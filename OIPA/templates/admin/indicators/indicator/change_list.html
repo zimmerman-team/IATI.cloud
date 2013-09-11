@@ -1,0 +1,25 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls admin_static admin_list %}
+
+
+{% block extrastyle %}
+{{block.super}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/custom_admin.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script type="text/javascript" src="/static/js/indicator_admin.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+
+{{block.super}}
+    <div class="module" style="margin: 10px 15px; padding: 20px;">
+
+        <button id="update-indicators-set" class="oipa-admin-button">Update indicator meta</button>
+        <button id="update-indicator-data-set" class="oipa-admin-button">Update indicator country data</button>
+        <button id="update-indicator-city-data-set" class="oipa-admin-button">Update indicator city data</button>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}{% load i18n static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <section id="getting-started">
+        <div class="page-header">
+            <h1>Getting started </h1>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <p>OIPA currently supports these formats:</p>
+                <ul>
+                    <li>JSON</li>
+                    <li>XML</li>
+                </ul>
+                <p>Every call to the API returns a meta and objects block where;</p>
+                <ul>
+                    <li>The <span class="label">meta block</span> consists of tools to ease pagination, limiting results and summing up the total of object results.</li>
+                    <li>The <span class="label">objects block</span> returns the chosen format representation of the object results as a list.</li>
+                </ul>
+                <h3 class="hidden-phone push_20px_top">Example:</h3>
+                <pre class="hidden-phone">
+                    <code>
+                        {
+                            meta: {
+                                limit: 2,
+                                next: "/api/v2/activities/?offset=2&amp;limit=2&amp;format=json",
+                                offset: 0,
+                                previous: null,
+                                total_count: 2769
+                            },
+                            objects: [
+                                - {
+                                    date_created: "2012-06-25",
+                                    date_updated: "2009-01-06",
+                                    description: {
+                                        default: "Launched in 1992, the Global Environment Facility..."
+                                        },
+                                    end_actual: null,
+                                    end_planned: "2012-12-31",
+                                    iati_identifier: "41AAA-00043782",
+                                    reporting_organisation: {
+                                        date_created: "2012-06-25",
+                                        date_updated: "2012-06-25",
+                                        org_name: "United Nations Office for Project Services",
+                                        org_name_lang: null,
+                                        ref: "41AAA",
+                                        resource_uri: "/api/v2/organisations/41AAA/",
+                                        type: "Multilateral"
+                                        },
+                                    resource_uri: "/api/v2/activities/41AAA-00043782/",
+                                    start_actual: "2005-02-03",
+                                    start_planned: null,
+                                    title: {
+                                        default: "Global Environment Facility (GEF) Small Grants Programme, 3rd Operational Phase"
+                                        }
+                                },
+                                - { ... }
+                            ]
+                        }
+                    </code>
+                </pre>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">Retrieving a single object</h3>
+                <p>Every object has a default field called <span class="label label-info">resource_uri</span> which displays the API call to retrieve the object.</p>
+                <p>Looking at the example above the activity resource_uri is:</p>
+                <pre><code>resource_uri: "/api/v2/activities/41AAA-00043782/",</code></pre>
+                <p>The nested organisation resource_uri is:</p>
+                <pre><code>resource_uri: "/api/v2/organisations/41AAA/",</code></pre>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,15 @@
+<html>
+<head>
+
+</head>
+<body>
+    <h1>TEst upload</h1>
+
+    <form action="{% url upload_data %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Upload CSV UnHabitatIndicatorCountry file">
+    </form>
+
+</body>
+</html>

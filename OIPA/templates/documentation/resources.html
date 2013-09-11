@@ -1,0 +1,409 @@
+{% extends "base.html" %}{% load i18n static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <section id="resources">
+        <div class="page-header">
+            <h1>Resources <small>available API resources</small></h1>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <p>OIPA currently implements five public resources:</p>
+                <ul>
+                    <li>OrganisationResource *</li>
+                    <li>ActivityResource</li>
+                    <li>RegionResource</li>
+                    <li>CountryResource</li>
+                    <li>SectorResource</li>
+                </ul>
+                <div class="alert alert-info">
+                    <strong>*</strong> The current API implementation nests basic OrganisationResource fields within the ActivityResource as well as Region-, Country- and SectorResources.
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">{{ resources.organisation }}</h3>
+                <p>The OrganisationResource represents an IATI standard represenation of an Organsation</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>IATI Component</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="label label-info">code</span></td>
+                            <td>code</td>
+                            <td>46002</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">abbreviation</span></td>
+                            <td>abbreviation</td>
+                            <td>Afr.DB</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">name</span></td>
+                            <td>name</td>
+                            <td>African Development Bank</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">type</span></td>
+                            <td>ref</td>
+                            <td>OrganisationTypeResource</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">resource_uri</span></td>
+                            <td></td>
+                            <td>"/api/v2/organisations/44000/"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">{{ resources.activity }}</h3>
+                <p>The ActivityResource represents an IATI standard represenation of an Activity</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>IATI Component</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">budget</span></td>
+                        <td>budget</td>
+                        <td>ActivityBudgetResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">activity-status</span></td>
+                        <td>activity-status</td>
+                        <td>StatusResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">transactions</span></td>
+                        <td>transaction</td>
+                        <td>TransactionResource</td>
+                    <tr>
+                        <td><span class="label label-info">collaboration_type</span></td>
+                        <td>collaboration-type</td>
+                        <td>CollaborationTypeResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">date_updated</span></td>
+                        <td>last-updated-datetime</td>
+                        <td>"2011-11-11" **</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">default_aid_type</span></td>
+                        <td>default-aid-type</td>
+                        <td>AidTypeResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">default_finance_type</span></td>
+                        <td>default-finance-type</td>
+                        <td>FinanceTypeResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">default_flow_type</span></td>
+                        <td>default-flow-type</td>
+                        <td>FlowTypeResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">default_tied_status</span></td>
+                        <td>default-tied-status</td>
+                        <td>TiedStatusResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">descriptions</span></td>
+                        <td>description</td>
+                        <td>DescriptionResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">end_actual</span></td>
+                        <td>end-actual</td>
+                        <td>"2011-11-16" **</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">end_planned</span></td>
+                        <td>end-planned</td>
+                        <td>"2011-11-16" **</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">iati_identifier</span></td>
+                        <td>iati-identifier</td>
+                        <td>"NL-1-PPR-17014"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">recipient_country</span></td>
+                        <td>recipient-country</td>
+                        <td>RecipientCountryResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">recipient_region</span></td>
+                        <td>recipient-region</td>
+                        <td>RecipientRegionResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">reporting_organisation</span></td>
+                        <td>reporting-org</td>
+                        <td>OrganisationResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">participating_organisations</span></td>
+                        <td>participating-org</td>
+                        <td>OrganisationResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">resource_uri</span></td>
+                        <td></td>
+                        <td>"/api/v2/activities/NL-1-PPR-17014/"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">sectors</span></td>
+                        <td>sector</td>
+                        <td>SectorResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">start_actual</span></td>
+                        <td>start-actual</td>
+                        <td>"2011-11-16" **</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">start_planned</span></td>
+                        <td>start-planned</td>
+                        <td>"2011-11-16" **</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">titles</span></td>
+                        <td>title</td>
+                        <td>TitleResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">documents</span></td>
+                        <td>document-link</td>
+                        <td>DocumentLinkResource</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">hierarchy</span></td>
+                        <td>hierarchy</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">last_updated_datetime</span></td>
+                        <td>last-updated-datetime</td>
+                        <td>2011-10-17T14:00:00</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">linked_data_uri</span></td>
+                        <td>linked-data-uri</td>
+                        <td>unknown</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">xml_source_ref</span></td>
+                        <td></td>
+                        <td>afdb-mali ***</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-info">
+                    <strong>**</strong> Time is stripped.<br/>
+                    <strong>***</strong> The XML file the activity was derived from.
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">{{ resources.country }}</h3>
+                <p>The CountryResource represents a standard represenation of a Country</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">code</span></td>
+                        <td>"NL"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">region_id</span></td>
+                        <td>789</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">center_longlat</span></td>
+                        <td>"POINT (20.0000000000000000 47.0000000000000000)"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">capital_city</span></td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">iso3</span></td>
+                        <td>"NLD"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">name</span></td>
+                        <td>"Netherlands</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">{{ resources.region }}</h3>
+                <p>The RegionResource represents an standard represenation of a geographical Region</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">code</span></td>
+                        <td>298</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">name</span></td>
+                        <td>"Africa, regional"</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">{{ resources.sector }}</h3>
+                <p>The SectorResource represents a standard representation of a Sector</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">code</span></td>
+                        <td>11130</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">name</span></td>
+                        <td>"Teacher training"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">description</span></td>
+                        <td>"Teacher education (where the level of education is unspecified); in-service and pre-service training; materials development."</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">ActivityFilterOptionsResource (JSON only)</h3>
+                <p>Filtering options based on country, region, sector, budget and organisation filters. Example: when using parameters: organisation = NL-1, all countries, regions and sectors are returned this organisation has activities in.</p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">regions</span></td>
+                        <td>regions: { <br>
+                        89: "Europe, regional", <br>
+                        189: "North of Sahara, regional", <br>
+                        289: "South of Sahara, regional" <br>
+                        }</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">sectors</span></td>
+                        <td>
+                            sectors: { <br>
+                            11110: "Education policy and administrative management", <br>
+                            11120: "Education facilities and training" <br>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">countries</span></td>
+                        <td>countries: { <br>
+                            BD: "BANGLADESH", <br>
+                            BF: "BURKINA FASO" <br>
+                        }</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">IndicatorDataResource (JSON only)</h3>
+                <p></p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">regions</span></td>
+                        <td>regions: { <br>
+                        89: "Europe, regional", <br>
+                        189: "North of Sahara, regional", <br>
+                        289: "South of Sahara, regional" <br>
+                        }</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">sectors</span></td>
+                        <td>
+                            sectors: { <br>
+                            11110: "Education policy and administrative management", <br>
+                            11120: "Education facilities and training" <br>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">countries</span></td>
+                        <td>countries: { <br>
+                            BD: "BANGLADESH", <br>
+                            BF: "BURKINA FASO" <br>
+                        }</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        </div>
+    </section>
+{% endblock %}

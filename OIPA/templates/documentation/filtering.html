@@ -1,0 +1,54 @@
+{% extends "base.html" %}{% load i18n static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <section id="filtering">
+        <div class="page-header">
+            <h1>Interface <small>with the OIPA resources</small></h1>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_10px_top">Search</h3>
+                <p>The current API implements a combined search query on the <span class="label label-info">title</span> and <span class="label label-info">description</span> fields of the ActivityResource.</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;query=Food</strong></code></pre>
+                <div class="alert alert-info">
+                    <strong>Note:</strong> search is case insensitive.
+                </div>
+            </div>
+            <div class="span12">
+                <h3 class="push_10px_top">Countries</h3>
+                <p>The current API implements a countries filter</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;countries=BB|AO|FR</strong></code></pre>
+            </div>
+            <div class="span12">
+                <h3 class="push_10px_top">Regions</h3>
+                <p>The current API implements a countries filter</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;regions=380|89</strong></code></pre>
+            </div>
+            <div class="span12">
+                <h3 class="push_10px_top">Sectors</h3>
+                <p>The current API implements a countries filter</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;sectors=410|12220</strong></code></pre>
+            </div>
+            <div class="span12">
+                <h3 class="push_10px_top">IATI identifier</h3>
+                <p>The current API implements the IATI identifer filter</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&iati_identifier=NL-1-PPR-22163</strong></code></pre>
+            </div>
+                        <div class="span12">
+                <h3 class="push_10px_top">Organisations</h3>
+                <p>The current API implements an organisations filter</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&organisations=44000|NL-1</strong></code></pre>
+            </div>
+            <div class="span12">
+                <h3 class="push_10px_top">Joining calls</h3>
+                <p>Calls to the API can be joined, for example:</p>
+                <p>Retrieve all objects where <span class="label label-info">title</span> and/or <span class="label label-info">description</span> contain the word "food" where <span class="label label-info">recipient_country</span> is BB and/or AO and/or FR</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;query=Food</strong>&countries=BB|AO|FR</code></pre>
+                <p>Retrieve all objects where <span class="label label-info">reporting_organisation</span> is "NL-1" where <span class="label label-info">recipient_country</span> is BA (Bosnia Herzegovina)</p>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;organisations=NL-1</strong>&countries=BA</code></pre>
+            </div>
+        </div>
+    </section>
+{% endblock %}
