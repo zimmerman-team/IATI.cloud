@@ -1,7 +1,7 @@
-OIPA V2.1: OpenAid IATI parser and API Version 2.1 
+OIPA V2.1: OpenAid IATI parser and API 
 ============
 
-Technology developed within the www.openaid.nl platform enables IATI standard compliant datasets to easily parse and 
+OIPA Version 2.1 is developed within the www.openaid.nl platform and enables IATI standard compliant datasets to easily parse and 
 interface that data using the OIPA framework that has been developed. 
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, 
