@@ -1,8 +1,4 @@
-OIPA-V2.1
-=========
-
-
-OIPA V2: OpenAid IATI parser and API Version 2.0 Released on 11th September 2013
+OIPA V2.1: OpenAid IATI parser and API Version 2.0 Released on 11th September 2013
 ============
 
 Technology developed within the www.openaid.nl platform enables IATI standard compliant datasets to easily parse and 
