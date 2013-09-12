@@ -1,2 +1,20 @@
 OIPA-V2.1
 =========
+
+
+OIPA V2: OpenAid IATI parser and API Version 2.0 Released on 11th September 2013
+============
+
+Technology developed within the www.openaid.nl platform enables IATI standard compliant datasets to easily parse and 
+interface that data using the OIPA framework that has been developed. 
+
+IATI is a global aid transparency standard and it makes information about aid spending easier to access, 
+re-use and understand the underlying data using a unified open standard. You can find more about IATA standard at: 
+
+http://iatistandard.org/
+
+OIPA V2.1 has an open-source license, meaning you can download the package from Github under the AGPL license. 
+
+Check the full documentation and how to use OIPA here: http://oipa.openaidsearch.org/api/v2/docs/
+
+============
