@@ -33,8 +33,8 @@ class indicator(models.Model):
     selection_type = models.CharField(max_length=255, null=True, blank=True)
     #deprivation type is used for i.e. table 14 urban, non slum household, one sheltar deprivation
     deprivation_type = models.CharField(max_length=255, null=True, blank=True)
-    source = models.ForeignKey(null=True, blank=True)
-    topic = models.ForeignKey(null=True, blank=True)
+    source = models.ForeignKey(indicator_source, null=True, blank=True)
+    topic = models.ForeignKey(indicator_topic, null=True, blank=True)
 
     def __unicode__(self):
         return self.friendly_label
