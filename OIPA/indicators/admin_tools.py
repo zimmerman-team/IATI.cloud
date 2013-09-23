@@ -10,13 +10,12 @@ from geodata.models import country, city
 
 class IndicatorAdminTools():
 
-
     def update_indicators(self):
 
         for key, value in mapping_names.items():
 
             try:
-                new_indicator = indicator(name=key, friendly_label=value["name"], type_data=value["type_data"])
+                new_indicator = indicator(id=key, friendly_label=value["name"], type_data=value["type_data"])
                 new_indicator.save()
 
             except IntegrityError, e:
@@ -27,8 +26,6 @@ class IndicatorAdminTools():
 
             except ValidationError, e:
                 print e.message
-
-
 
 
     def update_indicator_data(self):

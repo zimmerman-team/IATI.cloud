@@ -66,13 +66,13 @@ USE_TZ = False
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 MEDIA_ROOT = rel('../media')
-STATIC_ROOT = rel('../static-root')
+STATIC_ROOT = STATIC_ROOT
 
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 MEDIA_URL = '/media/'
-STATIC_URL = '/static/'
+STATIC_URL = STATIC_URL
 
 # Additional locations of static files
 STATICFILES_DIRS = (
