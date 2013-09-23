@@ -18,3 +18,5 @@ OIPA/OIPA/local_settings.py
 OIPA/OIPA/local_settings.pyc
 
 *.pyc
+
+*.pyc
