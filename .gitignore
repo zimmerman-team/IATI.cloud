@@ -18,5 +18,24 @@ OIPA/OIPA/local_settings.py
 OIPA/OIPA/local_settings.pyc
 
 *.pyc
+OIPA/API/v3/resources/advanced_resources.pyc
 
-*.pyc
+OIPA/API/v3/resources/model_resources.pyc
+
+OIPA/API/v3/urls.pyc
+
+OIPA/API/v3/views.pyc
+
+OIPA/IATI/models.pyc
+
+OIPA/IATI/parser.pyc
+
+OIPA/OIPA/settings.pyc
+
+OIPA/OIPA/wsgi.pyc
+
+OIPA/geodata/admin_tools.pyc
+
+OIPA/geodata/data_backup/country_data.pyc
+
+OIPA/geodata/data_backup/country_data.pyc
