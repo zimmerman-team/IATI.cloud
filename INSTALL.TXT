@@ -7,3 +7,5 @@ OIPA (OpenAid IATI Parser and API)
 - See requirements.txt for library requirements
 - Lighttpd (or Nginx of Apache). Preferably Lighttpd/Nginx, easier to configure.
 - Dovecot/Mail configuration.
+
+For more info, contact us via http://www.zimmermanzimmerman.nl

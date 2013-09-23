@@ -340,7 +340,7 @@ class title(models.Model):
 
 class description(models.Model):
     activity = models.ForeignKey(activity)
-    text = models.TextField(null=True, default=None)
+    description = models.TextField(null=True, default=None)
     language = models.ForeignKey(language, null=True, default = None)
     type = models.ForeignKey(description_type, related_name="description_type", null=True, default = None)
 

@@ -1,4 +1,4 @@
-# Django settings for OIPAv3 project.
+# Django settings for OIPA project.
 import sys
 import os
 

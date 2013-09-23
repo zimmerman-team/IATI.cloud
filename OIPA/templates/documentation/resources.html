@@ -16,6 +16,10 @@
                     <li>RegionResource</li>
                     <li>CountryResource</li>
                     <li>SectorResource</li>
+                    <li>ActivityFilterOptionsResource (JSON only)</li>
+                    <li>IndicatorFilterOptionsResource (JSON only)</li>
+                    <li>IndicatorDataResource (JSON only)</li>
+                    <li>CountryGeoJSONResource (JSON only)</li>
                 </ul>
                 <div class="alert alert-info">
                     <strong>*</strong> The current API implementation nests basic OrganisationResource fields within the ActivityResource as well as Region-, Country- and SectorResources.
@@ -359,10 +363,9 @@
             </div>
         </div>
 
-
         <div class="row">
             <div class="span12">
-                <h3 class="push_20px_top">IndicatorDataResource (JSON only)</h3>
+                <h3 class="push_20px_top">IndicatorFilterOptionsResource (JSON only)</h3>
                 <p></p>
                 <p>Available fields:</p>
                 <table class="table table-bordered table-striped">
@@ -373,6 +376,13 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr>
+                        <td><span class="label label-info">indicators</span></td>
+                        <td>indicators: { <br>
+                            cpi_environment_index: "Environmental Sustainability index", <br>
+                            bottle_water: "Access to bottled water" <br>
+                        }</td>
+                    </tr>
                     <tr>
                         <td><span class="label label-info">regions</span></td>
                         <td>regions: { <br>
@@ -397,11 +407,140 @@
                             BF: "BURKINA FASO" <br>
                         }</td>
                     </tr>
+                    <tr>
+                        <td><span class="label label-info">cities</span></td>
+                        <td>cities: { <br>
+                            5723: "Lusaka", <br>
+                            5728: "Tegucigalpa" <br>
+                        }</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">IndicatorDataResource (JSON only)</h3>
+                <p></p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span class="label label-info">indicator</span></td>
+                        <td>"population"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">longitude</span></td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">latitude</span></td>
+                        <td>24</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">name</span></td>
+                        <td>"Bangladesh"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">max_value</span></td>
+                        <td>"1658270"</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">years</span></td>
+                        <td>{ <br>
+y1955: 48415,<br>
+y1970: 69817,<br>
+y2000: 139434,<br>
+y1975: 78993 <br>
+} <br>
+</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">type_data</span></td>
+                        <td>1000 *</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-info">indicator_friendly</span></td>
+                        <td>"Total population"</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-info">
+                    <strong>*</strong> type_data options: 1000 ( = amount per 1000 citizens), p ( = percent).
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <h3 class="push_20px_top">CountryGeoJSONResource (JSON only)</h3>
+                <p>Also see: <a href="http://geojson.org/geojson-spec.html"> GeoJSON specification</a></p>
+                <p>Available fields:</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Example</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="label label-info">geometry</span></td>
+                            <td>
+                                { <br>
+                                    type: "Polygon", <br>
+                                    coordinates: [ <br>
+                                    [ <br>
+                                    [ <br>
+                                    61.210817, <br>
+                                    35.650072 <br>
+                                    ], <br>
+                                    [ <br>
+                                    62.230651, <br>
+                                    35.270664 <br>
+                                    ], <br>
+                                    [ <br>
+                                    62.984662, <br>
+                                    35.404041 <br>
+                                    ], <br>
+                                    [ <br>
+                                    63.193538, <br>
+                                    35.857166 <br>
+                                    ], <br>
+                                ] <br>
+                                }
+
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">type</span></td>
+                            <td>"Feature"</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">id</span></td>
+                            <td>"AF"</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-info">properties</span></td>
+                            <td>{<br>
+                            project_amount: 590,<br>
+                            total_budget: "418070576.00",<br>
+                            name: "Afghanistan"<br>
+                            }</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
 
         </div>

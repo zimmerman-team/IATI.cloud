@@ -148,6 +148,7 @@ def indicator_data_response(request):
                    'JOIN indicators_indicator da ON da.name = id.indicator_id WHERE %s' % (filter_string))
     cursor_max = connection.cursor()
 
+    indicator_q = indicator_q.replace(" ) AND (", "")
     cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
     result_max = cursor_max.fetchone()
     desc = cursor.description
@@ -286,7 +287,7 @@ def indicator_filter_options(request):
 
 
 
-def json_activities_response(request):
+def country_geojson_response(request):
 
     city_q = get_and_query(request, 'cities', 'city.id')
     country_q = get_and_query(request, 'countries', 'country.code')
@@ -337,7 +338,6 @@ def json_activities_response(request):
             'GROUP BY c.country_id %s' % (query_string, where_sector, query_having)
     cursor.execute(query)
 
-    activity_result = {}
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
 
     activities = []

@@ -50,8 +50,7 @@ urlpatterns = patterns('',
     url(r'^v3/indicator-data/$', 'API.v3.views.indicator_data_response'),
     url(r'^v3/activity-filter-options/$', 'API.v3.views.activity_filter_options'),
     url(r'^v3/indicator-filter-options/$', 'API.v3.views.indicator_filter_options'),
-    url(r'^v3/activity-geojson/$', 'API.v3.views.json_activities_response'),
+    url(r'^v3/country-geojson/$', 'API.v3.views.country_geojson_response'),
     (r'', include(v3_api.urls)),
     (r'', include(v2_api.urls)),
-
 )

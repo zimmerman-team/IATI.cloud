@@ -398,7 +398,7 @@ class Parser():
                                 description = type_ref
 
 
-                    new_description = models.description(activity=activity, text=description, type=type, language=language)
+                    new_description = models.description(activity=activity, description=description, type=type, language=language)
                     new_description.save()
 
                 except IntegrityError, e:
