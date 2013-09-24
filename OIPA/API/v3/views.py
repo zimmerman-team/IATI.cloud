@@ -13,7 +13,7 @@ from geodata.data_backup.country_data import countryData
 def docs_index(request):
     context = dict()
     context['title'] = 'Documentation'
-    t = TemplateResponse(request, 'base.html', context)
+    t = TemplateResponse(request, 'bfwfase.html', context)
     return t.render()
 
 def docs_start(request):
