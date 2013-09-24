@@ -38,12 +38,12 @@
                 <p class="lead">OIPA is a framework that provides a rich and usable API for parsing, ingesting, storing and searching IATI standard compliant datasets.</p>
                 <div class="subnav">
                     <ul class="nav nav-pills">
-                        <li{% if title == 'Documentation' %} class="active"{% endif %}><a href="{% url "docs" %}"><i class="icon-home"></i></a></li>
-                        <li{% if title == 'Getting started' %} class="active"{% endif %}><a href="{% url "start_docs" %}">Getting started</a></li>
-                        <li{% if title == 'Resources' %} class="active"{% endif %}><a href="{% url "resource_docs" %}">Resources</a></li>
-                        <li{% if title == 'Filtering' %} class="active"{% endif %}><a href="{% url "filter_docs" %}">Filtering</a></li>
-                        <li{% if title == 'Ordering' %} class="active"{% endif %}><a href="{% url "ordering_docs" %}">Ordering</a></li>
-                        <li{% if title == 'About' %} class="active"{% endif %}><a href="{% url "about_docs" %}">About</a></li>
+                        <li{% if title == 'Documentation' %} class="active"{% endif %}><a href="{% url 'docs' %}"><i class="icon-home"></i></a></li>
+                        <li{% if title == 'Getting started' %} class="active"{% endif %}><a href="{% url 'start_docs' %}">Getting started</a></li>
+                        <li{% if title == 'Resources' %} class="active"{% endif %}><a href="{% url 'resource_docs' %}">Resources</a></li>
+                        <li{% if title == 'Filtering' %} class="active"{% endif %}><a href="{% url 'filter_docs' %}">Filtering</a></li>
+                        <li{% if title == 'Ordering' %} class="active"{% endif %}><a href="{% url 'ordering_docs' %}">Ordering</a></li>
+                        <li{% if title == 'About' %} class="active"{% endif %}><a href="{% url 'about_docs' %}">About</a></li>
                     </ul>
                 </div>
             </header>
