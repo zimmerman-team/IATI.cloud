@@ -27,22 +27,17 @@ v3_api.register(OnlyRegionResource())
 v3_api.register(RecipientCountryResource())
 
 
-
-
-
 def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
 
 urlpatterns = patterns('',
-    url(r'^$', api_v3_docs),
-    (r'^v3/$', api_v3_docs),
     url(r'^v2/docs/$', 'API.v2.views.docs_index', name='docsv2'),
     url(r'^v2/docs/getting-started/$', 'API.v2.views.docs_start', name='start_docsv2'),
     url(r'^v2/docs/resources/$', old_views.docs_resources, name='resource_docsv2'),
     url(r'^v2/docs/filtering/$', old_views.docs_filtering, name='filter_docsv2'),
     url(r'^v2/docs/ordering/$', old_views.docs_ordering, name='ordering_docsv2'),
     url(r'^v2/docs/about/$', old_views.docs_about, name='about_docsv2'),
-    url(r'^v3/docs/$', views.docs_index),
+    url(r'^v3/docs/$', views.docs_index, name='docs'),
     url(r'^v3/docs/getting-started/$', views.docs_start, name='start_docs'),
     url(r'^v3/docs/resources/$', views.docs_resources, name='resource_docs'),
     url(r'^v3/docs/filtering/$', views.docs_filtering, name='filter_docs'),
@@ -54,4 +49,6 @@ urlpatterns = patterns('',
     url(r'^v3/country-geojson/$', 'API.v3.views.country_geojson_response'),
     (r'', include(v3_api.urls)),
     (r'', include(v2_api.urls)),
+    url(r'^$', api_v3_docs),
+    (r'^v3/$', api_v3_docs),
 )
