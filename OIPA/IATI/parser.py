@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 import time
 from datetime import datetime
 from geodata.models import country, region
+import gc
 
 class Parser():
 
@@ -1142,4 +1143,6 @@ class Parser():
         iati_file = get_the_file(url)
         context = etree.iterparse( iati_file, tag='iati-activity' )
         fast_iter(context, process_element)
+        iati_file = None
+        gc.collect()
 
