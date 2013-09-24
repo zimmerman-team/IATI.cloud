@@ -141,11 +141,11 @@ def indicator_data_response(request):
 
     cursor = connection.cursor()
 
-    cursor.execute('SELECT da.name as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
+    cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
                    'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
                    'FROM indicators_indicator_data id '
                    'LEFT OUTER JOIN geodata_country c ON id.country_id = c.code '
-                   'JOIN indicators_indicator da ON da.name = id.indicator_id WHERE %s' % (filter_string))
+                   'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
     cursor_max = connection.cursor()
 
     indicator_q = indicator_q.replace(" ) AND (", "")
@@ -193,13 +193,13 @@ def activity_filter_options(request):
         q_organisations_and = 'AND a.reporting_organisation_id = "' + q_organisations + '"'
 
     query = 'SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
-                   'FROM iati_activity a '\
-                   'LEFT JOIN iati_activity_recipient_region ir ON a.id = ir.activity_id '\
+                   'FROM IATI_activity a '\
+                   'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
                    'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
-                   'LEFT JOIN iati_activity_recipient_country ic ON a.id = ic.activity_id '\
+                   'LEFT JOIN IATI_activity_recipient_country ic ON a.id = ic.activity_id '\
                    'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
-                   'LEFT JOIN iati_activity_sector ias ON a.id = ias.activity_id '\
-                   'LEFT JOIN iati_sector s ON ias.sector_id = s.code '\
+                   'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
+                   'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
                    'WHERE 1 %s' % q_organisations_and
     cursor.execute(query)
     results = get_fields(cursor=cursor)
@@ -314,7 +314,7 @@ def country_geojson_response(request):
 
     if request.GET.get('sectors', None):
         where_sector =  ' Where ' + str(get_filter_query(filters=filter_sector)[4:])
-        where_sector = ' and a.id in (select activity_id from iati_activity_sector s %s)  ' % where_sector
+        where_sector = ' and a.id in (select activity_id from IATI_activity_sector s %s)  ' % where_sector
     else:
         where_sector = ''
 
@@ -329,9 +329,9 @@ def country_geojson_response(request):
     cursor = connection.cursor()
 
     query = 'SELECT c.country_id, count(a.id) as total_projects, cd.name as country_name, sum(b.value) as total_budget, cd.region_id '\
-            'FROM iati_activity a '\
-            'LEFT JOIN iati_budget b ON b.activity_id = a.id '\
-            'LEFT JOIN iati_activity_recipient_country c ON c.activity_id = a.id '\
+            'FROM IATI_activity a '\
+            'LEFT JOIN IATI_budget b ON b.activity_id = a.id '\
+            'LEFT JOIN IATI_activity_recipient_country c ON c.activity_id = a.id '\
             'LEFT JOIN geodata_country cd ON c.country_id = cd.code '\
             'WHERE 1' \
             ' %s %s '\
