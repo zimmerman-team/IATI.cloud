@@ -1144,5 +1144,5 @@ class Parser():
         context = etree.iterparse( iati_file, tag='iati-activity' )
         fast_iter(context, process_element)
         iati_file = None
-        gc.collect()
+        # gc.collect()
 
