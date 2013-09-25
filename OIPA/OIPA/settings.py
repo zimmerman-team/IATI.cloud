@@ -7,7 +7,7 @@ def rel(*x):
 
 sys.path.insert(0, rel('..','lib'))
 
-DEBUG = True
+DEBUG = DEBUG
 TEMPLATE_DEBUG = DEBUG
 
 from local_settings import *
