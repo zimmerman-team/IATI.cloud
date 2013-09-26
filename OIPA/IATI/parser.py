@@ -17,15 +17,19 @@ class Parser():
     def parse_url(self, url, xml_source_ref):
 
         def fast_iter(context, func):
-            for event, elem in context:
-                try:
-                    func(self, elem)
-                except Exception as e:
-                    print '%s (%s)' % (e.message, type(e))
-                elem.clear()
-                while elem.getprevious() is not None:
-                    del elem.getparent()[0]
-            del context
+
+            try:
+                for event, elem in context:
+                    try:
+                        func(self, elem)
+                    except Exception as e:
+                        print '%s (%s)' % (e.message, type(e))
+                    elem.clear()
+                    while elem.getprevious() is not None:
+                        del elem.getparent()[0]
+                del context
+            except Exception as e:
+                print '%s (%s)' % (e.message, type(e))
 
         def process_element(self, elem):
 
