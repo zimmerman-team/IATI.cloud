@@ -131,7 +131,8 @@ INSTALLED_APPS = (
     'geodata',
     'indicators',
     'API',
-    'south'
+    'south',
+    'django_jenkins'
 )
 
 # A sample logging configuration. The only tangible logging
