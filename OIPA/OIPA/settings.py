@@ -126,13 +126,14 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     # 'django.contrib.gis',
+    # 'django_jenkins',
     'IATI',
     'IATI_synchroniser',
     'geodata',
     'indicators',
     'API',
     'south',
-    'django_jenkins'
+
 )
 
 # A sample logging configuration. The only tangible logging

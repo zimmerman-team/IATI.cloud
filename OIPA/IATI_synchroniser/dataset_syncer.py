@@ -13,10 +13,9 @@ class DatasetSyncer():
         if type == 2:
             cur_url = "http://www.iatiregistry.org/api/search/dataset?filetype=organisation&all_fields=1&limit=1000&offset="
 
-        for i in range(0,10000,1000):
-            cur_url += str(i)
-
-            self.synchronize_with_iati_api_by_page(cur_url, type)
+        for i in range(0, 10000, 200):
+            cur_url_with_offset = cur_url + str(i)
+            self.synchronize_with_iati_api_by_page(cur_url_with_offset, type)
 
     def synchronize_with_iati_api_by_page(self,cur_url, cur_type, try_number = 0):
         try:
@@ -43,7 +42,7 @@ class DatasetSyncer():
                                 publisher_iati_id = object["extras"]["publisher_iati_id"]
 
                             #                   If publisher_iati_id is given
-                            if not (publisher_iati_id is None) or not (publisher_iati_id == ""):
+                            if not (publisher_iati_id is None) and not (publisher_iati_id == ""):
         #                        and is already in the database, get the publisher_id, else add the publisher
                                 if(models.Publisher.objects.filter(org_abbreviate=publisher_iati_id).count() > 0):
                                     current_publisher = models.Publisher.objects.get(org_abbreviate=publisher_iati_id)
@@ -51,7 +50,7 @@ class DatasetSyncer():
                                     current_publisher = self.add_publisher_to_db(publisher_iati_id,publisher_iati_id)
                             else:
                                 if(models.Publisher.objects.filter(org_abbreviate=publisher_iati_id).count() > 0):
-                                    current_publisher = models.Publisher.objects.get(org_abbreviate="Unknown")
+                                    current_publisher = models.Publisher.objects.filter(org_abbreviate=publisher_iati_id)[0]
                                 else:
                                     current_publisher = self.add_publisher_to_db("Unknown","Unknown")
         #                        publisher unknown
@@ -65,7 +64,7 @@ class DatasetSyncer():
 
 
         except urllib2.HTTPError, e:
-            print 'HTTP error: ' + str(e.code)
+            print 'HTTP error: ' + str(e.code) + " " + cur_url
             if try_number < 6:
                 self.synchronize_with_iati_api_by_page(cur_url, cur_type,try_number + 1)
             else:
