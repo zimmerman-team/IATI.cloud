@@ -52,6 +52,12 @@ class CodeListSyncAdmin(admin.ModelAdmin):
 
 
 
+
+class IATIXMLSourceInline(admin.TabularInline):
+    model = iati_xml_source
+    extra = 0
+
+
 class IATIXMLSourceAdmin(admin.ModelAdmin):
     list_display = ['ref', 'publisher', 'type', 'date_created', 'get_parse_status', 'date_updated']
     list_filter = ('publisher', 'type')
@@ -76,8 +82,31 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
+class PublisherAdmin(admin.ModelAdmin):
+    inlines = [IATIXMLSourceInline]
+
+    list_display = ('org_name', 'org_abbreviate')
+
+    class Media:
+        js = (
+            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js',
+            '/static/js/publisher_admin.js',
+            )
+
+    def get_urls(self):
+        urls = super(PublisherAdmin, self).get_urls()
+        extra_urls = patterns('',
+            (r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view))
+        )
+        return extra_urls + urls
+
+    def parse_view(self, request):
+        publisher_id = request.GET.get('publisher_id')
+        for obj in iati_xml_source.objects.filter(publisher__id=publisher_id):
+            obj.process(1)
+        return HttpResponse('Success')
 
 admin.site.register(dataset_sync,DatasetSyncAdmin)
 admin.site.register(codelist_sync,CodeListSyncAdmin)
-admin.site.register(Publisher)
+admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(iati_xml_source, IATIXMLSourceAdmin)

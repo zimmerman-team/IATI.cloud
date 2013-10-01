@@ -12,7 +12,7 @@ $(document).ready(function (){
         $.ajax({
             type: "GET",
             data: ({'publisher_id': publisher_id}),
-            url: "/admin/utils/publisher/parse-publisher/",
+            url: "/admin/IATI_synchroniser/publisher/parse-publisher/",
             beforeSend: function() {
                 image.hide();
                 loading.show();
