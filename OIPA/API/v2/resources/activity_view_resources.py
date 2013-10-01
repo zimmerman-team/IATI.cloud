@@ -105,7 +105,7 @@ class ActivityResource(ModelResource):
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
     recipient_country = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
     recipient_region = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)
-    activity_sectors = fields.ToManyField(ActivityViewSectorsResource, 'sector', full=True, null=True)
+    sectors = fields.ToManyField(ActivityViewSectorsResource, 'sector', full=True, null=True)
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
     collaboration_type = fields.ForeignKey(ActivityViewCollaborationTypeResource, attribute='collaboration_type', full=True, null=True)

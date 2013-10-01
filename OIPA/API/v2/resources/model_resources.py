@@ -97,6 +97,7 @@ class IndicatorDataResource(ModelResource):
 
 class OrganisationResource(ModelResource):
     type = fields.OneToOneField(OrganisationTypeResource, 'type', full=True, null=True)
+    org_name = fields.CharField('name', null=True)
 
     class Meta:
         queryset = organisation.objects.all()

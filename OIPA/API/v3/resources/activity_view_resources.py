@@ -52,6 +52,8 @@ class ActivityViewOrganisationResource(ModelResource):
 
 
 class ActivityViewTransactionResource(ModelResource):
+    provider_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'provider_organisation', full=True, null=True)
+    receiver_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'receiver_organisation', full=True, null=True)
 
     class Meta:
         queryset = transaction.objects.all()

@@ -364,8 +364,8 @@ class Parser():
                         if models.language.objects.filter(code=language_ref).exists():
                             language = models.language.objects.get(code=language_ref)
 
-                        new_title = models.title(activity=activity, title=title, language=language)
-                        new_title.save()
+                    new_title = models.title(activity=activity, title=title, language=language)
+                    new_title.save()
 
                 except IntegrityError, e:
                     print e.message + " in add_title: " + activity.id

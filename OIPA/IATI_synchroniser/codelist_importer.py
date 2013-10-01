@@ -100,6 +100,7 @@ class CodeListImporter():
                     db_row = aid_type(code=code, name=name, description=description, category=db_row2)
 
                 elif type == "Country" :
+                    name = name.lower().capitalize()
                     db_row = country(code=code, name=name, language=language_name)
 
                 elif type == "BudgetType" :
@@ -187,6 +188,7 @@ class CodeListImporter():
                     db_row = sector(code=code, name=name, description=description)
 
                 elif type == "SectorCategory" :
+                    name = name.lower().capitalize()
                     db_row = sector_category(code=code, name=name, description=description)
 
                 elif type == "TiedStatus" :
