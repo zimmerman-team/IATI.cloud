@@ -447,6 +447,8 @@ def country_geojson_response(request):
         country = {}
         country['type'] = 'Feature'
         country['id'] = r['country_id']
+        if (country['id'] == None):
+            continue
         country['properties'] = {'name' : r['country_name'], 'project_amount' : r['total_projects']}
         country['geometry'] = find_polygon(r['country_id'])
 
