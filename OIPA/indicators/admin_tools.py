@@ -108,8 +108,8 @@ class IndicatorAdminTools():
                     continue
 
                 found_indicator = None
-                if indicator.objects.filter(name=indicator_id).exists():
-                        found_indicator = indicator.objects.get(name=indicator_id)
+                if indicator.objects.filter(id=indicator_id).exists():
+                        found_indicator = indicator.objects.get(id=indicator_id)
                 else:
                     print "indicator not found for " + str(indicator_id)
                     continue
