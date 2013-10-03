@@ -1,5 +1,4 @@
 from lxml import etree
-
 import urllib2
 import IATI.models as models
 from re import sub
@@ -9,12 +8,16 @@ from exceptions import TypeError
 from django.core.exceptions import ValidationError
 import time
 from datetime import datetime
-from geodata.models import country, region
-import gc
+from deleter import Deleter
 
 class Parser():
 
     def parse_url(self, url, xml_source_ref):
+
+        def delete_all_activities_from_source():
+            deleter = Deleter()
+            deleter.delete_by_source(xml_source_ref)
+
 
         def fast_iter(context, func):
 
@@ -73,8 +76,6 @@ class Parser():
 
             except Exception as e:
                     print '%s (%s)' % (e.message, type(e)) + " in process_element: " + activity.id
-
-
 
 
         # class wide functions
@@ -138,31 +139,8 @@ class Parser():
 
         def remove_old_values_for_activity(self, elem):
 
-            activity_id = return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-            activity_id = activity_id.replace(" ", "")
-
-            cur_activity = models.activity.objects.get(id=activity_id)
-
-            models.activity_recipient_country.objects.filter(activity=cur_activity).delete()
-            models.activity_sector.objects.filter(activity=cur_activity).delete()
-            models.activity_date.objects.filter(activity=cur_activity).delete()
-            models.activity_website.objects.filter(activity=cur_activity).delete()
-            models.activity_participating_organisation.objects.filter(activity=cur_activity).delete()
-            models.activity_policy_marker.objects.filter(activity=cur_activity).delete()
-            models.activity_recipient_region.objects.filter(activity=cur_activity).delete()
-            models.related_activity.objects.filter(current_activity=cur_activity).delete()
-            models.other_identifier.objects.filter(activity=cur_activity).delete()
-            models.title.objects.filter(activity=cur_activity).delete()
-            models.description.objects.filter(activity=cur_activity).delete()
-            models.contact_info.objects.filter(activity=cur_activity).delete()
-            models.location.objects.filter(activity=cur_activity).delete()
-            models.transaction.objects.filter(activity=cur_activity).delete()
-            models.budget.objects.filter(activity=cur_activity).delete()
-            models.planned_disbursement.objects.filter(activity=cur_activity).delete()
-            models.condition.objects.filter(activity=cur_activity).delete()
-            models.result.objects.filter(activity=cur_activity).delete()
-            models.document_link.objects.filter(activity=cur_activity).delete()
-            cur_activity.delete()
+            deleter = Deleter()
+            deleter.remove_old_values_for_activity(self, elem);
 
 
         # entity add functions
@@ -630,10 +608,42 @@ class Parser():
                     if provider_organisation_ref:
                         if models.organisation.objects.filter(code=provider_organisation_ref).exists():
                             provider_organisation = models.organisation.objects.get(code=provider_organisation_ref)
+                        else:
+                            provider_organisation_type = None
+                            provider_organisation_type_ref = return_first_exist(t.xpath('provider-org/@type'))
+                            if provider_organisation_type_ref:
+                                if models.organisation_type.objects.filter(code=provider_organisation_type_ref).exists():
+                                    provider_organisation_type = models.organisation_type.objects.get(code=provider_organisation_type_ref)
+
+                            provider_organisation_name_ref = return_first_exist(t.xpath('provider-org/text()'))
+                            try:
+
+                                new_organisation = models.organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name_ref)
+                                new_organisation.save()
+
+                            except Exception as e:
+                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding provider organisation: " + activity.id
+
 
                     if receiver_organisation_ref:
                         if models.organisation.objects.filter(code=receiver_organisation_ref).exists():
                             receiver_organisation = models.organisation.objects.get(code=receiver_organisation_ref)
+                        else:
+                            receiver_organisation_type = None
+                            receiver_organisation_type_ref = return_first_exist(t.xpath('receiver-org/@type'))
+                            if receiver_organisation_type_ref:
+                                if models.organisation_type.objects.filter(code=receiver_organisation_type_ref).exists():
+                                    receiver_organisation_type = models.organisation_type.objects.get(code=receiver_organisation_type_ref)
+
+                            receiver_organisation_name_ref = return_first_exist(t.xpath('receiver-org/text()'))
+                            try:
+
+                                new_organisation = models.organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name_ref)
+                                new_organisation.save()
+
+                            except Exception as e:
+                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding receiver organisation: " + activity.id
+
 
                     if tied_status_ref:
                         if models.tied_status.objects.filter(code=tied_status_ref).exists():

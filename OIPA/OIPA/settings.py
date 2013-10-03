@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     # 'django.contrib.gis',
-    # 'django_jenkins',
+    'django_jenkins',
     'IATI',
     'IATI_synchroniser',
     'geodata',

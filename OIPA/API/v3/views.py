@@ -187,7 +187,7 @@ def indicator_data_response(request):
 
 def activity_filter_options(request):
     cursor = connection.cursor()
-    q_organisations = request.GET.get('organisation', None);
+    q_organisations = request.GET.get('organisations', None);
     q_organisations_and = ""
     if q_organisations:
         q_organisations_and = 'AND a.reporting_organisation_id = "' + q_organisations + '"'
@@ -220,16 +220,117 @@ def activity_filter_options(request):
     return HttpResponse(json.dumps(countries), mimetype='application/json')
 
 
+def indicator_region_filter_options(request):
 
-def indicator_filter_options(request):
+    region_q = get_and_query(request, 'regions', 'region.code')
+    indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
+
+
+    filter_string = ' AND (' + region_q + indicator_q + ')'
+    if 'AND ()' in filter_string:
+        filter_string = filter_string[:-6]
+    cursor = connection.cursor()
+    cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label,region.code as region_id, region.name as region_name '
+                   'FROM indicators_indicator_data i '
+                   'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
+                   'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
+                   'WHERE 1 %s' % (filter_string))
+
+    desc = cursor.description
+    results = [
+    dict(zip([col[0] for col in desc], row))
+    for row in cursor.fetchall()
+    ]
+
+    regions = {}
+    countries = {}
+    indicators = {}
+    jsondata = {}
+
+    for r in results:
+
+        region = {}
+        if r['region_id']:
+            region[r['region_id']] = r['region_name']
+            regions.update(region)
+
+        country = {}
+        if r['country_id']:
+            country[r['country_id']] = r['country_name']
+            countries.update(country)
+
+        indicator = {}
+        if r['indicator_id']:
+            indicator[r['indicator_id']] = r['friendly_label']
+            indicators.update(indicator)
+
+    jsondata['regions'] = regions
+    jsondata['countries'] = countries
+    jsondata['indicators'] = indicators
+
+    return HttpResponse(json.dumps(jsondata), mimetype='application/json')
+
+
+def indicator_country_filter_options(request):
+
+    country_q = get_and_query(request, 'countries', 'country.code')
+    region_q = get_and_query(request, 'regions', 'region.code')
+    indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
+
+
+    filter_string = ' AND (' + country_q + region_q + indicator_q + ')'
+    if 'AND ()' in filter_string:
+        filter_string = filter_string[:-6]
+    cursor = connection.cursor()
+    cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
+                   'FROM indicators_indicator_data i '
+                   'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
+                   'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
+                   'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
+                   'WHERE 1 %s' % (filter_string))
+
+    desc = cursor.description
+    results = [
+    dict(zip([col[0] for col in desc], row))
+    for row in cursor.fetchall()
+    ]
+
+    regions = {}
+    countries = {}
+    indicators = {}
+    jsondata = {}
+
+    for r in results:
+
+        region = {}
+        if r['region_id']:
+            region[r['region_id']] = r['region_name']
+            regions.update(region)
+
+        country = {}
+        if r['country_id']:
+            country[r['country_id']] = r['country_name']
+            countries.update(country)
+
+        indicator = {}
+        if r['indicator_id']:
+            indicator[r['indicator_id']] = r['friendly_label']
+            indicators.update(indicator)
+
+    jsondata['regions'] = regions
+    jsondata['countries'] = countries
+    jsondata['indicators'] = indicators
+
+    return HttpResponse(json.dumps(jsondata), mimetype='application/json')
+
+
+
+def indicator_city_filter_options(request):
 
     city_q = get_and_query(request, 'cities', 'city.id')
     country_q = get_and_query(request, 'countries', 'country.code')
     region_q = get_and_query(request, 'regions', 'region.code')
     indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
-
-    # if not indicator_q:
-        # indicator_q = ' i.indicator_id = "cpi_5_dimensions"'
 
     filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + ')'
     if 'AND ()' in filter_string:
@@ -239,7 +340,7 @@ def indicator_filter_options(request):
                    'FROM indicators_indicator_data i '
                    'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
                    'LEFT OUTER JOIN geodata_city city ON i.city_id=city.id '
-                   'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
+                   'LEFT OUTER JOIN geodata_country country on city.country_id = country.code '
                    'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
                    'WHERE 1 %s' % (filter_string))
 
@@ -328,14 +429,13 @@ def country_geojson_response(request):
 
     cursor = connection.cursor()
 
-    query = 'SELECT c.country_id, count(a.id) as total_projects, cd.name as country_name, sum(b.value) as total_budget, cd.region_id '\
+    query = 'SELECT cd.country_id, count(a.id) as total_projects, cd.name as country_name, cd.region_id '\
             'FROM IATI_activity a '\
-            'LEFT JOIN IATI_budget b ON b.activity_id = a.id '\
             'LEFT JOIN IATI_activity_recipient_country c ON c.activity_id = a.id '\
             'LEFT JOIN geodata_country cd ON c.country_id = cd.code '\
             'WHERE 1' \
             ' %s %s '\
-            'GROUP BY c.country_id %s' % (query_string, where_sector, query_having)
+            'GROUP BY cd.country_id %s' % (query_string, where_sector, query_having)
     cursor.execute(query)
 
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
@@ -348,7 +448,6 @@ def country_geojson_response(request):
         country['type'] = 'Feature'
         country['id'] = r['country_id']
         country['properties'] = {'name' : r['country_name'], 'project_amount' : r['total_projects'], 'total_budget' : str(r['total_budget'])}
-
         country['geometry'] = find_polygon(r['country_id'])
 
         activities.append(country)

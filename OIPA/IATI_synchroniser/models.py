@@ -54,6 +54,7 @@ class iati_xml_source(models.Model):
 
     def process(self, verbosity, save=True):
         file_url = self.source_url
+
         parser = Parser()
         parser.parse_url(file_url, self.ref)
 
