@@ -429,13 +429,13 @@ def country_geojson_response(request):
 
     cursor = connection.cursor()
 
-    query = 'SELECT cd.country_id, count(a.id) as total_projects, cd.name as country_name, cd.region_id '\
+    query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
             'FROM IATI_activity a '\
-            'LEFT JOIN IATI_activity_recipient_country c ON c.activity_id = a.id '\
-            'LEFT JOIN geodata_country cd ON c.country_id = cd.code '\
+            'LEFT JOIN IATI_activity_recipient_country rc ON rc.activity_id = a.id '\
+            'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
             'WHERE 1' \
             ' %s %s '\
-            'GROUP BY cd.country_id %s' % (query_string, where_sector, query_having)
+            'GROUP BY c.code %s' % (query_string, where_sector, query_having)
     cursor.execute(query)
 
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
@@ -447,7 +447,7 @@ def country_geojson_response(request):
         country = {}
         country['type'] = 'Feature'
         country['id'] = r['country_id']
-        country['properties'] = {'name' : r['country_name'], 'project_amount' : r['total_projects'], 'total_budget' : str(r['total_budget'])}
+        country['properties'] = {'name' : r['country_name'], 'project_amount' : r['total_projects']}
         country['geometry'] = find_polygon(r['country_id'])
 
         activities.append(country)
