@@ -19,6 +19,10 @@ MANAGERS = ADMINS
 
 DATABASES = DATABASES
 
+JENKINS_TASKS = JENKINS_TASKS
+PROJECT_APPS = PROJECT_APPS
+
+
 #
 # HAYSTACK_SEARCH_ENGINE = 'solr'
 #
@@ -106,6 +110,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.v3.ajax_allower.XsSharing'
 )
 
 ROOT_URLCONF = 'OIPA.urls'
@@ -136,8 +141,6 @@ INSTALLED_APPS = (
 
 )
 
-JENKINS_TASKS = JENKINS_TASKS
-PROJECT_APPS = PROJECT_APPS
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
