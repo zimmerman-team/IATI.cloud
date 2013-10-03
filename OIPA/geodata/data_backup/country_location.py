@@ -241,6 +241,17 @@ COUNTRY_LOCATION = {
     "YT": {"latitude": "-12.50", "longitude": "45.10"},
     "ZA": {"latitude": "-29.00", "longitude": "24.00"},
     "ZM": {"latitude": "-15.00", "longitude": "30.00"},
-    "ZW": {"latitude": "-20.00", "longitude": "30.00"}
+    "ZW": {"latitude": "-20.00", "longitude": "30.00"},
+    "TL": {"latitude": "-8.711486", "longitude": "125.634765"},
+    "AQ": {"latitude": "-82.862752", "longitude": "-135.000000"},
+    "BQ": {"latitude": "17.636260", "longitude": "-63.234022"},
+    "CW": {"latitude": "12.169570", "longitude": "-68.990020"},
+    "EE": {"latitude": "58.595272", "longitude": "25.013607"},
+    "IO": {"latitude": "-7.334756", "longitude": "72.424233"},
+    "KZ": {"latitude": "48.019573", "longitude": "66.923684"},
+    "MF": {"latitude": "18.082550", "longitude": "-63.052251"},
+    "MM": {"latitude": "21.913965", "longitude": "95.956223"},
+    "SS": {"latitude": "7.088628", "longitude": "30.629883"},
+    "TF": {"latitude": "-49.280366", "longitude": "69.348557"}
 }
 
