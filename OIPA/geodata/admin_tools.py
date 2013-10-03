@@ -45,9 +45,8 @@ class AdminTools():
                 point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
                 c.center_longlat = fromstr(point_loc_str, srid=4326)
                 c.save()
-                print "Country %s has been updated" % c.name
             except KeyError:
-                print "Country with iso %s not found..." % c.name
+                print "Country with iso %s not found..." % c.code
 
 
     def update_country_regions(self):
