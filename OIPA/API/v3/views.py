@@ -128,7 +128,7 @@ def find_polygon(iso2):
 
 
 
-def indicator_data_response(request):
+def indicator_country_data_response(request):
 
     country_q = get_and_query(request, 'countries', 'c.code')
     region_q = get_and_query(request, 'regions', 'dac_region_code')
@@ -136,7 +136,7 @@ def indicator_data_response(request):
     indicator_q = get_and_query(request, 'indicators', 'indicator_id')
 
     if not indicator_q:
-        indicator_q = ' indicator_id = "population"'
+        return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
 
     filter_string = '  (' + country_q + region_q + year_q + indicator_q + ')'
 
@@ -145,10 +145,10 @@ def indicator_data_response(request):
 
     cursor = connection.cursor()
 
-    cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
-                   'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
+    cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, '
+                   'id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
                    'FROM indicators_indicator_data id '
-                   'LEFT OUTER JOIN geodata_country c ON id.country_id = c.code '
+                   'JOIN geodata_country c ON id.country_id = c.code '
                    'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
     cursor_max = connection.cursor()
 
@@ -187,6 +187,158 @@ def indicator_data_response(request):
     country['max_value'] = result_max[0]
 
     return HttpResponse(json.dumps(country), mimetype='application/json')
+
+
+def indicator_city_data_response(request):
+
+    city_q = get_and_query(request, 'cities', 'city_id')
+    country_q = get_and_query(request, 'countries', 'c.code')
+    region_q = get_and_query(request, 'regions', 'r.code')
+    year_q = get_and_query(request, 'years', 'id.year')
+    indicator_q = get_and_query(request, 'indicators', 'indicator_id')
+
+    if not indicator_q:
+        return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
+
+    filter_string = '  (' + city_q + country_q + region_q + year_q + indicator_q + ')'
+
+    if 'AND ()' in filter_string:
+        filter_string = filter_string[:-6]
+
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, ci.name as city_name, '
+                   'c.name as country_name, id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
+                   'FROM indicators_indicator_data id '
+                   'JOIN geodata_city ci ON id.city_id = ci.id '
+                   'JOIN geodata_country c ON ci.country_id = c.code '
+                   'JOIN geodata_region r ON c.region_id = r.code '
+                   'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+
+
+    cursor_max = connection.cursor()
+    indicator_q = indicator_q.replace(" ) AND (", "")
+    cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
+    result_max = cursor_max.fetchone()
+    desc = cursor.description
+    results = [
+    dict(zip([col[0] for col in desc], row))
+    for row in cursor.fetchall()
+    ]
+    city = {}
+    for r in results:
+
+        try:
+            city[r['city_id']]['years']
+        except:
+            loc = r['loc']
+            if loc:
+
+                loc = loc.replace("POINT(", "")
+                loc = loc.replace(")", "")
+                loc_array = loc.split(" ")
+                longitude = loc_array[0]
+                latitude = loc_array[1]
+            else:
+                longitude = None
+                latitude = None
+
+            city[r['city_id']] = {'name' : r['city_name'], 'city_id' : r['city_id'], 'country_name' : r['country_name'], 'longitude' : longitude, 'latitude' : latitude, 'indicator_friendly' : r['friendly_label'], 'type_data' : r['type_data'] , 'indicator' : r['indicator_id'],  'years' : {}}
+
+        year = {}
+        year['y' + str(r['year'])] = r['value']
+        city[r['city_id']]['years'].update(year)
+
+    city['max_value'] = result_max[0]
+
+    return HttpResponse(json.dumps(city), mimetype='application/json')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def indicator_region_data_response(request):
+
+    country_q = get_and_query(request, 'cities', 'c.code')
+    region_q = get_and_query(request, 'regions', 'dac_region_code')
+    year_q = get_and_query(request, 'years', 'id.year')
+    indicator_q = get_and_query(request, 'indicators', 'indicator_id')
+
+    if not indicator_q:
+        indicator_q = ' indicator_id = "population"'
+
+    filter_string = '  (' + country_q + region_q + year_q + indicator_q + ')'
+
+    if 'AND ()' in filter_string:
+        filter_string = filter_string[:-6]
+
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
+                   'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
+                   'FROM indicators_indicator_data id '
+                   'LEFT OUTER JOIN geodata_city c ON id.country_id = c.code '
+                   'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+    cursor_max = connection.cursor()
+
+    indicator_q = indicator_q.replace(" ) AND (", "")
+    cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
+    result_max = cursor_max.fetchone()
+    desc = cursor.description
+    results = [
+    dict(zip([col[0] for col in desc], row))
+    for row in cursor.fetchall()
+    ]
+    country = {}
+    for r in results:
+
+        try:
+            country[r['country_id']]['years']
+        except:
+            loc = r['loc']
+            if loc:
+
+                loc = loc.replace("POINT(", "")
+                loc = loc.replace(")", "")
+                loc_array = loc.split(" ")
+                longitude = loc_array[0]
+                latitude = loc_array[1]
+            else:
+                longitude = None
+                latitude = None
+
+            country[r['country_id']] = {'name' : r['country_name'], 'country_id' : r['country_id'], 'longitude' : longitude, 'latitude' : latitude, 'indicator_friendly' : r['friendly_label'], 'type_data' : r['type_data'] , 'indicator' : r['indicator_id'],  'years' : {}}
+
+        year = {}
+        year['y' + str(r['year'])] = r['value']
+        country[r['country_id']]['years'].update(year)
+
+    country['max_value'] = result_max[0]
+
+    return HttpResponse(json.dumps(country), mimetype='application/json')
+
+
+
 
 
 def activity_filter_options(request):
