@@ -39172,7 +39172,7 @@ countryData = {
             "id": "SDS",
             "properties": {
                 "name": "South Sudan",
-                "iso2": "XK"
+                "iso2": "SS"
             },
             "geometry": {
                 "type": "Polygon",
