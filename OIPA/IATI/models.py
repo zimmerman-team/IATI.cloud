@@ -335,12 +335,12 @@ class result(models.Model):
 
 class title(models.Model):
     activity = models.ForeignKey(activity)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, db_index=True)
     language = models.ForeignKey(language, null=True, default = None)
 
 class description(models.Model):
     activity = models.ForeignKey(activity)
-    description = models.TextField(null=True, default=None)
+    description = models.TextField(null=True, default=None, db_index=True)
     language = models.ForeignKey(language, null=True, default = None)
     type = models.ForeignKey(description_type, related_name="description_type", null=True, default = None)
 
