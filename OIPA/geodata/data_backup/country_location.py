@@ -252,6 +252,7 @@ COUNTRY_LOCATION = {
     "MF": {"latitude": "18.082550", "longitude": "-63.052251"},
     "MM": {"latitude": "21.913965", "longitude": "95.956223"},
     "SS": {"latitude": "7.088628", "longitude": "30.629883"},
-    "TF": {"latitude": "-49.280366", "longitude": "69.348557"}
+    "TF": {"latitude": "-49.280366", "longitude": "69.348557"},
+    "XK": {"latitude": "42.602636", "longitude": "20.902977"}
 }
 

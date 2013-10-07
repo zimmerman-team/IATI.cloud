@@ -388,7 +388,7 @@ def indicator_region_filter_options(request):
     cursor = connection.cursor()
     cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label,region.code as region_id, region.name as region_name '
                    'FROM indicators_indicator_data i '
-                   'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
+                   'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
                    'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
                    'WHERE 1 %s' % (filter_string))
 
@@ -440,7 +440,7 @@ def indicator_country_filter_options(request):
     cursor = connection.cursor()
     cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                    'FROM indicators_indicator_data i '
-                   'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
+                   'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
                    'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
                    'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
                    'WHERE 1 %s' % (filter_string))
@@ -494,7 +494,7 @@ def indicator_city_filter_options(request):
     cursor = connection.cursor()
     cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, city.id as city_id, city.name as city_name, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                    'FROM indicators_indicator_data i '
-                   'JOIN indicators_indicator ind ON i.indicator_id = ind.name '
+                   'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
                    'LEFT OUTER JOIN geodata_city city ON i.city_id=city.id '
                    'LEFT OUTER JOIN geodata_country country on city.country_id = country.code '
                    'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '

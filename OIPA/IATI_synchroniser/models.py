@@ -53,10 +53,9 @@ class iati_xml_source(models.Model):
     get_parse_status.short_description = _(u"Parse status")
 
     def process(self, verbosity, save=True):
-        file_url = self.source_url
 
         parser = Parser()
-        parser.parse_url(file_url, self.ref)
+        parser.parse_url(self.source_url, self.ref)
 
         if save:
             self.save()
@@ -65,8 +64,6 @@ class iati_xml_source(models.Model):
         if not self.id:
             self.process(verbosity=1, save=False)
         super(iati_xml_source, self).save()
-
-
 
 
 
