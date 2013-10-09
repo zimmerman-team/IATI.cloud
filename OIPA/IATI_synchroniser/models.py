@@ -33,12 +33,19 @@ class iati_xml_source(models.Model):
         (1, _(u"Activity Files")),
         (2, _(u"Organisation Files")),
     )
+    INTERVAL_CHOICES = (
+        ("day", _(u"Day")),
+        ("week", _(u"Week")),
+        ("month", _(u"Month")),
+        ("year", _(u"Year")),
+    )
     ref = models.CharField(verbose_name=_(u"Reference"), max_length=70, help_text=_(u"Reference for the XML file. Preferred usage: 'collection' or single country or region name"))
     type = models.IntegerField(choices=TYPE_CHOICES, default=1)
     publisher = models.ForeignKey(Publisher)
     source_url = models.URLField(unique=True, help_text=_(u"Hyperlink to an IATI activity or organisation XML file."))
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now=True, editable=False)
+    update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -52,17 +59,13 @@ class iati_xml_source(models.Model):
     get_parse_status.allow_tags = True
     get_parse_status.short_description = _(u"Parse status")
 
-    def process(self, verbosity, save=True):
-
+    def process(self):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
 
-        if save:
-            self.save()
-
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.process(verbosity=1, save=False)
+        self.process()
+        self.date_updated = datetime.datetime.now()
         super(iati_xml_source, self).save()
 
 
@@ -71,7 +74,7 @@ class dataset_sync(models.Model):
     TYPE_CHOICES = (
         (1, _(u"Activity Files")),
         (2, _(u"Organisation Files")),
-        )
+    )
 
     interval = models.CharField(verbose_name=_(u"Interval"), max_length=55, choices=INTERVAL_CHOICES)
     date_updated = models.DateTimeField(auto_now=True, editable=False)
@@ -112,7 +115,6 @@ class dataset_sync(models.Model):
 class codelist_sync(models.Model):
 
     date_updated = models.DateTimeField(auto_now=True, editable=False)
-
 
     class Meta:
         verbose_name_plural = "codelist synchronisers"

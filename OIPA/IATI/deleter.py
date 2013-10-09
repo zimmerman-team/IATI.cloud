@@ -9,6 +9,7 @@ class Deleter():
         for activity in activities:
             self.remove_values_for_activity(activity)
 
+
     def return_first_exist(self, xpath_find):
 
         if not xpath_find:

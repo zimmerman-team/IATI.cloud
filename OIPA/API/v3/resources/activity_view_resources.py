@@ -49,6 +49,9 @@ class ActivityViewOrganisationResource(ModelResource):
         queryset = organisation.objects.all()
         include_resource_uri = False
         excludes = ['abbreviation', 'reported_by_organisation']
+        filtering = {
+            'iati_identifier': 'exact'
+        }
 
 
 class ActivityViewTransactionResource(ModelResource):
@@ -113,7 +116,12 @@ class ActivityResource(ModelResource):
         excludes = ['date_created', 'id']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'activity_sectors', 'statistics']
         filtering = {
-            'iati_identifier': ALL
+            'iati_identifier': ALL,
+            'start_planned': ALL,
+            'start_actual': ALL,
+            'end_planned' : ALL,
+            'end_actual' : ALL
+
         }
         cache = NoTransformCache()
 

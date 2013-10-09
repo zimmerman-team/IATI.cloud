@@ -198,14 +198,14 @@ class activity(models.Model):
     default_currency = models.ForeignKey(currency, null=True, default = None)
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, null=True, default = None)
-    linked_data_uri = models.CharField(max_length=100, null=True)
+    linked_data_uri = models.CharField(max_length=100, blank=True, null=True)
     reporting_organisation = models.ForeignKey(organisation, null=True, default = None, related_name="activity_reporting_organisation")
     activity_status = models.ForeignKey(activity_status, null=True, default = None)
 
-    start_planned = models.DateField(null=True, default = None)
-    end_planned = models.DateField(null=True, default = None)
-    start_actual = models.DateField(null=True, default = None)
-    end_actual = models.DateField(null=True, default = None)
+    start_planned = models.DateField(null=True, blank=True, default = None)
+    end_planned = models.DateField(null=True, blank=True, default = None)
+    start_actual = models.DateField(null=True, blank=True, default = None)
+    end_actual = models.DateField(null=True, blank=True, default = None)
 
     participating_organisation = models.ManyToManyField(organisation, through="activity_participating_organisation")
     policy_marker = models.ManyToManyField(policy_marker, through="activity_policy_marker")
@@ -225,6 +225,9 @@ class activity(models.Model):
 
     class Meta:
         verbose_name_plural = "activities"
+
+    def save(self, *args, **kwargs):
+        super(activity, self).save()
 
 
 

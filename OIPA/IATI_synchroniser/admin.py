@@ -3,6 +3,8 @@ from django.contrib import admin
 from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from IATI_synchroniser.management.commands.parse_all import ParseAll
+from IATI_synchroniser.management.commands.parse_schedule import ParseSchedule
 
 
 
@@ -59,7 +61,7 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    list_display = ['ref', 'publisher', 'type', 'date_created', 'get_parse_status', 'date_updated']
+    list_display = ['ref', 'publisher', 'type', 'date_created', 'update_interval', 'get_parse_status', 'date_updated']
     list_filter = ('publisher', 'type')
 
     class Media:
@@ -71,14 +73,26 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
         extra_urls = patterns('',
-            (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view))
+            (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
+            (r'^parse-all/', self.admin_site.admin_view(self.parse_all)),
+            (r'^parse-all-over-interval/', self.admin_site.admin_view(self.parse_all_over_interval))
         )
         return extra_urls + urls
 
     def parse_view(self, request):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(iati_xml_source, id=xml_id)
-        obj.process(1)
+        obj.save()
+        return HttpResponse('Success')
+
+    def parse_all(self, request):
+        parser = ParseAll()
+        parser.parseAll()
+        return HttpResponse('Success')
+
+    def parse_all_over_interval(self, request):
+        parser = ParseSchedule()
+        parser.parseSchedule()
         return HttpResponse('Success')
 
 

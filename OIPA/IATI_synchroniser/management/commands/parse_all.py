@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext as _
 
 # App specific
-from utils.models import IATIXMLSource
+from IATI_synchroniser.models import iati_xml_source
 
 
 class Command(BaseCommand):
@@ -13,10 +13,15 @@ class Command(BaseCommand):
     counter = 0
 
     def handle(self, *args, **options):
+        parser = ParseAll()
+        parser.parseAll()
+
+
+class ParseAll():
+
+    def parseAll(self):
+
         def parse(source):
-            self.counter += 1
-            print u"[", self.counter, u"]", _(u"parsing"), source.source_url
-            source.process(verbosity=2)
-            source.date_updated = datetime.datetime.now()
             source.save()
-        [parse(source) for source in IATIXMLSource.objects.all()]
+        [parse(source) for source in iati_xml_source.objects.all()]
+
