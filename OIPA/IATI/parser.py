@@ -114,10 +114,6 @@ class Parser():
             self.add_policy_markers(elem, activity)
             self.add_activity_date(elem, activity)
 
-
-        except TypeError, e:
-                print " TypeError in add_all_activity_data: " + e.message
-
         except Exception as e:
                 print "error"
                 print '%s (%s)' % (e.args[0], type(e))
@@ -174,19 +170,6 @@ class Parser():
         else:
             return False
 
-    def needs_update(self, elem):
-
-        activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-        activity_id = activity_id.replace(" ", "")
-
-        cur_activity = models.activity.objects.get(id=activity_id)
-        last_updated_datetime = cur_activity.last_updated_datetime
-
-        if last_updated_datetime == self.return_first_exist(elem.xpath('@last-updated-datetime')) and last_updated_datetime:
-            return False
-        else:
-            return True
-
     def remove_old_values_for_activity(self, elem):
         deleter = Deleter()
         deleter.remove_old_values_for_activity(elem)
@@ -195,6 +178,12 @@ class Parser():
     def delete_all_activities_from_source(self, xml_source_ref):
         deleter = Deleter()
         deleter.delete_by_source(xml_source_ref)
+
+
+    def exception_handler(self, e, ref, current_def):
+        if e.args:
+            print e.args[0]
+        print " in " + current_def + ": " + ref
 
     # entity add functions
     def add_organisation(self, elem):
@@ -230,19 +219,15 @@ class Parser():
                     new_organisation.save()
 
             except ValueError, e:
-                print e.message + " in add_organisation: "+ ref
-
+                self.exception_handler(e, ref, "add_organisation")
             except TypeError, e:
-                print e.message + " in add_organidation: "+ ref
-
+                self.exception_handler(e, ref, "add_organisation")
             except ValidationError, e:
-                print e.message + " in add_organisation: "+ ref
-
+                self.exception_handler(e, ref, "add_organisation")
             except IntegrityError, e:
-                print e.message + " in add_organisation: "+ ref
+                self.exception_handler(e, ref, "add_organisation")
             except Exception as e:
-                print "error in add_organisation(elem) " + ref
-                print '%s (%s)' % (e.args[0], type(e))
+                self.exception_handler(e, ref, "add_organisation")
 
 
 
@@ -335,19 +320,15 @@ class Parser():
             return new_activity
 
         except IntegrityError, e:
-            print e.type + " in add_activity: " + activity_id
-
+            self.exception_handler(e, activity_id, "add_activity")
         except ValueError, e:
-            print e.type + " in add_activity: "+ activity_id
-
+            self.exception_handler(e, activity_id, "add_activity")
         except ValidationError, e:
-                print e.type + " in add_activity: "+ activity_id
+            self.exception_handler(e, activity_id, "add_activity")
         except TypeError, e:
-                print e.type + " in add_activity: "+ activity_id
+            self.exception_handler(e, activity_id, "add_activity")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_activity: " + activity_id
-
-
+            self.exception_handler(e, activity_id, "add_activity")
 
 
     #after activity is added
@@ -367,18 +348,13 @@ class Parser():
                     new_other_identifier.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_other_identifier: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_other_identifier")
                 except ValueError, e:
-                    print e.message + " in add_other_identifier: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_other_identifier")
                 except ValidationError, e:
-                    print e.message + " in add_other_identifier: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_other_identifier")
         except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " in add_other_identifier: " + activity.id
-
-
+                    self.exception_handler(e, activity.id, "add_other_identifier")
 
 
 
@@ -399,16 +375,16 @@ class Parser():
                     new_title.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_title: " + activity.id
+                    self.exception_handler(e, activity.id, "add_activity_title")
 
                 except ValueError, e:
-                    print e.message + " in add_title: " + activity.id
+                    self.exception_handler(e, activity.id, "add_activity_title")
 
                 except ValidationError, e:
-                    print e.message + " in add_title: " + activity.id
+                    self.exception_handler(e, activity.id, "add_activity_title")
 
         except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " in add_activity_title: " + activity.id
+            self.exception_handler(e, activity.id, "add_activity_title")
 
 
 
@@ -442,16 +418,13 @@ class Parser():
                     new_description.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_description: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_description")
                 except ValueError, e:
-                    print e.message + " in add_description: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_description")
                 except ValidationError, e:
-                    print e.message + " in add_description: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_description")
         except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " in add_description: " + activity.id
+                    self.exception_handler(e, activity.id, "add_activity_description")
 
 
     def add_budget(self, elem, activity):
@@ -492,19 +465,16 @@ class Parser():
                     new_budget.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_budget: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_budget")
                 except ValueError, e:
-                    print e.message + " in add_budget: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_budget")
                 except ValidationError, e:
-                    print e.message + " in add_budget: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_budget")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_budget: " + activity.id
+                    self.exception_handler(e, activity.id, "add_budget")
 
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_budget: " + activity.id
+                self.exception_handler(e, activity.id, "add_budget")
 
 
 
@@ -537,19 +507,16 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_planned_disbursement: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_planned_disbursement")
                 except ValueError, e:
-                    print e.message + " in add_planned_disbursement: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_planned_disbursement")
                 except ValidationError, e:
-                    print e.message + " in add_planned_disbursement: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_planned_disbursement")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_planned_disbursement: " + activity.id
+                    self.exception_handler(e, activity.id, "add_planned_disbursement")
 
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_planned_disbursement: " + activity.id
+                self.exception_handler(e, activity.id, "add_planned_disbursement")
 
     # add many to 1
     def add_website(self, elem, activity):
@@ -565,19 +532,19 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_website: " + activity.id
+                    self.exception_handler(e, activity.id, "add_website")
 
                 except ValueError, e:
-                    print e.message + " in add_website: " + activity.id
+                    self.exception_handler(e, activity.id, "add_website")
 
                 except ValidationError, e:
-                    print e.message + " in add_website: " + activity.id
+                    self.exception_handler(e, activity.id, "add_website")
 
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_website: " + activity.id
+                    self.exception_handler(e, activity.id, "add_website")
 
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_website: " + activity.id
+                self.exception_handler(e, activity.id, "add_website")
 
 
 
@@ -597,19 +564,15 @@ class Parser():
                     new_contact.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_contact_info: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_contact_info")
                 except ValueError, e:
-                    print e.message + " in add_contact_info: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_contact_info")
                 except ValidationError, e:
-                    print e.message + " in add_contact_info: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_contact_info")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_contact_info: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_contact_info")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_contact_info: " + activity.id
+                self.exception_handler(e, activity.id, "add_contact_info")
 
 
     def add_transaction(self, elem, activity):
@@ -742,19 +705,15 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_transaction: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_transaction")
                 except ValueError, e:
-                    print e.message + " in add_transaction: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_transaction")
                 except ValidationError, e:
-                    print e.message + " in add_transaction: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_transaction")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_transaction: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_transaction")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_transaction: " + activity.id
+            self.exception_handler(e, activity.id, "add_transaction")
 
 
     def add_result(self, elem, activity):
@@ -784,20 +743,15 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_result: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_result")
                 except ValueError, e:
-                    print e.message + " in add_result: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_result")
                 except ValidationError, e:
-                    print e.message + " in add_result: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_result")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_result: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_result")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_result: " + activity.id
-
+            self.exception_handler(e, activity.id, "add_result")
 
     # add many to many relationship
     def add_sectors(self, elem, activity):
@@ -842,20 +796,19 @@ class Parser():
                     new_activity_sector.save()
 
                 except IntegrityError, e:
-                    print e.message + "for activity: " + activity.id
+                    self.exception_handler(e, activity.id, "add_sectors")
                     print  "in add_sectors: " + sector_code
                 except ValueError, e:
-                    print e.message + "for activity: " + activity.id
+                    self.exception_handler(e, activity.id, "add_sectors")
                     print  "in add_sectors: " + sector_code
                 except ValidationError, e:
-                    print e.message + "for activity: " + activity.id
+                    self.exception_handler(e, activity.id, "add_sectors")
                     print  "in add_sectors: " + sector_code
                 except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " for activity: " + activity.id
-                    print "in add_sectors: " + sector_code
+                    self.exception_handler(e, activity.id, "add_sectors")
 
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_Sectors: " + activity.id
+            self.exception_handler(e, activity.id, "add_sectors")
 
 
 
@@ -884,16 +837,15 @@ class Parser():
                     new_activity_country.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_countries: " + activity.id
+                    self.exception_handler(e, activity.id, "add_countries")
                 except ValueError, e:
-                    print e.message + " in add_countries: " + activity.id + " country: " + country_ref
+                    self.exception_handler(e, activity.id, "add_countries")
                 except ValidationError, e:
-                    print e.message + " in add_countries: " + activity.id
+                    self.exception_handler(e, activity.id, "add_countries")
                 except Exception as e:
-                    print type(e) + " in add_countries: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_countries")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_countries: " + activity.id
+                self.exception_handler(e, activity.id, "add_countries")
 
     def add_regions(self, elem, activity):
 
@@ -916,26 +868,21 @@ class Parser():
                 else:
                     continue
 
-
-
                 try:
                     new_activity_region = models.activity_recipient_region(activity=activity, region=region, percentage = percentage)
                     new_activity_region.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_regions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_regions")
                 except ValueError, e:
-                    print e.message + " in add_regions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_regions")
                 except ValidationError, e:
-                    print e.message + " in add_regions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_regions")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_regions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_regions")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_regions: " + activity.id
+                self.exception_handler(e, activity.id, "add_regions")
+
 
     def add_participating_organisations(self, elem, activity):
 
@@ -970,19 +917,15 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_participating_organisations: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_participating_organisations")
                 except ValueError, e:
-                    print e.message + " in add_participating_organisations: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_participating_organisations")
                 except ValidationError, e:
-                    print e.message + " in add_participating_organisations: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_participating_organisations")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_participating_organisations: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_participating_organisations")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_participating_organisations: " + activity.id
+                self.exception_handler(e, activity.id, "add_participating_organisations")
 
 
     def add_policy_markers(self, elem, activity):
@@ -1028,20 +971,15 @@ class Parser():
                     new_activity_policy_marker.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_policy_markers: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_policy_markers")
                 except ValueError, e:
-                    print e.message + " in add_policy_markers: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_policy_markers")
                 except ValidationError, e:
-                    print e.message + " in add_policy_markers: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_policy_markers")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_policy_markers: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_policy_markers")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_policy_markers: " + activity.id
-
+                self.exception_handler(e, activity.id, "add_policy_markers")
 
 
     def add_activity_date(self, elem, activity):
@@ -1059,8 +997,6 @@ class Parser():
                         curdate = self.return_first_exist(t.xpath( '@iso-date' ))
 
                     curdate = self.validate_date(curdate)
-
-
 
                     if type_ref:
                         if models.activity_date_type.objects.filter(code=type_ref).exists():
@@ -1082,23 +1018,18 @@ class Parser():
                     if type.code == 'start-planned':
                         activity.start_planned = curdate
 
-
                     activity.save()
 
                 except IntegrityError, e:
-                    print e.message + " in add_activity_date: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_date")
                 except ValueError, e:
-                    print e.message + " in add_activity_date: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_date")
                 except ValidationError, e:
-                    print e.message + " in add_activity_date: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_date")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_activity_date: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_activity_date")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_activity_date: " + activity.id
+                self.exception_handler(e, activity.id, "add_activity_date")
 
 
     def add_related_activities(self, elem, activity):
@@ -1119,25 +1050,19 @@ class Parser():
                     new_related_activity = models.related_activity(current_activity=activity, type=type, ref=ref, text=text)
                     new_related_activity.save()
 
-
                 except IntegrityError, e:
-                    print e.message + " in add_related_activities: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_related_activities")
                 except ValueError, e:
-                    print e.message + " in add_related_activities: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_related_activities")
                 except ValidationError, e:
-                    print e.message + " in add_related_activities: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_related_activities")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_related_activities: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_related_activities")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_related_activities: " + activity.id
+            self.exception_handler(e, activity.id, "add_related_activities")
 
 
     def add_location(self, elem, activity):
-
 
         try:
             for t in elem.xpath('location'):
@@ -1190,19 +1115,15 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_location: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_location")
                 except ValueError, e:
-                    print e.message + " in add_location: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_location")
                 except ValidationError, e:
-                    print e.message + " in add_location: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_location")
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e)) + " in add_location: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_location")
         except Exception as e:
-                print '%s (%s)' % (e.args[0], type(e)) + " in add_location: " + activity.id
+                self.exception_handler(e, activity.id, "add_location")
 
     def add_conditions(self, elem, activity):
 
@@ -1223,16 +1144,14 @@ class Parser():
 
 
                 except IntegrityError, e:
-                    print e.message + " in add_conditions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_conditions")
                 except ValueError, e:
-                    print e.message + " in add_conditions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_conditions")
                 except ValidationError, e:
-                    print e.message + " in add_conditions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_conditions")
                 except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " in add_conditions: " + activity.id
-
+                    self.exception_handler(e, activity.id, "add_conditions")
         except Exception as e:
-                    print '%s (%s)' % (e.args[0], type(e)) + " in add_conditions: " + activity.id
+            self.exception_handler(e, activity.id, "add_conditions")
+
+
