@@ -156,6 +156,7 @@ class Parser():
 
             except ValueError:
                 print('Invalid date!')
+                print unvalidated_date
                 valid_date = None
         return valid_date
 
@@ -618,6 +619,7 @@ class Parser():
                     currency = None
 
                     if aid_type_ref:
+                        aid_type_ref = aid_type_ref.replace("O", "0")
                         if models.aid_type.objects.filter(code=aid_type_ref).exists():
                             aid_type = models.aid_type.objects.get(code=aid_type_ref)
                     else:
@@ -647,40 +649,51 @@ class Parser():
                         if models.organisation.objects.filter(code=provider_organisation_ref).exists():
                             provider_organisation = models.organisation.objects.get(code=provider_organisation_ref)
                         else:
-                            provider_organisation_type = None
-                            provider_organisation_type_ref = self.return_first_exist(t.xpath('provider-org/@type'))
-                            if provider_organisation_type_ref:
-                                if models.organisation_type.objects.filter(code=provider_organisation_type_ref).exists():
-                                    provider_organisation_type = models.organisation_type.objects.get(code=provider_organisation_type_ref)
-
                             provider_organisation_name_ref = self.return_first_exist(t.xpath('provider-org/text()'))
-                            try:
 
-                                new_organisation = models.organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name_ref)
-                                new_organisation.save()
+                            if models.organisation.objects.filter(name=provider_organisation_name_ref).exists():
+                                provider_organisation = models.organisation.objects.get(name=provider_organisation_name_ref)
+                            else:
+                                provider_organisation_type = None
+                                provider_organisation_type_ref = self.return_first_exist(t.xpath('provider-org/@type'))
+                                if provider_organisation_type_ref:
+                                    if models.organisation_type.objects.filter(code=provider_organisation_type_ref).exists():
+                                        provider_organisation_type = models.organisation_type.objects.get(code=provider_organisation_type_ref)
 
-                            except Exception as e:
-                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding provider organisation: " + activity.id
+
+                                try:
+
+                                    new_organisation = models.organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name_ref)
+                                    new_organisation.save()
+
+                                except Exception as e:
+                                    print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding provider organisation: " + activity.id
 
 
                     if receiver_organisation_ref:
                         if models.organisation.objects.filter(code=receiver_organisation_ref).exists():
                             receiver_organisation = models.organisation.objects.get(code=receiver_organisation_ref)
                         else:
-                            receiver_organisation_type = None
-                            receiver_organisation_type_ref = self.return_first_exist(t.xpath('receiver-org/@type'))
-                            if receiver_organisation_type_ref:
-                                if models.organisation_type.objects.filter(code=receiver_organisation_type_ref).exists():
-                                    receiver_organisation_type = models.organisation_type.objects.get(code=receiver_organisation_type_ref)
-
                             receiver_organisation_name_ref = self.return_first_exist(t.xpath('receiver-org/text()'))
-                            try:
 
-                                new_organisation = models.organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name_ref)
-                                new_organisation.save()
+                            if models.organisation.objects.filter(name=receiver_organisation_name_ref).exists():
+                                receiver_organisation = models.organisation.objects.get(name=receiver_organisation_name_ref)
+                            else:
 
-                            except Exception as e:
-                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding receiver organisation: " + activity.id
+                                receiver_organisation_type = None
+                                receiver_organisation_type_ref = self.return_first_exist(t.xpath('receiver-org/@type'))
+                                if receiver_organisation_type_ref:
+                                    if models.organisation_type.objects.filter(code=receiver_organisation_type_ref).exists():
+                                        receiver_organisation_type = models.organisation_type.objects.get(code=receiver_organisation_type_ref)
+
+
+                                try:
+
+                                    new_organisation = models.organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name_ref)
+                                    new_organisation.save()
+
+                                except Exception as e:
+                                    print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding receiver organisation: " + activity.id
 
 
                     if tied_status_ref:
@@ -959,8 +972,8 @@ class Parser():
                                 policy_marker = models.policy_marker.objects.get(code=policy_marker_name)
 
                     if policy_marker_voc:
-                        if models.vocabulary.objects.filter(code=vocabulary).exists():
-                            vocabulary = models.vocabulary.objects.get(code=vocabulary)
+                        if models.vocabulary.objects.filter(code=policy_marker_voc).exists():
+                            vocabulary = models.vocabulary.objects.get(code=policy_marker_voc)
 
                     if policy_marker_significance:
                         if models.policy_significance.objects.filter(code=policy_marker_significance).exists():
@@ -992,11 +1005,13 @@ class Parser():
                     type_ref = self.return_first_exist(t.xpath( '@type' ))
                     type = None
                     curdate = self.return_first_exist(t.xpath( 'text()' ))
+                    curdate = self.validate_date(curdate)
 
                     if not curdate:
                         curdate = self.return_first_exist(t.xpath( '@iso-date' ))
+                        curdate = self.validate_date(curdate)
 
-                    curdate = self.validate_date(curdate)
+
 
                     if type_ref:
                         if models.activity_date_type.objects.filter(code=type_ref).exists():

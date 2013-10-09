@@ -38,17 +38,17 @@ $(document).ready(function (){
            type: "GET",
            url: "/admin/IATI_synchroniser/iati_xml_source/parse-all/",
            beforeSend: function() {
-               $(this).text("Updating...");
+               $('#parse-all-set').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $(this).text("Updated");
+                   $('#parse-all-set').text("Updated");
                },
                404: function() {
-                   $(this).text("404 error...");
+                   $('#parse-all-set').text("404 error...");
                },
                500: function() {
-                   $(this).text("500 error...");
+                   $('#parse-all-set').text("500 error...");
                }
            }
        });
@@ -59,17 +59,17 @@ $(document).ready(function (){
            type: "GET",
            url: "/admin/IATI_synchroniser/iati_xml_source/parse-all-over-interval/",
            beforeSend: function() {
-               $(this).text("Updating...");
+               $('#parse-all-over-interval-set').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $(this).text("Updated");
+                   $('#parse-all-over-interval-set').text("Updated");
                },
                404: function() {
-                   $(this).text("404 error...");
+                   $('#parse-all-over-interval-set').text("404 error...");
                },
                500: function() {
-                   $(this).text("500 error...");
+                   $('#parse-all-over-interval-set').text("500 error...");
                }
            }
        });
