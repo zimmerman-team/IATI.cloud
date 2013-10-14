@@ -161,10 +161,3 @@ class ActivityResource(ModelResource):
 
             return base_object_list.filter(qset).distinct()
         return base_object_list.filter(**filters).distinct()
-
-
-
-
-
-
-

@@ -546,52 +546,40 @@ def indicator_city_filter_options(request):
 
 def country_geojson_response(request):
 
-    city_q = get_and_query(request, 'cities', 'city.id')
-    country_q = get_and_query(request, 'countries', 'country.code')
-    region_q = get_and_query(request, 'regions', 'region.code')
-    budget_q = get_and_query(request, 'indicators', 'i.indicator_id')
-    organisation_q = get_and_query(request, 'indicators', 'i.indicator_id')
+    country_q = get_and_query(request, 'countries', 'c.code')
+    budget_q = request.GET.get('budgets', None)
+    region_q = get_and_query(request, 'regions', 'r.code')
+    sector_q = get_and_query(request, 'sectors', 's.sector_id')
+    organisation_q = get_and_query(request, 'organisations', 'a.reporting_organisation_id')
 
-    q_countries = { 'country_id' :request.GET.get('countries', None)}
-    q_sectors = {'sector_id' : request.GET.get('sectors', None)}
-    q_regions = {'dac_region_code' :request.GET.get('regions', None)}
-    q_budget = {'total_budget' : request.GET.get('budget', None)}
-    q_organisations = {'reporting_organisation_id' : request.GET.get('organisations', None)}
+    filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + ')'
+    if 'AND ()' in filter_string:
+        filter_string = filter_string[:-6]
 
-    filters = []
-
-    filters.append(q_organisations)
-    filters.append(q_countries)
-    filters.append(q_regions)
-
-    filter_region = []
-    filter_region.append(q_regions)
-    filter_sector = []
-    filter_sector.append(q_sectors)
-
-    if request.GET.get('sectors', None):
-        where_sector =  ' Where ' + str(get_filter_query(filters=filter_sector)[4:])
-        where_sector = ' and a.id in (select activity_id from IATI_activity_sector s %s)  ' % where_sector
-    else:
-        where_sector = ''
-
-    if q_budget['total_budget']:
-        query_having = 'having total_budget ' + q_budget['total_budget'].split(',')[0]
+    if budget_q:
+        query_having = 'having total_budget ' + budget_q
     else:
         query_having = ''
 
-    query_string = get_filter_query(filters=filters)
-    query_string = query_string.replace('AND () and' , ' (')
+    if region_q:
+        filter_region = 'LEFT JOIN geodata_region r ON c.region_id = r.code '
+    else:
+        filter_region = ''
+
+    if sector_q:
+        filter_sector = 'LEFT JOIN IATI_activity_sector s ON a.activity_id = s.sector_id '
+    else:
+        filter_sector = ''
+
 
     cursor = connection.cursor()
-
     query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
             'FROM IATI_activity a '\
             'LEFT JOIN IATI_activity_recipient_country rc ON rc.activity_id = a.id '\
             'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
-            'WHERE 1' \
-            ' %s %s '\
-            'GROUP BY c.code %s' % (query_string, where_sector, query_having)
+            '%s %s'\
+            'WHERE 1 %s'\
+            'GROUP BY c.code %s' % (filter_region, filter_sector, filter_string, query_having)
     cursor.execute(query)
 
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
@@ -612,4 +600,5 @@ def country_geojson_response(request):
     result = {}
 
     activity_result['features'] = activities
+    activity_result['query'] = query
     return HttpResponse(json.dumps(activity_result), mimetype='application/json')
