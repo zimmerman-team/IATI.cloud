@@ -567,7 +567,7 @@ def country_geojson_response(request):
         filter_region = ''
 
     if sector_q:
-        filter_sector = 'LEFT JOIN IATI_activity_sector s ON a.activity_id = s.sector_id '
+        filter_sector = 'LEFT JOIN IATI_activity_sector s ON a.id = s.sector_id '
     else:
         filter_sector = ''
 
