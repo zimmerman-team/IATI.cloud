@@ -562,7 +562,7 @@ def country_geojson_response(request):
         query_having = ''
 
     if region_q:
-        filter_region = 'LEFT JOIN geodata_region r ON c.region_id = r.code '
+        filter_region = 'LEFT JOIN IATI_activity_recipient_region rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
     else:
         filter_region = ''
 
