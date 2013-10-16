@@ -557,7 +557,9 @@ def country_geojson_response(request):
         filter_string = filter_string[:-6]
 
     if budget_q:
-        query_having = 'having total_budget ' + budget_q
+        query_having = ''
+        # TO DO: implement budget filter in query.
+        # query_having = 'having total_budget ' + budget_q
     else:
         query_having = ''
 
@@ -570,7 +572,6 @@ def country_geojson_response(request):
         filter_sector = 'LEFT JOIN IATI_activity_sector s ON a.id = s.activity_id '
     else:
         filter_sector = ''
-
 
     cursor = connection.cursor()
     query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
