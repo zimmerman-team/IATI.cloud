@@ -53,7 +53,6 @@ class ActivityViewOrganisationResource(ModelResource):
             'iati_identifier': 'exact'
         }
 
-
 class ActivityViewTransactionResource(ModelResource):
     provider_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'provider_organisation', full=True, null=True)
     receiver_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'receiver_organisation', full=True, null=True)
@@ -77,16 +76,6 @@ class ActivityViewActivityStatusResource(ModelResource):
         include_resource_uri = False
         excludes = ['language']
 
-# class ActivityViewRecipientCountryResource(ModelResource):
-#     class Meta:
-#         queryset = activity_recipient_country.objects.all()
-#         include_resource_uri = False
-#         excludes = ['id']
-#
-#     def dehydrate(self, bundle):
-#         bundle.data['country'] = bundle.obj.code
-#         return bundle
-
 
 class ActivityResource(ModelResource):
 
@@ -94,8 +83,8 @@ class ActivityResource(ModelResource):
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
     participating_organisations = fields.ToManyField(ActivityViewOrganisationResource, 'participating_organisation', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
-    recipient_country = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
-    recipient_region = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)
+    countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
+    regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)
     sectors = fields.ToManyField(ActivityViewSectorResource, 'sector', full=True, null=True)
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
@@ -116,40 +105,23 @@ class ActivityResource(ModelResource):
         excludes = ['date_created', 'id']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'activity_sectors', 'statistics']
         filtering = {
-            'iati_identifier': ALL,
+            'iati_identifier': 'exact',
             'start_planned': ALL,
             'start_actual': ALL,
             'end_planned' : ALL,
-            'end_actual' : ALL
-
+            'end_actual' : ALL,
+            'sectors' : ('exact', 'in'),
+            'regions': ('exact', 'in'),
+            'countries': ('exact', 'in'),
+            'reporting_organisation': ('exact', 'in')
         }
         cache = NoTransformCache()
 
-    # def dehydrate(self, bundle):
-    #     bundle.data['recipient_country'] = "test"
-    #     print bundle.obj.recipient_country.country.code
-    #     return bundle
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ActivityResource, self).apply_filters(request, applicable_filters)
         query = request.GET.get('query', None)
-        sectors = request.GET.get('sectors', None)
-        regions = request.GET.get('regions', None)
-        countries = request.GET.get('countries', None)
-        organisations = request.GET.get('organisations', None)
         filters = {}
-        if sectors:
-            sectors = sectors.replace('|', ',').split(',')
-            filters.update(dict(activity_sector__sector__code__in=sectors))
-        if regions:
-            regions = regions.replace('|', ',').split(',')
-            filters.update(dict(activity_recipient_region__region__code__in=regions))
-        if countries:
-            countries = countries.replace('|', ',').split(',')
-            filters.update(dict(activity_recipient_country__country__code__in=countries))
-        if organisations:
-            organisations = organisations.replace('|', ',').split(',')
-            filters.update(dict(reporting_organisation__code__in=organisations))
         if query:
 
             qset = (

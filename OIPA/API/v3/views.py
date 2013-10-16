@@ -128,12 +128,46 @@ def find_polygon(iso2):
 
 
 
+def activity_filter_options(request):
+    cursor = connection.cursor()
+    q_organisations = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation')
+
+
+    query = 'SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
+                   'FROM IATI_activity a '\
+                   'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
+                   'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
+                   'LEFT JOIN IATI_activity_recipient_country ic ON a.id = ic.activity_id '\
+                   'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
+                   'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
+                   'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
+                   'WHERE 1 %s' % q_organisations
+    cursor.execute(query)
+    results = get_fields(cursor=cursor)
+    countries = {}
+    countries['countries'] = {}
+    countries['regions'] = {}
+    countries['sectors'] = {}
+
+    for r in results:
+
+        if r['country_name']:
+            countries['countries'][r['country_id']] = r['country_name']
+        if r['sector_name']:
+            countries['sectors'][r['sector_id']] = r['sector_name']
+        if r['region_name']:
+            countries['regions'][r['region_id']] = r['region_name']
+
+    return HttpResponse(json.dumps(countries), mimetype='application/json')
+
+
+
 def indicator_country_data_response(request):
 
-    country_q = get_and_query(request, 'countries', 'c.code')
-    region_q = get_and_query(request, 'regions', 'dac_region_code')
-    year_q = get_and_query(request, 'years', 'id.year')
-    indicator_q = get_and_query(request, 'indicators', 'indicator_id')
+    country_q = get_and_query(request, 'countries__in', 'c.code')
+    region_q = get_and_query(request, 'regions__in', 'dac_region_code')
+    year_q = get_and_query(request, 'years__in', 'id.year')
+    indicator_q = get_and_query(request, 'indicators__in', 'indicator_id')
 
     if not indicator_q:
         return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
@@ -191,11 +225,11 @@ def indicator_country_data_response(request):
 
 def indicator_city_data_response(request):
 
-    city_q = get_and_query(request, 'cities', 'city_id')
-    country_q = get_and_query(request, 'countries', 'c.code')
-    region_q = get_and_query(request, 'regions', 'r.code')
-    year_q = get_and_query(request, 'years', 'id.year')
-    indicator_q = get_and_query(request, 'indicators', 'indicator_id')
+    city_q = get_and_query(request, 'cities__in', 'city_id')
+    country_q = get_and_query(request, 'countries__in', 'c.code')
+    region_q = get_and_query(request, 'regions__in', 'r.code')
+    year_q = get_and_query(request, 'years__in', 'id.year')
+    indicator_q = get_and_query(request, 'indicators__in', 'indicator_id')
 
     if not indicator_q:
         return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
@@ -258,31 +292,12 @@ def indicator_city_data_response(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def indicator_region_data_response(request):
 
-    country_q = get_and_query(request, 'cities', 'c.code')
-    region_q = get_and_query(request, 'regions', 'dac_region_code')
-    year_q = get_and_query(request, 'years', 'id.year')
-    indicator_q = get_and_query(request, 'indicators', 'indicator_id')
+    country_q = get_and_query(request, 'cities__in', 'c.code')
+    region_q = get_and_query(request, 'regions__in', 'dac_region_code')
+    year_q = get_and_query(request, 'years__in', 'id.year')
+    indicator_q = get_and_query(request, 'indicators__in', 'indicator_id')
 
     if not indicator_q:
         indicator_q = ' indicator_id = "population"'
@@ -339,47 +354,10 @@ def indicator_region_data_response(request):
 
 
 
-
-
-def activity_filter_options(request):
-    cursor = connection.cursor()
-    q_organisations = request.GET.get('organisations', None);
-    q_organisations_and = ""
-    if q_organisations:
-        q_organisations_and = 'AND a.reporting_organisation_id = "' + q_organisations + '"'
-
-    query = 'SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
-                   'FROM IATI_activity a '\
-                   'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
-                   'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
-                   'LEFT JOIN IATI_activity_recipient_country ic ON a.id = ic.activity_id '\
-                   'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
-                   'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
-                   'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
-                   'WHERE 1 %s' % q_organisations_and
-    cursor.execute(query)
-    results = get_fields(cursor=cursor)
-    countries = {}
-    countries['countries'] = {}
-    countries['regions'] = {}
-    countries['sectors'] = {}
-
-    for r in results:
-
-        if r['country_name']:
-            countries['countries'][r['country_id']] = r['country_name']
-        if r['sector_name']:
-            countries['sectors'][r['sector_id']] = r['sector_name']
-        if r['region_name']:
-            countries['regions'][r['region_id']] = r['region_name']
-
-    return HttpResponse(json.dumps(countries), mimetype='application/json')
-
-
 def indicator_region_filter_options(request):
 
-    region_q = get_and_query(request, 'regions', 'region.code')
-    indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
+    region_q = get_and_query(request, 'regions__in', 'region.code')
+    indicator_q = get_and_query(request, 'indicators__in', 'i.indicator_id')
 
 
     filter_string = ' AND (' + region_q + indicator_q + ')'
@@ -429,9 +407,9 @@ def indicator_region_filter_options(request):
 
 def indicator_country_filter_options(request):
 
-    country_q = get_and_query(request, 'countries', 'country.code')
-    region_q = get_and_query(request, 'regions', 'region.code')
-    indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
+    country_q = get_and_query(request, 'countries__in', 'country.code')
+    region_q = get_and_query(request, 'regions__in', 'region.code')
+    indicator_q = get_and_query(request, 'indicators__in', 'i.indicator_id')
 
 
     filter_string = ' AND (' + country_q + region_q + indicator_q + ')'
@@ -483,10 +461,10 @@ def indicator_country_filter_options(request):
 
 def indicator_city_filter_options(request):
 
-    city_q = get_and_query(request, 'cities', 'city.id')
-    country_q = get_and_query(request, 'countries', 'country.code')
-    region_q = get_and_query(request, 'regions', 'region.code')
-    indicator_q = get_and_query(request, 'indicators', 'i.indicator_id')
+    city_q = get_and_query(request, 'cities__in', 'city.id')
+    country_q = get_and_query(request, 'countries__in', 'country.code')
+    region_q = get_and_query(request, 'regions__in', 'region.code')
+    indicator_q = get_and_query(request, 'indicators__in', 'i.indicator_id')
 
     filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + ')'
     if 'AND ()' in filter_string:
@@ -546,11 +524,11 @@ def indicator_city_filter_options(request):
 
 def country_geojson_response(request):
 
-    country_q = get_and_query(request, 'countries', 'c.code')
-    budget_q = request.GET.get('budgets', None)
-    region_q = get_and_query(request, 'regions', 'r.code')
-    sector_q = get_and_query(request, 'sectors', 's.sector_id')
-    organisation_q = get_and_query(request, 'organisations', 'a.reporting_organisation_id')
+    country_q = get_and_query(request, 'countries__in', 'c.code')
+    budget_q = request.GET.get('budgets__in', None)
+    region_q = get_and_query(request, 'regions__in', 'r.code')
+    sector_q = get_and_query(request, 'sectors__in', 's.sector_id')
+    organisation_q = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
 
     filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + ')'
     if 'AND ()' in filter_string:
