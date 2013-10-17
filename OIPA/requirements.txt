@@ -9,3 +9,4 @@ python-mimeparse==0.1.4
 pysolr==3.1.0
 django-jenkins==0.14.1
 pylint==1.0.0
+defusedxml==0.4.1

@@ -4,7 +4,6 @@ from django.template.response import TemplateResponse
 # Api specific
 from API.v3.resources.model_resources import *
 from API.v3.resources.activity_view_resources import *
-
 import json
 from django.db import connection
 from django.http import HttpResponse
@@ -131,9 +130,9 @@ def find_polygon(iso2):
 def activity_filter_options(request):
     cursor = connection.cursor()
     q_organisations = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation')
+    q_organisations = request.GET.get('reporting_organisation__in', None)
 
-
-    query = 'SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
+    cursor.execute('SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
                    'FROM IATI_activity a '\
                    'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
                    'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
@@ -141,24 +140,23 @@ def activity_filter_options(request):
                    'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
                    'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
                    'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
-                   'WHERE 1 %s' % q_organisations
-    cursor.execute(query)
+                   'WHERE 1 AND a.reporting_organisation_id = "%s"' % (q_organisations))
     results = get_fields(cursor=cursor)
-    countries = {}
-    countries['countries'] = {}
-    countries['regions'] = {}
-    countries['sectors'] = {}
+    options = {}
+    options['countries'] = {}
+    options['regions'] = {}
+    options['sectors'] = {}
 
     for r in results:
 
         if r['country_name']:
-            countries['countries'][r['country_id']] = r['country_name']
+            options['countries'][r['country_id']] = r['country_name']
         if r['sector_name']:
-            countries['sectors'][r['sector_id']] = r['sector_name']
+            options['sectors'][r['sector_id']] = r['sector_name']
         if r['region_name']:
-            countries['regions'][r['region_id']] = r['region_name']
+            options['regions'][r['region_id']] = r['region_name']
 
-    return HttpResponse(json.dumps(countries), mimetype='application/json')
+    return HttpResponse(json.dumps(options), mimetype='application/json')
 
 
 
@@ -284,6 +282,8 @@ def indicator_city_data_response(request):
         city[r['city_id']]['years'].update(year)
 
     city['max_value'] = result_max[0]
+
+
 
     return HttpResponse(json.dumps(city), mimetype='application/json')
 
@@ -416,7 +416,7 @@ def indicator_country_filter_options(request):
     if 'AND ()' in filter_string:
         filter_string = filter_string[:-6]
     cursor = connection.cursor()
-    cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
+    cursor.execute('SELECT DISTINCT i.indicator_id, ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                    'FROM indicators_indicator_data i '
                    'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
                    'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
