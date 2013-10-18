@@ -5,6 +5,8 @@ from geodata.models import country, city, region
 from django.contrib.gis.geos import fromstr
 from geodata.data_backup.city_data import CityLocations
 from geodata.data_backup.country_regions import country_regions
+from geodata.data_backup.un_region_codes import un_region_codes
+from geodata.data_backup.un_numerical_country_codes import un_numerical_country_codes
 import sys
 
 class AdminTools():
@@ -49,6 +51,28 @@ class AdminTools():
                 print "Country with iso %s not found..." % c.code
 
 
+    def update_country_identifiers(self):
+        for c in un_numerical_country_codes['codemappings']['territorycodes']:
+            try:
+                iso2 = c['type']
+
+
+                if country.objects.filter(code=iso2).exists():
+                    the_country = country.objects.get(code=iso2)
+
+                    if 'numeric' in c:
+                        the_country.numerical_code_un = c['numeric']
+                    if 'alpha3' in c:
+                        the_country.alpha3 = c['alpha3']
+                    if 'fips10' in c:
+                        the_country.fips10 = c['fips10']
+
+                    the_country.save()
+
+            except Exception as e:
+                print e.args
+
+
     def update_country_regions(self):
         for cr in country_regions:
             try:
@@ -72,6 +96,48 @@ class AdminTools():
 
             except:
                 print "error in update_country_regions"
+
+
+
+
+    def import_un_regions(self):
+
+        for cr in un_region_codes["territorycontainment"]["group"]:
+            try:
+                type = cr['type']
+                contains = cr['contains']
+                region_un_name = cr['name']
+
+                the_region = None
+
+                if region.objects.filter(code=type).exists():
+                    the_region = region.objects.get(code=type)
+                    the_region.name = region_un_name
+                else:
+                    the_region = region(code=type, name=region_un_name, source="UN", parental_region=None)
+
+                the_region.save()
+
+                countries_or_regions = contains.split(" ")
+                try:
+                    int(countries_or_regions[0])
+
+                    for cur_region in countries_or_regions:
+                        if region.objects.filter(code=cur_region).exists():
+                            cur_region_obj = region.objects.get(code=cur_region)
+                            cur_region_obj.parental_region = the_region
+                            cur_region_obj.save()
+
+                except:
+                    for cur_country in countries_or_regions:
+                        if country.objects.filter(code=cur_country).exists():
+                            the_country = country.objects.get(code=cur_country)
+                            the_country.un_region = the_region
+                            the_country.save()
+
+            except Exception as e:
+                print "error in update_country_regions" + str(type)
+                print e.args
 
 
 
@@ -115,7 +181,3 @@ class AdminTools():
 
             except:
                 print "error in update_cities"
-
-
-
-

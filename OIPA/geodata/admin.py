@@ -6,6 +6,22 @@ from django.template import RequestContext, loader
 from geodata.admin_tools import AdminTools
 
 
+class RegionAdmin(admin.ModelAdmin):
+
+    def get_urls(self):
+        urls = super(RegionAdmin, self).get_urls()
+
+        my_urls = patterns('',
+            (r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions))
+        )
+        return my_urls + urls
+
+    def import_un_regions(self, request):
+        admTools = AdminTools()
+        admTools.import_un_regions()
+        return HttpResponse('Success')
+
+
 class CountryAdmin(admin.ModelAdmin):
 
     def get_urls(self):
@@ -14,7 +30,8 @@ class CountryAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
             (r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
-            (r'^update-regions-set/$', self.admin_site.admin_view(self.update_regions))
+            (r'^update-regions-set/$', self.admin_site.admin_view(self.update_regions)),
+            (r'^update-country-identifiers-set/$', self.admin_site.admin_view(self.update_country_identifiers))
         )
         return my_urls + urls
 
@@ -32,6 +49,12 @@ class CountryAdmin(admin.ModelAdmin):
         admTools = AdminTools()
         admTools.update_country_regions()
         return HttpResponse('Success')
+
+    def update_country_identifiers(self, request):
+        admTools = AdminTools()
+        admTools.update_country_identifiers()
+        return HttpResponse('Success')
+
 
 
 
@@ -53,4 +76,4 @@ class CityAdmin(admin.ModelAdmin):
 
 admin.site.register(city, CityAdmin)
 admin.site.register(country, CountryAdmin)
-admin.site.register(region)
+admin.site.register(region, RegionAdmin)

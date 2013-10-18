@@ -22,6 +22,30 @@ $(document).ready(function (){
        });
    });
 
+    $('#update-country-identifiers-set').click(function(){
+
+       $.ajax({
+           type: "GET",
+           data: ({'all': 1}),
+           url: "/admin/geodata/country/update-country-identifiers-set/",
+           beforeSend: function() {
+               $('#update-country-identifiers-set').text("Updating...");
+           },
+           statusCode: {
+               200: function() {
+                   $('#update-country-identifiers-set').text("Updated");
+               },
+               404: function() {
+                   $('#update-country-identifiers-set').text("404 error...");
+               },
+               500: function() {
+                   $('#update-country-identifiers-set').text("500 error...");
+               }
+           }
+       });
+   });
+
+
    $('#update-country-center-set').click(function(){
 
        $.ajax({

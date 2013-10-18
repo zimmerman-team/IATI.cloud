@@ -176,7 +176,7 @@ class CodeListImporter():
                     db_row = publisher_type(code=code, name=name)
 
                 elif type == "Region" :
-                    db_row = region(code=code, name=name)
+                    db_row = region(code=code, name=name, source="DAC")
 
                 elif type == "RelatedActivityType" :
                     db_row = related_activity_type(code=code, name=name, description=description)

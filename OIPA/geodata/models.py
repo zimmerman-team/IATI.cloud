@@ -5,20 +5,24 @@ from django.contrib.gis import geos
 class region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=80)
+    source = models.CharField(max_length=80)
+    parental_region = models.ForeignKey('self', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
 class country(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
+    numerical_code_un = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=100, db_index=True)
     language = models.CharField(max_length=2, null=True)
     capital_city = models.ForeignKey("city", related_name='capital_city', null=True, blank=True)
     region = models.ForeignKey(region, null=True, blank=True)
-    dac_region_code = models.IntegerField(null=True, blank=True)
-    dac_region_name = models.CharField(max_length=100, null=True, blank=True)
+    un_region = models.ForeignKey('region', null=True, blank=True, related_name='un_region')
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
+    alpha3 = models.CharField(max_length=3, null=True, blank=True)
+    fips10 = models.CharField(max_length=2, null=True, blank=True)
     center_longlat = models.PointField(null=True, blank=True)
     polygon = models.TextField(null=True, blank=True)
     objects = models.GeoManager()
