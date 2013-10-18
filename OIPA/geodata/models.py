@@ -5,7 +5,7 @@ from django.contrib.gis import geos
 class region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=80)
-    source = models.CharField(max_length=80)
+    source = models.CharField(max_length=80, null=True, blank=True)
     parental_region = models.ForeignKey('self', null=True, blank=True)
 
     def __unicode__(self):
