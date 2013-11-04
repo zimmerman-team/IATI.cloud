@@ -43,3 +43,19 @@ OIPA/geodata/data_backup/country_data.pyc
 OIPA/indicators/models.pyc
 
 OIPA/indicators/models.pyc
+
+OIPA/indicators/data_backup/wdi_data/WDI_CS_Notes.csv
+
+OIPA/indicators/data_backup/wdi_data/WDI_Country.csv
+
+OIPA/indicators/data_backup/wdi_data/WDI_Description.csv
+
+OIPA/indicators/wbi_parser.py
+
+OIPA/indicators/data_backup/wdi_data/WDI_Data.csv
+
+OIPA/indicators/data_backup/wdi_data/WDI_Footnotes.csv
+
+OIPA/indicators/data_backup/wdi_data/WDI_ST_Notes.csv
+
+OIPA/indicators/data_backup/wdi_data/WDI_Series.csv

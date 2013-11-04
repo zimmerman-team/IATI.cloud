@@ -25,7 +25,7 @@ class indicator_source(models.Model):
 
 class indicator(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     friendly_label = models.CharField(max_length=255, null=True, blank=True)
     type_data = models.CharField(max_length=255, null=True, blank=True)
     # parent = models.ForeignKey()

@@ -101,43 +101,45 @@ class AdminTools():
 
 
     def import_un_regions(self):
-
-        for cr in un_region_codes["territorycontainment"]["group"]:
-            try:
-                type = cr['type']
-                contains = cr['contains']
-                region_un_name = cr['name']
-
-                the_region = None
-
-                if region.objects.filter(code=type).exists():
-                    the_region = region.objects.get(code=type)
-                    the_region.name = region_un_name
-                else:
-                    the_region = region(code=type, name=region_un_name, source="UN", parental_region=None)
-
-                the_region.save()
-
-                countries_or_regions = contains.split(" ")
+        times = 0
+        while times < 2:
+            times += 1
+            for cr in un_region_codes["territorycontainment"]["group"]:
                 try:
-                    int(countries_or_regions[0])
+                    type = cr['type']
+                    contains = cr['contains']
+                    region_un_name = cr['name']
 
-                    for cur_region in countries_or_regions:
-                        if region.objects.filter(code=cur_region).exists():
-                            cur_region_obj = region.objects.get(code=cur_region)
-                            cur_region_obj.parental_region = the_region
-                            cur_region_obj.save()
+                    the_region = None
 
-                except:
-                    for cur_country in countries_or_regions:
-                        if country.objects.filter(code=cur_country).exists():
-                            the_country = country.objects.get(code=cur_country)
-                            the_country.un_region = the_region
-                            the_country.save()
+                    if region.objects.filter(code=type).exists():
+                        the_region = region.objects.get(code=type)
+                        the_region.name = region_un_name
+                    else:
+                        the_region = region(code=type, name=region_un_name, source="UN", parental_region=None)
 
-            except Exception as e:
-                print "error in update_country_regions" + str(type)
-                print e.args
+                    the_region.save()
+
+                    countries_or_regions = contains.split(" ")
+                    try:
+                        int(countries_or_regions[0])
+
+                        for cur_region in countries_or_regions:
+                            if region.objects.filter(code=cur_region).exists():
+                                cur_region_obj = region.objects.get(code=cur_region)
+                                cur_region_obj.parental_region = the_region
+                                cur_region_obj.save()
+
+                    except:
+                        for cur_country in countries_or_regions:
+                            if country.objects.filter(code=cur_country).exists():
+                                the_country = country.objects.get(code=cur_country)
+                                the_country.un_region = the_region
+                                the_country.save()
+
+                except Exception as e:
+                    print "error in update_country_regions" + str(type)
+                    print e.args
 
 
 

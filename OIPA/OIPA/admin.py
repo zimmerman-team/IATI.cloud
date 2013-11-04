@@ -18,5 +18,4 @@ class LogAdmin(admin.ModelAdmin):
         return False
 
 
-
-    admin.site.register(LogEntry, LogAdmin)
+admin.site.register(LogEntry, LogAdmin)

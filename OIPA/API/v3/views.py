@@ -130,8 +130,9 @@ def find_polygon(iso2):
 def activity_filter_options(request):
     cursor = connection.cursor()
     q_organisations = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation')
-    q_organisations = request.GET.get('reporting_organisation__in', None)
-
+    if ') AND (' in q_organisations:
+        q_organisations = q_organisations[:-7]
+        q_organisations = " AND " + q_organisations
     cursor.execute('SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
                    'FROM IATI_activity a '\
                    'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
@@ -140,8 +141,11 @@ def activity_filter_options(request):
                    'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
                    'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
                    'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
-                   'WHERE 1 AND a.reporting_organisation_id = "%s"' % (q_organisations))
+                   'WHERE 1 %s' % (q_organisations))
     results = get_fields(cursor=cursor)
+
+
+
     options = {}
     options['countries'] = {}
     options['regions'] = {}
