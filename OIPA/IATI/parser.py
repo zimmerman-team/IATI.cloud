@@ -235,7 +235,7 @@ class Parser():
     def add_activity(self, elem):
         try:
             activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-            activity_id = activity_id.replace(" ", "")
+            activity_id = activity_id.strip(' \t\n\r')
             default_currency_ref = self.return_first_exist(elem.xpath('@default-currency'))
             default_currency = None
 
