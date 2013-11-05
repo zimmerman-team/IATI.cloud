@@ -129,7 +129,7 @@ def find_polygon(iso2):
 
 def activity_filter_options(request):
     cursor = connection.cursor()
-    q_organisations = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation')
+    q_organisations = get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
     if ') AND (' in q_organisations:
         q_organisations = q_organisations[:-7]
         q_organisations = " AND " + q_organisations
