@@ -26,11 +26,12 @@ class Parser():
         try:
             #iterate through iati-activity tree
             iati_file = self.get_the_file(url)
-            self.xml_source_ref = xml_source_ref
-            context = etree.iterparse( iati_file, tag='iati-activity' )
-            self.fast_iter(context, self.process_element)
-            iati_file = None
-            # gc.collect()
+            if iati_file:
+                self.xml_source_ref = xml_source_ref
+                context = etree.iterparse( iati_file, tag='iati-activity' )
+                self.fast_iter(context, self.process_element)
+                iati_file = None
+                # gc.collect()
         except XMLSyntaxError, e:
             print "XMLSyntaxError" + e.message
 
