@@ -13,6 +13,7 @@ COUNTRY_LOCATION = {
     "AS": {"latitude": "-14.20", "longitude": "-170.00"},
     "AT": {"latitude": "47.20", "longitude": "13.20"},
     "AU": {"latitude": "-27.00", "longitude": "133.00"},
+    "AX": {"latitude": "60.338", "longitude": "20.273"},
     "AW": {"latitude": "12.30", "longitude": "-69.58"},
     "AZ": {"latitude": "40.30", "longitude": "47.30"},
     "BA": {"latitude": "44.00", "longitude": "18.00"},

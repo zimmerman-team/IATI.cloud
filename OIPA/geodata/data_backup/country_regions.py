@@ -323,6 +323,15 @@ country_regions = [
 		"dac_region_name": "Oceania, regional",
 		"type": "Country"
 	},
+    {
+		"country_name": "Aland Islands",
+		"dac_country_code": "",
+		"iso2": "AX",
+		"iso3": "ALA",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
 	{
 		"country_name": "Costa Rica",
 		"dac_country_code": "336",

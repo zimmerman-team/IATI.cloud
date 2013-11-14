@@ -133,34 +133,64 @@ def activity_filter_options(request):
     if ') AND (' in q_organisations:
         q_organisations = q_organisations[:-7]
         q_organisations = " AND " + q_organisations
-    cursor.execute('SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
-                   'FROM IATI_activity a '\
-                   'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
-                   'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
-                   'LEFT JOIN IATI_activity_recipient_country ic ON a.id = ic.activity_id '\
-                   'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
-                   'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
-                   'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
-                   'WHERE 1 %s' % (q_organisations))
-    results = get_fields(cursor=cursor)
+
+    if q_organisations:
+        cursor.execute('SELECT DISTINCT s.code as sector_id, s.name as sector_name, c.code as country_id, c.name as country_name, r.code as region_id, r.name as region_name  '\
+                       'FROM IATI_activity a '\
+                       'LEFT JOIN IATI_activity_recipient_region ir ON a.id = ir.activity_id '\
+                       'LEFT JOIN geodata_region r ON r.code = ir.region_id '\
+                       'LEFT JOIN IATI_activity_recipient_country ic ON a.id = ic.activity_id '\
+                       'LEFT JOIN geodata_country c ON ic.country_id = c.code '\
+                       'LEFT JOIN IATI_activity_sector ias ON a.id = ias.activity_id '\
+                       'LEFT JOIN IATI_sector s ON ias.sector_id = s.code '\
+                       'WHERE 1 %s' % (q_organisations))
+        results = get_fields(cursor=cursor)
 
 
 
-    options = {}
-    options['countries'] = {}
-    options['regions'] = {}
-    options['sectors'] = {}
+        options = {}
+        options['countries'] = {}
+        options['regions'] = {}
+        options['sectors'] = {}
 
-    for r in results:
+        for r in results:
 
-        if r['country_name']:
-            options['countries'][r['country_id']] = r['country_name']
-        if r['sector_name']:
-            options['sectors'][r['sector_id']] = r['sector_name']
-        if r['region_name']:
-            options['regions'][r['region_id']] = r['region_name']
+            if r['country_name']:
+                options['countries'][r['country_id']] = r['country_name']
+            if r['sector_name']:
+                options['sectors'][r['sector_id']] = r['sector_name']
+            if r['region_name']:
+                options['regions'][r['region_id']] = r['region_name']
 
-    return HttpResponse(json.dumps(options), mimetype='application/json')
+        return HttpResponse(json.dumps(options), mimetype='application/json')
+
+    else:
+
+        cursor.execute('SELECT DISTINCT c.code as country_id, c.name as country_name FROM geodata_country c')
+        results1 = get_fields(cursor=cursor)
+        cursor.execute('SELECT DISTINCT r.code as region_id, r.name as region_name FROM geodata_region r where source is null')
+        results2 = get_fields(cursor=cursor)
+        cursor.execute('SELECT DISTINCT s.code as sector_id, s.name as sector_name FROM IATI_sector s')
+        results3 = get_fields(cursor=cursor)
+
+        options = {}
+        options['countries'] = {}
+        options['regions'] = {}
+        options['sectors'] = {}
+
+        for r in results1:
+            if r['country_name']:
+                options['countries'][r['country_id']] = r['country_name']
+
+        for r in results2:
+            if r['region_name']:
+                options['regions'][r['region_id']] = r['region_name']
+
+        for r in results3:
+            if r['sector_name']:
+                options['sectors'][r['sector_id']] = r['sector_name']
+
+        return HttpResponse(json.dumps(options), mimetype='application/json')
 
 
 

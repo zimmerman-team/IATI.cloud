@@ -22,6 +22,31 @@ $(document).ready(function (){
        });
    });
 
+   $('#update-wbi-set').click(function(){
+
+       $.ajax({
+           type: "GET",
+           data: ({'all': 1}),
+           url: "/admin/indicators/indicator/update-wbi-indicators/",
+           beforeSend: function() {
+               $('#update-wbi-set').text("Updating...");
+           },
+           statusCode: {
+               200: function() {
+                   $('#update-wbi-set').text("Updated");
+               },
+               404: function() {
+                   $('#update-wbi-set').text("404 error...");
+               },
+               500: function() {
+                   $('#update-wbi-set').text("500 error...");
+               }
+           }
+       });
+   });
+
+
+
    $('#update-indicator-data-set').click(function(){
 
        $.ajax({

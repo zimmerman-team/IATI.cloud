@@ -3,8 +3,7 @@ from indicators.models import indicator
 from django.conf.urls import patterns
 from indicators.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
-
-
+from indicators.wbi_parser import WBI_Parser
 
 
 class IndicatorAdmin(admin.ModelAdmin):
@@ -15,7 +14,8 @@ class IndicatorAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^update-indicators/$', self.admin_site.admin_view(self.update_indicators)),
             (r'^update-indicator-data/$', self.admin_site.admin_view(self.update_indicator_data)),
-            (r'^update-indicator-city-data/$', self.admin_site.admin_view(self.update_indicator_city_data))
+            (r'^update-indicator-city-data/$', self.admin_site.admin_view(self.update_indicator_city_data)),
+            (r'^update-wbi-indicators/$', self.admin_site.admin_view(self.update_WBI_indicators))
         )
         return my_urls + urls
 
@@ -32,6 +32,11 @@ class IndicatorAdmin(admin.ModelAdmin):
     def update_indicators(self, request):
         admTools = IndicatorAdminTools()
         admTools.update_indicators()
+        return HttpResponse('Success')
+
+    def update_WBI_indicators(self, request):
+        wbi_parser = WBI_Parser()
+        wbi_parser.import_wbi_indicators()
         return HttpResponse('Success')
 
 

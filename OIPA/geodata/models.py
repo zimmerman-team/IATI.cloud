@@ -56,3 +56,16 @@ class city(models.Model):
         verbose_name_plural = "cities"
 
 
+# class adm1_region(models.Model):
+#     adm1_code = models.CharField(primary_key=True, max_length=10)
+#     natural_earth_data_id = models.IntegerField(null=True, blank=True)
+#     country_id = models.ForeignKey(country)
+#
+
+
+
+
+
+
+
+

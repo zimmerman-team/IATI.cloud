@@ -64,6 +64,7 @@ class AdminTools():
                         the_country.numerical_code_un = c['numeric']
                     if 'alpha3' in c:
                         the_country.alpha3 = c['alpha3']
+                        the_country.iso3 = c['alpha3']
                     if 'fips10' in c:
                         the_country.fips10 = c['fips10']
 

@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 from deleter import Deleter
 from lxml.etree import XMLSyntaxError
+import gc
 
 class Parser():
 
@@ -31,7 +32,7 @@ class Parser():
                 context = etree.iterparse( iati_file, tag='iati-activity' )
                 self.fast_iter(context, self.process_element)
                 iati_file = None
-                # gc.collect()
+                gc.collect()
         except XMLSyntaxError, e:
             print "XMLSyntaxError" + e.message
 
