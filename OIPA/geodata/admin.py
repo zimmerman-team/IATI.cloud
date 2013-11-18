@@ -1,6 +1,6 @@
 from django.conf.urls import patterns
 from django.contrib import admin
-from geodata.models import city, country, region
+from geodata.models import *
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from geodata.admin_tools import AdminTools
@@ -74,6 +74,24 @@ class CityAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
+
+class Adm1RegionAdmin(admin.ModelAdmin):
+
+    def get_urls(self):
+        urls = super(Adm1RegionAdmin, self).get_urls()
+
+        my_urls = patterns('',
+            (r'^update-adm1-regions/$', self.admin_site.admin_view(self.update_adm1_regions))
+        )
+        return my_urls + urls
+
+    def update_adm1_regions(self, request):
+        admTools = AdminTools()
+        admTools.update_adm1_regions()
+        return HttpResponse('Success')
+
+
 admin.site.register(city, CityAdmin)
 admin.site.register(country, CountryAdmin)
 admin.site.register(region, RegionAdmin)
+admin.site.register(adm1_region, Adm1RegionAdmin)

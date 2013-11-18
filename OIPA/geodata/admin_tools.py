@@ -1,13 +1,15 @@
 __author__ = 'vincentvantwestende'
 from geodata.data_backup.country_data import countryData
 from geodata.data_backup.country_location import COUNTRY_LOCATION
-from geodata.models import country, city, region
+from geodata.models import *
 from django.contrib.gis.geos import fromstr
 from geodata.data_backup.city_data import CityLocations
 from geodata.data_backup.country_regions import country_regions
 from geodata.data_backup.un_region_codes import un_region_codes
 from geodata.data_backup.un_numerical_country_codes import un_numerical_country_codes
+import json
 import sys
+import os
 
 class AdminTools():
 
@@ -184,3 +186,161 @@ class AdminTools():
 
             except:
                 print "error in update_cities"
+
+
+    def update_adm1_regions(self):
+
+        BASE = os.path.dirname(os.path.abspath(__file__))
+        location = BASE + "/data_backup/adm1_regions.json"
+
+        json_data = open(location)
+        adm1_regions = json.load(json_data)
+
+        for r in adm1_regions['features']:
+
+            the_adm1_region = adm1_region()
+            the_adm1_region.adm1_code = r["properties"]["adm1_code"]
+
+            p = r["properties"]
+
+            if "OBJECTID_1" in p:
+                the_adm1_region.OBJECTID_1 = p["OBJECTID_1"]
+            if "diss_me" in p:
+                the_adm1_region.diss_me = p["diss_me"]
+            if "adm1_cod_1" in p:
+                the_adm1_region.adm1_cod_1 = p["adm1_cod_1"]
+            if "iso_3166_2" in p:
+                the_adm1_region.iso_3166_2 = str(p["iso_3166_2"])[:2]
+            if "wikipedia" in p:
+                the_adm1_region.wikipedia = p["wikipedia"]
+            if "iso_a2" in p:
+                if country.objects.filter(code=p["iso_a2"]).exists():
+                    the_country = country.objects.get(code=p["iso_a2"])
+                    the_adm1_region.country = the_country
+                else:
+                    if "admin" in p:
+                        if p["admin"] == "Kosovo":
+                            if country.objects.filter(code="XK").exists():
+                                the_country = country.objects.get(code="XK")
+                                the_adm1_region.country = the_country
+            if "adm0_sr" in p:
+                the_adm1_region.adm0_sr = p["adm0_sr"]
+            if "name" in p:
+                the_adm1_region.name = p["name"]
+            if "name_alt" in p:
+                the_adm1_region.name_alt = p["name_alt"]
+            if "name_local" in p:
+                the_adm1_region.name_local = p["name_local"]
+            if "type" in p:
+                the_adm1_region.type = p["type"]
+            if "type_en" in p:
+                the_adm1_region.type_en = p["type_en"]
+            if "code_local" in p:
+                the_adm1_region.code_local = p["code_local"]
+            if "code_hasc" in p:
+                the_adm1_region.code_hasc = p["code_hasc"]
+            if "note" in p:
+                the_adm1_region.note = p["note"]
+            if "hasc_maybe" in p:
+                the_adm1_region.hasc_maybe = p["hasc_maybe"]
+            if "region" in p:
+                the_adm1_region.region = p["region"]
+            if "region_cod" in p:
+                the_adm1_region.region_cod = p["region_cod"]
+            if "provnum_ne" in p:
+                the_adm1_region.provnum_ne = p["provnum_ne"]
+            if "gadm_level" in p:
+                the_adm1_region.gadm_level = p["gadm_level"]
+            if "check_me" in p:
+                the_adm1_region.check_me = p["check_me"]
+            if "scalerank" in p:
+                the_adm1_region.scalerank = p["scalerank"]
+            if "datarank" in p:
+                the_adm1_region.datarank = p["datarank"]
+            if "abbrev" in p:
+                the_adm1_region.abbrev = p["abbrev"]
+            if "postal" in p:
+                the_adm1_region.postal = p["postal"]
+            if "area_sqkm" in p:
+                the_adm1_region.area_sqkm = p["area_sqkm"]
+            if "sameascity" in p:
+                the_adm1_region.sameascity = p["sameascity"]
+            if "labelrank" in p:
+                the_adm1_region.labelrank = p["labelrank"]
+            if "featurecla" in p:
+                the_adm1_region.featurecla = p["featurecla"]
+            if "name_len" in p:
+                the_adm1_region.name_len = p["name_len"]
+            if "mapcolor9" in p:
+                the_adm1_region.mapcolor9 = p["mapcolor9"]
+            if "mapcolor13" in p:
+                the_adm1_region.mapcolor13 = p["mapcolor13"]
+            if "fips" in p:
+                the_adm1_region.fips = p["fips"]
+            if "fips_alt" in p:
+                the_adm1_region.fips_alt = p["fips_alt"]
+            if "woe_id" in p:
+                the_adm1_region.woe_id = p["woe_id"]
+            if "woe_label" in p:
+                the_adm1_region.woe_label = p["woe_label"]
+            if "woe_name" in p:
+                the_adm1_region.woe_name = p["woe_name"]
+            if "longitude" in p and "latitude" in p:
+                try:
+                    longitude = str(p["longitude"])
+                    latitude = str(p["latitude"])
+                    point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
+                    the_adm1_region.center_location = fromstr(point_loc_str, srid=4326)
+                except KeyError:
+                    print "Admin 1 region with code %s has an illegal center location..." % the_adm1_region.adm1_code
+            if "sov_a3" in p:
+                the_adm1_region.sov_a3 = p["sov_a3"]
+            if "adm0_a3" in p:
+                the_adm1_region.adm0_a3 = p["adm0_a3"]
+            if "adm0_label" in p:
+                the_adm1_region.adm0_label = p["adm0_label"]
+            if "admin" in p:
+                the_adm1_region.admin = p["admin"]
+            if "geonunit" in p:
+                the_adm1_region.geonunit = p["geonunit"]
+            if "gu_a3" in p:
+                the_adm1_region.gu_a3 = p["gu_a3"]
+            if "gn_id" in p:
+                the_adm1_region.gn_id = p["gn_id"]
+            if "gn_name" in p:
+                the_adm1_region.gn_name = p["gn_name"]
+            if "gns_id" in p:
+                the_adm1_region.gns_id = p["gns_id"]
+            if "gns_name" in p:
+                the_adm1_region.gns_name = p["gns_name"]
+            if "gn_level" in p:
+                the_adm1_region.gn_level = p["gn_level"]
+            if "gn_region" in p:
+                the_adm1_region.gn_region = p["gn_region"]
+            if "gn_a1_code" in p:
+                the_adm1_region.gn_a1_code = p["gn_a1_code"]
+            if "region_sub" in p:
+                the_adm1_region.region_sub = p["region_sub"]
+            if "sub_code" in p:
+                the_adm1_region.sub_code = p["sub_code"]
+            if "gns_level" in p:
+                the_adm1_region.gns_level = p["gns_level"]
+            if "gns_lang" in p:
+                the_adm1_region.gns_lang = p["gns_lang"]
+            if "gns_adm1" in p:
+                the_adm1_region.gns_adm1 = p["gns_adm1"]
+            if "gns_region" in p:
+                the_adm1_region.gns_region = p["gns_region"]
+
+            if "coordinates" in r["geometry"]:
+                the_adm1_region.polygon = r["geometry"]["coordinates"]
+            if "type" in r["geometry"]:
+                the_adm1_region.geometry_type = r["geometry"]["type"]
+
+            the_adm1_region.save()
+
+        json_data.close()
+
+
+
+

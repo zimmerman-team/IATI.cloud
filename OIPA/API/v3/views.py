@@ -613,5 +613,38 @@ def country_geojson_response(request):
     result = {}
 
     activity_result['features'] = activities
-    activity_result['query'] = query
+    return HttpResponse(json.dumps(activity_result), mimetype='application/json')
+
+
+
+
+
+def adm1_region_geojson_response(request):
+
+    country_id = request.GET.get("country_id", None)
+
+    cursor = connection.cursor()
+    query = 'SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
+            'FROM geodata_adm1_region r '\
+            'WHERE r.country_id = "%s"' % (country_id)
+
+    cursor.execute('SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
+            'FROM geodata_adm1_region r '\
+            'WHERE r.country_id = "%s"' % (country_id))
+
+    activity_result = {'type' : 'FeatureCollection', 'features' : []}
+
+    activities = []
+
+    results = get_fields(cursor=cursor)
+    for r in results:
+        region = {}
+        region['type'] = 'Feature'
+        region['geometry'] = {'type' : r['geometry_type'], 'coordinates' : r['polygon']}
+        region['properties'] = {'id' : r['adm1_code'], 'name' : r['name']}
+        activities.append(region)
+
+    result = {}
+
+    activity_result['features'] = activities
     return HttpResponse(json.dumps(activity_result), mimetype='application/json')

@@ -216,7 +216,10 @@ class CodeListImporter():
                 print e.messages
                 raise
 
-
+        def add_missing_items():
+            if not country.objects.filter(code="XK").exists():
+                kosovo = country(code="XK", name="Kosovo", language="en")
+                kosovo.save()
 
 
 
@@ -231,6 +234,8 @@ class CodeListImporter():
 
             context = etree.iterparse( cur_xml_file, tag=name[0] )
             fast_iter(context, add_code_list_item)
+
+            add_missing_items()
 
 
         #iterate through code lists

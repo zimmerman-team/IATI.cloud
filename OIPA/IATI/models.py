@@ -219,6 +219,7 @@ class activity(models.Model):
     default_finance_type = models.ForeignKey(finance_type, null=True, default = None)
     default_tied_status = models.ForeignKey(tied_status, null=True, default = None)
     xml_source_ref = models.CharField(null=True, max_length=200)
+    total_budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, default = None)
 
     def __unicode__(self):
         return self.id
