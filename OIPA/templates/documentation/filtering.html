@@ -19,17 +19,17 @@
             <div class="span12">
                 <h3 class="push_10px_top">Countries</h3>
                 <p>The current API implements a countries filter</p>
-                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;countries=BB,AO,FR</strong></code></pre>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;countries__in=BB,AO,FR</strong></code></pre>
             </div>
             <div class="span12">
                 <h3 class="push_10px_top">Regions</h3>
                 <p>The current API implements a countries filter</p>
-                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;regions=380,89</strong></code></pre>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;regions__in=380,89</strong></code></pre>
             </div>
             <div class="span12">
                 <h3 class="push_10px_top">Sectors</h3>
                 <p>The current API implements a countries filter</p>
-                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;sectors=410,12220</strong></code></pre>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&amp;sectors__in=410,12220</strong></code></pre>
             </div>
             <div class="span12">
                 <h3 class="push_10px_top">IATI identifier</h3>
@@ -39,7 +39,7 @@
                         <div class="span12">
                 <h3 class="push_10px_top">Organisations</h3>
                 <p>The current API implements an organisations filter</p>
-                <pre><code>{{ api_url }}/activities/?format=json<strong>&organisations=44000,NL-1</strong></code></pre>
+                <pre><code>{{ api_url }}/activities/?format=json<strong>&reporting_organisation__in=44000,NL-1</strong></code></pre>
             </div>
             <div class="span12">
                 <h3 class="push_10px_top">Joining calls</h3>
