@@ -586,7 +586,7 @@ def country_geojson_response(request):
             'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
             '%s %s'\
             'WHERE 1 %s'\
-            'GROUP BY c.code %s' % (filter_region, filter_sector, filter_string)
+            'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
     cursor.execute(query)
 
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
