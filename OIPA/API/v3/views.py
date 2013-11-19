@@ -324,8 +324,6 @@ def indicator_city_data_response(request):
 
 
 
-
-
 def indicator_region_data_response(request):
 
     country_q = get_and_query(request, 'cities__in', 'c.code')
@@ -569,11 +567,7 @@ def country_geojson_response(request):
         filter_string = filter_string[:-6]
 
     if budget_q:
-        query_having = ''
-        # TO DO: implement budget filter in query.
-        # query_having = 'having total_budget ' + budget_q
-    else:
-        query_having = ''
+        filter_string += ' AND total_budget > ' + budget_q
 
     if region_q:
         filter_region = 'LEFT JOIN IATI_activity_recipient_region rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
@@ -592,7 +586,7 @@ def country_geojson_response(request):
             'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
             '%s %s'\
             'WHERE 1 %s'\
-            'GROUP BY c.code %s' % (filter_region, filter_sector, filter_string, query_having)
+            'GROUP BY c.code %s' % (filter_region, filter_sector, filter_string)
     cursor.execute(query)
 
     activity_result = {'type' : 'FeatureCollection', 'features' : []}
@@ -624,9 +618,6 @@ def adm1_region_geojson_response(request):
     country_id = request.GET.get("country_id", None)
 
     cursor = connection.cursor()
-    query = 'SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
-            'FROM geodata_adm1_region r '\
-            'WHERE r.country_id = "%s"' % (country_id)
 
     cursor.execute('SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
             'FROM geodata_adm1_region r '\

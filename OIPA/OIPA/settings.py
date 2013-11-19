@@ -137,8 +137,8 @@ INSTALLED_APPS = (
     'geodata',
     'indicators',
     'API',
+    'RSR',
     'south',
-
 )
 
 

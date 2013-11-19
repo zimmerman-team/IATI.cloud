@@ -8,11 +8,9 @@ from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 
 # Data specific
-from IATI.models import activity, organisation
+from IATI.models import organisation
 from indicators.models import *
 from API.v3.resources.helper_resources import *
-from API.cache import NoTransformCache
-from API.v3.resources.advanced_resources import *
 
 class CityResource(ModelResource):
 
@@ -39,15 +37,6 @@ class CountryResource(ModelResource):
         return bundle
 
 
-class CountryGeoResource(ModelResource):
-
-    class Meta:
-        queryset = country.objects.all()
-        resource_name = 'country-polygons'
-        excludes = ['dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language']
-        include_resource_uri = False
-        serializer = Serializer(formats=['xml', 'json'])
-
 
 class RegionResource(ModelResource):
 
@@ -66,44 +55,6 @@ class SectorResource(ModelResource):
         resource_name = 'sectors'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
-
-
-
-class IndicatorResource(ModelResource):
-    class Meta:
-        queryset = indicator.objects.all()
-        resource_name = 'indicators'
-        include_resource_uri = False
-        serializer = Serializer(formats=['xml', 'json'])
-
-
-class IndicatorDataResource(ModelResource):
-
-
-    class Meta:
-        queryset = indicator_data.objects.all()
-        include_resource_uri = False
-
-class CountryIndicatorDataResource(ModelResource):
-    # countries = fields.ToManyField(CountryResource, 'country_set', full=True, null=True)
-    # years = fields.ToManyField(IndicatorDataResource, "indicator", full=True, null=True)
-    years = fields.ToManyField(IndicatorDataResource, attribute=lambda bundle: indicator_data.objects.filter(indicator=bundle.obj), null=True)
-
-
-    class Meta:
-        queryset = indicator.objects.all()
-        resource_name = 'indicatordata'
-        include_resource_uri = False
-        # TO DO: bugfix
-        filtering = {
-            'name': ALL
-        }
-        serializer = Serializer(formats=['xml', 'json'])
-
-    # def dehydrate(self, bundle):
-    #     bundle.data['country'] = bundle.obj.country.code
-    #     bundle.data['indicator'] = bundle.obj.indicator.name
-    #     return bundle
 
 
 

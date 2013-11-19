@@ -27,7 +27,7 @@ class OnlyCountryResource(ModelResource):
     class Meta:
         queryset = country.objects.all().order_by('name')
         include_resource_uri = False
-        excludes = ['center_longlat', 'dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon']
+        excludes = ['center_longlat', 'dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon', 'alpha3', 'fips10', 'numerical_code_un']
         resource_name = 'country'
         limit = 1000
 

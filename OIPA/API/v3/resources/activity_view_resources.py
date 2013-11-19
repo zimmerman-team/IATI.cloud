@@ -76,6 +76,13 @@ class ActivityViewActivityStatusResource(ModelResource):
         include_resource_uri = False
         excludes = ['language']
 
+class ActivityViewCurrencyResource(ModelResource):
+    class Meta:
+        queryset = currency.objects.all()
+        include_resource_uri = False
+        excludes = ['language']
+
+
 
 class ActivityResource(ModelResource):
 
@@ -93,6 +100,7 @@ class ActivityResource(ModelResource):
     default_finance_type = fields.ForeignKey(FinanceTypeResource, attribute='default_finance_type', full=True, null=True)
     default_aid_type = fields.ForeignKey(ActivityViewAidTypeResource, attribute='default_aid_type', full=True, null=True)
     default_tied_status = fields.ForeignKey(ActivityViewTiedStatusResource, attribute='default_tied_status', full=True, null=True)
+    default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True)
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'document_link_set', full=True, null=True)
