@@ -37,7 +37,6 @@ class CountryResource(ModelResource):
         return bundle
 
 
-
 class RegionResource(ModelResource):
 
     class Meta:
@@ -47,7 +46,6 @@ class RegionResource(ModelResource):
         serializer = Serializer(formats=['xml', 'json'])
 
 
-
 class SectorResource(ModelResource):
 
     class Meta:
@@ -55,7 +53,6 @@ class SectorResource(ModelResource):
         resource_name = 'sectors'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
-
 
 
 class OrganisationResource(ModelResource):
