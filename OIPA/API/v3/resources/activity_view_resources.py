@@ -136,8 +136,8 @@ class ActivityResource(ModelResource):
             qset = (
                 Q(id__in=query, **filters) |
                 Q(activity_recipient_country__country__name__in=query, **filters) |
-                Q(title__title__icontains=query, **filters) |
-                Q(description__description__icontains=query, **filters)
+                Q(title__title__icontains=query, **filters) #|
+                # Q(description__description__icontains=query, **filters)
             )
 
             return base_object_list.filter(qset).distinct()
