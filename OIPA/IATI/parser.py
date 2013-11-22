@@ -43,8 +43,8 @@ class Parser():
             #get the file
             iati_file_url_object = urllib2.Request(url)
             file_opener = urllib2.build_opener()
-            iati_file = file_opener.open(iati_file_url_object)
-            return iati_file;
+            iati_file = file_opener.open(iati_file_url_object, timeout=80)
+            return iati_file
 
         except urllib2.HTTPError, e:
             print 'HTTPError (url=' + url + ') = ' + str(e.code)
