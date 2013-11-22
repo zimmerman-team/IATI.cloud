@@ -110,7 +110,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'API.v3.ajax_allower.XsSharing'
+    'API.v3.ajax_allower.XsSharing',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
 )
 
 ROOT_URLCONF = 'OIPA.urls'
@@ -138,7 +140,7 @@ INSTALLED_APPS = (
     'indicators',
     'API',
     'RSR',
-    'south',
+    'south'
 )
 
 

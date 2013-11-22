@@ -14,6 +14,7 @@ class DatasetSyncer():
             cur_url = "http://www.iatiregistry.org/api/search/dataset?filetype=organisation&all_fields=1&limit=1000&offset="
 
         for i in range(0, 10000, 200):
+            cur_url = cur_url.replace(" ", "%20")
             cur_url_with_offset = cur_url + str(i)
             self.synchronize_with_iati_api_by_page(cur_url_with_offset, type)
 

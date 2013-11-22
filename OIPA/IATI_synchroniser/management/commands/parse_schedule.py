@@ -28,13 +28,10 @@ class ParseSchedule():
             if update_interval == "week":
                 update_interval_time = 24 * 60 * 60 * 7
             if update_interval == "month":
-                update_interval_time = 24 * 60 * 60 * 4.34
+                update_interval_time = 24 * 60 * 60 * 7 * 4.34
             if update_interval == "year":
                 update_interval_time = 24 * 60 * 60 * 365
 
-            print curdate
-            print last_updated
-            print update_interval_time
 
             if ((curdate - update_interval_time) > last_updated):
                 print "Now updating " + source.source_url

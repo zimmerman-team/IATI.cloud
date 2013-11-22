@@ -15,7 +15,8 @@ class AdminTools():
 
 
     def update_polygon_set(self):
-        print "update_polygon_set not implemented yet as polygon sql field: need postgis"
+
+        #  "update_polygon_set not implemented yet as polygon sql field: need gis"
         for k in countryData['features']:
             try:
                 country_iso2 = k['properties']['iso2']

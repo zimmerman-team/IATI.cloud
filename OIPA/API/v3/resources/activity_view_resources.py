@@ -6,6 +6,7 @@ from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
+from API.CSVSerializer import CSVSerializer
 
 # Data specific
 from IATI.models import activity, organisation
@@ -109,7 +110,7 @@ class ActivityResource(ModelResource):
         queryset = activity.objects.all()
         resource_name = 'activities'
         max_limit = 100
-        serializer = Serializer(formats=['xml', 'json'])
+        serializer = CSVSerializer(formats=['xml', 'json', 'csv'])
         excludes = ['date_created', 'id']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {
