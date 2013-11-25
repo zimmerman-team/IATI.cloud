@@ -11,6 +11,8 @@ from datetime import datetime
 from deleter import Deleter
 from lxml.etree import XMLSyntaxError
 import gc
+import logging
+logger = logging.getLogger(__name__)
 
 class Parser():
 
@@ -29,12 +31,12 @@ class Parser():
             iati_file = self.get_the_file(url)
             if iati_file:
                 self.xml_source_ref = xml_source_ref
-                context = etree.iterparse( iati_file, tag='iati-activity' )
+                context = etree.iterparse(iati_file, tag='iati-activity')
                 self.fast_iter(context, self.process_element)
                 iati_file = None
                 gc.collect()
         except XMLSyntaxError, e:
-            print "XMLSyntaxError" + e.message
+            logger.info("XMLSyntaxError" + e.message)
 
 
 
@@ -47,21 +49,22 @@ class Parser():
             return iati_file
 
         except urllib2.HTTPError, e:
-            print 'HTTPError (url=' + url + ') = ' + str(e.code)
+            logger.info('HTTPError (url=' + url + ') = ' + str(e.code))
             if try_number < 6:
                 self.get_the_file(url, try_number + 1)
             else:
                 return None
         except urllib2.URLError, e:
-            print 'URLError (url=' + url + ') = ' + str(e.reason)
+            print
+            logger.info('URLError (url=' + url + ') = ' + str(e.reason))
             if try_number < 6:
                 self.get_the_file(url, try_number + 1)
         except httplib.HTTPException, e:
-            print 'HTTPException reading url ' + url
+            logger.info('HTTPException reading url ' + url)
             if try_number < 6:
                 self.get_the_file(url, try_number + 1)
         except Exception as e:
-                print '%s (%s)' % (e.message, type(e)) + " in get_the_file: " + url
+            logger.info('%s (%s)' % (e.message, type(e)) + " in get_the_file: " + url)
 
 
     def fast_iter(self, context, func):
@@ -77,7 +80,7 @@ class Parser():
                     del elem.getparent()[0]
             del context
         except Exception as e:
-            print '%s (%s)' % (e.message, type(e))
+            logger.info('%s (%s)' % (e.message, type(e)))
 
 
     def process_element(self, elem):
@@ -117,9 +120,9 @@ class Parser():
             self.add_activity_date(elem, activity)
 
         except Exception as e:
-                print "error"
-                print '%s (%s)' % (e.args[0], type(e))
-                print " in add_all_activity_data: " + activity.id
+                logger.info("error")
+                logger.info('%s (%s)' % (e.args[0], type(e)))
+                logger.info(" in add_all_activity_data: " + activity.id)
 
 
     # class wide functions
@@ -155,10 +158,8 @@ class Parser():
                 validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
                 valid_date = datetime.fromtimestamp(time.mktime(validated_date))
 
-
             except ValueError:
-                print('Invalid date!')
-                print unvalidated_date
+                logger.info('Invalid date: ' + unvalidated_date)
                 valid_date = None
         return valid_date
 
@@ -185,8 +186,8 @@ class Parser():
 
     def exception_handler(self, e, ref, current_def):
         if e.args:
-            print e.args[0]
-        print " in " + current_def + ": " + ref
+            logger.info(e.args[0])
+        logger.info(" in " + current_def + ": " + ref)
 
     # entity add functions
     def add_organisation(self, elem):
@@ -198,10 +199,8 @@ class Parser():
             try:
                 if not models.organisation.objects.filter(code=ref).exists():
 
-
                     if not models.organisation_identifier.objects.filter(code=ref).exists():
                         abbreviation = None
-
 
                     else:
                         org_identifier = models.organisation_identifier.objects.get(code=ref)
@@ -220,6 +219,18 @@ class Parser():
 
                     new_organisation = models.organisation(code=ref, type=type, abbreviation=abbreviation, name=name)
                     new_organisation.save()
+
+                else:
+                    existing_organisation = models.organisation.objects.get(code=ref)
+                    if not existing_organisation.name:
+                        existing_organisation.name = name
+                    if not existing_organisation.abbreviation:
+                        if models.organisation_identifier.objects.filter(code=ref).exists():
+                            org_identifier = models.organisation_identifier.objects.get(code=ref)
+                            existing_organisation.abbreviation = org_identifier.abbreviation
+                            existing_organisation.name = org_identifier.name
+                    existing_organisation.save()
+
 
             except ValueError, e:
                 self.exception_handler(e, ref, "add_organisation")
@@ -915,18 +926,31 @@ class Parser():
                     role_ref = self.return_first_exist(t.xpath('@role'))
                     role = None
 
+                    role_type = self.return_first_exist(t.xpath('@type'))
+                    type = None
+
+                    if role_type:
+                        if models.organisation_type.objects.filter(code=role_type).exists():
+                            type = models.organisation_type.objects.get(code=role_type)
+
                     if participating_organisation_ref:
                         if models.organisation.objects.filter(code=participating_organisation_ref).exists():
                             participating_organisation = models.organisation.objects.get(code=participating_organisation_ref)
+                            if not participating_organisation.name:
+                                participating_organisation.name = name
+                            if not participating_organisation.type:
+                                participating_organisation.type = type
                         else:
-                            new_po = models.organisation(code=participating_organisation_ref)
-                            new_po.save()
-                            participating_organisation = new_po
+                            participating_organisation = models.organisation(code=participating_organisation_ref, name=name, type=type)
+                            participating_organisation.save()
+                    else:
+                        if name:
+                            if models.organisation.objects.filter(name=name).exists():
+                                participating_organisation = models.organisation.objects.get(name=name)
 
                     if role_ref:
                         if models.organisation_role.objects.filter(code=role_ref).exists():
                             role = models.organisation_role.objects.get(code=role_ref)
-
 
                     new_activity_participating_organisation = models.activity_participating_organisation(activity=activity, organisation=participating_organisation, role=role, name=name)
                     new_activity_participating_organisation.save()
@@ -942,6 +966,7 @@ class Parser():
                     self.exception_handler(e, activity.id, "add_participating_organisations")
         except Exception as e:
                 self.exception_handler(e, activity.id, "add_participating_organisations")
+
 
 
     def add_policy_markers(self, elem, activity):

@@ -18,7 +18,6 @@ class CSVSerializer(Serializer):
         options = options or {}
         data = self.to_simple(data, options)
         raw_data = StringIO.StringIO()
-        # Untested, so this might not work exactly right.
         for item in data['objects']:
             writer = csv.DictWriter(raw_data, item.keys(), extrasaction='ignore')
             writer.writerow(item)
@@ -27,7 +26,6 @@ class CSVSerializer(Serializer):
     def from_csv(self, content):
         raw_data = StringIO.StringIO(content)
         data = []
-        # Untested, so this might not work exactly right.
         for item in csv.DictReader(raw_data):
             data.append(item)
         return data
