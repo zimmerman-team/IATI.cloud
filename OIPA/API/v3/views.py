@@ -580,7 +580,7 @@ def country_geojson_response(request):
         filter_string = filter_string[:-6]
 
     if budget_q:
-        filter_string += ' AND total_budget > ' + budget_q
+        filter_string += ' AND total_budget > ' + budget_q + ' '
 
     if region_q:
         filter_region = 'LEFT JOIN IATI_activity_recipient_region rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '

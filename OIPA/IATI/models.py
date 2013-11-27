@@ -331,7 +331,7 @@ class activity(models.Model):
         )
 
     id = models.CharField(primary_key=True, max_length=100)
-    default_currency = models.ForeignKey(currency, null=True, default=None)
+    default_currency = models.ForeignKey(currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, null=True, default=None)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True)
@@ -355,6 +355,7 @@ class activity(models.Model):
     default_finance_type = models.ForeignKey(finance_type, null=True, default=None)
     default_tied_status = models.ForeignKey(tied_status, null=True, default=None)
     xml_source_ref = models.CharField(null=True, max_length=200)
+    total_budget_currency = models.ForeignKey(currency, null=True, default=None, related_name="total_budget_currency")
     total_budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, default=None, db_index=True)
 
     def __unicode__(self):

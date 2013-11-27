@@ -5,7 +5,8 @@ from tastypie.api import Api
 
 from API.v3.resources.model_resources import *
 from API.v3.resources.advanced_resources import *
-from API.v3.resources.activity_view_resources import *
+from API.v3.resources.activity_view_resources import ActivityResource
+from API.v3.resources.activity_list_resources import ActivityListResource
 from API.v2 import views as old_views
 from API.v3 import views
 
@@ -14,6 +15,7 @@ from API.v2.urls import v2_api;
 v3_api = Api(api_name='v3')
 v3_api.register(OrganisationResource())
 v3_api.register(ActivityResource())
+v3_api.register(ActivityListResource())
 v3_api.register(CityResource())
 v3_api.register(CountryResource())
 v3_api.register(RegionResource())
