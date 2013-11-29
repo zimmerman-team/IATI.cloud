@@ -9,7 +9,7 @@ import datetime
 
 class Validator():
 
-    start_caching_from = 1.0 # seconds in query time
+    start_caching_from = 0.3 # seconds in query time
 
     def is_cached(self, call):
         if requested_call.objects.filter(call=call).exists():
