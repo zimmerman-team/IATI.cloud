@@ -7,12 +7,17 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 from API.CSVSerializer import CSVSerializer
+from tastypie.cache import SimpleCache
 
 # Data specific
-from IATI.models import activity, organisation
-from API.v3.resources.helper_resources import *
 from API.cache import NoTransformCache
-from API.v3.resources.advanced_resources import *
+from IATI.models import activity, organisation, aid_type, flow_type, sector, collaboration_type, tied_status, transaction, activity_status, currency
+from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource
+from API.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
+
+# Cache specific
+from django.http import HttpResponse
+from Cache.validator import Validator
 
 class ActivityViewAidTypeResource(ModelResource):
     class Meta:
@@ -110,7 +115,7 @@ class ActivityResource(ModelResource):
         queryset = activity.objects.all()
         resource_name = 'activities'
         max_limit = 100
-        serializer = CSVSerializer(formats=['xml', 'json', 'csv'])
+        serializer = Serializer(formats=['xml', 'json'])
         excludes = ['date_created', 'id']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {
@@ -143,3 +148,11 @@ class ActivityResource(ModelResource):
 
             return base_object_list.filter(qset).distinct()
         return base_object_list.filter(**filters).distinct()
+
+    def get_list(self, request, **kwargs):
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+        if validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+        else:
+            return super(ActivityResource, self).get_list(request, **kwargs)

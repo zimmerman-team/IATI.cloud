@@ -8,11 +8,15 @@ from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 
 # Data specific
-from IATI.models import activity, organisation
-from API.v3.resources.helper_resources import *
+from IATI.models import activity
+from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
 from API.cache import NoTransformCache
-from API.v3.resources.advanced_resources import *
+from API.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 from API.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
+
+#cache specific
+from django.http import HttpResponse
+from Cache.validator import Validator
 
 class ActivityListResource(ModelResource):
 
@@ -70,3 +74,11 @@ class ActivityListResource(ModelResource):
 
             return base_object_list.filter(qset).distinct()
         return base_object_list.filter(**filters).distinct()
+
+    def get_list(self, request, **kwargs):
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+        if validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+        else:
+            return super(ActivityListResource, self).get_list(request, **kwargs)

@@ -3,10 +3,11 @@ from django.conf.urls import *
 from django.http import HttpResponseRedirect
 from tastypie.api import Api
 
-from API.v3.resources.model_resources import *
-from API.v3.resources.advanced_resources import *
+from API.v3.resources.model_resources import OrganisationResource, CityResource, CountryResource, RegionResource, SectorResource, RecipientCountryResource
+from API.v3.resources.advanced_resources import OnlyCityResource, OnlyRegionResource, OnlyCountryResource
 from API.v3.resources.activity_view_resources import ActivityResource
 from API.v3.resources.activity_list_resources import ActivityListResource
+from API.v3.resources.sql_resources import ActivityFilterOptionsResource, IndicatorCountryDataResource, IndicatorCityDataResource, IndicatorRegionDataResource, IndicatorRegionFilterOptionsResource, IndicatorCountryFilterOptionsResource, IndicatorCityFilterOptionsResource, CountryGeojsonResource, Adm1rRegionGeojsonResource
 from API.v2 import views as old_views
 from API.v3 import views
 
@@ -16,15 +17,23 @@ v3_api = Api(api_name='v3')
 v3_api.register(OrganisationResource())
 v3_api.register(ActivityResource())
 v3_api.register(ActivityListResource())
+v3_api.register(ActivityFilterOptionsResource())
 v3_api.register(CityResource())
 v3_api.register(CountryResource())
 v3_api.register(RegionResource())
 v3_api.register(SectorResource())
-v3_api.register(IndicatorFiltersResource())
 v3_api.register(OnlyCityResource())
 v3_api.register(OnlyCountryResource())
 v3_api.register(OnlyRegionResource())
 v3_api.register(RecipientCountryResource())
+v3_api.register(IndicatorCountryDataResource())
+v3_api.register(IndicatorCityDataResource())
+v3_api.register(IndicatorRegionDataResource())
+v3_api.register(IndicatorRegionFilterOptionsResource())
+v3_api.register(IndicatorCountryFilterOptionsResource())
+v3_api.register(IndicatorCityFilterOptionsResource())
+v3_api.register(CountryGeojsonResource())
+v3_api.register(Adm1rRegionGeojsonResource())
 
 
 def api_v3_docs(request):
@@ -43,15 +52,6 @@ urlpatterns = patterns('',
     url(r'^v3/docs/filtering/$', views.docs_filtering, name='filter_docs'),
     url(r'^v3/docs/ordering/$', views.docs_ordering, name='ordering_docs'),
     url(r'^v3/docs/about/$', views.docs_about, name='about_docs'),
-    url(r'^v3/indicator-country-data/$', 'API.v3.views.indicator_country_data_response'),
-    url(r'^v3/indicator-city-data/$', 'API.v3.views.indicator_city_data_response'),
-    url(r'^v3/indicator-region-data/$', 'API.v3.views.indicator_region_data_response'),
-    url(r'^v3/activity-filter-options/$', 'API.v3.views.activity_filter_options'),
-    url(r'^v3/indicator-region-filter-options/$', 'API.v3.views.indicator_region_filter_options'),
-    url(r'^v3/indicator-country-filter-options/$', 'API.v3.views.indicator_country_filter_options'),
-    url(r'^v3/indicator-city-filter-options/$', 'API.v3.views.indicator_city_filter_options'),
-    url(r'^v3/country-geojson/$', 'API.v3.views.country_geojson_response'),
-    url(r'^v3/adm1-region-geojson/$', 'API.v3.views.adm1_region_geojson_response'),
     (r'', include(v3_api.urls)),
     (r'', include(v2_api.urls)),
     url(r'^$', api_v3_docs),

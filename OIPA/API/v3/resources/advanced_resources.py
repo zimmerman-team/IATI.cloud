@@ -8,19 +8,19 @@ from tastypie.serializers import Serializer
 
 
 
-class IndicatorFiltersResource(ModelResource):
-    name = fields.CharField(attribute='name')
-
-
-    class Meta:
-        queryset = indicator.objects.all()
-        resource_name = 'indicator-filters'
-        serializer = Serializer(formats=['xml', 'json'])
-        excludes = ['description', 'type_data', 'selection_type', 'deprivation_type', 'rain_programme']
-        include_resource_uri = False
-
-    def dehydrate_name(selfself, bundle):
-        return bundle.data['name']
+#class IndicatorFiltersResource(ModelResource):
+#    name = fields.CharField(attribute='name')
+#
+#
+#    class Meta:
+#        queryset = indicator.objects.all()
+#        resource_name = 'indicator-filters'
+#        serializer = Serializer(formats=['xml', 'json'])
+#        excludes = ['description', 'type_data', 'selection_type', 'deprivation_type', 'rain_programme']
+#        include_resource_uri = False
+#
+#    def dehydrate_name(selfself, bundle):
+#        return bundle.data['name']
 
 
 class OnlyCountryResource(ModelResource):

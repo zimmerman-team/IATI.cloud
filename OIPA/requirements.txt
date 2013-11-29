@@ -11,3 +11,4 @@ django-jenkins==0.14.1
 pylint==1.0.0
 defusedxml==0.4.1
 johnny-cache==1.4
+contexttimer==0.2.0
