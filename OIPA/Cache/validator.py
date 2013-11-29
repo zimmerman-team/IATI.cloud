@@ -44,7 +44,7 @@ class Validator():
 
     def cache_all_requests(self):
 
-        for entry in requested_call.objects.filter(response_time=None):
+        for entry in requested_call.objects.all():
             data = self.perform_api_call(entry.call)
             if data:
                 the_api_cache = cached_call(call=entry.call, result=data, last_fetched=datetime.datetime.now())
