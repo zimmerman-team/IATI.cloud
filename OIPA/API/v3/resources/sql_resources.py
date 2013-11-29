@@ -97,90 +97,90 @@ class ActivityFilterOptionsResource(ModelResource):
 
 
     def get_list(self, request, **kwargs):
-        helper = CustomCallHelper()
+
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
         if validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+
+        helper = CustomCallHelper()
+        cursor = connection.cursor()
+        organisations = request.GET.get("reporting_organisation__in", None)
+        if organisations:
+            q_organisations = 'WHERE a.reporting_organisation_id = "' + organisations + '"'
         else:
+            q_organisations = ""
 
-            cursor = connection.cursor()
-            organisations = request.GET.get("reporting_organisation__in", None)
-            if organisations:
-                q_organisations = 'WHERE a.reporting_organisation_id = "' + organisations + '"'
-            else:
-                q_organisations = ""
-
-            cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
-                           'FROM geodata_country c '
-                           'LEFT JOIN IATI_activity_recipient_country rc on c.code = rc.country_id '
-                           'LEFT JOIN IATI_activity a on rc.activity_id = a.id %s '
-                           'GROUP BY c.code' % (q_organisations))
-            results1 = helper.get_fields(cursor=cursor)
-            cursor.execute('SELECT s.code, s.name, count(s.code) as total_amount '
-                           'FROM IATI_sector s '
-                           'LEFT JOIN IATI_activity_sector as ias on s.code = ias.sector_id '
-                           'LEFT JOIN IATI_activity a on ias.activity_id = a.id '
-                           '%s '
-                           'GROUP BY s.code' % (q_organisations))
-            results2 = helper.get_fields(cursor=cursor)
-            if q_organisations:
-                q_organisations = q_organisations.replace("WHERE", "AND")
-            cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
-                           'FROM geodata_region r '
-                           'LEFT JOIN IATI_activity_recipient_region rr on r.code = rr.region_id '
-                           'LEFT JOIN IATI_activity a on rr.activity_id = a.id '
-                           'WHERE r.source is null '
-                           '%s '
-                           'GROUP BY r.code' % (q_organisations))
-            results3 = helper.get_fields(cursor=cursor)
+        cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
+                       'FROM geodata_country c '
+                       'LEFT JOIN IATI_activity_recipient_country rc on c.code = rc.country_id '
+                       'LEFT JOIN IATI_activity a on rc.activity_id = a.id %s '
+                       'GROUP BY c.code' % (q_organisations))
+        results1 = helper.get_fields(cursor=cursor)
+        cursor.execute('SELECT s.code, s.name, count(s.code) as total_amount '
+                       'FROM IATI_sector s '
+                       'LEFT JOIN IATI_activity_sector as ias on s.code = ias.sector_id '
+                       'LEFT JOIN IATI_activity a on ias.activity_id = a.id '
+                       '%s '
+                       'GROUP BY s.code' % (q_organisations))
+        results2 = helper.get_fields(cursor=cursor)
+        if q_organisations:
+            q_organisations = q_organisations.replace("WHERE", "AND")
+        cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
+                       'FROM geodata_region r '
+                       'LEFT JOIN IATI_activity_recipient_region rr on r.code = rr.region_id '
+                       'LEFT JOIN IATI_activity a on rr.activity_id = a.id '
+                       'WHERE r.source is null '
+                       '%s '
+                       'GROUP BY r.code' % (q_organisations))
+        results3 = helper.get_fields(cursor=cursor)
 
 
 
-            options = {}
-            options['countries'] = {}
-            options['regions'] = {}
-            options['sectors'] = {}
+        options = {}
+        options['countries'] = {}
+        options['regions'] = {}
+        options['sectors'] = {}
 
-            for r in results1:
+        for r in results1:
 
-                country_item = {}
-                country_item['name'] = r['name']
-                country_item['total'] = r['total_amount']
-                options['countries'][r['code']] = country_item
+            country_item = {}
+            country_item['name'] = r['name']
+            country_item['total'] = r['total_amount']
+            options['countries'][r['code']] = country_item
 
-            for r in results2:
-                sector_item = {}
-                sector_item['name'] = r['name']
-                sector_item['total'] = r['total_amount']
-                options['sectors'][r['code']] = sector_item
+        for r in results2:
+            sector_item = {}
+            sector_item['name'] = r['name']
+            sector_item['total'] = r['total_amount']
+            options['sectors'][r['code']] = sector_item
 
-            for r in results3:
+        for r in results3:
 
-                region_item = {}
-                region_item['name'] = r['name']
-                region_item['total'] = r['total_amount']
-                options['regions'][r['code']] = region_item
+            region_item = {}
+            region_item['name'] = r['name']
+            region_item['total'] = r['total_amount']
+            options['regions'][r['code']] = region_item
 
 
 
-            if not q_organisations:
-                cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
-                           'FROM IATI_activity a '
-                           'INNER JOIN IATI_organisation o on a.reporting_organisation_id = o.code '
-                           'GROUP BY a.reporting_organisation_id')
-                results4 = helper.get_fields(cursor=cursor)
+        if not q_organisations:
+            cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
+                       'FROM IATI_activity a '
+                       'INNER JOIN IATI_organisation o on a.reporting_organisation_id = o.code '
+                       'GROUP BY a.reporting_organisation_id')
+            results4 = helper.get_fields(cursor=cursor)
 
-                options['reporting_organisations'] = {}
+            options['reporting_organisations'] = {}
 
-                for r in results4:
+            for r in results4:
 
-                    org_item = {}
-                    org_item['name'] = r['name']
-                    org_item['total'] = r['total_amount']
-                    options['reporting_organisations'][r['reporting_organisation_id']] = org_item
+                org_item = {}
+                org_item['name'] = r['name']
+                org_item['total'] = r['total_amount']
+                options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-            return HttpResponse(json.dumps(options), mimetype='application/json')
+        return HttpResponse(json.dumps(options), mimetype='application/json')
 
 
 
@@ -600,6 +600,10 @@ class IndicatorCityFilterOptionsResource(ModelResource):
 
 
 
+
+
+
+
 class CountryGeojsonResource(ModelResource):
 
     class Meta:
@@ -611,6 +615,12 @@ class CountryGeojsonResource(ModelResource):
 
 
     def get_list(self, request, **kwargs):
+
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+        if validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
         budget_q = request.GET.get('budgets__in', None)
@@ -703,3 +713,5 @@ class Adm1rRegionGeojsonResource(ModelResource):
 
         activity_result['features'] = activities
         return HttpResponse(json.dumps(activity_result), mimetype='application/json')
+
+
