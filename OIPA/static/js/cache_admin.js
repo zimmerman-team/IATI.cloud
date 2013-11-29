@@ -22,6 +22,29 @@ $(document).ready(function (){
        });
    });
 
+       $('#cache-all-requests').click(function(){
+
+       $.ajax({
+           type: "GET",
+           data: ({'all': 1}),
+           url: "/admin/Cache/requested_call/cache-all-requests/",
+           beforeSend: function() {
+               $('#cache-all-requests').text("Updating...");
+           },
+           statusCode: {
+               200: function() {
+                   $('#cache-all-requests').text("Updated");
+               },
+               404: function() {
+                   $('#cache-all-requests').text("404 error...");
+               },
+               500: function() {
+                   $('#cache-all-requests').text("500 error...");
+               }
+           }
+       });
+   });
+
    $('#update-caches').click(function(){
 
        $.ajax({

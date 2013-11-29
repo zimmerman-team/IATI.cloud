@@ -12,13 +12,19 @@ class RequestAdmin(admin.ModelAdmin):
         urls = super(RequestAdmin, self).get_urls()
 
         my_urls = patterns('',
-            (r'^update-requests/$', self.admin_site.admin_view(self.update_requests))
+            (r'^update-requests/$', self.admin_site.admin_view(self.update_requests)),
+            (r'^cache-all-requests/$', self.admin_site.admin_view(self.cache_all_requests))
         )
         return my_urls + urls
 
     def update_requests(self, request):
         validator = Validator()
         validator.update_response_times_and_add_to_cache()
+        return HttpResponse('Success')
+
+    def cache_all_requests(self, request):
+        validator = Validator()
+        validator.cache_all_requests()
         return HttpResponse('Success')
 
 

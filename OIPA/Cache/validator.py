@@ -42,6 +42,16 @@ class Validator():
                     entry.response_time = time_elapsed
                     entry.save()
 
+    def cache_all_requests(self):
+
+        for entry in requested_call.objects.filter(response_time=None):
+            data = self.perform_api_call(entry.call)
+            if data:
+                the_api_cache = cached_call(call=entry.call, result=data, last_fetched=datetime.datetime.now())
+                the_api_cache.save()
+                entry.cached = True
+                entry.save()
+
 
     def perform_api_call(self, call):
 
