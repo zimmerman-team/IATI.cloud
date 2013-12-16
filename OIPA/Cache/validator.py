@@ -15,7 +15,8 @@ class Validator():
         if requested_call.objects.filter(call=call).exists():
             the_call = requested_call.objects.get(call=call)
             if the_call.cached:
-                return True
+                if cached_call.objects.filter(call=call).exists():
+                    return True
         else:
             the_call = requested_call(call=call, cached=False, response_time=None)
             the_call.save()

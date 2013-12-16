@@ -413,6 +413,8 @@ class Parser():
                     type = None
                     language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
                     language = None
+                    rsr_type_ref = self.return_first_exist(t.xpath('@akvo:type'))
+                    rsr_type = None
 
 
                     if language_ref:
@@ -424,9 +426,14 @@ class Parser():
                             if models.description_type.objects.filter(code=type_ref).exists():
                                 type = models.description_type.objects.get(code=type_ref)
                         except ValueError:
-                            # nasty exception to make wrong use of type ref right
+                            # exception to make wrong use of type ref right
                             if not description:
                                 description = type_ref
+
+                    # if rsr_type_ref:
+                    #     if models.rsr_description_type.objects.filter(code=rsr_type_ref).exists():
+                    #         rsr_type = models.rsr_description_type.objects.get(code=rsr_type_ref)
+
 
 
                     new_description = models.description(activity=activity, description=description, type=type, language=language)
