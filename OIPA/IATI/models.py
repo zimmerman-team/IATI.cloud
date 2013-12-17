@@ -541,6 +541,7 @@ class description(models.Model):
     description = models.TextField(null=True, default=None, db_index=True)
     language = models.ForeignKey(language, null=True, default=None)
     type = models.ForeignKey(description_type, related_name="description_type", null=True, default=None)
+    rsr_description_type_id = models.IntegerField(null=True, default=None)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.type)

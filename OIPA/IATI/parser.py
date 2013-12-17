@@ -1,6 +1,7 @@
 from lxml import etree
 import urllib2
 import IATI.models as models
+from IATI.management.commands.update_total_budget import UpdateTotal
 from re import sub
 import httplib
 from django.db import IntegrityError
@@ -118,6 +119,10 @@ class Parser():
             self.add_regions(elem, activity)
             self.add_policy_markers(elem, activity)
             self.add_activity_date(elem, activity)
+
+            # Extras
+            self.add_total_budget(activity)
+
 
         except Exception as e:
                 logger.info("error")
@@ -413,7 +418,7 @@ class Parser():
                     type = None
                     language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
                     language = None
-                    rsr_type_ref = self.return_first_exist(t.xpath('@akvo:type'))
+                    rsr_type_ref = self.return_first_exist(t.xpath( '@akvo:type', namespaces=t.nsmap ))
                     rsr_type = None
 
 
@@ -436,7 +441,7 @@ class Parser():
 
 
 
-                    new_description = models.description(activity=activity, description=description, type=type, language=language)
+                    new_description = models.description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
                     new_description.save()
 
                 except IntegrityError, e:
@@ -1204,4 +1209,9 @@ class Parser():
         except Exception as e:
             self.exception_handler(e, activity.id, "add_conditions")
 
+
+    def add_total_budget(self, activity):
+
+        updater = UpdateTotal()
+        updater.updateSingleActivityTotal(activity.id)
 

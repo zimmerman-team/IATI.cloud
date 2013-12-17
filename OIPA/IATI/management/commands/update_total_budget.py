@@ -35,3 +35,15 @@ class UpdateTotal():
             cur_act = activity.objects.get(id=r['activity_id'])
             cur_act.total_budget = r['total_value']
             cur_act.save()
+
+
+    def updateSingleActivityTotal(self, id):
+
+        cursor = connection.cursor()
+        cursor.execute('SELECT activity_id, sum(value) as total_value FROM IATI_budget b WHERE activity_id = %s GROUP BY activity_id', id)
+
+        results = self.get_fields(cursor=cursor)
+        for r in results:
+            cur_act = activity.objects.get(id=r['activity_id'])
+            cur_act.total_budget = r['total_value']
+            cur_act.save()
