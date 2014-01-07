@@ -7,6 +7,8 @@ from geodata.admin_tools import AdminTools
 
 
 class RegionAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ['__unicode__', 'source', 'parental_region']
 
     def get_urls(self):
         urls = super(RegionAdmin, self).get_urls()
@@ -23,6 +25,9 @@ class RegionAdmin(admin.ModelAdmin):
 
 
 class CountryAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ['__unicode__', 'capital_city', 'region']
+
 
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
@@ -59,6 +64,8 @@ class CountryAdmin(admin.ModelAdmin):
 
 
 class CityAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ['geoname_id', '__unicode__', 'ascii_name', 'alt_name', 'namepar']
 
     def get_urls(self):
         urls = super(CityAdmin, self).get_urls()
@@ -76,6 +83,8 @@ class CityAdmin(admin.ModelAdmin):
 
 
 class Adm1RegionAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    list_display = ['__unicode__', 'adm1_code', 'country', 'type', 'admin']
 
     def get_urls(self):
         urls = super(Adm1RegionAdmin, self).get_urls()

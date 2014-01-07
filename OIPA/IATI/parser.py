@@ -13,6 +13,8 @@ from deleter import Deleter
 from lxml.etree import XMLSyntaxError
 import gc
 import logging
+import mechanize, cookielib, StringIO
+
 logger = logging.getLogger(__name__)
 
 class Parser():
@@ -34,20 +36,46 @@ class Parser():
                 self.xml_source_ref = xml_source_ref
                 context = etree.iterparse(iati_file, tag='iati-activity')
                 self.fast_iter(context, self.process_element)
-                iati_file = None
+                del iati_file
                 gc.collect()
         except XMLSyntaxError, e:
             logger.info("XMLSyntaxError" + e.message)
+        except Exception as e:
+            print e.message
 
 
 
     def get_the_file(self, url, try_number = 0):
         try:
-            #get the file
-            iati_file_url_object = urllib2.Request(url)
-            file_opener = urllib2.build_opener()
-            iati_file = file_opener.open(iati_file_url_object, timeout=80)
-            return iati_file
+
+            br = mechanize.Browser()
+
+            # Cookie Jar
+            cj = cookielib.LWPCookieJar()
+            br.set_cookiejar(cj)
+
+            # Browser options
+            br.set_handle_equiv(True)
+            br.set_handle_redirect(True)
+            br.set_handle_referer(True)
+            br.set_handle_robots(False)
+            br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+            br.set_debug_http(True)
+            br.set_debug_redirects(True)
+            br.set_debug_responses(True)
+
+            # User-Agent
+            br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+
+            response = br.open(url, timeout=80)
+            return response
+
+            # headers = {'User-agent': 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36'}
+            # iati_file_url_object = mechanize.Request(url, headers=headers)
+            # file_opener = mechanize.build_opener()
+            # iati_file = file_opener.open(iati_file_url_object)
+            # return iati_file
+
 
         except urllib2.HTTPError, e:
             logger.info('HTTPError (url=' + url + ') = ' + str(e.code))
@@ -68,6 +96,8 @@ class Parser():
             logger.info('%s (%s)' % (e.message, type(e)) + " in get_the_file: " + url)
 
 
+
+    # loop through the activities, fast_iter starts at the last activity and walks towards the first
     def fast_iter(self, context, func):
 
         try:
@@ -84,12 +114,16 @@ class Parser():
             logger.info('%s (%s)' % (e.message, type(e)))
 
 
+
+    # remove previously saved data about the activity and store new info
     def process_element(self, elem):
 
-        if self.activity_exists(elem):
-            self.remove_old_values_for_activity(elem)
+        if self.activity_has_identifier(elem):
 
-        self.add_all_activity_data(elem)
+            if self.activity_exists(elem):
+                self.remove_old_values_for_activity(elem)
+
+            self.add_all_activity_data(elem)
 
 
     def add_all_activity_data(self, elem):
@@ -166,6 +200,8 @@ class Parser():
             except ValueError:
                 logger.info('Invalid date: ' + unvalidated_date)
                 valid_date = None
+            except Exception as e:
+                logger.info(e.message)
         return valid_date
 
 
@@ -178,6 +214,13 @@ class Parser():
             return True
         else:
             return False
+
+    def activity_has_identifier(self, elem):
+        activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
+        if activity_id:
+            return True
+        return False
+
 
     def remove_old_values_for_activity(self, elem):
         deleter = Deleter()
@@ -347,6 +390,8 @@ class Parser():
             self.exception_handler(e, activity_id, "add_activity")
         except TypeError, e:
             self.exception_handler(e, activity_id, "add_activity")
+        except AttributeError as e:
+            self.exception_handler(e, activity_id, "add_activity")
         except Exception as e:
             self.exception_handler(e, activity_id, "add_activity")
 
@@ -418,7 +463,7 @@ class Parser():
                     type = None
                     language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
                     language = None
-                    rsr_type_ref = self.return_first_exist(t.xpath( '@akvo:type', namespaces=t.nsmap ))
+                    rsr_type_ref = self.return_first_exist(t.xpath( '@akvo:type', namespaces={'akvo': 'http://akvo.org/api/v1/iati-activities'}))
                     rsr_type = None
 
 

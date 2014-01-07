@@ -15,8 +15,9 @@ INTERVAL_CHOICES = (
     (u'DAILY', _(u"Parse daily")),
 )
 class Publisher(models.Model):
-    org_name = models.CharField(max_length=255)
+    org_id = models.CharField(max_length=100, blank=True, null=True)
     org_abbreviate = models.CharField(max_length=55, blank=True, null=True)
+    org_name = models.CharField(max_length=255)
     default_interval = models.CharField(verbose_name=_(u"Interval"), max_length=55, choices=INTERVAL_CHOICES, default=u'MONTHLY')
 
     def __unicode__(self):
@@ -40,12 +41,14 @@ class iati_xml_source(models.Model):
         ("year", _(u"Year")),
     )
     ref = models.CharField(verbose_name=_(u"Reference"), max_length=70, help_text=_(u"Reference for the XML file. Preferred usage: 'collection' or single country or region name"))
+    title = models.CharField(max_length=255, null=True)
     type = models.IntegerField(choices=TYPE_CHOICES, default=1)
     publisher = models.ForeignKey(Publisher)
-    source_url = models.URLField(unique=True, help_text=_(u"Hyperlink to an IATI activity or organisation XML file."))
+    source_url = models.CharField(max_length=255, unique=True, help_text=_(u"Hyperlink to an IATI activity or organisation XML file."))
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now=True, editable=False)
     update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
+    last_found_in_registry = models.DateTimeField(default=None, null=True)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -62,11 +65,13 @@ class iati_xml_source(models.Model):
     def process(self):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
-
-    def save(self, *args, **kwargs):
-        self.process()
         self.date_updated = datetime.datetime.now()
+
+    def save(self, process=True, *args, **kwargs):
         super(iati_xml_source, self).save()
+        if process:
+            self.process()
+            self.date_updated = datetime.datetime.now()
 
 
 

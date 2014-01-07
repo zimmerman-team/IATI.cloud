@@ -60,6 +60,10 @@ class Validator():
         site = settings.SITE_URL
         fullurl = site + call
 
+        if ("?" in fullurl):
+            fullurl += "&flush=true"
+        else:
+            fullurl += "?flush=true"
 
         try:
             req = urllib2.Request(fullurl)
@@ -87,11 +91,16 @@ class Validator():
     def update_cache_calls(self):
         for entry in cached_call.objects.all():
 
-            data = self.perform_api_call(entry.call)
-            if data:
-                entry.result = data
-                entry.last_fetched=datetime.datetime.now()
-                entry.save()
+            try:
+
+                data = self.perform_api_call(entry.call)
+                if data:
+                    entry.result = data
+                    entry.last_fetched=datetime.datetime.now()
+                    entry.save()
+
+            except Exception as e:
+                print e.message
 
     def get_cached_call(self, call):
         data = cached_call.objects.get(call=call).result

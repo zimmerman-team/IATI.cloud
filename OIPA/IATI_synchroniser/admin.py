@@ -61,7 +61,7 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    list_display = ['ref', 'publisher', 'type', 'date_created', 'update_interval', 'get_parse_status', 'date_updated']
+    list_display = ['ref', 'publisher', 'type', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry']
     list_filter = ('publisher', 'type')
 
     class Media:
@@ -99,7 +99,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 class PublisherAdmin(admin.ModelAdmin):
     inlines = [IATIXMLSourceInline]
 
-    list_display = ('org_name', 'org_abbreviate')
+    list_display = ('org_id', 'org_abbreviate', 'org_name' )
 
     class Media:
         js = (

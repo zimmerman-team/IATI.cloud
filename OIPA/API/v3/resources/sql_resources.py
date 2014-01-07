@@ -130,7 +130,7 @@ class ActivityFilterOptionsResource(ModelResource):
                        'FROM geodata_region r '
                        'LEFT JOIN IATI_activity_recipient_region rr on r.code = rr.region_id '
                        'LEFT JOIN IATI_activity a on rr.activity_id = a.id '
-                       'WHERE r.source is null '
+                       'WHERE r.source = "DAC" '
                        '%s '
                        'GROUP BY r.code' % (q_organisations))
         results3 = helper.get_fields(cursor=cursor)

@@ -78,7 +78,18 @@ class ActivityListResource(ModelResource):
     def get_list(self, request, **kwargs):
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-        if validator.is_cached(cururl):
+
+        flush = False
+
+        try:
+            if request.REQUEST and ('flush' in request.REQUEST):
+                if not request.REQUEST['flush'] == True:
+                    flush = True
+                del request.REQUEST['flush']
+        except Exception as e:
+            print e.message
+
+        if not flush and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
         else:
             return super(ActivityListResource, self).get_list(request, **kwargs)
