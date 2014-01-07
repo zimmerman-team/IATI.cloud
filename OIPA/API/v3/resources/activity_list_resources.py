@@ -81,13 +81,10 @@ class ActivityListResource(ModelResource):
 
         flush = False
 
-        try:
-            if request.REQUEST and ('flush' in request.REQUEST):
-                if not request.REQUEST['flush'] == True:
-                    flush = True
-                del request.REQUEST['flush']
-        except Exception as e:
-            print e.message
+
+        if request.REQUEST and ('flush' in request.REQUEST):
+            if not request.REQUEST['flush'] == True:
+                flush = True
 
         if not flush and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
