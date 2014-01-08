@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from IATI_synchroniser.management.commands.parse_all import ParseAll
 from IATI_synchroniser.management.commands.parse_schedule import ParseSchedule
+from IATI_synchroniser.management.commands.parse_twodays import ParseTwoDays
 
 
 
@@ -75,7 +76,8 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         extra_urls = patterns('',
             (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
             (r'^parse-all/', self.admin_site.admin_view(self.parse_all)),
-            (r'^parse-all-over-interval/', self.admin_site.admin_view(self.parse_all_over_interval))
+            (r'^parse-all-over-interval/', self.admin_site.admin_view(self.parse_all_over_interval)),
+            (r'^parse-all-over-two-days/', self.admin_site.admin_view(self.parse_all_over_two_days)),
         )
         return extra_urls + urls
 
@@ -93,6 +95,11 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def parse_all_over_interval(self, request):
         parser = ParseSchedule()
         parser.parseSchedule()
+        return HttpResponse('Success')
+
+    def parse_all_over_two_days(self, request):
+        parser = ParseTwoDays()
+        parser.parseTwoDays()
         return HttpResponse('Success')
 
 

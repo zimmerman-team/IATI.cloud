@@ -54,6 +54,27 @@ $(document).ready(function (){
        });
    });
 
+   $('#parse-all-over-two-days-set').click(function(){
+       $.ajax({
+           type: "GET",
+           url: "/admin/IATI_synchroniser/iati_xml_source/parse-all-over-two-days/",
+           beforeSend: function() {
+               $('#parse-all-over-two-days-set').text("Updating...");
+           },
+           statusCode: {
+               200: function() {
+                   $('#parse-all-over-two-days-set').text("Updated");
+               },
+               404: function() {
+                   $('#parse-all-over-two-days-set').text("404 error...");
+               },
+               500: function() {
+                   $('#parse-all-over-two-days-set').text("500 error...");
+               }
+           }
+       });
+   });
+
    $('#parse-all-over-interval-set').click(function(){
        $.ajax({
            type: "GET",
