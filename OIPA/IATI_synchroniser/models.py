@@ -46,7 +46,7 @@ class iati_xml_source(models.Model):
     publisher = models.ForeignKey(Publisher)
     source_url = models.CharField(max_length=255, unique=True, help_text=_(u"Hyperlink to an IATI activity or organisation XML file."))
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
-    date_updated = models.DateTimeField(auto_now=True, editable=False)
+    date_updated = models.DateTimeField(auto_now_add=True, editable=False)
     update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
 
@@ -65,7 +65,7 @@ class iati_xml_source(models.Model):
     def process(self):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
-        self.date_updated = datetime.datetime.now()
+
 
     def save(self, process=True, *args, **kwargs):
         super(iati_xml_source, self).save()
