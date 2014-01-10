@@ -9,6 +9,8 @@ class requested_call(models.Model):
     call = models.CharField(max_length=255, primary_key=True)
     cached = models.BooleanField(default=False)
     response_time = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    last_requested = models.DateTimeField(auto_now=True)
+    count = models.IntegerField(default=0)
 
     def __unicode__(self,):
         return "%s" % (self.call)

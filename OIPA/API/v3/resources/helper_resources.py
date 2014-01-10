@@ -114,3 +114,8 @@ class RecipientRegionResource(ModelResource):
         queryset = activity_recipient_region.objects.all()
         include_resource_uri = False
 
+class WebsiteResource(ModelResource):
+    class Meta:
+        queryset = activity_website.objects.all()
+        include_resource_uri = False
+        excludes = ['id']

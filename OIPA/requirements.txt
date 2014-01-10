@@ -13,3 +13,4 @@ defusedxml==0.4.1
 johnny-cache==1.4
 contexttimer==0.2.0
 mechanize==0.2.5
+django-suit

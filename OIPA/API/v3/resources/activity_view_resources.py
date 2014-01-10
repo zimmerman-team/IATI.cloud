@@ -12,7 +12,7 @@ from tastypie.cache import SimpleCache
 # Data specific
 from API.cache import NoTransformCache
 from IATI.models import activity, organisation, aid_type, flow_type, sector, collaboration_type, tied_status, transaction, activity_status, currency
-from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource
+from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource
 from API.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
 # Cache specific
@@ -101,6 +101,7 @@ class ActivityResource(ModelResource):
     sectors = fields.ToManyField(ActivityViewSectorResource, 'sector', full=True, null=True)
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
+    websites = fields.ToManyField(WebsiteResource, 'activity_website_set', full=True, null=True)
     collaboration_type = fields.ForeignKey(ActivityViewCollaborationTypeResource, attribute='collaboration_type', full=True, null=True)
     default_flow_type = fields.ForeignKey(ActivityViewFlowTypeResource, attribute='default_flow_type', full=True, null=True)
     default_finance_type = fields.ForeignKey(FinanceTypeResource, attribute='default_finance_type', full=True, null=True)
@@ -142,8 +143,8 @@ class ActivityResource(ModelResource):
             qset = (
                 Q(id__in=query, **filters) |
                 Q(activity_recipient_country__country__name__in=query, **filters) |
-                Q(title__title__icontains=query, **filters) #|
-                # Q(description__description__icontains=query, **filters)
+                Q(title__title__icontains=query, **filters) |
+                Q(description__description__icontains=query, **filters)
             )
 
             return base_object_list.filter(qset).distinct()
