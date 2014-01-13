@@ -19,6 +19,7 @@ import resource
 import gc
 gc.collect()  # don't care about stuff that would be garbage collected properly
 import objgraph
+from guppy import hpy
 
 class CustomCallHelper():
 
@@ -100,6 +101,8 @@ class ActivityFilterOptionsResource(ModelResource):
 
 
     def get_list(self, request, **kwargs):
+        hp = hpy()
+        before = hp.heap()
 
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
@@ -186,6 +189,10 @@ class ActivityFilterOptionsResource(ModelResource):
 
         memuse = 'Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         objgraph.show_most_common_types()
+        after = hp.heap()
+        leftover = after - before
+        import pdb;
+        pdb.set_trace()
         return HttpResponse(json.dumps(memuse), mimetype='application/json')
 
 
