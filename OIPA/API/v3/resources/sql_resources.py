@@ -101,6 +101,7 @@ class ActivityFilterOptionsResource(ModelResource):
 
 
     def get_list(self, request, **kwargs):
+        print 'Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         hp = hpy()
         before = hp.heap()
 
