@@ -191,8 +191,9 @@ class ActivityFilterOptionsResource(ModelResource):
         objgraph.show_most_common_types()
         after = hp.heap()
         leftover = after - before
-        import pdb;
-        pdb.set_trace()
+        print leftover
+        leftover.byrcs[0].byid
+
         return HttpResponse(json.dumps(memuse), mimetype='application/json')
 
 
