@@ -18,8 +18,9 @@ class Validator():
                 if cached_call.objects.filter(call=call).exists():
                     return True
         else:
-            the_call = requested_call(call=call, cached=False, response_time=None)
-            the_call.save()
+            if not "flush" in call:
+                the_call = requested_call(call=call, cached=False, response_time=None)
+                the_call.save()
         return False
 
     def update_response_times_and_add_to_cache(self):

@@ -6,7 +6,7 @@ from Cache.validator import Validator
 
 class RequestAdmin(admin.ModelAdmin):
     search_fields = ['call']
-    list_display = ['call', 'cached', 'response_time']
+    list_display = ['call', 'cached', 'response_time', 'last_requested', 'count']
 
     def get_urls(self):
         urls = super(RequestAdmin, self).get_urls()

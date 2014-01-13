@@ -1,5 +1,5 @@
 lxml==3.2.3
-mysql-python==1.2.4
+mysql-python==1.2.5
 Django==1.5.4
 south==0.8.2
 django-tastypie==0.10.0
