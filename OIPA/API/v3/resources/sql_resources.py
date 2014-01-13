@@ -16,6 +16,9 @@ from django.db import connection
 from django.http import HttpResponse
 
 import resource
+import gc
+gc.collect()  # don't care about stuff that would be garbage collected properly
+import objgraph
 
 class CustomCallHelper():
 
@@ -182,6 +185,7 @@ class ActivityFilterOptionsResource(ModelResource):
 
 
         memuse = 'Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        objgraph.show_most_common_types()
         return HttpResponse(json.dumps(memuse), mimetype='application/json')
 
 
