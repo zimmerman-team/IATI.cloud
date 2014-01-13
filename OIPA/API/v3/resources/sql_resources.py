@@ -15,7 +15,7 @@ import json
 from django.db import connection
 from django.http import HttpResponse
 
-
+import resource
 
 class CustomCallHelper():
 
@@ -180,7 +180,9 @@ class ActivityFilterOptionsResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(json.dumps(options), mimetype='application/json')
+
+        memuse = 'Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return HttpResponse(json.dumps(memuse), mimetype='application/json')
 
 
 
