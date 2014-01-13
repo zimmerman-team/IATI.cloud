@@ -15,3 +15,4 @@ contexttimer==0.2.0
 mechanize==0.2.5
 django-suit
 objgraph
+guppy
