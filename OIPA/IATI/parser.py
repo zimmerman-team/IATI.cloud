@@ -157,6 +157,8 @@ class Parser():
             # Extras
             self.add_total_budget(activity)
 
+        except AttributeError as e:
+            self.exception_handler(e, "add_activity")
 
         except Exception as e:
                 logger.info("error")

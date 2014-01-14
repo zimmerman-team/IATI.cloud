@@ -16,3 +16,4 @@ mechanize==0.2.5
 django-suit
 objgraph
 guppy
+ujson==1.33

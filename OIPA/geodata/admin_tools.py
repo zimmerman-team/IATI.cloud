@@ -1,15 +1,14 @@
 __author__ = 'vincentvantwestende'
 from geodata.models import *
 from django.contrib.gis.geos import fromstr
-import json
+import ujson
 import sys
 import os
-countryData = None
-COUNTRY_LOCATION = None
+from geodata.data_backup.country_data import countryData
+country_location = None
 un_numerical_country_codes = None
 un_region_codes = None
 country_regions = None
-CityLocations = None
 
 class AdminTools():
 
@@ -45,8 +44,8 @@ class AdminTools():
          for c in country.objects.all():
             try:
 
-                longitude = str(COUNTRY_LOCATION[c.code]['longitude'])
-                latitude = str(COUNTRY_LOCATION[c.code]['latitude'])
+                longitude = str(country_location[c.code]['longitude'])
+                latitude = str(country_location[c.code]['latitude'])
                 point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
                 c.center_longlat = fromstr(point_loc_str, srid=4326)
                 c.save()
@@ -149,9 +148,9 @@ class AdminTools():
 
     def update_cities(self):
 
-        cl = CityLocations()
-        city_locations = cl.get_city_locations()
-
+        # cl = CityLocations()
+        # city_locations = cl.get_city_locations()
+        city_locations = None
         for c in city_locations['features']:
             try:
                 geoid = int(c['properties']['geonameid'])
@@ -195,7 +194,7 @@ class AdminTools():
         location = BASE + "/data_backup/adm1_regions.json"
 
         json_data = open(location)
-        adm1_regions = json.load(json_data)
+        adm1_regions = ujson.load(json_data)
 
         for r in adm1_regions['features']:
 

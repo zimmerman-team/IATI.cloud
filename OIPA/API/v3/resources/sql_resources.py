@@ -11,7 +11,7 @@ from Cache.validator import Validator
 
 
 # Direct sql specific
-import json
+import ujson
 from django.db import connection
 from django.http import HttpResponse
 
@@ -180,7 +180,7 @@ class ActivityFilterOptionsResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(json.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), mimetype='application/json')
 
 
 
@@ -207,7 +207,7 @@ class IndicatorCountryDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
 
         if not indicator_q:
-            return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
 
         filter_string = '  (' + country_q + region_q + year_q + indicator_q + ')'
 
@@ -257,7 +257,7 @@ class IndicatorCountryDataResource(ModelResource):
 
         country['max_value'] = result_max[0]
 
-        return HttpResponse(json.dumps(country), mimetype='application/json')
+        return HttpResponse(ujson.dumps(country), mimetype='application/json')
 
 
 class IndicatorCityDataResource(ModelResource):
@@ -279,7 +279,7 @@ class IndicatorCityDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
 
         if not indicator_q:
-            return HttpResponse(json.dumps("No indicator given"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
 
         filter_string = '  (' + city_q + country_q + region_q + year_q + indicator_q + ')'
 
@@ -334,7 +334,7 @@ class IndicatorCityDataResource(ModelResource):
 
 
 
-        return HttpResponse(json.dumps(city), mimetype='application/json')
+        return HttpResponse(ujson.dumps(city), mimetype='application/json')
 
 
 
@@ -403,7 +403,7 @@ class IndicatorRegionDataResource(ModelResource):
 
         country['max_value'] = result_max[0]
 
-        return HttpResponse(json.dumps(country), mimetype='application/json')
+        return HttpResponse(ujson.dumps(country), mimetype='application/json')
 
 
 
@@ -465,7 +465,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
         jsondata['countries'] = countries
         jsondata['indicators'] = indicators
 
-        return HttpResponse(json.dumps(jsondata), mimetype='application/json')
+        return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
 
 class IndicatorCountryFilterOptionsResource(ModelResource):
@@ -523,7 +523,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
         jsondata['countries'] = countries
         jsondata['indicators'] = indicators
 
-        return HttpResponse(json.dumps(jsondata), mimetype='application/json')
+        return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
 
 
@@ -595,7 +595,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
         jsondata['cities'] = cities
         jsondata['indicators'] = indicators
 
-        return HttpResponse(json.dumps(jsondata), mimetype='application/json')
+        return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
 
 
@@ -673,7 +673,7 @@ class CountryGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(json.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
 
 
 
@@ -712,6 +712,6 @@ class Adm1rRegionGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(json.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
 
 
