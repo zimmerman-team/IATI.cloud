@@ -15,6 +15,7 @@ import gc
 import logging
 import mechanize, cookielib, StringIO
 
+
 logger = logging.getLogger(__name__)
 
 class Parser():
@@ -158,7 +159,7 @@ class Parser():
             self.add_total_budget(activity)
 
         except AttributeError as e:
-            self.exception_handler(e, "add_activity")
+            self.exception_handler(e,"test", "add_activity")
 
         except Exception as e:
                 logger.info("error")
@@ -1005,7 +1006,9 @@ class Parser():
                     else:
                         if name:
                             if models.organisation.objects.filter(name=name).exists():
-                                participating_organisation = models.organisation.objects.get(name=name)
+
+                                participating_organisation = models.organisation.objects.filter(name=name)
+                                participating_organisation = participating_organisation[0]
 
                     if role_ref:
                         if models.organisation_role.objects.filter(code=role_ref).exists():

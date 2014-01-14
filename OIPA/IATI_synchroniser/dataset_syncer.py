@@ -2,9 +2,10 @@ import json
 import models
 import httplib
 import urllib2
-import sys
 import datetime
 from IATI.models import organisation_identifier
+import logging
+logger = logging.getLogger(__name__)
 
 class DatasetSyncer():
 
@@ -58,13 +59,14 @@ class DatasetSyncer():
                                     if "title" in data_dict["organization"]:
                                         publisher_name = data_dict["organization"]["title"]
                             except Exception as e:
-                                print(e.code)
+                                logger.info( "Unexpected error in synchronize_with_iati_api_by_page organisation match:")
+                                logger.info(e.message)
 
 
                         #   If download url is not already in OIPA
                         if not models.iati_xml_source.objects.filter(source_url=source_url).exists():
 
-                            print "starting on: " + source_url + ", cur url = " + cur_url
+                            logger.info("starting on: " + source_url + ", cur url = " + cur_url)
 
 
                             #   If publisher_iati_id is given
@@ -81,7 +83,7 @@ class DatasetSyncer():
 
                         else:
 
-                            print "Updated publisher and last found in registry on: " + source_url
+                            logger.info("Updated publisher and last found in registry on: " + source_url)
 
                             cursource = models.iati_xml_source.objects.get(source_url=source_url)
                             cursource.last_found_in_registry = datetime.datetime.now()
@@ -93,22 +95,23 @@ class DatasetSyncer():
                             cursource.save(process=False)
 
                     except Exception as e:
-                        print "Unexpected error:", sys.exc_info()[0]
-                        print e.message
+                        logger.info("Unexpected error in synchronize_with_iati_api_by_page:")
+                        logger.info(e.message)
+
 
 
         except urllib2.HTTPError, e:
-            print 'HTTP error: ' + str(e.code) + " " + cur_url
+            logger.info('HTTP error: ' + str(e.code) + " " + cur_url)
             if try_number < 6:
                 self.synchronize_with_iati_api_by_page(cur_url, cur_type,try_number + 1)
             else:
                 return None
         except urllib2.URLError, e:
-            print 'URL error: ' + str(e.reason)
+            logger.info('URL error: ' + str(e.reason))
             if try_number < 6:
                 self.synchronize_with_iati_api_by_page(cur_url, cur_type,try_number + 1)
         except httplib.HTTPException, e:
-            print 'HTTP exception'
+            logger.info('HTTP exception')
             if try_number < 6:
                 self.synchronize_with_iati_api_by_page(cur_url, cur_type,try_number + 1)
 
@@ -140,19 +143,12 @@ class DatasetSyncer():
 
         return current_publisher
 
-
-
-
     def add_publisher_to_db(self, org_id, org_abbreviate_value, org_name_value):
         new_publisher = models.Publisher(org_id=org_id, org_abbreviate=org_abbreviate_value, org_name=org_name_value, default_interval='MONTHLY')
         new_publisher.save()
         return new_publisher
 
-
-
     def add_iati_xml_source_to_db(self, url, title, name, current_publisher, cur_type):
-
-
         new_source = models.iati_xml_source(ref=name, title=title, publisher=current_publisher, source_url=url, type=cur_type)
         new_source.save()
         return new_source

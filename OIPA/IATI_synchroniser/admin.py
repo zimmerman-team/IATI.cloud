@@ -53,9 +53,6 @@ class CodeListSyncAdmin(admin.ModelAdmin):
         obj.sync_codelist()
         return HttpResponse('Success')
 
-
-
-
 class IATIXMLSourceInline(admin.TabularInline):
     model = iati_xml_source
     extra = 0

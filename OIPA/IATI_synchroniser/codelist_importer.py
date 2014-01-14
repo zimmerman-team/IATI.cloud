@@ -3,18 +3,17 @@ from IATI.models import *
 import urllib2
 from lxml import etree
 from geodata.models import country, region
+import logging
+logger = logging.getLogger(__name__)
 
 class CodeListImporter():
 
     def synchronise_with_codelists(self):
 
-
         #get the file
         downloaded_xml = urllib2.Request("http://datadev.aidinfolabs.org/data/codelist.xml")
         file_opener = urllib2.build_opener()
         xml_file = file_opener.open(downloaded_xml)
-
-
 
         def fast_iter(context, func):
             for event, elem in context:
@@ -211,10 +210,10 @@ class CodeListImporter():
                     db_row.save()
 
             except Exception as e:
-                print "error in codelists"
-                print '%s (%s)' % (e.message, type(e))
-                print e.messages
-                raise
+
+                logger.info("error in codelists")
+                logger.info('%s (%s)' % (e.message, type(e)))
+                logger.info(e.messages)
 
         def add_missing_items():
             if not country.objects.filter(code="XK").exists():
