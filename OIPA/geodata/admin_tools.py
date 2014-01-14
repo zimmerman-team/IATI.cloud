@@ -1,15 +1,15 @@
 __author__ = 'vincentvantwestende'
-from geodata.data_backup.country_data import countryData
-from geodata.data_backup.country_location import COUNTRY_LOCATION
 from geodata.models import *
 from django.contrib.gis.geos import fromstr
-from geodata.data_backup.city_data import CityLocations
-from geodata.data_backup.country_regions import country_regions
-from geodata.data_backup.un_region_codes import un_region_codes
-from geodata.data_backup.un_numerical_country_codes import un_numerical_country_codes
 import json
 import sys
 import os
+countryData = None
+COUNTRY_LOCATION = None
+un_numerical_country_codes = None
+un_region_codes = None
+country_regions = None
+CityLocations = None
 
 class AdminTools():
 
