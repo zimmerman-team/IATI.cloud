@@ -2,7 +2,6 @@
 from tastypie.resources import ModelResource
 
 # Data specific
-from geodata.data_backup.country_data import countryData
 
 # Cache specific
 from API.cache import NoTransformCache
@@ -73,6 +72,7 @@ class CustomCallHelper():
 
     def find_polygon(self, iso2):
         polygon = None
+        countryData = None
         for k in countryData['features']:
             try:
                 if k['properties']['iso2'] == iso2:
@@ -101,7 +101,7 @@ class ActivityFilterOptionsResource(ModelResource):
 
 
     def get_list(self, request, **kwargs):
-        print 'Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
         hp = hpy()
         before = hp.heap()
 
