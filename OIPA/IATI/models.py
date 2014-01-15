@@ -512,6 +512,7 @@ class document_link(models.Model):
     url = models.CharField(max_length=200)
     file_format = models.ForeignKey(file_format, null=True, default=None)
     document_category = models.ForeignKey(document_category, null=True, default=None)
+    title = models.CharField(max_length=255, null=True, default=None)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.url)

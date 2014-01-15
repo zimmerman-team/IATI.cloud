@@ -145,7 +145,8 @@ class Parser():
             self.add_result(elem, activity)
             self.add_location(elem, activity)
             self.add_related_activities(elem, activity)
-            self.add_conditions( elem, activity)
+            self.add_conditions(elem, activity)
+            self.add_document_link(elem, activity)
 
             # ManyToMany
             self.add_sectors(elem, activity)
@@ -990,8 +991,12 @@ class Parser():
                     type = None
 
                     if role_type:
-                        if models.organisation_type.objects.filter(code=role_type).exists():
-                            type = models.organisation_type.objects.get(code=role_type)
+                        if self.isInt(role_type):
+                            if models.organisation_type.objects.filter(code=role_type).exists():
+                                type = models.organisation_type.objects.get(code=role_type)
+                        else:
+                            if models.organisation_type.objects.filter(name=role_type).exists():
+                                type = models.organisation_type.objects.get(name=role_type)
 
                     if participating_organisation_ref:
                         if models.organisation.objects.filter(code=participating_organisation_ref).exists():
@@ -1233,7 +1238,7 @@ class Parser():
     def add_conditions(self, elem, activity):
 
         try:
-            for t in elem.xpath('location/conditions/condition'):
+            for t in elem.xpath('conditions/condition'):
 
                 try:
                     condition_type_ref = self.return_first_exist(t.xpath('@type'))
@@ -1245,6 +1250,54 @@ class Parser():
                             condition_type = models.condition_type.objects.get(code=condition_type_ref)
 
                     new_condition = models.condition(activity=activity, text=condition, type=condition_type)
+                    new_condition.save()
+
+
+                except IntegrityError, e:
+                    self.exception_handler(e, activity.id, "add_conditions")
+                except ValueError, e:
+                    self.exception_handler(e, activity.id, "add_conditions")
+                except ValidationError, e:
+                    self.exception_handler(e, activity.id, "add_conditions")
+                except Exception as e:
+                    self.exception_handler(e, activity.id, "add_conditions")
+        except Exception as e:
+            self.exception_handler(e, activity.id, "add_conditions")
+
+
+    def add_document_link(self, elem, activity):
+
+        try:
+            for t in elem.xpath('document-link'):
+
+                try:
+                    url = self.return_first_exist(t.xpath('@url'))
+                    file_format_ref = self.return_first_exist(t.xpath('@format'))
+                    file_format = None
+                    title = self.return_first_exist(t.xpath('title/text()'))
+                    # doc_category_text = self.return_first_exist(t.xpath('category/text()'))
+                    doc_category_ref = self.return_first_exist(t.xpath('category/@code'))
+                    doc_category = None
+                    # language_ref = self.return_first_exist(t.xpath('language/@code'))
+                    # language = None
+
+
+
+                    if file_format_ref:
+                        if models.file_format.objects.filter(code=file_format_ref).exists():
+                            file_format = models.file_format.objects.get(code=file_format_ref)
+
+                    if doc_category_ref:
+                        if models.document_category.objects.filter(code=doc_category_ref).exists():
+                            document_category = models.document_category.objects.get(code=doc_category_ref)
+
+                    # if language_ref:
+                    #     if models.language.objects.filter(code=language_ref).exists():
+                    #         language = models.language.objects.get(code=language_ref)
+
+
+
+                    document_link = models.document_link(activity=activity, url=url, file_format=file_format, document_category=document_category)
                     new_condition.save()
 
 
