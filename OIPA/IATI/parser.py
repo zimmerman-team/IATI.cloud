@@ -1298,7 +1298,7 @@ class Parser():
 
 
                     document_link = models.document_link(activity=activity, url=url, file_format=file_format, document_category=document_category)
-                    new_condition.save()
+                    document_link.save()
 
 
                 except IntegrityError, e:
