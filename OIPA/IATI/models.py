@@ -330,7 +330,7 @@ class activity(models.Model):
         (2, u"Child"),
         )
 
-    id = models.CharField(primary_key=True, max_length=100)
+    id = models.CharField(primary_key=True, max_length=150)
     default_currency = models.ForeignKey(currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, null=True, default=None)
@@ -357,6 +357,8 @@ class activity(models.Model):
     xml_source_ref = models.CharField(null=True, max_length=200)
     total_budget_currency = models.ForeignKey(currency, null=True, default=None, related_name="total_budget_currency")
     total_budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, default=None, db_index=True)
+
+    iati_identifier = models.CharField(max_length=150)
 
     def __unicode__(self):
         return self.id

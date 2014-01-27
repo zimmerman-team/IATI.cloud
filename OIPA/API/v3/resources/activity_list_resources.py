@@ -76,17 +76,13 @@ class ActivityListResource(ModelResource):
         return base_object_list.filter(**filters).distinct()
 
     def get_list(self, request, **kwargs):
+
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
-        flush = False
-
-
-        if request.REQUEST and ('flush' in request.REQUEST):
-            if not request.REQUEST['flush'] == True:
-                flush = True
-
-        if not flush and validator.is_cached(cururl):
+        if not 'flush' in cururl and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
         else:
             return super(ActivityListResource, self).get_list(request, **kwargs)

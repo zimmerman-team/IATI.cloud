@@ -65,13 +65,14 @@ class iati_xml_source(models.Model):
     def process(self):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
-
+        self.date_updated = datetime.datetime.now()
+        self.save(process=False)
 
     def save(self, process=True, *args, **kwargs):
         super(iati_xml_source, self).save()
         if process:
             self.process()
-            self.date_updated = datetime.datetime.now()
+
 
 
 

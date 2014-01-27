@@ -299,9 +299,12 @@ class Parser():
 
     def add_activity(self, elem):
         try:
-            activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-            activity_id = activity_id.strip(' \t\n\r')
-            activity_id = activity_id.replace(" ", "")
+            iati_identifier = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
+            iati_identifier = iati_identifier.strip(' \t\n\r')
+            iati_identifier = iati_identifier.replace(" ", "")
+            activity_id = iati_identifier.replace("/", "-")
+            activity_id = activity_id.replace(":", "-")
+
             default_currency_ref = self.return_first_exist(elem.xpath('@default-currency'))
             default_currency = None
 
@@ -382,7 +385,7 @@ class Parser():
             if not self.isInt(hierarchy):
                 hierarchy = None
 
-            new_activity = models.activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref)
+            new_activity = models.activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier)
             new_activity.save()
             return new_activity
 

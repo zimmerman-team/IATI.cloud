@@ -3,6 +3,7 @@ from indicators.models import indicator, indicator_data
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from geodata.models import country, city
+
 IndicatorData = None
 IndicatorCityData = None
 IndicatorCityInfo = None

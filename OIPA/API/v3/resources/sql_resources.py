@@ -9,12 +9,10 @@ from API.cache import NoTransformCache
 from IATI.models import aid_type
 from Cache.validator import Validator
 
-
 # Direct sql specific
 import ujson
 from django.db import connection
 from django.http import HttpResponse
-
 
 
 class CustomCallHelper():
@@ -98,10 +96,14 @@ class ActivityFilterOptionsResource(ModelResource):
 
     def get_list(self, request, **kwargs):
 
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-        if validator.is_cached(cururl):
+
+        if not 'flush' in cururl and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+
 
         helper = CustomCallHelper()
         cursor = connection.cursor()
@@ -135,8 +137,6 @@ class ActivityFilterOptionsResource(ModelResource):
                        'GROUP BY r.code' % (q_organisations))
         results3 = helper.get_fields(cursor=cursor)
 
-
-
         options = {}
         options['countries'] = {}
         options['regions'] = {}
@@ -163,7 +163,6 @@ class ActivityFilterOptionsResource(ModelResource):
             options['regions'][r['code']] = region_item
 
 
-
         if not q_organisations:
             cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
                        'FROM IATI_activity a '
@@ -181,8 +180,6 @@ class ActivityFilterOptionsResource(ModelResource):
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
         return HttpResponse(ujson.dumps(options), mimetype='application/json')
-
-
 
 
 
@@ -616,9 +613,12 @@ class CountryGeojsonResource(ModelResource):
 
     def get_list(self, request, **kwargs):
 
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-        if validator.is_cached(cururl):
+
+        if not 'flush' in cururl and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
 
         helper = CustomCallHelper()

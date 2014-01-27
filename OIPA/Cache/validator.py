@@ -12,14 +12,18 @@ class Validator():
     start_caching_from = 0.3 # seconds in query time
 
     def is_cached(self, call):
+
+        # check if call is in requested_calls table
         if requested_call.objects.filter(call=call).exists():
             the_call = requested_call.objects.get(call=call)
+            the_call.count = the_call.count + 1
+            the_call.save()
             if the_call.cached:
                 if cached_call.objects.filter(call=call).exists():
                     return True
         else:
             if not "flush" in call:
-                the_call = requested_call(call=call, cached=False, response_time=None)
+                the_call = requested_call(call=call, cached=False, response_time=None, count=1)
                 the_call.save()
         return False
 
