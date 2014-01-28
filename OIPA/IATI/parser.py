@@ -677,9 +677,11 @@ class Parser():
                     flow_type = None
                     provider_organisation_ref = self.return_first_exist(t.xpath('provider-org/@ref'))
                     provider_organisation = None
+                    provider_organisation_name = self.return_first_exist(t.xpath('provider-org/text()'))
                     provider_activity = self.return_first_exist(t.xpath('provider-org/@provider-activity-id'))
                     receiver_organisation_ref = self.return_first_exist(t.xpath('receiver-org/@ref'))
                     receiver_organisation = None
+                    receiver_organisation_name = self.return_first_exist(t.xpath('receiver-org/text()'))
                     tied_status_ref = self.return_first_exist(t.xpath('tied-status/@code'))
                     tied_status = None
                     transaction_date = self.validate_date(self.return_first_exist(t.xpath('transaction-date/@iso-date')))
@@ -791,7 +793,7 @@ class Parser():
                         currency = activity.default_currency
 
 
-                    new_transaction = models.transaction(activity=activity, aid_type=aid_type, description=description, description_type=description_type, disbursement_channel=disbursement_channel, finance_type=finance_type, flow_type=flow_type, provider_organisation=provider_organisation, provider_activity=provider_activity, receiver_organisation=receiver_organisation, tied_status=tied_status, transaction_date=transaction_date, transaction_type=transaction_type, value_date=value_date, value=value, ref=ref, currency=currency)
+                    new_transaction = models.transaction(activity=activity, aid_type=aid_type, description=description, description_type=description_type, disbursement_channel=disbursement_channel, finance_type=finance_type, flow_type=flow_type, provider_organisation=provider_organisation, provider_organisation_name=provider_organisation_name, provider_activity=provider_activity, receiver_organisation=receiver_organisation, receiver_organisation_name=receiver_organisation_name, tied_status=tied_status, transaction_date=transaction_date, transaction_type=transaction_type, value_date=value_date, value=value, ref=ref, currency=currency)
                     new_transaction.save()
 
 
