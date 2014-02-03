@@ -3,10 +3,26 @@ from IATI.models import activity, organisation
 from django.conf.urls import patterns
 from IATI.management.commands.update_total_budget import UpdateTotal
 from django.http import HttpResponse
+from IATI.admin_tools import AdminTools
 
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
-    list_display = ['__unicode__', 'code', 'type', 'total_activities']
+    list_display = ['code', 'abbreviation', 'name', 'type', 'total_activities']
+
+    def get_urls(self):
+        urls = super(OrganisationAdmin, self).get_urls()
+
+        my_urls = patterns('',
+            (r'^update-organisation-names/$', self.admin_site.admin_view(self.update_organisation_names))
+        )
+        return my_urls + urls
+
+    def update_organisation_names(self, request):
+        admin_tools = AdminTools()
+        admin_tools.update_organisation_names()
+        return HttpResponse('Success')
+
+
 
 class ActivityAdmin(admin.ModelAdmin):
     search_fields = ['id']
@@ -27,4 +43,5 @@ class ActivityAdmin(admin.ModelAdmin):
 
 admin.site.register(activity, ActivityAdmin)
 admin.site.register(organisation, OrganisationAdmin)
+
 

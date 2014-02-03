@@ -574,7 +574,7 @@ class condition(models.Model):
 
 class location(models.Model):
     activity = models.ForeignKey(activity)
-    name = models.CharField(max_length=200, null=True, default=None)
+    name = models.TextField(max_length=1000, null=True, default=None)
     type = models.ForeignKey(location_type, null=True, default=None)
     type_description = models.CharField(max_length=200, null=True, default=None)
     description = models.TextField(null=True, default=None)

@@ -8,7 +8,6 @@ from IATI_synchroniser.management.commands.parse_schedule import ParseSchedule
 from IATI_synchroniser.management.commands.parse_twodays import ParseTwoDays
 
 
-
 class DatasetSyncAdmin(admin.ModelAdmin):
     list_display = ['type', 'interval', 'date_updated', 'sync_now']
 
@@ -59,7 +58,7 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    list_display = ['ref', 'publisher', 'type', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry']
+    list_display = ['ref', 'publisher', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count']
     list_filter = ('publisher', 'type')
 
     class Media:

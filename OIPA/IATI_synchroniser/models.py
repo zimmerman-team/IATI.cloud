@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from IATI_synchroniser.dataset_syncer import DatasetSyncer
 from IATI_synchroniser.codelist_importer import CodeListImporter
 from IATI.parser import Parser
-
+from IATI_synchroniser.admin_tools import AdminTools
 
 
 INTERVAL_CHOICES = (
@@ -49,6 +49,8 @@ class iati_xml_source(models.Model):
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
     update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
+    xml_activity_count = models.IntegerField(null=True, default=None)
+    oipa_activity_count = models.IntegerField(null=True, default=None)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -66,6 +68,9 @@ class iati_xml_source(models.Model):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
         self.date_updated = datetime.datetime.now()
+        activity_counter = AdminTools()
+        self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
+        self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
         self.save(process=False)
 
     def save(self, process=True, *args, **kwargs):
