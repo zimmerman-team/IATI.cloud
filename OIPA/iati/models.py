@@ -635,7 +635,7 @@ class Title(models.Model):
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    description = models.TextField(null=True, default=None, db_index=True)
+    description = models.TextField(null=True, default=None, db_index=True, max_length=40000)
     language = models.ForeignKey(Language, null=True, default=None)
     type = models.ForeignKey(DescriptionType, related_name="description_type", null=True, default=None)
     rsr_description_type_id = models.IntegerField(null=True, default=None)

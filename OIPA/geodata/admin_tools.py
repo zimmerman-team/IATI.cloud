@@ -63,7 +63,7 @@ class AdminTools():
     def update_country_identifiers(self):
 
         base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/data_backup/country_regions.json"
+        location = base + "/data_backup/un_numerical_country_codes.json"
 
         json_data = open(location)
         un_numerical_country_codes = ujson.load(json_data)
