@@ -1,4 +1,4 @@
-from iati.models import Transaction
+from iatip.models import Transaction
 
 class CurrencyConverter():
 

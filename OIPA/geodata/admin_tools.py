@@ -4,7 +4,7 @@ from django.contrib.gis.geos import fromstr
 import ujson
 import sys
 import os
-from iati.models import RegionVocabulary
+from iatip.models import RegionVocabulary
 import os.path
 
 

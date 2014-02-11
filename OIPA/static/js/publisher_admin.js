@@ -12,7 +12,7 @@ $(document).ready(function (){
         $.ajax({
             type: "GET",
             data: ({'publisher_id': publisher_id}),
-            url: "/admin/iati_synchroniser/publisher/parse-publisher/",
+            url: "/admin/iati_synchroniserp/publisher/parse-publisher/",
             beforeSend: function() {
                 image.hide();
                 loading.show();
@@ -40,7 +40,7 @@ $(document).ready(function (){
     $('#count-publisher-activities').click(function(){
        $.ajax({
            type: "GET",
-           url: "/admin/iati_synchroniser/publisher/count-publisher-activities/",
+           url: "/admin/iati_synchroniserp/publisher/count-publisher-activities/",
            beforeSend: function() {
                $('#count-publisher-activities').text("Updating...");
            },

@@ -120,7 +120,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'api.v3.ajax_allower.XsSharing',
+    'apip.v3.ajax_allower.XsSharing',
     # 'johnny.middleware.LocalStoreClearMiddleware',
     # 'johnny.middleware.QueryCacheMiddleware',
 )
@@ -145,14 +145,14 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     # 'django.contrib.gis',
     'django_jenkins',
-    'iati',
-    'iati_synchroniser',
+    'iatip',
+    'iati_synchroniserp',
     'geodata',
     'indicator',
     'logviewer',
-    'api',
-    'rsr',
-    'cache',
+    'apip',
+    'rsrp',
+    'cachep',
     'south'
 )
 

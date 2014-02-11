@@ -4,7 +4,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/iati/organisation/update-organisation-names/",
+           url: "/admin/iatip/organisation/update-organisation-names/",
            beforeSend: function() {
                $('#update-organisation-names').text("Updating...");
            },

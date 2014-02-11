@@ -1,5 +1,5 @@
 from django.db import models
-from iati.models import Transaction
+from iatip.models import Transaction
 from currency_converter.converter import CurrencyConverter
 
 class Converter(models.Model):

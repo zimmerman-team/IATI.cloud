@@ -4,7 +4,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/cache/requestedcall/update-requests/",
+           url: "/admin/cachep/requestedcall/update-requests/",
            beforeSend: function() {
                $('#update-requests').text("Updating...");
            },
@@ -30,7 +30,7 @@ $(document).ready(function (){
            $.ajax({
                type: "GET",
                data: ({'count': request_count}),
-               url: "/admin/iati_synchroniser/iatixmlsource/delete-all-under-x-count/",
+               url: "/admin/iati_synchroniserp/iatixmlsource/delete-all-under-x-count/",
                beforeSend: function() {
                    $('#delete-all-under-x-count').text("Updating...");
                },
@@ -58,7 +58,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/cache/requestedcall/cache-all-requests/",
+           url: "/admin/cachep/requestedcall/cachep-all-requests/",
            beforeSend: function() {
                $('#cache-all-requests').text("Updating...");
            },
@@ -81,7 +81,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/cache/cachedcall/update-caches/",
+           url: "/admin/cachep/cachedcall/update-caches/",
            beforeSend: function() {
                $('#update-caches').text("Updating...");
            },
