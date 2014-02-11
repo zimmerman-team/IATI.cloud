@@ -6,7 +6,7 @@ $(document).ready(function (){
         $.ajax({
             type: "GET",
             data: ({'sync_id': sync_id}),
-            url: "/admin/iati_synchroniserp/datasetsync/sync-datasets/",
+            url: "/admin/iati_synchroniser/datasetsync/sync-datasets/",
             beforeSend: function() {
                 image.hide();
                 loading.show();

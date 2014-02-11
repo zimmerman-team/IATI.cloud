@@ -6,7 +6,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'xml_id': xml_id}),
-           url: "/admin/iati_synchroniserp/iatixmlsource/parse-xml/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-xml/",
            beforeSend: function() {
                image.hide();
                loading.show();
@@ -36,7 +36,7 @@ $(document).ready(function (){
    $('#parse-all-set').click(function(){
        $.ajax({
            type: "GET",
-           url: "/admin/iati_synchroniserp/iatixmlsource/parse-all/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-all/",
            beforeSend: function() {
                $('#parse-all-set').text("Updating...");
            },
@@ -62,7 +62,7 @@ $(document).ready(function (){
            $.ajax({
                type: "GET",
                data: ({'days': parse_days}),
-               url: "/admin/iati_synchroniserp/iatixmlsource/parse-all-over-x-days/",
+               url: "/admin/iati_synchroniser/iatixmlsource/parse-all-over-x-days/",
                beforeSend: function() {
                    $('#parse-all-over-x-days-set').text("Updating...");
                },
@@ -84,7 +84,7 @@ $(document).ready(function (){
    $('#parse-all-over-interval-set').click(function(){
        $.ajax({
            type: "GET",
-           url: "/admin/iati_synchroniserp/iatixmlsource/parse-all-over-interval/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-all-over-interval/",
            beforeSend: function() {
                $('#parse-all-over-interval-set').text("Updating...");
            },
