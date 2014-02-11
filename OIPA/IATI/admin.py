@@ -1,9 +1,9 @@
 from django.contrib import admin
-from IATI.models import activity, organisation
+from iati.models import Activity, Organisation
 from django.conf.urls import patterns
-from IATI.management.commands.update_total_budget import UpdateTotal
+from iati.management.commands.total_budget_updater import TotalBudgetUpdater
+from iati.management.commands.organisation_name_updater import OrganisationNameUpdater
 from django.http import HttpResponse
-from IATI.admin_tools import AdminTools
 
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
@@ -13,14 +13,17 @@ class OrganisationAdmin(admin.ModelAdmin):
         urls = super(OrganisationAdmin, self).get_urls()
 
         my_urls = patterns('',
-            (r'^update-organisation-names/$', self.admin_site.admin_view(self.update_organisation_names))
+            (r'^update-organisation-names', self.admin_site.admin_view(self.update_organisation_names))
         )
         return my_urls + urls
 
-    def update_organisation_names(self, request):
-        admin_tools = AdminTools()
-        admin_tools.update_organisation_names()
-        return HttpResponse('Success')
+    def update_organisation_names(self):
+        org_updater = OrganisationNameUpdater()
+        success = org_updater.update()
+        if success:
+            return HttpResponse('Success')
+        else:
+            return False
 
 
 
@@ -32,16 +35,19 @@ class ActivityAdmin(admin.ModelAdmin):
         urls = super(ActivityAdmin, self).get_urls()
 
         my_urls = patterns('',
-            (r'^update-budget-totals/$', self.admin_site.admin_view(self.update_budget_totals))
+            (r'^update-budget-totals', self.admin_site.admin_view(self.update_budget_totals))
         )
         return my_urls + urls
 
-    def update_budget_totals(self, request):
-        update_total = UpdateTotal()
-        update_total.updateTotal()
-        return HttpResponse('Success')
+    def update_budget_totals(self):
+        update_total = TotalBudgetUpdater()
+        success = update_total.update()
+        if success:
+            return HttpResponse('Success')
+        else:
+            return False
 
-admin.site.register(activity, ActivityAdmin)
-admin.site.register(organisation, OrganisationAdmin)
+admin.site.register(Activity, ActivityAdmin)
+admin.site.register(Organisation, OrganisationAdmin)
 
 

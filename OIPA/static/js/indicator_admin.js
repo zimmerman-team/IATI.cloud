@@ -4,7 +4,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/indicators/indicator/update-indicators/",
+           url: "/admin/indicator/indicator/update-indicator/",
            beforeSend: function() {
                $('#update-indicators-set').text("Updating...");
            },
@@ -27,7 +27,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/indicators/indicator/update-wbi-indicators/",
+           url: "/admin/indicator/indicator/update-wbi-indicator/",
            beforeSend: function() {
                $('#update-wbi-set').text("Updating...");
            },
@@ -52,7 +52,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/indicators/indicator/update-indicator-data/",
+           url: "/admin/indicator/indicator/update-indicator-data/",
            beforeSend: function() {
                $('#update-indicator-data-set').text("Updating... This might take 10+ minutes");
            },
@@ -76,7 +76,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/indicators/indicator/update-indicator-city-data/",
+           url: "/admin/indicator/indicator/update-indicator-city-data/",
            beforeSend: function() {
                $('#update-indicator-city-data-set').text("Updating... This might take 5+ minutes");
            },

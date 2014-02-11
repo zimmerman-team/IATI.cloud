@@ -3,56 +3,54 @@ from django.db.models import Q
 
 # Tastypie specific
 from tastypie import fields
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.constants import ALL
 from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
-from API.CSVSerializer import CSVSerializer
-from tastypie.cache import SimpleCache
 
 # Data specific
-from API.cache import NoTransformCache
-from IATI.models import activity, organisation, aid_type, flow_type, sector, collaboration_type, tied_status, transaction, activity_status, currency
-from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource
-from API.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
+from api.cache import NoTransformCache
+from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency
+from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource
+from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
-# Cache specific
+# cache specific
 from django.http import HttpResponse
-from Cache.validator import Validator
+from cache.validator import Validator
 
 class ActivityViewAidTypeResource(ModelResource):
     class Meta:
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         include_resource_uri = False
         excludes = ['description']
 
 class ActivityViewFlowTypeResource(ModelResource):
     class Meta:
-        queryset = flow_type.objects.all()
+        queryset = FlowType.objects.all()
         include_resource_uri = False
         excludes = ['description']
 
 class ActivityViewSectorResource(ModelResource):
     class Meta:
-        queryset = sector.objects.all()
+        queryset = Sector.objects.all()
         include_resource_uri = False
         excludes = ['description']
 
 class ActivityViewCollaborationTypeResource(ModelResource):
     class Meta:
-        queryset = collaboration_type.objects.all()
+        queryset = CollaborationType.objects.all()
         include_resource_uri = False
         excludes = ['description', 'language']
 
 class ActivityViewTiedStatusResource(ModelResource):
     class Meta:
-        queryset = tied_status.objects.all()
+        queryset = TiedStatus.objects.all()
         include_resource_uri = False
         excludes = ['description']
 
 class ActivityViewOrganisationResource(ModelResource):
 
     class Meta:
-        queryset = organisation.objects.all()
+        queryset = Organisation.objects.all()
         include_resource_uri = False
         excludes = ['abbreviation', 'reported_by_organisation']
         filtering = {
@@ -64,7 +62,7 @@ class ActivityViewTransactionResource(ModelResource):
     receiver_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'receiver_organisation', full=True, null=True)
 
     class Meta:
-        queryset = transaction.objects.all()
+        queryset = Transaction.objects.all()
         include_resource_uri = False
         excludes = ['id', 'ref', 'description', 'provider_activity']
 
@@ -78,13 +76,13 @@ class ActivityViewTransactionResource(ModelResource):
 
 class ActivityViewActivityStatusResource(ModelResource):
     class Meta:
-        queryset = activity_status.objects.all()
+        queryset = ActivityStatus.objects.all()
         include_resource_uri = False
         excludes = ['language']
 
 class ActivityViewCurrencyResource(ModelResource):
     class Meta:
-        queryset = currency.objects.all()
+        queryset = Currency.objects.all()
         include_resource_uri = False
         excludes = ['language']
 
@@ -92,7 +90,6 @@ class ActivityViewCurrencyResource(ModelResource):
 
 class ActivityResource(ModelResource):
 
-    iati_identifier = fields.CharField('id')
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
     participating_organisations = fields.ToManyField(ActivityViewOrganisationResource, 'participating_organisation', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
@@ -113,11 +110,11 @@ class ActivityResource(ModelResource):
     documents = fields.ToManyField(DocumentResource, 'document_link_set', full=True, null=True)
 
     class Meta:
-        queryset = activity.objects.all()
+        queryset = Activity.objects.all()
         resource_name = 'activities'
         max_limit = 100
         serializer = Serializer(formats=['xml', 'json'])
-        excludes = ['date_created', 'id']
+        excludes = ['date_created']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {
             'iati_identifier': 'exact',

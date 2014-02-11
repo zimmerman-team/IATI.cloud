@@ -1,6 +1,6 @@
 # Django specific
 from django.core.management.base import BaseCommand
-from IATI.models import country, city
+from iati.models import country, city
 from geodata.data_backup.city_locations import CITY_LOCATIONS
 
 

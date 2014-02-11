@@ -4,10 +4,10 @@ from django.http import HttpResponseRedirect
 from tastypie.api import Api
 
 # App specific
-from API.v2.resources.model_resources import *
-# from API.v2.resources.model_resources import ActivitySearchResource
-from API.v2.resources.activity_view_resources import ActivityResource
-from API.v2.resources.advanced_resources import OnlyCityResource, OnlyRegionResource, OnlyCountryResource
+from api.v2.resources.model_resources import *
+# from api.v2.resources.model_resources import ActivitySearchResource
+from api.v2.resources.activity_view_resources import ActivityResource
+from api.v2.resources.advanced_resources import OnlyCityResource, OnlyRegionResource, OnlyCountryResource
 
 v2_api = Api(api_name='v2')
 v2_api.register(OrganisationResource())
@@ -29,11 +29,11 @@ def api_v2_docs(request):
 
 urlpatterns = patterns('',
     (r'^v2/', api_v2_docs),
-    url(r'^v2/docs/$', 'API.v2.views.docs_index', name='docs'),
-    url(r'^v2/docs/getting-started/$', 'API.v2.views.docs_start', name='start_docs'),
-    url(r'^v2/docs/resources/$', 'API.v2.views.docs_resources', name='resource_docs'),
-    url(r'^v2/docs/filtering/$', 'API.v2.views.docs_filtering', name='filter_docs'),
-    url(r'^v2/docs/ordering/$', 'API.v2.views.docs_ordering', name='ordering_docs'),
-    url(r'^v2/docs/about/$', 'API.v2.views.docs_about', name='about_docs'),
+    url(r'^v2/docs/$', 'api.v2.views.docs_index', name='docs'),
+    url(r'^v2/docs/getting-started/$', 'api.v2.views.docs_start', name='start_docs'),
+    url(r'^v2/docs/resources/$', 'api.v2.views.docs_resources', name='resource_docs'),
+    url(r'^v2/docs/filtering/$', 'api.v2.views.docs_filtering', name='filter_docs'),
+    url(r'^v2/docs/ordering/$', 'api.v2.views.docs_ordering', name='ordering_docs'),
+    url(r'^v2/docs/about/$', 'api.v2.views.docs_about', name='about_docs'),
     (r'', include(v2_api.urls)),
 )

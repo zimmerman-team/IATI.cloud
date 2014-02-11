@@ -4,23 +4,26 @@ from django.contrib.gis.geos import fromstr
 import ujson
 import sys
 import os
-from geodata.data_backup.country_data import countryData
-country_location = None
-un_numerical_country_codes = None
-un_region_codes = None
-country_regions = None
+from iati.models import RegionVocabulary
+import os.path
+
 
 class AdminTools():
 
-
     def update_polygon_set(self):
-
         #  "update_polygon_set not implemented yet as polygon sql field: need gis"
-        for k in countryData['features']:
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/admin_0_countries.json"
+
+        json_data = open(location)
+        admin_countries = ujson.load(json_data)
+
+        for k in admin_countries['features']:
             try:
                 country_iso2 = k['properties']['iso2']
-                if country.objects.filter(code=country_iso2).exists():
-                        the_country = country.objects.get(code=country_iso2)
+                if Country.objects.filter(code=country_iso2).exists():
+                        the_country = Country.objects.get(code=country_iso2)
                 else:
                     continue
 
@@ -33,34 +36,45 @@ class AdminTools():
                 the_country.save()
 
             except ValueError, e:
-                print "valueerror update polygon set" + e.message
+                print "Value error update_polygon_set" + e.message
             except TypeError, e:
-                print "Typeerror update polygon set " + e.message
+                print "Type error update_polygon_set" + e.message
             except:
-                print "error in update_polygon_set", sys.exc_info()[0]
-
+                print "Error in update_polygon_set", sys.exc_info()[0]
 
     def update_country_center(self):
-         for c in country.objects.all():
-            try:
 
-                longitude = str(country_location[c.code]['longitude'])
-                latitude = str(country_location[c.code]['latitude'])
-                point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
-                c.center_longlat = fromstr(point_loc_str, srid=4326)
-                c.save()
-            except KeyError:
-                print "Country with iso %s not found..." % c.code
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/country_center.json"
 
+        json_data = open(location)
+        country_centers = ujson.load(json_data)
+        for c in country_centers:
+            if Country.objects.filter(code=c).exists():
+                current_country = Country.objects.get(code=c)
+
+                point_loc_str = 'POINT(' + str(country_centers[c]["longitude"]) + ' ' + str(country_centers[c]["longitude"]) + ')'
+                longlat = fromstr(point_loc_str, srid=4326)
+                current_country.center_longlat = longlat
+                current_country.save()
+
+        json_data.close()
 
     def update_country_identifiers(self):
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/country_regions.json"
+
+        json_data = open(location)
+        un_numerical_country_codes = ujson.load(json_data)
+
         for c in un_numerical_country_codes['codemappings']['territorycodes']:
             try:
                 iso2 = c['type']
 
 
-                if country.objects.filter(code=iso2).exists():
-                    the_country = country.objects.get(code=iso2)
+                if Country.objects.filter(code=iso2).exists():
+                    the_country = Country.objects.get(code=iso2)
 
                     if 'numeric' in c:
                         the_country.numerical_code_un = c['numeric']
@@ -73,23 +87,31 @@ class AdminTools():
                     the_country.save()
 
             except Exception as e:
-                print e.args
+               print e.args
+
+        json_data.close()
 
 
     def update_country_regions(self):
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/country_regions.json"
+
+        json_data = open(location)
+        country_regions = ujson.load(json_data)
+
         for cr in country_regions:
             try:
                 country_iso2 = cr['iso2']
                 region_dac_code = cr['dac_region_code']
 
 
-                if country.objects.filter(code=country_iso2).exists():
-                            the_country = country.objects.get(code=country_iso2)
+                if Country.objects.filter(code=country_iso2).exists():
+                            the_country = Country.objects.get(code=country_iso2)
                 else:
                     continue
 
-                if region.objects.filter(code=region_dac_code).exists():
-                            the_region = region.objects.get(code=region_dac_code)
+                if Region.objects.filter(code=region_dac_code).exists():
+                            the_region = Region.objects.get(code=region_dac_code)
                 else:
                     continue
 
@@ -98,12 +120,19 @@ class AdminTools():
                     the_country.save()
 
             except:
-                print "error in update_country_regions"
-
+                print "error in ate_country_regions"
+        json_data.close()
 
 
 
     def import_un_regions(self):
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/un_region_codes.json"
+
+        json_data = open(location)
+        un_region_codes = ujson.load(json_data)
+
         times = 0
         while times < 2:
             times += 1
@@ -115,11 +144,12 @@ class AdminTools():
 
                     the_region = None
 
-                    if region.objects.filter(code=type).exists():
-                        the_region = region.objects.get(code=type)
+                    if Region.objects.filter(code=type).exists():
+                        the_region = Region.objects.get(code=type)
                         the_region.name = region_un_name
                     else:
-                        the_region = region(code=type, name=region_un_name, source="UN", parental_region=None)
+                        the_region_voc = RegionVocabulary.objects.get(code=2)
+                        the_region = Region(code=type, name=region_un_name, region_vocabulary=the_region_voc, parental_region=None)
 
                     the_region.save()
 
@@ -128,54 +158,58 @@ class AdminTools():
                         int(countries_or_regions[0])
 
                         for cur_region in countries_or_regions:
-                            if region.objects.filter(code=cur_region).exists():
-                                cur_region_obj = region.objects.get(code=cur_region)
+                            if Region.objects.filter(code=cur_region).exists():
+                                cur_region_obj = Region.objects.get(code=cur_region)
                                 cur_region_obj.parental_region = the_region
                                 cur_region_obj.save()
 
                     except:
                         for cur_country in countries_or_regions:
-                            if country.objects.filter(code=cur_country).exists():
-                                the_country = country.objects.get(code=cur_country)
+                            if Country.objects.filter(code=cur_country).exists():
+                                the_country = Country.objects.get(code=cur_country)
                                 the_country.un_region = the_region
                                 the_country.save()
 
                 except Exception as e:
                     print "error in update_country_regions" + str(type)
                     print e.args
+        json_data.close()
 
 
 
     def update_cities(self):
 
-        # cl = CityLocations()
-        # city_locations = cl.get_city_locations()
-        city_locations = None
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/cities.json"
+
+        json_data = open(location)
+        city_locations = ujson.load(json_data)
+
         for c in city_locations['features']:
             try:
-                geoid = int(c['properties']['geonameid'])
-                if city.objects.filter(geoname_id=geoid).exists():
+                geoid = int(c['properties']['GEONAMEID'])
+                if City.objects.filter(geoname_id=geoid).exists():
                         continue
 
-                name = c['properties']['name']
+                name = c['properties']['NAME']
                 the_country = None
-                latitude = c['properties']['latitude']
-                longitude = c['properties']['longitude']
-                ascii_name = c['properties']['nameascii']
-                alt_name = c['properties']['namealt']
-                country_iso2 = c['properties']['iso_a2']
-                namepar = c['properties']['namepar']
+                latitude = c['properties']['LATITUDE']
+                longitude = c['properties']['LONGITUDE']
+                ascii_name = c['properties']['NAMEASCII']
+                alt_name = c['properties']['NAMEALT']
+                country_iso2 = c['properties']['ISO_A2']
+                namepar = c['properties']['NAMEPAR']
 
                 point_loc_str = 'POINT(' + str(longitude) + ' ' + str(latitude) + ')'
                 longlat = fromstr(point_loc_str, srid=4326)
 
-                if country.objects.filter(code=country_iso2).exists():
-                    the_country = country.objects.get(code=country_iso2)
+                if Country.objects.filter(code=country_iso2).exists():
+                    the_country = Country.objects.get(code=country_iso2)
 
-                new_city = city(geoname_id=geoid, name=name, country=the_country, location=longlat, ascii_name=ascii_name, alt_name=alt_name, namepar=namepar)
+                new_city = City(geoname_id=geoid, name=name, country=the_country, location=longlat, ascii_name=ascii_name, alt_name=alt_name, namepar=namepar)
                 new_city.save()
 
-                if c['properties']['featurecla'] == "Admin-0 capital":
+                if c['properties']['FEATURECLA'] == "Admin-0 capital":
                     if the_country:
                         the_country.capital_city = new_city
                         the_country.save()
@@ -184,21 +218,23 @@ class AdminTools():
                 print "error in update_cities ", sys.exc_info()[0]
                 print e.message
 
-            except:
+            except Exception as e:
                 print "error in update_cities"
+
+        json_data.close()
 
 
     def update_adm1_regions(self):
 
-        BASE = os.path.dirname(os.path.abspath(__file__))
-        location = BASE + "/data_backup/adm1_regions.json"
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/admin_1_regions.json"
 
         json_data = open(location)
         adm1_regions = ujson.load(json_data)
 
         for r in adm1_regions['features']:
 
-            the_adm1_region = adm1_region()
+            the_adm1_region = Adm1Region()
             the_adm1_region.adm1_code = r["properties"]["adm1_code"]
 
             p = r["properties"]
@@ -214,14 +250,14 @@ class AdminTools():
             if "wikipedia" in p:
                 the_adm1_region.wikipedia = p["wikipedia"]
             if "iso_a2" in p:
-                if country.objects.filter(code=p["iso_a2"]).exists():
-                    the_country = country.objects.get(code=p["iso_a2"])
+                if Country.objects.filter(code=p["iso_a2"]).exists():
+                    the_country = Country.objects.get(code=p["iso_a2"])
                     the_adm1_region.country = the_country
                 else:
                     if "admin" in p:
                         if p["admin"] == "Kosovo":
-                            if country.objects.filter(code="XK").exists():
-                                the_country = country.objects.get(code="XK")
+                            if Country.objects.filter(code="XK").exists():
+                                the_country = Country.objects.get(code="XK")
                                 the_adm1_region.country = the_country
             if "adm0_sr" in p:
                 the_adm1_region.adm0_sr = p["adm0_sr"]

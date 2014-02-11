@@ -5,7 +5,7 @@ class MediumTextField(models.Field):
     def db_type(self, connection):
         return 'mediumtext'
 
-class requested_call(models.Model):
+class RequestedCall(models.Model):
     call = models.CharField(max_length=255, primary_key=True)
     cached = models.BooleanField(default=False)
     response_time = models.DecimalField(max_digits=5, decimal_places=2, null=True)
@@ -15,7 +15,7 @@ class requested_call(models.Model):
     def __unicode__(self,):
         return "%s" % (self.call)
 
-class cached_call(models.Model):
+class CachedCall(models.Model):
     call = models.CharField(max_length=255, primary_key=True)
     last_fetched = models.DateTimeField(null=True, default=None)
     result = MediumTextField()

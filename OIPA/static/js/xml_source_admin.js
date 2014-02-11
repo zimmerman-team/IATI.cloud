@@ -6,7 +6,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'xml_id': xml_id}),
-           url: "/admin/IATI_synchroniser/iati_xml_source/parse-xml/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-xml/",
            beforeSend: function() {
                image.hide();
                loading.show();
@@ -36,7 +36,7 @@ $(document).ready(function (){
    $('#parse-all-set').click(function(){
        $.ajax({
            type: "GET",
-           url: "/admin/IATI_synchroniser/iati_xml_source/parse-all/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-all/",
            beforeSend: function() {
                $('#parse-all-set').text("Updating...");
            },
@@ -54,31 +54,37 @@ $(document).ready(function (){
        });
    });
 
-   $('#parse-all-over-two-days-set').click(function(){
-       $.ajax({
-           type: "GET",
-           url: "/admin/IATI_synchroniser/iati_xml_source/parse-all-over-two-days/",
-           beforeSend: function() {
-               $('#parse-all-over-two-days-set').text("Updating...");
-           },
-           statusCode: {
-               200: function() {
-                   $('#parse-all-over-two-days-set').text("Updated");
+   $('#parse-all-over-x-days-set').click(function(){
+       parse_days = $('#parse-days').val();
+       var intRegex = /^\d+$/;
+       if(intRegex.test(parse_days)) {
+
+           $.ajax({
+               type: "GET",
+               data: ({'days': parse_days}),
+               url: "/admin/iati_synchroniser/iatixmlsource/parse-all-over-x-days/",
+               beforeSend: function() {
+                   $('#parse-all-over-x-days-set').text("Updating...");
                },
-               404: function() {
-                   $('#parse-all-over-two-days-set').text("404 error...");
-               },
-               500: function() {
-                   $('#parse-all-over-two-days-set').text("500 error...");
+               statusCode: {
+                   200: function() {
+                       $('#parse-all-over-x-days-set').text("Updated");
+                   },
+                   404: function() {
+                       $('#parse-all-over-x-days-set').text("404 error...");
+                   },
+                   500: function() {
+                       $('#parse-all-over-x-days-set').text("500 error...");
+                   }
                }
-           }
-       });
+           });
+       }
    });
 
    $('#parse-all-over-interval-set').click(function(){
        $.ajax({
            type: "GET",
-           url: "/admin/IATI_synchroniser/iati_xml_source/parse-all-over-interval/",
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-all-over-interval/",
            beforeSend: function() {
                $('#parse-all-over-interval-set').text("Updating...");
            },

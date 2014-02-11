@@ -1,7 +1,7 @@
 from lxml import etree
 import urllib2
-import IATI.models as models
-from IATI.management.commands.update_total_budget import UpdateTotal
+from iati import models
+from iati.management.commands.total_budget_updater import TotalBudgetUpdater
 from re import sub
 import httplib
 from django.db import IntegrityError
@@ -13,8 +13,8 @@ from deleter import Deleter
 from lxml.etree import XMLSyntaxError
 import gc
 import logging
-import mechanize, cookielib, StringIO
-
+import mechanize
+import cookielib
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,7 @@ class Parser():
                 self.xml_source_ref = xml_source_ref
                 context = etree.iterparse(iati_file, tag='iati-activity')
                 self.fast_iter(context, self.process_element)
+
                 del iati_file
                 gc.collect()
         except XMLSyntaxError, e:
@@ -214,7 +215,7 @@ class Parser():
         activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
         activity_id = activity_id.replace(" ", "")
 
-        if models.activity.objects.filter(id=activity_id).exists():
+        if models.Activity.objects.filter(id=activity_id).exists():
             return True
         else:
             return False
@@ -239,7 +240,7 @@ class Parser():
     def exception_handler(self, e, ref, current_def):
         if e.args:
             logger.info(e.args[0])
-        logger.info(" in " + current_def + ": " + ref)
+        logger.info(" in " + ref)
 
     # entity add functions
     def add_organisation(self, elem):
@@ -249,36 +250,36 @@ class Parser():
         name = self.return_first_exist(elem.xpath('reporting-org/text()'))
         if ref:
             try:
-                if not models.organisation.objects.filter(code=ref).exists():
+                if not models.Organisation.objects.filter(code=ref).exists():
 
-                    if not models.organisation_identifier.objects.filter(code=ref).exists():
+                    if not models.OrganisationIdentifier.objects.filter(code=ref).exists():
                         abbreviation = None
 
                     else:
-                        org_identifier = models.organisation_identifier.objects.get(code=ref)
+                        org_identifier = models.OrganisationIdentifier.objects.get(code=ref)
                         abbreviation = org_identifier.abbreviation
                         name = org_identifier.name
 
                     if type_ref:
                         try:
                             isnumber = int(type_ref)
-                            if models.organisation_type.objects.filter(code=type_ref).exists():
-                                type = models.organisation_type.objects.get(code=type_ref)
+                            if models.OrganisationType.objects.filter(code=type_ref).exists():
+                                type = models.OrganisationType.objects.get(code=type_ref)
                         except ValueError:
-                            if models.organisation_type.objects.filter(name=type_ref).exists():
-                                type = models.organisation_type.objects.get(name=type_ref)
+                            if models.OrganisationType.objects.filter(name=type_ref).exists():
+                                type = models.OrganisationType.objects.get(name=type_ref)
 
 
-                    new_organisation = models.organisation(code=ref, type=type, abbreviation=abbreviation, name=name)
+                    new_organisation = models.Organisation(code=ref, type=type, abbreviation=abbreviation, name=name)
                     new_organisation.save()
 
                 else:
-                    existing_organisation = models.organisation.objects.get(code=ref)
+                    existing_organisation = models.Organisation.objects.get(code=ref)
                     if not existing_organisation.name:
                         existing_organisation.name = name
                     if not existing_organisation.abbreviation:
-                        if models.organisation_identifier.objects.filter(code=ref).exists():
-                            org_identifier = models.organisation_identifier.objects.get(code=ref)
+                        if models.OrganisationIdentifier.objects.filter(code=ref).exists():
+                            org_identifier = models.OrganisationIdentifier.objects.get(code=ref)
                             existing_organisation.abbreviation = org_identifier.abbreviation
                             existing_organisation.name = org_identifier.name
                     existing_organisation.save()
@@ -299,11 +300,13 @@ class Parser():
 
     def add_activity(self, elem):
         try:
-            iati_identifier = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
+            iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
             iati_identifier = iati_identifier.strip(' \t\n\r')
             iati_identifier = iati_identifier.replace(" ", "")
             activity_id = iati_identifier.replace("/", "-")
             activity_id = activity_id.replace(":", "-")
+
+
 
             default_currency_ref = self.return_first_exist(elem.xpath('@default-currency'))
             default_currency = None
@@ -317,54 +320,57 @@ class Parser():
             # last_updated_datetime = datetime.fromtimestamp(time.mktime(strp_time))
 
             linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri'))
-            reporting_organisation_ref = self.return_first_exist(elem.xpath( 'reporting-org/@ref' ))
+            iati_standard_version = self.return_first_exist(elem.xpath('@version'))
+            reporting_organisation_ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
             reporting_organisation = None
 
-            activity_status_code = self.return_first_exist(elem.xpath( 'activity-status/@code' ))
-            activity_status_name = self.return_first_exist(elem.xpath( 'activity-status/text()' ))
+            activity_status_code = self.return_first_exist(elem.xpath('activity-status/@code'))
+            activity_status_name = self.return_first_exist(elem.xpath('activity-status/text()'))
             activity_status = None
 
-            collaboration_type_ref = self.return_first_exist(elem.xpath( 'collaboration-type/@code' ))
+            collaboration_type_ref = self.return_first_exist(elem.xpath('collaboration-type/@code'))
             collaboration_type = None
-            default_flow_type_ref = self.return_first_exist(elem.xpath( 'default-flow-type/@code' ))
+            default_flow_type_ref = self.return_first_exist(elem.xpath('default-flow-type/@code'))
             default_flow_type = None
-            default_aid_type_ref = self.return_first_exist(elem.xpath( 'default-aid-type/@code' ))
+            default_aid_type_ref = self.return_first_exist(elem.xpath('default-aid-type/@code'))
             default_aid_type = None
-            default_finance_type_ref = self.return_first_exist(elem.xpath( 'default-finance-type/@code' ))
+            default_finance_type_ref = self.return_first_exist(elem.xpath('default-finance-type/@code'))
             default_finance_type = None
-            default_tied_status_ref = self.return_first_exist(elem.xpath( 'default-tied-status/@code' ))
+            default_tied_status_ref = self.return_first_exist(elem.xpath('default-tied-status/@code'))
             default_tied_status = None
-
+            capital_spend = self.return_first_exist(elem.xpath('capital-spend/@percentage'))
+            activity_scope_ref = self.return_first_exist(elem.xpath('activity-scope/@code'))
+            activity_scope = None
 
             #get foreign key objects
             if default_currency_ref:
-                if models.currency.objects.filter(code=default_currency_ref).exists():
-                    default_currency = models.currency.objects.get(code=default_currency_ref)
+                if models.Currency.objects.filter(code=default_currency_ref).exists():
+                    default_currency = models.Currency.objects.get(code=default_currency_ref)
 
             #activity status
             if activity_status_code and self.isInt(activity_status_code):
-                if models.activity_status.objects.filter(code=activity_status_code).exists():
-                    activity_status = models.activity_status.objects.get(code=activity_status_code)
+                if models.ActivityStatus.objects.filter(code=activity_status_code).exists():
+                    activity_status = models.ActivityStatus.objects.get(code=activity_status_code)
 
             if reporting_organisation_ref:
-                if models.organisation.objects.filter(code=reporting_organisation_ref).exists():
-                    reporting_organisation = models.organisation.objects.get(code=reporting_organisation_ref)
+                if models.Organisation.objects.filter(code=reporting_organisation_ref).exists():
+                    reporting_organisation = models.Organisation.objects.get(code=reporting_organisation_ref)
 
             if collaboration_type_ref and self.isInt(collaboration_type_ref):
-                if models.collaboration_type.objects.filter(code=collaboration_type_ref).exists():
-                    collaboration_type = models.collaboration_type.objects.get(code=collaboration_type_ref)
+                if models.CollaborationType.objects.filter(code=collaboration_type_ref).exists():
+                    collaboration_type = models.CollaborationType.objects.get(code=collaboration_type_ref)
 
             if default_flow_type_ref and self.isInt(default_flow_type_ref):
-                if models.flow_type.objects.filter(code=default_flow_type_ref).exists():
-                    default_flow_type = models.flow_type.objects.get(code=default_flow_type_ref)
+                if models.FlowType.objects.filter(code=default_flow_type_ref).exists():
+                    default_flow_type = models.FlowType.objects.get(code=default_flow_type_ref)
 
             if default_aid_type_ref:
-                if models.aid_type.objects.filter(code=default_aid_type_ref).exists():
-                    default_aid_type = models.aid_type.objects.get(code=default_aid_type_ref)
+                if models.AidType.objects.filter(code=default_aid_type_ref).exists():
+                    default_aid_type = models.AidType.objects.get(code=default_aid_type_ref)
 
             if default_finance_type_ref and self.isInt(default_finance_type_ref):
-                if models.finance_type.objects.filter(code=default_finance_type_ref).exists():
-                    default_finance_type = models.finance_type.objects.get(code=default_finance_type_ref)
+                if models.FinanceType.objects.filter(code=default_finance_type_ref).exists():
+                    default_finance_type = models.FinanceType.objects.get(code=default_finance_type_ref)
 
             if default_tied_status_ref:
 
@@ -379,13 +385,24 @@ class Parser():
                     else:
                         default_tied_status_ref = None
 
-                if models.tied_status.objects.filter(code=default_tied_status_ref).exists():
-                    default_tied_status = models.tied_status.objects.get(code=default_tied_status_ref)
+                if models.TiedStatus.objects.filter(code=default_tied_status_ref).exists():
+                    default_tied_status = models.TiedStatus.objects.get(code=default_tied_status_ref)
 
             if not self.isInt(hierarchy):
                 hierarchy = None
 
-            new_activity = models.activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier)
+            if not capital_spend:
+                capital_spend = self.return_first_exist(elem.xpath('capital-spend/text()'))
+
+            if not activity_scope_ref:
+                activity_scope_ref = self.return_first_exist(elem.xpath('activity-scope/text()'))
+
+
+            if activity_scope_ref and self.isInt(activity_scope_ref):
+                if models.ActivityScope.objects.filter(code=activity_scope_ref).exists():
+                    activity_scope = models.ActivityScope.objects.get(code=activity_scope_ref)
+
+            new_activity = models.Activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier, iati_standard_version=iati_standard_version, capital_spend=capital_spend, scope=activity_scope)
             new_activity.save()
             return new_activity
 
@@ -416,7 +433,7 @@ class Parser():
                     owner_name = self.return_first_exist(t.xpath( '@owner-name' ))
                     other_identifier = self.return_first_exist(t.xpath( 'text()' ))
 
-                    new_other_identifier = models.other_identifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
+                    new_other_identifier = models.OtherIdentifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
                     new_other_identifier.save()
 
                 except IntegrityError, e:
@@ -440,10 +457,10 @@ class Parser():
                     language = None
 
                     if language_ref:
-                        if models.language.objects.filter(code=language_ref).exists():
-                            language = models.language.objects.get(code=language_ref)
+                        if models.Language.objects.filter(code=language_ref).exists():
+                            language = models.Language.objects.get(code=language_ref)
 
-                    new_title = models.title(activity=activity, title=title, language=language)
+                    new_title = models.Title(activity=activity, title=title, language=language)
                     new_title.save()
 
                 except IntegrityError, e:
@@ -475,13 +492,13 @@ class Parser():
 
 
                     if language_ref:
-                        if models.language.objects.filter(code=language_ref).exists():
-                            language = models.language.objects.get(code=language_ref)
+                        if models.Language.objects.filter(code=language_ref).exists():
+                            language = models.Language.objects.get(code=language_ref)
 
                     if type_ref:
                         try:
-                            if models.description_type.objects.filter(code=type_ref).exists():
-                                type = models.description_type.objects.get(code=type_ref)
+                            if models.DescriptionType.objects.filter(code=type_ref).exists():
+                                type = models.DescriptionType.objects.get(code=type_ref)
                         except ValueError:
                             # exception to make wrong use of type ref right
                             if not description:
@@ -493,7 +510,7 @@ class Parser():
 
 
 
-                    new_description = models.description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
+                    new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
                     new_description.save()
 
                 except IntegrityError, e:
@@ -533,14 +550,14 @@ class Parser():
                             type_ref = '1'
                         if type_ref == 'revised':
                             type_ref = '2'
-                        if models.budget_type.objects.filter(code=type_ref).exists():
-                            type = models.budget_type.objects.get(code=type_ref)
+                        if models.BudgetType.objects.filter(code=type_ref).exists():
+                            type = models.BudgetType.objects.get(code=type_ref)
 
                     if currency_ref:
-                        if models.currency.objects.filter(code=currency_ref).exists():
-                            currency = models.currency.objects.get(code=currency_ref)
+                        if models.Currency.objects.filter(code=currency_ref).exists():
+                            currency = models.Currency.objects.get(code=currency_ref)
 
-                    new_budget = models.budget(activity=activity, type=type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)
+                    new_budget = models.Budget(activity=activity, type=type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)
                     new_budget.save()
 
                 except IntegrityError, e:
@@ -578,10 +595,10 @@ class Parser():
                     updated = self.return_first_exist(t.xpath('@updated'))
 
                     if currency_ref:
-                        if models.currency.objects.filter(code=currency_ref).exists():
-                            currency = models.currency.objects.get(code=currency_ref)
+                        if models.Currency.objects.filter(code=currency_ref).exists():
+                            currency = models.Currency.objects.get(code=currency_ref)
 
-                    new_planned_disbursement = models.planned_disbursement(activity=activity, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency, updated=updated)
+                    new_planned_disbursement = models.PlannedDisbursement(activity=activity, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency, updated=updated)
                     new_planned_disbursement.save()
 
 
@@ -606,7 +623,7 @@ class Parser():
 
                     url = self.return_first_exist(t.xpath( 'text()'))
 
-                    new_website = models.activity_website(activity=activity, url=url)
+                    new_website = models.ActivityWebsite(activity=activity, url=url)
                     new_website.save()
 
 
@@ -639,7 +656,14 @@ class Parser():
                     email = self.return_first_exist(t.xpath('email/text()'))
                     mailing_address = self.return_first_exist(t.xpath('mailing-address/text()'))
 
-                    new_contact = models.contact_info(activity=activity, person_name=person_name, organisation=organisation, telephone=telephone, email=email, mailing_address=mailing_address)
+                    type_ref = self.return_first_exist(t.xpath('@type'))
+                    type = None
+
+                    if type_ref:
+                        if models.ContactType.objects.filter(code=type_ref).exists():
+                            type = models.ContactType.objects.get(code=type_ref)
+
+                    new_contact = models.ContactInfo(activity=activity, person_name=person_name, organisation=organisation, telephone=telephone, email=email, mailing_address=mailing_address, contact_type=type)
                     new_contact.save()
 
                 except IntegrityError, e:
@@ -700,50 +724,50 @@ class Parser():
 
                     if aid_type_ref:
                         aid_type_ref = aid_type_ref.replace("O", "0")
-                        if models.aid_type.objects.filter(code=aid_type_ref).exists():
-                            aid_type = models.aid_type.objects.get(code=aid_type_ref)
+                        if models.AidType.objects.filter(code=aid_type_ref).exists():
+                            aid_type = models.AidType.objects.get(code=aid_type_ref)
                     else:
                         aid_type = activity.default_aid_type
 
                     if description_type_ref:
-                        if models.description_type.objects.filter(code=description_type_ref).exists():
-                            description_type = models.description_type.objects.get(code=description_type_ref)
+                        if models.DescriptionType.objects.filter(code=description_type_ref).exists():
+                            description_type = models.DescriptionType.objects.get(code=description_type_ref)
 
                     if disbursement_channel_ref:
-                        if models.disbursement_channel.objects.filter(code=disbursement_channel_ref).exists():
-                            disbursement_channel = models.disbursement_channel.objects.get(code=disbursement_channel_ref)
+                        if models.DisbursementChannel.objects.filter(code=disbursement_channel_ref).exists():
+                            disbursement_channel = models.DisbursementChannel.objects.get(code=disbursement_channel_ref)
 
                     if finance_type_ref:
-                        if models.finance_type.objects.filter(code=finance_type_ref).exists():
-                            finance_type = models.finance_type.objects.get(code=finance_type_ref)
+                        if models.FinanceType.objects.filter(code=finance_type_ref).exists():
+                            finance_type = models.FinanceType.objects.get(code=finance_type_ref)
                     else:
                         finance_type = activity.default_finance_type
 
                     if flow_type_ref:
-                        if models.flow_type.objects.filter(code=flow_type_ref).exists():
-                            flow_type = models.flow_type.objects.get(code=flow_type_ref)
+                        if models.FlowType.objects.filter(code=flow_type_ref).exists():
+                            flow_type = models.FlowType.objects.get(code=flow_type_ref)
                     else:
                         flow_type = activity.default_flow_type
 
                     if provider_organisation_ref:
-                        if models.organisation.objects.filter(code=provider_organisation_ref).exists():
-                            provider_organisation = models.organisation.objects.get(code=provider_organisation_ref)
+                        if models.Organisation.objects.filter(code=provider_organisation_ref).exists():
+                            provider_organisation = models.Organisation.objects.get(code=provider_organisation_ref)
                         else:
                             provider_organisation_name_ref = self.return_first_exist(t.xpath('provider-org/text()'))
 
-                            if models.organisation.objects.filter(name=provider_organisation_name_ref).exists():
-                                provider_organisation = models.organisation.objects.get(name=provider_organisation_name_ref)
+                            if models.Organisation.objects.filter(name=provider_organisation_name_ref).exists():
+                                provider_organisation = models.Organisation.objects.get(name=provider_organisation_name_ref)
                             else:
                                 provider_organisation_type = None
                                 provider_organisation_type_ref = self.return_first_exist(t.xpath('provider-org/@type'))
                                 if provider_organisation_type_ref:
-                                    if models.organisation_type.objects.filter(code=provider_organisation_type_ref).exists():
-                                        provider_organisation_type = models.organisation_type.objects.get(code=provider_organisation_type_ref)
+                                    if models.OrganisationType.objects.filter(code=provider_organisation_type_ref).exists():
+                                        provider_organisation_type = models.OrganisationType.objects.get(code=provider_organisation_type_ref)
 
 
                                 try:
 
-                                    new_organisation = models.organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name_ref)
+                                    new_organisation = models.Organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name_ref)
                                     new_organisation.save()
 
                                 except Exception as e:
@@ -751,25 +775,25 @@ class Parser():
 
 
                     if receiver_organisation_ref:
-                        if models.organisation.objects.filter(code=receiver_organisation_ref).exists():
-                            receiver_organisation = models.organisation.objects.get(code=receiver_organisation_ref)
+                        if models.Organisation.objects.filter(code=receiver_organisation_ref).exists():
+                            receiver_organisation = models.Organisation.objects.get(code=receiver_organisation_ref)
                         else:
                             receiver_organisation_name_ref = self.return_first_exist(t.xpath('receiver-org/text()'))
 
-                            if models.organisation.objects.filter(name=receiver_organisation_name_ref).exists():
-                                receiver_organisation = models.organisation.objects.get(name=receiver_organisation_name_ref)
+                            if models.Organisation.objects.filter(name=receiver_organisation_name_ref).exists():
+                                receiver_organisation = models.Organisation.objects.get(name=receiver_organisation_name_ref)
                             else:
 
                                 receiver_organisation_type = None
                                 receiver_organisation_type_ref = self.return_first_exist(t.xpath('receiver-org/@type'))
                                 if receiver_organisation_type_ref:
-                                    if models.organisation_type.objects.filter(code=receiver_organisation_type_ref).exists():
-                                        receiver_organisation_type = models.organisation_type.objects.get(code=receiver_organisation_type_ref)
+                                    if models.OrganisationType.objects.filter(code=receiver_organisation_type_ref).exists():
+                                        receiver_organisation_type = models.OrganisationType.objects.get(code=receiver_organisation_type_ref)
 
 
                                 try:
 
-                                    new_organisation = models.organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name_ref)
+                                    new_organisation = models.Organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name_ref)
                                     new_organisation.save()
 
                                 except Exception as e:
@@ -777,23 +801,23 @@ class Parser():
 
 
                     if tied_status_ref:
-                        if models.tied_status.objects.filter(code=tied_status_ref).exists():
-                            tied_status = models.tied_status.objects.get(code=tied_status_ref)
+                        if models.TiedStatus.objects.filter(code=tied_status_ref).exists():
+                            tied_status = models.TiedStatus.objects.get(code=tied_status_ref)
                     else:
                         tied_status = activity.default_tied_status
 
                     if transaction_type_ref:
-                        if models.transaction_type.objects.filter(code=transaction_type_ref).exists():
-                            transaction_type = models.transaction_type.objects.get(code=transaction_type_ref)
+                        if models.TransactionType.objects.filter(code=transaction_type_ref).exists():
+                            transaction_type = models.TransactionType.objects.get(code=transaction_type_ref)
 
                     if currency_ref:
-                        if models.currency.objects.filter(code=currency_ref).exists():
-                            currency = models.currency.objects.get(code=currency_ref)
+                        if models.Currency.objects.filter(code=currency_ref).exists():
+                            currency = models.Currency.objects.get(code=currency_ref)
                     else:
                         currency = activity.default_currency
 
 
-                    new_transaction = models.transaction(activity=activity, aid_type=aid_type, description=description, description_type=description_type, disbursement_channel=disbursement_channel, finance_type=finance_type, flow_type=flow_type, provider_organisation=provider_organisation, provider_organisation_name=provider_organisation_name, provider_activity=provider_activity, receiver_organisation=receiver_organisation, receiver_organisation_name=receiver_organisation_name, tied_status=tied_status, transaction_date=transaction_date, transaction_type=transaction_type, value_date=value_date, value=value, ref=ref, currency=currency)
+                    new_transaction = models.Transaction(activity=activity, aid_type=aid_type, description=description, description_type=description_type, disbursement_channel=disbursement_channel, finance_type=finance_type, flow_type=flow_type, provider_organisation=provider_organisation, provider_organisation_name=provider_organisation_name, provider_activity=provider_activity, receiver_organisation=receiver_organisation, receiver_organisation_name=receiver_organisation_name, tied_status=tied_status, transaction_date=transaction_date, transaction_type=transaction_type, value_date=value_date, value=value, ref=ref, currency=currency)
                     new_transaction.save()
 
 
@@ -827,11 +851,11 @@ class Parser():
                             type_ref = '2'
                         if type_ref == 'impact':
                             type_ref == '3'
-                        if models.result_type.objects.filter(code=type_ref).exists():
-                            type = models.result_type.objects.get(code=type_ref)
+                        if self.isInt(type_ref) and models.ResultType.objects.filter(code=type_ref).exists():
+                            type = models.ResultType.objects.get(code=type_ref)
 
 
-                    new_result = models.result(activity=activity, result_type=type, title=title, description=description)
+                    new_result = models.Result(activity=activity, result_type=type, title=title, description=description)
                     new_result.save()
 
 
@@ -868,24 +892,24 @@ class Parser():
                             sector_code = None
 
                     if sector_code:
-                        if models.sector.objects.filter(code=sector_code).exists():
-                            sector = models.sector.objects.get(code=sector_code)
+                        if models.Sector.objects.filter(code=sector_code).exists():
+                            sector = models.Sector.objects.get(code=sector_code)
 
                     if not sector:
                         sector_name = self.return_first_exist(t.xpath( 'text()' ))
-                        if models.sector.objects.filter(name=sector_name).exists():
-                            sector = models.sector.objects.get(name=sector_name)
+                        if models.Sector.objects.filter(name=sector_name).exists():
+                            sector = models.Sector.objects.get(name=sector_name)
 
                     if vocabulary_code:
-                        if models.vocabulary.objects.filter(code=vocabulary_code).exists():
-                            vocabulary = models.vocabulary.objects.get(code=vocabulary_code)
+                        if models.Vocabulary.objects.filter(code=vocabulary_code).exists():
+                            vocabulary = models.Vocabulary.objects.get(code=vocabulary_code)
 
                     if not sector:
                         alt_sector_name = sector_code
                     else:
                         alt_sector_name = None
 
-                    new_activity_sector = models.activity_sector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage = percentage)
+                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage = percentage)
                     new_activity_sector.save()
 
                 except IntegrityError, e:
@@ -917,16 +941,16 @@ class Parser():
                         percentage = percentage.replace("%", "")
 
                     if country_ref:
-                        if models.country.objects.filter(code=country_ref).exists():
-                            country = models.country.objects.get(code=country_ref)
+                        if models.Country.objects.filter(code=country_ref).exists():
+                            country = models.Country.objects.get(code=country_ref)
                         else:
                             country_ref = country_ref.upper()
-                            if models.country.objects.filter(name=country_ref).exists():
-                                country = models.country.objects.get(name=country_ref)
+                            if models.Country.objects.filter(name=country_ref).exists():
+                                country = models.Country.objects.get(name=country_ref)
                     else:
                         continue
 
-                    new_activity_country = models.activity_recipient_country(activity=activity, country=country, percentage = percentage)
+                    new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
                     new_activity_country.save()
 
                 except IntegrityError, e:
@@ -945,24 +969,32 @@ class Parser():
         try:
             for t in elem.xpath('recipient-region'):
 
-                region_ref = self.return_first_exist(t.xpath( '@code' ))
+                region_ref = self.return_first_exist(t.xpath('@code'))
                 region = None
+                region_voc_ref = self.return_first_exist(t.xpath('@vocabulary'))
+                region_voc = None
                 percentage = self.return_first_exist(t.xpath('@percentage'))
                 if percentage:
                         percentage = percentage.replace("%", "")
 
+                if self.isInt(region_voc_ref):
+                    if models.RegionVocabulary.objects.filter(code=region_voc_ref).exists():
+                        region_voc = models.RegionVocabulary.objects.get(code=region_voc_ref)
+                else:
+                    region_voc = models.RegionVocabulary.objects.get(code=1)
+
                 if region_ref:
-                    if models.region.objects.filter(code=region_ref).exists():
-                        region = models.region.objects.get(code=region_ref)
-                    elif models.region.objects.filter(name=region_ref).exists():
-                            region = models.region.objects.get(name=region_ref)
+                    if models.Region.objects.filter(code=region_ref).exists():
+                        region = models.Region.objects.get(code=region_ref)
+                    elif models.Region.objects.filter(name=region_ref).exists():
+                            region = models.Region.objects.get(name=region_ref)
                     else:
                         print "error in add regions, unknown region: " + region_ref
                 else:
                     continue
 
                 try:
-                    new_activity_region = models.activity_recipient_region(activity=activity, region=region, percentage = percentage)
+                    new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
                     new_activity_region.save()
 
                 except IntegrityError, e:
@@ -997,34 +1029,34 @@ class Parser():
 
                     if role_type:
                         if self.isInt(role_type):
-                            if models.organisation_type.objects.filter(code=role_type).exists():
-                                type = models.organisation_type.objects.get(code=role_type)
+                            if models.OrganisationType.objects.filter(code=role_type).exists():
+                                type = models.OrganisationType.objects.get(code=role_type)
                         else:
-                            if models.organisation_type.objects.filter(name=role_type).exists():
-                                type = models.organisation_type.objects.get(name=role_type)
+                            if models.OrganisationType.objects.filter(name=role_type).exists():
+                                type = models.OrganisationType.objects.get(name=role_type)
 
                     if participating_organisation_ref:
-                        if models.organisation.objects.filter(code=participating_organisation_ref).exists():
-                            participating_organisation = models.organisation.objects.get(code=participating_organisation_ref)
+                        if models.Organisation.objects.filter(code=participating_organisation_ref).exists():
+                            participating_organisation = models.Organisation.objects.get(code=participating_organisation_ref)
                             if not participating_organisation.name:
                                 participating_organisation.name = name
                             if not participating_organisation.type:
                                 participating_organisation.type = type
                         else:
-                            participating_organisation = models.organisation(code=participating_organisation_ref, name=name, type=type)
+                            participating_organisation = models.Organisation(code=participating_organisation_ref, name=name, type=type)
                             participating_organisation.save()
                     else:
                         if name:
-                            if models.organisation.objects.filter(name=name).exists():
+                            if models.Organisation.objects.filter(name=name).exists():
 
-                                participating_organisation = models.organisation.objects.filter(name=name)
+                                participating_organisation = models.Organisation.objects.filter(name=name)
                                 participating_organisation = participating_organisation[0]
 
                     if role_ref:
-                        if models.organisation_role.objects.filter(code=role_ref).exists():
-                            role = models.organisation_role.objects.get(code=role_ref)
+                        if models.OrganisationRole.objects.filter(code=role_ref).exists():
+                            role = models.OrganisationRole.objects.get(code=role_ref)
 
-                    new_activity_participating_organisation = models.activity_participating_organisation(activity=activity, organisation=participating_organisation, role=role, name=name)
+                    new_activity_participating_organisation = models.ActivityParticipatingOrganisation(activity=activity, organisation=participating_organisation, role=role, name=name)
                     new_activity_participating_organisation.save()
 
 
@@ -1063,24 +1095,24 @@ class Parser():
 
 
                     if policy_marker_code:
-                        if models.policy_marker.objects.filter(code=policy_marker_code).exists():
-                            policy_marker = models.policy_marker.objects.get(code=policy_marker_code)
+                        if models.PolicyMarker.objects.filter(code=policy_marker_code).exists():
+                            policy_marker = models.PolicyMarker.objects.get(code=policy_marker_code)
                     else:
                         policy_marker_name = self.return_first_exist(t.xpath( 'text()' ))
                         if policy_marker_name:
-                            if models.policy_marker.objects.filter(name=policy_marker_name).exists():
-                                policy_marker = models.policy_marker.objects.get(code=policy_marker_name)
+                            if models.PolicyMarker.objects.filter(name=policy_marker_name).exists():
+                                policy_marker = models.PolicyMarker.objects.get(code=policy_marker_name)
 
                     if policy_marker_voc:
-                        if models.vocabulary.objects.filter(code=policy_marker_voc).exists():
-                            vocabulary = models.vocabulary.objects.get(code=policy_marker_voc)
+                        if models.Vocabulary.objects.filter(code=policy_marker_voc).exists():
+                            vocabulary = models.Vocabulary.objects.get(code=policy_marker_voc)
 
                     if policy_marker_significance:
-                        if models.policy_significance.objects.filter(code=policy_marker_significance).exists():
-                            significance = models.policy_significance.objects.get(code=policy_marker_significance)
+                        if models.PolicySignificance.objects.filter(code=policy_marker_significance).exists():
+                            significance = models.PolicySignificance.objects.get(code=policy_marker_significance)
 
 
-                    new_activity_policy_marker = models.activity_policy_marker(activity=activity, policy_marker=policy_marker, vocabulary=vocabulary, policy_significance=significance)
+                    new_activity_policy_marker = models.ActivityPolicyMarker(activity=activity, policy_marker=policy_marker, vocabulary=vocabulary, policy_significance=significance)
                     new_activity_policy_marker.save()
 
                 except IntegrityError, e:
@@ -1114,14 +1146,14 @@ class Parser():
 
 
                     if type_ref:
-                        if models.activity_date_type.objects.filter(code=type_ref).exists():
-                            type = models.activity_date_type.objects.get(code=type_ref)
+                        if models.ActivityDateType.objects.filter(code=type_ref).exists():
+                            type = models.ActivityDateType.objects.get(code=type_ref)
                         else:
                             type_ref = type_ref.lower();
                             type_ref = type_ref.replace(' ', '-');
 
-                            if models.activity_date_type.objects.filter(code=type_ref).exists():
-                                type = models.activity_date_type.objects.get(code=type_ref)
+                            if models.ActivityDateType.objects.filter(code=type_ref).exists():
+                                type = models.ActivityDateType.objects.get(code=type_ref)
 
 
                     if type.code == 'end-actual':
@@ -1159,10 +1191,10 @@ class Parser():
                     text = self.return_first_exist(t.xpath('text()'))
 
                     if type_ref:
-                        if models.related_activity_type.objects.filter(code=type_ref).exists():
-                            type = models.related_activity_type.objects.get(code=type_ref)
+                        if models.RelatedActivityType.objects.filter(code=type_ref).exists():
+                            type = models.RelatedActivityType.objects.get(code=type_ref)
 
-                    new_related_activity = models.related_activity(current_activity=activity, type=type, ref=ref, text=text)
+                    new_related_activity = models.RelatedActivity(current_activity=activity, type=type, ref=ref, text=text)
                     new_related_activity.save()
 
                 except IntegrityError, e:
@@ -1205,27 +1237,27 @@ class Parser():
                     gazetteer_ref = None
 
                     if type_ref:
-                        if models.location_type.objects.filter(code=type_ref).exists():
-                            type = models.location_type.objects.get(code=type_ref)
+                        if models.LocationType.objects.filter(code=type_ref).exists():
+                            type = models.LocationType.objects.get(code=type_ref)
 
                     if description_type_ref:
-                        if models.description_type.objects.filter(code=description_type_ref).exists():
-                            description_type = models.description_type.objects.get(code=description_type_ref)
+                        if models.DescriptionType.objects.filter(code=description_type_ref).exists():
+                            description_type = models.DescriptionType.objects.get(code=description_type_ref)
 
                     if adm_country_iso_ref:
-                        if models.country.objects.filter(code=adm_country_iso_ref).exists():
-                            adm_country_iso = models.country.objects.get(code=adm_country_iso_ref)
+                        if models.Country.objects.filter(code=adm_country_iso_ref).exists():
+                            adm_country_iso = models.Country.objects.get(code=adm_country_iso_ref)
 
                     if precision_ref:
-                        if models.geographical_precision.objects.filter(code=precision_ref).exists():
-                            precision = models.geographical_precision.objects.get(code=precision_ref)
+                        if models.GeographicalPrecision.objects.filter(code=precision_ref).exists():
+                            precision = models.GeographicalPrecision.objects.get(code=precision_ref)
 
                     if gazetteer_ref_ref:
-                        if models.gazetteer_agency.objects.filter(code=gazetteer_ref_ref).exists():
-                            gazetteer_ref = models.gazetteer_agency.objects.get(code=gazetteer_ref_ref)
+                        if models.GazetteerAgency.objects.filter(code=gazetteer_ref_ref).exists():
+                            gazetteer_ref = models.GazetteerAgency.objects.get(code=gazetteer_ref_ref)
 
 
-                    new_location = models.location(activity=activity, name=name, type=type, type_description=type_description, description=description, description_type=description_type, adm_country_iso=adm_country_iso, adm_country_adm1=adm_country_adm1, adm_country_adm2=adm_country_adm2, adm_country_name=adm_country_name, percentage=percentage, latitude=latitude, longitude=longitude, precision=precision, gazetteer_entry=gazetteer_entry, gazetteer_ref=gazetteer_ref)
+                    new_location = models.Location(activity=activity, name=name, type=type, type_description=type_description, description=description, description_type=description_type, adm_country_iso=adm_country_iso, adm_country_adm1=adm_country_adm1, adm_country_adm2=adm_country_adm2, adm_country_name=adm_country_name, percentage=percentage, latitude=latitude, longitude=longitude, precision=precision, gazetteer_entry=gazetteer_entry, gazetteer_ref=gazetteer_ref)
                     new_location.save()
 
 
@@ -1251,10 +1283,10 @@ class Parser():
                     condition = self.return_first_exist(t.xpath('text()'))
 
                     if condition_type_ref:
-                        if models.condition_type.objects.filter(code=condition_type_ref).exists():
-                            condition_type = models.condition_type.objects.get(code=condition_type_ref)
+                        if models.ConditionType.objects.filter(code=condition_type_ref).exists():
+                            condition_type = models.ConditionType.objects.get(code=condition_type_ref)
 
-                    new_condition = models.condition(activity=activity, text=condition, type=condition_type)
+                    new_condition = models.Condition(activity=activity, text=condition, type=condition_type)
                     new_condition.save()
 
 
@@ -1289,12 +1321,12 @@ class Parser():
 
 
                     if file_format_ref:
-                        if models.file_format.objects.filter(code=file_format_ref).exists():
-                            file_format = models.file_format.objects.get(code=file_format_ref)
+                        if models.FileFormat.objects.filter(code=file_format_ref).exists():
+                            file_format = models.FileFormat.objects.get(code=file_format_ref)
 
                     if doc_category_ref:
-                        if models.document_category.objects.filter(code=doc_category_ref).exists():
-                            document_category = models.document_category.objects.get(code=doc_category_ref)
+                        if models.DocumentCategory.objects.filter(code=doc_category_ref).exists():
+                            document_category = models.DocumentCategory.objects.get(code=doc_category_ref)
 
                     # if language_ref:
                     #     if models.language.objects.filter(code=language_ref).exists():
@@ -1302,24 +1334,175 @@ class Parser():
 
 
 
-                    document_link = models.document_link(activity=activity, url=url, file_format=file_format, document_category=document_category)
+                    document_link = models.DocumentLink(activity=activity, url=url, file_format=file_format, document_category=document_category)
                     document_link.save()
 
 
                 except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+                    self.exception_handler(e, activity.id, "add_document_link")
                 except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+                    self.exception_handler(e, activity.id, "add_document_link")
                 except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+                    self.exception_handler(e, activity.id, "add_document_link")
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+                    self.exception_handler(e, activity.id, "add_document_link")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_conditions")
+            self.exception_handler(e, activity.id, "add_document_link")
+
+
+
+
+    def add_country_budget_items(self, elem, activity):
+
+        try:
+            for t in elem.xpath('country-budget-items'):
+                try:
+                    budget_identifier_vocabulary_ref = self.return_first_exist(t.xpath('@vocabulary'))
+                    budget_identifier_vocabulary = None
+                    if budget_identifier_vocabulary_ref and self.isInt(budget_identifier_vocabulary_ref):
+                        if models.BudgetIdentifierVocabulary.objects.filter(code=budget_identifier_vocabulary_ref).exists():
+                            budget_identifier_vocabulary = models.BudgetIdentifierVocabulary.objects.get(code=budget_identifier_vocabulary_ref)
+
+                    for bi in elem.xpath('budget-item'):
+
+                        code_ref = self.return_first_exist(bi.xpath('@code'))
+                        code = None
+                        percentage = self.return_first_exist(bi.xpath('@percentage'))
+                        description = self.return_first_exist(bi.xpath('description/text()'))
+
+                        if code_ref:
+                            if models.BudgetIdentifier.objects.filter(code=code_ref).exists():
+                                code = models.BudgetIdentifier.objects.get(code=code_ref)
+
+                        country_budget_item = models.CountryBudgetItem(activity=activity, vocabulary=budget_identifier_vocabulary, code=code, percentage=percentage, description=description)
+                        country_budget_item.save()
+
+                except IntegrityError, e:
+                    self.exception_handler(e, activity.id, "add_country_budget_items")
+                except ValueError, e:
+                    self.exception_handler(e, activity.id, "add_country_budget_items")
+                except ValidationError, e:
+                    self.exception_handler(e, activity.id, "add_country_budget_items")
+                except Exception as e:
+                    self.exception_handler(e, activity.id, "add_country_budget_items")
+        except Exception as e:
+            self.exception_handler(e, activity.id, "add_country_budget_items")
+
+
+
+    def add_crs_add(self, elem, activity):
+
+        try:
+            for t in elem.xpath('crs-add'):
+                try:
+
+                    aid_type_flag_ref = self.return_first_exist(t.xpath('aidtype-flag/@code'))
+                    aid_type_flag_significance = self.return_first_exist(t.xpath('aidtype-flag/@significance'))
+                    aid_type_flag = None
+
+                    if aid_type_flag_ref:
+                            if models.AidTypeFlag.objects.filter(code=aid_type_flag_ref).exists():
+                                aid_type_flag = models.AidTypeFlag.objects.get(code=aid_type_flag_ref)
+
+                    new_crs_add = models.CrsAdd(aid_type_flag=aid_type_flag, aid_type_flag_significance=aid_type_flag_significance)
+                    new_crs_add.save()
+
+                    for lt in elem.xpath('loan-terms'):
+
+                        rate_1 = self.return_first_exist(lt.xpath('@rate-1'))
+                        rate_2 = self.return_first_exist(lt.xpath('@rate-2'))
+                        repayment_type_ref = self.return_first_exist(lt.xpath('repayment-type/@code'))
+                        repayment_type = None
+                        repayment_plan_ref = self.return_first_exist(lt.xpath('repayment-plan/@code'))
+                        repayment_plan = None
+                        repayment_plan_text = self.return_first_exist(lt.xpath('repayment-plan/text()'))
+                        commitment_date = self.return_first_exist(lt.xpath('commitment-date/@iso-date'))
+                        repayment_first_date = self.return_first_exist(lt.xpath('repayment-first-date/@iso-date'))
+                        repayment_final_date = self.return_first_exist(lt.xpath('repayment-final-date/@iso-date'))
+
+                        if repayment_type_ref:
+                            if models.LoanRepaymentType.objects.filter(code=repayment_type_ref).exists():
+                                repayment_type = models.LoanRepaymentType.objects.get(code=repayment_type_ref)
+
+                        if repayment_plan_ref:
+                            if models.LoanRepaymentPeriod.objects.filter(code=repayment_plan_ref).exists():
+                                repayment_plan = models.LoanRepaymentPeriod.objects.get(code=repayment_plan_ref)
+
+                        new_loan_term = models.CrsAddLoanTerms(crs_add=new_crs_add, rate_1=rate_1, rate_2=rate_2, repayment_type=repayment_type, repayment_plan=repayment_plan, repayment_plan_text=repayment_plan_text, commitment_date=commitment_date, repayment_first_date=repayment_first_date, repayment_final_date=repayment_final_date)
+                        new_loan_term.save()
+
+                    for ls in elem.xpath('loan-status'):
+
+                        year = self.return_first_exist(ls.xpath(''))
+                        value_date = self.return_first_exist(ls.xpath(''))
+                        currency_ref = self.return_first_exist(ls.xpath(''))
+                        currency = None
+                        interest_received = self.return_first_exist(ls.xpath(''))
+                        principal_outstanding = self.return_first_exist(ls.xpath(''))
+                        principal_arrears = self.return_first_exist(ls.xpath(''))
+                        interest_arrears = self.return_first_exist(ls.xpath(''))
+
+                        if currency_ref:
+                            if models.Currency.objects.filter(code=currency_ref).exists():
+                                currency = models.Currency.objects.get(code=currency_ref)
+
+                        new_loan_status = models.CrsAddLoanStatus(crs_add=new_crs_add, year=year, value_date=value_date, currency=currency, interest_received=interest_received, principal_outstanding=principal_outstanding, principal_arrears=principal_arrears, interest_arrears=interest_arrears)
+                        new_loan_status.save()
+
+
+                except IntegrityError, e:
+                    self.exception_handler(e, activity.id, "add_crs_add")
+                except ValueError, e:
+                    self.exception_handler(e, activity.id, "add_crs_add")
+                except ValidationError, e:
+                    self.exception_handler(e, activity.id, "add_crs_add")
+                except Exception as e:
+                    self.exception_handler(e, activity.id, "add_crs_add")
+        except Exception as e:
+            self.exception_handler(e, activity.id, "add_crs_add")
+
+
+
+    def add_fss(self, elem, activity):
+
+        try:
+            for t in elem.xpath('ffs'):
+                try:
+                    extraction_date = self.return_first_exist(t.xpath('@extraction-date'))
+                    priority = self.return_first_exist(t.xpath('@priority'))
+                    phaseout_year = self.return_first_exist(t.xpath('@phaseout-year'))
+
+                    new_ffs = models.Ffs(activity=activity, extraction_date=extraction_date, priority=priority, phaseout_year=phaseout_year)
+                    new_ffs.save()
+
+                    for fc in elem.xpath('forecast'):
+                        year = self.return_first_exist(fc.xpath('@year'))
+                        currency_ref = self.return_first_exist(fc.xpath('@currency'))
+                        currency = None
+                        value_date = self.return_first_exist(fc.xpath('@value-date'))
+                        value = self.return_first_exist(fc.xpath('text()'))
+
+                        if currency_ref:
+                            if models.Currency.objects.filter(code=currency_ref).exists():
+                                currency = models.Currency.objects.get(code=currency_ref)
+
+                        new_forecast = models.FfsForecast(ffs=new_ffs, year=year, currency=currency, value_date=value_date, value=value)
+                        new_forecast.save()
+
+                except IntegrityError, e:
+                    self.exception_handler(e, activity.id, "add_fss")
+                except ValueError, e:
+                    self.exception_handler(e, activity.id, "add_fss")
+                except ValidationError, e:
+                    self.exception_handler(e, activity.id, "add_fss")
+                except Exception as e:
+                    self.exception_handler(e, activity.id, "add_fss")
+        except Exception as e:
+            self.exception_handler(e, activity.id, "add_fss")
 
 
     def add_total_budget(self, activity):
 
-        updater = UpdateTotal()
-        updater.updateSingleActivityTotal(activity.id)
+        updater = TotalBudgetUpdater()
+        updater.update_single_activity(activity.id)
 

@@ -2,23 +2,23 @@
 from django.contrib.gis.db import models
 from django.contrib.gis import geos
 
-class region(models.Model):
+class Region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=80)
-    source = models.CharField(max_length=80, null=True, blank=True)
+    region_vocabulary = models.ForeignKey('iati.RegionVocabulary', default=1)
     parental_region = models.ForeignKey('self', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
-class country(models.Model):
+class Country(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
     numerical_code_un = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=100, db_index=True)
     language = models.CharField(max_length=2, null=True)
-    capital_city = models.ForeignKey("city", related_name='capital_city', null=True, blank=True)
-    region = models.ForeignKey(region, null=True, blank=True)
-    un_region = models.ForeignKey('region', null=True, blank=True, related_name='un_region')
+    capital_city = models.ForeignKey("City", related_name='capital_city', null=True, blank=True)
+    region = models.ForeignKey(Region, null=True, blank=True)
+    un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_region')
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)
@@ -39,10 +39,10 @@ class country(models.Model):
     #         self.polygon = geos.MultiPolygon(self.polygon)
     #     super(country, self).save(*args, **kwargs)
 
-class city(models.Model):
+class City(models.Model):
     geoname_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=200)
-    country = models.ForeignKey(country, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
     location = models.PointField(null=True, blank=True)
     ascii_name = models.CharField(max_length=200, null=True, blank=True)
     alt_name = models.CharField(max_length=200, null=True, blank=True)
@@ -56,14 +56,14 @@ class city(models.Model):
         verbose_name_plural = "cities"
 
 
-class adm1_region(models.Model):
+class Adm1Region(models.Model):
     adm1_code = models.CharField(primary_key=True, max_length=10)
     OBJECTID_1 = models.IntegerField(null=True, blank=True)
     diss_me = models.IntegerField(null=True, blank=True)
     adm1_cod_1 = models.CharField(null=True, blank=True, max_length=20)
     iso_3166_2 = models.CharField(null=True, blank=True, max_length=2)
     wikipedia = models.CharField(null=True, blank=True, max_length=150)
-    country = models.ForeignKey(country, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
     adm0_sr = models.IntegerField(null=True, blank=True)
     name = models.CharField(null=True, blank=True, max_length=100)
     name_alt = models.CharField(null=True, blank=True, max_length=200)

@@ -1,7 +1,7 @@
 
 from tastypie.resources import ModelResource
-from geodata.models import country, region, city
-from indicators.models import indicator
+from geodata.models import Country, Region, City
+from indicator.models import Indicator
 from tastypie import fields
 from tastypie.serializers import Serializer
 
@@ -12,7 +12,7 @@ class IndicatorFiltersResource(ModelResource):
 
 
     class Meta:
-        queryset = indicator.objects.all()
+        queryset = Indicator.objects.all()
         resource_name = 'indicator-filters'
         serializer = Serializer(formats=['xml', 'json'])
         excludes = ['description', 'type_data', 'selection_type', 'deprivation_type', 'rain_programme']
@@ -27,7 +27,7 @@ class IndicatorFiltersResource(ModelResource):
 
 class OnlyCountryResource(ModelResource):
     class Meta:
-        queryset = country.objects.all().order_by('name')
+        queryset = Country.objects.all().order_by('name')
         include_resource_uri = False
         excludes = ['center_longlat', 'dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon']
         resource_name = 'country'
@@ -36,13 +36,13 @@ class OnlyCountryResource(ModelResource):
 
 class OnlyRegionResource(ModelResource):
     class Meta:
-        queryset = region.objects.all().distinct().order_by('code')
+        queryset = Region.objects.all().distinct().order_by('code')
         resource_name = 'region'
         include_resource_uri = False
 
 class OnlyCityResource(ModelResource):
     class Meta:
-        queryset = city.objects.all().order_by('name')
+        queryset = City.objects.all().order_by('name')
         resource_name = 'city'
         include_resource_uri = False
         excludes = ['alt_name', 'ascii_name', 'geoname_id', 'location']
@@ -78,7 +78,7 @@ class OnlyCityResource(ModelResource):
 #     class Meta:
 #         queryset = UnHabitatIndicatorCountry.objects.all()
 #         include_resource_uri = False
-#         resource_name = 'indicators-country'
+#         resource_name = 'indicator-country'
 #         serializer = Serializer(formats=['xml', 'json'])
 #         filtering = {"year": ALL }
 # #        authentication = ApiKeyAuthentication()
@@ -120,7 +120,7 @@ class OnlyCityResource(ModelResource):
 #         regions = request.GET.get('regions', None)
 #         countries = request.GET.get('country_name', None)
 #         isos = request.GET.get('iso', None)
-#         indicators = request.GET.get('indicators', None)
+#         indicator = request.GET.get('indicator', None)
 #
 #
 #
@@ -145,7 +145,7 @@ class OnlyCityResource(ModelResource):
 #     class Meta:
 #         queryset = UnHabitatIndicatorcity.objects.all()
 #         include_resource_uri = False
-#         resource_name = 'indicators-city'
+#         resource_name = 'indicator-city'
 #         serializer = Serializer(formats=['xml', 'json'])
 #         filtering = {"year": ALL }
 #     #        authentication = ApiKeyAuthentication()

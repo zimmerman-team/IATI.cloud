@@ -2,13 +2,12 @@ from django.conf.urls import patterns
 from django.contrib import admin
 from geodata.models import *
 from django.http import HttpResponse
-from django.template import RequestContext, loader
 from geodata.admin_tools import AdminTools
 
 
 class RegionAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ['__unicode__', 'source', 'parental_region']
+    list_display = ['__unicode__', 'parental_region']
 
     def get_urls(self):
         urls = super(RegionAdmin, self).get_urls()
@@ -28,15 +27,14 @@ class CountryAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_display = ['__unicode__', 'capital_city', 'region']
 
-
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
 
         my_urls = patterns('',
             (r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
             (r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
-            (r'^update-regions-set/$', self.admin_site.admin_view(self.update_regions)),
-            (r'^update-country-identifiers-set/$', self.admin_site.admin_view(self.update_country_identifiers))
+            (r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
+            (r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers))
         )
         return my_urls + urls
 
@@ -61,8 +59,6 @@ class CountryAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-
-
 class CityAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_display = ['geoname_id', '__unicode__', 'ascii_name', 'alt_name', 'namepar']
@@ -79,7 +75,6 @@ class CityAdmin(admin.ModelAdmin):
         admTools = AdminTools()
         admTools.update_cities()
         return HttpResponse('Success')
-
 
 
 class Adm1RegionAdmin(admin.ModelAdmin):
@@ -100,7 +95,7 @@ class Adm1RegionAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-admin.site.register(city, CityAdmin)
-admin.site.register(country, CountryAdmin)
-admin.site.register(region, RegionAdmin)
-admin.site.register(adm1_region, Adm1RegionAdmin)
+admin.site.register(City, CityAdmin)
+admin.site.register(Country, CountryAdmin)
+admin.site.register(Region, RegionAdmin)
+admin.site.register(Adm1Region, Adm1RegionAdmin)

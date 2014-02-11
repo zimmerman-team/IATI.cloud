@@ -2,7 +2,7 @@ import datetime
 
 # Django specific
 from django.core.management.base import BaseCommand
-from Cache.validator import Validator
+from cache.validator import Validator
 
 
 class Command(BaseCommand):

@@ -3,24 +3,23 @@ from django.db.models import Q
 
 # Tastypie specific
 from tastypie import fields
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.constants import ALL
 from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 
 # Data specific
-from IATI.models import activity
-from API.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
-from API.cache import NoTransformCache
-from API.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
-from API.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
+from iati.models import Activity
+from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
+from api.cache import NoTransformCache
+from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
+from api.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
 
 #cache specific
 from django.http import HttpResponse
-from Cache.validator import Validator
+from cache.validator import Validator
 
 class ActivityListResource(ModelResource):
 
-    iati_identifier = fields.CharField('id')
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
     participating_organisations = fields.ToManyField(ActivityViewOrganisationResource, 'participating_organisation', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
@@ -38,11 +37,11 @@ class ActivityListResource(ModelResource):
 
 
     class Meta:
-        queryset = activity.objects.all()
+        queryset = Activity.objects.all()
         resource_name = 'activity-list'
         max_limit = 100
         serializer = Serializer(formats=['xml', 'json'])
-        excludes = ['date_created', 'id']
+        excludes = ['date_created']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {
             'iati_identifier': 'exact',

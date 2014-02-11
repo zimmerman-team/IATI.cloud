@@ -8,14 +8,14 @@ from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 
 # Data specific
-from IATI.models import activity, organisation
-from indicators.models import *
-from API.v2.resources.helper_resources import *
+from iati.models import Activity, Organisation
+from indicator.models import *
+from api.v2.resources.helper_resources import *
 
 class CityResource(ModelResource):
 
     class Meta:
-        queryset = city.objects.all()
+        queryset = City.objects.all()
         resource_name = 'cities'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
@@ -28,7 +28,7 @@ class CountryResource(ModelResource):
     # activities = fields.ToManyField(RecipientCountryResource, attribute=lambda bundle: activity_recipient_country.objects.filter(country=bundle.obj), null=True)
 
     class Meta:
-        queryset = country.objects.all()
+        queryset = Country.objects.all()
         resource_name = 'countries'
         excludes = ['polygon', 'code']
         include_resource_uri = False
@@ -42,7 +42,7 @@ class CountryResource(ModelResource):
 class CountryGeoResource(ModelResource):
 
     class Meta:
-        queryset = country.objects.all()
+        queryset = Country.objects.all()
         resource_name = 'country-polygons'
         excludes = ['dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language']
         include_resource_uri = False
@@ -52,7 +52,7 @@ class CountryGeoResource(ModelResource):
 class RegionResource(ModelResource):
 
     class Meta:
-        queryset = region.objects.all()
+        queryset = Region.objects.all()
         resource_name = 'regions'
         serializer = Serializer(formats=['xml', 'json'])
 
@@ -61,7 +61,7 @@ class RegionResource(ModelResource):
 class SectorResource(ModelResource):
 
     class Meta:
-        queryset = sector.objects.all()
+        queryset = Sector.objects.all()
         resource_name = 'sectors'
         serializer = Serializer(formats=['xml', 'json'])
 
@@ -69,8 +69,8 @@ class SectorResource(ModelResource):
 
 class IndicatorResource(ModelResource):
     class Meta:
-        queryset = indicator.objects.all()
-        resource_name = 'indicators'
+        queryset = Indicator.objects.all()
+        resource_name = 'indicator'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
 
@@ -78,7 +78,7 @@ class IndicatorResource(ModelResource):
 class IndicatorDataResource(ModelResource):
 
     class Meta:
-        queryset = indicator_data.objects.all()
+        queryset = IndicatorData.objects.all()
         excludes = ['country.language', 'language']
         resource_name = 'indicatordata'
         include_resource_uri = False
@@ -100,7 +100,7 @@ class OrganisationResource(ModelResource):
     org_name = fields.CharField('name', null=True)
 
     class Meta:
-        queryset = organisation.objects.all()
+        queryset = Organisation.objects.all()
         resource_name = 'organisations'
         serializer = Serializer(formats=['xml', 'json'])
         filtering = {
@@ -137,7 +137,7 @@ class ActivityListResource(ModelResource):
 
 
     class Meta:
-        queryset = activity.objects.all()
+        queryset = Activity.objects.all()
         resource_name = 'activity-list'
         max_limit = 100
         serializer = Serializer(formats=['xml', 'json'])

@@ -1,19 +1,15 @@
 __author__ = 'vincentvantwestende'
-from IATI.models import *
+from iati.models import *
 import urllib2
 from lxml import etree
-from geodata.models import country, region
+from geodata.models import Country, Region
+from iati.models import RegionVocabulary
 import logging
 logger = logging.getLogger(__name__)
 
 class CodeListImporter():
 
     def synchronise_with_codelists(self):
-
-        #get the file
-        downloaded_xml = urllib2.Request("http://datadev.aidinfolabs.org/data/codelist.xml")
-        file_opener = urllib2.build_opener()
-        xml_file = file_opener.open(downloaded_xml)
 
         def fast_iter(context, func):
             for event, elem in context:
@@ -51,6 +47,7 @@ class CodeListImporter():
             category_name = elem.xpath('category-name/text()')
             category_description = elem.xpath('category-description/text()')
             abbreviation = elem.xpath('abbreviation/text()')
+            sector = elem.xpath('sector/text()')
 
             if not code:
                 code = ""
@@ -84,126 +81,149 @@ class CodeListImporter():
                 abbreviation = ""
             else:
                 abbreviation = return_first_exist(abbreviation)
+            if not sector:
+                sector = ""
+            else:
+                sector = return_first_exist(sector)
 
 
             try:
-                if type == "ActivityDateType" :
-                    db_row = activity_date_type(code=code, name=name)
+                if type == "ActivityDateType":
+                    db_row = ActivityDateType(code=code, name=name)
 
-                elif type == "ActivityStatus" :
-                    db_row = activity_status(code=code, name=name, language=language_name)
+                elif type == "ActivityStatus":
+                    db_row = ActivityStatus(code=code, name=name, language=language_name)
 
-                elif type == "AidType" :
-                    db_row2 = aid_type_category(code=category, name=category_name, description=category_description)
-                    db_row2.save()
-                    db_row = aid_type(code=code, name=name, description=description, category=db_row2)
-
-                elif type == "Country" :
+                elif type == "Country":
                     name = name.lower().capitalize()
-                    db_row = country(code=code, name=name, language=language_name)
+                    db_row = Country(code=code, name=name, language=language_name)
 
-                elif type == "BudgetType" :
-                    db_row = budget_type(code=code, name=name, language=language_name)
+                elif type == "BudgetType":
+                    db_row = BudgetType(code=code, name=name, language=language_name)
 
-                elif type == "CollaborationType" :
-                    db_row = collaboration_type(code=code, name=name, description=description, language=language_name)
+                elif type == "CollaborationType":
+                    db_row = CollaborationType(code=code, name=name, description=description, language=language_name)
 
-                elif type == "ConditionType" :
-                    db_row = condition_type(code=code, name=name, language=language_name)
+                elif type == "ConditionType":
+                    db_row = ConditionType(code=code, name=name, language=language_name)
 
-                elif type == "Currency" :
-                    db_row = currency(code=code, name=name, language=language_name)
+                elif type == "Currency":
+                    db_row = Currency(code=code, name=name, language=language_name)
 
-                elif type == "DescriptionType" :
-                    db_row = description_type(code=code, name=name, description=description)
+                elif type == "DescriptionType":
+                    db_row = DescriptionType(code=code, name=name, description=description)
 
-                elif type == "DisbursementChannel" :
-                    db_row = disbursement_channel(code=code, name=name)
+                elif type == "DisbursementChannel":
+                    db_row = DisbursementChannel(code=code, name=name)
 
-                elif type == "DocumentCategory" :
-                    db_row = document_category(code=code, name=name, description=description, category=category, category_name=category_name)
+                elif type == "DocumentCategory":
+                    db_row = DocumentCategory(code=code, name=name, description=description, category=category, category_name=category_name)
 
-                elif type == "FileFormat" :
-                    db_row = file_format(code=code, name=name)
+                elif type == "FileFormat":
+                    db_row = FileFormat(code=code, name=name)
 
-                elif type == "FinanceType" :
-                    db_row2 = finance_type_category(code=category, name=category_name ,description=category_description)
-                    db_row2.save()
-                    db_row = finance_type(code=code, name=name, category=db_row2)
+                elif type == "FlowType":
+                    db_row = FlowType(code=code, name=name, description=description)
 
-                elif type == "FlowType" :
-                    db_row = flow_type(code=code, name=name, description=description)
+                elif type == "GazetteerAgency":
+                    db_row = GazetteerAgency(code=code, name=name)
 
-                elif type == "GazetteerAgency" :
-                    db_row = gazetteer_agency(code=code, name=name)
+                elif type == "GeographicalPrecision":
+                    db_row = GeographicalPrecision(code=code, name=name, description=description)
 
+                elif type == "IndicatorMeasure":
+                    db_row = ResultIndicatorMeasure(code=code, name=name)
 
-                elif type == "GeographicalPrecision" :
-                    db_row = geographical_precision(code=code, name=name, description=description)
+                elif type == "Language":
+                    db_row = Language(code=code, name=name)
 
+                elif type == "LocationType":
+                    db_row = LocationType(code=code, name=name)
 
-                elif type == "IndicatorMeasure" :
-                    db_row = indicator_measure(code=code, name=name)
+                elif type == "OrganisationIdentifier":
+                    db_row = OrganisationIdentifier(code=code,abbreviation=abbreviation, name=name)
 
-                elif type == "Language" :
-                    db_row = language(code=code, name=name)
+                elif type == "OrganisationRole":
+                    db_row = OrganisationRole(code=code, name=name, description=description)
 
+                elif type == "OrganisationType":
+                    db_row = OrganisationType(code=code, name=name)
 
-                elif type == "LocationType" :
-                    db_row = location_type(code=code, name=name)
+                elif type == "PolicyMarker":
+                    db_row = PolicyMarker(code=code, name=name)
 
+                elif type == "PolicySignificance":
+                    db_row = PolicySignificance(code=code, name=name, description=description)
 
-                elif type == "OrganisationalIdentifier" :
-                    db_row = organisation_identifier(code=code,abbreviation=abbreviation, name=name)
+                elif type == "PublisherType":
+                    db_row = PublisherType(code=code, name=name)
 
+                elif type == "RelatedActivityType":
+                    db_row = RelatedActivityType(code=code, name=name, description=description)
 
-                elif type == "OrganisationRole" :
-                    db_row = organisation_role(code=code, name=name, description=description)
+                elif type == "ResultType":
+                    db_row = ResultType(code=code, name=name)
 
-                elif type == "OrganisationType" :
-                    db_row = organisation_type(code=code, name=name)
-
-
-                elif type == "PolicyMarker" :
-                    db_row = policy_marker(code=code, name=name)
-
-
-                elif type == "PolicySignificance" :
-                    db_row = policy_significance(code=code, name=name, description=description)
-
-                elif type == "PublisherType" :
-                    db_row = publisher_type(code=code, name=name)
-
-                elif type == "Region" :
-                    db_row = region(code=code, name=name, source="DAC")
-
-                elif type == "RelatedActivityType" :
-                    db_row = related_activity_type(code=code, name=name, description=description)
-
-                elif type == "ResultType" :
-                    db_row = result_type(code=code, name=name)
-
-                elif type == "Sector" :
-                    db_row = sector(code=code, name=name, description=description)
-
-                elif type == "SectorCategory" :
+                elif type == "SectorCategory":
                     name = name.lower().capitalize()
-                    db_row = sector_category(code=code, name=name, description=description)
+                    db_row = SectorCategory(code=code, name=name, description=description)
 
-                elif type == "TiedStatus" :
-                    db_row = tied_status(code=code, name=name, description=description)
+                elif type == "TiedStatus":
+                    db_row = TiedStatus(code=code, name=name, description=description)
 
-                elif type == "TransactionType" :
-                    db_row = transaction_type(code=code, name=name, description=description)
+                elif type == "TransactionType":
+                    db_row = TransactionType(code=code, name=name, description=description)
 
-                elif type == "ValueType" :
-                    db_row = value_type(code=code, name=name, description=description)
+                elif type == "ValueType":
+                    db_row = ValueType(code=code, name=name, description=description)
 
-                elif type == "VerificationStatus" :
-                    db_row = verification_status(code=code, name=name)
+                elif type == "VerificationStatus":
+                    db_row = VerificationStatus(code=code, name=name)
 
-                elif type == "Vocabulary" :
-                    db_row = vocabulary(code=code, name=name)
+                elif type == "Vocabulary":
+                    db_row = Vocabulary(code=code, name=name)
+
+                elif type == "ActivityScope":
+                    db_row = ActivityScope(code=code, name=name)
+
+                elif type == "AidTypeFlag":
+                    db_row = AidTypeFlag(code=code, name=name)
+
+                elif type == "BudgetIdentifier":
+                    db_row = BudgetIdentifier(code=code, name=name, category=category, sector=sector)
+
+                elif type == "BudgetIdentifierVocabulary":
+                    db_row = BudgetIdentifierVocabulary(code=code, name=name)
+
+                elif type == "ContactType":
+                    db_row = ContactType(code=code, name=name)
+
+                elif type == "LoanRepaymentPeriod":
+                    db_row = LoanRepaymentPeriod(code=code, name=name)
+
+                elif type == "LoanRepaymentType":
+                    db_row = LoanRepaymentType(code=code, name=name)
+
+                elif type == "RegionVocabulary":
+                    db_row = RegionVocabulary(code=code, name=name)
+
+                elif type == "FinanceType":
+                    db_row2 = FinanceTypeCategory(code=category, name=category_name ,description=category_description)
+                    db_row2.save()
+                    db_row = FinanceType(code=code, name=name, category=db_row2)
+
+                elif type == "Region":
+                    region_voc = RegionVocabulary.objects.get(code=1)
+                    db_row = Region(code=code, name=name, region_vocabulary=region_voc)
+
+                elif type == "AidType":
+                        db_row2 = AidTypeCategory(code=category, name=category_name, description=category_description)
+                        db_row2.save()
+                        db_row = AidType(code=code, name=name, description=description, category=db_row2)
+
+                elif type == "Sector":
+                    sector_cat = SectorCategory.objects.get(code=category)
+                    db_row = Sector(code=code, name=name, description=description, category=sector_cat)
 
 
                 if (db_row is not None):
@@ -216,29 +236,31 @@ class CodeListImporter():
                 logger.info(e.messages)
 
         def add_missing_items():
-            if not country.objects.filter(code="XK").exists():
-                kosovo = country(code="XK", name="Kosovo", language="en")
+            if not Country.objects.filter(code="XK").exists():
+                kosovo = Country(code="XK", name="Kosovo", language="en")
                 kosovo.save()
 
 
-
-        def get_codelist_data(elem):
-            name = (elem.xpath( 'name/text()' ))
-            cur_downloaded_xml = "http://datadev.aidinfolabs.org/data/codelist/" + name[0] + ".xml"
+        def get_codelist_data(elem=None, name=None):
+            if not name:
+                name = (elem.xpath('name/text()'))[0]
+            cur_downloaded_xml = "http://data.aidinfolabs.org/data/codelist/" + name + ".xml"
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
-            if (name[0] == "OrganisationIdentifier"):
-                name[0] = "OrganisationalIdentifier"
+            context2 = etree.iterparse(cur_xml_file, tag=name)
+            fast_iter(context2, add_code_list_item)
 
-            context = etree.iterparse( cur_xml_file, tag=name[0] )
-            fast_iter(context, add_code_list_item)
+        #Do sector categories first
+        get_codelist_data(name="SectorCategory")
+        get_codelist_data(name="RegionVocabulary")
 
-            add_missing_items()
-
-
-        #iterate through code lists
-        context = etree.iterparse( xml_file, tag='codelist' )
+        #get the file
+        downloaded_xml = urllib2.Request("http://data.aidinfolabs.org/data/codelist.xml")
+        file_opener = urllib2.build_opener()
+        xml_file = file_opener.open(downloaded_xml)
+        context = etree.iterparse(xml_file, tag='codelist')
         fast_iter(context, get_codelist_data)
+        add_missing_items()
 
 

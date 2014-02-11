@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 
 # App specific
-from IATI_synchroniser.models import iati_xml_source
+from iati_synchroniser.models import IatiXmlSource
 import datetime
 
 
@@ -37,6 +37,6 @@ class ParseSchedule():
                 print "Now updating " + source.source_url
                 source.save()
 
-        [parse(source) for source in iati_xml_source.objects.all()]
+        [parse(source) for source in IatiXmlSource.objects.all()]
 
 

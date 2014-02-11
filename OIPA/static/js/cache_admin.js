@@ -4,7 +4,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/Cache/requested_call/update-requests/",
+           url: "/admin/cache/requestedcall/update-requests/",
            beforeSend: function() {
                $('#update-requests').text("Updating...");
            },
@@ -22,12 +22,43 @@ $(document).ready(function (){
        });
    });
 
+   $('#delete-all-under-x-count').click(function(){
+       request_count = $('#request-count').val();
+       var intRegex = /^\d+$/;
+       if(intRegex.test(parse_days)) {
+
+           $.ajax({
+               type: "GET",
+               data: ({'count': request_count}),
+               url: "/admin/iati_synchroniser/iatixmlsource/delete-all-under-x-count/",
+               beforeSend: function() {
+                   $('#delete-all-under-x-count').text("Updating...");
+               },
+               statusCode: {
+                   200: function() {
+                       $('#delete-all-under-x-count').text("Updated");
+                   },
+                   404: function() {
+                       $('#delete-all-under-x-count').text("404 error...");
+                   },
+                   500: function() {
+                       $('#delete-all-under-x-count').text("500 error...");
+                   }
+               }
+           });
+       }
+   });
+
+
+
+
+
        $('#cache-all-requests').click(function(){
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/Cache/requested_call/cache-all-requests/",
+           url: "/admin/cache/requestedcall/cache-all-requests/",
            beforeSend: function() {
                $('#cache-all-requests').text("Updating...");
            },
@@ -50,7 +81,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/Cache/cached_call/update-caches/",
+           url: "/admin/cache/cachedcall/update-caches/",
            beforeSend: function() {
                $('#update-caches').text("Updating...");
            },

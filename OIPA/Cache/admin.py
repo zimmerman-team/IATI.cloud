@@ -1,8 +1,8 @@
 from django.contrib import admin
-from Cache.models import *
+from cache.models import *
 from django.conf.urls import patterns
 from django.http import HttpResponse
-from Cache.validator import Validator
+from cache.validator import Validator
 
 class RequestAdmin(admin.ModelAdmin):
     search_fields = ['call']
@@ -45,6 +45,6 @@ class CallAdmin(admin.ModelAdmin):
         validator.update_cache_calls()
         return HttpResponse('Success')
 
-admin.site.register(cached_call, CallAdmin)
-admin.site.register(requested_call, RequestAdmin)
+admin.site.register(CachedCall, CallAdmin)
+admin.site.register(RequestedCall, RequestAdmin)
 

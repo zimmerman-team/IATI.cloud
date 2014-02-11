@@ -4,10 +4,10 @@ from tastypie.resources import ModelResource
 # Data specific
 from geodata.data_backup.country_data import countryData
 
-# Cache specific
-from API.cache import NoTransformCache
-from IATI.models import aid_type
-from Cache.validator import Validator
+# cache specific
+from api.cache import NoTransformCache
+from iati.models import AidType
+from cache.validator import Validator
 
 # Direct sql specific
 import ujson
@@ -88,7 +88,7 @@ class ActivityFilterOptionsResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'activity-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -188,7 +188,7 @@ class IndicatorCountryDataResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-country-data'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -261,7 +261,7 @@ class IndicatorCityDataResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-city-data'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -340,7 +340,7 @@ class IndicatorRegionDataResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-region-data'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -408,7 +408,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-region-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -460,7 +460,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicators'] = indicators
+        jsondata['indicator'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -469,7 +469,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-country-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -518,7 +518,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicators'] = indicators
+        jsondata['indicator'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -528,7 +528,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'indicator-city-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -590,7 +590,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
         jsondata['regions'] = regions
         jsondata['countries'] = countries
         jsondata['cities'] = cities
-        jsondata['indicators'] = indicators
+        jsondata['indicator'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -605,7 +605,7 @@ class CountryGeojsonResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'country-geojson'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -623,17 +623,24 @@ class CountryGeojsonResource(ModelResource):
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q = request.GET.get('budgets__in', None)
+        budget_q_gte = request.GET.get('total_budget__gte', None)
+        budget_q_lte = request.GET.get('total_budget__lte', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
+        budget_q = ''
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + ')'
+        if budget_q_gte:
+            budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
+        if budget_q_lte:
+            budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
+
+
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
-        if budget_q:
-            filter_string += ' AND total_budget > ' + budget_q + ' '
+
 
         if region_q:
             filter_region = 'LEFT JOIN IATI_activity_recipient_region rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
@@ -677,11 +684,11 @@ class CountryGeojsonResource(ModelResource):
 
 
 
-class Adm1rRegionGeojsonResource(ModelResource):
+class Adm1RegionGeojsonResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = aid_type.objects.all()
+        queryset = AidType.objects.all()
         resource_name = 'adm1-region-geojson'
         include_resource_uri = True
         cache = NoTransformCache()

@@ -1,31 +1,21 @@
-# Django specific
-from django.db.models import Q
-
-# Tastypie specific
-from tastypie import fields
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
-
-# Data specific
-from IATI.models import organisation
-from indicators.models import *
-from API.v3.resources.helper_resources import *
+from indicator.models import *
+from api.v3.resources.helper_resources import *
 
 class CityResource(ModelResource):
 
     class Meta:
-        queryset = city.objects.all()
+        queryset = City.objects.all()
         resource_name = 'cities'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
 
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
-    activities = fields.ToManyField(RecipientCountryResource, attribute=lambda bundle: activity_recipient_country.objects.filter(country=bundle.obj), null=True)
+    activities = fields.ToManyField(RecipientCountryResource, attribute=lambda bundle: ActivityRecipientCountry.objects.filter(country=bundle.obj), null=True)
 
     class Meta:
-        queryset = country.objects.all()
+        queryset = Country.objects.all()
         resource_name = 'countries'
         excludes = ['polygon']
         include_resource_uri = False
@@ -40,7 +30,7 @@ class CountryResource(ModelResource):
 class RegionResource(ModelResource):
 
     class Meta:
-        queryset = region.objects.all()
+        queryset = Region.objects.all()
         resource_name = 'regions'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
@@ -49,7 +39,7 @@ class RegionResource(ModelResource):
 class SectorResource(ModelResource):
 
     class Meta:
-        queryset = sector.objects.all()
+        queryset = Sector.objects.all()
         resource_name = 'sectors'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
@@ -59,7 +49,7 @@ class OrganisationResource(ModelResource):
     type = fields.OneToOneField(OrganisationTypeResource, 'type', full=True, null=True)
 
     class Meta:
-        queryset = organisation.objects.all()
+        queryset = Organisation.objects.all()
         resource_name = 'organisations'
         serializer = Serializer(formats=['xml', 'json'])
         filtering = {

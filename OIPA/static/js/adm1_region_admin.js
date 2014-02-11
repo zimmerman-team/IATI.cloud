@@ -11,7 +11,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/geodata/adm1_region/update-adm1-regions/",
+           url: "/admin/geodata/adm1region/update-adm1-regions/",
            beforeSend: function() {
                $('#update-adm1-region').text("Updating...");
            },

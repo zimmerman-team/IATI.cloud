@@ -1,4 +1,4 @@
-from Cache.models import *
+from cache.models import *
 import urllib2
 import httplib
 from django.conf import settings
@@ -14,22 +14,22 @@ class Validator():
     def is_cached(self, call):
 
         # check if call is in requested_calls table
-        if requested_call.objects.filter(call=call).exists():
-            the_call = requested_call.objects.get(call=call)
+        if RequestedCall.objects.filter(call=call).exists():
+            the_call = RequestedCall.objects.get(call=call)
             the_call.count = the_call.count + 1
             the_call.save()
             if the_call.cached:
-                if cached_call.objects.filter(call=call).exists():
+                if CachedCall.objects.filter(call=call).exists():
                     return True
         else:
             if not "flush" in call:
-                the_call = requested_call(call=call, cached=False, response_time=None, count=1)
+                the_call = RequestedCall(call=call, cached=False, response_time=None, count=1)
                 the_call.save()
         return False
 
     def update_response_times_and_add_to_cache(self):
 
-        for entry in requested_call.objects.filter(response_time=None):
+        for entry in RequestedCall.objects.filter(response_time=None):
 
             data = None
             #perform the code with a timer
@@ -42,7 +42,7 @@ class Validator():
                     #if t in seconds > min query time to cache, store the call
                     if time_elapsed > self.start_caching_from:
 
-                        the_api_cache = cached_call(call=entry.call, result=data, last_fetched=datetime.datetime.now())
+                        the_api_cache = CachedCall(call=entry.call, result=data, last_fetched=datetime.datetime.now())
                         the_api_cache.save()
                         entry.cached = True
                     entry.response_time = time_elapsed
@@ -50,10 +50,10 @@ class Validator():
 
     def cache_all_requests(self):
 
-        for entry in requested_call.objects.all():
+        for entry in RequestedCall.objects.all():
             data = self.perform_api_call(entry.call)
             if data:
-                the_api_cache = cached_call(call=entry.call, result=data, last_fetched=datetime.datetime.now())
+                the_api_cache = CachedCall(call=entry.call, result=data, last_fetched=datetime.datetime.now())
                 the_api_cache.save()
                 entry.cached = True
                 entry.save()
@@ -94,7 +94,7 @@ class Validator():
         return None
 
     def update_cache_calls(self):
-        for entry in cached_call.objects.all():
+        for entry in CachedCall.objects.all():
 
             try:
 
@@ -108,5 +108,5 @@ class Validator():
                 print e.message
 
     def get_cached_call(self, call):
-        data = cached_call.objects.get(call=call).result
+        data = CachedCall.objects.get(call=call).result
         return data

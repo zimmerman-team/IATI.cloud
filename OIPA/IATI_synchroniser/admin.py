@@ -3,10 +3,11 @@ from django.contrib import admin
 from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from IATI_synchroniser.management.commands.parse_all import ParseAll
-from IATI_synchroniser.management.commands.parse_schedule import ParseSchedule
-from IATI_synchroniser.management.commands.parse_twodays import ParseTwoDays
-
+from iati_synchroniser.management.commands.parse_all import ParseAll
+from iati_synchroniser.management.commands.parse_schedule import ParseSchedule
+from iati_synchroniser.management.commands.parse_x_days import ParseXDays
+from iati_synchroniser.management.commands.update_publisher_activity_count import PublisherUpdater
+from iati_synchroniser.admin import AdminTools
 
 class DatasetSyncAdmin(admin.ModelAdmin):
     list_display = ['type', 'interval', 'date_updated', 'sync_now']
@@ -26,7 +27,7 @@ class DatasetSyncAdmin(admin.ModelAdmin):
 
     def sync_view(self, request):
         sync_id = request.GET.get('sync_id')
-        obj = get_object_or_404(dataset_sync, id=sync_id)
+        obj = get_object_or_404(DatasetSync, id=sync_id)
         obj.sync_dataset_with_iati_api()
         return HttpResponse('Success')
 
@@ -48,12 +49,13 @@ class CodeListSyncAdmin(admin.ModelAdmin):
         return extra_urls + urls
 
     def sync_view(self, request):
-        obj = get_object_or_404(codelist_sync)
+        sync_id = request.GET.get('sync_id')
+        obj = get_object_or_404(CodelistSync, id=sync_id)
         obj.sync_codelist()
         return HttpResponse('Success')
 
 class IATIXMLSourceInline(admin.TabularInline):
-    model = iati_xml_source
+    model = IatiXmlSource
     extra = 0
 
 
@@ -73,36 +75,37 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
             (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
             (r'^parse-all/', self.admin_site.admin_view(self.parse_all)),
             (r'^parse-all-over-interval/', self.admin_site.admin_view(self.parse_all_over_interval)),
-            (r'^parse-all-over-two-days/', self.admin_site.admin_view(self.parse_all_over_two_days)),
+            (r'^parse-all-over-two-days/', self.admin_site.admin_view(self.parse_all_over_x_days)),
         )
         return extra_urls + urls
 
     def parse_view(self, request):
         xml_id = request.GET.get('xml_id')
-        obj = get_object_or_404(iati_xml_source, id=xml_id)
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
         obj.save()
         return HttpResponse('Success')
 
-    def parse_all(self, request):
+    def parse_all(self):
         parser = ParseAll()
         parser.parseAll()
         return HttpResponse('Success')
 
-    def parse_all_over_interval(self, request):
+    def parse_all_over_interval(self):
         parser = ParseSchedule()
         parser.parseSchedule()
         return HttpResponse('Success')
 
-    def parse_all_over_two_days(self, request):
-        parser = ParseTwoDays()
-        parser.parseTwoDays()
+    def parse_all_over_x_days(self, request):
+        days = request.GET.get('days')
+        parser = ParseXDays()
+        parser.parseXDays(days)
         return HttpResponse('Success')
 
 
 class PublisherAdmin(admin.ModelAdmin):
     inlines = [IATIXMLSourceInline]
 
-    list_display = ('org_id', 'org_abbreviate', 'org_name' )
+    list_display = ('org_id', 'org_abbreviate', 'org_name', 'XML_total_activity_count', 'OIPA_total_activity_count')
 
     class Media:
         js = (
@@ -113,17 +116,26 @@ class PublisherAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(PublisherAdmin, self).get_urls()
         extra_urls = patterns('',
-            (r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view))
+            (r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view)),
+            (r'^count-publisher-activities/', self.admin_site.admin_view(self.count_publisher_activities))
         )
         return extra_urls + urls
 
+
     def parse_view(self, request):
         publisher_id = request.GET.get('publisher_id')
-        for obj in iati_xml_source.objects.filter(publisher__id=publisher_id):
-            obj.process(1)
+        for obj in IatiXmlSource.objects.filter(publisher__id=publisher_id):
+            obj.process()
         return HttpResponse('Success')
 
-admin.site.register(dataset_sync,DatasetSyncAdmin)
-admin.site.register(codelist_sync,CodeListSyncAdmin)
+    def count_publisher_activities(self):
+
+        pu = PublisherUpdater()
+        pu.update_publisher_activity_count()
+        return HttpResponse('Success')
+
+
+admin.site.register(DatasetSync,DatasetSyncAdmin)
+admin.site.register(CodelistSync,CodeListSyncAdmin)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(iati_xml_source, IATIXMLSourceAdmin)
+admin.site.register(IatiXmlSource, IATIXMLSourceAdmin)

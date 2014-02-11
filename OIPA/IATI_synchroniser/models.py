@@ -2,11 +2,10 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from IATI_synchroniser.dataset_syncer import DatasetSyncer
-from IATI_synchroniser.codelist_importer import CodeListImporter
-from IATI.parser import Parser
-from IATI_synchroniser.admin_tools import AdminTools
-
+from iati_synchroniser.dataset_syncer import DatasetSyncer
+from iati_synchroniser.codelist_importer import CodeListImporter
+from iati.parser import Parser
+from iati_synchroniser.admin_tools import AdminTools
 
 INTERVAL_CHOICES = (
     (u'YEARLY', _(u"Parse yearly")),
@@ -14,22 +13,20 @@ INTERVAL_CHOICES = (
     (u'WEEKLY', _(u"Parse weekly")),
     (u'DAILY', _(u"Parse daily")),
 )
+
 class Publisher(models.Model):
     org_id = models.CharField(max_length=100, blank=True, null=True)
     org_abbreviate = models.CharField(max_length=55, blank=True, null=True)
     org_name = models.CharField(max_length=255)
     default_interval = models.CharField(verbose_name=_(u"Interval"), max_length=55, choices=INTERVAL_CHOICES, default=u'MONTHLY')
+    XML_total_activity_count = models.IntegerField(null=True, default=None)
+    OIPA_total_activity_count = models.IntegerField(null=True, default=None)
 
     def __unicode__(self):
-        if self.org_abbreviate:
-            return self.org_abbreviate
-        return self.org_name
-
-    class Meta:
-        ordering = ["org_name"]
+        return self.org_id
 
 
-class iati_xml_source(models.Model):
+class IatiXmlSource(models.Model):
     TYPE_CHOICES = (
         (1, _(u"Activity Files")),
         (2, _(u"Organisation Files")),
@@ -44,16 +41,17 @@ class iati_xml_source(models.Model):
     title = models.CharField(max_length=255, null=True)
     type = models.IntegerField(choices=TYPE_CHOICES, default=1)
     publisher = models.ForeignKey(Publisher)
-    source_url = models.CharField(max_length=255, unique=True, help_text=_(u"Hyperlink to an IATI activity or organisation XML file."))
+    source_url = models.CharField(max_length=255, unique=True, help_text=_(u"Hyperlink to an iati activity or organisation XML file."))
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
     update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
     xml_activity_count = models.IntegerField(null=True, default=None)
     oipa_activity_count = models.IntegerField(null=True, default=None)
+    iati_standard_version = models.CharField(max_length=10)
 
     class Meta:
-        verbose_name_plural = "IATI XML sources"
+        verbose_name_plural = "iati XML sources"
         ordering = ["ref"]
 
     def __unicode__(self):
@@ -74,14 +72,14 @@ class iati_xml_source(models.Model):
         self.save(process=False)
 
     def save(self, process=True, *args, **kwargs):
-        super(iati_xml_source, self).save()
+        super(IatiXmlSource, self).save()
         if process:
             self.process()
 
 
 
 
-class dataset_sync(models.Model):
+class DatasetSync(models.Model):
     TYPE_CHOICES = (
         (1, _(u"Activity Files")),
         (2, _(u"Organisation Files")),
@@ -123,7 +121,7 @@ class dataset_sync(models.Model):
 
 
 
-class codelist_sync(models.Model):
+class CodelistSync(models.Model):
 
     date_updated = models.DateTimeField(auto_now=True, editable=False)
 
@@ -137,4 +135,4 @@ class codelist_sync(models.Model):
 
     def sync_codelist(self):
         syncer = CodeListImporter()
-        syncer.synchronise_with_codelists();
+        syncer.synchronise_with_codelists()

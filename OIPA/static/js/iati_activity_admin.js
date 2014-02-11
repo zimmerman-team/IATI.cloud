@@ -13,7 +13,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/IATI/activity/update-budget-totals/",
+           url: "/admin/iati/activity/update-budget-totals/",
            beforeSend: function() {
                $('#update-budget-totals').text("Updating...");
            },

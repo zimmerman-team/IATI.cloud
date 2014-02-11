@@ -3,7 +3,7 @@ import models
 import httplib
 import urllib2
 import datetime
-from IATI.models import organisation_identifier
+from iati.models import OrganisationIdentifier
 import logging
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class DatasetSyncer():
 
 
                         #   If download url is not already in OIPA
-                        if not models.iati_xml_source.objects.filter(source_url=source_url).exists():
+                        if not models.IatiXmlSource.objects.filter(source_url=source_url).exists():
 
                             logger.info("starting on: " + source_url + ", cur url = " + cur_url)
 
@@ -85,7 +85,7 @@ class DatasetSyncer():
 
                             logger.info("Updated publisher and last found in registry on: " + source_url)
 
-                            cursource = models.iati_xml_source.objects.get(source_url=source_url)
+                            cursource = models.IatiXmlSource.objects.get(source_url=source_url)
                             cursource.last_found_in_registry = datetime.datetime.now()
                             current_publisher = cursource.publisher
                             #check if publisher meta is already known, if not, add it and check if the known publisher already existed and add it to the source
@@ -119,8 +119,8 @@ class DatasetSyncer():
     def update_publisher(self, publisher_iati_id, publisher_abbreviation, publisher_name):
 
         # get the abbreviation from organisation_identifier table
-        if(organisation_identifier.objects.filter(code=publisher_iati_id).exists()):
-            current_publisher_meta = organisation_identifier.objects.get(code=publisher_iati_id)
+        if(OrganisationIdentifier.objects.filter(code=publisher_iati_id).exists()):
+            current_publisher_meta = OrganisationIdentifier.objects.get(code=publisher_iati_id)
             publisher_abbreviation = current_publisher_meta.abbreviation
 
         #   if already in the database, get the publisher_id, else add the publisher
@@ -149,6 +149,6 @@ class DatasetSyncer():
         return new_publisher
 
     def add_iati_xml_source_to_db(self, url, title, name, current_publisher, cur_type):
-        new_source = models.iati_xml_source(ref=name, title=title, publisher=current_publisher, source_url=url, type=cur_type)
+        new_source = models.IatiXmlSource(ref=name, title=title, publisher=current_publisher, source_url=url, type=cur_type)
         new_source.save()
         return new_source

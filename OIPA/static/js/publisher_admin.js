@@ -12,7 +12,7 @@ $(document).ready(function (){
         $.ajax({
             type: "GET",
             data: ({'publisher_id': publisher_id}),
-            url: "/admin/IATI_synchroniser/publisher/parse-publisher/",
+            url: "/admin/iati_synchroniser/publisher/parse-publisher/",
             beforeSend: function() {
                 image.hide();
                 loading.show();
@@ -36,4 +36,25 @@ $(document).ready(function (){
             }
         });
     });
+
+    $('#count-publisher-activities').click(function(){
+       $.ajax({
+           type: "GET",
+           url: "/admin/iati_synchroniser/publisher/count-publisher-activities/",
+           beforeSend: function() {
+               $('#count-publisher-activities').text("Updating...");
+           },
+           statusCode: {
+               200: function() {
+                   $('#count-publisher-activities').text("Updated");
+               },
+               404: function() {
+                   $('#count-publisher-activities').text("404 error...");
+               },
+               500: function() {
+                   $('#count-publisher-activities').text("500 error...");
+               }
+           }
+       });
+   });
 });

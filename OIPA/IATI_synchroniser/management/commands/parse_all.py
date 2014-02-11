@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext as _
 
 # App specific
-from IATI_synchroniser.models import iati_xml_source
+from iati_synchroniser.models import IatiXmlSource
 
 
 class Command(BaseCommand):
@@ -23,5 +23,5 @@ class ParseAll():
 
         def parse(source):
             source.save()
-        [parse(source) for source in iati_xml_source.objects.all()]
+        [parse(source) for source in IatiXmlSource.objects.all()]
 

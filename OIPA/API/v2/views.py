@@ -3,8 +3,8 @@ from django.conf import settings
 from django.template.response import TemplateResponse
 
 # Api specific
-from API.v2.resources.model_resources import *
-from API.v2.resources.activity_view_resources import ActivityResource
+from api.v2.resources.model_resources import *
+from api.v2.resources.activity_view_resources import ActivityResource
 
 def docs_index(request):
     context = dict()

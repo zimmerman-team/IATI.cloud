@@ -6,7 +6,7 @@ $(document).ready(function (){
         $.ajax({
             type: "GET",
             data: ({'sync_id': sync_id}),
-            url: "/admin/IATI_synchroniser/codelist_sync/sync-codelists/",
+            url: "/admin/iati_synchroniser/codelistsync/sync-codelists/",
             beforeSend: function() {
                 image.hide();
                 loading.show();

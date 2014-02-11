@@ -1,92 +1,92 @@
 $(document).ready(function (){
-   $('#update-polygon-set').click(function(){
+   $('#update-polygon').click(function(){
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/geodata/country/update-polygon/",
            beforeSend: function() {
-               $('#update-polygon-set').text("Updating...");
+               $('#update-polygon').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-polygon-set').text("Updated");
+                   $('#update-polygon').text("Updated");
                },
                404: function() {
-                   $('#update-polygon-set').text("404 error...");
+                   $('#update-polygon').text("404 error...");
                },
                500: function() {
-                   $('#update-polygon-set').text("500 error...");
+                   $('#update-polygon').text("500 error...");
                }
            }
        });
    });
 
-    $('#update-country-identifiers-set').click(function(){
+    $('#update-country-identifiers').click(function(){
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/geodata/country/update-country-identifiers-set/",
+           url: "/admin/geodata/country/update-country-identifiers/",
            beforeSend: function() {
-               $('#update-country-identifiers-set').text("Updating...");
+               $('#update-country-identifiers').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-country-identifiers-set').text("Updated");
+                   $('#update-country-identifiers').text("Updated");
                },
                404: function() {
-                   $('#update-country-identifiers-set').text("404 error...");
+                   $('#update-country-identifiers').text("404 error...");
                },
                500: function() {
-                   $('#update-country-identifiers-set').text("500 error...");
+                   $('#update-country-identifiers').text("500 error...");
                }
            }
        });
    });
 
 
-   $('#update-country-center-set').click(function(){
+   $('#update-country-center').click(function(){
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/geodata/country/update-country-center/",
            beforeSend: function() {
-               $('#update-country-center-set').text("Updating...");
+               $('#update-country-center').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-country-center-set').text("Updated");
+                   $('#update-country-center').text("Updated");
                },
                404: function() {
-                   $('#update-country-center-set').text("404 error...");
+                   $('#update-country-center').text("404 error...");
                },
                500: function() {
-                   $('#update-country-center-set').text("500 error...");
+                   $('#update-country-center').text("500 error...");
                }
            }
        });
    });
 
-    $('#update-regions-set').click(function(){
+    $('#update-regions').click(function(){
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
-           url: "/admin/geodata/country/update-regions-set/",
+           url: "/admin/geodata/country/update-regions/",
            beforeSend: function() {
-               $('#update-regions-set').text("Updating...");
+               $('#update-regions').text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-regions-set').text("Updated");
+                   $('#update-regions').text("Updated");
                },
                404: function() {
-                   $('#update-regions-set').text("404 error...");
+                   $('#update-regions').text("404 error...");
                },
                500: function() {
-                   $('#update-regions-set').text("500 error...");
+                   $('#update-regions').text("500 error...");
                }
            }
        });
