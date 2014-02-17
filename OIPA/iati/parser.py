@@ -459,7 +459,7 @@ class Parser():
                         language = None
                         if title.__len__() > 255:
                             title = title[:255]
-    
+
                         if language_ref:
                             if models.Language.objects.filter(code=language_ref).exists():
                                 language = models.Language.objects.get(code=language_ref)
@@ -846,6 +846,8 @@ class Parser():
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
                     title = self.return_first_exist(t.xpath('title/text()'))
+                    if title and title.__len__ > 255:
+                        title = title[:255]
                     description = self.return_first_exist(t.xpath('description/text()'))
 
                     if type_ref:
@@ -1002,8 +1004,11 @@ class Parser():
                     continue
 
                 try:
-                    new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
-                    new_activity_region.save()
+                    if not region:
+                        print "Unknown region in add_regions: " + region_ref
+                    else:
+                        new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
+                        new_activity_region.save()
 
                 except IntegrityError, e:
                     self.exception_handler(e, activity.id, "add_regions")
