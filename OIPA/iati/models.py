@@ -570,7 +570,7 @@ class RelatedActivity(models.Model):
 
 class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity)
-    url = models.CharField(max_length=255)
+    url = models.TextField(max_length=500)
     file_format = models.ForeignKey(FileFormat, null=True, default=None)
     document_category = models.ForeignKey(DocumentCategory, null=True, default=None)
     title = models.CharField(max_length=255, null=True, default=None)

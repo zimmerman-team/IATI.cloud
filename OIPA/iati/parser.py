@@ -453,15 +453,20 @@ class Parser():
             for t in elem.xpath('title'):
                 try:
                     title = self.return_first_exist(t.xpath( 'text()' ))
-                    language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
-                    language = None
+                    if title:
 
-                    if language_ref:
-                        if models.Language.objects.filter(code=language_ref).exists():
-                            language = models.Language.objects.get(code=language_ref)
+                        language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
+                        language = None
+                        if title.__len__() > 255:
+                            title = title[:255]
+    
+                        if language_ref:
+                            if models.Language.objects.filter(code=language_ref).exists():
+                                language = models.Language.objects.get(code=language_ref)
 
-                    new_title = models.Title(activity=activity, title=title, language=language)
-                    new_title.save()
+
+                        new_title = models.Title(activity=activity, title=title, language=language)
+                        new_title.save()
 
                 except IntegrityError, e:
                     self.exception_handler(e, activity.id, "add_activity_title")
