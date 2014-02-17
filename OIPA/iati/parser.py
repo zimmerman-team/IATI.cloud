@@ -193,6 +193,7 @@ class Parser():
                 unvalidated_date = unvalidated_date.split("Z")[0]
                 unvalidated_date = sub(r'[\t]', '', unvalidated_date)
                 unvalidated_date = unvalidated_date.replace(" ", "")
+                unvalidated_date = unvalidated_date.replace("/", "-")
                 if len(unvalidated_date) == 4:
                     unvalidated_date = unvalidated_date + "-01-01"
                 validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
@@ -247,7 +248,7 @@ class Parser():
     def add_organisation(self, elem):
         ref = self.return_first_exist(elem.xpath( 'reporting-org/@ref' ))
         type_ref = self.return_first_exist(elem.xpath( 'reporting-org/@type' ))
-        type = None
+        org_type = None
         name = self.return_first_exist(elem.xpath('reporting-org/text()'))
         if ref:
             try:
@@ -262,16 +263,13 @@ class Parser():
                         name = org_identifier.name
 
                     if type_ref:
-                        try:
-                            isnumber = int(type_ref)
-                            if models.OrganisationType.objects.filter(code=type_ref).exists():
-                                type = models.OrganisationType.objects.get(code=type_ref)
-                        except ValueError:
-                            if models.OrganisationType.objects.filter(name=type_ref).exists():
-                                type = models.OrganisationType.objects.get(name=type_ref)
+                            if self.isInt(type_ref):
+                                if models.OrganisationType.objects.filter(code=type_ref).exists():
+                                    org_type = models.OrganisationType.objects.get(code=type_ref)
+                            elif models.OrganisationType.objects.filter(name=type_ref).exists():
+                                org_type = models.OrganisationType.objects.filter(name=type_ref)[0]
 
-
-                    new_organisation = models.Organisation(code=ref, type=type, abbreviation=abbreviation, name=name)
+                    new_organisation = models.Organisation(code=ref, type=org_type, abbreviation=abbreviation, name=name)
                     new_organisation.save()
 
                 else:
@@ -322,6 +320,7 @@ class Parser():
 
             linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri'))
             iati_standard_version = self.return_first_exist(elem.xpath('@version'))
+
             reporting_organisation_ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
             reporting_organisation = None
 
@@ -757,7 +756,7 @@ class Parser():
                             provider_organisation_name_ref = self.return_first_exist(t.xpath('provider-org/text()'))
 
                             if models.Organisation.objects.filter(name=provider_organisation_name_ref).exists():
-                                provider_organisation = models.Organisation.objects.get(name=provider_organisation_name_ref)
+                                provider_organisation = models.Organisation.objects.filter(name=provider_organisation_name_ref)[0]
                             else:
                                 provider_organisation_type = None
                                 provider_organisation_type_ref = self.return_first_exist(t.xpath('provider-org/@type'))
@@ -782,7 +781,7 @@ class Parser():
                             receiver_organisation_name_ref = self.return_first_exist(t.xpath('receiver-org/text()'))
 
                             if models.Organisation.objects.filter(name=receiver_organisation_name_ref).exists():
-                                receiver_organisation = models.Organisation.objects.get(name=receiver_organisation_name_ref)
+                                receiver_organisation = models.Organisation.objects.filter(name=receiver_organisation_name_ref)[0]
                             else:
 
                                 receiver_organisation_type = None
@@ -899,7 +898,7 @@ class Parser():
                     if not sector:
                         sector_name = self.return_first_exist(t.xpath( 'text()' ))
                         if models.Sector.objects.filter(name=sector_name).exists():
-                            sector = models.Sector.objects.get(name=sector_name)
+                            sector = models.Sector.objects.filter(name=sector_name)[0]
 
                     if vocabulary_code:
                         if models.Vocabulary.objects.filter(code=vocabulary_code).exists():
@@ -947,7 +946,7 @@ class Parser():
                         else:
                             country_ref = country_ref.upper()
                             if models.Country.objects.filter(name=country_ref).exists():
-                                country = models.Country.objects.get(name=country_ref)
+                                country = models.Country.objects.filter(name=country_ref)[0]
                     else:
                         continue
 
@@ -988,7 +987,7 @@ class Parser():
                     if models.Region.objects.filter(code=region_ref).exists():
                         region = models.Region.objects.get(code=region_ref)
                     elif models.Region.objects.filter(name=region_ref).exists():
-                            region = models.Region.objects.get(name=region_ref)
+                            region = models.Region.objects.filter(name=region_ref)[0]
                     else:
                         print "error in add regions, unknown region: " + region_ref
                 else:
@@ -1034,7 +1033,7 @@ class Parser():
                                 type = models.OrganisationType.objects.get(code=role_type)
                         else:
                             if models.OrganisationType.objects.filter(name=role_type).exists():
-                                type = models.OrganisationType.objects.get(name=role_type)
+                                type = models.OrganisationType.objects.filter(name=role_type)[0]
 
                     if participating_organisation_ref:
                         if models.Organisation.objects.filter(code=participating_organisation_ref).exists():
@@ -1192,8 +1191,12 @@ class Parser():
                     text = self.return_first_exist(t.xpath('text()'))
 
                     if type_ref:
-                        if models.RelatedActivityType.objects.filter(code=type_ref).exists():
+                        if self.isInt(type_ref) and models.RelatedActivityType.objects.filter(code=type_ref).exists():
                             type = models.RelatedActivityType.objects.get(code=type_ref)
+                        else:
+                            type_ref = type_ref.lower().capitalize()
+                            if models.RelatedActivityType.objects.filter(name=type_ref).exists():
+                                type = models.RelatedActivityType.objects.filter(name=type_ref)[0]
 
                     new_related_activity = models.RelatedActivity(current_activity=activity, type=type, ref=ref, text=text)
                     new_related_activity.save()
@@ -1327,7 +1330,7 @@ class Parser():
 
                     if doc_category_ref:
                         if models.DocumentCategory.objects.filter(code=doc_category_ref).exists():
-                            document_category = models.DocumentCategory.objects.get(code=doc_category_ref)
+                            doc_category = models.DocumentCategory.objects.get(code=doc_category_ref)
 
                     # if language_ref:
                     #     if models.language.objects.filter(code=language_ref).exists():
@@ -1335,7 +1338,7 @@ class Parser():
 
 
 
-                    document_link = models.DocumentLink(activity=activity, url=url, file_format=file_format, document_category=document_category)
+                    document_link = models.DocumentLink(activity=activity, url=url, file_format=file_format, document_category=doc_category)
                     document_link.save()
 
 

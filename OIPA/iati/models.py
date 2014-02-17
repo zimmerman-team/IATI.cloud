@@ -406,7 +406,7 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
-    iati_standard_version = models.CharField(max_length=10, null=True, default=None)
+    iati_standard_version = models.CharField(max_length=30, null=True, default=None)
 
 
     def __unicode__(self):
