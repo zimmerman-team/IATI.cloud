@@ -46,7 +46,7 @@ class TotalBudgetUpdater():
         try:
             cursor = connection.cursor()
 
-            cursor.execute("SELECT activity_id, sum(value) as total_value FROM IATI_budget b WHERE activity_id ='" + id + "' GROUP BY activity_id")
+            cursor.execute("SELECT activity_id, sum(value) as total_value FROM iati_budget b WHERE activity_id ='" + id + "' GROUP BY activity_id")
 
             results = self.get_fields(cursor=cursor)
             for r in results:
