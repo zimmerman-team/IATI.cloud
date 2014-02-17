@@ -238,6 +238,7 @@ class Parser():
         logger.info("error in " + ref + ", def: " + current_def)
         if e.args:
             logger.info(e.args[0])
+        if e.args.__len__() > 1:
             logger.info(e.args[1])
         if e.message:
             logger.info(e.message)
