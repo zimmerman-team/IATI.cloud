@@ -4,7 +4,9 @@ import datetime
 from django.core.management.base import BaseCommand
 from django.db import connection
 from iati.models import Activity, Budget
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list
@@ -52,4 +54,10 @@ class TotalBudgetUpdater():
                 cur_act.total_budget = r['total_value']
                 cur_act.save()
         except Exception as e:
-            print e.message
+            logger.info("error in " + id + ", def: update_single_activity")
+            if e.args:
+                logger.info(e.args[0])
+            if e.args.__len__() > 1:
+                logger.info(e.args[1])
+            if e.message:
+                logger.info(e.message)
