@@ -943,8 +943,11 @@ class Parser():
                     if country_ref:
                         if models.Country.objects.filter(code=country_ref).exists():
                             country = models.Country.objects.get(code=country_ref)
+                        elif country_ref == "KOS":
+                            # Kosovo fix
+                            country = models.Country.objects.get(code="XK")
                         else:
-                            country_ref = country_ref.upper()
+                            country_ref = country_ref.lower().capitalize()
                             if models.Country.objects.filter(name=country_ref).exists():
                                 country = models.Country.objects.filter(name=country_ref)[0]
                     else:
