@@ -96,7 +96,11 @@ class DatasetSyncer():
 
                     except Exception as e:
                         logger.info("Unexpected error in synchronize_with_iati_api_by_page:")
-                        logger.info(e.message)
+                        if e.args:
+                            logger.info(e.args[0])
+                            logger.info(e.args[1])
+                        if e.message:
+                            logger.info(e.message)
 
 
 
