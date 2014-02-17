@@ -48,7 +48,7 @@ class IatiXmlSource(models.Model):
     last_found_in_registry = models.DateTimeField(default=None, null=True)
     xml_activity_count = models.IntegerField(null=True, default=None)
     oipa_activity_count = models.IntegerField(null=True, default=None)
-    iati_standard_version = models.CharField(max_length=10)
+    iati_standard_version = models.CharField(max_length=10, null=True, default=None)
 
     class Meta:
         verbose_name_plural = "iati XML sources"

@@ -133,6 +133,7 @@ class Parser():
         try:
 
             # add basics
+            iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
             self.add_organisation(elem)
             activity = self.add_activity(elem)
             self.add_other_identifier(elem, activity)
@@ -160,13 +161,8 @@ class Parser():
             # Extras
             self.add_total_budget(activity)
 
-        except AttributeError as e:
-            self.exception_handler(e,"test", "add_all_activity_data")
-
         except Exception as e:
-                logger.info("error")
-                logger.info('%s (%s)' % (e.args[0], type(e)))
-                logger.info(" in add_all_activity_data: " + activity.id)
+                self.exception_handler(e, iati_identifier, "add_all_activity_data")
 
 
     # class wide functions
@@ -238,9 +234,13 @@ class Parser():
 
 
     def exception_handler(self, e, ref, current_def):
+
+        logger.info("error in " + ref + ", def: " + current_def)
         if e.args:
             logger.info(e.args[0])
-        logger.info(" in " + ref)
+            logger.info(e.args[1])
+        if e.message:
+            logger.info(e.message)
 
     # entity add functions
     def add_organisation(self, elem):
@@ -640,7 +640,7 @@ class Parser():
                     self.exception_handler(e, activity.id, "add_website")
 
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_website")
+            self.exception_handler(e, activity.id, "add_website")
 
 
 
@@ -1503,6 +1503,8 @@ class Parser():
 
     def add_total_budget(self, activity):
 
-        updater = TotalBudgetUpdater()
-        updater.update_single_activity(activity.id)
-
+        try:
+            updater = TotalBudgetUpdater()
+            updater.update_single_activity(activity.id)
+        except Exception as e:
+            self.exception_handler(e, activity.id, "add_total_budget")

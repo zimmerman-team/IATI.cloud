@@ -7,7 +7,7 @@ from geodata.admin_tools import AdminTools
 
 class RegionAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ['__unicode__', 'parental_region', 'parental_region']
+    list_display = ['__unicode__','code', 'region_vocabulary', 'parental_region']
 
     def get_urls(self):
         urls = super(RegionAdmin, self).get_urls()
