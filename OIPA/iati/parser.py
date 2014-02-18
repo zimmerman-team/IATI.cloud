@@ -237,7 +237,7 @@ class Parser():
     def exception_handler(self, e, ref, current_def):
 
         logger.info("error in " + ref + ", def: " + current_def)
-        if e.args:
+        if e.args and e.args.__len__() > 0:
             logger.info(e.args[0])
         if e.args.__len__() > 1:
             logger.info(e.args[1])
@@ -627,9 +627,9 @@ class Parser():
                 try:
 
                     url = self.return_first_exist(t.xpath( 'text()'))
-
-                    new_website = models.ActivityWebsite(activity=activity, url=url)
-                    new_website.save()
+                    if url:
+                        new_website = models.ActivityWebsite(activity=activity, url=url)
+                        new_website.save()
 
 
                 except IntegrityError, e:

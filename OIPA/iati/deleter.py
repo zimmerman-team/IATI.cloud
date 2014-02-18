@@ -47,6 +47,15 @@ class Deleter():
         models.Budget.objects.filter(activity=cur_activity).delete()
         models.PlannedDisbursement.objects.filter(activity=cur_activity).delete()
         models.Condition.objects.filter(activity=cur_activity).delete()
+        # TO DO: indicatorperiod and indicator dont have an activity, but an result object
+        # models.ResultIndicatorPeriod.objects.filter(activity=cur_activity).delete()
+        # models.ResultIndicator.objects.filter(activity=cur_activity).delete()
         models.Result.objects.filter(activity=cur_activity).delete()
         models.DocumentLink.objects.filter(activity=cur_activity).delete()
+        #TO DO: loanterms and status dont have an activity, but an crsadd object
+        # models.CrsAddLoanTerms.objects.filter(activity=cur_activity).delete()
+        # models.CrsAddLoanStatus.objects.filter(activity=cur_activity).delete()
+        models.CrsAdd.objects.filter(activity=cur_activity).delete()
+        models.CountryBudgetItem.objects.filter(activity=cur_activity).delete()
+
         cur_activity.delete()

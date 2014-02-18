@@ -529,7 +529,7 @@ class Transaction(models.Model):
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey(Currency, null=True, default=None)
-    ref = models.CharField(max_length=100, null=True, default=None)
+    ref = models.CharField(max_length=255, null=True, default=None)
 
     def __unicode__(self,):
         return "%s: %s - %s" % (self.activity, self.transaction_type, self.transaction_date)
