@@ -356,8 +356,8 @@ class RegionVocabulary(models.Model):
 
 
 class Organisation(models.Model):
-    code = models.CharField(primary_key=True, max_length=30)
-    abbreviation = models.CharField(max_length=30, null=True, default=None)
+    code = models.CharField(primary_key=True, max_length=80)
+    abbreviation = models.CharField(max_length=80, null=True, default=None)
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     reported_by_organisation = models.CharField(max_length=100, null=True, default=None)
     name = models.CharField(max_length=250, null=True, default=None)

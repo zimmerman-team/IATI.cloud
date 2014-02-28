@@ -189,6 +189,9 @@ class Parser():
     def validate_date(self, unvalidated_date):
         valid_date = None
         if unvalidated_date:
+            unvalidated_date = unvalidated_date.strip(' \t\n\r')
+
+        if unvalidated_date:
             try:
                 unvalidated_date = unvalidated_date.split("Z")[0]
                 unvalidated_date = sub(r'[\t]', '', unvalidated_date)
@@ -196,21 +199,25 @@ class Parser():
                 unvalidated_date = unvalidated_date.replace("/", "-")
                 if len(unvalidated_date) == 4:
                     unvalidated_date = unvalidated_date + "-01-01"
-                validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
+                try:
+                    validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
+                except ValueError:
+                    validated_date = time.strptime(unvalidated_date, '%d-%m-%Y')
                 valid_date = datetime.fromtimestamp(time.mktime(validated_date))
 
             except ValueError:
-                logger.info('Invalid date: ' + unvalidated_date)
-                valid_date = None
+                if not any(c.isalpha() for c in unvalidated_date):
+                    logger.info('Invalid date: ' + unvalidated_date)
+                return None
             except Exception as e:
                 logger.info(e.message)
+                return None
         return valid_date
 
 
     def activity_exists(self, elem):
 
         activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-        activity_id = activity_id.replace(" ", "")
 
         if models.Activity.objects.filter(id=activity_id).exists():
             return True
@@ -238,11 +245,11 @@ class Parser():
 
         logger.info("error in " + ref + ", def: " + current_def)
         if e.args and e.args.__len__() > 0:
-            logger.info(e.args[0])
+            logger.warning(e.args[0])
         if e.args.__len__() > 1:
-            logger.info(e.args[1])
+            logger.warning(e.args[1])
         if e.message:
-            logger.info(e.message)
+            logger.warning(e.message)
 
     # entity add functions
     def add_organisation(self, elem):
@@ -301,9 +308,9 @@ class Parser():
         try:
             iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
             iati_identifier = iati_identifier.strip(' \t\n\r')
-            iati_identifier = iati_identifier.replace(" ", "")
             activity_id = iati_identifier.replace("/", "-")
             activity_id = activity_id.replace(":", "-")
+            activity_id = activity_id.replace(" ", "")
 
 
 
@@ -432,7 +439,8 @@ class Parser():
                     owner_ref = self.return_first_exist(t.xpath( '@owner-ref' ))
                     owner_name = self.return_first_exist(t.xpath( '@owner-name' ))
                     other_identifier = self.return_first_exist(t.xpath( 'text()' ))
-
+                    if not other_identifier:
+                        continue
                     new_other_identifier = models.OtherIdentifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
                     new_other_identifier.save()
 
@@ -539,12 +547,24 @@ class Parser():
                     period_start = self.return_first_exist(t.xpath( 'period-start/@iso-date'))
                     if not period_start:
                         period_start = self.return_first_exist(t.xpath('period-start/text()'))
+                    period_start = self.validate_date(period_start)
+
                     period_end = self.return_first_exist(t.xpath( 'period-end/@iso-date'))
                     if not period_end:
                         period_end = self.return_first_exist(t.xpath('period-end/text()'))
+                    period_end = self.validate_date(period_end)
 
-                    value = self.return_first_exist(t.xpath( 'value/text()' ))
+                    value = self.return_first_exist(t.xpath('value/text()'))
+                    value = value.strip(' \t\n\r')
+                    if value:
+                        value = value.replace(",", ".")
+                        value = value.replace(" ", "")
+                    else:
+                        continue
+
                     value_date = self.validate_date(self.return_first_exist(t.xpath('value/@value-date')))
+
+
 
                     currency_ref = self.return_first_exist(t.xpath('value/@currency'))
                     currency = None
@@ -561,6 +581,11 @@ class Parser():
                     if currency_ref:
                         if models.Currency.objects.filter(code=currency_ref).exists():
                             currency = models.Currency.objects.get(code=currency_ref)
+
+                    if not value:
+                        continue
+
+
 
                     new_budget = models.Budget(activity=activity, type=type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)
                     new_budget.save()
@@ -664,7 +689,7 @@ class Parser():
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
 
-                    if type_ref:
+                    if self.isInt(type_ref):
                         if models.ContactType.objects.filter(code=type_ref).exists():
                             type = models.ContactType.objects.get(code=type_ref)
 
@@ -718,9 +743,12 @@ class Parser():
                     transaction_type_ref = self.return_first_exist(t.xpath('transaction-type/@code'))
                     transaction_type = None
                     value = self.return_first_exist(t.xpath('value/text()'))
-
+                    value = value.strip(' \t\n\r')
                     if value:
-                        value = value.replace(",", "")
+                        value = value.replace(",", ".")
+                        value = value.replace(" ", "")
+                    else:
+                        continue
 
                     value_date = self.validate_date(self.return_first_exist(t.xpath('value/@value-date')))
 
@@ -748,9 +776,12 @@ class Parser():
                     else:
                         finance_type = activity.default_finance_type
 
-                    if flow_type_ref:
+                    if self.isInt(flow_type_ref):
                         if models.FlowType.objects.filter(code=flow_type_ref).exists():
                             flow_type = models.FlowType.objects.get(code=flow_type_ref)
+                    elif flow_type_ref:
+                        if models.FlowType.objects.filter(name=flow_type_ref).exists():
+                            flow_type = models.FlowType.objects.get(name=flow_type_ref)
                     else:
                         flow_type = activity.default_flow_type
 
@@ -892,18 +923,15 @@ class Parser():
                     if percentage:
                         percentage = percentage.replace("%", "")
 
-                    if sector_code:
-                        try:
-                            int(sector_code)
-                        except ValueError:
-                            sector_code = None
+                    if not self.isInt(sector_code):
+                        sector_code = None
 
                     if sector_code:
                         if models.Sector.objects.filter(code=sector_code).exists():
                             sector = models.Sector.objects.get(code=sector_code)
 
                     if not sector:
-                        sector_name = self.return_first_exist(t.xpath( 'text()' ))
+                        sector_name = self.return_first_exist(t.xpath('text()'))
                         if models.Sector.objects.filter(name=sector_name).exists():
                             sector = models.Sector.objects.filter(name=sector_name)[0]
 
@@ -916,7 +944,7 @@ class Parser():
                     else:
                         alt_sector_name = None
 
-                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage = percentage)
+                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage=percentage)
                     new_activity_sector.save()
 
                 except IntegrityError, e:
@@ -950,9 +978,12 @@ class Parser():
                     if country_ref:
                         if models.Country.objects.filter(code=country_ref).exists():
                             country = models.Country.objects.get(code=country_ref)
-                        elif country_ref == "KOS":
+                        elif country_ref == "KOS" or country_ref == "KS":
                             # Kosovo fix
                             country = models.Country.objects.get(code="XK")
+                        elif country_ref == "NES":
+                            # This prevents the spain NES (not specified) code from flooding the parselog
+                            continue
                         else:
                             country_ref = country_ref.lower().capitalize()
                             if models.Country.objects.filter(name=country_ref).exists():
@@ -964,15 +995,15 @@ class Parser():
                     new_activity_country.save()
 
                 except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_countries")
+                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
                 except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_countries")
+                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
                 except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_countries")
+                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_countries")
+                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_countries")
+                self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
 
     def add_regions(self, elem, activity):
 
@@ -993,7 +1024,7 @@ class Parser():
                 else:
                     region_voc = models.RegionVocabulary.objects.get(code=1)
 
-                if region_ref:
+                if self.isInt(region_ref):
                     if models.Region.objects.filter(code=region_ref).exists():
                         region = models.Region.objects.get(code=region_ref)
                     elif models.Region.objects.filter(name=region_ref).exists():
@@ -1107,7 +1138,7 @@ class Parser():
                             policy_marker_code = None
 
 
-                    if policy_marker_code:
+                    if self.isInt(policy_marker_code):
                         if models.PolicyMarker.objects.filter(code=policy_marker_code).exists():
                             policy_marker = models.PolicyMarker.objects.get(code=policy_marker_code)
                     else:
@@ -1120,7 +1151,7 @@ class Parser():
                         if models.Vocabulary.objects.filter(code=policy_marker_voc).exists():
                             vocabulary = models.Vocabulary.objects.get(code=policy_marker_voc)
 
-                    if policy_marker_significance:
+                    if self.isInt(policy_marker_significance):
                         if models.PolicySignificance.objects.filter(code=policy_marker_significance).exists():
                             significance = models.PolicySignificance.objects.get(code=policy_marker_significance)
 
@@ -1149,11 +1180,11 @@ class Parser():
                 try:
                     type_ref = self.return_first_exist(t.xpath( '@type' ))
                     type = None
-                    curdate = self.return_first_exist(t.xpath( 'text()' ))
+                    curdate = self.return_first_exist(t.xpath( '@iso-date' ))
                     curdate = self.validate_date(curdate)
 
                     if not curdate:
-                        curdate = self.return_first_exist(t.xpath( '@iso-date' ))
+                        curdate = self.return_first_exist(t.xpath( 'text()' ))
                         curdate = self.validate_date(curdate)
 
 
@@ -1162,12 +1193,13 @@ class Parser():
                         if models.ActivityDateType.objects.filter(code=type_ref).exists():
                             type = models.ActivityDateType.objects.get(code=type_ref)
                         else:
-                            type_ref = type_ref.lower();
-                            type_ref = type_ref.replace(' ', '-');
-
+                            type_ref = type_ref.lower()
+                            type_ref = type_ref.replace(' ', '-')
                             if models.ActivityDateType.objects.filter(code=type_ref).exists():
                                 type = models.ActivityDateType.objects.get(code=type_ref)
 
+                    if not type:
+                        continue
 
                     if type.code == 'end-actual':
                         activity.end_actual = curdate
