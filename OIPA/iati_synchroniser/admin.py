@@ -85,12 +85,12 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         obj.save()
         return HttpResponse('Success')
 
-    def parse_all(self):
+    def parse_all(self, request):
         parser = ParseAll()
         parser.parseAll()
         return HttpResponse('Success')
 
-    def parse_all_over_interval(self):
+    def parse_all_over_interval(self, request):
         parser = ParseSchedule()
         parser.parseSchedule()
         return HttpResponse('Success')
@@ -128,7 +128,7 @@ class PublisherAdmin(admin.ModelAdmin):
             obj.process()
         return HttpResponse('Success')
 
-    def count_publisher_activities(self):
+    def count_publisher_activities(self, request):
 
         pu = PublisherUpdater()
         pu.update_publisher_activity_count()
