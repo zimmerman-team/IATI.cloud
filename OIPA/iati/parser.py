@@ -176,7 +176,7 @@ class Parser():
             except:
                 xpath_find = xpath_find[0]
 
-            xpath_find = xpath_find.encode('utf-8')
+            xpath_find = xpath_find.encode('utf-8', 'ignore')
         return xpath_find
 
     def isInt(self, obj):
