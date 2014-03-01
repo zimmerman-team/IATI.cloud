@@ -747,6 +747,13 @@ class Parser():
                     if value:
                         value = value.replace(",", ".")
                         value = value.replace(" ", "")
+                        if value.__len__() > 2:
+                            dec = False
+                            if value[-2] == ".":
+                                dec = True
+                            value = value.replace(".", "")
+                            if dec:
+                                value[:-2] + "." + value[-2:]
                     else:
                         continue
 

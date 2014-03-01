@@ -25,12 +25,11 @@ class Deleter():
 
     def remove_old_values_for_activity(self, elem):
         activity_id = self.return_first_exist(elem.xpath( 'iati-identifier/text()' ))
-        activity_id = activity_id.replace(" ", "")
-        cur_activity = models.Activity.objects.get(id=activity_id)
+        cur_activity = models.Activity.objects.get(iati_identifier=activity_id)
         self.remove_values_for_activity(cur_activity)
 
-    def remove_values_for_activity(self, cur_activity):
 
+    def remove_values_for_activity(self, cur_activity):
         models.ActivityRecipientCountry.objects.filter(activity=cur_activity).delete()
         models.ActivitySector.objects.filter(activity=cur_activity).delete()
         models.ActivityWebsite.objects.filter(activity=cur_activity).delete()

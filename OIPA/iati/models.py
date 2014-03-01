@@ -710,6 +710,7 @@ class FfsForecast(models.Model):
 
 
 class CrsAdd(models.Model):
+    activity = models.ForeignKey(Activity)
     aid_type_flag = models.ForeignKey(AidTypeFlag)
     aid_type_flag_significance = models.IntegerField(null=True, default=None)
 
