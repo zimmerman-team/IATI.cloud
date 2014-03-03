@@ -66,9 +66,9 @@ class IatiXmlSource(models.Model):
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
         self.date_updated = datetime.datetime.now()
-        activity_counter = AdminTools()
-        self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
-        self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
+        #activity_counter = AdminTools()
+        #self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
+        #self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
         self.save(process=False)
 
     def save(self, process=True, *args, **kwargs):
