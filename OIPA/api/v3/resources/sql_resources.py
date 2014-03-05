@@ -130,7 +130,7 @@ class ActivityFilterOptionsResource(ModelResource):
             q_organisations = q_organisations.replace("WHERE", "AND")
         cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
                        'FROM geodata_region r '
-                       'LEFT JOIN iati_activity_recipientregion rr on r.code = rr.region_id '
+                       'LEFT JOIN iati_activityrecipientregion rr on r.code = rr.region_id '
                        'LEFT JOIN iati_activity a on rr.activity_id = a.id '
                        'WHERE r.source = "DAC" '
                        '%s '
