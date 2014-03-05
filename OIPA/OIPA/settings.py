@@ -149,7 +149,7 @@ INSTALLED_APPS = (
     'iati_synchroniser',
     'geodata',
     'indicator',
-    'logviewer',
+    # 'logviewer',
     'api',
     'rsr',
     'cache',

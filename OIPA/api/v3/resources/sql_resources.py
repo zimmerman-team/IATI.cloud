@@ -115,14 +115,14 @@ class ActivityFilterOptionsResource(ModelResource):
 
         cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
                        'FROM geodata_country c '
-                       'LEFT JOIN IATI_activity_recipient_country rc on c.code = rc.country_id '
-                       'LEFT JOIN IATI_activity a on rc.activity_id = a.id %s '
+                       'LEFT JOIN iati_activityrecipientcountry rc on c.code = rc.country_id '
+                       'LEFT JOIN iati_activity a on rc.activity_id = a.id %s '
                        'GROUP BY c.code' % (q_organisations))
         results1 = helper.get_fields(cursor=cursor)
         cursor.execute('SELECT s.code, s.name, count(s.code) as total_amount '
-                       'FROM IATI_sector s '
-                       'LEFT JOIN IATI_activity_sector as ias on s.code = ias.sector_id '
-                       'LEFT JOIN IATI_activity a on ias.activity_id = a.id '
+                       'FROM iati_sector s '
+                       'LEFT JOIN iati_activitysector as ias on s.code = ias.sector_id '
+                       'LEFT JOIN iati_activity a on ias.activity_id = a.id '
                        '%s '
                        'GROUP BY s.code' % (q_organisations))
         results2 = helper.get_fields(cursor=cursor)
@@ -130,8 +130,8 @@ class ActivityFilterOptionsResource(ModelResource):
             q_organisations = q_organisations.replace("WHERE", "AND")
         cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
                        'FROM geodata_region r '
-                       'LEFT JOIN IATI_activity_recipient_region rr on r.code = rr.region_id '
-                       'LEFT JOIN IATI_activity a on rr.activity_id = a.id '
+                       'LEFT JOIN iati_activity_recipientregion rr on r.code = rr.region_id '
+                       'LEFT JOIN iati_activity a on rr.activity_id = a.id '
                        'WHERE r.source = "DAC" '
                        '%s '
                        'GROUP BY r.code' % (q_organisations))
@@ -165,8 +165,8 @@ class ActivityFilterOptionsResource(ModelResource):
 
         if not q_organisations:
             cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
-                       'FROM IATI_activity a '
-                       'INNER JOIN IATI_organisation o on a.reporting_organisation_id = o.code '
+                       'FROM iati_activity a '
+                       'INNER JOIN iati_organisation o on a.reporting_organisation_id = o.code '
                        'GROUP BY a.reporting_organisation_id')
             results4 = helper.get_fields(cursor=cursor)
 
@@ -215,7 +215,7 @@ class IndicatorCountryDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
-                       'FROM indicators_indicator_data id '
+                       'FROM indicators_indicatordata id '
                        'JOIN geodata_country c ON id.country_id = c.code '
                        'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
         cursor_max = connection.cursor()
@@ -287,7 +287,7 @@ class IndicatorCityDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, ci.name as city_name, '
                        'c.name as country_name, id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
-                       'FROM indicators_indicator_data id '
+                       'FROM indicators_indicatordata id '
                        'JOIN geodata_city ci ON id.city_id = ci.id '
                        'JOIN geodata_country c ON ci.country_id = c.code '
                        'JOIN geodata_region r ON c.region_id = r.code '
@@ -546,7 +546,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, city.id as city_id, city.name as city_name, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
-                       'FROM indicators_indicator_data i '
+                       'FROM indicators_indicatordata i '
                        'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_city city ON i.city_id=city.id '
                        'LEFT OUTER JOIN geodata_country country on city.country_id = country.code '
@@ -643,19 +643,19 @@ class CountryGeojsonResource(ModelResource):
 
 
         if region_q:
-            filter_region = 'LEFT JOIN IATI_activity_recipient_region rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
         else:
             filter_region = ''
 
         if sector_q:
-            filter_sector = 'LEFT JOIN IATI_activity_sector s ON a.id = s.activity_id '
+            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
         else:
             filter_sector = ''
 
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
-                'FROM IATI_activity a '\
-                'LEFT JOIN IATI_activity_recipient_country rc ON rc.activity_id = a.id '\
+                'FROM iati_activity a '\
+                'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
                 'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
                 '%s %s'\
                 'WHERE 1 %s'\
@@ -701,7 +701,7 @@ class Adm1RegionGeojsonResource(ModelResource):
         cursor = connection.cursor()
 
         cursor.execute('SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
-                'FROM geodata_adm1_region r '\
+                'FROM geodata_adm1region r '\
                 'WHERE r.country_id = "%s"' % (country_id))
 
         activity_result = {'type' : 'FeatureCollection', 'features' : []}
