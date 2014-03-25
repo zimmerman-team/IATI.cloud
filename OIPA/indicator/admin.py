@@ -1,5 +1,5 @@
 from django.contrib import admin
-from indicator.models import Indicator
+from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLevel, LendingType, IndicatorTopic
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
@@ -41,3 +41,9 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Indicator, IndicatorAdmin)
+admin.site.register(IndicatorData)
+admin.site.register(IndicatorSource)
+admin.site.register(IncomeLevel)
+admin.site.register(LendingType)
+admin.site.register(IndicatorTopic)
+
