@@ -215,13 +215,13 @@ class IndicatorCountryDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
-                       'FROM indicators_indicatordata id '
+                       'FROM indicator_indicatordata id '
                        'JOIN geodata_country c ON id.country_id = c.code '
-                       'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         desc = cursor.description
         results = [
@@ -287,16 +287,16 @@ class IndicatorCityDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, ci.name as city_name, '
                        'c.name as country_name, id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
-                       'FROM indicators_indicatordata id '
+                       'FROM indicator_indicatordata id '
                        'JOIN geodata_city ci ON id.city_id = ci.id '
                        'JOIN geodata_country c ON ci.country_id = c.code '
                        'JOIN geodata_region r ON c.region_id = r.code '
-                       'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
 
 
         cursor_max = connection.cursor()
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         desc = cursor.description
         results = [
@@ -365,13 +365,13 @@ class IndicatorRegionDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
                        'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
-                       'FROM indicators_indicator_data id '
+                       'FROM indicator_indicator_data id '
                        'LEFT OUTER JOIN geodata_city c ON id.country_id = c.code '
-                       'JOIN indicators_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicators_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         results = helper.get_fields(cursor)
         country = {}
@@ -425,8 +425,8 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label,region.code as region_id, region.name as region_name '
-                       'FROM indicators_indicator_data i '
-                       'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
+                       'FROM indicator_indicator_data i '
+                       'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
                        'WHERE 1 %s' % (filter_string))
 
@@ -487,8 +487,8 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id, ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
-                       'FROM indicators_indicator_data i '
-                       'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
+                       'FROM indicator_indicator_data i '
+                       'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
                        'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
                        'WHERE 1 %s' % (filter_string))
@@ -546,8 +546,8 @@ class IndicatorCityFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, city.id as city_id, city.name as city_name, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
-                       'FROM indicators_indicatordata i '
-                       'JOIN indicators_indicator ind ON i.indicator_id = ind.id '
+                       'FROM indicator_indicatordata i '
+                       'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_city city ON i.city_id=city.id '
                        'LEFT OUTER JOIN geodata_country country on city.country_id = country.code '
                        'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '

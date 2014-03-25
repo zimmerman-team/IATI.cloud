@@ -361,6 +361,7 @@ class Organisation(models.Model):
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     reported_by_organisation = models.CharField(max_length=100, null=True, default=None)
     name = models.CharField(max_length=250, null=True, default=None)
+    original_ref = models.CharField(max_length=80, null=True, default=None)
 
     def __unicode__(self):
         return self.name
