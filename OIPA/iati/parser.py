@@ -747,7 +747,7 @@ class Parser():
                                 #same org, so make it the provider organisation
                                 provider_organisation = organisation_to_be_matched
                             else:
-                                for x in range(0, 1000):
+                                for x in range(0, 5000):
                                     temp_ref = provider_organisation_ref + "-" + str(x)
                                     if models.Organisation.objects.filter(code=temp_ref).exists():
                                         organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
@@ -785,7 +785,7 @@ class Parser():
                                 #same org, so make it the receiver organisation
                                 receiver_organisation = organisation_to_be_matched
                             else:
-                                for x in range(0, 1000):
+                                for x in range(0, 5000):
                                     temp_ref = receiver_organisation_ref + "-" + str(x)
                                     if models.Organisation.objects.filter(code=temp_ref).exists():
                                         organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
@@ -1067,7 +1067,7 @@ class Parser():
                                 #check if the org exists on another double of this org or
                                 # create a new participating organisation with custom ref
 
-                                for x in range(0, 1000):
+                                for x in range(0, 5000):
                                     temp_ref = participating_organisation_ref + "-" + str(x)
                                     if models.Organisation.objects.filter(code=temp_ref).exists():
                                         participating_organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
