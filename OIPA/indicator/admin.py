@@ -1,5 +1,5 @@
 from django.contrib import admin
-from indicator.models import Indicator
+from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLevel, LendingType, IndicatorTopic
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
@@ -39,5 +39,17 @@ class IndicatorAdmin(admin.ModelAdmin):
         wbi_parser.import_wbi_indicators()
         return HttpResponse('Success')
 
+class IndicatorDataAdmin(admin.ModelAdmin):
+    list_display = ['indicator', 'city','country', 'region', 'year', 'value']
+    search_fields = ['year', 'indicator__friendly_label', 'value']
+    list_filter = ['indicator', 'city', 'country', 'year']
+
+
 
 admin.site.register(Indicator, IndicatorAdmin)
+admin.site.register(IndicatorData, IndicatorDataAdmin)
+admin.site.register(IndicatorSource)
+admin.site.register(IncomeLevel)
+admin.site.register(LendingType)
+admin.site.register(IndicatorTopic)
+
