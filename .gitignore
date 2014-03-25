@@ -57,3 +57,7 @@ OIPA/indicators/data_backup/wdi_data/WDI_Footnotes.csv
 OIPA/indicators/data_backup/wdi_data/WDI_ST_Notes.csv
 
 OIPA/indicators/data_backup/wdi_data/WDI_Series.csv
+
+parse.log
+
+.DS_Store
