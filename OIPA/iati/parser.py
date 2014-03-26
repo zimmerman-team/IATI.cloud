@@ -740,79 +740,62 @@ class Parser():
                         flow_type = activity.default_flow_type
 
                     if provider_organisation_ref:
-                        if models.Organisation.objects.filter(name=provider_organisation_ref).exists():
-
-                            organisation_to_be_matched = models.Organisation.objects.get(code=provider_organisation_name)
-                            if organisation_to_be_matched.name == provider_organisation_name:
+                        if models.Organisation.objects.filter(code=provider_organisation_ref).exists() and provider_organisation_name:
+                            provider_organisation_to_be_matched = models.Organisation.objects.get(code=provider_organisation_ref)
+                            if provider_organisation_to_be_matched.name == provider_organisation_name:
                                 #same org, so make it the provider organisation
-                                provider_organisation = organisation_to_be_matched
+                                provider_organisation = provider_organisation_to_be_matched
                             else:
+                                #check if the org exists on another double of this org or
+                                # create a new provider organisation with custom ref
+
                                 for x in range(0, 5000):
                                     temp_ref = provider_organisation_ref + "-" + str(x)
                                     if models.Organisation.objects.filter(code=temp_ref).exists():
-                                        organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
-                                        if organisation_to_be_matched.name == provider_organisation_name:
+                                        provider_organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
+                                        if provider_organisation_to_be_matched.name == provider_organisation_name:
                                             #same org, so make it the provider organisation
-                                            provider_organisation = organisation_to_be_matched
+                                            provider_organisation = provider_organisation_to_be_matched
+                                            break
                                         else:
                                             continue
                                     else:
-                                        provider_organisation = models.Organisation(code=temp_ref, name=provider_organisation_name, type=type, original_ref=provider_organisation_ref)
+                                        provider_organisation = models.Organisation(code=temp_ref, name=provider_organisation_name, type=None, original_ref=provider_organisation_ref)
                                         provider_organisation.save()
-
-
+                                        break
                         else:
-                            provider_organisation_type = None
-                            provider_organisation_type_ref = self.return_first_exist(t.xpath('provider-org/@type'))
-                            if provider_organisation_type_ref:
-                                if models.OrganisationType.objects.filter(code=provider_organisation_type_ref).exists():
-                                    provider_organisation_type = models.OrganisationType.objects.get(code=provider_organisation_type_ref)
-
-                            try:
-
-                                new_organisation = models.Organisation(code=provider_organisation_ref, abbreviation=None, type=provider_organisation_type, reported_by_organisation=None, name=provider_organisation_name)
-                                new_organisation.save()
-
-                            except Exception as e:
-                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding provider organisation: " + activity.id
+                            provider_organisation = models.Organisation(code=provider_organisation_ref, name=provider_organisation_name, type=None, original_ref=provider_organisation_ref )
+                            provider_organisation.save()
 
 
                     if receiver_organisation_ref:
-                        if models.Organisation.objects.filter(name=receiver_organisation_ref).exists():
-
-                            organisation_to_be_matched = models.Organisation.objects.get(code=receiver_organisation_name)
-                            if organisation_to_be_matched.name == receiver_organisation_name:
+                        if models.Organisation.objects.filter(code=receiver_organisation_ref).exists() and receiver_organisation_name:
+                            receiver_organisation_to_be_matched = models.Organisation.objects.get(code=receiver_organisation_ref)
+                            if receiver_organisation_to_be_matched.name == receiver_organisation_name:
                                 #same org, so make it the receiver organisation
-                                receiver_organisation = organisation_to_be_matched
+                                receiver_organisation = receiver_organisation_to_be_matched
                             else:
+                                #check if the org exists on another double of this org or
+                                # create a new receiver organisation with custom ref
+
                                 for x in range(0, 5000):
                                     temp_ref = receiver_organisation_ref + "-" + str(x)
                                     if models.Organisation.objects.filter(code=temp_ref).exists():
-                                        organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
-                                        if organisation_to_be_matched.name == receiver_organisation_name:
+                                        receiver_organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)
+                                        if receiver_organisation_to_be_matched.name == receiver_organisation_name:
                                             #same org, so make it the receiver organisation
-                                            receiver_organisation = organisation_to_be_matched
+                                            receiver_organisation = receiver_organisation_to_be_matched
+                                            break
                                         else:
                                             continue
                                     else:
-                                        receiver_organisation = models.Organisation(code=temp_ref, name=receiver_organisation_name, type=type, original_ref=receiver_organisation_ref)
+                                        receiver_organisation = models.Organisation(code=temp_ref, name=provider_organisation_name, type=None, original_ref=provider_organisation_ref)
                                         receiver_organisation.save()
-
-
+                                        break
                         else:
-                            receiver_organisation_type = None
-                            receiver_organisation_type_ref = self.return_first_exist(t.xpath('receiver-org/@type'))
-                            if receiver_organisation_type_ref:
-                                if models.OrganisationType.objects.filter(code=receiver_organisation_type_ref).exists():
-                                    receiver_organisation_type = models.OrganisationType.objects.get(code=receiver_organisation_type_ref)
+                            receiver_organisation = models.Organisation(code=provider_organisation_ref, name=provider_organisation_name, type=None, original_ref=provider_organisation_ref )
+                            receiver_organisation.save()
 
-                            try:
-
-                                new_organisation = models.Organisation(code=receiver_organisation_ref, abbreviation=None, type=receiver_organisation_type, reported_by_organisation=None, name=receiver_organisation_name)
-                                new_organisation.save()
-
-                            except Exception as e:
-                                print '%s (%s)' % (e.message, type(e)) + " in add_transaction during adding receiver organisation: " + activity.id
 
                     if tied_status_ref:
                         if models.TiedStatus.objects.filter(code=tied_status_ref).exists():
@@ -1058,7 +1041,7 @@ class Parser():
                                 type = models.OrganisationType.objects.filter(name=role_type)[0]
 
                     if participating_organisation_ref:
-                        if models.Organisation.objects.filter(code=participating_organisation_ref).exists():
+                        if models.Organisation.objects.filter(code=participating_organisation_ref).exists() and name:
                             participating_organisation_to_be_matched = models.Organisation.objects.get(code=participating_organisation_ref)
                             if participating_organisation_to_be_matched.name == name:
                                 #same org, so make it the participating organisation
@@ -1074,11 +1057,13 @@ class Parser():
                                         if participating_organisation_to_be_matched.name == name:
                                             #same org, so make it the participating organisation
                                             participating_organisation = participating_organisation_to_be_matched
+                                            break
                                         else:
                                             continue
                                     else:
                                         participating_organisation = models.Organisation(code=temp_ref, name=name, type=type, original_ref=participating_organisation_ref)
                                         participating_organisation.save()
+                                        break
                         else:
                             participating_organisation = models.Organisation(code=participating_organisation_ref, name=name, type=type, original_ref=participating_organisation_ref )
                             participating_organisation.save()
