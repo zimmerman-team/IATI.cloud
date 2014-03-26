@@ -44,3 +44,6 @@ class IndicatorData(models.Model):
 
     class Meta:
         verbose_name_plural = "indicator data"
+
+    def __unicode__(self):
+        return self.indicator.friendly_label
