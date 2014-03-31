@@ -23,9 +23,9 @@ class Indicator(models.Model):
     description = models.TextField(null=True, blank=True)
     friendly_label = models.CharField(max_length=255, null=True, blank=True)
     type_data = models.CharField(max_length=255, null=True, blank=True)
-    # parent = models.ForeignKey()
-    #selection type is used for i.e. table 14 type of fuel
-    selection_type = models.CharField(max_length=255, null=True, blank=True)
+    #selection type is used for i.e. table 14 type of fuel this attribute is removed to IndicatorData (31-03-2014)
+    #selection_type = models.CharField(max_length=255, null=True, blank=True)
+
     #deprivation type is used for i.e. table 14 urban, non slum household, one sheltar deprivation
     deprivation_type = models.CharField(max_length=255, null=True, blank=True)
     source = models.ForeignKey(IndicatorSource, null=True, blank=True)
@@ -41,6 +41,7 @@ class IndicatorData(models.Model):
     region = models.ForeignKey(Region, null=True)
     value = models.FloatField(null=True, blank=True)
     year = models.IntegerField(max_length=5)
+    selection_type = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "indicator data"

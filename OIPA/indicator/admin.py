@@ -48,9 +48,9 @@ class IndicatorDataAdmin(admin.ModelAdmin):
     list_filter = ['indicator', 'city', 'country', 'year']
 
 class MyModelAdmin(MultiUploadAdmin):
-    list_display = ['indicator', 'city','country', 'region', 'year', 'value']
+    list_display = ['indicator','selection_type', 'city','country', 'region', 'year', 'value']
     search_fields = ['year', 'indicator__friendly_label', 'value']
-    list_filter = ['indicator', 'city', 'country', 'year']
+    list_filter = ['indicator','selection_type', 'city', 'country', 'year']
     # default value of all parameters:
     change_form_template = 'multiupload/change_form.html'
     change_list_template = 'multiupload/change_list.html'
@@ -176,8 +176,13 @@ class MyModelAdmin(MultiUploadAdmin):
             #try to update or create IndicatorData
             try:
                 if city_from_db:
-                    indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, city=city_from_db)[0]
-                    indicator_data_from_db.country = country_from_db
+                    #if the indicator data a selection type contains than we need to store that correctly
+                    if selection_type_csv:
+                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, city=city_from_db)[0]
+                    else:
+                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, city=city_from_db)[0]
+                    if country_from_db:
+                        indicator_data_from_db.country = country_from_db
                     indicator_data_from_db.city = city_from_db
                     #todo get region from db
                     indicator_data_from_db.value = float(value_csv)
