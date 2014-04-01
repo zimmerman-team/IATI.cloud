@@ -144,7 +144,10 @@ class MyModelAdmin(MultiUploadAdmin):
 
             #getting city from our database
             try:
-                city_from_db = find_city(city_name=city_csv, cities=cities)
+                if city_csv:
+                    city_from_db = find_city(city_name=city_csv, cities=cities)
+                else:
+                    city_from_db = None
             except:
                 city_from_db = None
 
@@ -152,7 +155,10 @@ class MyModelAdmin(MultiUploadAdmin):
 
             #getting country from our database
             try:
-                country_from_db = find_country(country_name=country_csv, countries=countries)
+                if country_csv:
+                    country_from_db = find_country(country_name=country_csv, countries=countries)
+                else:
+                    country_from_db = None
             except:
                 country_from_db = None
 
@@ -166,14 +172,7 @@ class MyModelAdmin(MultiUploadAdmin):
             else:
                 city_not_found.append(city_csv)
 
-            #if not (city_csv and city_from_db):
-            #    file.next()
-            #
-            #if (not country_csv and country_from_db) or not city_from_db:
-            #    file.next()
-                #continue
-
-            #try to update or create IndicatorData
+            #this block is for storing data related to cities
             try:
                 if city_from_db:
                     #if the indicator data a selection type contains than we need to store that correctly
@@ -184,6 +183,19 @@ class MyModelAdmin(MultiUploadAdmin):
                     if country_from_db:
                         indicator_data_from_db.country = country_from_db
                     indicator_data_from_db.city = city_from_db
+                    #todo get region from db
+                    indicator_data_from_db.value = float(value_csv)
+                    indicator_data_from_db.save()
+            except:
+                pass
+
+            #this block is for storing country related indicator data
+            try:
+                if country_from_db and not city_from_db:
+                    if selection_type_csv:
+                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, country=country_from_db)[0]
+                    else:
+                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, country=country_from_db)[0]
                     #todo get region from db
                     indicator_data_from_db.value = float(value_csv)
                     indicator_data_from_db.save()
