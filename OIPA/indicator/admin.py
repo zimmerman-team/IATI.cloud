@@ -185,6 +185,9 @@ class MyModelAdmin(MultiUploadAdmin):
                     indicator_data_from_db.city = city_from_db
                     #todo get region from db
                     indicator_data_from_db.value = float(value_csv)
+                    #todo add year range to model IndicatorData
+                    #if year_range_csv:
+                    #    indicator_data_from_db.year_range = year_range_csv
                     indicator_data_from_db.save()
             except:
                 pass
@@ -198,6 +201,9 @@ class MyModelAdmin(MultiUploadAdmin):
                         indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, country=country_from_db)[0]
                     #todo get region from db
                     indicator_data_from_db.value = float(value_csv)
+                    #todo add year range to model IndicatorData
+                    #if year_range_csv:
+                    #    indicator_data_from_db.year_range = year_range_csv
                     indicator_data_from_db.save()
             except:
                 pass

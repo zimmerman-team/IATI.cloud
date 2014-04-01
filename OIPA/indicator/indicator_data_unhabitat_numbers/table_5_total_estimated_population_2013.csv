@@ -1,0 +1,46 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Egypt;Cairo;;15.071.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Central African Rep.;Bangui;;792.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Nigeria;Lagos;;12.090.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Kenya;Nairobi;;4.457.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Ghana;Accra;;3.933.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Tanzania;Dar es Salaam;;3.723.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Senegal;Dakar;;3.270.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Ethiopia;Addis Abeba;;3.226.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Morocco;Casablanca;;3.120.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Nigeria;Abuja;;2.360.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Burkina Faso;Ouagadougou;;2.193.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Rwanda;Kigali;;1.055.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Japan;Tokyo-Yokohama;;37.239.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Indonesia;Jakarta (Jabotabek);;26.746.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Philippines;Manila;;21.241.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;China;Beijing, BJ;;18.241.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;India;Mumbai, MAH;;17.307.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;India;Kolkota, WB;;14.630.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;India;Chandigarh, CH;;1.074.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Thailand;Bangkok;;14.544.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Bangladesh;Dhaka;;14.399.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;China;Hong Kong, HK;;7.162.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Malaysia;Kuala Lumpur;;6.608.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Singapore;Singapore;;5.287.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Armenia;Yerevan;;1.300.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;United States;New York, NY-NJ-CT;;20.673.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;United States;Los Angeles, CA;;15.067.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;France;Paris;;10.869.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;United Kingdom;London;;9.576.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;United States;Washington, DC-VA-MD;;4.825.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Spain;Barcelona;;4.604.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;United States;Phoenix, AZ;;4.044.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Greece;Athens;;3.510.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Belgium;Brussels;;1.944.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;New Zealand;Auckland;;1.310.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Denmark;Copenhagen;;1.218.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Finland;Helsinki;;1.159.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Netherlands;Amsterdam;;1.050.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Russia;Moscow;;15.788.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Russia;St. Petersburg;;4.899.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Mexico;Guadalajara;;4.567.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Colombia;Medellin;;3.732.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Brazil;Sao Paulo;;20.568.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Brazil;Brasilia;;2.394.000;Table 5 Population Density of Urban Agglomerations in Selected Cities
+2013;;population_estimate;Population estimate of urban agglomeration;1000;;;Guyana;Gerogetown;;135.000;Table 5 Population Density of Urban Agglomerations in Selected Cities

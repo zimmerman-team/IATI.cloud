@@ -1,0 +1,61 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Australia;Melbourne;;0,868;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Australia;Sydney;;0,852;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Belgium;Brussels ;;0,831;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Canada;Calgary;;0,746;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Canada;Montreal;;0,968;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Canada;Toronto;;1,000;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Denmark;Copenhagen ;;0,748;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Finland;Helsinki ;;0,755;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;France;Paris ;;0,990;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Greece;Athens ;;0,952;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Netherlands;Amsterdam ;;0,969;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Newzealand;Auckland ;;0,590;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Russia;Moscow;;0,448;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Russia;Saint Petersburg ;;0,603;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Spain;Barcelona ;;1,000;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United Kingdom;London;;1,000;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United States of America;Los Angeles;;0,754;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United States of America;New York ;;1,000;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United States of America;Phoenix;;0,631;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United States of America;Washington, D.C.;;0,820;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Armenia;Yerevan ;;0,176;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Bangladesh;Dhaka;;0,241;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Bolivia;La Paz;;0,494;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Brazil;Brasilia ;;0,541;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Brazil;Sao Paulo;;0,638;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Burkina Faso;Ouagadougou ;;0,390;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Central African Republic;Bangui ;;0,172;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;China;Beijing ;;0,624;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;China, Hong Kong SAR;Hong Kong ;;1,000;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Colombia;Bogota;;0,793;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Colombia;Medellin ;;0,834;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Egypt;Alexandria;;0,404;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Egypt;Cairo;;0,507;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Ethiopia;Addis Ababa ;;0,428;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Ghana;Accra ;;0,348;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Guatemala;Guatemala City;;0,412;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Guyana;Georgetown ;;0,400;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;India;Chandigarh ;;0,507;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;India;Kolkota ;;0,490;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;India;Mumbai;;0,490;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Indonesia;Jakarta;;;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Japan;Tokyo ;;0,959;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Kenya;Nairobi ;;0,362;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Malaysia;Kuala Lumpur ;;;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Mexico;Guadalajara ;;0,717;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Mexico;Mexico City;;0,772;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Morocco;Casablanca;;0,534;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Nigeria;Abuja ;;0,486;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Nigeria;Lagos;;0,448;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Philippines;Manila;;0,490;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Rwanda;Kigali ;;0,321;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Senegal;Dakar ;;0,459;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Singapore;Singapore ;;0,710;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;South Africa;Cape Town;;0,835;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;South Africa;Johannesburg;;0,496;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Thailand;Bangkok ;;0,514;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United Republic of Tanzania;Dar es Salaam;;0,310;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;United Republic of Tanzania;Dodoma;;0,414;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Zambia;;;;Table 2: Composite Street Connectivity Index 
+2013;;land_allocated_to_street_index;Land allocated to street index;index;city_core;;Zimbabwe;Harare;;;Table 2: Composite Street Connectivity Index 
