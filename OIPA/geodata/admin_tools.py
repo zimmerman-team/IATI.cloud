@@ -21,7 +21,7 @@ class AdminTools():
 
         for k in admin_countries['features']:
             try:
-                country_iso2 = k['properties']['iso2']
+                country_iso2 = k['properties']['ISO_A2']
                 if Country.objects.filter(code=country_iso2).exists():
                         the_country = Country.objects.get(code=country_iso2)
                 else:
@@ -39,7 +39,7 @@ class AdminTools():
                 print "Value error update_polygon_set" + e.message
             except TypeError, e:
                 print "Type error update_polygon_set" + e.message
-            except:
+            except Exception as e:
                 print "Error in update_polygon_set", sys.exc_info()[0]
 
     def update_country_center(self):
