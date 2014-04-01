@@ -1,0 +1,64 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
+2010;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Burkina Faso;;;57;Table 14: Ownership of Bicycle and Motorcycle
+2003;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Burkina Faso;;;55,4;Table 14: Ownership of Bicycle and Motorcycle
+1998;1998-99 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Burkina Faso;;;51,8;Table 14: Ownership of Bicycle and Motorcycle
+1993;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Burkina Faso;;;57,9;Table 14: Ownership of Bicycle and Motorcycle
+1994;1994-95 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Central African Republic;;;8,8;Table 14: Ownership of Bicycle and Motorcycle
+2008;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Egypt;;;1,9;Table 14: Ownership of Bicycle and Motorcycle
+2005;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Egypt;;;1,4;Table 14: Ownership of Bicycle and Motorcycle
+2000;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Egypt;;;1,7;Table 14: Ownership of Bicycle and Motorcycle
+1995;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Egypt;;;;Table 14: Ownership of Bicycle and Motorcycle
+1992;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Egypt;;;;Table 14: Ownership of Bicycle and Motorcycle
+2008;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Ghana;;;4,7;Table 14: Ownership of Bicycle and Motorcycle
+2003;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Ghana;;;2,6;Table 14: Ownership of Bicycle and Motorcycle
+1998;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Ghana;;;1,6;Table 14: Ownership of Bicycle and Motorcycle
+1993;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Ghana;;;1,6;Table 14: Ownership of Bicycle and Motorcycle
+2008;2008-09 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Kenya;;;2,8;Table 14: Ownership of Bicycle and Motorcycle
+2003;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Kenya;;;0,9;Table 14: Ownership of Bicycle and Motorcycle
+1998;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Kenya;;;1,8;Table 14: Ownership of Bicycle and Motorcycle
+1993;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Kenya;;;;Table 14: Ownership of Bicycle and Motorcycle
+2003;2003-04 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Morocco;;;11,8;Table 14: Ownership of Bicycle and Motorcycle
+1992;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Morocco;;;14,8;Table 14: Ownership of Bicycle and Motorcycle
+2008;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Nigeria;;;23,5;Table 14: Ownership of Bicycle and Motorcycle
+2003;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Nigeria;;;17,5;Table 14: Ownership of Bicycle and Motorcycle
+1999;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Nigeria;;;13,9;Table 14: Ownership of Bicycle and Motorcycle
+2010;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Rwanda;;;2,6;Table 14: Ownership of Bicycle and Motorcycle
+2007;2007-08 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Rwanda;;;2,6;Table 14: Ownership of Bicycle and Motorcycle
+2005;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Rwanda;;;1,8;Table 14: Ownership of Bicycle and Motorcycle
+2000;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Rwanda;;;3,1;Table 14: Ownership of Bicycle and Motorcycle
+1992;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Rwanda;;;2,6;Table 14: Ownership of Bicycle and Motorcycle
+2010;2010-11 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Senegal;;;10,3;Table 14: Ownership of Bicycle and Motorcycle
+2008;2008-09 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Senegal;;;8,1;Table 14: Ownership of Bicycle and Motorcycle
+2005;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Senegal;;;7,4;Table 14: Ownership of Bicycle and Motorcycle
+1997;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Senegal;;;4,9;Table 14: Ownership of Bicycle and Motorcycle
+1992;1992-93 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Senegal;;;3,7;Table 14: Ownership of Bicycle and Motorcycle
+2010;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Tanzania;;;5,2;Table 14: Ownership of Bicycle and Motorcycle
+2004;2004-05 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Tanzania;;;2,4;Table 14: Ownership of Bicycle and Motorcycle
+1999;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Tanzania;;;1,5;Table 14: Ownership of Bicycle and Motorcycle
+1996;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Tanzania;;;1,7;Table 14: Ownership of Bicycle and Motorcycle
+1991;1991-92 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Tanzania;;;1,3;Table 14: Ownership of Bicycle and Motorcycle
+2010;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Armenia;;;0,2;Table 14: Ownership of Bicycle and Motorcycle
+2005;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Armenia;;;0,2;Table 14: Ownership of Bicycle and Motorcycle
+2000;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Armenia;;;0,8;Table 14: Ownership of Bicycle and Motorcycle
+2011;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;7,1;Table 14: Ownership of Bicycle and Motorcycle
+2007;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;4,7;Table 14: Ownership of Bicycle and Motorcycle
+2004;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;4;Table 14: Ownership of Bicycle and Motorcycle
+1999;1999-00 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;4;Table 14: Ownership of Bicycle and Motorcycle
+1996;1996-97 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;;Table 14: Ownership of Bicycle and Motorcycle
+1993;1993-94 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Bangladesh;;;;Table 14: Ownership of Bicycle and Motorcycle
+2005;2005-06 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;India;;;30,5;Table 14: Ownership of Bicycle and Motorcycle
+1998;1998-99 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;India;;;25;Table 14: Ownership of Bicycle and Motorcycle
+1992;1992-93 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;India;;;19,2;Table 14: Ownership of Bicycle and Motorcycle
+2007;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Indonesia;;;55,7;Table 14: Ownership of Bicycle and Motorcycle
+2002;2002-03 ;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Indonesia;;;38,7;Table 14: Ownership of Bicycle and Motorcycle
+1997;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Indonesia;;;30,8;Table 14: Ownership of Bicycle and Motorcycle
+1994;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Indonesia;;;25,6;Table 14: Ownership of Bicycle and Motorcycle
+1991;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Indonesia;;;;Table 14: Ownership of Bicycle and Motorcycle
+2008;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Philippines;;;22,5;Table 14: Ownership of Bicycle and Motorcycle
+2003;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Philippines;;;13,7;Table 14: Ownership of Bicycle and Motorcycle
+1998;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Philippines;;;13,1;Table 14: Ownership of Bicycle and Motorcycle
+2010;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Colombia;;;18,1;Table 14: Ownership of Bicycle and Motorcycle
+2005;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Colombia;;;8,9;Table 14: Ownership of Bicycle and Motorcycle
+1995;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Colombia;;;8,9;Table 14: Ownership of Bicycle and Motorcycle
+1990;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Colombia;;;5,4;Table 14: Ownership of Bicycle and Motorcycle
+2009;;owner_motorcycle;Ownership of motorcycle;p;urban_area;;Guyana;;;14,6;Table 14: Ownership of Bicycle and Motorcycle
