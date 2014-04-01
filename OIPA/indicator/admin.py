@@ -191,7 +191,7 @@ class MyModelAdmin(MultiUploadAdmin):
 
             #this block is for storing country related indicator data
             try:
-                if country_from_db and not city_from_db:
+                if country_from_db and not city_csv:
                     if selection_type_csv:
                         indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, country=country_from_db)[0]
                     else:
