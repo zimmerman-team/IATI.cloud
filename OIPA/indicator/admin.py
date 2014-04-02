@@ -125,7 +125,7 @@ class MyModelAdmin(MultiUploadAdmin):
             friendly_label_csv = line.get('friendly_name')
             value_csv = line.get('value')
             #todo replace , with . for floating numbers, check if this is always the case
-            value_csv = value_csv.replace(',', '.')
+            #value_csv = value_csv.replace(',', '.')
             year_range_csv = line.get('year_range')
             indicator_id_csv = line.get('indicator_id')
             year_csv = line.get('year')
@@ -188,7 +188,13 @@ class MyModelAdmin(MultiUploadAdmin):
                         indicator_data_from_db.country = country_from_db
                     indicator_data_from_db.city = city_from_db
                     #todo get region from db
-                    indicator_data_from_db.value = float(value_csv)
+                    if value_csv:
+                        try:
+                            indicator_data_from_db.value = float(value_csv)
+                        except ValueError:
+                            indicator_data_from_db.value = float(value_csv.replace('.', ''))
+                    else:
+                        indicator_data_from_db.value = None
                     #todo add year range to model IndicatorData
                     #if year_range_csv:
                     #    indicator_data_from_db.year_range = year_range_csv
@@ -228,8 +234,8 @@ class MyModelAdmin(MultiUploadAdmin):
         log.upload = uploaded
         log.uploaded_by = request.user
         log.slug = uuid.uuid4()
-        log.cities_not_found = ', '.join(city_not_found)
-        log.countries_not_found = ', '.join(country_not_found)
+        log.cities_not_found = unicode(', '.join(city_not_found), errors='ignore')
+        log.countries_not_found = unicode(', '.join(country_not_found), errors='ignore')
         log.total_cities_found = city_found.__len__()
         log.total_countries_found = country_found.__len__()
         log.total_countries_not_found = country_not_found.__len__()
@@ -242,11 +248,10 @@ class MyModelAdmin(MultiUploadAdmin):
             'url': '/admin/indicator/csvuploadlog/%s/' % str(log.id),
             'thumbnail_url': 'f.image_thumb()',
             'id': 'f.id',
-            'name': '<p>Country found/not found: %s/%s</p> City found/not found %s/%s, Total saved: %s \n Countries not found %s'
-                    % (str(country_found.__len__()),str(country_not_found.__len__()),str(city_found.__len__()), str(city_not_found.__len__()), str(total_items_saved), ', '.join(country_not_found)),
-            'country_not_found' : ', '.join(country_not_found),
+            'name' : title,
+            'country_not_found' : log.countries_not_found,
             'total_countries_not_found' : country_not_found.__len__(),
-            'city_not_found' : ', '.join(city_not_found),
+            'city_not_found' : log.cities_not_found,
             'total_cities_not_found' : city_not_found.__len__(),
             'total_items_saved' : str(total_items_saved),
 
