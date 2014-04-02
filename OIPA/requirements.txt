@@ -17,4 +17,3 @@ django-suit
 objgraph
 guppy
 ujson==1.33
--e git+git://github.com/gkuhn1/django-admin-multiupload.git

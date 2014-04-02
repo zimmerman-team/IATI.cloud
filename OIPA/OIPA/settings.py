@@ -157,8 +157,7 @@ INSTALLED_APPS = (
     'api',
     'rsr',
     'cache',
-    'south',
-    'multiupload',
+    'south'
 )
 
 
