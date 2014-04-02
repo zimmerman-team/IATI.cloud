@@ -2,6 +2,7 @@
 import sys
 import os
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from django.conf import settings
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
@@ -26,6 +27,9 @@ DATABASES = DATABASES
 
 JENKINS_TASKS = JENKINS_TASKS
 PROJECT_APPS = PROJECT_APPS
+
+ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO',
+                              'csv_files')
 
 
 XS_SHARING_ALLOWED_ORIGINS = '*'

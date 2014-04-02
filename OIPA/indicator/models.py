@@ -1,5 +1,9 @@
+import os
 from django.db import models
+from django.utils.text import slugify
 from geodata.models import Country, City, Region
+from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 class IndicatorTopic(models.Model):
     id = models.AutoField(primary_key=True)
@@ -48,3 +52,33 @@ class IndicatorData(models.Model):
 
     def __unicode__(self):
         return self.indicator.friendly_label
+
+def file_upload_to(instance, filename):
+    path = settings.ADMINFILES_UPLOAD_TO
+    try:
+        name, ext = filename.rsplit('.', 1)
+    except ValueError:
+        # when file has no extension
+        name = filename
+        ext = None
+    name = slugify(name).replace('-','_')
+    return os.path.join(path, '%s%s%s' % (name, ext and '.' or '',
+        ext or ''))
+
+class CsvUploadLog(models.Model):
+    upload_date = models.DateTimeField(_('Upload date'), auto_now_add=True)
+    upload = models.FileField(_('File'), upload_to=file_upload_to,
+        blank=True, null=True)
+    title = models.CharField(_('title'), max_length=100, null=True, blank=True)
+    slug = models.SlugField(_('slug'), max_length=100, unique=True)
+    link = models.URLField(_('link'), max_length=500, null=True, blank=True)
+    description = models.CharField(_('description'), blank=True, max_length=200)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
+        verbose_name=_(u'uploaded by'), related_name='uploaded_files')
+    cities_not_found = models.TextField(null=True, blank=True)
+    countries_not_found = models.TextField(null=True, blank=True)
+    total_countries_found = models.IntegerField(null=True, blank=True)
+    total_countries_not_found = models.IntegerField(null=True, blank=True)
+    total_cities_not_found = models.IntegerField(null=True, blank=True)
+    total_cities_found = models.IntegerField(null=True, blank=True)
+    total_items_saved = models.IntegerField(null=True, blank=True)

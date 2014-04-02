@@ -1,7 +1,8 @@
+import uuid
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from multiupload.admin import MultiUploadAdmin
-from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLevel, LendingType, IndicatorTopic
+from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLevel, LendingType, IndicatorTopic, CsvUploadLog
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
@@ -70,7 +71,7 @@ class MyModelAdmin(MultiUploadAdmin):
     # tuple with mimetype accepted
     multiupload_acceptedformats = ( "text/csv",)
 
-    def process_uploaded_file(self, uploaded, object,not_sure, **kwargs):
+    def process_uploaded_file(self, uploaded, object,request, **kwargs):
         '''
         This method will be called for every file uploaded.
         Parameters:
@@ -109,6 +110,7 @@ class MyModelAdmin(MultiUploadAdmin):
         city_not_found = []
         country_found = []
         country_not_found = []
+        total_items_saved = 0
 
         cities = get_cities()
         countries = get_countries()
@@ -165,12 +167,14 @@ class MyModelAdmin(MultiUploadAdmin):
             if country_from_db:
                 country_found.append(country_csv)
             else:
-                country_not_found.append(country_csv)
+                if country_csv:
+                    country_not_found.append(country_csv)
 
             if city_from_db:
                 city_found.append(city_csv)
             else:
-                city_not_found.append(city_csv)
+                if city_csv:
+                    city_not_found.append(city_csv)
 
             #this block is for storing data related to cities
             try:
@@ -189,6 +193,7 @@ class MyModelAdmin(MultiUploadAdmin):
                     #if year_range_csv:
                     #    indicator_data_from_db.year_range = year_range_csv
                     indicator_data_from_db.save()
+                    total_items_saved += 1
             except:
                 pass
 
@@ -200,24 +205,51 @@ class MyModelAdmin(MultiUploadAdmin):
                     else:
                         indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, country=country_from_db)[0]
                     #todo get region from db
-                    indicator_data_from_db.value = float(value_csv)
+                    if value_csv:
+                        try:
+                            indicator_data_from_db.value = float(value_csv)
+                        except ValueError:
+                            indicator_data_from_db.value = float(value_csv.replace('.', ''))
+                    else:
+                        indicator_data_from_db.value = None
+
                     #todo add year range to model IndicatorData
                     #if year_range_csv:
                     #    indicator_data_from_db.year_range = year_range_csv
                     indicator_data_from_db.save()
+                    total_items_saved += 1
             except:
                 pass
 
             line_counter += 1
 
 
+        log = CsvUploadLog()
+        log.upload = uploaded
+        log.uploaded_by = request.user
+        log.slug = uuid.uuid4()
+        log.cities_not_found = ', '.join(city_not_found)
+        log.countries_not_found = ', '.join(country_not_found)
+        log.total_cities_found = city_found.__len__()
+        log.total_countries_found = country_found.__len__()
+        log.total_countries_not_found = country_not_found.__len__()
+        log.total_cities_not_found = city_not_found.__len__()
+        log.total_items_saved = total_items_saved
+        log.save()
 
 
         return {
-            'url': 'f.image_thumb()',
+            'url': '/admin/indicator/csvuploadlog/%s/' % str(log.id),
             'thumbnail_url': 'f.image_thumb()',
             'id': 'f.id',
-            'name': title
+            'name': '<p>Country found/not found: %s/%s</p> City found/not found %s/%s, Total saved: %s \n Countries not found %s'
+                    % (str(country_found.__len__()),str(country_not_found.__len__()),str(city_found.__len__()), str(city_not_found.__len__()), str(total_items_saved), ', '.join(country_not_found)),
+            'country_not_found' : ', '.join(country_not_found),
+            'total_countries_not_found' : country_not_found.__len__(),
+            'city_not_found' : ', '.join(city_not_found),
+            'total_cities_not_found' : city_not_found.__len__(),
+            'total_items_saved' : str(total_items_saved),
+
         }
 
     def delete_file(self, pk, request):
@@ -236,4 +268,5 @@ admin.site.register(IndicatorSource)
 admin.site.register(IncomeLevel)
 admin.site.register(LendingType)
 admin.site.register(IndicatorTopic)
+admin.site.register(CsvUploadLog)
 
