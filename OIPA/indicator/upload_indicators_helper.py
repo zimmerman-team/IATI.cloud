@@ -63,11 +63,19 @@ def find_city(city_name, cities):
 
 def get_value(value_csv):
     value = None
+    value_csv = value_csv.replace(' ', '')
     if value_csv:
-        try:
-            value = float(value_csv)
-        except ValueError:
-            value = float(value_csv.replace('.', ''))
+        #check if the value is a decimal
+        value = value_csv
+        if '.' in value:
+            value = value.replace('.', '')
+        if ',' in value[-4: -1]:
+            value = value.replace(',', '.')
+
+        return float(value)
+
+
+
     else:
         value = None
     return value
