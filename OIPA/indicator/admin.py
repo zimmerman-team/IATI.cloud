@@ -6,7 +6,7 @@ from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLe
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
-from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities
+from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, get_value, save_log, save_city_data, save_country_data
 from indicator.wbi_parser import WBI_Parser
 
 
@@ -48,7 +48,7 @@ class IndicatorDataAdmin(admin.ModelAdmin):
     search_fields = ['year', 'indicator__friendly_label', 'value']
     list_filter = ['indicator', 'city', 'country', 'year']
 
-class MyModelAdmin(MultiUploadAdmin):
+class IndicatorDataUploadAdmin(MultiUploadAdmin):
     list_display = ['indicator','selection_type', 'city','country', 'region', 'year', 'value']
     search_fields = ['year', 'indicator__friendly_label', 'value']
     list_filter = ['indicator','selection_type', 'city', 'country', 'year']
@@ -73,7 +73,7 @@ class MyModelAdmin(MultiUploadAdmin):
 
     def process_uploaded_file(self, uploaded, object,request, **kwargs):
         '''
-        This method will be called for every file uploaded.
+        This method will be called for every csv file uploaded.
         Parameters:
             :uploaded: instance of uploaded file
             :object: instance of object if in form_multiupload else None
@@ -87,12 +87,10 @@ class MyModelAdmin(MultiUploadAdmin):
                 'name': 'the name of created file',
             }
         '''
-        # example:
+
+        #getting the title of the file
         title = kwargs.get('title', [''])[0] or uploaded.name
 
-        #check here how to save the file, i think we have to create a model, check https://github.com/gkuhn1/django-adminfiles/blob/master/adminfiles/models.py
-        #f = self.model(upload=uploaded, title=title)
-        #f.save()
         import csv
         try:
             dialect = csv.Sniffer().sniff(uploaded.read(4048))
@@ -100,9 +98,6 @@ class MyModelAdmin(MultiUploadAdmin):
             dialect = csv.excel
 
         file = csv.DictReader(uploaded, dialect=dialect)
-        keys = []
-        for key in file.next().iterkeys():
-            keys.append(key)
 
         line_counter = 0
         indicator_from_db = None
@@ -124,16 +119,14 @@ class MyModelAdmin(MultiUploadAdmin):
             region_csv = line.get('region_csv')
             friendly_label_csv = line.get('friendly_name')
             value_csv = line.get('value')
-            #todo replace , with . for floating numbers, check if this is always the case
-            #value_csv = value_csv.replace(',', '.')
             year_range_csv = line.get('year_range')
             indicator_id_csv = line.get('indicator_id')
             year_csv = line.get('year')
             type_data_csv = line.get('type_data')
 
+            #here we are checking if this indicator already exists, or if we have to create a new one
             if line_counter == 0:
                 #try to find the indicator that is uploaded or create a new one
-                #todo I think an indicator is unique together with a selection_type or derivation_type
                 indicator_from_db = Indicator.objects.get_or_create(id=indicator_id_csv)[0]
 
                 #update the indicator fields
@@ -145,31 +138,19 @@ class MyModelAdmin(MultiUploadAdmin):
                 indicator_from_db.save()
 
             #getting city from our database
-            try:
-                if city_csv:
-                    city_from_db = find_city(city_name=city_csv, cities=cities)
-                else:
-                    city_from_db = None
-            except:
-                city_from_db = None
-
-                #continue
+            city_from_db = find_city(city_name=city_csv, cities=cities)
 
             #getting country from our database
-            try:
-                if country_csv:
-                    country_from_db = find_country(country_name=country_csv, countries=countries)
-                else:
-                    country_from_db = None
-            except:
-                country_from_db = None
+            country_from_db = find_country(country_name=country_csv, countries=countries)
 
+            #add country to the log array
             if country_from_db:
                 country_found.append(country_csv)
             else:
                 if country_csv:
                     country_not_found.append(country_csv)
 
+            #add city to the log array
             if city_from_db:
                 city_found.append(city_csv)
             else:
@@ -177,77 +158,44 @@ class MyModelAdmin(MultiUploadAdmin):
                     city_not_found.append(city_csv)
 
             #this block is for storing data related to cities
-            try:
-                if city_from_db:
-                    #if the indicator data a selection type contains than we need to store that correctly
-                    if selection_type_csv:
-                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, city=city_from_db)[0]
-                    else:
-                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, city=city_from_db)[0]
-                    if country_from_db:
-                        indicator_data_from_db.country = country_from_db
-                    indicator_data_from_db.city = city_from_db
-                    #todo get region from db
-                    if value_csv:
-                        try:
-                            indicator_data_from_db.value = float(value_csv)
-                        except ValueError:
-                            indicator_data_from_db.value = float(value_csv.replace('.', ''))
-                    else:
-                        indicator_data_from_db.value = None
-                    #todo add year range to model IndicatorData
-                    #if year_range_csv:
-                    #    indicator_data_from_db.year_range = year_range_csv
-                    indicator_data_from_db.save()
-                    total_items_saved += 1
-            except:
-                pass
+            if save_city_data(
+                city_from_db=city_from_db,
+                country_from_db=country_from_db,
+                selection_type_csv=selection_type_csv,
+                indicator_from_db=indicator_from_db,
+                year_csv=year_csv,
+                value_csv=value_csv
+            ): total_items_saved += 1
 
             #this block is for storing country related indicator data
-            try:
-                if country_from_db and not city_csv:
-                    if selection_type_csv:
-                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, country=country_from_db)[0]
-                    else:
-                        indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, country=country_from_db)[0]
-                    #todo get region from db
-                    if value_csv:
-                        try:
-                            indicator_data_from_db.value = float(value_csv)
-                        except ValueError:
-                            indicator_data_from_db.value = float(value_csv.replace('.', ''))
-                    else:
-                        indicator_data_from_db.value = None
-
-                    #todo add year range to model IndicatorData
-                    #if year_range_csv:
-                    #    indicator_data_from_db.year_range = year_range_csv
-                    indicator_data_from_db.save()
-                    total_items_saved += 1
-            except:
-                pass
+            if save_country_data(
+                    country_from_db=country_from_db,
+                    city_csv=city_csv,
+                    selection_type_csv=selection_type_csv,
+                    year_csv=year_csv,
+                    indicator_from_db=indicator_from_db,
+                    value_csv=value_csv
+            ): total_items_saved += 1
 
             line_counter += 1
 
 
-        log = CsvUploadLog()
-        log.upload = uploaded
-        log.uploaded_by = request.user
-        log.slug = uuid.uuid4()
-        log.cities_not_found = unicode(', '.join(city_not_found), errors='ignore')
-        log.countries_not_found = unicode(', '.join(country_not_found), errors='ignore')
-        log.total_cities_found = city_found.__len__()
-        log.total_countries_found = country_found.__len__()
-        log.total_countries_not_found = country_not_found.__len__()
-        log.total_cities_not_found = city_not_found.__len__()
-        log.total_items_saved = total_items_saved
-        log.save()
+        log = save_log(file=uploaded,
+                 uploaded_by_user=request.user,
+                 cities_not_found=city_not_found,
+                 countries_not_found=country_not_found,
+                 total_cities_found=city_found,
+                 total_countries_found=country_found,
+                 total_cities_not_found=city_not_found,
+                 total_countries_not_found=country_not_found,
+                 total_items_saved=total_items_saved
+        )
 
 
         return {
             'url': '/admin/indicator/csvuploadlog/%s/' % str(log.id),
-            'thumbnail_url': 'f.image_thumb()',
-            'id': 'f.id',
+            'thumbnail_url': '',
+            'id': str(log.id),
             'name' : title,
             'country_not_found' : log.countries_not_found,
             'total_countries_not_found' : country_not_found.__len__(),
@@ -268,7 +216,7 @@ class MyModelAdmin(MultiUploadAdmin):
 
 
 admin.site.register(Indicator, IndicatorAdmin)
-admin.site.register(IndicatorData, MyModelAdmin)
+admin.site.register(IndicatorData, IndicatorDataUploadAdmin)
 admin.site.register(IndicatorSource)
 admin.site.register(IncomeLevel)
 admin.site.register(LendingType)
