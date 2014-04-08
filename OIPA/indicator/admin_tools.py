@@ -70,7 +70,7 @@ class IndicatorAdminTools():
                 if IndicatorData.objects.filter(indicator=found_indicator, country=found_country, year=year).exists():
                     continue
 
-                new_indicator_data = IndicatorData(indicator=found_indicator, country=found_country, value=value, year=year)
+                new_indicator_data = IndicatorData(indicator=found_indicator, country=found_country, value=value, year=year, selection_type=None)
                 new_indicator_data.save()
 
             except:
@@ -130,10 +130,10 @@ class IndicatorAdminTools():
                 if IndicatorData.objects.filter(indicator=found_indicator, city=found_city, year=year).exists():
                     continue
 
-                new_indicator_data = IndicatorData(indicator=found_indicator, city=found_city, value=value, year=year)
+                new_indicator_data = IndicatorData(indicator=found_indicator, city=found_city, value=value, year=year, selection_type=None)
                 new_indicator_data.save()
 
-            except:
+            except Exception as e:
                 print "error in update_indicator_data"
 
          print "ready"

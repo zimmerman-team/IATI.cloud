@@ -221,7 +221,7 @@ class IndicatorCountryDataResource(ModelResource):
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicatordata WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         desc = cursor.description
         results = [
@@ -296,7 +296,7 @@ class IndicatorCityDataResource(ModelResource):
 
         cursor_max = connection.cursor()
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicatordata WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         desc = cursor.description
         results = [
@@ -365,13 +365,13 @@ class IndicatorRegionDataResource(ModelResource):
 
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, c.dac_region_code, '
                        'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
-                       'FROM indicator_indicator_data id '
+                       'FROM indicator_indicatordata id '
                        'LEFT OUTER JOIN geodata_city c ON id.country_id = c.code '
                        'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
-        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicator_data WHERE %s' % indicator_q)
+        cursor_max.execute('SELECT max(value) as max_value FROM indicator_indicatordata WHERE %s' % indicator_q)
         result_max = cursor_max.fetchone()
         results = helper.get_fields(cursor)
         country = {}
@@ -425,7 +425,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label,region.code as region_id, region.name as region_name '
-                       'FROM indicator_indicator_data i '
+                       'FROM indicator_indicatordata i '
                        'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
                        'WHERE 1 %s' % (filter_string))
@@ -487,7 +487,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT i.indicator_id, ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
-                       'FROM indicator_indicator_data i '
+                       'FROM indicator_indicatordata i '
                        'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
                        'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
