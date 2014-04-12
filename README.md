@@ -11,6 +11,6 @@ http://iatistandard.org/
 
 OIPA V2.1 has an open-source license, meaning you can download the package from Github under the AGPL license. 
 
-Check the full documentation and how to use OIPA here: http://oipa.openaidsearch.org/api/v2/docs/
+Check the full documentation and how to use OIPA here: http://oipa.openaidsearch.org/api/v3/docs/
 
 ============
