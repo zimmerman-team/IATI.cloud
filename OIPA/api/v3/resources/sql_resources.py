@@ -460,7 +460,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -518,7 +518,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -590,7 +590,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
         jsondata['regions'] = regions
         jsondata['countries'] = countries
         jsondata['cities'] = cities
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
