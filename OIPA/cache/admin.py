@@ -13,7 +13,8 @@ class RequestAdmin(admin.ModelAdmin):
 
         my_urls = patterns('',
             (r'^update-requests/$', self.admin_site.admin_view(self.update_requests)),
-            (r'^cache-all-requests/$', self.admin_site.admin_view(self.cache_all_requests))
+            (r'^cache-all-requests/$', self.admin_site.admin_view(self.cache_all_requests)),
+            (r'^delete-all-under-x-count/$', self.admin_site.admin_view(self.delete_all_under_x))
         )
         return my_urls + urls
 
@@ -25,6 +26,12 @@ class RequestAdmin(admin.ModelAdmin):
     def cache_all_requests(self, request):
         validator = Validator()
         validator.cache_all_requests()
+        return HttpResponse('Success')
+
+    def delete_all_under_x(self, request):
+        count = request.GET.get('count')
+        validator = Validator()
+        validator.delete_all_under_x(count)
         return HttpResponse('Success')
 
 

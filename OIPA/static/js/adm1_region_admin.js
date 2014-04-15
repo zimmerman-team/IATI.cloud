@@ -8,22 +8,29 @@
 $(document).ready(function (){
    $('#update-adm1-region').click(function(){
 
+       var btn = $('#update-adm1-region');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/geodata/adm1region/update-adm1-regions/",
            beforeSend: function() {
-               $('#update-adm1-region').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-adm1-region').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-adm1-region').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-adm1-region').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });

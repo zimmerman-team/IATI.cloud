@@ -1,22 +1,29 @@
 $(document).ready(function (){
    $('#import-un-region-set').click(function(){
 
+       var btn = $('#import-un-region-set');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/geodata/region/import-un-regions/",
            beforeSend: function() {
-               $('#import-un-region-set').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#import-un-region-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#import-un-region-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#import-un-region-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });

@@ -73,9 +73,9 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
         extra_urls = patterns('',
             (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
-            (r'^parse-all/', self.admin_site.admin_view(self.parse_all)),
-            (r'^parse-all-over-interval/', self.admin_site.admin_view(self.parse_all_over_interval)),
-            (r'^parse-all-over-two-days/', self.admin_site.admin_view(self.parse_all_over_x_days)),
+            (r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
+            (r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
+            (r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
         )
         return extra_urls + urls
 

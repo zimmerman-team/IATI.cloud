@@ -1,7 +1,18 @@
 .oipa-admin-button{
+    transition: background-color 0.5s ease;
     background-color: #999;
     color: #fff;
     border: 0;
     padding:6px 10px;
     cursor: pointer;
+    border-radius: 4px;
+}
+
+.oipa-admin-button:hover{
+    background-color: #999;
+    color: #fff;
+    border: 0;
+    padding:6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
 }

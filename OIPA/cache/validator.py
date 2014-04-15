@@ -48,6 +48,7 @@ class Validator():
                     entry.response_time = time_elapsed
                     entry.save()
 
+
     def cache_all_requests(self):
 
         for entry in RequestedCall.objects.all():
@@ -110,3 +111,18 @@ class Validator():
     def get_cached_call(self, call):
         data = CachedCall.objects.get(call=call).result
         return data
+
+
+    def delete_all_under_x(self, number):
+        try:
+
+            for entry in RequestedCall.objects.filter(count__lt=number):
+                if CachedCall.objects.filter(call=entry.call).exists():
+                    CachedCall.objects.get(call=entry.call).delete()
+                entry.delete()
+            return True
+
+        except Exception as e:
+            print type(e)
+            print e.message
+            return False

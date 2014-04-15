@@ -1,22 +1,30 @@
 $(document).ready(function (){
+
    $('#update-indicators-set').click(function(){
+
+       var btn = $('#update-indicators-set');
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/indicator/indicator/update-indicator/",
            beforeSend: function() {
-               $('#update-indicators-set').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-indicators-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-indicators-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-indicators-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
@@ -24,22 +32,29 @@ $(document).ready(function (){
 
    $('#update-wbi-set').click(function(){
 
+       var btn = $('#update-wbi-set');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/indicator/indicator/update-wbi-indicator/",
            beforeSend: function() {
-               $('#update-wbi-set').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-wbi-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-wbi-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-wbi-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
@@ -49,22 +64,29 @@ $(document).ready(function (){
 
    $('#update-indicator-data-set').click(function(){
 
+       var btn = $('#update-indicator-data-set');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/indicator/indicator/update-indicator-data/",
            beforeSend: function() {
-               $('#update-indicator-data-set').text("Updating... This might take 10+ minutes");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-indicator-data-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-indicator-data-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-indicator-data-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
@@ -73,22 +95,29 @@ $(document).ready(function (){
 
    $('#update-indicator-city-data-set').click(function(){
 
+       var btn = $('#update-indicator-city-data-set');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/indicator/indicator/update-indicator-city-data/",
            beforeSend: function() {
-               $('#update-indicator-city-data-set').text("Updating... This might take 5+ minutes");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-indicator-city-data-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-indicator-city-data-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-indicator-city-data-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
