@@ -9,7 +9,7 @@ import datetime
 
 class Validator():
 
-    start_caching_from = 0.3 # seconds in query time
+    start_caching_from = 0.6 # seconds in query time
 
     def is_cached(self, call):
 

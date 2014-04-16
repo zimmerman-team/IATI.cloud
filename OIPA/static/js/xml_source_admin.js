@@ -1,5 +1,7 @@
 $(document).ready(function (){
    $('.parse').click(function(){
+
+       var btn = $(this);
        var image = $(this).find('img'),
            loading = $(this).parent().find('.loading'),
            xml_id = $(this).data('xml').replace('xml_', '');
