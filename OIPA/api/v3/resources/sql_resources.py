@@ -217,7 +217,10 @@ class IndicatorCountryDataResource(ModelResource):
                        'id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
                        'FROM indicator_indicatordata id '
                        'LEFT OUTER JOIN geodata_country c ON id.country_id = c.code '
-                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id '
+                       'WHERE '
+                       'id.city_id is NULL '
+                       'AND %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
