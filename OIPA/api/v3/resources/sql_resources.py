@@ -665,7 +665,10 @@ class CountryGeojsonResource(ModelResource):
                 '%s %s'\
                 'WHERE 1 %s'\
                 'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
+
+        print connection.queries
         cursor.execute(query)
+        print connection.queries
 
         activity_result = {'type' : 'FeatureCollection', 'features' : []}
 
