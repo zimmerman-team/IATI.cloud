@@ -294,7 +294,10 @@ class IndicatorCityDataResource(ModelResource):
                        'LEFT OUTER JOIN geodata_city ci ON id.city_id = ci.id '
                        'LEFT OUTER JOIN geodata_country c ON ci.country_id = c.code '
                        'LEFT OUTER JOIN geodata_region r ON c.region_id = r.code '
-                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id '
+                       'WHERE '
+                       'id.city_id is not NULL '
+                       'AND %s' % (filter_string))
 
         cursor_max = connection.cursor()
         indicator_q = indicator_q.replace(" ) AND (", "")
