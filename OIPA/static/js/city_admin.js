@@ -1,22 +1,29 @@
 $(document).ready(function (){
    $('#update-cities-set').click(function(){
 
+       var btn = $('#update-cities-set');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/geodata/city/update-cities/",
            beforeSend: function() {
-               $('#update-cities-set').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-cities-set').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-cities-set').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-cities-set').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });

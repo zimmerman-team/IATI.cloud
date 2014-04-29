@@ -216,8 +216,11 @@ class IndicatorCountryDataResource(ModelResource):
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
                        'FROM indicator_indicatordata id '
-                       'JOIN geodata_country c ON id.country_id = c.code '
-                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'LEFT OUTER JOIN geodata_country c ON id.country_id = c.code '
+                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id '
+                       'WHERE '
+                       'id.city_id is NULL '
+                       'AND %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
@@ -288,11 +291,13 @@ class IndicatorCityDataResource(ModelResource):
         cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, ci.name as city_name, '
                        'c.name as country_name, id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
                        'FROM indicator_indicatordata id '
-                       'JOIN geodata_city ci ON id.city_id = ci.id '
-                       'JOIN geodata_country c ON ci.country_id = c.code '
-                       'JOIN geodata_region r ON c.region_id = r.code '
-                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
-
+                       'LEFT OUTER JOIN geodata_city ci ON id.city_id = ci.id '
+                       'LEFT OUTER JOIN geodata_country c ON ci.country_id = c.code '
+                       'LEFT OUTER JOIN geodata_region r ON c.region_id = r.code '
+                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id '
+                       'WHERE '
+                       'id.city_id is not NULL '
+                       'AND %s' % (filter_string))
 
         cursor_max = connection.cursor()
         indicator_q = indicator_q.replace(" ) AND (", "")
@@ -367,7 +372,7 @@ class IndicatorRegionDataResource(ModelResource):
                        'c.dac_region_name, id.value, id.year, AsText(c.center_longlat) as loc, c.code as country_id '
                        'FROM indicator_indicatordata id '
                        'LEFT OUTER JOIN geodata_city c ON id.country_id = c.code '
-                       'JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
+                       'LEFT OUTER JOIN indicator_indicator da ON da.id = id.indicator_id WHERE %s' % (filter_string))
         cursor_max = connection.cursor()
 
         indicator_q = indicator_q.replace(" ) AND (", "")
@@ -460,7 +465,7 @@ class IndicatorRegionFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -518,7 +523,7 @@ class IndicatorCountryFilterOptionsResource(ModelResource):
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -590,7 +595,7 @@ class IndicatorCityFilterOptionsResource(ModelResource):
         jsondata['regions'] = regions
         jsondata['countries'] = countries
         jsondata['cities'] = cities
-        jsondata['indicator'] = indicators
+        jsondata['indicators'] = indicators
 
         return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
 
@@ -660,7 +665,10 @@ class CountryGeojsonResource(ModelResource):
                 '%s %s'\
                 'WHERE 1 %s'\
                 'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
+
+        print query
         cursor.execute(query)
+        print connection.queries
 
         activity_result = {'type' : 'FeatureCollection', 'features' : []}
 

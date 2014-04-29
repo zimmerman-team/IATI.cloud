@@ -9,7 +9,7 @@ import datetime
 
 class Validator():
 
-    start_caching_from = 0.3 # seconds in query time
+    start_caching_from = 0.6 # seconds in query time
 
     def is_cached(self, call):
 
@@ -47,6 +47,7 @@ class Validator():
                         entry.cached = True
                     entry.response_time = time_elapsed
                     entry.save()
+
 
     def cache_all_requests(self):
 
@@ -110,3 +111,18 @@ class Validator():
     def get_cached_call(self, call):
         data = CachedCall.objects.get(call=call).result
         return data
+
+
+    def delete_all_under_x(self, number):
+        try:
+
+            for entry in RequestedCall.objects.filter(count__lt=number):
+                if CachedCall.objects.filter(call=entry.call).exists():
+                    CachedCall.objects.get(call=entry.call).delete()
+                entry.delete()
+            return True
+
+        except Exception as e:
+            print type(e)
+            print e.message
+            return False

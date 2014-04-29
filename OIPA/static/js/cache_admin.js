@@ -1,48 +1,64 @@
 $(document).ready(function (){
    $('#update-requests').click(function(){
 
+       var btn = $('#update-requests');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/cache/requestedcall/update-requests/",
            beforeSend: function() {
-               $('#update-requests').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-requests').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-requests').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-requests').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
    });
 
    $('#delete-all-under-x-count').click(function(){
-       request_count = $('#request-count').val();
+
+       var btn = $('#delete-all-under-x-count');
+
+       var request_count = $('#request-count').val();
        var intRegex = /^\d+$/;
-       if(intRegex.test(parse_days)) {
+       if(intRegex.test(request_count)) {
 
            $.ajax({
                type: "GET",
                data: ({'count': request_count}),
-               url: "/admin/iati_synchroniser/iatixmlsource/delete-all-under-x-count/",
+               url: "/admin/cache/requestedcall/delete-all-under-x-count/",
                beforeSend: function() {
-                   $('#delete-all-under-x-count').text("Updating...");
+                   btn.removeClass("btn-success");
+                   btn.addClass("btn-warning");
+                   btn.text("Updating...");
                },
                statusCode: {
                    200: function() {
-                       $('#delete-all-under-x-count').text("Updated");
+                       btn.addClass("btn-info");
+                       btn.text("Updated");
+                       setInterval(function(){location.reload()},2000);
                    },
                    404: function() {
-                       $('#delete-all-under-x-count').text("404 error...");
+                       btn.addClass("btn-danger");
+                       btn.text("404 error...");
                    },
                    500: function() {
-                       $('#delete-all-under-x-count').text("500 error...");
+                       btn.addClass("btn-danger");
+                       btn.text("500 error...");
                    }
                }
            });
@@ -53,24 +69,31 @@ $(document).ready(function (){
 
 
 
-       $('#cache-all-requests').click(function(){
+   $('#cache-all-requests').click(function(){
+
+       var btn = $('#cache-all-requests');
 
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/cache/requestedcall/cache-all-requests/",
            beforeSend: function() {
-               $('#cache-all-requests').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#cache-all-requests').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#cache-all-requests').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#cache-all-requests').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
@@ -78,22 +101,29 @@ $(document).ready(function (){
 
    $('#update-caches').click(function(){
 
+       var btn = $('#update-caches');
+
        $.ajax({
            type: "GET",
            data: ({'all': 1}),
            url: "/admin/cache/cachedcall/update-caches/",
            beforeSend: function() {
-               $('#update-caches').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#update-caches').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#update-caches').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#update-caches').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });

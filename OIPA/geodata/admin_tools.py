@@ -53,7 +53,7 @@ class AdminTools():
             if Country.objects.filter(code=c).exists():
                 current_country = Country.objects.get(code=c)
 
-                point_loc_str = 'POINT(' + str(country_centers[c]["longitude"]) + ' ' + str(country_centers[c]["longitude"]) + ')'
+                point_loc_str = 'POINT(' + str(country_centers[c]["longitude"]) + ' ' + str(country_centers[c]["latitude"]) + ')'
                 longlat = fromstr(point_loc_str, srid=4326)
                 current_country.center_longlat = longlat
                 current_country.save()

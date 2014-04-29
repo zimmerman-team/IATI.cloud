@@ -38,21 +38,29 @@ $(document).ready(function (){
     });
 
     $('#count-publisher-activities').click(function(){
+
+       var btn = $('#count-publisher-activities');
+
        $.ajax({
            type: "GET",
            url: "/admin/iati_synchroniser/publisher/count-publisher-activities/",
            beforeSend: function() {
-               $('#count-publisher-activities').text("Updating...");
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Updating...");
            },
            statusCode: {
                200: function() {
-                   $('#count-publisher-activities').text("Updated");
+                   btn.addClass("btn-info");
+                   btn.text("Updated");
                },
                404: function() {
-                   $('#count-publisher-activities').text("404 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
                },
                500: function() {
-                   $('#count-publisher-activities').text("500 error...");
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
                }
            }
        });
