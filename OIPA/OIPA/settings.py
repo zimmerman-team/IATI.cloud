@@ -159,6 +159,8 @@ INSTALLED_APPS = (
     'cache',
     'south',
     'multiupload',
+    'indicator_unesco',
+    'translation_model',
 )
 
 

@@ -9,13 +9,21 @@ def get_countries():
 def get_cities():
     return City.objects.all()
 
-def find_country(country_name, countries):
+def find_country(country_name, countries, iso2=None):
         """
         Mapping the country string, to a country in the database
         @todo create a more optimized solution for this, it only matches an exact string, or the first 8 or last 8 characters
         @param country_name string from csv document:
         @return: country from database or False if it could not map a country
         """
+
+        #check is we are able to find the country based on the iso code
+        if iso2:
+            try:
+                return Country.objects.get(code=iso2)
+            except:
+                pass
+
         #getting countries from database
         try:
             if country_name:
@@ -24,6 +32,7 @@ def find_country(country_name, countries):
                     country_name = country_name.lower()
                     if country_name.decode('utf8') in country_name_db or country_name.decode('utf8')[:8] in country_name_db or country_name.decode('utf8')[-8:] in country_name_db:
                         return country
+
             else:
                 return None
         except:
@@ -96,8 +105,13 @@ def save_log(
     log.upload = file
     log.uploaded_by = uploaded_by_user
     log.slug = uuid.uuid4()
-    log.cities_not_found = unicode(', '.join(cities_not_found), errors='ignore')
-    log.countries_not_found = unicode(', '.join(countries_not_found), errors='ignore')
+    try:
+        log.cities_not_found = unicode(', '.join(cities_not_found), errors='ignore')
+        log.countries_not_found = unicode(', '.join(countries_not_found), errors='ignore')
+    except:
+        log.cities_not_found = ', '.join(cities_not_found)
+        log.countries_not_found = ', '.join(countries_not_found)
+
     log.total_cities_found = total_cities_found.__len__()
     log.total_countries_found = total_countries_found.__len__()
     log.total_countries_not_found = total_countries_not_found.__len__()

@@ -1,4 +1,5 @@
 import uuid
+import xml.etree.cElementTree as etree
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from multiupload.admin import MultiUploadAdmin
@@ -69,7 +70,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
     # min allowed filesize for uploads in bytes
     multiupload_minfilesize = 0
     # tuple with mimetype accepted
-    multiupload_acceptedformats = ( "text/csv",)
+    multiupload_acceptedformats = ( "text/csv", "text/xml")
 
     def process_uploaded_file(self, uploaded, object,request, **kwargs):
         '''
@@ -90,6 +91,12 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
 
         #getting the title of the file
         title = kwargs.get('title', [''])[0] or uploaded.name
+
+        xmlDoc = uploaded
+        xmlDocData = xmlDoc.read()
+        xmlDocTree = etree.XML(xmlDocData)
+        for country in xmlDocTree.iter('CountryId'):
+            country_name = country
 
         import csv
         try:
