@@ -1,5 +1,3 @@
-import uuid
-import xml.etree.cElementTree as etree
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from multiupload.admin import MultiUploadAdmin
@@ -7,7 +5,7 @@ from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLe
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
-from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, get_value, save_log, save_city_data, save_country_data
+from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, save_log, save_city_data, save_country_data
 from indicator.wbi_parser import WBI_Parser
 
 
@@ -91,12 +89,6 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
 
         #getting the title of the file
         title = kwargs.get('title', [''])[0] or uploaded.name
-
-        xmlDoc = uploaded
-        xmlDocData = xmlDoc.read()
-        xmlDocTree = etree.XML(xmlDocData)
-        for country in xmlDocTree.iter('CountryId'):
-            country_name = country
 
         import csv
         try:
