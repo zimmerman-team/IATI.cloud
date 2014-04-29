@@ -1,4 +1,3 @@
-import uuid
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from multiupload.admin import MultiUploadAdmin
@@ -6,7 +5,7 @@ from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLe
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
 from django.http import HttpResponse
-from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, get_value, save_log, save_city_data, save_country_data
+from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, save_log, save_city_data, save_country_data
 from indicator.wbi_parser import WBI_Parser
 
 
@@ -69,7 +68,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
     # min allowed filesize for uploads in bytes
     multiupload_minfilesize = 0
     # tuple with mimetype accepted
-    multiupload_acceptedformats = ( "text/csv",)
+    multiupload_acceptedformats = ( "text/csv", "text/xml")
 
     def process_uploaded_file(self, uploaded, object,request, **kwargs):
         '''
