@@ -27,7 +27,8 @@ def add_task(request):
 @staff_member_required
 def start_worker(request):
     queue_name = request.GET.get('queue_name')
-    tasks.start_worker(queue_name)
+    amount_of_workers = request.GET.get('amount_of_workers')
+    tasks.start_worker(queue_name, amount_of_workers)
     return HttpResponse('Success')
 
 @staff_member_required

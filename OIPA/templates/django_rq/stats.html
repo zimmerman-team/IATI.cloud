@@ -54,7 +54,7 @@
                                             </a>
                                         </th>
                                         <td>{{ queue.jobs }}</td>
-                                        <td>{{ queue.workers }}</td>
+                                        <td id="{{ queue.name }}-amount-workers">{{ queue.workers }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -893,12 +893,14 @@
             e.preventDefault();
 
             var btn = $('#add-worker-for-default-queue');
+            var amount = $('#default-amount-workers').text();
 
             $.ajax({
                type: "GET",
                url: "/admin/task_queue/start_worker/",
                data: {
-                   queue_name: 'default'
+                   queue_name: 'default',
+                   amount_of_workers: amount
                },
                success: function (data) {
 
@@ -932,12 +934,14 @@
             e.preventDefault();
 
             var btn = $('#add-worker-for-parser-queue');
+            var amount = $('#default-amount-workers').text();
 
             $.ajax({
                type: "GET",
                url: "/admin/task_queue/start_worker/",
                data: {
-                   queue_name: 'parser'
+                   queue_name: 'parser',
+                   amount_of_workers: amount,
                },
                success: function (data) {
                    console.log(data);
