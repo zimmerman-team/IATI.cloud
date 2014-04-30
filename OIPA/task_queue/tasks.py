@@ -38,20 +38,17 @@ def parse_all_existing_sources():
         queue = django_rq.get_queue("parser")
         queue.enqueue(parse_source_by_url, e.source_url)
 
-
 @job
 def get_new_sources_from_iati_api():
     from iati_synchroniser.dataset_syncer import DatasetSyncer
     ds = DatasetSyncer()
     ds.synchronize_with_iati_api(1)
 
-
 @job
 def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
-
 
 @job
 def parse_all_not_parsed_in_x_days(days):
@@ -89,10 +86,9 @@ def parse_all_over_parse_interval():
 ###############################
 
 @job
-def sync_codelist():
+def update_iati_codelists():
     from iati_synchroniser.codelist_importer import CodeListImporter
     syncer = CodeListImporter()
-
     syncer.synchronise_with_codelists()
 
 

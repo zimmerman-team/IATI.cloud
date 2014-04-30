@@ -63,11 +63,18 @@ def get_current_job(request):
 # Schedule management
 
 @staff_member_required
+def start_scheduler(request):
+    from rq_scheduler.scripts import rqscheduler
+    rqscheduler.main()
+    return HttpResponse('Success')
+
+@staff_member_required
 def add_scheduled_task(request):
 
     task = request.GET.get('task')
     period = request.GET.get('period')
     queue = request.GET.get('queue')
+    parameters = request.GET.get('parameters')
 
 
     from rq import use_connection
@@ -77,12 +84,21 @@ def add_scheduled_task(request):
     use_connection() # Use RQ's default Redis connection
     scheduler = Scheduler(queue) # Get a scheduler for the "default" queue
 
-    scheduler.schedule(
-        scheduled_time=datetime.now(),   # Time for first execution
-        func=getattr(tasks, task),           # Function to be queued
-        interval=period,                 # Time before the function is called again, in seconds
-        repeat=None                      # Repeat this number of times (None means repeat forever)
-    )
+    if parameters:
+        scheduler.schedule(
+            scheduled_time=datetime.now(),   # Time for first execution
+            func=getattr(tasks, task),       # Function to be queued
+            args=[int(parameters)],
+            interval=period,                 # Time before the function is called again, in seconds
+            repeat=None                      # Repeat this number of times (None means repeat forever)
+        )
+    else:
+        scheduler.schedule(
+            scheduled_time=datetime.now(),   # Time for first execution
+            func=getattr(tasks, task),           # Function to be queued
+            interval=period,                 # Time before the function is called again, in seconds
+            repeat=None                      # Repeat this number of times (None means repeat forever)
+        )
     return HttpResponse('Success')
 
 
@@ -100,7 +116,7 @@ def get_queue(request):
         if count_jobs == 20:
             break
 
-        job_dict = { 'job_id': job._id, 'created_at':job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'enqueued_at':job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'status': job.status, 'function': job.func_name, 'args': job.args }
+        job_dict = { 'job_id': job._id, 'created_at':job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'enqueued_at':job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'status': job.status, 'function': job.func_name, 'args': job.args}
         jobdata.append(job_dict)
     data = json.dumps(jobdata)
     return HttpResponse(data, mimetype='application/json')
@@ -121,7 +137,7 @@ def get_scheduled_tasks(request):
             interval = job.meta["interval"]
         else:
             interval = 0
-        job_dict = { 'job_id': job._id, 'task': job.description, 'period': interval, 'queue': "default" }
+        job_dict = { 'job_id': job._id, 'task': job.description, 'period': interval, 'args': job.args, 'queue': "default" }
         jobdata.append(job_dict)
 
     # scheduler = Scheduler('parser') # Get a scheduler for the "parser" queue

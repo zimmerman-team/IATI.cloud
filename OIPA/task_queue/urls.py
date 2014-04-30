@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^add_task/', 'task_queue.views.add_task'),
 
     # Schedule management
+    (r'^start_scheduler/', 'task_queue.views.start_scheduler'),
     (r'^add_scheduled_task/', 'task_queue.views.add_scheduled_task'),
     (r'^cancel_scheduled_task/', 'task_queue.views.cancel_scheduled_task'),
     (r'^get_scheduled_tasks/', 'task_queue.views.get_scheduled_tasks'),
