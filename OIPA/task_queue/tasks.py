@@ -18,7 +18,7 @@ def start_worker(queue_name, amount_of_workers):
     redis_conn = Redis()
     queue = Queue('low', connection=redis_conn)
 
-    amount_of_workers += 1
+    amount_of_workers = int(amount_of_workers) + 1
 
     with Connection():
         workername = "oipa-" + queue_name + "-" + str(amount_of_workers)
