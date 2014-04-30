@@ -34,7 +34,8 @@ def advanced_start_worker():
 @job
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
-        django_rq.enqueue(parse_source_by_url, e.source_url)
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(parse_source_by_url, e.source_url)
 
 
 @job
