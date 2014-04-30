@@ -13,7 +13,7 @@ import datetime
 @job
 def start_worker(queue_name, amount_of_workers):
     from rq import Queue, Connection, Worker
-    import Redis
+    from redis import Redis
 
     redis_conn = Redis()
     queue = Queue('low', connection=redis_conn)
