@@ -16,7 +16,7 @@ def start_worker(queue_name, amount_of_workers):
     from redis import Redis
 
     redis_conn = Redis()
-    queue = Queue('low', connection=redis_conn)
+    queue = Queue(queue_name, connection=redis_conn)
 
     amount_of_workers = int(amount_of_workers) + 1
 
@@ -25,6 +25,18 @@ def start_worker(queue_name, amount_of_workers):
         w = Worker(queue, workername)
         w.work()
 
+
+@job
+def advanced_start_worker():
+    from rq import Queue, Connection, Worker
+    from redis import Redis
+
+    redis_conn = Redis()
+    queue = Queue('default', connection=redis_conn)
+
+    with Connection():
+        w = Worker(queue)
+        w.work()
 
 
 
