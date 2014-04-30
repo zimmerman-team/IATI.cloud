@@ -13,7 +13,10 @@ def add_task(request):
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
 
-    queue.enqueue(getattr(tasks, task), parameters)
+    if parameters:
+        queue.enqueue(getattr(tasks, task), parameters)
+    else:
+        queue.enqueue(getattr(tasks, task))
     return HttpResponse('Success')
 
 

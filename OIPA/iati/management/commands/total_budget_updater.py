@@ -52,6 +52,8 @@ class TotalBudgetUpdater():
             for r in results:
                 cur_act = Activity.objects.get(id=r['activity_id'])
                 cur_act.total_budget = r['total_value']
+
+                #TO DO: CHECK CURRENCIES
                 cur_act.save()
         except Exception as e:
             logger.info("error in " + id + ", def: update_single_activity")

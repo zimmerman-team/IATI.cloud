@@ -17,7 +17,7 @@ def start_worker(queue_name):
 
 @job
 def start_parser_worker():
-    worker = django_rq.get_worker('parser') # Returns a worker for "parser" queue
+    worker = django_rq.get_worker('parser')
     worker.work()
 
 def advanced_start_worker():
