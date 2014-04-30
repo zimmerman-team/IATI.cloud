@@ -901,8 +901,12 @@
                    queue_name: 'default'
                },
                success: function (data) {
-                   console.log(data);
 
+               },
+               beforeSend: function() {
+                   btn.removeClass("btn-info");
+                   btn.addClass("btn-warning");
+                   btn.text("Adding worker...");
                },
                statusCode: {
                    200: function() {
@@ -938,6 +942,11 @@
                success: function (data) {
                    console.log(data);
 
+               },
+               beforeSend: function() {
+                   btn.removeClass("btn-info");
+                   btn.addClass("btn-warning");
+                   btn.text("Adding worker...");
                },
                statusCode: {
                    200: function() {
