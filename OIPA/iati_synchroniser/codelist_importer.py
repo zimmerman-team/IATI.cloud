@@ -5,9 +5,27 @@ from lxml import etree
 from geodata.models import Country, Region
 from iati.models import RegionVocabulary
 import logging
+from iati_synchroniser.models import Codelist
+import datetime
+
 logger = logging.getLogger(__name__)
 
 class CodeListImporter():
+
+        # class wide functions
+    def return_first_exist(self, xpath_find):
+
+        if not xpath_find:
+             xpath_find = None
+        else:
+            try:
+                xpath_find = unicode(xpath_find[0], errors='ignore')
+            except:
+                xpath_find = xpath_find[0]
+
+            xpath_find = xpath_find.encode('utf-8', 'ignore')
+        return xpath_find
+
 
     def synchronise_with_codelists(self):
 
@@ -95,8 +113,8 @@ class CodeListImporter():
                     db_row = ActivityStatus(code=code, name=name, language=language_name)
 
                 elif type == "Country":
-                    name = name.lower().capitalize()
-                    db_row = Country(code=code, name=name, language=language_name)
+                    name = name.lower().capitalize().replace("É", "é").replace("Ô", "o").replace("Ç", "ç")
+                    db_row = Country(code=code, name=name, language=language_name, data_source="IATI")
 
                 elif type == "BudgetType":
                     db_row = BudgetType(code=code, name=name, language=language_name)
@@ -224,7 +242,8 @@ class CodeListImporter():
                 elif type == "Sector":
                     sector_cat = SectorCategory.objects.get(code=category)
                     db_row = Sector(code=code, name=name, description=description, category=sector_cat)
-
+                else:
+                    print "type not saved: " + type
 
                 if (db_row is not None):
                     db_row.save()
@@ -242,9 +261,27 @@ class CodeListImporter():
 
 
         def get_codelist_data(elem=None, name=None):
+
             if not name:
-                name = (elem.xpath('name/text()'))[0]
-            cur_downloaded_xml = "http://data.aidinfolabs.org/data/codelist/" + name + ".xml"
+                name = self.return_first_exist(elem.xpath('name/text()'))
+
+                description = self.return_first_exist(elem.xpath('description/text()'))
+                count = self.return_first_exist(elem.xpath('count/text()'))
+                fields = self.return_first_exist(elem.xpath('fields/text()'))
+                date_updated = datetime.datetime.now()
+
+                if (Codelist.objects.filter(name=name).exists()):
+                    current_codelist = Codelist.objects.get(name=name)
+                    current_codelist.date_updated = date_updated
+                    current_codelist.description = description
+                    current_codelist.count = count
+                    current_codelist.fields = fields
+                    current_codelist.save()
+                else:
+                    new_codelist = Codelist(name=name, description=description, count=count, fields=fields, date_updated=date_updated)
+                    new_codelist.save()
+
+            cur_downloaded_xml = "http://dev.iatistandard.org/codelists/downloads/clv1/codelist/" + name + ".xml"
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
@@ -256,7 +293,7 @@ class CodeListImporter():
         get_codelist_data(name="RegionVocabulary")
 
         #get the file
-        downloaded_xml = urllib2.Request("http://data.aidinfolabs.org/data/codelist.xml")
+        downloaded_xml = urllib2.Request("http://dev.iatistandard.org/codelists/downloads/clv1/codelist.xml")
         file_opener = urllib2.build_opener()
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')

@@ -1,0 +1,135 @@
+{% extends "admin/base_site.html" %}
+
+{% load url from future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>table {width: 100%;}</style>
+
+{% endblock %}
+
+{% block content_title %}<h1>Add task to queue</h1>{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+        <a href="{% url 'rq_home' %}">OIPA task queues</a>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+    <div class="row-fluid">
+    <div class="span5">
+        <h1>Add new task</h1>
+    </div>
+    <div class="span5">
+        <h1>Schedule new task</h1>
+    </div>
+</div>
+
+
+
+        <div class="row-fluid">
+            <div class="span12">
+                <b>Parse tasks (will be added to default task queue)    </b>
+            </div>
+        </div>
+
+        <div class="row-fluid django-rq-buttons">
+
+            <div class="span12">
+
+                <a href="/admin/task_queue/add_task_parse_all/" id="update-all-existing-iati-sources" class="btn-success oipa-admin-button">Update all existing IATI sources</a>            <br>
+
+                <a href="/admin/task_queue/get_new_sources_from_iati_api/" id="get_new_sources_from_iati_api" class="btn-success oipa-admin-button">Add new sources from IATI registry</a>  <br>
+
+                <input id="django-rq-input-parse-x-days" name="" value="" placeholder="x (days)">
+                <a href="/admin/task_queue/parse_all_not_parsed_in_x_days/?days=" id="add-new-parser-worker" class="btn-success oipa-admin-button">Update sources not parsed in x days</a>  <br>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+
+        <div class="row-fluid">
+
+            <div class="span12">
+                <b>Other tasks (will be added to default task queue)</b>
+            </div>
+        </div>
+        <div class="row-fluid django-rq-buttons">
+
+            <div class="span12">
+
+                <a id="add-new-parser-worker" class="btn-success oipa-admin-button">Update all geo data</a>                   <br>
+                <a id="add-new-parser-worker" class="btn-success oipa-admin-button">Update all indicator data</a>             <br>
+                <a id="add-new-parser-worker" class="btn-success oipa-admin-button">cache long API calls</a>                  <br>
+                <a id="add-new-parser-worker" class="btn-success oipa-admin-button">update existing API call caches</a>       <br>
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+    <script>
+
+    $(document).ready(function (){
+
+       $('#update-all-existing-iati-sources').click(function(){
+
+           var btn = $('#update-all-existing-iati-sources');
+
+           $.ajax({
+               type: "GET",
+               data: ({'all': 1}),
+               url: "/admin/task_queue/add_task_parse_all/",
+               beforeSend: function() {
+                   btn.removeClass("btn-success");
+                   btn.addClass("btn-warning");
+                   btn.text("Updating...");
+               },
+               statusCode: {
+                   200: function() {
+                       btn.addClass("btn-info");
+                       btn.text("Added to task queue");
+                   },
+                   404: function() {
+                       btn.addClass("btn-danger");
+                       btn.text("404 error...");
+                   },
+                   500: function() {
+                       btn.addClass("btn-danger");
+                       btn.text("500 error...");
+                   }
+               }
+           });
+       });
+
+
+
+
+
+    });
+
+
+
+
+    </script>
+
+
+{% endblock %}

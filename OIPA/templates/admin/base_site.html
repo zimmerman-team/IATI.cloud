@@ -3,6 +3,15 @@
 
 {% block title %}{{ title }} | {% trans 'OIPA site admin' %}{% endblock %}
 
+{% block extrastyle %}
+    {{ block.super }}
+
+    <link rel="stylesheet" type="text/css" href="/static/css/custom_admin.css" />
+    <script type="text/javascript" src="/static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui-1.10.4.min.js"></script>
+
+{% endblock %}
+
 {% block branding %}
 <h1 id="site-name">{% trans 'OIPA administration' %}</h1>
 {% endblock %}

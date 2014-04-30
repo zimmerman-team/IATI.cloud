@@ -25,6 +25,7 @@ class Country(models.Model):
     fips10 = models.CharField(max_length=2, null=True, blank=True)
     center_longlat = models.PointField(null=True, blank=True)
     polygon = models.TextField(null=True, blank=True)
+    data_source = models.CharField(max_length=20, null=True, blank=True)
     objects = models.GeoManager()
 
     class Meta:

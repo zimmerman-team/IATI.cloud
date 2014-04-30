@@ -3,25 +3,16 @@ from django.contrib import admin
 from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from iati_synchroniser.management.commands.parse_all import ParseAll
-from iati_synchroniser.management.commands.parse_schedule import ParseSchedule
-from iati_synchroniser.management.commands.parse_x_days import ParseXDays
-from iati_synchroniser.management.commands.update_publisher_activity_count import PublisherUpdater
-from iati_synchroniser.admin import AdminTools
+from iati_synchroniser.parse_admin import ParseAdmin
 
 class DatasetSyncAdmin(admin.ModelAdmin):
     list_display = ['type', 'interval', 'date_updated', 'sync_now']
 
-    class Media:
-        js = (
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js',
-            '/static/js/dataset_sync_admin.js',
-            )
-
     def get_urls(self):
         urls = super(DatasetSyncAdmin, self).get_urls()
         extra_urls = patterns('',
-            (r'^sync-datasets/$', self.admin_site.admin_view(self.sync_view))
+            (r'^sync-datasets/$', self.admin_site.admin_view(self.sync_view)),
+
         )
         return extra_urls + urls
 
@@ -32,17 +23,17 @@ class DatasetSyncAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-class CodeListSyncAdmin(admin.ModelAdmin):
-    list_display = ['date_updated', 'sync_now']
 
-    class Media:
-        js = (
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js',
-            '/static/js/codelist_sync_admin.js',
-            )
+
+
+
+
+
+class CodeListAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description', 'count', 'fields', 'date_updated']
 
     def get_urls(self):
-        urls = super(CodeListSyncAdmin, self).get_urls()
+        urls = super(CodeListAdmin, self).get_urls()
         extra_urls = patterns('',
             (r'^sync-codelists/$', self.admin_site.admin_view(self.sync_view))
         )
@@ -50,9 +41,11 @@ class CodeListSyncAdmin(admin.ModelAdmin):
 
     def sync_view(self, request):
         sync_id = request.GET.get('sync_id')
-        obj = get_object_or_404(CodelistSync, id=sync_id)
-        obj.sync_codelist()
+        from iati_synchroniser.codelist_importer import CodeListImporter
+        cli = CodeListImporter()
+        cli.synchronise_with_codelists()
         return HttpResponse('Success')
+
 
 class IATIXMLSourceInline(admin.TabularInline):
     model = IatiXmlSource
@@ -60,14 +53,8 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    list_display = ['ref', 'publisher', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count']
-    list_filter = ('publisher', 'type')
-
-    class Media:
-        js = (
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js',
-            '/static/js/xml_source_admin.js',
-        )
+    search_fields = ['ref', 'publisher', 'title']
+    list_display = ['ref', 'publisher', 'title', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count']
 
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
@@ -86,18 +73,18 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
     def parse_all(self, request):
-        parser = ParseAll()
+        parser = ParseAdmin()
         parser.parseAll()
         return HttpResponse('Success')
 
     def parse_all_over_interval(self, request):
-        parser = ParseSchedule()
+        parser = ParseAdmin()
         parser.parseSchedule()
         return HttpResponse('Success')
 
     def parse_all_over_x_days(self, request):
         days = request.GET.get('days')
-        parser = ParseXDays()
+        parser = ParseAdmin()
         parser.parseXDays(days)
         return HttpResponse('Success')
 
@@ -130,12 +117,12 @@ class PublisherAdmin(admin.ModelAdmin):
 
     def count_publisher_activities(self, request):
 
-        pu = PublisherUpdater()
+        pu = ParseAdmin()
         pu.update_publisher_activity_count()
         return HttpResponse('Success')
 
 
 admin.site.register(DatasetSync,DatasetSyncAdmin)
-admin.site.register(CodelistSync,CodeListSyncAdmin)
+admin.site.register(Codelist,CodeListAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(IatiXmlSource, IATIXMLSourceAdmin)

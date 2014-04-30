@@ -43,6 +43,11 @@ class IndicatorAdmin(admin.ModelAdmin):
         wbi_parser.import_wbi_indicators()
         return HttpResponse('Success')
 
+    def update_WBI_indicator_data(self, request):
+        wbi_parser = WBI_Parser()
+        wbi_parser.import_wbi_indicator_data()
+        return HttpResponse('Success')
+
 class IndicatorDataAdmin(admin.ModelAdmin):
     list_display = ['indicator', 'city','country', 'region', 'year', 'value']
     search_fields = ['year', 'indicator__friendly_label', 'value']

@@ -19,8 +19,6 @@ class Parser():
 
     xml_source_ref = None
 
-    total_transactions = 0
-
 
     def parse_url(self, url, xml_source_ref):
 
@@ -55,10 +53,6 @@ class Parser():
             activity_count = 0
 
             for event, elem in context:
-
-                activity_count += 1
-                print "activity count: " + str(activity_count)
-                print "transaction count: " + str(self.total_transactions)
 
                 try:
                     func(elem)
@@ -672,7 +666,6 @@ class Parser():
 
             for t in elem.xpath('transaction'):
 
-                self.total_transactions += 1
 
                 try:
 

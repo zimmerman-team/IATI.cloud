@@ -104,8 +104,8 @@ class DocumentCategory(models.Model):
 
 
 class FileFormat(models.Model):
-    code = models.CharField(primary_key=True, max_length=30)
-    name = models.CharField(max_length=30)
+    code = models.CharField(primary_key=True, max_length=100)
+    name = models.CharField(max_length=100)
  
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)

@@ -1,0 +1,18 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls admin_static admin_list %}
+
+
+{% block extrastyle %}
+{{block.super}}
+<script type="text/javascript" src="/static/js/xml_source_admin.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+
+{{block.super}}
+<div class="module" style="margin: 10px 15px; padding: 20px;">
+    <button id="sync-codelists" class="btn-success oipa-admin-button">Update codelists</button>
+</div>
+
+{% endblock %}

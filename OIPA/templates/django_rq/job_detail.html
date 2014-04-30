@@ -1,0 +1,126 @@
+{% extends "admin/base_site.html" %}
+
+{% load url from future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .data {
+            display: inline-block;
+            float: left;
+            width: 80%;
+            font-size: 12px;
+            padding-top: 3px;
+        }
+    </style>
+    <link href="{{ STATIC_URL }}admin/css/forms.css" type="text/css" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+        <a href="{% url 'rq_home' %}">OIPA task queues</a> &rsaquo;
+        <a href = "{% url 'rq_jobs' queue_index %}">{{ queue.name }}</a> &rsaquo;
+        <a href = "{% url 'rq_job_detail' queue_index job.id %}">{{ job.id }}</a>
+    </div>
+{% endblock %}
+
+{% block content_title %}<h1>Job Info</h1>{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+
+
+    <table class="table table-striped table-bordered table-hover table-condensed django-rq-table">
+
+        <tr>
+            <td>ID:</td>
+            <td>{{ job.id }}</td>
+        </tr>
+
+        <tr>
+            <td>Queue:</td>
+            <td>{{ job.origin }}</td>
+        </tr>
+
+        <tr>
+            <td>Timeout:</td>
+            <td>{{ job.timeout }}</td>
+        </tr>
+
+        <tr>
+            <td>Result TTL:</td>
+            <td>{{ job.result_ttl }}</td>
+        </tr>
+
+        <tr>
+            <td>Created:</td>
+            <td>{{ job.created_at }}</td>
+        </tr>
+
+        <tr>
+            <td>Queued:</td>
+            <td>{{ job.enqueued_at }}</td>
+        </tr>
+
+        <tr>
+            <td>Status:</td>
+            <td>{{ job.status }}</td>
+        </tr>
+
+        <tr>
+            <td>Callable:</td>
+            <td>{{ job.func_name }}</td>
+        </tr>
+
+        <tr>
+            <td>Args:</td>
+            <td>
+            {% if job.args %}
+            <ul>
+                {% for arg in job.args %}
+                    <li>{{ arg }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>Kwargs:</td>
+            <td>
+                {% if job.kwargs %}
+                        <ul>
+                            {% for key, value in job.kwargs.items %}
+                                <li>{{ key }}: {{ value|escape }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+            </td>
+        </tr>
+
+      <tr>
+            <td>Exception:</td>
+            <td><pre>{% if job.exc_info %}{{ job.exc_info|linebreaks }}{% endif %}</pre></td>
+        </tr>
+
+
+    </table>
+
+
+    <div class="submit-row">
+        <p class="deletelink-box"><a href="delete/" class="oipa-admin-button deletelink">Delete</a></p>
+        {% if job.is_failed %}
+            <form method = 'POST' action = "{% url 'rq_requeue_job' queue_index job.id %}">
+                {% csrf_token %}
+                <input type="submit" value="Requeue" class="default" name="requeue">
+            </form>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

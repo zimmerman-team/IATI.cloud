@@ -1,0 +1,152 @@
+{% extends "admin/base_site.html" %}
+
+{% load url from future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>table {width: 100%;}</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+        <a href="{% url 'rq_home' %}">OIPA task queues</a> &rsaquo;
+        <a href = "{% url 'rq_jobs' queue_index %}">{{ queue.name }}</a>
+    </div>
+{% endblock %}
+
+{% block content_title %}<h1>Jobs in {{ queue.name }}</h1>{% endblock %}
+
+{% block content %}
+
+
+    <div id="task-queue-jobs-admin">
+
+        <a href="/admin/task_queue/delete_all_tasks_from_queue/?queue_name={{ queue.name }}" id="delete-all-tasks" class="btn-danger oipa-admin-button">Clear queue</a>
+
+    </div>
+
+<div id="content-main">
+
+    <div class="module">
+        <table class="table table-striped table-bordered table-hover table-condensed django-rq-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Created</th>
+                    <th>Enqueued</th>
+                    <th>Status</th>
+                    <th>Callable</th>
+                    <th>Args</th>
+                    <th>Delete task</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr class = "{% cycle 'row1' 'row2' %}">
+                        <th>
+                            <a href = "{% url 'rq_job_detail' queue_index job.id %}">
+                                {{ job.id }}
+                            </a>
+                        </th>
+                        <td>{{ job.created_at }}</td>
+                        <td>{{ job.enqueued_at }}</td>
+                        <td>{{ job.status }}</td>
+                        <td>{{ job.func_name }}</td>
+
+                        <td>
+                        {% if job.args %}
+                        <ul>
+                            {% for arg in job.args %}
+                                <li>{{ arg }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        </td>
+                        <td>
+                            <a href="/admin/task_queue/delete_task_from_queue/?job_id={{ job.id }}" class="btn-danger oipa-admin-button delete-task-button">Delete</a>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+    <script>
+
+    $(document).ready(function (){
+
+       $('.delete-task-button').click(function(e){
+           e.preventDefault();
+
+           var btn = $(this);
+
+           $.ajax({
+               type: "GET",
+               url: btn.attr("href"),
+               beforeSend: function() {
+                   btn.text("Deleting...");
+               },
+               statusCode: {
+                   200: function() {
+                       btn.closest('tr').hide(500);
+                   },
+                   404: function() {
+                       btn.addClass("btn-warning");
+                       btn.text("404 error...");
+                   },
+                   500: function() {
+                       btn.addClass("btn-warning");
+                       btn.text("500 error...");
+                   }
+               }
+           });
+       });
+
+       $('#delete-all-tasks').click(function(e){
+           e.preventDefault();
+
+           var btn = $(this);
+
+           $.ajax({
+               type: "GET",
+               url: btn.attr("href"),
+               beforeSend: function() {
+                   btn.text("Deleting...");
+               },
+               statusCode: {
+                   200: function() {
+                       btn.addClass("btn-info");
+                       btn.text("Deleted");
+                       $('.django-rq-table tbody').hide(500);
+                   },
+                   404: function() {
+                       btn.addClass("btn-warning");
+                       btn.text("404 error...");
+                   },
+                   500: function() {
+                       btn.addClass("btn-warning");
+                       btn.text("500 error...");
+                   }
+               }
+           });
+       });
+
+
+
+
+
+    });
+
+
+
+
+    </script>
+
+{% endblock %}

@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 import csv
-from geodata.models import Country
-from indicator.models import *
+from indicator.models import IndicatorTopic, IndicatorSource, Indicator, IndicatorData, Country, Region
 import os.path
 
 class WBI_Parser():
 
     def import_wbi_indicators(self):
+        self.update_country_data()
         self.add_indicators()
         self.add_indicator_data()
-
 
     def get_topic_or_create(self, topic_name):
         res, created = IndicatorTopic.objects.get_or_create(name=topic_name)
@@ -58,7 +57,7 @@ class WBI_Parser():
             series_reader = csv.reader(f)
             series_header = series_reader.next()
             for row in series_reader:
-                indicator_id = row[series_header.index("SeriesCode")]
+                indicator_id = row[series_header.index("Series Code")]
                 indicator_id = self.decode_data(indicator_id)
                 new_indicator = self.get_indicator_or_create(indicator_id)
                 if new_indicator.source and new_indicator.topic:
@@ -107,3 +106,34 @@ class WBI_Parser():
                         our_data.country = our_country
                         our_data.save()
 
+
+    def update_country_data(self):
+        BASE = os.path.dirname(os.path.abspath(__file__))
+        specific = BASE + "/data_backup/wdi_data/WDI_Country.csv"
+
+        with open(specific, 'rb') as f:
+            data_reader = csv.reader(f)
+            data_header = data_reader.next()
+            for row in data_reader:
+                country_iso3 = row[data_header.index("Country Code")]
+                country_iso2 = row[data_header.index("2-alpha code")]
+                name = row[data_header.index("Table Name")]
+
+                if country_iso2 == "":
+                    if not (Country.objects.filter(iso3=country_iso3)).exists():
+                        new_country = Country()
+                        new_country.code = country_iso2
+                        new_country.iso3 = country_iso3
+                        new_country.name = name
+                        new_country.language = "en"
+                        new_country.data_source = "WDI"
+                        new_country.save()
+
+                elif not (Country.objects.filter(code=country_iso2)).exists():
+                    new_country = Country()
+                    new_country.code = country_iso2
+                    new_country.iso3 = country_iso3
+                    new_country.name = name
+                    new_country.language = "en"
+                    new_country.data_source = "WDI"
+                    new_country.save()

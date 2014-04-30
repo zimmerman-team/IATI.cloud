@@ -13,8 +13,14 @@ defusedxml==0.4.1
 johnny-cache==1.4
 contexttimer==0.2.0
 mechanize==0.2.5
-django-suit
+django-suit==0.2.7
 objgraph
 guppy
 ujson==1.33
+redis
+rq==0.3.13
+django-rq
+rq-scheduler
+
+
 git+git://github.com/gkuhn1/django-admin-multiupload.git

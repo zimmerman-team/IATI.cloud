@@ -5,9 +5,11 @@ import urllib2
 import datetime
 from iati.models import OrganisationIdentifier
 import logging
+
 logger = logging.getLogger(__name__)
 
 class DatasetSyncer():
+
 
     # Start looping through the datasets
     def synchronize_with_iati_api(self, type):

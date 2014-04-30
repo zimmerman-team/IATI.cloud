@@ -61,3 +61,17 @@ OIPA/indicators/data_backup/wdi_data/WDI_Series.csv
 parse.log
 
 .DS_Store
+
+OIPA/indicator/data_backup/wdi_data/WDI_Country.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_CS_Notes.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_Data.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_Description.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_Footnotes.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_Series.csv
+
+OIPA/indicator/data_backup/wdi_data/WDI_ST_Notes.csv

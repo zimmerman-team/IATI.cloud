@@ -3,9 +3,8 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from iati_synchroniser.dataset_syncer import DatasetSyncer
-from iati_synchroniser.codelist_importer import CodeListImporter
 from iati.parser import Parser
-from iati_synchroniser.admin_tools import AdminTools
+from iati.deleter import Deleter
 
 INTERVAL_CHOICES = (
     (u'YEARLY', _(u"Parse yearly")),
@@ -58,7 +57,7 @@ class IatiXmlSource(models.Model):
         return self.ref
 
     def get_parse_status(self):
-        return mark_safe("<img class='loading' src='/static/img/loading.gif' alt='loading' style='display:none;' /><a data-xml='xml_%i' class='parse'><img src='/static/img/utils.parse.png' style='cursor:pointer;' /></a>") % self.id
+        return mark_safe("<a data-xml='xml_%i' class='parse-btn'>Parse</a>") % self.id
     get_parse_status.allow_tags = True
     get_parse_status.short_description = _(u"Parse status")
 
@@ -75,6 +74,11 @@ class IatiXmlSource(models.Model):
         super(IatiXmlSource, self).save()
         if process:
             self.process()
+
+    def delete(self, process=True, *args, **kwargs):
+        deleter = Deleter()
+        deleter.delete_by_source(self.source_url)
+        super(IatiXmlSource, self).delete()
 
 
 
@@ -96,7 +100,7 @@ class DatasetSync(models.Model):
         verbose_name_plural = "dataset synchronisers"
 
     def sync_now(self):
-        return mark_safe("<img class='loading' src='/static/img/loading.gif' alt='loading' style='display:none;' /><a data-sync='sync_%i' class='sync    '><img src='/static/img/utils.parse.png' style='cursor:pointer;' /></a>") % self.id
+        return mark_safe("<a data-sync='sync_%i' class='sync-btn'>Parse</a>") % self.id
     sync_now.allow_tags = True
     sync_now.short_description = _(u"Sync now?")
 
@@ -120,19 +124,13 @@ class DatasetSync(models.Model):
         syncer.synchronize_with_iati_api(self.type)
 
 
-
-class CodelistSync(models.Model):
-
+class Codelist(models.Model):
+    name = models.CharField(primary_key=True, max_length=100)
+    description = models.TextField( max_length=1000, blank=True, null=True)
+    count = models.CharField(max_length=10, blank=True, null=True)
+    fields = models.CharField(max_length=255, blank=True, null=True)
     date_updated = models.DateTimeField(auto_now=True, editable=False)
 
-    class Meta:
-        verbose_name_plural = "codelist synchronisers"
 
-    def sync_now(self):
-        return mark_safe("<img class='loading' src='/static/img/loading.gif' alt='loading' style='display:none;' /><a data-sync='sync_%i' class='sync    '><img src='/static/img/utils.parse.png' style='cursor:pointer;' /></a>") % self.id
-    sync_now.allow_tags = True
-    sync_now.short_description = _(u"Sync now?")
-
-    def sync_codelist(self):
-        syncer = CodeListImporter()
-        syncer.synchronise_with_codelists()
+    def __unicode__(self,):
+        return "%s" % (self.name)

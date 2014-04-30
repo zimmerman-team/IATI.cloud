@@ -1,5 +1,5 @@
 from django.contrib import admin
-from iati.models import Activity, Organisation
+from iati.models import Activity, Organisation, Sector
 from django.conf.urls import patterns
 from iati.management.commands.total_budget_updater import TotalBudgetUpdater
 from iati.management.commands.organisation_name_updater import OrganisationNameUpdater
@@ -47,7 +47,13 @@ class ActivityAdmin(admin.ModelAdmin):
         else:
             return False
 
+
+class SectorAdmin(admin.ModelAdmin):
+    search_fields = ['id']
+    list_display = ['code', 'name', 'description', 'category']
+
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Organisation, OrganisationAdmin)
+admin.site.register(Sector, SectorAdmin)
 
 

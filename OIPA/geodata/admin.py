@@ -2,10 +2,11 @@ from django.conf.urls import patterns
 from django.contrib import admin
 from geodata.models import *
 from django.http import HttpResponse
-from geodata.admin_tools import AdminTools
+from geodata.updaters import CountryUpdater, CityUpdater, Admin1RegionUpdater, RegionUpdater
 
 
 class RegionAdmin(admin.ModelAdmin):
+
     search_fields = ['name']
     list_display = ['__unicode__','code', 'region_vocabulary', 'parental_region']
 
@@ -18,14 +19,14 @@ class RegionAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def import_un_regions(self, request):
-        admTools = AdminTools()
-        admTools.import_un_regions()
+        ru = RegionUpdater()
+        ru.update_un_regions()
         return HttpResponse('Success')
 
 
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ['__unicode__', 'capital_city', 'region']
+    list_display = ['__unicode__', 'capital_city', 'region', 'un_region', 'dac_country_code', 'iso3', 'alpha3', 'fips10', 'data_source']
 
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
@@ -39,23 +40,24 @@ class CountryAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def update_polygon(self, request):
-        admTools = AdminTools()
-        admTools.update_polygon_set()
+
+        cu = CountryUpdater()
+        cu.update_polygon_set()
         return HttpResponse('Success')
 
     def update_country_center(self, request):
-        admTools = AdminTools()
-        admTools.update_country_center()
+        cu = CountryUpdater()
+        cu.update_center_longlat()
         return HttpResponse('Success')
 
     def update_regions(self, request):
-        admTools = AdminTools()
-        admTools.update_country_regions()
+        cu = CountryUpdater()
+        cu.update_regions()
         return HttpResponse('Success')
 
     def update_country_identifiers(self, request):
-        admTools = AdminTools()
-        admTools.update_country_identifiers()
+        cu = CountryUpdater()
+        cu.update_identifiers()
         return HttpResponse('Success')
 
 
@@ -72,8 +74,8 @@ class CityAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def update_cities(self, request):
-        admTools = AdminTools()
-        admTools.update_cities()
+        cu = CityUpdater()
+        cu.update_cities()
         return HttpResponse('Success')
 
 
@@ -90,9 +92,16 @@ class Adm1RegionAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def update_adm1_regions(self, request):
-        admTools = AdminTools()
-        admTools.update_adm1_regions()
+        adm1u = Admin1RegionUpdater()
+        adm1u.update_all()
         return HttpResponse('Success')
+
+
+
+    def change_view(self, request, object_id, extra_context=None):
+        self.exclude = ('polygon', 'center_location', )
+        return super(Adm1RegionAdmin, self).change_view(request, object_id, extra_context=None)
+
 
 
 admin.site.register(City, CityAdmin)

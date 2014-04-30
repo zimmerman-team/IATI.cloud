@@ -4,9 +4,6 @@
 
 {% block extrastyle %}
 {{block.super}}
-
-<link rel="stylesheet" type="text/css" href="/static/css/custom_admin.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 <script type="text/javascript" src="/static/js/xml_source_admin.js"></script>
 
 {% endblock %}
@@ -16,7 +13,7 @@
 {{block.super}}
     <div class="module" style="margin: 10px 15px; padding: 20px;">
 
-        <button id="parse-all-set" class="oipa-admin-button">Parse all sources</button>
+        <button id="parse-all-set" class="btn-success oipa-admin-button">Parse all sources</button>
         <button id="parse-all-over-interval-set" class="btn-success oipa-admin-button">Parse all sources over their parse interval</button>
         <div style="display:inline-block;padding:0 1em;">
             Parse all not parsed within x days: <input id="parse-days" type="text" style="margin-bottom: 0;width:3em;" name="parse-days" placeholder="days">

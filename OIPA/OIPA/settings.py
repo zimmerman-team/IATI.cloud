@@ -157,9 +157,50 @@ INSTALLED_APPS = (
     'api',
     'rsr',
     'cache',
+    'task_queue',
     'south',
     'multiupload',
+    'django_rq',
 )
+
+
+SUIT_CONFIG = {
+    'ADMIN_NAME': 'OIPA',
+    'MENU': (
+        # Keep original label and models
+        'sites',
+
+        # Rename app and set icon
+        {'app': 'auth', 'label': 'Authorization', 'icon':'icon-lock'},
+        {'app': 'iati', 'label': 'IATI', 'icon':'icon-th'},
+        {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon':'icon-refresh'},
+
+        {'app': 'geodata', 'label': 'Geo data', 'icon':'icon-globe'},
+        {'app': 'indicator', 'label': 'Indicators', 'icon':'icon-signal'},
+
+        {'app': 'cache', 'label': 'API call cache', 'icon':'icon-hdd'},
+
+        {'label': 'Task queue', 'url': ( '/admin/task-queue/'), 'icon':'icon-tasks', 'models': [
+
+            {'label': 'Task overview', 'url': ( '/admin/task_queue/')},
+            {'label': 'Default queue', 'url': ( '/admin/task_queue/queues/0/')},
+            {'label': 'Parse queue', 'url': ( '/admin/task_queue/queues/1/')},
+
+        ]},
+
+
+
+    )
+
+        # Keep original label and models
+        # 'sites',
+
+
+        # Custom app, with models
+        # {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
+
+
+}
 
 
 # A sample logging configuration. The only tangible logging
@@ -167,4 +208,10 @@ INSTALLED_APPS = (
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+RQ_SHOW_ADMIN_LINK = True
+
 LOGGING = LOGGING
+
+RQ_QUEUES = RQ_QUEUES
+
