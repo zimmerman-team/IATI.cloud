@@ -401,7 +401,7 @@
     <div class="row-fluid">
         <div class="span11">
 
-            <div class="django-rq-block">
+            <div id="django-rq-parse-queue-block" class="django-rq-block">
                 <div class="row-fluid">
                     <div class="span6">
                         <h1>Parser queue (Only parses single IATI XML files)</h1>
@@ -718,32 +718,32 @@
 
         function fill_parser_queue(){
 
-            $.ajax({
-               type: "GET",
-               url: "/admin/task_queue/get_queue/",
-               data: {
-                    "queue": "parser"
-               },
-               success: function (data) {
-
-                   scheduled_tasks_html = "";
-
-                   $.each(data, function( index, value ) {
-                       scheduled_tasks_html += "<tr>";
-                       scheduled_tasks_html += "<td>" + value.job_id + "</td>";
-                       scheduled_tasks_html += "<td>" + value.created_at + "</td>";
-                       scheduled_tasks_html += "<td>" + value.enqueued_at + "</td>";
-                       scheduled_tasks_html += "<td>" + value.status + "</td>";
-                       scheduled_tasks_html += "<td>" + value.function + "</td>";
-                       scheduled_tasks_html += "<td>" + value.args + "</td>";
-                       scheduled_tasks_html += '<td><a href="/admin/task_queue/delete_task_from_queue/?job_id=' + value.job_id + '" class="delete-parser-task">delete</a></td>';
-                       scheduled_tasks_html += "</tr>";
-                   });
-
-                   $('#parser-tasks-table tbody').html(scheduled_tasks_html);
-                   load_listeners();
-               }
-           });
+{#            $.ajax({#}
+{#               type: "GET",#}
+{#               url: "/admin/task_queue/get_queue/",#}
+{#               data: {#}
+{#                    "queue": "parser"#}
+{#               },#}
+{#               success: function (data) {#}
+{##}
+{#                   scheduled_tasks_html = "";#}
+{##}
+{#                   $.each(data, function( index, value ) {#}
+{#                       scheduled_tasks_html += "<tr>";#}
+{#                       scheduled_tasks_html += "<td>" + value.job_id + "</td>";#}
+{#                       scheduled_tasks_html += "<td>" + value.created_at + "</td>";#}
+{#                       scheduled_tasks_html += "<td>" + value.enqueued_at + "</td>";#}
+{#                       scheduled_tasks_html += "<td>" + value.status + "</td>";#}
+{#                       scheduled_tasks_html += "<td>" + value.function + "</td>";#}
+{#                       scheduled_tasks_html += "<td>" + value.args + "</td>";#}
+{#                       scheduled_tasks_html += '<td><a href="/admin/task_queue/delete_task_from_queue/?job_id=' + value.job_id + '" class="delete-parser-task">delete</a></td>';#}
+{#                       scheduled_tasks_html += "</tr>";#}
+{#                   });#}
+{##}
+{#                   $('#parser-tasks-table tbody').html(scheduled_tasks_html);#}
+{#                   load_listeners();#}
+{#               }#}
+{#           });#}
 
         }
 

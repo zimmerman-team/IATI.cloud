@@ -115,6 +115,10 @@ a{
     display: none;
 }
 
+#django-rq-parse-queue-block{
+    display: none;
+}
+
 #add-task-button-default{
     margin-bottom: 0;
 }
