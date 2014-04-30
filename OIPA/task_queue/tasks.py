@@ -11,21 +11,22 @@ import datetime
 ###############################
 
 @job
-def start_worker(queue_name):
-    worker = django_rq.get_worker(queue_name)
-    worker.work()
+def start_worker(queue_name, amount_of_workers):
+    from rq import Queue, Connection, Worker
+    import Redis
 
-@job
-def start_parser_worker():
-    worker = django_rq.get_worker('parser')
-    worker.work()
+    redis_conn = Redis()
+    queue = Queue('low', connection=redis_conn)
 
-def advanced_start_worker():
-    from rq import Connection, Queue, Worker
+    amount_of_workers += 1
+
     with Connection():
-        queue = django_rq.get_queue('parser')
-        w = Worker(queue)
+        workername = "oipa-" + queue_name + "-" + str(amount_of_workers)
+        w = Worker(queue, workername)
         w.work()
+
+
+
 
 ###############################
 ######## PARSING TASKS ########
