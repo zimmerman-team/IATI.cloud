@@ -21,6 +21,7 @@ redis
 rq==0.3.13
 django-rq
 rq-scheduler
-
+supervisor
+django-supervisor
 
 git+git://github.com/gkuhn1/django-admin-multiupload.git

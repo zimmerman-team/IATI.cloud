@@ -83,46 +83,6 @@ class IatiXmlSource(models.Model):
 
 
 
-class DatasetSync(models.Model):
-    TYPE_CHOICES = (
-        (1, _(u"Activity Files")),
-        (2, _(u"Organisation Files")),
-    )
-
-    interval = models.CharField(verbose_name=_(u"Interval"), max_length=55, choices=INTERVAL_CHOICES)
-    date_updated = models.DateTimeField(auto_now=True, editable=False)
-    type = models.IntegerField(choices=TYPE_CHOICES, default=1)
-
-    def __unicode__(self):
-        return self.interval
-
-    class Meta:
-        verbose_name_plural = "dataset synchronisers"
-
-    def sync_now(self):
-        return mark_safe("<a data-sync='sync_%i' class='sync-btn'>Parse</a>") % self.id
-    sync_now.allow_tags = True
-    sync_now.short_description = _(u"Sync now?")
-
-    def _add_month(self, d,months=1):
-        year, month, day = d.timetuple()[:3]
-        new_month = month + months
-        return datetime.date(year + ((new_month-1) / 12), (new_month-1) % 12 +1, day)
-
-    def process(self):
-        if self.interval == u'YEARLY' and (self._add_month(self.date_updated, 12) <= datetime.datetime.now().date()):
-            self.sync_dataset_with_iati_api()
-        elif self.interval == u'MONTHLY' and (self._add_month(self.date_updated) <= datetime.datetime.now().date()):
-            self.sync_dataset_with_iati_api()
-        elif self.interval == u'WEEKLY' and (self.date_updated+datetime.timedelta(7) <= datetime.datetime.today()):
-            self.sync_dataset_with_iati_api()
-        elif self.interval == u'DAILY' and (self.date_updated+datetime.timedelta(1) <= datetime.datetime.today()):
-            self.sync_dataset_with_iati_api()
-
-    def sync_dataset_with_iati_api(self):
-        syncer = DatasetSyncer()
-        syncer.synchronize_with_iati_api(self.type)
-
 
 class Codelist(models.Model):
     name = models.CharField(primary_key=True, max_length=100)

@@ -5,7 +5,9 @@ urlpatterns = patterns('',
 
     # Task queue management
     (r'^start_worker/', 'task_queue.views.start_worker'),
+    (r'^start_worker_from_command_line/', 'task_queue.views.start_worker_from_command_line'),
     (r'^advanced_start_worker/', 'task_queue.views.advanced_start_worker'),
+    (r'^get_workers/', 'task_queue.views.get_workers'),
     (r'^delete_task_from_queue/', 'task_queue.views.delete_task_from_queue'),
     (r'^delete_all_tasks_from_queue/', 'task_queue.views.delete_all_tasks_from_queue'),
     (r'^get_current_job/', 'task_queue.views.get_current_job'),

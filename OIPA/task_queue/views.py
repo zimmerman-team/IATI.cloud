@@ -36,6 +36,41 @@ def advanced_start_worker(request):
     tasks.advanced_start_worker()
     return HttpResponse('Success')
 
+@staff_member_required
+def start_worker_from_command_line(request):
+    # from django.core.management import execute_from_command_line
+    # execute_from_command_line(["manage.py", "rqworker"])
+
+
+
+    import subprocess
+    output = subprocess.check_output(["python", "manage.py", "rqworker"])
+    for line in output.split('\n'):
+        return HttpResponse(line)
+    return HttpResponse('Success')
+
+
+@staff_member_required
+def get_workers(request):
+    from rq import Worker, push_connection
+    import redis
+    import json
+
+    connection = redis.Redis()
+    push_connection(connection)
+    workers = Worker.all(connection=connection)
+
+    workerdata = list()
+    # serialize workers
+    for w in workers:
+
+        worker_dict = { 'pid': w.pid, 'name': w.name, 'state': w.state}
+        workerdata.append(worker_dict)
+
+    data = json.dumps(workerdata)
+    return HttpResponse(data, mimetype='application/json')
+
+
 
 @staff_member_required
 def delete_task_from_queue(request):
@@ -160,7 +195,6 @@ def cancel_scheduled_task(request):
     from rq import use_connection
     from rq_scheduler import Scheduler
 
-    use_connection()
     scheduler = Scheduler('parser')
     scheduler.cancel(job_id)
     return HttpResponse('Success')

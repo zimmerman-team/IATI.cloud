@@ -5,29 +5,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from iati_synchroniser.parse_admin import ParseAdmin
 
-class DatasetSyncAdmin(admin.ModelAdmin):
-    list_display = ['type', 'interval', 'date_updated', 'sync_now']
-
-    def get_urls(self):
-        urls = super(DatasetSyncAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^sync-datasets/$', self.admin_site.admin_view(self.sync_view)),
-
-        )
-        return extra_urls + urls
-
-    def sync_view(self, request):
-        sync_id = request.GET.get('sync_id')
-        obj = get_object_or_404(DatasetSync, id=sync_id)
-        obj.sync_dataset_with_iati_api()
-        return HttpResponse('Success')
-
-
-
-
-
-
-
 
 class CodeListAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'count', 'fields', 'date_updated']
@@ -122,7 +99,7 @@ class PublisherAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-admin.site.register(DatasetSync,DatasetSyncAdmin)
+
 admin.site.register(Codelist,CodeListAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(IatiXmlSource, IATIXMLSourceAdmin)

@@ -3,7 +3,7 @@ import datetime
 # Django specific
 from django.core.management.base import BaseCommand
 from django.db import connection
-from iati.models import Activity, Budget
+from iati.models import Activity, Budget, Currency
 import logging
 
 logger = logging.getLogger(__name__)
@@ -36,9 +36,38 @@ class TotalBudgetUpdater():
         for r in results:
             cur_act = Activity.objects.get(id=r['activity_id'])
             cur_act.total_budget = r['total_value']
+            cur_act.total_budget_currency = self.get_budget_currency(cur_act);
             cur_act.save()
 
         return True
+
+    def get_budget_currency(self, activity):
+
+        try:
+            currency = None
+            for b in Budget.objects.filter(activity_id=activity.id):
+
+                if not currency:
+                    # first row
+                    currency = b.currency_id
+                elif currency == b.currency_id:
+                    # currency matches previously found currency
+                    continue
+                else:
+                    # multiple currencies detected, return None
+                    return None
+
+            return Currency.objects.get(code=currency)
+        except Exception as e:
+            logger.info("error in " + activity.id + ", def: get_budget_currency")
+            if e.args:
+                logger.info(e.args[0])
+            if e.args.__len__() > 1:
+                logger.info(e.args[1])
+            if e.message:
+                logger.info(e.message)
+            return None
+
 
 
     def update_single_activity(self, id):
@@ -52,8 +81,7 @@ class TotalBudgetUpdater():
             for r in results:
                 cur_act = Activity.objects.get(id=r['activity_id'])
                 cur_act.total_budget = r['total_value']
-
-                #TO DO: CHECK CURRENCIES
+                cur_act.total_budget_currency = self.get_budget_currency(cur_act)
                 cur_act.save()
         except Exception as e:
             logger.info("error in " + id + ", def: update_single_activity")

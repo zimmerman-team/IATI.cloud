@@ -75,3 +75,7 @@ OIPA/indicator/data_backup/wdi_data/WDI_Footnotes.csv
 OIPA/indicator/data_backup/wdi_data/WDI_Series.csv
 
 OIPA/indicator/data_backup/wdi_data/WDI_ST_Notes.csv
+
+OIPA/supervisord.log
+
+OIPA/supervisord.pid

@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'south',
     'multiupload',
     'django_rq',
+    'djsupervisor',
 )
 
 

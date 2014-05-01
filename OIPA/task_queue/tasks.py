@@ -41,6 +41,15 @@ def advanced_start_worker():
 
 
 ###############################
+#### TASK QUEUE MANAGEMENT ####
+###############################
+
+@job
+def remove_duplicates_from_parser_queue():
+    raise Exception("Not implemented yet")
+
+
+###############################
 ######## PARSING TASKS ########
 ###############################
 
@@ -48,7 +57,8 @@ def advanced_start_worker():
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
         queue = django_rq.get_queue("parser")
-        queue.enqueue(parse_source_by_url, e.source_url)
+        queue.enqueue(parse_source_by_url, args=(e.source_url), timeout=3600)
+
 
 @job
 def get_new_sources_from_iati_api():
