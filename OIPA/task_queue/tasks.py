@@ -118,13 +118,21 @@ def delete_sources_not_found_in_registry_in_x_days(days):
         raise Exception("Bad idea to delete sources not found for only 5 days or less.")
     for source in IatiXmlSource.objects.all():
         curdate = float(datetime.datetime.now().strftime('%s'))
-        last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))
+        if last_found_in_registry:
+            last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))
 
-        update_interval_time = 24 * 60 * 60 * int(days)
+            update_interval_time = 24 * 60 * 60 * int(days)
 
-        if ((curdate - update_interval_time) > last_found_in_registry):
-            queue = django_rq.get_queue("parser")
-            queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+            if ((curdate - update_interval_time) > last_found_in_registry):
+                queue = django_rq.get_queue("parser")
+                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+
+        else:
+            if not source.added_manually:
+                # Old source, delete
+                queue = django_rq.get_queue("parser")
+                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+
 
 
 ###############################
