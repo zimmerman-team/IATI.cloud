@@ -186,6 +186,7 @@ SUIT_CONFIG = {
             {'label': 'Task overview', 'url': ( '/admin/task_queue/')},
             {'label': 'Default queue', 'url': ( '/admin/task_queue/queues/0/')},
             {'label': 'Parse queue', 'url': ( '/admin/task_queue/queues/1/')},
+            {'label': 'Failed tasks', 'url': ( '/admin/task_queue/queues/2/')},
 
         ]},
 

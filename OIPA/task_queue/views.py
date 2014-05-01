@@ -42,11 +42,10 @@ def start_worker_from_command_line(request):
     # execute_from_command_line(["manage.py", "rqworker"])
 
 
+    from django.core.management import call_command
 
-    import subprocess
-    output = subprocess.check_output(["python", "manage.py", "rqworker"])
-    for line in output.split('\n'):
-        return HttpResponse(line)
+    call_command('supervisor', 'start rq-worker-parser-2')
+
     return HttpResponse('Success')
 
 
