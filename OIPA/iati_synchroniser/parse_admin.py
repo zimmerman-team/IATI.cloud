@@ -16,7 +16,6 @@ class ParseAdmin():
             source.save()
         [parse(source) for source in IatiXmlSource.objects.all()]
 
-
     def parseSchedule(self):
 
         def parse(source):
@@ -77,7 +76,7 @@ class ParseAdmin():
         except Exception as e:
             if e.args:
                 print(e.args[0])
-            print("ERROR IN UPDATE_PUBLISHER_ACTIVITY_COUNT, FILE URL " + url)
+            print("ERROR IN UPDATE_PUBLISHER_ACTIVITY_COUNT, ORG ID " + pub.org_id)
 
     def get_xml_activity_amount(self, url):
         try:
