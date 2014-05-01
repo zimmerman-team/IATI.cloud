@@ -113,7 +113,7 @@ class CodeListImporter():
                     db_row = ActivityStatus(code=code, name=name, language=language_name)
 
                 elif type == "Country":
-                    name = name.lower().capitalize()#.replace("É", "é").replace("Ô", "o").replace("Ç", "ç")
+                    name = name.lower().capitalize()
                     db_row = Country(code=code, name=name, language=language_name, data_source="IATI")
 
                 elif type == "BudgetType":
