@@ -114,6 +114,8 @@ def delete_source_by_id(id):
 
 @job
 def delete_sources_not_found_in_registry_in_x_days(days):
+    if int(days) < 6:
+        raise Exception("Bad idea to delete sources not found for only 5 days or less.")
     for source in IatiXmlSource.objects.all():
         curdate = float(datetime.datetime.now().strftime('%s'))
         last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))

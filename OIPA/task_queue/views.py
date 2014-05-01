@@ -14,9 +14,9 @@ def add_task(request):
     queue = django_rq.get_queue(queue_to_be_added_to)
 
     if parameters:
-        queue.enqueue(getattr(tasks, task), parameters)
+        queue.enqueue(getattr(tasks, task), args=(parameters,), timeout=3600)
     else:
-        queue.enqueue(getattr(tasks, task))
+        queue.enqueue(getattr(tasks, task), timeout=3600)
     return HttpResponse('Success')
 
 
