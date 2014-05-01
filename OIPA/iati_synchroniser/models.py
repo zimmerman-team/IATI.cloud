@@ -48,6 +48,8 @@ class IatiXmlSource(models.Model):
     xml_activity_count = models.IntegerField(null=True, default=None)
     oipa_activity_count = models.IntegerField(null=True, default=None)
     iati_standard_version = models.CharField(max_length=10, null=True, default=None)
+    is_parsed = models.BooleanField(null=False, default=False)
+
 
     class Meta:
         verbose_name_plural = "iati XML sources"
@@ -62,6 +64,7 @@ class IatiXmlSource(models.Model):
     get_parse_status.short_description = _(u"Parse status")
 
     def process(self):
+        self.is_parsed = True
         parser = Parser()
         parser.parse_url(self.source_url, self.ref)
         self.date_updated = datetime.datetime.now()

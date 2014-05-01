@@ -19,7 +19,6 @@ class Parser():
 
     xml_source_ref = None
 
-
     def parse_url(self, url, xml_source_ref):
 
         try:

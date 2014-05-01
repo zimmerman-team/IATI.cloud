@@ -11,6 +11,9 @@ urlpatterns = patterns('',
     (r'^get_current_job/', 'task_queue.views.get_current_job'),
     (r'^get_queue/', 'task_queue.views.get_queue'),
 
+    (r'^test/', 'task_queue.views.test'),
+
+
     # Callable tasks
     (r'^add_task/', 'task_queue.views.add_task'),
 

@@ -183,9 +183,9 @@
                     <div class="span6">
                         <h1>Scheduled tasks</h1>
                     </div>
-                    <div class="span6 django-rq-align-right">
-                        <a href="/admin/task_queue/start_scheduler/">Start scheduler</a>
-                    </div>
+{#                    <div class="span6 django-rq-align-right">#}
+{#                        <a href="/admin/task_queue/start_scheduler/">Start scheduler</a>#}
+{#                    </div>#}
                 </div>
                 <div class="row-fluid">
                     <div class="span12">
@@ -990,7 +990,7 @@
                beforeSend: function() {
                    btn.removeClass("btn-info");
                    btn.addClass("btn-warning");
-                   btn.text("Adding worker...");
+                   btn.text("Starting/stopping worker...");
                },
                statusCode: {
                    200: function() {
@@ -1035,7 +1035,7 @@
                beforeSend: function() {
                    btn.removeClass("btn-info");
                    btn.addClass("btn-warning");
-                   btn.text("Adding worker...");
+                   btn.text("Starting/stopping worker...");
                },
                statusCode: {
                    200: function() {
@@ -1083,7 +1083,7 @@
                    beforeSend: function() {
                        btn.removeClass("btn-info");
                        btn.addClass("btn-warning");
-                       btn.text("Adding worker...");
+                       btn.text("Starting/stopping worker...");
                    },
                    statusCode: {
                        200: function() {

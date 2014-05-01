@@ -57,7 +57,7 @@ def remove_duplicates_from_parser_queue():
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
         queue = django_rq.get_queue("parser")
-        queue.enqueue(parse_source_by_url, args=(e.source_url), timeout=3600)
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=3600)
 
 
 @job

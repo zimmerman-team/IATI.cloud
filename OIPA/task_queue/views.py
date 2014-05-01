@@ -49,8 +49,7 @@ def get_workers(request):
     workerdata = list()
     # serialize workers
     for w in workers:
-
-        worker_dict = { 'pid': w.pid, 'name': w.name, 'state': w.state}
+        worker_dict = {'pid': w.pid, 'name': w.name, 'state': w.get_state()}
         workerdata.append(worker_dict)
 
     data = json.dumps(workerdata)
@@ -75,7 +74,16 @@ def get_current_job(request):
     from rq import get_current_job
     job = get_current_job()
     import json
+    data = json.dumps(job)
+    return HttpResponse(data, mimetype='application/json')
+
+@staff_member_required
+def test(request):
+    from rq import get_current_job
+    job = get_current_job()
+    import json
     return json.dumps(job)
+
 
 
 

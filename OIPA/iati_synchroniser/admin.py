@@ -31,7 +31,7 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
     search_fields = ['ref', 'publisher', 'title']
-    list_display = ['ref', 'publisher', 'title', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count']
+    list_display = ['ref', 'publisher', 'title', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count', 'is_parsed']
 
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()

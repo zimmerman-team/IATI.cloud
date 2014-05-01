@@ -18,7 +18,7 @@ objgraph
 guppy
 ujson==1.33
 redis
-rq==0.3.13
+rq==0.4.2
 django-rq
 rq-scheduler
 supervisor
