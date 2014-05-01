@@ -21,30 +21,17 @@ def add_task(request):
 
 
 
-
 # TASK QUEUE MANAGEMENT
 
 @staff_member_required
-def start_worker(request):
-    queue_name = request.GET.get('queue_name')
-    amount_of_workers = request.GET.get('amount_of_workers')
-    tasks.start_worker(queue_name, amount_of_workers)
-    return HttpResponse('Success')
-
-@staff_member_required
-def advanced_start_worker(request):
-    tasks.advanced_start_worker()
-    return HttpResponse('Success')
-
-@staff_member_required
-def start_worker_from_command_line(request):
-    # from django.core.management import execute_from_command_line
-    # execute_from_command_line(["manage.py", "rqworker"])
-
-
+def start_worker_with_supervisor(request):
     from django.core.management import call_command
 
-    call_command('supervisor', 'start rq-worker-parser-2')
+    action = request.GET.get('action')
+    worker_program = request.GET.get('worker_program')
+
+    list = [action, worker_program]
+    call_command('supervisor', *list)
 
     return HttpResponse('Success')
 
