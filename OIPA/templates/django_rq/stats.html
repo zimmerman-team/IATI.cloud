@@ -103,6 +103,7 @@
                             <option value="update_all_indicator_data">Update all indicator data</option>
                             <option value="cache_long_api_calls">cache long API calls</option>
                             <option value="update_existing_api_call_caches">update existing API call caches</option>
+                            <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
                         </select>
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -917,7 +918,7 @@
         });
 
         $('select[name="add-task-select-default"]').change(function(){
-           if ($(this).val() == "parse_all_not_parsed_in_x_days"){
+           if ($(this).val() == "parse_all_not_parsed_in_x_days" || $(this).val() == "delete_sources_not_found_in_registry_in_x_days"){
                $('#add-task-input-parameters').show(500);
            } else {
                $("#add-task-input-parameters").hide(500);

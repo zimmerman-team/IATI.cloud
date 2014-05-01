@@ -94,7 +94,7 @@ class DatasetSyncer():
                             if ((current_publisher.org_abbreviate == "Unknown" and publisher_abbreviation and publisher_abbreviation != "Unknown") or (current_publisher.org_name == "Unknown" and publisher_name and publisher_name != "Unknown")):
                                 new_current_publisher = self.update_publisher(publisher_iati_id, publisher_abbreviation, publisher_name)
                                 cursource.publisher = new_current_publisher
-                            cursource.save(process=False)
+                            cursource.save(process=False, added_manually=False)
 
                     except Exception as e:
                         logger.info("Unexpected error in synchronize_with_iati_api_by_page:")

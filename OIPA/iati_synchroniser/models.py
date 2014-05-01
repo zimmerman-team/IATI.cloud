@@ -49,7 +49,7 @@ class IatiXmlSource(models.Model):
     oipa_activity_count = models.IntegerField(null=True, default=None)
     iati_standard_version = models.CharField(max_length=10, null=True, default=None)
     is_parsed = models.BooleanField(null=False, default=False)
-
+    added_manually = models.BooleanField(null=False, default=True)
 
     class Meta:
         verbose_name_plural = "iati XML sources"
@@ -73,7 +73,8 @@ class IatiXmlSource(models.Model):
         #self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
         self.save(process=False)
 
-    def save(self, process=True, *args, **kwargs):
+    def save(self, process=True, added_manually=True, *args, **kwargs):
+        self.added_manually = added_manually
         super(IatiXmlSource, self).save()
         if process:
             self.process()

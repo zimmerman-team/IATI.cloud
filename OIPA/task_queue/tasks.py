@@ -72,6 +72,8 @@ def parse_source_by_url(url):
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
 
+
+
 @job
 def parse_all_not_parsed_in_x_days(days):
     for source in IatiXmlSource.objects.all():
@@ -81,7 +83,8 @@ def parse_all_not_parsed_in_x_days(days):
         update_interval_time = 24 * 60 * 60 * int(days)
 
         if ((curdate - update_interval_time) > last_updated):
-            source.save()
+            queue = django_rq.get_queue("parser")
+            queue.enqueue(parse_source_by_url, args=(source.source_url,), timeout=3600)
 
 @job
 def parse_all_over_parse_interval():
@@ -103,6 +106,25 @@ def parse_all_over_parse_interval():
             source.save()
 
 
+@job
+def delete_source_by_id(id):
+    if IatiXmlSource.objects.filter(id=id).exists():
+        xml_source = IatiXmlSource.objects.get(id=id)
+        xml_source.delete()
+
+@job
+def delete_sources_not_found_in_registry_in_x_days(days):
+    for source in IatiXmlSource.objects.all():
+        curdate = float(datetime.datetime.now().strftime('%s'))
+        last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))
+
+        update_interval_time = 24 * 60 * 60 * int(days)
+
+        if ((curdate - update_interval_time) > last_found_in_registry):
+            queue = django_rq.get_queue("parser")
+            queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+
+
 ###############################
 #### IATI MANAGEMENT TASKS ####
 ###############################
@@ -120,6 +142,22 @@ def update_iati_codelists():
 
 @job
 def update_all_geo_data():
+    raise Exception("Not implemented yet")
+
+@job
+def update_all_city_data():
+    raise Exception("Not implemented yet")
+
+@job
+def update_all_country_data():
+    raise Exception("Not implemented yet")
+
+@job
+def update_all_region_data():
+    raise Exception("Not implemented yet")
+
+@job
+def update_all_admin1_region_data():
     raise Exception("Not implemented yet")
 
 
