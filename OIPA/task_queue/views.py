@@ -222,8 +222,9 @@ def reschedule_all_failed(request):
 
     from rq import requeue_job
     from rq import get_failed_queue
+    from django_rq import get_connection
 
-    queue = get_failed_queue()
+    queue = get_failed_queue(get_connection())
 
     for job in queue.jobs:
         requeue_job(job.id, connection=queue.connection)
