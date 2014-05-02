@@ -363,6 +363,7 @@
                         <h1>Failed tasks</h1>
                     </div>
                     <div class="span6 django-rq-align-right">
+                        <a id="requeue-all-failed-tasks" href="#" class="btn-info oipa-admin-button">Re-queue all failed tasks</a>
                         <a id="clear-failed-tasks" href="#" class="btn-info oipa-admin-button">Clear failed tasks</a>
                     </div>
                 </div>
@@ -468,6 +469,36 @@
                statusCode: {
                    200: function() {
                        btn.text("Cleared failed tasks");
+                       fill_failed_tasks();
+                   },
+                   404: function() {
+                       btn.removeClass("btn-info");
+                       btn.addClass("btn-danger");
+                       btn.text("404 error...");
+                   },
+                   500: function() {
+                       btn.removeClass("btn-info");
+                       btn.addClass("btn-danger");
+                       btn.text("500 error...");
+                   }
+               }
+           });
+       });
+
+       $('#requeue-all-failed-tasks').click(function(e){
+           e.preventDefault();
+           var btn = $('#requeue-all-failed-tasks');
+
+           $.ajax({
+               type: "GET",
+               url: '/admin/task_queue/reschedule_all_failed/',
+               beforeSend: function() {
+                   btn.text("Re-queueing...");
+               },
+               statusCode: {
+                   200: function() {
+                       btn.text("Re-queued failed tasks");
+                       reload_task_queue_overview_table();
                        fill_failed_tasks();
                    },
                    404: function() {
