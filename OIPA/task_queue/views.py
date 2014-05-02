@@ -217,102 +217,15 @@ def get_failed_tasks(request):
 
 
 
+@staff_member_required
+def reschedule_all_failed(request):
 
+    from rq import requeue_job
+    import django_rq
 
+    queue = django_rq.get_queue("failed")
 
-#
-# @staff_member_required
-# def add_task_parse_all(request):
-#     tasks.parse_all_existing_sources()
-#     return HttpResponse('Success')
-#
-# @staff_member_required
-# def get_new_sources_from_iati_api(request):
-#     import django_rq
-#     django_rq.enqueue(tasks.get_new_sources_from_iati_api)
-#     return HttpResponse('Success')
-#
-# @staff_member_required
-# def parse_all_not_parsed_in_x_days(request):
-#     import django_rq
-#     days = request.GET.get('days')
-#     django_rq.enqueue(tasks.parse_all_not_parsed_in_x_days, days)
-#     return HttpResponse('Success')
-#
-# # OTHER TASKS
-#
-# @staff_member_required
-# def update_all_geo_data(request):
-#     import django_rq
-#     django_rq.enqueue(tasks.update_all_geo_data)
-#     return HttpResponse('Success')
-#
-# @staff_member_required
-# def update_all_indicator_data(request):
-#     import django_rq
-#     django_rq.enqueue(tasks.update_all_indicator_data)
-#     return HttpResponse('Success')
-#
-# @staff_member_required
-# def cache_long_api_calls(request):
-#     import django_rq
-#     django_rq.enqueue(tasks.cache_long_api_calls)
-#     return HttpResponse('Success')
-#
-# @staff_member_required
-# def update_existing_api_call_caches(request):
-#     import django_rq
-#     django_rq.enqueue(tasks.update_existing_api_call_caches)
-#     return HttpResponse('Success')
+    for job in queue.jobs:
+        requeue_job(job.id, connection=queue.connection)
 
-
-
-
-
-
-#
-# # Schedule management
-#
-# @staff_member_required
-# def add_scheduled_task(request):
-#
-#     task = request.GET.get('task')
-#     period = request.GET.get('period')
-#
-#     from rq import use_connection
-#     from rq_scheduler import Scheduler
-#     from datetime import datetime
-#
-#     use_connection() # Use RQ's default Redis connection
-#     scheduler = Scheduler() # Get a scheduler for the "default" queue
-#
-#     scheduler.schedule(
-#         scheduled_time=datetime.now(),   # Time for first execution
-#         func=getattr(tasks, task),           # Function to be queued
-#         interval=period,                 # Time before the function is called again, in seconds
-#         repeat=None                      # Repeat this number of times (None means repeat forever)
-#     )
-#     return HttpResponse('Success')
-
-
-
-# @staff_member_required
-# def add_task(request):
-#     context = dict()
-#     context['title'] = 'Add task'
-#     t = TemplateResponse(request, 'admin/task_queue/add_task.html', context)
-#     return t.render()
-
-# @staff_member_required
-# def scheduler(request):
-#     from rq_scheduler import Scheduler
-#     from rq import use_connection
-#
-#     context = dict()
-#     context['title'] = 'Scheduler'
-#     use_connection() # Use RQ's default Redis connection
-#     scheduler = Scheduler()
-#     context['jobs'] = scheduler.get_jobs()
-#
-#     t = TemplateResponse(request, 'admin/task_queue/scheduler.html', context)
-#     return t.render()
+    return HttpResponse('Success')

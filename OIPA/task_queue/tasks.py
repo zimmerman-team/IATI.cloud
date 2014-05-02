@@ -197,6 +197,7 @@ def cache_long_api_calls():
     v.update_response_times_and_add_to_cache()
 
 
+
 def delete_task_from_queue(job_id):
     from rq import cancel_job
     from rq import Connection
