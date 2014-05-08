@@ -370,6 +370,7 @@ class Organisation(models.Model):
         return self.activity_set.count()
 
 
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),

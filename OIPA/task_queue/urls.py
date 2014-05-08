@@ -13,7 +13,6 @@ urlpatterns = patterns('',
 
     (r'^test/', 'task_queue.views.test'),
 
-
     # Callable tasks
     (r'^add_task/', 'task_queue.views.add_task'),
 

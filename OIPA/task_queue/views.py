@@ -186,7 +186,6 @@ def get_scheduled_tasks(request):
 @staff_member_required
 def cancel_scheduled_task(request):
     job_id = request.GET.get('job_id')
-    from rq import use_connection
     from rq_scheduler import Scheduler
 
     scheduler = Scheduler('parser')
@@ -230,3 +229,4 @@ def reschedule_all_failed(request):
         requeue_job(job.id, connection=queue.connection)
 
     return HttpResponse('Success')
+

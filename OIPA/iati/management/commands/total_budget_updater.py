@@ -44,20 +44,23 @@ class TotalBudgetUpdater():
     def get_budget_currency(self, activity):
 
         try:
-            currency = None
+            current_currency = None
             for b in Budget.objects.filter(activity_id=activity.id):
 
-                if not currency:
+                if not current_currency:
                     # first row
-                    currency = b.currency_id
-                elif currency == b.currency_id:
+                    current_currency = b.currency_id
+                elif current_currency == b.currency_id:
                     # currency matches previously found currency
                     continue
                 else:
                     # multiple currencies detected, return None
                     return None
 
-            return Currency.objects.get(code=currency)
+            if current_currency:
+                return Currency.objects.get(code=current_currency)
+            else:
+                return None
         except Exception as e:
             logger.info("error in " + activity.id + ", def: get_budget_currency")
             if e.args:

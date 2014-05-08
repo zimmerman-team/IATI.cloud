@@ -71,8 +71,8 @@ class IatiXmlSource(models.Model):
         self.save(process=False)
         from iati_synchroniser.parse_admin import ParseAdmin
         activity_counter = ParseAdmin()
-        self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
-        self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
+        # self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
+        # self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
         self.save(process=False)
 
     def save(self, process=True, added_manually=True, *args, **kwargs):

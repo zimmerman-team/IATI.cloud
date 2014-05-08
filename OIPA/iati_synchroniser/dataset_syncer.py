@@ -156,5 +156,5 @@ class DatasetSyncer():
 
     def add_iati_xml_source_to_db(self, url, title, name, current_publisher, cur_type):
         new_source = models.IatiXmlSource(ref=name, title=title, publisher=current_publisher, source_url=url, type=cur_type)
-        new_source.save()
+        new_source.save(process=False, added_manually=False)
         return new_source
