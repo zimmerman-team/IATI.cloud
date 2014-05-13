@@ -25,7 +25,7 @@ class Parser():
             deleter = Deleter()
             deleter.delete_by_source(xml_source_ref)
         except Exception as e:
-            print e.args
+            self.exception_handler(e, "parse url", "delete by source")
 
         try:
             #iterate through iati-activity tree
@@ -38,11 +38,8 @@ class Parser():
 
                 del iati_file
                 gc.collect()
-        except XMLSyntaxError, e:
-            logger.info("XMLSyntaxError" + e.message)
         except Exception as e:
-            print e.message
-
+            self.exception_handler(e, "parse url", "parse_url")
 
     # loop through the activities, fast_iter starts at the last activity and walks towards the first
     def fast_iter(self, context, func):
@@ -56,13 +53,13 @@ class Parser():
                 try:
                     func(elem)
                 except Exception as e:
-                    print '%s (%s)' % (e.message, type(e))
+                    self.exception_handler(e, "fast_iter", "fast_iter")
                 elem.clear()
                 while elem.getprevious() is not None:
                     del elem.getparent()[0]
             del context
         except Exception as e:
-            logger.info('%s (%s)' % (e.message, type(e)))
+            self.exception_handler(e, "fast_iter", "fast_iter")
 
 
 
@@ -159,7 +156,7 @@ class Parser():
                     logger.info('Invalid date: ' + unvalidated_date)
                 return None
             except Exception as e:
-                logger.info(e.message)
+                self.exception_handler(e, "validate date", "validate_date")
                 return None
         return valid_date
 
@@ -197,8 +194,7 @@ class Parser():
             logger.warning(e.args[0])
         if e.args.__len__() > 1:
             logger.warning(e.args[1])
-        if e.message:
-            logger.warning(e.message)
+        logger.warning(type(e))
 
     # entity add functions
     def add_organisation(self, elem):
@@ -247,19 +243,6 @@ class Parser():
                     new_organisation = models.Organisation(code=ref, type=org_type, abbreviation=None, name=name)
                     new_organisation.save()
 
-
-
-
-
-
-            except ValueError, e:
-                self.exception_handler(e, ref, "add_organisation")
-            except TypeError, e:
-                self.exception_handler(e, ref, "add_organisation")
-            except ValidationError, e:
-                self.exception_handler(e, ref, "add_organisation")
-            except IntegrityError, e:
-                self.exception_handler(e, ref, "add_organisation")
             except Exception as e:
                 self.exception_handler(e, ref, "add_organisation")
 
@@ -374,16 +357,6 @@ class Parser():
             new_activity.save()
             return new_activity
 
-        except IntegrityError, e:
-            self.exception_handler(e, activity_id, "add_activity")
-        except ValueError, e:
-            self.exception_handler(e, activity_id, "add_activity")
-        except ValidationError, e:
-            self.exception_handler(e, activity_id, "add_activity")
-        except TypeError, e:
-            self.exception_handler(e, activity_id, "add_activity")
-        except AttributeError as e:
-            self.exception_handler(e, activity_id, "add_activity")
         except Exception as e:
             self.exception_handler(e, activity_id, "add_activity")
 
@@ -405,11 +378,7 @@ class Parser():
                     new_other_identifier = models.OtherIdentifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
                     new_other_identifier.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_other_identifier")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_other_identifier")
-                except ValidationError, e:
+                except Exception as e:
                     self.exception_handler(e, activity.id, "add_other_identifier")
         except Exception as e:
                     self.exception_handler(e, activity.id, "add_other_identifier")
@@ -437,13 +406,7 @@ class Parser():
                         new_title = models.Title(activity=activity, title=title, language=language)
                         new_title.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_activity_title")
-
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_activity_title")
-
-                except ValidationError, e:
+                except Exception as e:
                     self.exception_handler(e, activity.id, "add_activity_title")
 
         except Exception as e:
@@ -487,11 +450,8 @@ class Parser():
                     new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
                     new_description.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_activity_description")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_activity_description")
-                except ValidationError, e:
+
+                except Exception as e:
                     self.exception_handler(e, activity.id, "add_activity_description")
         except Exception as e:
                     self.exception_handler(e, activity.id, "add_activity_description")
@@ -553,12 +513,6 @@ class Parser():
                     new_budget = models.Budget(activity=activity, type=type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)
                     new_budget.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_budget")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_budget")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_budget")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_budget")
 
@@ -595,12 +549,6 @@ class Parser():
                     new_planned_disbursement.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_planned_disbursement")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_planned_disbursement")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_planned_disbursement")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_planned_disbursement")
 
@@ -618,16 +566,6 @@ class Parser():
                     if url:
                         new_website = models.ActivityWebsite(activity=activity, url=url)
                         new_website.save()
-
-
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_website")
-
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_website")
-
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_website")
 
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_website")
@@ -659,12 +597,6 @@ class Parser():
                     new_contact = models.ContactInfo(activity=activity, person_name=person_name, organisation=organisation, telephone=telephone, email=email, mailing_address=mailing_address, contact_type=type)
                     new_contact.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_contact_info")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_contact_info")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_contact_info")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_contact_info")
         except Exception as e:
@@ -845,12 +777,6 @@ class Parser():
                     new_transaction.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_transaction")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_transaction")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_transaction")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_transaction")
         except Exception as e:
@@ -884,13 +810,6 @@ class Parser():
                     new_result = models.Result(activity=activity, result_type=type, title=title, description=description)
                     new_result.save()
 
-
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_result")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_result")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_result")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_result")
         except Exception as e:
@@ -935,18 +854,9 @@ class Parser():
                     new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage=percentage)
                     new_activity_sector.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_sectors")
-                    print  "in add_sectors: " + sector_code
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_sectors")
-                    print  "in add_sectors: " + sector_code
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_sectors")
-                    print  "in add_sectors: " + sector_code
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_sectors")
-
         except Exception as e:
             self.exception_handler(e, activity.id, "add_sectors")
 
@@ -982,12 +892,7 @@ class Parser():
                     new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
                     new_activity_country.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
         except Exception as e:
@@ -1029,12 +934,7 @@ class Parser():
                         new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
                         new_activity_region.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_regions")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_regions")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_regions")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_regions")
         except Exception as e:
@@ -1117,12 +1017,7 @@ class Parser():
                     new_activity_participating_organisation.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_participating_organisations")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_participating_organisations")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_participating_organisations")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_participating_organisations")
         except Exception as e:
@@ -1172,12 +1067,7 @@ class Parser():
                     new_activity_policy_marker = models.ActivityPolicyMarker(activity=activity, policy_marker=policy_marker, vocabulary=vocabulary, policy_significance=significance)
                     new_activity_policy_marker.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_policy_markers")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_policy_markers")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_policy_markers")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_policy_markers")
         except Exception as e:
@@ -1225,12 +1115,7 @@ class Parser():
 
                     activity.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_activity_date")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_activity_date")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_activity_date")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_activity_date")
         except Exception as e:
@@ -1259,12 +1144,6 @@ class Parser():
                     new_related_activity = models.RelatedActivity(current_activity=activity, type=type, ref=ref, text=text)
                     new_related_activity.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_related_activities")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_related_activities")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_related_activities")
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_related_activities")
         except Exception as e:
@@ -1323,12 +1202,7 @@ class Parser():
                     new_location.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_location")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_location")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_location")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_location")
         except Exception as e:
@@ -1352,12 +1226,7 @@ class Parser():
                     new_condition.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_conditions")
         except Exception as e:
@@ -1400,12 +1269,7 @@ class Parser():
                     document_link.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_document_link")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_document_link")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_document_link")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_document_link")
         except Exception as e:
@@ -1439,12 +1303,7 @@ class Parser():
                         country_budget_item = models.CountryBudgetItem(activity=activity, vocabulary=budget_identifier_vocabulary, code=code, percentage=percentage, description=description)
                         country_budget_item.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_country_budget_items")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_country_budget_items")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_country_budget_items")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_country_budget_items")
         except Exception as e:
@@ -1512,12 +1371,7 @@ class Parser():
                         new_loan_status.save()
 
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_crs_add")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_crs_add")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_crs_add")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_crs_add")
         except Exception as e:
@@ -1551,12 +1405,7 @@ class Parser():
                         new_forecast = models.FfsForecast(ffs=new_ffs, year=year, currency=currency, value_date=value_date, value=value)
                         new_forecast.save()
 
-                except IntegrityError, e:
-                    self.exception_handler(e, activity.id, "add_fss")
-                except ValueError, e:
-                    self.exception_handler(e, activity.id, "add_fss")
-                except ValidationError, e:
-                    self.exception_handler(e, activity.id, "add_fss")
+
                 except Exception as e:
                     self.exception_handler(e, activity.id, "add_fss")
         except Exception as e:
