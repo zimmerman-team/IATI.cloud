@@ -417,7 +417,7 @@ class Activity(models.Model):
     last_updated_datetime = models.CharField(max_length=100, null=True, default=None)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True)
     reporting_organisation = models.ForeignKey(Organisation, null=True, default=None, related_name="activity_reporting_organisation")
-    secondary_reporter = models.BooleanField(default=False)
+    secondary_publisher = models.BooleanField(default=False)
     activity_status = models.ForeignKey(ActivityStatus, null=True, default=None)
 
     start_planned = models.DateField(null=True, blank=True, default=None)
