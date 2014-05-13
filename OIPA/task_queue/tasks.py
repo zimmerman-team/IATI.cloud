@@ -2,7 +2,6 @@
 from iati_synchroniser.models import IatiXmlSource
 from django_rq import job
 import django_rq
-from django.http import HttpResponse
 import datetime
 
 
@@ -56,7 +55,7 @@ def remove_duplicates_from_parser_queue():
 @job
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
-        queue = django_rq.get_queue("parser")
+        queue = django_rq.get_queue("default")
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=3600)
 
 

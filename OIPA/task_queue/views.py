@@ -49,9 +49,15 @@ def get_workers(request):
     workerdata = list()
     # serialize workers
     for w in workers:
-        worker_dict = {'pid': w.pid, 'name': w.name, 'state': w.get_state()}
-        workerdata.append(worker_dict)
+        cj = w.get_current_job()
 
+        if cj:
+            cjinfo = {'id' : cj.id, 'args' : cj.args, 'enqueued_at' : cj.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'description' : cj.description}
+        else:
+            cjinfo = None
+
+        worker_dict = {'pid': w.pid, 'name': w.name, 'state': w.get_state(), 'current_job': cjinfo}
+        workerdata.append(worker_dict)
     data = json.dumps(workerdata)
     return HttpResponse(data, mimetype='application/json')
 
@@ -72,7 +78,13 @@ def delete_all_tasks_from_queue(request):
 @staff_member_required
 def get_current_job(request):
     from rq import get_current_job
-    job = get_current_job()
+    from rq import use_connection
+    from redis import Redis
+    from rq import Queue
+    use_connection()
+    redis_conn = Redis()
+    q = Queue(connection=redis_conn)
+    job = get_current_job(q)
     import json
     data = json.dumps(job)
     return HttpResponse(data, mimetype='application/json')
@@ -145,7 +157,7 @@ def get_queue(request):
         if count_jobs == 20:
             break
 
-        job_dict = { 'job_id': job._id, 'created_at':job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'enqueued_at':job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'status': job.status, 'function': job.func_name, 'args': job.args}
+        job_dict = { 'job_id': job._id, 'created_at':job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'enqueued_at':job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'status': job.get_status(), 'function': job.func_name, 'args': job.args}
         jobdata.append(job_dict)
     data = json.dumps(jobdata)
     return HttpResponse(data, mimetype='application/json')
