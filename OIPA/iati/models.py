@@ -91,17 +91,21 @@ class DisbursementChannel(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+class DocumentCategoryCategory(models.Model):
+    code = models.CharField(primary_key=True, max_length=3)
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
 
 class DocumentCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=100)
     description = models.TextField()
-    category = models.CharField(max_length=1)
-    category_name = models.CharField(max_length=30)
+    category = models.ForeignKey(DocumentCategoryCategory)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
-
 
 class FileFormat(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
@@ -154,6 +158,13 @@ class GeographicalPrecision(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+class GeographicLocationClass(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=200)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
 
 class Language(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
@@ -162,14 +173,21 @@ class Language(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
-
-class LocationType(models.Model):
+class LocationTypeCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=100)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+class LocationType(models.Model):
+    code = models.CharField(primary_key=True, max_length=10)
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, default=None)
+    category = models.ForeignKey(LocationTypeCategory)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
 
 class OrganisationIdentifier(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -315,6 +333,21 @@ class BudgetIdentifier(models.Model):
     name = models.CharField(max_length=160)
     category = models.CharField(max_length=120)
     sector = models.CharField(max_length=100)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+class BudgetIdentifierSectorCategory(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=160)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+class BudgetIdentifierSector(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=160)
+    category = models.ForeignKey(BudgetIdentifierSectorCategory)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -668,25 +701,74 @@ class Condition(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.type)
 
+class GeographicVocabulary(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, default=None)
+    category = models.CharField(max_length=50)
+    url = models.TextField(null=True, default=None)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.type)
+
+class GeographicLocationReach(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=80)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.type)
+
+class OrganisationRegistrationAgency(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=160)
+    description = models.TextField(null=True, default=None)
+    category = models.CharField(max_length=10)
+    category_name = models.CharField(max_length=120)
+    url = models.TextField(null=True, default=None)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.type)
+
+class GeographicExactness(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=160)
+    description = models.TextField(null=True, default=None)
+    category = models.CharField(max_length=50)
+    url = models.TextField(null=True, default=None)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.type)
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
-    ref = models.CharField(max_length=200, null=True, default=None)
+    ref = models.CharField(max_length=200, null=True, default=None) # new in v1.04
     name = models.TextField(max_length=1000, null=True, default=None)
-    type = models.ForeignKey(LocationType, null=True, default=None)
+    type = models.ForeignKey(LocationType, null=True, default=None, related_name="deprecated_location_type") # deprecated as of v1.04
     type_description = models.CharField(max_length=200, null=True, default=None)
     description = models.TextField(null=True, default=None)
+    activity_description = models.TextField(null=True, default=None)
     description_type = models.ForeignKey(DescriptionType, null=True, default=None)
-    adm_country_iso = models.ForeignKey(Country, null=True, default=None)
-    adm_country_adm1 = models.CharField(max_length=100, null=True, default=None)
-    adm_country_adm2 = models.CharField(max_length=100, null=True, default=None)
-    adm_country_name = models.CharField(max_length=200, null=True, default=None)
+    adm_country_iso = models.ForeignKey(Country, null=True, default=None) # deprecated as of v1.04
+    adm_country_adm1 = models.CharField(max_length=100, null=True, default=None) # deprecated as of v1.04
+    adm_country_adm2 = models.CharField(max_length=100, null=True, default=None) # deprecated as of v1.04
+    adm_country_name = models.CharField(max_length=200, null=True, default=None) # deprecated as of v1.04
+    adm_code = models.CharField(max_length=255, null=True, default=None) # new in v1.04
+    adm_vocabulary = models.ForeignKey(GeographicVocabulary, null=True, default=None, related_name="administrative_vocabulary   ") # new in v1.04
+    adm_level = models.IntegerField(null=True, default=None) # new in v1.04
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
-    latitude = models.CharField(max_length=70, null=True, default=None)
-    longitude = models.CharField(max_length=70, null=True, default=None)
+    latitude = models.CharField(max_length=70, null=True, default=None) # deprecated as of v1.04
+    longitude = models.CharField(max_length=70, null=True, default=None) # deprecated as of v1.04
     precision = models.ForeignKey(GeographicalPrecision, null=True, default=None)
-    gazetteer_entry = models.CharField(max_length=70, null=True, default=None)
-    gazetteer_ref = models.ForeignKey(GazetteerAgency, null=True, default=None)
+    gazetteer_entry = models.CharField(max_length=70, null=True, default=None) # deprecated as of v1.04
+    gazetteer_ref = models.ForeignKey(GazetteerAgency, null=True, default=None) # deprecated as of v1.04
+    location_reach = models.ForeignKey(GeographicLocationReach, null=True, default=None) # new in v1.04
+    location_id_vocabulary = models.ForeignKey(GeographicVocabulary, null=True, default=None, related_name="location_id_vocabulary") # new in v1.04
+    location_id_code = models.CharField(max_length=255, null=True, default=None) # new in v1.04
+    point_srs_name = models.CharField(max_length=255, null=True, default=None) # new in v1.04
+    point_pos = models.CharField(max_length=255, null=True, default=None) # new in v1.04
+    exactness = models.ForeignKey(GeographicExactness, null=True, default=None) # new in v1.04
+    feature_designation = models.ForeignKey(LocationType, null=True, default=None, related_name="feature_designation") #new in v1.04
+    location_class = models.ForeignKey(GeographicLocationClass, null=True, default=None) #new in v1.04
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.name)

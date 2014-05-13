@@ -66,6 +66,7 @@ class CodeListImporter():
             category_description = elem.xpath('category-description/text()')
             abbreviation = elem.xpath('abbreviation/text()')
             sector = elem.xpath('sector/text()')
+            url = elem.xpath('url/text()')
 
             if not code:
                 code = ""
@@ -134,8 +135,15 @@ class CodeListImporter():
                 elif type == "DisbursementChannel":
                     db_row = DisbursementChannel(code=code, name=name)
 
+                elif type == "DocumentCategory-category":
+                    db_row = DocumentCategoryCategory(code=code, name=name)
+
                 elif type == "DocumentCategory":
-                    db_row = DocumentCategory(code=code, name=name, description=description, category=category, category_name=category_name)
+                    dcc = DocumentCategoryCategory.objects.get(code=category)
+                    db_row = DocumentCategory(code=code, name=name, description=description, category=dcc)
+
+                elif type == "GeographicLocationClass":
+                    db_row = GeographicLocationClass(code=code, name=name)
 
                 elif type == "FileFormat":
                     db_row = FileFormat(code=code, name=name)
@@ -155,8 +163,12 @@ class CodeListImporter():
                 elif type == "Language":
                     db_row = Language(code=code, name=name)
 
+                elif type == "LocationType-category":
+                    db_row = LocationTypeCategory(code=code, name=name)
+
                 elif type == "LocationType":
-                    db_row = LocationType(code=code, name=name)
+                    ltc = LocationTypeCategory.objects.get(code=category)
+                    db_row = LocationType(code=code, name=name, description=description, category=ltc)
 
                 elif type == "OrganisationIdentifier":
                     db_row = OrganisationIdentifier(code=code,abbreviation=abbreviation, name=name)
@@ -210,6 +222,14 @@ class CodeListImporter():
                 elif type == "BudgetIdentifier":
                     db_row = BudgetIdentifier(code=code, name=name, category=category, sector=sector)
 
+                elif type == "BudgetIdentifierSector-category":
+                    db_row = BudgetIdentifierSectorCategory(code=code, name=name)
+
+                elif type == "BudgetIdentifierSector":
+                    bisc = BudgetIdentifierSectorCategory.objects.get(code=category)
+                    db_row = BudgetIdentifierSector(code=code, name=name, category=bisc)
+
+
                 elif type == "BudgetIdentifierVocabulary":
                     db_row = BudgetIdentifierVocabulary(code=code, name=name)
 
@@ -226,22 +246,46 @@ class CodeListImporter():
                     db_row = RegionVocabulary(code=code, name=name)
 
                 elif type == "FinanceType":
-                    db_row2 = FinanceTypeCategory(code=category, name=category_name ,description=category_description)
-                    db_row2.save()
-                    db_row = FinanceType(code=code, name=name, category=db_row2)
+                    ftc = FinanceTypeCategory.objects.get(code=category)
+                    db_row = FinanceType(code=code, name=name, category=ftc)
+
+                elif type == "FinanceType-category":
+                    db_row = FinanceTypeCategory(code=code, name=name ,description=description)
 
                 elif type == "Region":
                     region_voc = RegionVocabulary.objects.get(code=1)
                     db_row = Region(code=code, name=name, region_vocabulary=region_voc)
 
+                elif type == "AidType-category":
+                    db_row = AidTypeCategory(code=code, name=name, description=description)
+
                 elif type == "AidType":
-                        db_row2 = AidTypeCategory(code=category, name=category_name, description=category_description)
-                        db_row2.save()
-                        db_row = AidType(code=code, name=name, description=description, category=db_row2)
+                    atc = AidTypeCategory.objects.get(code=category)
+                    db_row = AidType(code=code, name=name, description=description, category=atc)
 
                 elif type == "Sector":
                     sector_cat = SectorCategory.objects.get(code=category)
                     db_row = Sector(code=code, name=name, description=description, category=sector_cat)
+
+                # v1.04 added codelists
+
+                elif type == "GeographicLocationReach":
+                    db_row = GeographicLocationReach(code=code, name=name)
+
+                elif type == "OrganisationRegistrationAgency":
+                    db_row = OrganisationRegistrationAgency(code=code, name=name, description=description, category=category, category_name=category_name, url=url)
+
+                elif type == "GeographicExactness":
+                    db_row = GeographicExactness(code=code, name=name, description=description, category=category, url=url)
+
+                elif type == "GeographicVocabulary":
+                    db_row = GeographicVocabulary(code=code, name=name, description=description, category=category, url=url)
+
+
+
+
+
+
                 else:
                     print "type not saved: " + type
 
@@ -291,6 +335,11 @@ class CodeListImporter():
         #Do sector categories first
         get_codelist_data(name="SectorCategory")
         get_codelist_data(name="RegionVocabulary")
+        get_codelist_data(name="BudgetIdentifierSector-category")
+        get_codelist_data(name="LocationType-category")
+        get_codelist_data(name="FinanceType-category")
+        get_codelist_data(name="AidType-category")
+        get_codelist_data(name="DocumentCategory-category")
 
         #get the file
         downloaded_xml = urllib2.Request("http://dev.iatistandard.org/codelists/downloads/clv1/codelist.xml")

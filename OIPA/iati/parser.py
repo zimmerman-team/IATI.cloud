@@ -1179,6 +1179,25 @@ class Parser():
                     gazetteer_entry = self.return_first_exist(t.xpath('gazetteer-entry/text()'))
                     gazetteer_ref_ref = self.return_first_exist(t.xpath('gazetteer-entry/@gazetteer-ref'))
                     gazetteer_ref = None
+                    location_id_vocabulary_ref = self.return_first_exist(t.xpath('location-id/@vocabulary'))
+                    location_id_vocabulary = None
+                    location_id_code = self.return_first_exist(t.xpath('location-id/@code'))
+                    adm_code = self.return_first_exist(t.xpath('administrative/@code'))
+                    adm_vocabulary_ref = self.return_first_exist(t.xpath('administrative/@vocabulary'))
+                    adm_vocabulary = None
+                    adm_level = self.return_first_exist(t.xpath('administrative/@level'))
+                    activity_description = self.return_first_exist(t.xpath('activity-description/text()'))
+                    exactness_ref = self.return_first_exist(t.xpath('exactness/@code'))
+                    exactness = None
+                    location_reach_ref = self.return_first_exist(t.xpath('location-reach/text()'))
+                    location_reach = None
+                    location_class_ref = self.return_first_exist(t.xpath('location-class/@code'))
+                    location_class = None
+                    feature_designation_ref = self.return_first_exist(t.xpath('feature-designation/@code'))
+                    feature_designation = None
+                    point_srs_name = self.return_first_exist(t.xpath('point/@srsName'))
+                    point_pos = self.return_first_exist(t.xpath('point/pos/text()'))
+
 
                     if type_ref:
                         if models.LocationType.objects.filter(code=type_ref).exists():
@@ -1200,8 +1219,33 @@ class Parser():
                         if models.GazetteerAgency.objects.filter(code=gazetteer_ref_ref).exists():
                             gazetteer_ref = models.GazetteerAgency.objects.get(code=gazetteer_ref_ref)
 
+                    if location_reach_ref:
+                        if models.GeographicLocationReach.objects.filter(code=location_reach_ref).exists():
+                            location_reach = models.GeographicLocationReach.objects.get(code=location_reach_ref)
 
-                    new_location = models.Location(activity=activity, name=name, type=type, type_description=type_description, description=description, description_type=description_type, adm_country_iso=adm_country_iso, adm_country_adm1=adm_country_adm1, adm_country_adm2=adm_country_adm2, adm_country_name=adm_country_name, percentage=percentage, latitude=latitude, longitude=longitude, precision=precision, gazetteer_entry=gazetteer_entry, gazetteer_ref=gazetteer_ref)
+                    if location_id_vocabulary_ref:
+                        if models.GeographicVocabulary.objects.filter(code=location_id_vocabulary_ref).exists():
+                            location_id_vocabulary = models.GeographicVocabulary.objects.get(code=location_id_vocabulary_ref)
+
+
+
+                    if adm_vocabulary_ref:
+                        if models.GeographicVocabulary.objects.filter(code=adm_vocabulary_ref).exists():
+                            adm_vocabulary = models.GeographicVocabulary.objects.get(code=adm_vocabulary_ref)
+
+                    if exactness_ref:
+                        if models.GeographicExactness.objects.filter(code=exactness_ref).exists():
+                            exactness = models.GeographicExactness.objects.get(code=exactness_ref)
+
+                    if location_class_ref:
+                        if models.GeographicLocationClass.objects.filter(code=location_class_ref).exists():
+                            location_class = models.GeographicLocationClass.objects.get(code=location_class_ref)
+
+                    if feature_designation_ref:
+                        if models.LocationType.objects.filter(code=feature_designation_ref).exists():
+                            feature_designation = models.LocationType.objects.get(code=feature_designation_ref)
+
+                    new_location = models.Location(activity=activity, ref=ref, name=name, type=type, type_description=type_description, description=description, description_type=description_type, adm_country_iso=adm_country_iso, adm_country_adm1=adm_country_adm1, adm_country_adm2=adm_country_adm2, adm_country_name=adm_country_name, percentage=percentage, latitude=latitude, longitude=longitude, precision=precision, gazetteer_entry=gazetteer_entry, gazetteer_ref=gazetteer_ref, location_reach=location_reach, location_id_vocabulary=location_id_vocabulary, location_id_code=location_id_code, adm_code=adm_code, adm_vocabulary=adm_vocabulary, adm_level=adm_level, activity_description=activity_description, exactness=exactness, location_class=location_class, feature_designation=feature_designation, point_srs_name=point_srs_name, point_pos=point_pos)
                     new_location.save()
 
 

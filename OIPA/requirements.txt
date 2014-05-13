@@ -19,8 +19,6 @@ guppy
 ujson==1.33
 redis
 rq
-celery
-django-rq
 rq-scheduler
 supervisor
 django-supervisor
