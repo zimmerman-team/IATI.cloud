@@ -47,7 +47,6 @@ class FileGrabber():
             else:
                 return None
         except urllib2.URLError, e:
-            print
             logger.info('URLError (url=' + url + ') = ' + str(e.reason))
             if try_number < 6:
                 self.get_the_file(url, try_number + 1)

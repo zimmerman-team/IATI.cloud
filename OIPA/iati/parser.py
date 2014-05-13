@@ -292,6 +292,8 @@ class Parser():
             reporting_organisation_ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
             reporting_organisation = None
 
+            secondary_publisher = self.return_first_exist(elem.xpath('reporting-org/@secondary-publisher'))
+
             activity_status_code = self.return_first_exist(elem.xpath('activity-status/@code'))
             activity_status_name = self.return_first_exist(elem.xpath('activity-status/text()'))
             activity_status = None
@@ -370,7 +372,7 @@ class Parser():
                 if models.ActivityScope.objects.filter(code=activity_scope_ref).exists():
                     activity_scope = models.ActivityScope.objects.get(code=activity_scope_ref)
 
-            new_activity = models.Activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier, iati_standard_version=iati_standard_version, capital_spend=capital_spend, scope=activity_scope)
+            new_activity = models.Activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, secondary_publisher=secondary_publisher, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier, iati_standard_version=iati_standard_version, capital_spend=capital_spend, scope=activity_scope)
             new_activity.save()
             return new_activity
 
@@ -1277,6 +1279,7 @@ class Parser():
             for t in elem.xpath('location'):
 
                 try:
+                    ref = self.return_first_exist(t.xpath('@ref'))
                     name = self.return_first_exist(t.xpath('name/text()'))
                     type_ref = self.return_first_exist(t.xpath('location-type/@code'))
                     type = None
@@ -1289,7 +1292,7 @@ class Parser():
                     adm_country_adm1 = self.return_first_exist(t.xpath('administrative/@adm1'))
                     adm_country_adm2 = self.return_first_exist(t.xpath('administrative/@adm2'))
                     adm_country_name = self.return_first_exist(t.xpath('administrative/text()'))
-                    percentage = self.return_first_exist(t.xpath('@percentage'))
+                    percentage = self.return_first_exist(t.xpath('@percentage')) # Deprecated since 1.04
                     latitude = self.return_first_exist(t.xpath('coordinates/@latitude'))
                     longitude = self.return_first_exist(t.xpath('coordinates/@longitude'))
                     precision_ref = self.return_first_exist(t.xpath('coordinates/@precision'))
