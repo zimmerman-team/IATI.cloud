@@ -2,13 +2,10 @@ from lxml import etree
 from iati import models
 from iati.management.commands.total_budget_updater import TotalBudgetUpdater
 from re import sub
-from django.db import IntegrityError
-from exceptions import TypeError
-from django.core.exceptions import ValidationError
+from django.conf import settings
 import time
 from datetime import datetime
 from deleter import Deleter
-from lxml.etree import XMLSyntaxError
 import gc
 import logging
 from iati.filegrabber import FileGrabber
@@ -38,6 +35,12 @@ class Parser():
 
                 del iati_file
                 gc.collect()
+
+                # Throw away query logs when in debug mode to prevent memory from overflowing
+                if settings.DEBUG:
+                    from django import db
+                    db.reset_queries()
+
         except Exception as e:
             self.exception_handler(e, "parse url", "parse_url")
 
