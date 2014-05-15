@@ -7,10 +7,8 @@ import time
 from datetime import datetime
 from deleter import Deleter
 import gc
-import logging
 from iati.filegrabber import FileGrabber
-
-logger = logging.getLogger(__name__)
+from iati_synchroniser.exception_handler import exception_handler
 
 class Parser():
 
@@ -19,10 +17,11 @@ class Parser():
     def parse_url(self, url, xml_source_ref):
 
         try:
+
             deleter = Deleter()
             deleter.delete_by_source(xml_source_ref)
         except Exception as e:
-            self.exception_handler(e, "parse url", "delete by source")
+            exception_handler(e, "parse url", "delete by source")
 
         try:
             #iterate through iati-activity tree
@@ -42,7 +41,7 @@ class Parser():
                     db.reset_queries()
 
         except Exception as e:
-            self.exception_handler(e, "parse url", "parse_url")
+            exception_handler(e, "parse url", "parse_url")
 
     # loop through the activities, fast_iter starts at the last activity and walks towards the first
     def fast_iter(self, context, func):
@@ -56,13 +55,13 @@ class Parser():
                 try:
                     func(elem)
                 except Exception as e:
-                    self.exception_handler(e, "fast_iter", "fast_iter")
+                    exception_handler(e, "fast_iter", "fast_iter")
                 elem.clear()
                 while elem.getprevious() is not None:
                     del elem.getparent()[0]
             del context
         except Exception as e:
-            self.exception_handler(e, "fast_iter", "fast_iter")
+            exception_handler(e, "fast_iter", "fast_iter")
 
 
 
@@ -111,7 +110,7 @@ class Parser():
             self.add_total_budget(activity)
 
         except Exception as e:
-                self.exception_handler(e, iati_identifier, "add_all_activity_data")
+                exception_handler(e, iati_identifier, "add_all_activity_data")
 
 
     # class wide functions
@@ -156,10 +155,10 @@ class Parser():
 
             except ValueError:
                 if not any(c.isalpha() for c in unvalidated_date):
-                    logger.info('Invalid date: ' + unvalidated_date)
+                    exception_handler(None, "validate_date", 'Invalid date: ' + unvalidated_date)
                 return None
             except Exception as e:
-                self.exception_handler(e, "validate date", "validate_date")
+                exception_handler(e, "validate date", "validate_date")
                 return None
         return valid_date
 
@@ -190,28 +189,18 @@ class Parser():
         deleter.delete_by_source(xml_source_ref)
 
 
-    def exception_handler(self, e, ref, current_def):
-
-        logger.info("error in " + ref + ", def: " + current_def)
-        if e.args and e.args.__len__() > 0:
-            logger.warning(e.args[0])
-        if e.args.__len__() > 1:
-            logger.warning(e.args[1])
-        logger.warning(type(e))
-
     # entity add functions
     def add_organisation(self, elem):
-        ref = self.return_first_exist(elem.xpath( 'reporting-org/@ref' ))
-        type_ref = self.return_first_exist(elem.xpath( 'reporting-org/@type' ))
-        org_type = None
-        name = self.return_first_exist(elem.xpath('reporting-org/text()'))
-
         try:
+            ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
+            type_ref = self.return_first_exist(elem.xpath('reporting-org/@type'))
+            name = self.return_first_exist(elem.xpath('reporting-org/text()'))
+
             if ref:
                 self.find_or_create_organisation(ref, name, type_ref)
 
         except Exception as e:
-            self.exception_handler(e, ref, "add_organisation")
+            exception_handler(e, ref, "add_organisation")
 
 
 
@@ -330,7 +319,7 @@ class Parser():
             return new_activity
 
         except Exception as e:
-            self.exception_handler(e, activity_id, "add_activity")
+            exception_handler(e, activity_id, "add_activity")
 
 
     #after activity is added
@@ -351,9 +340,9 @@ class Parser():
                     new_other_identifier.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_other_identifier")
+                    exception_handler(e, activity.id, "add_other_identifier")
         except Exception as e:
-                    self.exception_handler(e, activity.id, "add_other_identifier")
+                    exception_handler(e, activity.id, "add_other_identifier")
 
 
 
@@ -379,10 +368,10 @@ class Parser():
                         new_title.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_activity_title")
+                    exception_handler(e, activity.id, "add_activity_title")
 
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_activity_title")
+            exception_handler(e, activity.id, "add_activity_title")
 
 
 
@@ -424,9 +413,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_activity_description")
+                    exception_handler(e, activity.id, "add_activity_description")
         except Exception as e:
-                    self.exception_handler(e, activity.id, "add_activity_description")
+                    exception_handler(e, activity.id, "add_activity_description")
 
 
     def add_budget(self, elem, activity):
@@ -486,10 +475,10 @@ class Parser():
                     new_budget.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_budget")
+                    exception_handler(e, activity.id, "add_budget")
 
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_budget")
+                exception_handler(e, activity.id, "add_budget")
 
 
 
@@ -522,10 +511,10 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_planned_disbursement")
+                    exception_handler(e, activity.id, "add_planned_disbursement")
 
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_planned_disbursement")
+                exception_handler(e, activity.id, "add_planned_disbursement")
 
     # add many to 1
     def add_website(self, elem, activity):
@@ -540,10 +529,10 @@ class Parser():
                         new_website.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_website")
+                    exception_handler(e, activity.id, "add_website")
 
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_website")
+            exception_handler(e, activity.id, "add_website")
 
 
 
@@ -570,9 +559,9 @@ class Parser():
                     new_contact.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_contact_info")
+                    exception_handler(e, activity.id, "add_contact_info")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_contact_info")
+                exception_handler(e, activity.id, "add_contact_info")
 
 
     def add_transaction(self, elem, activity):
@@ -691,9 +680,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_transaction")
+                    exception_handler(e, activity.id, "add_transaction")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_transaction")
+            exception_handler(e, activity.id, "add_transaction")
 
 
 
@@ -734,7 +723,7 @@ class Parser():
                 else:
                     org_type = None
 
-            found_org = models.Organisation(code=ref, name=org_name, type=None, original_ref=ref )
+            found_org = models.Organisation(code=ref, name=org_name, type=None, original_ref=ref)
             found_org.save()
 
         return found_org
@@ -768,9 +757,9 @@ class Parser():
                     new_result.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_result")
+                    exception_handler(e, activity.id, "add_result")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_result")
+            exception_handler(e, activity.id, "add_result")
 
     # add many to many relationship
     def add_sectors(self, elem, activity):
@@ -813,9 +802,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_sectors")
+                    exception_handler(e, activity.id, "add_sectors")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_sectors")
+            exception_handler(e, activity.id, "add_sectors")
 
 
 
@@ -846,14 +835,17 @@ class Parser():
                     else:
                         continue
 
-                    new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
-                    new_activity_country.save()
+                    if country:
+                        new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
+                        new_activity_country.save()
+                    else:
+                        exception_handler(e, activity.id, "add_countries, country not found: " + country_ref)
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
+                    exception_handler(e, activity.id, "add_countries, country = " + country_ref)
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_countries, country = " + country_ref)
+                exception_handler(e, activity.id, "add_countries")
 
     def add_regions(self, elem, activity):
 
@@ -880,22 +872,22 @@ class Parser():
                     elif models.Region.objects.filter(name=region_ref).exists():
                             region = models.Region.objects.filter(name=region_ref)[0]
                     else:
-                        logger.warning("error in add regions, unknown region: " + region_ref)
+                        exception_handler(None, "add_regions", "unknown region: " + region_ref)
                 else:
                     continue
 
                 try:
                     if not region:
-                        logger.warning("Unknown region in add_regions: " + region_ref)
+                        exception_handler(None, "add_regions", "Unknown region: " + region_ref)
                     else:
                         new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
                         new_activity_region.save()
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_regions")
+                    exception_handler(e, activity.id, "add_regions")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_regions")
+                exception_handler(e, activity.id, "add_regions")
 
 
     def add_participating_organisations(self, elem, activity):
@@ -976,9 +968,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_participating_organisations")
+                    exception_handler(e, activity.id, "add_participating_organisations")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_participating_organisations")
+                exception_handler(e, activity.id, "add_participating_organisations")
 
 
 
@@ -1026,9 +1018,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_policy_markers")
+                    exception_handler(e, activity.id, "add_policy_markers")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_policy_markers")
+                exception_handler(e, activity.id, "add_policy_markers")
 
 
     def add_activity_date(self, elem, activity):
@@ -1074,9 +1066,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_activity_date")
+                    exception_handler(e, activity.id, "add_activity_date")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_activity_date")
+                exception_handler(e, activity.id, "add_activity_date")
 
 
     def add_related_activities(self, elem, activity):
@@ -1102,9 +1094,9 @@ class Parser():
                     new_related_activity.save()
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_related_activities")
+                    exception_handler(e, activity.id, "add_related_activities")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_related_activities")
+            exception_handler(e, activity.id, "add_related_activities")
 
 
     def add_location(self, elem, activity):
@@ -1206,9 +1198,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_location")
+                    exception_handler(e, activity.id, "add_location")
         except Exception as e:
-                self.exception_handler(e, activity.id, "add_location")
+                exception_handler(e, activity.id, "add_location")
 
     def add_conditions(self, elem, activity):
 
@@ -1230,9 +1222,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_conditions")
+                    exception_handler(e, activity.id, "add_conditions")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_conditions")
+            exception_handler(e, activity.id, "add_conditions")
 
 
     def add_document_link(self, elem, activity):
@@ -1273,9 +1265,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_document_link")
+                    exception_handler(e, activity.id, "add_document_link")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_document_link")
+            exception_handler(e, activity.id, "add_document_link")
 
 
 
@@ -1307,9 +1299,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_country_budget_items")
+                    exception_handler(e, activity.id, "add_country_budget_items")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_country_budget_items")
+            exception_handler(e, activity.id, "add_country_budget_items")
 
 
 
@@ -1375,9 +1367,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_crs_add")
+                    exception_handler(e, activity.id, "add_crs_add")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_crs_add")
+            exception_handler(e, activity.id, "add_crs_add")
 
 
 
@@ -1409,9 +1401,9 @@ class Parser():
 
 
                 except Exception as e:
-                    self.exception_handler(e, activity.id, "add_fss")
+                    exception_handler(e, activity.id, "add_fss")
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_fss")
+            exception_handler(e, activity.id, "add_fss")
 
 
     def add_total_budget(self, activity):
@@ -1420,4 +1412,4 @@ class Parser():
             updater = TotalBudgetUpdater()
             updater.update_single_activity(activity.id)
         except Exception as e:
-            self.exception_handler(e, activity.id, "add_total_budget")
+            exception_handler(e, activity.id, "add_total_budget")
