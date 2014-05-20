@@ -84,30 +84,31 @@ class Parser():
             iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
             self.add_organisation(elem)
             activity = self.add_activity(elem)
-            self.add_other_identifier(elem, activity)
-            self.add_activity_title(elem, activity)
-            self.add_activity_description(elem, activity)
-            self.add_budget(elem, activity)
-            self.add_planned_disbursement(elem, activity)
-            self.add_website(elem, activity)
-            self.add_contact_info(elem, activity)
-            self.add_transaction(elem, activity)
-            self.add_result(elem, activity)
-            self.add_location(elem, activity)
-            self.add_related_activities(elem, activity)
-            self.add_conditions(elem, activity)
-            self.add_document_link(elem, activity)
+            if activity:
+                self.add_other_identifier(elem, activity)
+                self.add_activity_title(elem, activity)
+                self.add_activity_description(elem, activity)
+                self.add_budget(elem, activity)
+                self.add_planned_disbursement(elem, activity)
+                self.add_website(elem, activity)
+                self.add_contact_info(elem, activity)
+                self.add_transaction(elem, activity)
+                self.add_result(elem, activity)
+                self.add_location(elem, activity)
+                self.add_related_activities(elem, activity)
+                self.add_conditions(elem, activity)
+                self.add_document_link(elem, activity)
 
-            # ManyToMany
-            self.add_sectors(elem, activity)
-            self.add_participating_organisations(elem, activity)
-            self.add_countries(elem, activity)
-            self.add_regions(elem, activity)
-            self.add_policy_markers(elem, activity)
-            self.add_activity_date(elem, activity)
+                # ManyToMany
+                self.add_sectors(elem, activity)
+                self.add_participating_organisations(elem, activity)
+                self.add_countries(elem, activity)
+                self.add_regions(elem, activity)
+                self.add_policy_markers(elem, activity)
+                self.add_activity_date(elem, activity)
 
-            # Extras
-            self.add_total_budget(activity)
+                # Extras
+                self.add_total_budget(activity)
 
         except Exception as e:
                 exception_handler(e, iati_identifier, "add_all_activity_data")
@@ -839,7 +840,7 @@ class Parser():
                         new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
                         new_activity_country.save()
                     else:
-                        exception_handler(e, activity.id, "add_countries, country not found: " + country_ref)
+                        exception_handler(None, activity.id, "add_countries, country not found: " + country_ref)
 
 
                 except Exception as e:
@@ -858,7 +859,7 @@ class Parser():
                 region_voc = None
                 percentage = self.return_first_exist(t.xpath('@percentage'))
                 if percentage:
-                        percentage = percentage.replace("%", "")
+                    percentage = percentage.replace("%", "")
 
                 if self.isInt(region_voc_ref):
                     if models.RegionVocabulary.objects.filter(code=region_voc_ref).exists():
