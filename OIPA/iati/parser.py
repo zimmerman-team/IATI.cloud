@@ -99,6 +99,12 @@ class Parser():
                 self.add_conditions(elem, activity)
                 self.add_document_link(elem, activity)
 
+                # V1.04
+                self.add_country_budget_items(elem, activity)
+                self.add_crs_add(elem, activity)
+                self.add_fss(elem, activity)
+
+
                 # ManyToMany
                 self.add_sectors(elem, activity)
                 self.add_participating_organisations(elem, activity)

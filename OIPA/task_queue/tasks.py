@@ -56,7 +56,7 @@ def remove_duplicates_from_parser_queue():
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
         queue = django_rq.get_queue("parser")
-        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=3600)
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 
 @job
@@ -83,7 +83,7 @@ def parse_all_not_parsed_in_x_days(days):
 
         if ((curdate - update_interval_time) > last_updated):
             queue = django_rq.get_queue("parser")
-            queue.enqueue(parse_source_by_url, args=(source.source_url,), timeout=3600)
+            queue.enqueue(parse_source_by_url, args=(source.source_url,), timeout=7200)
 
 @job
 def parse_all_over_parse_interval():
@@ -124,13 +124,13 @@ def delete_sources_not_found_in_registry_in_x_days(days):
 
             if ((curdate - update_interval_time) > last_found_in_registry):
                 queue = django_rq.get_queue("parser")
-                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=7200)
 
         else:
             if not source.added_manually:
                 # Old source, delete
                 queue = django_rq.get_queue("parser")
-                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=3600)
+                queue.enqueue(delete_source_by_id, args=(source.id,), timeout=7200)
 
 
 
