@@ -11,9 +11,9 @@ def exception_handler(e, ref, current_def):
             if e.args.__len__() > 1:
                 logger.warning(e.args[1])
             logger.warning(type(e))
-    except Exception as e:
-        if e.args and e.args.__len__() > 0:
-            print e.args[0]
-        if e.args.__len__() > 1:
-            print e.args[1]
-        print type(e)
+    except Exception as e2:
+        if e2.args and e2.args.__len__() > 0:
+            print e2.args[0]
+        if e2.args.__len__() > 1:
+            print e2.args[1]
+        print type(e2)

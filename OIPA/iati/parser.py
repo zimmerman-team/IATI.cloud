@@ -141,6 +141,7 @@ class Parser():
         except:
             return False
 
+
     def validate_date(self, unvalidated_date):
         valid_date = None
         if unvalidated_date:
@@ -161,8 +162,8 @@ class Parser():
                 valid_date = datetime.fromtimestamp(time.mktime(validated_date))
 
             except ValueError:
-                if not any(c.isalpha() for c in unvalidated_date):
-                    exception_handler(None, "validate_date", 'Invalid date: ' + unvalidated_date)
+                # if not any(c.isalpha() for c in unvalidated_date):
+                #     exception_handler(None, "validate_date", 'Invalid date: ' + unvalidated_date)
                 return None
             except Exception as e:
                 exception_handler(e, "validate date", "validate_date")
@@ -618,9 +619,10 @@ class Parser():
                                 dec = True
                             value = value.replace(".", "")
                             if dec:
-                                value[:-2] + "." + value[-2:]
+                                value = value[:-2] + "." + value[-2:]
                     else:
                         continue
+
 
                     value_date = self.validate_date(self.return_first_exist(t.xpath('value/@value-date')))
 
@@ -688,6 +690,8 @@ class Parser():
 
                 except Exception as e:
                     exception_handler(e, activity.id, "add_transaction")
+                    if value:
+                        exception_handler(e, "and value is", value)
         except Exception as e:
             exception_handler(e, activity.id, "add_transaction")
 
@@ -832,9 +836,6 @@ class Parser():
                         elif country_ref == "KOS" or country_ref == "KS":
                             # Kosovo fix
                             country = models.Country.objects.get(code="XK")
-                        elif country_ref == "NES":
-                            # This prevents the spain NES (not specified) code from flooding the parselog
-                            continue
                         else:
                             country_ref = country_ref.lower().capitalize()
                             if models.Country.objects.filter(name=country_ref).exists():
@@ -845,8 +846,8 @@ class Parser():
                     if country:
                         new_activity_country = models.ActivityRecipientCountry(activity=activity, country=country, percentage = percentage)
                         new_activity_country.save()
-                    else:
-                        exception_handler(None, activity.id, "add_countries, country not found: " + country_ref)
+                    # else:
+                    #     exception_handler(None, activity.id, "add_countries, country not found: " + country_ref)
 
 
                 except Exception as e:
@@ -879,13 +880,14 @@ class Parser():
                     elif models.Region.objects.filter(name=region_ref).exists():
                             region = models.Region.objects.filter(name=region_ref)[0]
                     else:
-                        exception_handler(None, "add_regions", "unknown region: " + region_ref)
+                        region = None
                 else:
                     continue
 
                 try:
                     if not region:
-                        exception_handler(None, "add_regions", "Unknown region: " + region_ref)
+                        continue
+                        # exception_handler(None, "add_regions", "Unknown region: " + region_ref)
                     else:
                         new_activity_region = models.ActivityRecipientRegion(activity=activity, region=region, percentage = percentage, region_vocabulary=region_voc)
                         new_activity_region.save()
@@ -1037,16 +1039,14 @@ class Parser():
             for t in elem.xpath('activity-date'):
 
                 try:
-                    type_ref = self.return_first_exist(t.xpath( '@type' ))
+                    type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
-                    curdate = self.return_first_exist(t.xpath( '@iso-date' ))
+                    curdate = self.return_first_exist(t.xpath('@iso-date'))
                     curdate = self.validate_date(curdate)
 
                     if not curdate:
-                        curdate = self.return_first_exist(t.xpath( 'text()' ))
+                        curdate = self.return_first_exist(t.xpath('text()'))
                         curdate = self.validate_date(curdate)
-
-
 
                     if type_ref:
                         if models.ActivityDateType.objects.filter(code=type_ref).exists():
@@ -1058,6 +1058,9 @@ class Parser():
                                 type = models.ActivityDateType.objects.get(code=type_ref)
 
                     if not type:
+                        continue
+
+                    if not curdate:
                         continue
 
                     if type.code == 'end-actual':
