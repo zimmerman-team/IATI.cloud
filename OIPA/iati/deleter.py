@@ -6,9 +6,13 @@ from iati_synchroniser.exception_handler import exception_handler
 class Deleter():
 
     def delete_by_source(self, xml_source_ref):
-        activities = models.Activity.objects.filter(xml_source_ref=xml_source_ref)
-        for activity in activities:
-            self.remove_values_for_activity(activity)
+        try:
+            activities = models.Activity.objects.filter(xml_source_ref=xml_source_ref)
+            for activity in activities:
+                self.remove_values_for_activity(activity)
+
+        except Exception as e:
+            exception_handler(e, xml_source_ref, "delete_by_source")
 
     def return_first_exist(self, xpath_find):
 

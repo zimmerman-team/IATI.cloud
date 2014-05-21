@@ -701,7 +701,7 @@ class Parser():
                 if models.Organisation.objects.filter(name=org_name, original_ref=ref).exists():
                     found_org = models.Organisation.objects.get(name=org_name, original_ref=ref)
                 else:
-                    for x in range(0, 5000):
+                    for x in range(0, 50000):
                         temp_ref = ref + "-" + str(x)
                         if models.Organisation.objects.filter(code=temp_ref).exists():
                                 continue
