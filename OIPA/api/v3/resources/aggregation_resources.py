@@ -45,10 +45,10 @@ class ActivityCountResource(ModelResource):
 
         # get filters
         reporting_organisations = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
-        recipient_countries = helper.get_and_query(request, 'countries__in', 'rc.code')
-        recipient_regions = helper.get_and_query(request, 'regions__in', 'rr.code')
+        recipient_countries = helper.get_and_query(request, 'countries__in', 'rc.country_id')
+        recipient_regions = helper.get_and_query(request, 'regions__in', 'rr.region_id')
         total_budgets = helper.get_and_query(request, 'total_budget__in', 'a.total_budget')
-        sectors = helper.get_and_query(request, 'sectors__in', 'acts.code')
+        sectors = helper.get_and_query(request, 'sectors__in', 'acts.sector_id')
 
         from_countries = False
         from_regions = False
@@ -73,7 +73,7 @@ class ActivityCountResource(ModelResource):
         #create the query
         query_select = 'SELECT count(a.id) as activity_count, '
         query_from = 'FROM iati_activity as a '
-        query_where = 'WHERE 1 '
+        query_where = 'WHERE '
         query_group_by = 'GROUP BY '
 
         # fill select and group by
@@ -110,16 +110,36 @@ class ActivityCountResource(ModelResource):
             query_from += "JOIN iati_activitysector as acts on a.id = acts.activity_id "
 
         # fill where part
-        filter_string = reporting_organisations + recipient_countries + recipient_regions + total_budgets + sectors
+        filter_string = ' (' + reporting_organisations + recipient_countries + recipient_regions + total_budgets + sectors + ')'
+        if filter_string == ' ()':
+            filter_string = ""
+        else:
+            if 'AND ()' in filter_string:
+                filter_string = filter_string[:-6]
         print filter_string
 
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
-        print filter_string
+
+
 
         query_where += filter_string
 
+        # optimalisation for simple (all) queries
+        if not filter_string:
+            # fill select and group by
+            if(group_by == "country"):
+                query_select = 'SELECT count(activity_id) as activity_count, country_id as group_field '
+                query_from = "FROM iati_activityrecipientcountry "
+                query_group_by = "GROUP BY country_id"
 
+            elif(group_by == "region"):
+                query_select = 'SELECT count(activity_id) as activity_count, region_id as group_field '
+                query_from = "FROM iati_activityrecipientregion "
+                query_group_by = "GROUP BY region_id"
+
+            elif(group_by == "sector"):
+                query_select = 'SELECT count(activity_id) as activity_count, sector_id as group_field '
+                query_from = "FROM iati_activitysector "
+                query_group_by = "GROUP BY sector_id"
 
         # execute query
 
