@@ -73,7 +73,7 @@ class ActivityCountResource(ModelResource):
         #create the query
         query_select = 'SELECT count(a.id) as activity_count, '
         query_from = 'FROM iati_activity as a '
-        query_where = 'WHERE '
+        query_where = 'WHERE 1 '
         query_group_by = 'GROUP BY '
 
         # fill select and group by
@@ -110,8 +110,8 @@ class ActivityCountResource(ModelResource):
             query_from += "JOIN iati_activitysector as acts on a.id = acts.activity_id "
 
         # fill where part
-        filter_string = ' (' + reporting_organisations + recipient_countries + recipient_regions + total_budgets + sectors + ')'
-        if filter_string == ' ()':
+        filter_string = 'AND (' + reporting_organisations + recipient_countries + recipient_regions + total_budgets + sectors + ')'
+        if filter_string == 'AND ()':
             filter_string = ""
         else:
             if 'AND ()' in filter_string:
