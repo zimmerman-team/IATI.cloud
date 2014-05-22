@@ -56,3 +56,5 @@ class FileGrabber():
                 self.get_the_file(url, try_number + 1)
         except Exception as e:
             logger.info('%s (%s)' % (e.message, type(e)) + " in get_the_file: " + url)
+            if try_number < 6:
+                self.get_the_file(url, try_number + 1)

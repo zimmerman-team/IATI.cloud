@@ -17,17 +17,19 @@ class Parser():
     def parse_url(self, url, xml_source_ref):
 
         try:
-
-            deleter = Deleter()
-            deleter.delete_by_source(xml_source_ref)
-        except Exception as e:
-            exception_handler(e, "parse url", "delete by source")
-
-        try:
             #iterate through iati-activity tree
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             if iati_file:
+
+                # delete old activities
+                try:
+                    deleter = Deleter()
+                    deleter.delete_by_source(xml_source_ref)
+                except Exception as e:
+                    exception_handler(e, "parse url", "delete by source")
+
+                # parse the new file
                 self.xml_source_ref = xml_source_ref
                 context = etree.iterparse(iati_file, tag='iati-activity')
                 self.fast_iter(context, self.process_element)
