@@ -1,4 +1,4 @@
-OIPA V2.1: OpenAid IATI parser and API 
+OIPA: OpenAid IATI parser and API 
 ============
 
 OIPA Version 2.1 is developed within the www.openaid.nl platform and enables IATI standard compliant datasets to easily parse and 
