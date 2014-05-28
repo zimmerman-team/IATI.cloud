@@ -1,4 +1,4 @@
-OIPA (OpenAid IATI Parser and API)
+OIPA 
 ===========
 
 - Debian (or other Linux based env)
