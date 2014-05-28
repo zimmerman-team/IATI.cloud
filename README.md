@@ -1,4 +1,4 @@
-OIPA: OpenAid IATI parser and API 
+OIPA 
 ============
 
 OIPA is developed within the www.openaid.nl and www.openaidsearch.org platform and enables IATI standard compliant datasets to easily parse and  interface that data using the OIPA framework that has been developed using a Django interface.
