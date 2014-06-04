@@ -351,7 +351,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
             'recipient-region': {'select': 'rr.region_id', 'from_addition': 'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '},
             'year': {'select': 'YEAR('+group_field+')', 'from_addition': ''},
             'sector': {'select': 'acts.sector_id', 'from_addition': 'JOIN iati_activitysector as acts on a.id = acts.activity_id '},
-            'reporting-org': {'select': 'o.name', 'from_addition': 'JOIN iati_organisation as o on a.reporting_organisation_id = o.code '},
+            'reporting-org': {'select': 'a.reporting_organisation_id', 'from_addition': 'JOIN iati_organisation as o on a.reporting_organisation_id = o.code '},
             'participating-org': {'select': 'po.name', 'from_addition': 'JOIN iati_activityparticipatingorganisation as po on a.id = po.activity_id '},
             'policy-marker': {'select': 'pm.policy_marker_id', 'from_addition': 'JOIN iati_activitypolicymarker as pm on a.id = pm.activity_id '},
         }
@@ -405,7 +405,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
             return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), mimetype='application/json')
 
         #create the query
-        query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field '
+        query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field, o.code as org_name '
         query_from = 'FROM iati_activity as a ' + aggregation_from_addition + group_from_addition
         query_where = 'WHERE 1 ' + aggregation_where_addition
         query_group_by = 'GROUP BY ' + group_select
@@ -451,7 +451,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
 
         for r in results1:
 
-            options[r['group_field']] = r['aggregation_field']
+            options[r['group_field']] = [r['aggregation_field'], r['org_name']];
 
 
 
