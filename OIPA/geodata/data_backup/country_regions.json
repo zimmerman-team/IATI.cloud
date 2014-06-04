@@ -1519,5 +1519,104 @@
 		"dac_region_code": "289",
 		"dac_region_name": "South of Sahara, regional",
 		"type": "Country"
+	},
+    {
+		"country_name": "Andorra",
+		"dac_country_code": "",
+		"iso2": "AD",
+		"iso3": "",
+		"dac_region_code": "89",
+		"dac_region_name": "Europe, regional",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
+	},
+    {
+		"country_name": "",
+		"dac_country_code": "",
+		"iso2": "",
+		"iso3": "",
+		"dac_region_code": "",
+		"dac_region_name": "",
+		"type": "Country"
 	}
 ]

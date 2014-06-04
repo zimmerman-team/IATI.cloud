@@ -120,10 +120,10 @@ class ActivityResource(ModelResource):
             'iati_identifier': 'exact',
             'start_planned': ALL,
             'start_actual': ALL,
-            'end_planned' : ALL,
-            'end_actual' : ALL,
+            'end_planned': ALL,
+            'end_actual': ALL,
             'total_budget': ALL,
-            'sectors' : ('exact', 'in'),
+            'sectors': ('exact', 'in'),
             'regions': ('exact', 'in'),
             'countries': ('exact', 'in'),
             'reporting_organisation': ('exact', 'in')
@@ -139,7 +139,7 @@ class ActivityResource(ModelResource):
 
             qset = (
                 Q(id__in=query, **filters) |
-                Q(activity_recipient_country__country__name__in=query, **filters) |
+                Q(activityrecipientcountry__country__name__in=query, **filters) |
                 Q(title__title__icontains=query, **filters) |
                 Q(description__description__icontains=query, **filters)
             )

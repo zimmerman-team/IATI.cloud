@@ -296,3 +296,16 @@ class ActivityAggregatedAnyResource(ModelResource):
 
 
         return HttpResponse(ujson.dumps(options), mimetype='application/json')
+
+
+
+
+
+
+
+
+
+
+
+
+

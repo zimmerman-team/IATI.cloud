@@ -50,8 +50,6 @@ class Parser():
 
         try:
 
-            activity_count = 0
-
             for event, elem in context:
 
                 try:
@@ -59,6 +57,8 @@ class Parser():
                 except Exception as e:
                     exception_handler(e, "fast_iter", "fast_iter")
                 elem.clear()
+
+                # for ancestor in elem.xpath('ancestor-or-self::*'):
                 while elem.getprevious() is not None:
                     del elem.getparent()[0]
             del context
