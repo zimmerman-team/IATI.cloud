@@ -405,7 +405,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
             return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), mimetype='application/json')
 
         #create the query
-        query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field, o.org_name as org_name '
+        query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field, o.name as org_name '
         query_from = 'FROM iati_activity as a ' + aggregation_from_addition + group_from_addition
         query_where = 'WHERE 1 ' + aggregation_where_addition
         query_group_by = 'GROUP BY ' + group_select
