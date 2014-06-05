@@ -9,10 +9,13 @@ class CityResource(ModelResource):
         resource_name = 'cities'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
+        filtering = {
+            'id': ['exact'],
+        }
+
 
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
-    activities = fields.ToManyField(RecipientCountryResource, attribute=lambda bundle: ActivityRecipientCountry.objects.filter(country=bundle.obj), null=True)
 
     class Meta:
         queryset = Country.objects.all()
@@ -20,9 +23,11 @@ class CountryResource(ModelResource):
         excludes = ['polygon']
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
+        filtering = {
+            'code': ['exact'],
+        }
 
     def dehydrate(self, bundle):
-        bundle.data['activities'] = bundle.obj.activity_recipient_country_set.count()
         bundle.data['region_id'] = bundle.obj.region_id
         return bundle
 
