@@ -278,7 +278,7 @@ class CountryActivitiesResource(ModelResource):
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         budget_q = ''
-        per_page = request.GET.get("per_page", 999)
+        limit = request.GET.get("limit", 999)
         offset = request.GET.get("offset", 0)
 
         if budget_q_gte:
@@ -312,7 +312,7 @@ class CountryActivitiesResource(ModelResource):
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' \
                 'ORDER BY country_name ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, per_page, offset)
+                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, limit, offset)
 
         cursor.execute(query)
 
