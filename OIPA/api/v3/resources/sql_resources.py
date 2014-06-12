@@ -280,6 +280,7 @@ class CountryActivitiesResource(ModelResource):
         budget_q = ''
         limit = request.GET.get("limit", 999)
         offset = request.GET.get("offset", 0)
+        order_by = request.GET.get("order_by", "country_name")
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -312,7 +313,7 @@ class CountryActivitiesResource(ModelResource):
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' \
                 'ORDER BY country_name ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, limit, offset)
+                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, order_by, limit, offset)
 
         cursor.execute(query)
 
