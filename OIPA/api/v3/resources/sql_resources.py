@@ -312,7 +312,7 @@ class CountryActivitiesResource(ModelResource):
                 '%s %s'\
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' \
-                'ORDER BY country_name ' \
+                'ORDER BY %s ' \
                 'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, order_by, limit, offset)
 
         cursor.execute(query)
