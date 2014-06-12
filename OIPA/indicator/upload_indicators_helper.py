@@ -74,8 +74,6 @@ def get_value(value_csv):
 
         return float(value)
 
-
-
     else:
         value = None
     return value
@@ -115,12 +113,7 @@ def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_
             else:
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, city=city_from_db)[0]
 
-            #some city files also contain the country, so when this happens we also store it
-            if country_from_db:
-                indicator_data_from_db.country = country_from_db
-
             indicator_data_from_db.city = city_from_db
-            #todo get region from db
 
             indicator_data_from_db.value = get_value(value_csv=value_csv)
             #todo add year range to model IndicatorData
@@ -141,7 +134,7 @@ def save_country_data(country_from_db, city_csv, selection_type_csv, year_csv, i
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, country=country_from_db)[0]
             else:
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, country=country_from_db)[0]
-            #todo get region from db
+
             indicator_data_from_db.value = get_value(value_csv=value_csv)
 
 

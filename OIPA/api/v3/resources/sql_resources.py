@@ -278,6 +278,8 @@ class CountryActivitiesResource(ModelResource):
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         budget_q = ''
+        per_page = request.GET.get("per_page", 999)
+        offset = request.GET.get("offset", 0)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -302,17 +304,17 @@ class CountryActivitiesResource(ModelResource):
             filter_sector = ''
 
         cursor = connection.cursor()
-        query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects '\
+        query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
                 'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
                 '%s %s'\
-                'WHERE 1 %s'\
-                'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
+                'WHERE c.code is not null %s'\
+                'GROUP BY c.code ' \
+                'ORDER BY country_name ' \
+                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_string, per_page, offset)
 
-        print query
         cursor.execute(query)
-        print connection.queries
 
         activities = []
 
@@ -322,8 +324,22 @@ class CountryActivitiesResource(ModelResource):
             country['id'] = r['country_id']
             country['name'] = r['country_name']
             country['total_projects'] = r['total_projects']
-            country['lnglat'] = r['location']
 
+            loc = r['location']
+            if loc:
+
+                loc = loc.replace("POINT(", "")
+                loc = loc.replace(")", "")
+                loc_array = loc.split(" ")
+                longitude = loc_array[0]
+                latitude = loc_array[1]
+            else:
+                longitude = None
+                latitude = None
+
+            country['latitude'] = latitude
+            country['longitude'] = longitude
+            country['total_budget'] = r['total_budget']
             activities.append(country)
 
         return HttpResponse(ujson.dumps(activities), mimetype='application/json')

@@ -9,7 +9,7 @@ from api.v3.resources.activity_view_resources import ActivityResource
 from api.v3.resources.activity_list_resources import ActivityListResource
 from api.v3.resources.sql_resources import ActivityFilterOptionsResource, CountryGeojsonResource, Adm1RegionGeojsonResource, CountryActivitiesResource
 from api.v3.resources.aggregation_resources import ActivityCountResource, ActivityAggregatedAnyResource, ActivityAggregatedAnyNamesResource
-from api.v3.resources.indicator_resources import IndicatorAggregationResource, IndicatorCountryDataResource, IndicatorCityDataResource, IndicatorRegionDataResource, IndicatorRegionFilterOptionsResource, IndicatorCountryFilterOptionsResource, IndicatorCityFilterOptionsResource, IndicatorFilterOptionsResource
+from api.v3.resources.indicator_resources import IndicatorAggregationResource, IndicatorCountryDataResource, IndicatorCityDataResource, IndicatorRegionDataResource, IndicatorRegionFilterOptionsResource, IndicatorCountryFilterOptionsResource, IndicatorCityFilterOptionsResource, IndicatorFilterOptionsResource, IndicatorDataResource
 from api.v2 import views as old_views
 from api.v3 import views
 
@@ -42,7 +42,7 @@ v3_api.register(ActivityAggregatedAnyResource())
 v3_api.register(IndicatorAggregationResource())
 v3_api.register(ActivityAggregatedAnyNamesResource())
 v3_api.register(IndicatorFilterOptionsResource())
-
+v3_api.register(IndicatorDataResource())
 def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
 
