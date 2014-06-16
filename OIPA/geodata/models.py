@@ -7,6 +7,7 @@ class Region(models.Model):
     name = models.CharField(max_length=80)
     region_vocabulary = models.ForeignKey('iati.RegionVocabulary', default=1)
     parental_region = models.ForeignKey('self', null=True, blank=True)
+    center_longlat = models.PointField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name

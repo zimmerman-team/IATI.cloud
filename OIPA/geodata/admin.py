@@ -14,13 +14,19 @@ class RegionAdmin(admin.ModelAdmin):
         urls = super(RegionAdmin, self).get_urls()
 
         my_urls = patterns('',
-            (r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions))
+            (r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions)),
+            (r'^import-unesco-regions/$', self.admin_site.admin_view(self.import_unesco_regions))
         )
         return my_urls + urls
 
     def import_un_regions(self, request):
         ru = RegionUpdater()
         ru.update_un_regions()
+        return HttpResponse('Success')
+
+    def import_unesco_regions(self, request):
+        ru = RegionUpdater()
+        ru.update_unesco_regions()
         return HttpResponse('Success')
 
 

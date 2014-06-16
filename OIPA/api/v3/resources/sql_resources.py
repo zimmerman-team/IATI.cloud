@@ -344,4 +344,113 @@ class CountryActivitiesResource(ModelResource):
             country['total_budget'] = r['total_budget']
             activities.append(country)
 
-        return HttpResponse(ujson.dumps(activities), mimetype='application/json')
+        return_json = {}
+        return_json["objects"] = activities
+        return_json["meta"] = {"count": len(results)}
+
+        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+
+
+
+
+class RegionActivitiesResource(ModelResource):
+
+    class Meta:
+        #aid_type is used as dummy
+        queryset = AidType.objects.all()
+        resource_name = 'region-activities'
+        include_resource_uri = True
+        cache = NoTransformCache()
+
+
+    def get_list(self, request, **kwargs):
+
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+
+        if not 'flush' in cururl and validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+
+        helper = CustomCallHelper()
+        country_q = helper.get_and_query(request, 'countries__in', 'c.code')
+        budget_q_gte = request.GET.get('total_budget__gte', None)
+        budget_q_lte = request.GET.get('total_budget__lte', None)
+        region_q = helper.get_and_query(request, 'regions__in', 'r.code')
+        sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
+        budget_q = ''
+        limit = request.GET.get("limit", 999)
+        offset = request.GET.get("offset", 0)
+        order_by = request.GET.get("order_by", "region_name")
+        order_asc_desc = request.GET.get("order_asc_desc", "ASC")
+        vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
+
+        if budget_q_gte:
+            budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
+        if budget_q_lte:
+            budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
+
+
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + vocabulary_q + ')'
+        if 'AND ()' in filter_string:
+            filter_string = filter_string[:-6]
+
+
+        filter_country = ''
+        if country_q:
+            filter_country = 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id LEFT JOIN geodata_country c ON rc.region_id = c.code '
+
+        filter_sector = ''
+        if sector_q:
+            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+
+        filter_vocabulary = ''
+        if vocabulary_q:
+            filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
+
+        cursor = connection.cursor()
+        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+                'FROM iati_activity a '\
+                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
+                'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
+                '%s %s %s'\
+                'WHERE r.code is not null %s'\
+                'GROUP BY r.code ' \
+                'ORDER BY %s %s ' \
+                'LIMIT %s OFFSET %s' % (filter_country, filter_sector, filter_vocabulary, filter_string, order_by, order_asc_desc, limit, offset)
+
+        cursor.execute(query)
+
+        activities = []
+
+        results = helper.get_fields(cursor=cursor)
+        for r in results:
+            region = {}
+            region['id'] = r['region_id']
+            region['name'] = r['region_name']
+            region['total_projects'] = r['total_projects']
+
+            loc = r['location']
+            if loc:
+
+                loc = loc.replace("POINT(", "")
+                loc = loc.replace(")", "")
+                loc_array = loc.split(" ")
+                longitude = loc_array[0]
+                latitude = loc_array[1]
+            else:
+                longitude = None
+                latitude = None
+
+            region['latitude'] = latitude
+            region['longitude'] = longitude
+            region['total_budget'] = r['total_budget']
+            activities.append(region)
+
+        return_json = {}
+        return_json["objects"] = activities
+        return_json["meta"] = {"count": len(results)}
+
+        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')

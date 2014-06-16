@@ -184,6 +184,46 @@ class RegionUpdater():
 
 
 
+    def update_unesco_regions(self):
+        from geodata.models import Country, Region
+        import ujson
+        import os
+        import os.path
+        from iati.models import RegionVocabulary
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/unesco_regions.json"
+
+        json_data = open(location)
+        unesco_regions = ujson.load(json_data)
+
+        for cr in unesco_regions:
+
+            try:
+                code = cr
+                latitude = unesco_regions[cr]['latitude']
+                longitude = unesco_regions[cr]['longitude']
+                name = unesco_regions[cr]['name']
+
+                if Region.objects.filter(code=code).exists():
+                    the_region = Region.objects.get(code=code)
+                    the_region.name = name
+                else:
+                    if RegionVocabulary.objects.filter(name="UNESCO").exists():
+                        the_region_voc = RegionVocabulary.objects.get(name="UNESCO")
+                    else:
+                        the_region_voc = RegionVocabulary(code=999, name="UNESCO")
+                        the_region_voc.save()
+                    point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
+                    center_location = fromstr(point_loc_str, srid=4326)
+                    the_region = Region(code=code, name=name, region_vocabulary=the_region_voc, parental_region=None, center_longlat=center_location)
+                the_region.save()
+
+            except Exception as e:
+                print "error in update_country_regions" + str(type)
+                print e.args
+        json_data.close()
+
 
 
 class CityUpdater():
