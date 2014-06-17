@@ -47,10 +47,10 @@ class ActivityListResource(ModelResource):
             'iati_identifier': 'exact',
             'start_planned': ALL,
             'start_actual': ALL,
-            'end_planned' : ALL,
-            'end_actual' : ALL,
+            'end_planned': ALL,
+            'end_actual': ALL,
             'total_budget': ALL,
-            'sectors' : ('exact', 'in'),
+            'sectors': ('exact', 'in'),
             'regions': ('exact', 'in'),
             'countries': ('exact', 'in'),
             'reporting_organisation': ('exact', 'in')
@@ -74,14 +74,14 @@ class ActivityListResource(ModelResource):
             return base_object_list.filter(qset).distinct()
         return base_object_list.filter(**filters).distinct()
 
-    # def get_list(self, request, **kwargs):
-    #
-    #     # check if call is cached using validator.is_cached
-    #     # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
-    #     validator = Validator()
-    #     cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-    #
-    #     if not 'flush' in cururl and validator.is_cached(cururl):
-    #         return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
-    #     else:
-    #         return super(ActivityListResource, self).get_list(request, **kwargs)
+    def get_list(self, request, **kwargs):
+
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+
+        if not 'flush' in cururl and validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+        else:
+            return super(ActivityListResource, self).get_list(request, **kwargs)

@@ -1,6 +1,5 @@
 
 from django.contrib.gis.db import models
-from django.contrib.gis import geos
 
 class Region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
@@ -8,6 +7,7 @@ class Region(models.Model):
     region_vocabulary = models.ForeignKey('iati.RegionVocabulary', default=1)
     parental_region = models.ForeignKey('self', null=True, blank=True)
     center_longlat = models.PointField(null=True, blank=True)
+    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name

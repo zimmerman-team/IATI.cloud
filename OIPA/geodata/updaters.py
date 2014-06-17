@@ -183,9 +183,8 @@ class RegionUpdater():
         json_data.close()
 
 
-
     def update_unesco_regions(self):
-        from geodata.models import Country, Region
+        from geodata.models import Region
         import ujson
         import os
         import os.path

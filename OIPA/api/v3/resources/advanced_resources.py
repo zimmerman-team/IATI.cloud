@@ -15,6 +15,7 @@ class OnlyRegionResource(ModelResource):
     class Meta:
         queryset = Region.objects.all().distinct().order_by('code')
         resource_name = 'region'
+        excludes = ['center_longlat']
         include_resource_uri = False
 
 class OnlyCityResource(ModelResource):
