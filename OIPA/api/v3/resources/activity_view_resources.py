@@ -107,7 +107,7 @@ class ActivityResource(ModelResource):
     default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True)
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
-    documents = fields.ToManyField(DocumentResource, '+', full=True, null=True)
+    documents = fields.ToManyField(DocumentResource, 'documentlink', full=True, null=True)
 
     class Meta:
         queryset = Activity.objects.all()
@@ -126,7 +126,8 @@ class ActivityResource(ModelResource):
             'sectors': ('exact', 'in'),
             'regions': ('exact', 'in'),
             'countries': ('exact', 'in'),
-            'reporting_organisation': ('exact', 'in')
+            'reporting_organisation': ('exact', 'in'),
+            'documents': ('contains')
         }
         cache = NoTransformCache()
 

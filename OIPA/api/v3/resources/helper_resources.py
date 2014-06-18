@@ -98,6 +98,9 @@ class DocumentResource(ModelResource):
         queryset = DocumentLink.objects.all()
         include_resource_uri = False
         excludes = ['id']
+        filtering = {
+            'url' : ['contains']
+        }
 
 
 class RecipientCountryResource(ModelResource):

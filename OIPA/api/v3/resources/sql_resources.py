@@ -39,6 +39,9 @@ class ActivityFilterOptionsResource(ModelResource):
         helper = CustomCallHelper()
         cursor = connection.cursor()
         organisations = request.GET.get("reporting_organisation__in", None)
+        include_donors = request.GET.get("include_donors", None)
+        include_start_year_actual = request.GET.get("include_start_year_actual", None)
+        include_start_year_planned = request.GET.get("include_start_year_planned", None)
         if organisations:
             q_organisations = 'WHERE a.reporting_organisation_id = "' + organisations + '"'
         else:
@@ -73,6 +76,8 @@ class ActivityFilterOptionsResource(ModelResource):
         options['regions'] = {}
         options['sectors'] = {}
 
+
+
         for r in results1:
 
             country_item = {}
@@ -92,6 +97,54 @@ class ActivityFilterOptionsResource(ModelResource):
             region_item['name'] = r['name']
             region_item['total'] = r['total_amount']
             options['regions'][r['code']] = region_item
+
+        if include_donors:
+            options['donors'] = {}
+
+            cursor.execute('SELECT o.code, o.name, count(o.code) as total_amount '
+                       'FROM iati_activity a '
+                       'JOIN iati_activityparticipatingorganisation as po on a.id = po.activity_id '
+                       'JOIN iati_organisation as o on po.organisation_id = o.code '
+                       'WHERE 1 %s '
+                       'GROUP BY o.code' % (q_organisations))
+            results4 = helper.get_fields(cursor=cursor)
+
+            for r in results4:
+
+                donor_item = {}
+                donor_item['name'] = r['name']
+                donor_item['total'] = r['total_amount']
+                options['donors'][r['code']] = donor_item
+
+        if include_start_year_actual:
+
+            options['start_actual'] = {}
+            cursor.execute('SELECT YEAR(a.start_actual) as start_year, count(YEAR(a.start_actual)) as total_amount '
+                       'FROM iati_activity a '
+                       'WHERE 1 %s '
+                       'GROUP BY YEAR(a.start_actual)' % (q_organisations))
+            results5 = helper.get_fields(cursor=cursor)
+
+            for r in results5:
+                start_actual_item = {}
+                start_actual_item['name'] = r['start_year']
+                start_actual_item['total'] = r['total_amount']
+                options['start_actual'][r['start_year']] = start_actual_item
+
+        if include_start_year_planned:
+
+            options['start_planned_years'] = {}
+            cursor.execute('SELECT YEAR(a.start_planned) as start_year, count(YEAR(a.start_planned)) as total_amount '
+                       'FROM iati_activity a '
+                       'WHERE 1 %s '
+                       'GROUP BY YEAR(a.start_planned)' % (q_organisations))
+            results5 = helper.get_fields(cursor=cursor)
+
+            for r in results5:
+                start_planned_item = {}
+                start_planned_item['name'] = r['start_year']
+                start_planned_item['total'] = r['total_amount']
+                options['start_planned_years'][r['start_year']] = start_planned_item
 
 
         if not q_organisations:
@@ -420,6 +473,109 @@ class RegionActivitiesResource(ModelResource):
                 'GROUP BY r.code ' \
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_country, filter_sector, filter_vocabulary, filter_string, order_by, order_asc_desc, limit, offset)
+
+        cursor.execute(query)
+
+        activities = []
+
+        results = helper.get_fields(cursor=cursor)
+        for r in results:
+            region = {}
+            region['id'] = r['region_id']
+            region['name'] = r['region_name']
+            region['total_projects'] = r['total_projects']
+
+            loc = r['location']
+            if loc:
+
+                loc = loc.replace("POINT(", "")
+                loc = loc.replace(")", "")
+                loc_array = loc.split(" ")
+                longitude = loc_array[0]
+                latitude = loc_array[1]
+            else:
+                longitude = None
+                latitude = None
+
+            region['latitude'] = latitude
+            region['longitude'] = longitude
+            region['total_budget'] = r['total_budget']
+            activities.append(region)
+
+        return_json = {}
+        return_json["objects"] = activities
+        return_json["meta"] = {"count": len(results)}
+
+        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+
+
+
+
+
+
+
+
+class SectorActivitiesResource(ModelResource):
+
+    class Meta:
+        #aid_type is used as dummy
+        queryset = AidType.objects.all()
+        resource_name = 'sector-activities'
+        include_resource_uri = True
+        cache = NoTransformCache()
+
+
+    def get_list(self, request, **kwargs):
+
+
+        helper = CustomCallHelper()
+        country_q = helper.get_and_query(request, 'countries__in', 'c.code')
+        budget_q_gte = request.GET.get('total_budget__gte', None)
+        budget_q_lte = request.GET.get('total_budget__lte', None)
+        region_q = helper.get_and_query(request, 'regions__in', 'r.code')
+        sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
+        budget_q = ''
+        limit = request.GET.get("limit", 999)
+        offset = request.GET.get("offset", 0)
+        order_by = request.GET.get("order_by", "region_name")
+        order_asc_desc = request.GET.get("order_asc_desc", "ASC")
+
+        if budget_q_gte:
+            budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
+        if budget_q_lte:
+            budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
+
+
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + ')'
+        if 'AND ()' in filter_string:
+            filter_string = filter_string[:-6]
+
+
+        filter_country = ''
+        if country_q:
+            filter_country = 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id LEFT JOIN geodata_country c ON rc.region_id = c.code '
+
+        if region_q:
+            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+        else:
+            filter_region = ''
+
+        filter_sector = ''
+        if sector_q:
+            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+
+
+        cursor = connection.cursor()
+        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+                'FROM iati_activity a '\
+                'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '\
+                'LEFT JOIN iati_sector s ON s.code = acts.sector_id '\
+                '%s %s '\
+                'WHERE r.code is not null %s'\
+                'GROUP BY r.code ' \
+                'ORDER BY %s %s ' \
+                'LIMIT %s OFFSET %s' % (filter_country, filter_region, filter_string, order_by, order_asc_desc, limit, offset)
 
         cursor.execute(query)
 
