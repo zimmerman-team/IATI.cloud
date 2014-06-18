@@ -1,7 +1,7 @@
 # Tastypie specific
 from tastypie import fields
 from tastypie.resources import ModelResource
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from iati.models import *
 
 
@@ -99,7 +99,7 @@ class DocumentResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
         filtering = {
-            'url' : ['contains']
+            'url' : ALL_WITH_RELATIONS
         }
 
 

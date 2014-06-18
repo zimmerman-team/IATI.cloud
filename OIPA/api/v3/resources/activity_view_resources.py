@@ -3,7 +3,7 @@ from django.db.models import Q
 
 # Tastypie specific
 from tastypie import fields
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie.serializers import Serializer
 
@@ -127,7 +127,7 @@ class ActivityResource(ModelResource):
             'regions': ('exact', 'in'),
             'countries': ('exact', 'in'),
             'reporting_organisation': ('exact', 'in'),
-            'documents': ('contains')
+            'documents': ALL_WITH_RELATIONS
         }
         cache = NoTransformCache()
 
