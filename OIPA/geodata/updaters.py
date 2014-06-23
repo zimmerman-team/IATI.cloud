@@ -183,7 +183,25 @@ class RegionUpdater():
         json_data.close()
 
 
+
     def update_unesco_regions(self):
+
+
+        # TO DO
+
+        # read countries from country list XML
+
+        # add region to DB if new
+
+        # set the country region in the XML as country.unesco_region
+
+
+
+
+
+
+        # old code (only adds unesco regions, can be removed when above functionality is ready)
+
         from geodata.models import Region
         import ujson
         import os

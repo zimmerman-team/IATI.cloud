@@ -930,6 +930,10 @@ class Parser():
 
 
                     if participating_organisation_ref:
+                        participating_organisation_ref = participating_organisation_ref.strip()
+                        if not participating_organisation_ref:
+                                            participating_organisation_ref = "u"
+
                         if models.Organisation.objects.filter(code=participating_organisation_ref).exists():
                             participating_organisation_to_be_matched = models.Organisation.objects.get(code=participating_organisation_ref)
 
@@ -943,7 +947,7 @@ class Parser():
                                 if models.Organisation.objects.filter(name=name, original_ref=participating_organisation_ref).exists():
                                     participating_organisation = models.Organisation.objects.get(name=name, original_ref=participating_organisation_ref)
                                 else:
-                                    for x in range(0, 5000):
+                                    for x in range(0, 9999):
                                         temp_ref = participating_organisation_ref + "-" + str(x)
                                         if models.Organisation.objects.filter(code=temp_ref).exists():
                                             # participating_organisation_to_be_matched = models.Organisation.objects.get(code=temp_ref)

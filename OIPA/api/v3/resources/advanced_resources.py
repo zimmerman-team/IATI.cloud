@@ -1,6 +1,7 @@
 
 from tastypie.resources import ModelResource
 from geodata.models import Country, Region, City
+from tastypie.constants import ALL_WITH_RELATIONS
 
 class OnlyCountryResource(ModelResource):
     class Meta:
@@ -8,7 +9,9 @@ class OnlyCountryResource(ModelResource):
         include_resource_uri = False
         excludes = ['center_longlat', 'dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon', 'alpha3', 'fips10', 'numerical_code_un']
         resource_name = 'country'
-        limit = 1000
+        filtering = {
+            'code' : 'gte',
+        }
 
 
 class OnlyRegionResource(ModelResource):
@@ -17,6 +20,9 @@ class OnlyRegionResource(ModelResource):
         resource_name = 'region'
         excludes = ['center_longlat']
         include_resource_uri = False
+        filtering = {
+            'code' : 'gte',
+        }
 
 class OnlyCityResource(ModelResource):
     class Meta:

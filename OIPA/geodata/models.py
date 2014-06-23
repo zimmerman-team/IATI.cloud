@@ -20,6 +20,7 @@ class Country(models.Model):
     capital_city = models.ForeignKey("City", related_name='capital_city', null=True, blank=True)
     region = models.ForeignKey(Region, null=True, blank=True)
     un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_region')
+    unesco_region = models.ForeignKey('Region', null=True, blank=True, related_name='unesco_region')
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)

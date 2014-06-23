@@ -24,6 +24,27 @@ class CustomCallHelper():
             query = ''
         return query
 
+    def make_year_where_query(self, values, name):
+        query = ''
+        if values:
+            if not values[0]:
+                return None
+
+            for v in values:
+                query += '  YEAR(' + name + ') = "' + v + '" OR'
+            query = query[:-2]
+        return query
+
+    def get_year_and_query(self, request, parameter, queryparameter):
+
+        filters = request.GET.get(parameter, None)
+        if filters:
+            query = self.make_year_where_query(values=filters.split(','), name=queryparameter)
+            query += ') AND ('
+        else:
+            query = ''
+        return query
+
     def get_fields(self, cursor):
         desc = cursor.description
         results = [
