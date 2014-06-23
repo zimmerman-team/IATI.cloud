@@ -160,8 +160,13 @@ INSTALLED_APPS = (
     'task_queue',
     'south',
     'multiupload',
+<<<<<<< HEAD
     'django_rq',
     'djsupervisor',
+=======
+    'indicator_unesco',
+    'translation_model',
+>>>>>>> 58585986d2dd68ecd356750f652dd59b4243f064
 )
 
 
