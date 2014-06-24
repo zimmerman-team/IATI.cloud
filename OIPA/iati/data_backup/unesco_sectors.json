@@ -1,0 +1,19 @@
+{
+    "SHS": {"name": "Social and human sciences"},
+    "CLT": {"name": "Culture"},
+    "SC": {"name": "Natural Sciences"},
+    "ED": {"name": "Education"},
+    "CI": {"name": "Communication and information"},
+    "ODG/GE": {"name": "Coordination and monitoring of action to benefit Gender Equality"},
+    "HRM": {"name": "Human resources management"},
+    "ODG": {"name": "Office of the Director-General"},
+    "BFC": {"name": "Field management and coordination"},
+    "ERI": {"name": "External relations and Public information"},
+    "MSS": {"name": "Sector for the Management of Support Services"},
+    "ERI/FLP": {"name": "Fellowships Programme"},
+    "BSP": {"name": "Strategic planning and programme monitoring"},
+    "IOS": {"name": "Internal Oversight"},
+    "MSS/BKI": {"name": "Organization-wide knowledge management"},
+    "AFR": {"name": "Coordination and monitoring of action to benefit Africa"},
+    "UIS": {"name": "UNESCO Institute for Statistics"}
+}

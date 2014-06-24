@@ -42,7 +42,7 @@ class ActivityListResource(ModelResource):
         max_limit = 100
         serializer = Serializer(formats=['xml', 'json'])
         excludes = ['date_created']
-        ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
+        ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget', 'activity_status']
         filtering = {
             'iati_identifier': 'exact',
             'start_planned': ALL,
@@ -53,7 +53,8 @@ class ActivityListResource(ModelResource):
             'sectors': ('exact', 'in'),
             'regions': ALL_WITH_RELATIONS,
             'countries': ALL_WITH_RELATIONS,
-            'reporting_organisation': ('exact', 'in')
+            'reporting_organisation': ('exact', 'in'),
+            'participating_organisations': ('exact', 'in'),
         }
         cache = NoTransformCache()
 

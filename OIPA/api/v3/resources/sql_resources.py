@@ -333,7 +333,6 @@ class CountryActivitiesResource(ModelResource):
         offset = request.GET.get("offset", 0)
         order_by = request.GET.get("order_by", "country_name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
-
         query = request.GET.get("query", None)
 
         if budget_q_gte:
@@ -456,6 +455,8 @@ class RegionActivitiesResource(ModelResource):
         order_by = request.GET.get("order_by", "region_name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
+        query = request.GET.get("query", None)
+
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -479,6 +480,9 @@ class RegionActivitiesResource(ModelResource):
         filter_vocabulary = ''
         if vocabulary_q:
             filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
+
+        if query:
+            filter_string += 'AND c.name LIKE "%%' + query + '%%" '
 
         cursor = connection.cursor()
         query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
@@ -557,7 +561,6 @@ class SectorActivitiesResource(ModelResource):
 
     def get_list(self, request, **kwargs):
 
-
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
         budget_q_gte = request.GET.get('total_budget__gte', None)
@@ -568,8 +571,9 @@ class SectorActivitiesResource(ModelResource):
         budget_q = ''
         limit = request.GET.get("limit", 999)
         offset = request.GET.get("offset", 0)
-        order_by = request.GET.get("order_by", "region_name")
+        order_by = request.GET.get("order_by", "sector_name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
+        query = request.GET.get("query", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -595,15 +599,17 @@ class SectorActivitiesResource(ModelResource):
         if sector_q:
             filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
 
+        if query:
+            filter_string += 'AND c.name LIKE "%%' + query + '%%" '
 
         cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+        query = 'SELECT s.code as sector_id, s.name as sector_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '\
                 'LEFT JOIN iati_sector s ON s.code = acts.sector_id '\
                 '%s %s '\
-                'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' \
+                'WHERE s.code is not null %s'\
+                'GROUP BY s.code ' \
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_country, filter_region, filter_string, order_by, order_asc_desc, limit, offset)
 
@@ -613,39 +619,24 @@ class SectorActivitiesResource(ModelResource):
 
         results = helper.get_fields(cursor=cursor)
         for r in results:
-            region = {}
-            region['id'] = r['region_id']
-            region['name'] = r['region_name']
-            region['total_projects'] = r['total_projects']
-
-            loc = r['location']
-            if loc:
-
-                loc = loc.replace("POINT(", "")
-                loc = loc.replace(")", "")
-                loc_array = loc.split(" ")
-                longitude = loc_array[0]
-                latitude = loc_array[1]
-            else:
-                longitude = None
-                latitude = None
-
-            region['latitude'] = latitude
-            region['longitude'] = longitude
-            region['total_budget'] = r['total_budget']
-            activities.append(region)
+            sector = {}
+            sector['id'] = r['sector_id']
+            sector['name'] = r['sector_name']
+            sector['total_projects'] = r['total_projects']
+            sector['total_budget'] = r['total_budget']
+            activities.append(sector)
 
         return_json = {}
         return_json["objects"] = activities
 
         cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+        query = 'SELECT s.code as sector_id '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '\
                 'LEFT JOIN iati_sector s ON s.code = acts.sector_id '\
                 '%s %s '\
-                'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' % (filter_country, filter_region, filter_string)
+                'WHERE s.code is not null %s'\
+                'GROUP BY s.code ' % (filter_country, filter_region, filter_string)
 
         cursor.execute(query)
 
@@ -653,3 +644,96 @@ class SectorActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
         return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+
+
+
+
+
+
+
+class DonorActivitiesResource(ModelResource):
+
+    class Meta:
+        #aid_type is used as dummy
+        queryset = AidType.objects.all()
+        resource_name = 'donor-activities'
+        include_resource_uri = True
+        cache = NoTransformCache()
+
+
+    def get_list(self, request, **kwargs):
+
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
+
+        helper = CustomCallHelper()
+        country_q = helper.get_and_query(request, 'countries__in', 'c.code')
+        budget_q_gte = request.GET.get('total_budget__gte', None)
+        budget_q_lte = request.GET.get('total_budget__lte', None)
+        region_q = helper.get_and_query(request, 'regions__in', 'r.code')
+        sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        donor_q = helper.get_and_query(request, 'donors__in', 'apo.organisation_id')
+        organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
+        start_actual_q = helper.get_year_and_query(request, 'start_actual__in', 'a.start_actual')
+        start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')
+        budget_q = ''
+        limit = request.GET.get("limit", 999)
+        offset = request.GET.get("offset", 0)
+        order_by = request.GET.get("order_by", "apo.name")
+        order_asc_desc = request.GET.get("order_asc_desc", "ASC")
+        query = request.GET.get("query", None)
+
+        if budget_q_gte:
+            budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
+        if budget_q_lte:
+            budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
+
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + donor_q + ')'
+        if 'AND ()' in filter_string:
+            filter_string = filter_string[:-6]
+
+        filter_string += ' AND apo.role_id = "Funding" '
+
+        if query:
+            filter_string += 'AND apo.name LIKE "%%' + query + '%%" '
+
+        cursor = connection.cursor()
+        query = 'SELECT apo.organisation_id as organisation_id, apo.name as organisation_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+                'FROM iati_activity a '\
+                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
+                'WHERE apo.name is not null %s'\
+                'GROUP BY apo.name ' \
+                'ORDER BY %s %s ' \
+                'LIMIT %s OFFSET %s' % (filter_string, order_by, order_asc_desc, limit, offset)
+        cursor.execute(query)
+
+        activities = []
+
+        results = helper.get_fields(cursor=cursor)
+        for r in results:
+            donor = {}
+            donor['id'] = r['organisation_id']
+            donor['name'] = r['organisation_name']
+            donor['total_projects'] = r['total_projects']
+            donor['total_budget'] = r['total_budget']
+            activities.append(donor)
+
+        return_json = {}
+        return_json["objects"] = activities
+
+
+
+        query = 'SELECT apo.organisation_id as organisation_id '\
+                'FROM iati_activity a '\
+                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
+                'WHERE apo.name is not null %s'\
+                'GROUP BY apo.name ' % (filter_string)
+
+        cursor.execute(query)
+        results2 = helper.get_fields(cursor=cursor)
+
+        return_json["meta"] = {"total_count": len(results2)}
+
+
+        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+
