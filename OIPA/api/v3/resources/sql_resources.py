@@ -166,7 +166,162 @@ class ActivityFilterOptionsResource(ModelResource):
         return HttpResponse(ujson.dumps(options), mimetype='application/json')
 
 
+class ActivityFilterOptionsUnescoResource(ModelResource):
 
+    class Meta:
+        #aid_type is used as dummy
+        queryset = AidType.objects.all()
+        resource_name = 'activity-filter-options-unesco'
+        include_resource_uri = True
+        cache = NoTransformCache()
+
+
+    def get_list(self, request, **kwargs):
+
+        # check if call is cached using validator.is_cached
+        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+
+        if not 'flush' in cururl and validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+
+
+        helper = CustomCallHelper()
+        cursor = connection.cursor()
+        organisations = request.GET.get("reporting_organisation__in", None)
+
+        countries = request.GET.get("countries__in", None)
+        include_donors = request.GET.get("include_donor", None)
+        include_start_year_actual = request.GET.get("include_start_year_actual", None)
+        include_start_year_planned = request.GET.get("include_start_year_planned", None)
+        if organisations:
+            q_organisations = 'WHERE a.reporting_organisation_id = "' + organisations + '"'
+        else:
+            q_organisations = ""
+
+        cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
+                       'FROM geodata_country c '
+                       'LEFT JOIN iati_activityrecipientcountry rc on c.code = rc.country_id '
+                       'LEFT JOIN iati_activity a on rc.activity_id = a.id %s '
+                       'GROUP BY c.code' % (q_organisations))
+        results1 = helper.get_fields(cursor=cursor)
+        cursor.execute('SELECT s.code, s.name, count(s.code) as total_amount '
+                       'FROM iati_sector s '
+                       'LEFT JOIN iati_activitysector as ias on s.code = ias.sector_id '
+                       'LEFT JOIN iati_activity a on ias.activity_id = a.id '
+                       '%s '
+                       'GROUP BY s.code' % (q_organisations))
+        results2 = helper.get_fields(cursor=cursor)
+        if q_organisations:
+            q_organisations = q_organisations.replace("WHERE", "AND")
+        cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
+                       'FROM geodata_region r '
+                       'LEFT JOIN iati_activityrecipientregion rr on r.code = rr.region_id '
+                       'LEFT JOIN iati_activity a on rr.activity_id = a.id '
+                       'WHERE r.region_vocabulary_id = 1 '
+                       '%s '
+                       'GROUP BY r.code' % (q_organisations))
+        results3 = helper.get_fields(cursor=cursor)
+
+        options = {}
+        options['countries'] = {}
+        options['regions'] = {}
+        options['sectors'] = {}
+
+
+
+        for r in results1:
+
+            country_item = {}
+            country_item['name'] = r['name']
+            country_item['total'] = r['total_amount']
+            options['countries'][r['code']] = country_item
+
+        for r in results2:
+            sector_item = {}
+            sector_item['name'] = r['name']
+            sector_item['total'] = r['total_amount']
+            options['sectors'][r['code']] = sector_item
+
+        for r in results3:
+
+            region_item = {}
+            region_item['name'] = r['name']
+            region_item['total'] = r['total_amount']
+            options['regions'][r['code']] = region_item
+
+        if include_donors:
+            options['donors'] = {}
+            if countries:
+                q_countries = ' and c.country_id = "' + countries + '"'
+            else:
+                q_countries = ""
+
+            cursor.execute('SELECT o.code, o.name, c.country_id, count(o.code) as total_amount '
+                       'FROM iati_activity a '
+                        'JOIN iati_activityrecipientcountry as c on a.id = c.activity_id '
+                       'JOIN iati_activityparticipatingorganisation as po on a.id = po.activity_id '
+                       'JOIN iati_organisation as o on po.organisation_id = o.code '
+                       'WHERE 1 %s %s '
+                       'GROUP BY o.code' % (q_organisations, q_countries))
+            results4 = helper.get_fields(cursor=cursor)
+
+            for r in results4:
+
+                donor_item = {}
+                donor_item['name'] = r['name']
+                donor_item['total'] = r['total_amount']
+                options['donors'][r['code']] = donor_item
+
+        if include_start_year_actual:
+
+            options['start_actual'] = {}
+            cursor.execute('SELECT YEAR(a.start_actual) as start_year, count(YEAR(a.start_actual)) as total_amount '
+                       'FROM iati_activity a '
+                       'WHERE 1 %s '
+                       'GROUP BY YEAR(a.start_actual)' % (q_organisations))
+            results5 = helper.get_fields(cursor=cursor)
+
+            for r in results5:
+                start_actual_item = {}
+                start_actual_item['name'] = r['start_year']
+                start_actual_item['total'] = r['total_amount']
+                options['start_actual'][r['start_year']] = start_actual_item
+
+        if include_start_year_planned:
+
+            options['start_planned_years'] = {}
+            cursor.execute('SELECT YEAR(a.start_planned) as start_year, count(YEAR(a.start_planned)) as total_amount '
+                       'FROM iati_activity a '
+                       'WHERE 1 %s '
+                       'GROUP BY YEAR(a.start_planned)' % (q_organisations))
+            results5 = helper.get_fields(cursor=cursor)
+
+            for r in results5:
+                start_planned_item = {}
+                start_planned_item['name'] = r['start_year']
+                start_planned_item['total'] = r['total_amount']
+                options['start_planned_years'][r['start_year']] = start_planned_item
+
+
+        if not q_organisations:
+            cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
+                       'FROM iati_activity a '
+                       'INNER JOIN iati_organisation o on a.reporting_organisation_id = o.code '
+                       'GROUP BY a.reporting_organisation_id')
+            results4 = helper.get_fields(cursor=cursor)
+
+            options['reporting_organisations'] = {}
+
+            for r in results4:
+
+                org_item = {}
+                org_item['name'] = r['name']
+                org_item['total'] = r['total_amount']
+                options['reporting_organisations'][r['reporting_organisation_id']] = org_item
+
+        return HttpResponse(ujson.dumps(options), mimetype='application/json')
 
 
 
