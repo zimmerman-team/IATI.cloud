@@ -32,7 +32,7 @@ class RegionAdmin(admin.ModelAdmin):
 
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ['__unicode__', 'capital_city', 'region', 'un_region', 'dac_country_code', 'iso3', 'alpha3', 'fips10', 'data_source']
+    list_display = ['__unicode__', 'capital_city', 'region', 'un_region', 'unesco_region', 'dac_country_code', 'iso3', 'alpha3', 'fips10', 'data_source']
 
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
