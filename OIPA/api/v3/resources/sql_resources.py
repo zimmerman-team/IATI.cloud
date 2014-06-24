@@ -192,6 +192,24 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         organisations = request.GET.get("reporting_organisation__in", None)
 
         countries = request.GET.get("countries__in", None)
+
+        perspective = request.GET.get("perspective", None)
+
+        if perspective:
+            if perspective == 'country':
+                q_perspective = ' JOIN iati_activityrecipientcountry as c on a.id = c.activity_id '
+            elif perspective == 'region':
+                q_perspective = ' JOIN iati_activityrecipientregion as r on a.id = r.activity_id '
+            elif perspective == 'global':
+                #TODO Unesco needs to define it's global activities
+                q_perspective = ""
+            else:
+                q_perspective = ""
+        else:
+            q_perspective = ""
+
+
+
         include_donors = request.GET.get("include_donor", None)
         include_start_year_actual = request.GET.get("include_start_year_actual", None)
         include_start_year_planned = request.GET.get("include_start_year_planned", None)
@@ -200,12 +218,16 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         else:
             q_organisations = ""
 
+
+        #making query for country results
         cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
                        'FROM geodata_country c '
                        'LEFT JOIN iati_activityrecipientcountry rc on c.code = rc.country_id '
                        'LEFT JOIN iati_activity a on rc.activity_id = a.id %s '
                        'GROUP BY c.code' % (q_organisations))
         results1 = helper.get_fields(cursor=cursor)
+
+        #making query for sector results
         cursor.execute('SELECT s.code, s.name, count(s.code) as total_amount '
                        'FROM iati_sector s '
                        'LEFT JOIN iati_activitysector as ias on s.code = ias.sector_id '
@@ -213,6 +235,8 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
                        '%s '
                        'GROUP BY s.code' % (q_organisations))
         results2 = helper.get_fields(cursor=cursor)
+
+        #making query for regions
         if q_organisations:
             q_organisations = q_organisations.replace("WHERE", "AND")
         cursor.execute('SELECT r.code, r.name, count(r.code) as total_amount '
@@ -230,27 +254,27 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         options['sectors'] = {}
 
 
-
+        #country results
         for r in results1:
 
             country_item = {}
             country_item['name'] = r['name']
             country_item['total'] = r['total_amount']
             options['countries'][r['code']] = country_item
-
+        #sector results
         for r in results2:
             sector_item = {}
             sector_item['name'] = r['name']
             sector_item['total'] = r['total_amount']
             options['sectors'][r['code']] = sector_item
-
+        #region results
         for r in results3:
 
             region_item = {}
             region_item['name'] = r['name']
             region_item['total'] = r['total_amount']
             options['regions'][r['code']] = region_item
-
+        #donor results
         if include_donors:
             options['donors'] = {}
             if countries:
@@ -258,13 +282,14 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
             else:
                 q_countries = ""
 
-            cursor.execute('SELECT o.code, o.name, c.country_id, count(o.code) as total_amount '
+            cursor.execute('SELECT o.code, o.name, count(o.code) as total_amount '
                        'FROM iati_activity a '
-                        'JOIN iati_activityrecipientcountry as c on a.id = c.activity_id '
                        'JOIN iati_activityparticipatingorganisation as po on a.id = po.activity_id '
                        'JOIN iati_organisation as o on po.organisation_id = o.code '
+                       ' %s '
+
                        'WHERE 1 %s %s '
-                       'GROUP BY o.code' % (q_organisations, q_countries))
+                       'GROUP BY o.code' % (q_perspective, q_organisations, q_countries))
             results4 = helper.get_fields(cursor=cursor)
 
             for r in results4:
@@ -279,8 +304,9 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
             options['start_actual'] = {}
             cursor.execute('SELECT YEAR(a.start_actual) as start_year, count(YEAR(a.start_actual)) as total_amount '
                        'FROM iati_activity a '
+                        ' %s '
                        'WHERE 1 %s '
-                       'GROUP BY YEAR(a.start_actual)' % (q_organisations))
+                       'GROUP BY YEAR(a.start_actual)' % (q_perspective, q_organisations))
             results5 = helper.get_fields(cursor=cursor)
 
             for r in results5:
@@ -294,8 +320,9 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
             options['start_planned_years'] = {}
             cursor.execute('SELECT YEAR(a.start_planned) as start_year, count(YEAR(a.start_planned)) as total_amount '
                        'FROM iati_activity a '
+                        ' %s '
                        'WHERE 1 %s '
-                       'GROUP BY YEAR(a.start_planned)' % (q_organisations))
+                       'GROUP BY YEAR(a.start_planned)' % (q_perspective, q_organisations))
             results5 = helper.get_fields(cursor=cursor)
 
             for r in results5:
@@ -308,8 +335,9 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         if not q_organisations:
             cursor.execute('SELECT a.reporting_organisation_id, o.name, count(a.reporting_organisation_id) as total_amount '
                        'FROM iati_activity a '
+                        ' %s '
                        'INNER JOIN iati_organisation o on a.reporting_organisation_id = o.code '
-                       'GROUP BY a.reporting_organisation_id')
+                       'GROUP BY a.reporting_organisation_id' % q_perspective)
             results4 = helper.get_fields(cursor=cursor)
 
             options['reporting_organisations'] = {}
