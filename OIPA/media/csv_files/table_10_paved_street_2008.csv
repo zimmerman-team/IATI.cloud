@@ -1,0 +1,15 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Burkina Faso;Ouagadougou ;;11;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Cameroon;Douala ;;25;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Democratic Republic  Congo ;Kinshasa ;;10;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Ethiopia;Addis Ababa ;;;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Ghana;Accra ;;50;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Guinea;Conakry ;;32;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Ivory Coast;Abidjan ;;59;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Kenya;Nairobi ;;;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Mali;Bamako ;;24;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Nigeria;Lagos ;;;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Rwanda;Kigali ;;12;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Senegal;Dakar ;;;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Tanzania;Dar es Salaam ;;39;Table 10:  Length of Street Network and Paved Streets
+2012;;paved_street;Paved streets as share of all streets (%);p;;;Uganda;Kampala ;;74;Table 10:  Length of Street Network and Paved Streets
