@@ -93,7 +93,7 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
 
                 #storing the translation of the indicator
                 TranslationModel.objects.get_or_create(key=indicator_name_en, language='en', translation=indicator_name_en)
-                TranslationModel.objects.get_or_create(key=indicator_name_fr, language='fr', translation=indicator_name_fr)
+                TranslationModel.objects.get_or_create(key=indicator_name_en, language='fr', translation=indicator_name_fr)
 
                 if website_en:
                     indicator_data_from_db.website = website_en
@@ -101,7 +101,7 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
 
                     #we need to store the translations as well
                     TranslationModel.objects.get_or_create(key=website_en, language='en', translation=website_en)
-                    TranslationModel.objects.get_or_create(key=website_fr, language='fr', translation=website_fr)
+                    TranslationModel.objects.get_or_create(key=website_en, language='fr', translation=website_fr)
 
 
                 total_items_saved += 1

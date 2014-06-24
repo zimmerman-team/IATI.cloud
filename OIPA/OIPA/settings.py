@@ -184,6 +184,9 @@ SUIT_CONFIG = {
         {'app': 'geodata', 'label': 'Geo data', 'icon':'icon-globe'},
         {'app': 'indicator', 'label': 'Indicators', 'icon':'icon-signal'},
 
+        {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon':'icon-signal'},
+
+
         {'app': 'cache', 'label': 'API call cache', 'icon':'icon-hdd'},
 
         {'label': 'Task queue', 'url': ( '/admin/task-queue/'), 'icon':'icon-tasks', 'models': [
