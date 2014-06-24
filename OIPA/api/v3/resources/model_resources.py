@@ -2,6 +2,16 @@ from tastypie.serializers import Serializer
 from indicator.models import *
 from api.v3.resources.helper_resources import *
 
+
+
+class RegionResource(ModelResource):
+
+    class Meta:
+        queryset = Region.objects.all()
+        resource_name = 'regions'
+        include_resource_uri = False
+        serializer = Serializer(formats=['xml', 'json'])
+
 class CityResource(ModelResource):
 
     class Meta:
@@ -13,9 +23,9 @@ class CityResource(ModelResource):
             'id': ['exact'],
         }
 
-
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
+    unesco_region = fields.ForeignKey(RegionResource, 'unesco_region', full=True, null=True)
 
     class Meta:
         queryset = Country.objects.all()
@@ -32,13 +42,7 @@ class CountryResource(ModelResource):
         return bundle
 
 
-class RegionResource(ModelResource):
 
-    class Meta:
-        queryset = Region.objects.all()
-        resource_name = 'regions'
-        include_resource_uri = False
-        serializer = Serializer(formats=['xml', 'json'])
 
 
 class SectorResource(ModelResource):
