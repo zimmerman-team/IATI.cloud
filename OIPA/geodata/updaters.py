@@ -4,6 +4,8 @@ import os
 import os.path
 from django.contrib.gis.geos import fromstr
 import sys
+import xml.etree.cElementTree as etree
+
 
 class CountryUpdater():
 
@@ -185,61 +187,100 @@ class RegionUpdater():
 
 
     def update_unesco_regions(self):
+        '''
+        This code will loop over the XML unesco file ("Country_list_unesco.xml")
 
+        It will try to find a unesco region and relate it to a country
 
-        # TO DO
-
-        # read countries from country list XML
-
-        # add region to DB if new
-
-        # set the country region in the XML as country.unesco_region
-
-
-
-
-
-
-        # old code (only adds unesco regions, can be removed when above functionality is ready)
+        '''
 
         from geodata.models import Region
         import ujson
         import os
-        import os.path
         from iati.models import RegionVocabulary
 
+        #find the base path of the files
         base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/data_backup/unesco_regions.json"
 
+        #location of the unesco regions
+        location = base + "/data_backup/unesco_regions.json"
         json_data = open(location)
         unesco_regions = ujson.load(json_data)
 
-        for cr in unesco_regions:
+        #parsing the country XML file
+        xmlDoc = etree.parse(base + "/data_backup/Country_list_unesco.xml")
 
-            try:
-                code = cr
-                latitude = unesco_regions[cr]['latitude']
-                longitude = unesco_regions[cr]['longitude']
-                name = unesco_regions[cr]['name']
-                print cr
+        #a tracker to see how many countries the XML file contains
+        counter_countries = 0
 
-                #if Region.objects.filter(code=code).exists():
-                #    the_region = Region.objects.get(code=code)
-                #    the_region.name = name
-                #else:
-                #    if RegionVocabulary.objects.filter(name="UNESCO").exists():
-                #        the_region_voc = RegionVocabulary.objects.get(name="UNESCO")
-                #    else:
-                #        the_region_voc = RegionVocabulary(code=999, name="UNESCO")
-                #        the_region_voc.save()
-                #    point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
-                #    center_location = fromstr(point_loc_str, srid=4326)
-                #    the_region = Region(code=code, name=name, region_vocabulary=the_region_voc, parental_region=None, center_longlat=center_location)
-                #the_region.save()
+        #a tracker to see how many countries are found with a detected region
+        counter_region_found_for_country = 0
 
-            except Exception as e:
-                print "error in update_country_regions" + str(type)
-                print e.args
+
+
+        #loop over the countries in the XML file
+        for indicator in xmlDoc.iter('Country'):
+            #count total countries
+            counter_countries += 1
+
+            #get iso country from XML
+            iso2_xml =  indicator.get('countryid').rstrip()
+            #get region text
+            region_text_xml = indicator[18].getchildren()[0].text
+
+
+            #keeping track of unfind regions
+            counter_unfind_region = 0
+
+            #loop over the unesco regions json file #TODO create a function in a dictionary to increase performance
+            for cr in unesco_regions:
+                try:
+                    #getting the unesco region properties from the json file
+                    code = cr
+                    latitude = unesco_regions[cr]['latitude']
+                    longitude = unesco_regions[cr]['longitude']
+                    name = unesco_regions[cr]['name']
+                    if counter_unfind_region == 3:
+                        print region_text_xml
+                        counter_unfind_region = 0
+                    #try to match the region of the XML file with the json Unesco region file
+                    if name.lower() == region_text_xml.lower():
+                        counter_unfind_region = 0
+                        counter_region_found_for_country += 1
+                        #trying to get the region form the database
+                        if Region.objects.filter(code=code).exists():
+                            the_region = Region.objects.get(code=code)
+                            the_region.name = name
+
+                        #create a region
+                        else:
+                            #region has not been found, we need to create a region vocabulary for Unesco and create a region unless it exists
+                            if RegionVocabulary.objects.filter(name="UNESCO").exists():
+                                the_region_voc = RegionVocabulary.objects.get(name="UNESCO")
+                            else:
+                                the_region_voc = RegionVocabulary(code=999, name="UNESCO")
+                                the_region_voc.save()
+                            point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
+                            center_location = fromstr(point_loc_str, srid=4326)
+                            the_region = Region(code=code, name=name, region_vocabulary=the_region_voc, parental_region=None, center_longlat=center_location)
+                            the_region.save()
+
+
+                        #now we have the correct region and are we able to relate this region to the specific country
+                        #find country
+                        country = Country.objects.get(code=iso2_xml)
+                        #add the unesco region
+                        country.unesco_region = the_region
+                        country.save()
+                    else:
+                        counter_unfind_region += 1
+
+                except Exception as e:
+                    print "error in update_country_regions" + str(type)
+                    print e.args
+
+
+        print "Total countries found: %s, Total regions detected: %s" % (counter_countries, counter_region_found_for_country)
         json_data.close()
 
 
