@@ -14,6 +14,7 @@ from api.v2 import views as old_views
 from api.v3 import views
 
 from api.v2.urls import v2_api;
+from api.v3.resources.unesco_indicator_resources import UnescoIndicatorResource
 
 v3_api = Api(api_name='v3')
 v3_api.register(OrganisationResource())
@@ -46,6 +47,9 @@ v3_api.register(IndicatorDataResource())
 v3_api.register(RegionActivitiesResource())
 v3_api.register(DonorActivitiesResource())
 v3_api.register(SectorActivitiesResource())
+v3_api.register(UnescoIndicatorResource())
+
+
 
 def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
