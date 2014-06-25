@@ -7,7 +7,7 @@ class OnlyCountryResource(ModelResource):
     class Meta:
         queryset = Country.objects.all().order_by('name')
         include_resource_uri = False
-        excludes = ['center_longlat', 'dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon', 'alpha3', 'fips10', 'numerical_code_un']
+        excludes = ['dac_country_code', 'dac_region_code', 'dac_region_name', 'iso3', 'language', 'polygon', 'alpha3', 'fips10', 'numerical_code_un']
         resource_name = 'country'
         filtering = {
             'code' : 'gte',
@@ -18,7 +18,6 @@ class OnlyRegionResource(ModelResource):
     class Meta:
         queryset = Region.objects.all().distinct().order_by('code')
         resource_name = 'region'
-        excludes = ['center_longlat']
         include_resource_uri = False
         filtering = {
             'code' : 'gte',
