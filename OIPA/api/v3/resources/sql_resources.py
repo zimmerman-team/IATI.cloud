@@ -626,7 +626,7 @@ class RegionActivitiesResource(ModelResource):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
 
         helper = CustomCallHelper()
-        country_q = helper.get_and_query(request, 'countries__in', 'c.code')
+        # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
         budget_q_gte = request.GET.get('total_budget__gte', None)
         budget_q_lte = request.GET.get('total_budget__lte', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
@@ -647,14 +647,14 @@ class RegionActivitiesResource(ModelResource):
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + vocabulary_q + ')'
+        filter_string = ' AND (' + organisation_q + region_q + sector_q + budget_q + vocabulary_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
 
-        filter_country = ''
-        if country_q:
-            filter_country = 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id LEFT JOIN geodata_country c ON rc.region_id = c.code '
+        # filter_country = ''
+        # if country_q:
+        #     filter_country = 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id LEFT JOIN geodata_country c ON rc.region_id = c.code '
 
         filter_sector = ''
         if sector_q:
@@ -672,11 +672,11 @@ class RegionActivitiesResource(ModelResource):
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
                 'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
-                '%s %s %s'\
+                '%s %s'\
                 'WHERE r.code is not null %s'\
                 'GROUP BY r.code ' \
                 'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_country, filter_sector, filter_vocabulary, filter_string, order_by, order_asc_desc, limit, offset)
+                'LIMIT %s OFFSET %s' % (filter_sector, filter_vocabulary, filter_string, order_by, order_asc_desc, limit, offset)
 
         cursor.execute(query)
 
@@ -714,9 +714,9 @@ class RegionActivitiesResource(ModelResource):
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
                 'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
-                '%s %s %s'\
+                '%s %s'\
                 'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' % (filter_country, filter_sector, filter_vocabulary, filter_string)
+                'GROUP BY r.code ' % (filter_sector, filter_vocabulary, filter_string)
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
@@ -919,4 +919,8 @@ class DonorActivitiesResource(ModelResource):
 
 
         return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+
+
+
+
 
