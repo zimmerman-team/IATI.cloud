@@ -315,19 +315,19 @@ class IndicatorDataResource(ModelResource):
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         year_q = helper.get_and_query(request, 'years__in', 'id.year')
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
+        selection_type_q = helper.get_and_query(request, 'selection_type__in', 'id.selection_type')
 
         if not indicator_q:
             return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
 
 
-        filter_string = 'AND (' + city_q + country_q + region_q + year_q + indicator_q + ')'
+        filter_string = 'AND (' + city_q + country_q + region_q + year_q + indicator_q + selection_type_q + ')'
 
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, ci.name as city_name, '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, id.selection_type, ci.name as city_name, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
                        'FROM indicator_indicatordata id '
@@ -343,28 +343,14 @@ class IndicatorDataResource(ModelResource):
         for row in cursor.fetchall()
         ]
 
-        indicator_q = indicator_q.replace(" ) AND (", "")
-        print ('SELECT max(value) as max_value FROM indicator_indicatordata WHERE %s GROUP BY indicator_indicatordata.id' % indicator_q)
-
-        cursor_max = connection.cursor()
-        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
-        desc = cursor_max.description
-        max_results = [
-        dict(zip([col[0] for col in desc], row))
-        for row in cursor_max.fetchall()
-        ]
-
-
-
         # country indicator data
-        filter_string = 'AND (' + country_q + region_q + year_q + indicator_q + ')'
+        filter_string = 'AND (' + country_q + region_q + year_q + indicator_q + selection_type_q + ')'
 
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data,  '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.type_data,  '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc '
                        'FROM indicator_indicatordata id '
@@ -377,6 +363,17 @@ class IndicatorDataResource(ModelResource):
         country_results = [
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
+        ]
+
+
+        indicator_q = indicator_q.replace(" ) AND (", "")
+
+        cursor_max = connection.cursor()
+        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
+        desc = cursor_max.description
+        max_results = [
+        dict(zip([col[0] for col in desc], row))
+        for row in cursor_max.fetchall()
         ]
 
         # region indicator data
@@ -405,7 +402,7 @@ class IndicatorDataResource(ModelResource):
                     for mr in max_results:
                         if mr['indicator_id']:
                             max_value = mr['max_value']
-                    geolocs[r['indicator_id']] = {'indicator_friendly' : r['friendly_label'], 'type_data' : r['type_data'] , 'indicator' : r['indicator_id'], 'max_value' : max_value, 'cities' : {}, 'countries' : {}}
+                    geolocs[r['indicator_id']] = {'indicator_friendly' : r['friendly_label'], 'type_data' : r['type_data'], 'indicator' : r['indicator_id'], 'selection_type' : r['selection_type'], 'max_value' : max_value, 'cities' : {}, 'countries' : {}}
 
 
                 geolocs[r['indicator_id']]['cities'][r['city_id']] = {'name' : r['city_name'], 'id' : r['city_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
@@ -435,14 +432,12 @@ class IndicatorDataResource(ModelResource):
                     for mr in max_results:
                         if mr['indicator_id']:
                             max_value = mr['max_value']
-                    geolocs[c['indicator_id']] = {'indicator_friendly' : c['friendly_label'], 'type_data' : c['type_data'] , 'indicator' : c['indicator_id'], 'max_value' : max_value, 'cities' : {}, 'countries' : {}}
+                    geolocs[c['indicator_id']] = {'indicator_friendly' : c['friendly_label'], 'type_data' : c['type_data'] , 'indicator' : c['indicator_id'], 'selection_type' : c['selection_type'], 'max_value' : max_value, 'cities' : {}, 'countries' : {}}
 
 
                 geolocs[c['indicator_id']]['countries'][c['country_id']] = {'name' : c['country_name'], 'id' : c['country_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
 
             geolocs[c['indicator_id']]['countries'][c['country_id']]['years'][c['year']] = c['value']
-
-
 
 
 
@@ -674,21 +669,21 @@ class IndicatorFilterOptionsResource(ModelResource):
         country_q = helper.get_and_query(request, 'countries__in', 'country.code')
         region_q = helper.get_and_query(request, 'regions__in', 'region.code')
         indicator_q = helper.get_and_query(request, 'indicators__in', 'i.indicator_id')
-    
+        category_q = helper.get_and_query(request, 'categories__in', 'ind.category')
 
-        filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + ')'
+        filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + category_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
 
         # city filters
-        cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label, city.id as city_id, city.name as city_name, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
+        cursor.execute('SELECT DISTINCT i.indicator_id, i.selection_type ,ind.friendly_label, ind.category as indicator_category, city.id as city_id, city.name as city_name, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                        'FROM indicator_indicatordata i '
                        'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'JOIN geodata_city city ON i.city_id=city.id '
                        'LEFT OUTER JOIN geodata_country country on city.country_id = country.code '
                        'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
-                       'WHERE 1 %s' % (filter_string))
+                       'WHERE 1 %s ' % (filter_string))
 
         desc = cursor.description
         city_results = [
@@ -697,16 +692,16 @@ class IndicatorFilterOptionsResource(ModelResource):
         ]
 
         # country filters
-        filter_string = ' AND (' + country_q + region_q + indicator_q + ')'
+        filter_string = ' AND (' + country_q + region_q + indicator_q + category_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT i.indicator_id, ind.friendly_label, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
+        cursor.execute('SELECT DISTINCT i.indicator_id, i.selection_type, ind.friendly_label, ind.category as indicator_category, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                        'FROM indicator_indicatordata i '
                        'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
                        'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
-                       'WHERE 1 %s' % (filter_string))
+                       'WHERE 1 %s ' % (filter_string))
 
         desc = cursor.description
         country_results = [
@@ -715,15 +710,15 @@ class IndicatorFilterOptionsResource(ModelResource):
         ]
 
         # region filters
-        filter_string = ' AND (' + region_q + indicator_q + ')'
+        filter_string = ' AND (' + region_q + indicator_q + category_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT i.indicator_id ,ind.friendly_label,region.code as region_id, region.name as region_name '
+        cursor.execute('SELECT DISTINCT i.indicator_id, i.selection_type ,ind.friendly_label, ind.category as indicator_category, region.code as region_id, region.name as region_name '
                        'FROM indicator_indicatordata i '
                        'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
                        'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
-                       'WHERE 1 %s' % (filter_string))
+                       'WHERE 1 %s ' % (filter_string))
 
         desc = cursor.description
         region_results = [
@@ -736,6 +731,7 @@ class IndicatorFilterOptionsResource(ModelResource):
         cities = {}
         indicators = {}
         jsondata = {}
+
 
         for r in city_results:
 
@@ -754,10 +750,12 @@ class IndicatorFilterOptionsResource(ModelResource):
                 city[r['city_id']] = r['city_name']
                 cities.update(city)
 
-            indicator = {}
             if r['indicator_id']:
-                indicator[r['indicator_id']] = r['friendly_label']
-                indicators.update(indicator)
+                if not r['indicator_id'] in indicators:
+                    indicators[r['indicator_id']] = {"name": r['friendly_label'], "category": r['indicator_category'], "selection_types": []}
+                if r['selection_type'] and r['selection_type'] not in indicators[r['indicator_id']]["selection_types"]:
+                    indicators[r['indicator_id']]["selection_types"].append(r['selection_type'])
+
 
         for r in country_results:
 
@@ -771,10 +769,11 @@ class IndicatorFilterOptionsResource(ModelResource):
                 country[r['country_id']] = r['country_name']
                 countries.update(country)
 
-            indicator = {}
             if r['indicator_id']:
-                indicator[r['indicator_id']] = r['friendly_label']
-                indicators.update(indicator)
+                if not r['indicator_id'] in indicators not in indicators[r['indicator_id']]["selection_types"]:
+                    indicators[r['indicator_id']] = {"name": r['friendly_label'], "category": r['indicator_category'], "selection_types": []}
+                if r['selection_type'] and r['selection_type'] not in indicators[r['indicator_id']]["selection_types"]:
+                    indicators[r['indicator_id']]["selection_types"].append(r['selection_type'])
 
         for r in region_results:
 
@@ -783,10 +782,11 @@ class IndicatorFilterOptionsResource(ModelResource):
                 region[r['region_id']] = r['region_name']
                 regions.update(region)
 
-            indicator = {}
             if r['indicator_id']:
-                indicator[r['indicator_id']] = r['friendly_label']
-                indicators.update(indicator)
+                if not r['indicator_id'] in indicators:
+                    indicators[r['indicator_id']] = {"name": r['friendly_label'], "category": r['indicator_category'], "selection_types": []}
+                if r['selection_type'] and r['selection_type'] not in indicators[r['indicator_id']]["selection_types"]:
+                    indicators[r['indicator_id']]["selection_types"].append(r['selection_type'])
 
         jsondata['regions'] = regions
         jsondata['countries'] = countries

@@ -1,33 +1,33 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United Kingdom;London;;0,898;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Japan;Tokyo ;;0,931;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Finland;Helsinki ;;0,905;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Netherlands;Amsterdam ;;0,872;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;France;Paris ;;0,925;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Canada;Toronto;;0,907;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Spain;Barcelona ;;0,912;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Greece;Athens ;;0,885;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Denmark;Copenhagen ;;0,871;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Belgium;Brussels ;;0,864;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United States of America;New York;;0,866;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Mexico;Mexico City;;0,813;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Newzealand;Auckland ;;0,889;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;China;Beijing ;;0,836;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Russia;Moscow;;0,813;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Brazil;Sao Paulo;;0,803;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Egypt;Cairo;;0,743;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Thailand;Bangkok ;;0,747;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Colombia;Medellin ;;0,718;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Morocco;Casablanca;;0,513;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;South Africa;Cape Town;;0,645;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Guatemala;Guatemala City;;0,556;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Senegal;Dakar ;;0,384;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Armenia;Yerevan ;;0,850;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Bolivia;La Paz;;0,621;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Kenya;Nairobi ;;0,559;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United Republic of Tanzania;Dar-es-salam;;0,371;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Ghana;Accra ;;0,592;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Bangladesh;Dhaka;;0,539;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;South Africa;Johannesburg;;0,645;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Ethiopia;Addis Ababa ;;0,534;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Nigeria;Lagos;;0,634;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United Kingdom;London;;898;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Japan;Tokyo ;;931;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Finland;Helsinki ;;905;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Netherlands;Amsterdam ;;872;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;France;Paris ;;925;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Canada;Toronto;;907;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Spain;Barcelona ;;912;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Greece;Athens ;;885;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Denmark;Copenhagen ;;871;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Belgium;Brussels ;;864;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United States of America;New York;;866;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Mexico;Mexico City;;813;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Newzealand;Auckland ;;889;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;China;Beijing ;;836;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Russia;Moscow;;813;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Brazil;Sao Paulo;;803;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Egypt;Cairo;;743;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Thailand;Bangkok ;;747;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Colombia;Medellin ;;718;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Morocco;Casablanca;;513;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;South Africa;Cape Town;;645;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Guatemala;Guatemala City;;556;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Senegal;Dakar ;;384;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Armenia;Yerevan ;;850;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Bolivia;La Paz;;621;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Kenya;Nairobi ;;559;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;United Republic of Tanzania;Dar-es-salam;;371;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Ghana;Accra ;;592;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Bangladesh;Dhaka;;539;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;South Africa;Johannesburg;;645;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Ethiopia;Addis Ababa ;;534;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_quality_of_live_index;Quality of Life Index (QI);index;;;Nigeria;Lagos;;634;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity

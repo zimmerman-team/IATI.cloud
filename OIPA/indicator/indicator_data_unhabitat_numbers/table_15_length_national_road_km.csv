@@ -1,38 +1,38 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
-2009;;total_length_road;Total length of road network;km;;;Burkina Faso;;;92.495;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Central African Republic;;;24307;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Egypt;;;100.472;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Ethiopia;;;44.359;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Ghana;;;109.515;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Kenya;;;61.945;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Morocco;;;58.216;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Nigeria;;;193.200;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Rwanda;;;14.008;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Senegal;;;14.825;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;United Republic of Tanzania;;;103.706;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Armenia;;;7.705;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Bangladesh;;;239.226;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;China;;;3.860.823;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;China, Hong Kong SAR;;;2.050;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;India;;;4.109.592;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Indonesia;;;476.337;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Japan;;;1.207.867;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Malaysia;;;98.722;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Philippines;;;200.037;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Singapore;;;3.356;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Thailand;;;180.053;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Belgium;;;153.872;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Denmark;;;73.330;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Finland;;;78.925;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;France;;;951.260;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Greece;;;116.929;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Netherlands;;;136.827;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Russian Federation;;;982.000;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Spain;;;667.064;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;United Kingdom;;;419.665;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Brazil;;;1.751.868;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Colombia;;;129.485;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Guyana;;;;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;Mexico;;;366.807;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;United States of America;;;6.545.839;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
-2009;;total_length_road;Total length of road network;km;;;New Zealand;;;94.301;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2009;;total_length_road;Total length of road network;km;;;Burkina Faso;;;92.495;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Central African Republic;;;24307;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Egypt;;;100.472;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Ethiopia;;;44.359;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Ghana;;;109.515;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Kenya;;;61.945;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Morocco;;;58.216;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Nigeria;;;193.2;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Rwanda;;;14.008;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Senegal;;;14.825;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;United Republic of Tanzania;;;103.706;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Armenia;;;7.705;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Bangladesh;;;239.226;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;China;;;3.860.823;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;China, Hong Kong SAR;;;2.05;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;India;;;4.109.592;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Indonesia;;;476.337;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Japan;;;1.207.867;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Malaysia;;;98.722;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Philippines;;;200.037;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Singapore;;;3.356;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Thailand;;;180.053;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Belgium;;;153.872;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Denmark;;;73.33;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Finland;;;78.925;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;France;;;951.26;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Greece;;;116.929;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Netherlands;;;136.827;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Russian Federation;;;982;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Spain;;;667.064;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;United Kingdom;;;419.665;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Brazil;;;1.751.868;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Colombia;;;129.485;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Guyana;;;;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;Mexico;;;366.807;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;United States of America;;;6.545.839;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+2009;;total_length_road;Total length of road network;km;;;New Zealand;;;94.301;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces

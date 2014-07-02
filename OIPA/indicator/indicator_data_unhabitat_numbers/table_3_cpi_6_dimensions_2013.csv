@@ -1,33 +1,33 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United Kingdom;London;;0,919;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Japan;Tokyo ;;0,918;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Finland;Helsinki ;;0,913;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Netherlands;Amsterdam ;;0,910;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;France;Paris ;;0,909;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Canada;Toronto;;0,905;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Spain;Barcelona ;;0,884;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Greece;Athens ;;0,879;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Denmark;Copenhagen ;;0,875;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Belgium;Brussels ;;0,859;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United States of America;New York;;0,845;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Mexico;Mexico City;;0,788;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Newzealand;Auckland ;;0,777;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;China;Beijing ;;0,760;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Russia;Moscow;;0,722;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Brazil;Sao Paulo;;0,721;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Egypt;Cairo;;0,707;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Thailand;Bangkok ;;0,682;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Colombia;Medellin ;;0,669;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Morocco;Casablanca;;0,631;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;South Africa;Cape Town;;0,625;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Guatemala;Guatemala City;;0,621;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Senegal;Dakar ;;0,590;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Armenia;Yerevan ;;0,590;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Bolivia;La Paz;;0,574;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Kenya;Nairobi ;;0,514;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United Republic of Tanzania;Dar-es-salam;;0,501;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Ghana;Accra ;;0,501;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Bangladesh;Dhaka;;0,497;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;South Africa;Johannesburg;;0,493;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Ethiopia;Addis Ababa ;;0,488;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
-2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Nigeria;Lagos;;0,488;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI)
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United Kingdom;London;;919;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Japan;Tokyo ;;918;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Finland;Helsinki ;;913;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Netherlands;Amsterdam ;;910;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;France;Paris ;;909;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Canada;Toronto;;905;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Spain;Barcelona ;;884;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Greece;Athens ;;879;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Denmark;Copenhagen ;;875;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Belgium;Brussels ;;859;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United States of America;New York;;845;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Mexico;Mexico City;;788;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Newzealand;Auckland ;;777;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;China;Beijing ;;760;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Russia;Moscow;;722;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Brazil;Sao Paulo;;721;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Egypt;Cairo;;707;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Thailand;Bangkok ;;682;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Colombia;Medellin ;;669;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Morocco;Casablanca;;631;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;South Africa;Cape Town;;625;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Guatemala;Guatemala City;;621;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Senegal;Dakar ;;590;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Armenia;Yerevan ;;590;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Bolivia;La Paz;;574;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Kenya;Nairobi ;;514;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;United Republic of Tanzania;Dar-es-salam;;501;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Ghana;Accra ;;501;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Bangladesh;Dhaka;;497;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;South Africa;Johannesburg;;493;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Ethiopia;Addis Ababa ;;488;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_6_dimensions;City Prosperity Index 6 dimensions;index;;;Nigeria;Lagos;;488;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
