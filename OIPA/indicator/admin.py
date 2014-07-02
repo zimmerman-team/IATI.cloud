@@ -127,6 +127,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
             indicator_id_csv = line.get('indicator_id')
             year_csv = line.get('year')
             type_data_csv = line.get('type_data')
+            category_csv = line.get('category')
 
             #here we are checking if this indicator already exists, or if we have to create a new one
             if line_counter == 0:
@@ -139,6 +140,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 indicator_from_db.type_data = type_data_csv
                 indicator_from_db.selection_type = selection_type_csv
                 indicator_from_db.deprivation_type = deprivation_type_csv
+                indicator_from_db.category = category_csv
                 indicator_from_db.save()
 
             #getting city from our database

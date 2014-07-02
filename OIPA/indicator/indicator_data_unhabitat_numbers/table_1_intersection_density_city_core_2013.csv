@@ -1,61 +1,61 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
-2013;;intersection_density;Intersection density km2;km2;city_core;;Australia;Melbourne;;184,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Australia;Sydney;;179,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Belgium;Brussels ;;141,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Calgary;;161,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Montreal;;214,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Toronto;;254,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Denmark;Copenhagen ;;130;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Finland;Helsinki ;;276,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;France;Paris ;;242,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Greece;Athens ;;255,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Netherlands;Amsterdam ;;314,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Newzealand;Auckland ;;72,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Russia;Moscow;;86,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Russia;Saint Petersburg ;;113,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Spain;Barcelona ;;181,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United Kingdom;London;;224,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Los Angeles;;163,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;New York ;;173,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Phoenix;;132,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Washington, D.C.;;179,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Armenia;Yerevan ;;18;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Bangladesh;Dhaka;;10,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Bolivia;La Paz;;179,8;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Brazil;Brasilia ;;81;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Brazil;Sao Paulo;;94,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Burkina Faso;Ouagadougou ;;87;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Central African Republic;Bangui ;;14,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;China;Beijing ;;104,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;China, Hong Kong SAR;Hong Kong ;;382,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Colombia;Bogota;;106,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Colombia;Medellin ;;111,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Egypt;Alexandria;;194,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Egypt;Cairo;;204,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Ethiopia;Addis Ababa ;;73,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Ghana;Accra ;;38,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Guatemala;Guatemala City;;174,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Guyana;Georgetown ;;65,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;India;Chandigarh ;;100,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;India;Kolkota ;;212,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;India;Mumbai;;81;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Indonesia;Jakarta;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Japan;Tokyo ;;323,8;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Kenya;Nairobi ;;36;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Malaysia;Kuala LumpurÊ;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Mexico;Guadalajara ;;133,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Mexico;Mexico City;;138,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Morocco;Casablanca;;112,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Nigeria;Abuja ;;40,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Nigeria;Lagos;;82,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Philippines;Manila;;155;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Rwanda;Kigali ;;34;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Senegal;Dakar ;;159,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Singapore;Singapore ;;109,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;South Africa;Cape Town;;199,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;South Africa;Johannesburg;;139,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Thailand;Bangkok ;;76;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United Republic of Tanzania;Dar es Salaam;;34,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;United Republic of Tanzania;Dodoma;;70,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Zambia;Lusaka;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
-2013;;intersection_density;Intersection density km2;km2;city_core;;Zimbabwe;Harare;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2013;;intersection_density;Intersection density km2;km2;city_core;;Australia;Melbourne;;184,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Australia;Sydney;;179,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Belgium;Brussels ;;141,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Calgary;;161,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Montreal;;214,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Canada;Toronto;;254,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Denmark;Copenhagen ;;130;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Finland;Helsinki ;;276,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;France;Paris ;;242,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Greece;Athens ;;255,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Netherlands;Amsterdam ;;314,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Newzealand;Auckland ;;72,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Russia;Moscow;;86,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Russia;Saint Petersburg ;;113,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Spain;Barcelona ;;181,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United Kingdom;London;;224,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Los Angeles;;163,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;New York ;;173,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Phoenix;;132,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United States of America;Washington, D.C.;;179,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Armenia;Yerevan ;;18;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Bangladesh;Dhaka;;10,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Bolivia;La Paz;;179,8;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Brazil;Brasilia ;;81;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Brazil;Sao Paulo;;94,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Burkina Faso;Ouagadougou ;;87;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Central African Republic;Bangui ;;14,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;China;Beijing ;;104,7;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;China, Hong Kong SAR;Hong Kong ;;382,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Colombia;Bogota;;106,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Colombia;Medellin ;;111,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Egypt;Alexandria;;194,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Egypt;Cairo;;204,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Ethiopia;Addis Ababa ;;73,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Ghana;Accra ;;38,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Guatemala;Guatemala City;;174,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Guyana;Georgetown ;;65,5;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;India;Chandigarh ;;100,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;India;Kolkota ;;212,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;India;Mumbai;;81;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Indonesia;Jakarta;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Japan;Tokyo ;;323,8;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Kenya;Nairobi ;;36;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Malaysia;Kuala Lumpurï¿½;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Mexico;Guadalajara ;;133,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Mexico;Mexico City;;138,9;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Morocco;Casablanca;;112,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Nigeria;Abuja ;;40,1;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Nigeria;Lagos;;82,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Philippines;Manila;;155;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Rwanda;Kigali ;;34;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Senegal;Dakar ;;159,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Singapore;Singapore ;;109,4;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;South Africa;Cape Town;;199,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;South Africa;Johannesburg;;139,6;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Thailand;Bangkok ;;76;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United Republic of Tanzania;Dar es Salaam;;34,3;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;United Republic of Tanzania;Dodoma;;70,2;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Zambia;Lusaka;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces
+2013;;intersection_density;Intersection density km2;km2;city_core;;Zimbabwe;Harare;;;Table 1: Proportion of Land Allocated to Street, Street Density and Intersection Density;Public spaces

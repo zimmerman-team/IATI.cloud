@@ -674,6 +674,7 @@ class IndicatorFilterOptionsResource(ModelResource):
         country_q = helper.get_and_query(request, 'countries__in', 'country.code')
         region_q = helper.get_and_query(request, 'regions__in', 'region.code')
         indicator_q = helper.get_and_query(request, 'indicators__in', 'i.indicator_id')
+    
 
         filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + ')'
         if 'AND ()' in filter_string:

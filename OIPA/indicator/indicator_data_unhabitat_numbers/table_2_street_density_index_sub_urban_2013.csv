@@ -1,61 +1,61 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description
-2013;;street_density_index;Street density index;index;sub_urban;;Australia;Melbourne;;0,372;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Australia;Sydney;;0,359;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Belgium;Brussels ;;0,368;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Canada;Calgary;;0,248;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Canada;Montreal;;0,441;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Canada;Toronto;;0,461;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Denmark;Copenhagen ;;0,223;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Finland;Helsinki ;;0,426;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;France;Paris ;;0,38;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Greece;Athens ;;0,418;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Netherlands;Amsterdam ;;0,367;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Newzealand;Auckland ;;0,235;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Russia;Moscow;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Russia;Saint Petersburg ;;0,218;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Spain;Barcelona ;;0,313;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United Kingdom;London;;0,434;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Los Angeles;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United States of America;New York ;;0,359;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Phoenix;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Washington, D.C.;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Armenia;Yerevan ;;0,021;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Bangladesh;Dhaka;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Bolivia;La Paz;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Brazil;Brasilia ;;0,195;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Brazil;Sao Paulo;;0,234;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Burkina Faso;Ouagadougou ;;0,246;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Central African Republic;Bangui ;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;China;Beijing ;;0,114;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;China, Hong Kong SAR;Hong Kong ;;0,34;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Colombia;Bogota;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Colombia;Medellin ;;0,242;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Egypt;Alexandria;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Egypt;Cairo;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Ethiopia;Addis Ababa ;;0,2;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Ghana;Accra ;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Guatemala;Guatemala City;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Guyana;Georgetown ;;0,201;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;India;Chandigarh ;;0,253;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;India;Kolkota ;;0,399;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;India;Mumbai;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Indonesia;Jakarta;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Japan;Tokyo ;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Kenya;Nairobi ;;0,055;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Malaysia;Kuala Lumpur ;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Mexico;Guadalajara ;;0,4;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Mexico;Mexico City;;0,31;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Morocco;Casablanca;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Nigeria;Abuja ;;0,133;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Nigeria;Lagos;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Philippines;Manila;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Rwanda;Kigali ;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Senegal;Dakar ;;0,084;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Singapore;Singapore ;;0,236;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;South Africa;Cape Town;;0,383;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;South Africa;Johannesburg;;0,197;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Thailand;Bangkok ;;0,148;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United Republic of Tanzania;Dar es Salaam;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;United Republic of Tanzania;Dodoma;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Zambia;;;;Table 2: Composite Street Connectivity Index 
-2013;;street_density_index;Street density index;index;sub_urban;;Zimbabwe;Harare;;;Table 2: Composite Street Connectivity Index 
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2013;;street_density_index;Street density index;index;sub_urban;;Australia;Melbourne;;372;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Australia;Sydney;;359;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Belgium;Brussels ;;368;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Canada;Calgary;;248;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Canada;Montreal;;441;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Canada;Toronto;;461;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Denmark;Copenhagen ;;223;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Finland;Helsinki ;;426;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;France;Paris ;;0,38;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Greece;Athens ;;418;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Netherlands;Amsterdam ;;367;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Newzealand;Auckland ;;235;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Russia;Moscow;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Russia;Saint Petersburg ;;218;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Spain;Barcelona ;;313;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United Kingdom;London;;434;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Los Angeles;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United States of America;New York ;;359;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Phoenix;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United States of America;Washington, D.C.;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Armenia;Yerevan ;;21;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Bangladesh;Dhaka;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Bolivia;La Paz;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Brazil;Brasilia ;;195;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Brazil;Sao Paulo;;234;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Burkina Faso;Ouagadougou ;;246;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Central African Republic;Bangui ;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;China;Beijing ;;114;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;China, Hong Kong SAR;Hong Kong ;;0,34;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Colombia;Bogota;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Colombia;Medellin ;;242;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Egypt;Alexandria;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Egypt;Cairo;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Ethiopia;Addis Ababa ;;0,2;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Ghana;Accra ;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Guatemala;Guatemala City;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Guyana;Georgetown ;;201;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;India;Chandigarh ;;253;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;India;Kolkota ;;399;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;India;Mumbai;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Indonesia;Jakarta;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Japan;Tokyo ;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Kenya;Nairobi ;;55;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Malaysia;Kuala Lumpurï¾ ;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Mexico;Guadalajara ;;0,4;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Mexico;Mexico City;;0,31;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Morocco;Casablanca;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Nigeria;Abuja ;;133;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Nigeria;Lagos;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Philippines;Manila;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Rwanda;Kigali ;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Senegal;Dakar ;;84;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Singapore;Singapore ;;236;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;South Africa;Cape Town;;383;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;South Africa;Johannesburg;;197;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Thailand;Bangkok ;;148;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United Republic of Tanzania;Dar es Salaam;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;United Republic of Tanzania;Dodoma;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Zambia;;;;Table 2: Composite Street Connectivity Index ;Public spaces
+2013;;street_density_index;Street density index;index;sub_urban;;Zimbabwe;Harare;;;Table 2: Composite Street Connectivity Index ;Public spaces
