@@ -12,7 +12,7 @@ from iati.models import Activity
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
 from api.cache import NoTransformCache
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
-from api.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
+from api.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource,ActivityViewActivityScopeResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
 
 #cache specific
 from django.http import HttpResponse
@@ -23,6 +23,7 @@ class ActivityListResource(ModelResource):
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
     participating_organisations = fields.ToManyField(ActivityViewOrganisationResource, 'participating_organisation', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
+    activity_scope = fields.ForeignKey(ActivityViewActivityScopeResource, 'scope', full=True, null=True)
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)
     sectors = fields.ToManyField(ActivityViewSectorResource, 'sector', full=True, null=True)
@@ -50,6 +51,7 @@ class ActivityListResource(ModelResource):
             'end_planned': ALL,
             'end_actual': ALL,
             'total_budget': ALL,
+            'activity_scope': ('exact', 'in'),
             'sectors': ('exact', 'in'),
             'regions': ALL_WITH_RELATIONS,
             'countries': ALL_WITH_RELATIONS,

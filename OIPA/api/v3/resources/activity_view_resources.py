@@ -9,7 +9,7 @@ from tastypie.serializers import Serializer
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole
+from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
@@ -88,6 +88,13 @@ class ActivityViewActivityStatusResource(ModelResource):
         queryset = ActivityStatus.objects.all()
         include_resource_uri = False
         excludes = ['language']
+
+class ActivityViewActivityScopeResource(ModelResource):
+    class Meta:
+        queryset = ActivityScope.objects.all()
+        include_resource_uri = False
+        excludes = ['language']
+2
 
 class ActivityViewCurrencyResource(ModelResource):
     class Meta:
