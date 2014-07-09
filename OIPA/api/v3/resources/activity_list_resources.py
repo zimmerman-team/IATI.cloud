@@ -2,6 +2,7 @@
 from django.db.models import Q
 
 # Tastypie specific
+import operator
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -47,7 +48,7 @@ class ActivityListResource(ModelResource):
         filtering = {
             'iati_identifier': 'exact',
             'start_planned': ALL,
-            'start_actual': ALL,
+            #'start_actual': ALL,
             'end_planned': ALL,
             'end_actual': ALL,
             'total_budget': ALL,
@@ -73,8 +74,23 @@ class ActivityListResource(ModelResource):
                 Q(title__title__icontains=query, **filters) #|
                 # Q(description__description__icontains=query, **filters)
             )
-
             return base_object_list.filter(qset).distinct()
+
+        #adding filter option for start_actual of activities
+        filter_year = request.GET.get('start_year__in', None)
+        argument_list = []
+        if filter_year:
+            #check if we need to make a or query set
+            if ',' in filter_year:
+                filter_year = filter_year.split(',')
+                #create a or query set that is based on a single year per item
+                for f in filter_year:
+                    argument_list.append(Q(**{'start_actual__year':f}))
+                return base_object_list.filter(reduce(operator.or_, argument_list), **filters).distinct()
+            else:
+                return base_object_list.filter(start_actual__year=filter_year, **filters).distinct()
+
+
         return base_object_list.filter(**filters).distinct()
 
     def get_list(self, request, **kwargs):

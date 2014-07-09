@@ -49,5 +49,5 @@ class UnescoIndicatorResource(ModelResource):
         #return the iso value of a country
         bundle.data['country'] = bundle.obj.country.code
 
-        #return the new bundle with country and indicator
+        #return the new bundle with country and inidcato
         return bundle
