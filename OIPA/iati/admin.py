@@ -61,7 +61,7 @@ class SectorAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-    def update_unesco_sectors(self):
+    def update_unesco_sectors(self, request):
         sector_updater = SectorUpdater()
         success = sector_updater.update_unesco_sectors()
         if success:

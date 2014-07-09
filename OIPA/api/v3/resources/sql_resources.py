@@ -811,7 +811,9 @@ class GlobalActivitiesResource(ModelResource):
             filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
 
         if region_query:
+            filter_region = 'LEFT JOIN geodata_region r ON rr.region_id = r.code '
             filter_string += 'AND r.name LIKE "%%' + region_query + '%%" '
+
 
         filter_project_query = ''
         if project_query:
@@ -828,9 +830,8 @@ class GlobalActivitiesResource(ModelResource):
         query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
-                'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
                 '%s %s %s %s'\
-                'WHERE r.code is not null %s'\
+                'WHERE a.scope_id = 1 %s'\
                 'GROUP BY r.code ' \
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string, order_by, order_asc_desc, limit, offset)

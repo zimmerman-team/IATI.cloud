@@ -9,6 +9,7 @@ from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber
 from iati_synchroniser.exception_handler import exception_handler
+from iati.data_backup.unesco_sectors import unesco_sectors
 
 class Parser():
 
@@ -612,19 +613,21 @@ class Parser():
                     value = self.return_first_exist(t.xpath('value/text()'))
                     if value:
                         value = value.strip(' \t\n\r')
-                    if value:
-                        value = value.replace(",", ".")
-                        value = value.replace(" ", "")
-                        if value.__len__() > 2:
-                            dec = False
-                            if value[-2] == ".":
-                                dec = True
-                            value = value.replace(".", "")
-                            if dec:
-                                value = value[:-2] + "." + value[-2:]
-                    else:
-                        continue
+                    # if value:
+                    #     value = value.replace(",", ".")
+                    #     value = value.replace(" ", "")
+                    #     if value.__len__() > 2:
+                    #         dec = False
+                    #         if value[-2] == ".":
+                    #             dec = True
+                    #         value = value.replace(".", "")
+                    #         if dec:
+                    #             value = value[:-2] + "." + value[-2:]
+                    # else:
+                    #     continue
 
+                    if not value:
+                        continue
 
                     value_date = self.validate_date(self.return_first_exist(t.xpath('value/@value-date')))
 
@@ -790,7 +793,11 @@ class Parser():
                         percentage = percentage.replace("%", "")
 
                     if not self.isInt(sector_code):
-                        sector_code = None
+
+                        if sector_code in unesco_sectors:
+                            sector_code = unesco_sectors[sector_code]
+                        else:
+                            sector_code = None
 
                     if sector_code:
                         if models.Sector.objects.filter(code=sector_code).exists():

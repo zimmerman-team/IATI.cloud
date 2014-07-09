@@ -16,7 +16,7 @@ class SectorUpdater():
             for cr in unesco_sectors:
 
                 try:
-                    code = cr
+                    code = int(cr)
                     name = unesco_sectors[cr]['name']
 
                     if Sector.objects.filter(code=code).exists():
@@ -29,4 +29,6 @@ class SectorUpdater():
                 except Exception as e:
                     print "error in update_country_sectors" + str(type)
                     print e.args
+                    return False
             json_data.close()
+            return True
