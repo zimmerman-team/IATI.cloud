@@ -783,7 +783,7 @@ class GlobalActivitiesResource(ModelResource):
         budget_q = ''
         limit = request.GET.get("limit", 999)
         offset = request.GET.get("offset", 0)
-        order_by = request.GET.get("order_by", "region_name")
+        order_by = request.GET.get("order_by", None)
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         start_actual_q = helper.get_year_and_query(request, 'start_actual__in', 'a.start_actual')
         start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')
@@ -810,9 +810,9 @@ class GlobalActivitiesResource(ModelResource):
         if vocabulary_q:
             filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
 
-        if region_query:
-            filter_region = 'LEFT JOIN geodata_region r ON rr.region_id = r.code '
-            filter_string += 'AND r.name LIKE "%%' + region_query + '%%" '
+        filter_region = ''
+        if region_q:
+            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
 
 
         filter_project_query = ''
@@ -827,15 +827,12 @@ class GlobalActivitiesResource(ModelResource):
 
 
         cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+        query = 'SELECT count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
-                '%s %s %s %s'\
+                '%s %s %s %s %s '\
                 'WHERE a.scope_id = 1 %s'\
-                'GROUP BY r.code ' \
-                'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string, order_by, order_asc_desc, limit, offset)
-        print query
+                'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
+
         cursor.execute(query)
 
         activities = []
@@ -843,24 +840,7 @@ class GlobalActivitiesResource(ModelResource):
         results = helper.get_fields(cursor=cursor)
         for r in results:
             region = {}
-            region['id'] = r['region_id']
-            region['name'] = r['region_name']
             region['total_projects'] = r['total_projects']
-
-            loc = r['location']
-            if loc:
-
-                loc = loc.replace("POINT(", "")
-                loc = loc.replace(")", "")
-                loc_array = loc.split(" ")
-                longitude = loc_array[0]
-                latitude = loc_array[1]
-            else:
-                longitude = None
-                latitude = None
-
-            region['latitude'] = latitude
-            region['longitude'] = longitude
             region['total_budget'] = r['total_budget']
             activities.append(region)
 
@@ -868,13 +848,11 @@ class GlobalActivitiesResource(ModelResource):
         return_json["objects"] = activities
 
         cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
+        query = 'SELECT count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
-                'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
-                '%s %s %s %s'\
-                'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string)
+                '%s %s %s %s %s '\
+                'WHERE a.scope_id = 1 %s'\
+                'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)

@@ -77,7 +77,7 @@ class ActivityListResource(ModelResource):
             return base_object_list.filter(qset).distinct()
 
         #adding filter option for start_actual of activities
-        filter_year = request.GET.get('start_year__in', None)
+        filter_year = request.GET.get('start_year_planned__in', None)
         argument_list = []
         if filter_year:
             #check if we need to make a or query set
@@ -85,10 +85,10 @@ class ActivityListResource(ModelResource):
                 filter_year = filter_year.split(',')
                 #create a or query set that is based on a single year per item
                 for f in filter_year:
-                    argument_list.append(Q(**{'start_actual__year':f}))
+                    argument_list.append(Q(**{'start_planned__year':f}))
                 return base_object_list.filter(reduce(operator.or_, argument_list), **filters).distinct()
             else:
-                return base_object_list.filter(start_actual__year=filter_year, **filters).distinct()
+                return base_object_list.filter(start_planned__year=filter_year, **filters).distinct()
 
 
         return base_object_list.filter(**filters).distinct()
