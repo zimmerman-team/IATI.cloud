@@ -903,7 +903,7 @@ class SectorActivitiesResource(ModelResource):
         budget_q_gte = request.GET.get('total_budget__gte', None)
         budget_q_lte = request.GET.get('total_budget__lte', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
-        sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        sector_q = helper.get_and_query(request, 'sectors__in', 's.code')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         budget_q = ''
         limit = request.GET.get("limit", 999)
@@ -932,12 +932,8 @@ class SectorActivitiesResource(ModelResource):
         else:
             filter_region = ''
 
-        filter_sector = ''
-        if sector_q:
-            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
-
         if query:
-            filter_string += 'AND c.name LIKE "%%' + query + '%%" '
+            filter_string += 'AND s.name LIKE "%%' + query + '%%" '
 
         cursor = connection.cursor()
         query = 'SELECT s.code as sector_id, s.name as sector_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
