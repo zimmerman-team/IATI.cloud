@@ -69,8 +69,8 @@ class ActivityListResource(ModelResource):
         if query:
 
             qset = (
-                Q(id__in=query, **filters) |
-                Q(activityrecipientcountry__country__name__in=query, **filters) |
+                Q(iati_identifier__icontains=query, **filters) |
+                Q(activityrecipientcountry__country__name__icontains=query, **filters) |
                 Q(title__title__icontains=query, **filters) #|
                 # Q(description__description__icontains=query, **filters)
             )
