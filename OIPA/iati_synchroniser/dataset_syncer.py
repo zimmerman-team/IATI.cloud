@@ -125,7 +125,6 @@ class DatasetSyncer():
                 current_publisher = self.add_publisher_to_db(publisher_iati_id, publisher_abbreviation, publisher_name)
 
             return current_publisher
-            return current_publisher
 
         except Exception as e:
             exception_handler(e, publisher_iati_id, "dataset_syncer.update_publisher")
