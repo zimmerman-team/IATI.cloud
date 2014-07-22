@@ -787,7 +787,7 @@ class Parser():
                         if type_ref == 'outcome':
                             type_ref = '2'
                         if type_ref == 'impact':
-                            type_ref == '3'
+                            type_ref = '3'
                         if self.isInt(type_ref) and models.ResultType.objects.filter(code=type_ref).exists():
                             type = models.ResultType.objects.get(code=type_ref)
 
@@ -1124,7 +1124,7 @@ class Parser():
                     activity_description = self.return_first_exist(t.xpath('activity-description/text()'))
                     exactness_ref = self.return_first_exist(t.xpath('exactness/@code'))
                     exactness = None
-                    location_reach_ref = self.return_first_exist(t.xpath('location-reach/text()'))
+                    location_reach_ref = self.return_first_exist(t.xpath('location-reach/@code'))
                     location_reach = None
                     location_class_ref = self.return_first_exist(t.xpath('location-class/@code'))
                     location_class = None

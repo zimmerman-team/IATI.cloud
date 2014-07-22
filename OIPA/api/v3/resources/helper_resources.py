@@ -27,6 +27,11 @@ class DescriptionResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
 
+class PolicyMarkerResource(ModelResource):
+    class Meta:
+        queryset = PolicyMarker.objects.all()
+        include_resource_uri = False
+
 
 class OrganisationTypeResource(ModelResource):
 

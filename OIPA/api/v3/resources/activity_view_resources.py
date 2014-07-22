@@ -10,7 +10,7 @@ from tastypie.serializers import Serializer
 # Data specific
 from api.cache import NoTransformCache
 from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope
-from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource
+from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
 # cache specific
@@ -93,7 +93,6 @@ class ActivityViewActivityScopeResource(ModelResource):
     class Meta:
         queryset = ActivityScope.objects.all()
         include_resource_uri = False
-        excludes = ['language']
 2
 
 class ActivityViewCurrencyResource(ModelResource):
@@ -115,15 +114,18 @@ class ActivityResource(ModelResource):
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
     websites = fields.ToManyField(WebsiteResource, 'activity_website_set', full=True, null=True)
+    policy_markers = fields.ToManyField(PolicyMarkerResource, 'policy_marker_set', full=True, null=True)
     collaboration_type = fields.ForeignKey(ActivityViewCollaborationTypeResource, attribute='collaboration_type', full=True, null=True)
     default_flow_type = fields.ForeignKey(ActivityViewFlowTypeResource, attribute='default_flow_type', full=True, null=True)
     default_finance_type = fields.ForeignKey(FinanceTypeResource, attribute='default_finance_type', full=True, null=True)
     default_aid_type = fields.ForeignKey(ActivityViewAidTypeResource, attribute='default_aid_type', full=True, null=True)
     default_tied_status = fields.ForeignKey(ActivityViewTiedStatusResource, attribute='default_tied_status', full=True, null=True)
+    activity_scope = fields.ForeignKey(ActivityViewActivityScopeResource, attribute='scope', full=True, null=True)
     default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True)
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink', full=True, null=True)
+
 
     class Meta:
         queryset = Activity.objects.all()
