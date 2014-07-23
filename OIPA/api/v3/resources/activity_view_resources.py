@@ -114,7 +114,7 @@ class ActivityResource(ModelResource):
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
     websites = fields.ToManyField(WebsiteResource, 'activity_website_set', full=True, null=True)
-    policy_markers = fields.ToManyField(PolicyMarkerResource, 'policy_marker_set', full=True, null=True)
+    policy_markers = fields.ToManyField(PolicyMarkerResource, 'policy_marker', full=True, null=True)
     collaboration_type = fields.ForeignKey(ActivityViewCollaborationTypeResource, attribute='collaboration_type', full=True, null=True)
     default_flow_type = fields.ForeignKey(ActivityViewFlowTypeResource, attribute='default_flow_type', full=True, null=True)
     default_finance_type = fields.ForeignKey(FinanceTypeResource, attribute='default_finance_type', full=True, null=True)

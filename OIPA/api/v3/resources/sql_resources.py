@@ -383,8 +383,8 @@ class CountryGeojsonResource(ModelResource):
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
@@ -511,8 +511,8 @@ class CountryActivitiesResource(ModelResource):
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
@@ -642,8 +642,8 @@ class RegionActivitiesResource(ModelResource):
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
@@ -775,8 +775,8 @@ class GlobalActivitiesResource(ModelResource):
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
@@ -832,7 +832,7 @@ class GlobalActivitiesResource(ModelResource):
                 '%s %s %s %s %s '\
                 'WHERE a.scope_id = 1 %s'\
                 'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
-
+        print query
         cursor.execute(query)
 
         activities = []
@@ -878,8 +878,8 @@ class SectorActivitiesResource(ModelResource):
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.code')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
@@ -979,8 +979,8 @@ class DonorActivitiesResource(ModelResource):
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
-        budget_q_gte = request.GET.get('total_budget__gte', None)
-        budget_q_lte = request.GET.get('total_budget__lte', None)
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         donor_q = helper.get_and_query(request, 'donors__in', 'apo.organisation_id')
