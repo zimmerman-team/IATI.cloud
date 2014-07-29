@@ -324,6 +324,8 @@ class IndicatorDataResource(ModelResource):
             return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
 
 
+
+        # CITY DATA
         filter_string = 'AND (' + city_q + country_q + region_q + year_q + indicator_q + selection_type_q + ')'
 
         if 'AND ()' in filter_string:
@@ -346,8 +348,11 @@ class IndicatorDataResource(ModelResource):
         for row in cursor.fetchall()
         ]
 
-        # country indicator data
-        filter_string = 'AND (' + country_q + region_q + year_q + indicator_q + selection_type_q + ')'
+
+
+
+        # COUNTRY DATA
+        filter_string = 'AND (' + city_q + country_q + region_q + year_q + indicator_q + selection_type_q + ')'
 
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
@@ -368,7 +373,6 @@ class IndicatorDataResource(ModelResource):
         for row in cursor.fetchall()
         ]
 
-
         indicator_q = indicator_q.replace(" ) AND (", "")
 
         cursor_max = connection.cursor()
@@ -379,10 +383,12 @@ class IndicatorDataResource(ModelResource):
         for row in cursor_max.fetchall()
         ]
 
-        # region indicator data
+
+
+
+
+        # REGION DATA
         # NOT IMPLEMENTED YET -> WE DO NOT HAVE CENTER LOCATIONS FOR REGIONS
-
-
 
 
         geolocs = {}
