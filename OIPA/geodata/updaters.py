@@ -57,6 +57,19 @@ class CountryUpdater():
 
             json_data.close()
 
+        def update_alt_names(self):
+            base = os.path.dirname(os.path.abspath(__file__))
+            location = base + "/data_backup/urbnnrs_alt_country_name.json"
+
+            json_data = open(location)
+            alt_names = ujson.load(json_data)
+            for c in alt_names:
+                if Country.objects.filter(code=c).exists():
+                    current_country = Country.objects.get(code=c)
+                    current_country.alt_name = alt_names[c]["alt_name"]
+                    current_country.save()
+
+            json_data.close()
 
 
         def update_identifiers(self):

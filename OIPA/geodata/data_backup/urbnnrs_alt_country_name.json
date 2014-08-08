@@ -1,0 +1,11 @@
+{
+    "HK": {"alt_name": "China, Hong Kong SAR"},
+    "IR": {"alt_name": "Iran (Islamic Republic of)"},
+    "CI": {"alt_name": "Ivory Coast"},
+    "NZ": {"alt_name": "Newzealand"},
+    "US": {"alt_name": "United States of America"},
+    "TZ": {"alt_name": "United Republic of Tanzania"},
+    "RU": {"alt_name": "Russia"},
+    "BO": {"alt_name": "Bolivia"}
+
+}

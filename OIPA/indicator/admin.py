@@ -91,125 +91,131 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 'name': 'the name of created file',
             }
         '''
-
-        #getting the title of the file
-        title = kwargs.get('title', [''])[0] or uploaded.name
-
-        import csv
         try:
-            dialect = csv.Sniffer().sniff(uploaded.read(4048))
-        except csv.Error:
-            dialect = csv.excel
+            #getting the title of the file
+            title = kwargs.get('title', [''])[0] or uploaded.name
 
-        file = csv.DictReader(uploaded, dialect=dialect)
+            import csv
+            try:
+                dialect = csv.Sniffer().sniff(uploaded.read(4048))
+            except csv.Error:
+                dialect = csv.excel
 
-        line_counter = 0
-        indicator_from_db = None
-        city_found = []
-        city_not_found = []
-        country_found = []
-        country_not_found = []
-        total_items_saved = 0
+            file = csv.DictReader(uploaded, dialect=dialect)
 
-        cities = get_cities()
-        countries = get_countries()
-        for line in file:
-            #getting data from the csv file
-            city_csv = line.get('city')
-            deprivation_type_csv = line.get('deprivation_type')
-            description_csv = line.get('description')
-            selection_type_csv = line.get('selection_type')
-            country_csv = line.get('country')
-            region_csv = line.get('region_csv')
-            friendly_label_csv = line.get('friendly_name')
-            value_csv = line.get('value')
-            year_range_csv = line.get('year_range')
-            indicator_id_csv = line.get('indicator_id')
-            year_csv = line.get('year')
-            type_data_csv = line.get('type_data')
-            category_csv = line.get('category')
+            line_counter = 0
+            indicator_from_db = None
+            city_found = []
+            city_not_found = []
+            country_found = []
+            country_not_found = []
+            total_items_saved = 0
 
-            #here we are checking if this indicator already exists, or if we have to create a new one
-            if line_counter == 0:
-                #try to find the indicator that is uploaded or create a new one
-                indicator_from_db = Indicator.objects.get_or_create(id=indicator_id_csv)[0]
+            cities = get_cities()
+            countries = get_countries()
+            for line in file:
+                #getting data from the csv file
+                city_csv = line.get('city')
+                deprivation_type_csv = line.get('deprivation_type')
+                description_csv = line.get('description')
+                selection_type_csv = line.get('selection_type')
+                country_csv = line.get('country')
+                region_csv = line.get('region_csv')
+                friendly_label_csv = line.get('friendly_name')
+                value_csv = line.get('value')
+                year_range_csv = line.get('year_range')
+                indicator_id_csv = line.get('indicator_id')
+                year_csv = line.get('year')
+                type_data_csv = line.get('type_data')
+                category_csv = line.get('category')
 
-                #update the indicator fields
-                indicator_from_db.description = description_csv
-                indicator_from_db.friendly_label = friendly_label_csv
-                indicator_from_db.type_data = type_data_csv
-                indicator_from_db.selection_type = selection_type_csv
-                indicator_from_db.deprivation_type = deprivation_type_csv
-                indicator_from_db.category = category_csv
-                indicator_from_db.save()
+                #here we are checking if this indicator already exists, or if we have to create a new one
+                if line_counter == 0:
+                    #try to find the indicator that is uploaded or create a new one
+                    if Indicator.objects.filter(id=indicator_id_csv).exists():
+                        indicator_from_db = Indicator.objects.get(id=indicator_id_csv)
+                    else:
+                        # create new indicator
+                        try:
+                            indicator_from_db = Indicator(description=description_csv, friendly_label=friendly_label_csv, type_data=type_data_csv, deprivation_type=deprivation_type_csv, category=category_csv)
+                            indicator_from_db.save()
+                        except Exception as e:
+                            print e
 
-            #getting city from our database
-            city_from_db = find_city(city_name=city_csv, cities=cities)
+                #getting country from our database
+                country_from_db = find_country(country_name=country_csv, countries=countries)
 
-            #getting country from our database
-            country_from_db = find_country(country_name=country_csv, countries=countries)
-
-            #add country to the log array
-            if country_from_db:
-                country_found.append(country_csv)
-            else:
-                if country_csv:
-                    country_not_found.append(country_csv)
-
-            #add city to the log array
-            if city_from_db:
-                city_found.append(city_csv)
-            else:
-                if city_csv:
-                    city_not_found.append(city_csv)
-
-            #this block is for storing data related to cities
-            if save_city_data(
-                city_from_db=city_from_db,
-                country_from_db=country_from_db,
-                selection_type_csv=selection_type_csv,
-                indicator_from_db=indicator_from_db,
-                year_csv=year_csv,
-                value_csv=value_csv
-            ): total_items_saved += 1
-
-            #this block is for storing country related indicator data
-            if save_country_data(
-                    country_from_db=country_from_db,
-                    city_csv=city_csv,
-                    selection_type_csv=selection_type_csv,
-                    year_csv=year_csv,
-                    indicator_from_db=indicator_from_db,
-                    value_csv=value_csv
-            ): total_items_saved += 1
-
-            line_counter += 1
+                if country_from_db:
+                    #getting city from our database
+                    city_from_db = find_city(city_name=city_csv, cities=cities, country_id=country_from_db.code)
 
 
-        log = save_log(file=uploaded,
-                 uploaded_by_user=request.user,
-                 cities_not_found=city_not_found,
-                 countries_not_found=country_not_found,
-                 total_cities_found=city_found,
-                 total_countries_found=country_found,
-                 total_cities_not_found=city_not_found,
-                 total_countries_not_found=country_not_found,
-                 total_items_saved=total_items_saved
-        )
+                #add country to the log array
+                if country_from_db:
+                    country_found.append(country_csv)
+                else:
+                    if country_csv:
+                        country_not_found.append(country_csv)
+
+                #add city to the log array
+                if city_from_db:
+                    city_found.append(city_csv)
+                else:
+                    if city_csv:
+                        city_not_found.append(city_csv)
+
+                try:
+                    #this block is for storing data related to cities
+                    if save_city_data(
+                        city_from_db=city_from_db,
+                        country_from_db=country_from_db,
+                        selection_type_csv=selection_type_csv,
+                        indicator_from_db=indicator_from_db,
+                        year_csv=year_csv,
+                        value_csv=value_csv
+                    ): total_items_saved += 1
+
+                    #this block is for storing country related indicator data
+                    if save_country_data(
+                            country_from_db=country_from_db,
+                            city_csv=city_csv,
+                            selection_type_csv=selection_type_csv,
+                            year_csv=year_csv,
+                            indicator_from_db=indicator_from_db,
+                            value_csv=value_csv
+                    ): total_items_saved += 1
+
+                    line_counter += 1
+                except Exception as e:
+                    print e
+
+            log = save_log(file=uploaded,
+                     uploaded_by_user=request.user,
+                     cities_not_found=city_not_found,
+                     countries_not_found=country_not_found,
+                     total_cities_found=city_found,
+                     total_countries_found=country_found,
+                     total_cities_not_found=city_not_found,
+                     total_countries_not_found=country_not_found,
+                     total_items_saved=total_items_saved
+            )
 
 
-        return {
-            'url': '/admin/indicator/csvuploadlog/%s/' % str(log.id),
-            'thumbnail_url': '',
-            'id': str(log.id),
-            'name' : title,
-            'country_not_found' : log.countries_not_found,
-            'total_countries_not_found' : country_not_found.__len__(),
-            'city_not_found' : log.cities_not_found,
-            'total_cities_not_found' : city_not_found.__len__(),
-            'total_items_saved' : str(total_items_saved),
+            return {
+                'url': '/admin/indicator/csvuploadlog/%s/' % str(log.id),
+                'thumbnail_url': '',
+                'id': str(log.id),
+                'name' : title,
+                'country_not_found' : log.countries_not_found,
+                'total_countries_not_found' : country_not_found.__len__(),
+                'city_not_found' : log.cities_not_found,
+                'total_cities_not_found' : city_not_found.__len__(),
+                'total_items_saved' : str(total_items_saved),
 
-        }
+            }
+
+        except Exception as e:
+                    print e
 
     def delete_file(self, pk, request):
         '''

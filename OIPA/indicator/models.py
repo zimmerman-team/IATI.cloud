@@ -44,7 +44,7 @@ class IndicatorData(models.Model):
     country = models.ForeignKey(Country, null=True)
     city = models.ForeignKey(City, null=True)
     region = models.ForeignKey(Region, null=True)
-    value = models.FloatField(null=True, blank=True, db_index=True)
+    value = models.DecimalField(null=True, blank=True, db_index=True, max_digits=17, decimal_places=4)
     year = models.IntegerField(max_length=5)
     selection_type = models.CharField(max_length=255, null=True, blank=True)
 

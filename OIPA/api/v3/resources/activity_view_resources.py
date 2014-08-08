@@ -17,6 +17,8 @@ from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionR
 from django.http import HttpResponse
 from cache.validator import Validator
 
+from api.v3.resources.csv_serializer import CsvSerializer
+
 class ActivityViewAidTypeResource(ModelResource):
     class Meta:
         queryset = AidType.objects.all()
@@ -103,6 +105,15 @@ class ActivityViewCurrencyResource(ModelResource):
 
 
 
+
+
+
+
+
+
+
+
+
 class ActivityResource(ModelResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
@@ -126,12 +137,11 @@ class ActivityResource(ModelResource):
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink', full=True, null=True)
 
-
     class Meta:
         queryset = Activity.objects.all()
         resource_name = 'activities'
         max_limit = 100
-        serializer = Serializer(formats=['xml', 'json'])
+        serializer = CsvSerializer()
         excludes = ['date_created']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {

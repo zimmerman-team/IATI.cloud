@@ -32,7 +32,7 @@ class RegionAdmin(admin.ModelAdmin):
 
 class CountryAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ['__unicode__', 'capital_city', 'region', 'un_region', 'unesco_region', 'dac_country_code', 'iso3', 'alpha3', 'fips10', 'data_source']
+    list_display = ['__unicode__', 'alt_name', 'capital_city', 'region', 'un_region', 'unesco_region', 'dac_country_code', 'iso3', 'alpha3', 'fips10', 'data_source']
 
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
@@ -41,7 +41,8 @@ class CountryAdmin(admin.ModelAdmin):
             (r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
             (r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
             (r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
-            (r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers))
+            (r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers)),
+            (r'^update-alt-names/$', self.admin_site.admin_view(self.update_alt_names))
         )
         return my_urls + urls
 
@@ -64,6 +65,11 @@ class CountryAdmin(admin.ModelAdmin):
     def update_country_identifiers(self, request):
         cu = CountryUpdater()
         cu.update_identifiers()
+        return HttpResponse('Success')
+
+    def update_alt_names(self, request):
+        cu = CountryUpdater()
+        cu.update_alt_names()
         return HttpResponse('Success')
 
 

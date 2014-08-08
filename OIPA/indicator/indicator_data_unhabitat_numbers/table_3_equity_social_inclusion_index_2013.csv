@@ -1,33 +1,33 @@
 year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United Kingdom;London;;793;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Japan;Tokyo ;;828;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Finland;Helsinki ;;890;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Netherlands;Amsterdam ;;818;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;France;Paris ;;788;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Canada;Toronto;;733;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Spain;Barcelona ;;755;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Greece;Athens ;;762;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Denmark;Copenhagen ;;922;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Belgium;Brussels ;;783;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United States of America;New York;;502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Mexico;Mexico City;;550;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Newzealand;Auckland ;;657;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;China;Beijing ;;967;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Russia;Moscow;;550;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Brazil;Sao Paulo;;507;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Egypt;Cairo;;692;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Thailand;Bangkok ;;533;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Colombia;Medellin ;;394;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Morocco;Casablanca;;472;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;South Africa;Cape Town;;217;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Guatemala;Guatemala City;;502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Senegal;Dakar ;;712;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Armenia;Yerevan ;;817;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Bolivia;La Paz;;502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Kenya;Nairobi ;;357;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United Republic of Tanzania;Dar-es-salam;;767;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Ghana;Accra ;;500;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Bangladesh;Dhaka;;817;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;South Africa;Johannesburg;;83;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Ethiopia;Addis Ababa ;;313;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
-2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Nigeria;Lagos;;262;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United Kingdom;London;;0.793;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Japan;Tokyo ;;0.828;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Finland;Helsinki ;;0.89;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Netherlands;Amsterdam ;;0.818;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;France;Paris ;;0.788;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Canada;Toronto;;0.733;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Spain;Barcelona ;;0.755;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Greece;Athens ;;0.762;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Denmark;Copenhagen ;;0.922;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Belgium;Brussels ;;0.783;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United States of America;New York;;0.502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Mexico;Mexico City;;0.55;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Newzealand;Auckland ;;0.657;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;China;Beijing ;;0.967;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Russia;Moscow;;0.55;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Brazil;Sao Paulo;;0.507;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Egypt;Cairo;;0.692;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Thailand;Bangkok ;;0.533;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Colombia;Medellin ;;0.394;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Morocco;Casablanca;;0.472;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;South Africa;Cape Town;;0.217;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Guatemala;Guatemala City;;0.502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Senegal;Dakar ;;0.712;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Armenia;Yerevan ;;0.817;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Bolivia;La Paz;;0.502;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Kenya;Nairobi ;;0.357;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;United Republic of Tanzania;Dar-es-salam;;0.767;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Ghana;Accra ;;0.5;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Bangladesh;Dhaka;;0.817;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;South Africa;Johannesburg;;0.083;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Ethiopia;Addis Ababa ;;0.313;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity
+2013;;cpi_equity_index;Equity/Social Inclusion Index (EI);index;;;Nigeria;Lagos;;0.262;Table 3: Composite Street Connectivity Index (CSCI) and City Prosperity Index (CPI);City prosperity

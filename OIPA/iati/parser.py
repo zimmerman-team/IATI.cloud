@@ -365,10 +365,10 @@ class Parser():
         try:
             for t in elem.xpath('title'):
                 try:
-                    title = self.return_first_exist(t.xpath( 'text()' ))
+                    title = self.return_first_exist(t.xpath('text()'))
                     if title:
 
-                        language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
+                        language_ref = self.return_first_exist(t.xpath('@xml:lang'))
                         language = None
                         if title.__len__() > 255:
                             title = title[:255]
@@ -394,12 +394,12 @@ class Parser():
         try:
             for t in elem.xpath('description'):
                 try:
-                    description = self.return_first_exist(t.xpath( 'text()' ))
+                    description = self.return_first_exist(t.xpath('text()'))
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
-                    language_ref = self.return_first_exist(t.xpath( '@xml:lang' ))
+                    language_ref = self.return_first_exist(t.xpath('@xml:lang'))
                     language = None
-                    rsr_type_ref = self.return_first_exist(t.xpath( '@akvo:type', namespaces={'akvo': 'http://akvo.org/api/v1/iati-activities'}))
+                    rsr_type_ref = self.return_first_exist(t.xpath('@akvo:type', namespaces={'akvo': 'http://akvo.org/api/v1/iati-activities'}))
                     rsr_type = None
 
 

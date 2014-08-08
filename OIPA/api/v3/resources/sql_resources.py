@@ -1,5 +1,6 @@
 # Tastypie specific
 from tastypie.resources import ModelResource
+from tastypie.serializers import Serializer
 
 # cache specific
 from api.cache import NoTransformCache
@@ -10,8 +11,12 @@ from cache.validator import Validator
 import ujson
 from django.db import connection
 from django.http import HttpResponse
+import xmlrpclib
+
 
 # Helpers
+from api.v3.resources.csv_serializer import CsvSerializer
+from api.v3.resources.csv_helper import CsvHelper
 from api.v3.resources.custom_call_helper import CustomCallHelper
 
 
@@ -502,7 +507,7 @@ class CountryActivitiesResource(ModelResource):
         resource_name = 'country-activities'
         include_resource_uri = True
         cache = NoTransformCache()
-
+        serializer = serializer = CsvSerializer()
 
     def get_list(self, request, **kwargs):
 
@@ -526,6 +531,8 @@ class CountryActivitiesResource(ModelResource):
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         country_query = request.GET.get("country", None)
         project_query = request.GET.get("query", None)
+        format = request.GET.get("format", "json")
+
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -613,10 +620,19 @@ class CountryActivitiesResource(ModelResource):
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
 
+
         return_json["meta"] = {"total_count": len(results2)}
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        if format == "json":
+            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
 
+        if format == "xml":
+            return HttpResponse(xmlrpclib.dumps(return_json), mimetype='application/xml')
+
+        if format == "csv":
+            csvh = CsvHelper()
+            csv_content = csvh.to_csv(return_json)
+            return HttpResponse(csv_content, mimetype='text/csv')
 
 
 

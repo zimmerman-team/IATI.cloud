@@ -1,7 +1,7 @@
 import uuid
 from geodata.models import Country, City
 from indicator.models import CsvUploadLog, IndicatorData
-
+import difflib
 
 def get_countries():
     return Country.objects.all()
@@ -27,21 +27,28 @@ def find_country(country_name, countries, iso2=None):
         #getting countries from database
         try:
             if country_name:
+
+                country_name = country_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
+
                 for country in countries:
                     country_name_db = country.name.lower()
-                    country_name = country_name.lower()
-                    if country_name.decode('utf8') in country_name_db or country_name.decode('utf8')[:8] in country_name_db or country_name.decode('utf8')[-8:] in country_name_db:
-                        return country
+                    country_alt_name_db = country.alt_name
 
+                    if country_name == country_name_db:
+                        return country
+                    elif country_alt_name_db:
+                        country_alt_name_db = country_alt_name_db.lower()
+                        if country_name in country_alt_name_db:
+                            return country
             else:
                 return None
-        except:
+        except Exception as e:
             return None
 
         return None
 
 
-def find_city(city_name, cities):
+def find_city(city_name, cities, country_id):
         """
         Mapping the country string, to a country in the database
         @todo create a more optimized solution for this, it only matches an exact string, or the first 8 or last 8 characters
@@ -51,21 +58,40 @@ def find_city(city_name, cities):
         #getting countries from database
         try:
             if city_name:
+
+                city_name = city_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
+
                 for city in cities:
-                    city_name = city_name.lower()
+                    if city.country_id == country_id:
+                        city_name_db = city.name.lower()
+                        ascii_name_db = city.ascii_name
+                        alt_name_db = city.alt_name
+                        name_par_db = city.namepar
+                        matchperc = difflib.SequenceMatcher(None, city_name, city_name_db).ratio()
 
-                    city_name = city_name.decode('utf8')
-                    city_name_db = city.name.lower()
+                        if city_name == city_name_db or matchperc > 0.85:
+                            if matchperc != 1 or city_name_db == "kuala lumpur":
+                                print matchperc
+                                print city_name
+                                print city_name_db
+                            return city
+                        elif matchperc > 0.4:
 
-                    ascii_name_db = city.ascii_name
-                    alt_name_db = city.alt_name
-                    name_par_db = city.namepar
-
-                    if city_name in city_name_db or city_name[:8] in city_name_db or city_name[-8:] in city_name_db:
-                        return city
+                            if ascii_name_db:
+                                ascii_name_db = ascii_name_db.lower()
+                                if city_name == ascii_name_db or difflib.SequenceMatcher(None, city_name, ascii_name_db).ratio() > 0.85:
+                                    return city
+                            if alt_name_db:
+                                alt_name_db = alt_name_db.lower()
+                                if city_name == alt_name_db or difflib.SequenceMatcher(None, city_name, alt_name_db).ratio() > 0.85:
+                                    return city
+                            if name_par_db:
+                                name_par_db = name_par_db.lower()
+                                if city_name == name_par_db or difflib.SequenceMatcher(None, city_name, name_par_db).ratio() > 0.85:
+                                    return city
             else:
                 return None
-        except:
+        except Exception as e:
             return None
 
         return None
@@ -120,7 +146,7 @@ def save_log(
 
 def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_from_db, year_csv, value_csv):
     try:
-        if city_from_db:
+        if city_from_db and year_csv:
             #if the indicator data a selection type contains than we need to store that correctly
             if selection_type_csv:
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, city=city_from_db)[0]
@@ -143,7 +169,7 @@ def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_
 
 def save_country_data(country_from_db, city_csv, selection_type_csv, year_csv, indicator_from_db, value_csv):
     try:
-        if country_from_db and not city_csv:
+        if country_from_db and year_csv and not city_csv:
             if selection_type_csv:
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, country=country_from_db)[0]
             else:
