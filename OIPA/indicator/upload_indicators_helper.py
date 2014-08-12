@@ -67,31 +67,49 @@ def find_city(city_name, cities, country_id):
                         ascii_name_db = city.ascii_name
                         alt_name_db = city.alt_name
                         name_par_db = city.namepar
+
+                        if city_name == city_name_db:
+                            return city
+                        if ascii_name_db:
+                            ascii_name_db = ascii_name_db.lower()
+                            if city_name == ascii_name_db:
+                                return city
+                        if alt_name_db:
+                            alt_name_db = alt_name_db.lower()
+                            if city_name == alt_name_db:
+                                return city
+                        if name_par_db:
+                            name_par_db = name_par_db.lower()
+                            if city_name == name_par_db:
+                                return city
+
+                for city in cities:
+                    if city.country_id == country_id:
+                        city_name_db = city.name.lower()
+                        ascii_name_db = city.ascii_name
+                        alt_name_db = city.alt_name
+                        name_par_db = city.namepar
                         matchperc = difflib.SequenceMatcher(None, city_name, city_name_db).ratio()
 
-                        if city_name == city_name_db or matchperc > 0.85:
-                            if matchperc != 1 or city_name_db == "kuala lumpur":
-                                print matchperc
-                                print city_name
-                                print city_name_db
+                        if matchperc > 0.85:
                             return city
-                        elif matchperc > 0.4:
+                        if ascii_name_db:
+                            ascii_name_db = ascii_name_db.lower()
+                            if difflib.SequenceMatcher(None, city_name, ascii_name_db).ratio() > 0.85:
+                                return city
+                        if alt_name_db:
+                            alt_name_db = alt_name_db.lower()
+                            if difflib.SequenceMatcher(None, city_name, alt_name_db).ratio() > 0.85:
+                                return city
+                        if name_par_db:
+                            name_par_db = name_par_db.lower()
+                            if difflib.SequenceMatcher(None, city_name, name_par_db).ratio() > 0.85:
+                                return city
 
-                            if ascii_name_db:
-                                ascii_name_db = ascii_name_db.lower()
-                                if city_name == ascii_name_db or difflib.SequenceMatcher(None, city_name, ascii_name_db).ratio() > 0.85:
-                                    return city
-                            if alt_name_db:
-                                alt_name_db = alt_name_db.lower()
-                                if city_name == alt_name_db or difflib.SequenceMatcher(None, city_name, alt_name_db).ratio() > 0.85:
-                                    return city
-                            if name_par_db:
-                                name_par_db = name_par_db.lower()
-                                if city_name == name_par_db or difflib.SequenceMatcher(None, city_name, name_par_db).ratio() > 0.85:
-                                    return city
             else:
                 return None
         except Exception as e:
+            print e
             return None
 
         return None
