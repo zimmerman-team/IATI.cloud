@@ -555,7 +555,7 @@ class IndicatorFilterOptionsResource(ModelResource):
             cursor.execute('SELECT DISTINCT i.indicator_id, i.selection_type, ind.friendly_label, ind.category as indicator_category, country.code as country_id, country.name as country_name, region.code as region_id, region.name as region_name '
                            'FROM indicator_indicatordata i '
                            'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
-                           'LEFT OUTER JOIN geodata_country country on i.country_id = country.code '
+                           'JOIN geodata_country country on i.country_id = country.code '
                            'LEFT OUTER JOIN geodata_region region on country.region_id = region.code '
                            'WHERE 1 %s ' % (filter_string))
 
@@ -593,7 +593,7 @@ class IndicatorFilterOptionsResource(ModelResource):
             cursor.execute('SELECT DISTINCT i.indicator_id, i.selection_type ,ind.friendly_label, ind.category as indicator_category, region.code as region_id, region.name as region_name '
                            'FROM indicator_indicatordata i '
                            'JOIN indicator_indicator ind ON i.indicator_id = ind.id '
-                           'LEFT OUTER JOIN geodata_region region on i.region_id = region.code '
+                           'JOIN geodata_region region on i.region_id = region.code '
                            'WHERE 1 %s ' % (filter_string))
 
             desc = cursor.description
