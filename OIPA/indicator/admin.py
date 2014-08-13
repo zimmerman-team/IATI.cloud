@@ -137,7 +137,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                     else:
                         # create new indicator
                         try:
-                            indicator_from_db = Indicator(description=description_csv, friendly_label=friendly_label_csv, type_data=type_data_csv, deprivation_type=deprivation_type_csv, category=category_csv)
+                            indicator_from_db = Indicator(id=indicator_id_csv, description=description_csv, friendly_label=friendly_label_csv, type_data=type_data_csv, deprivation_type=deprivation_type_csv, category=category_csv)
                             indicator_from_db.save()
                         except Exception as e:
                             print e
@@ -145,17 +145,17 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 #getting country from our database
                 country_from_db = find_country(country_name=country_csv, countries=countries)
 
-                if country_from_db:
-                    #getting city from our database
-                    city_from_db = find_city(city_name=city_csv, cities=cities, country_id=country_from_db.code)
-
-
                 #add country to the log array
                 if country_from_db:
                     country_found.append(country_csv)
+                    country_id = country_from_db.code
                 else:
                     if country_csv:
                         country_not_found.append(country_csv)
+                        country_id = None
+
+
+                city_from_db = find_city(city_name=city_csv, cities=cities, country_id=country_id)
 
                 #add city to the log array
                 if city_from_db:
@@ -165,25 +165,26 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                         city_not_found.append(city_csv)
 
                 try:
-                    #this block is for storing data related to cities
-                    if save_city_data(
-                        city_from_db=city_from_db,
-                        country_from_db=country_from_db,
-                        selection_type_csv=selection_type_csv,
-                        indicator_from_db=indicator_from_db,
-                        year_csv=year_csv,
-                        value_csv=value_csv
-                    ): total_items_saved += 1
-
-                    #this block is for storing country related indicator data
-                    if save_country_data(
+                    if city_from_db:
+                        #this block is for storing data related to cities
+                        if save_city_data(
+                            city_from_db=city_from_db,
                             country_from_db=country_from_db,
-                            city_csv=city_csv,
                             selection_type_csv=selection_type_csv,
-                            year_csv=year_csv,
                             indicator_from_db=indicator_from_db,
+                            year_csv=year_csv,
                             value_csv=value_csv
-                    ): total_items_saved += 1
+                        ): total_items_saved += 1
+                    elif country_from_db:
+                        #this block is for storing country related indicator data
+                        if save_country_data(
+                                country_from_db=country_from_db,
+                                city_csv=city_csv,
+                                selection_type_csv=selection_type_csv,
+                                year_csv=year_csv,
+                                indicator_from_db=indicator_from_db,
+                                value_csv=value_csv
+                        ): total_items_saved += 1
 
                     line_counter += 1
                 except Exception as e:

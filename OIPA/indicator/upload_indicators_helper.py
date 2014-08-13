@@ -165,7 +165,7 @@ def save_log(
 def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_from_db, year_csv, value_csv):
     try:
         if city_from_db and year_csv:
-            #if the indicator data a selection type contains than we need to store that correctly
+            #if the indicator data contains a selection type than we need to store that correctly
             if selection_type_csv:
                 indicator_data_from_db = IndicatorData.objects.get_or_create(year=year_csv, indicator=indicator_from_db, selection_type=selection_type_csv, city=city_from_db)[0]
             else:
@@ -181,7 +181,8 @@ def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_
             return True
         else:
             return False
-    except:
+    except Exception as e:
+        print e
         #todo we need to know what is going wrong. We need to find the errors and give it back to the user.
         return False
 
