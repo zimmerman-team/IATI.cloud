@@ -14,7 +14,7 @@ from api.v3.resources.helper_resources import TitleResource, DescriptionResource
 from api.cache import NoTransformCache
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 from api.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource,ActivityViewActivityScopeResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
-
+from api.v3.resources.helper_resources import DocumentResource
 #cache specific
 from django.http import HttpResponse
 from cache.validator import Validator
@@ -36,7 +36,7 @@ class ActivityListResource(ModelResource):
     default_aid_type = fields.ForeignKey(ActivityViewAidTypeResource, attribute='default_aid_type', full=True, null=True)
     default_tied_status = fields.ForeignKey(ActivityViewTiedStatusResource, attribute='default_tied_status', full=True, null=True)
     default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
-
+    documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True)
 
     class Meta:
         queryset = Activity.objects.all()

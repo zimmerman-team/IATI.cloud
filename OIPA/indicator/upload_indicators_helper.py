@@ -109,7 +109,6 @@ def find_city(city_name, cities, country_id):
             else:
                 return None
         except Exception as e:
-            print e
             return None
 
         return None
@@ -182,7 +181,6 @@ def save_city_data(city_from_db, country_from_db, selection_type_csv, indicator_
         else:
             return False
     except Exception as e:
-        print e
         #todo we need to know what is going wrong. We need to find the errors and give it back to the user.
         return False
 
