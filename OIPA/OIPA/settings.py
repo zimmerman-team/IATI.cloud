@@ -166,7 +166,7 @@ INSTALLED_APPS = (
 
     'indicator_unesco',
     'translation_model',
-
+    'debug_toolbar',
 )
 
 
