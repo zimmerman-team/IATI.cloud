@@ -167,14 +167,14 @@ class ActivityResource(ModelResource):
         if query:
 
             qset = (
-                Q(id__in=query, **filters) |
-                Q(activityrecipientcountry__country__name__in=query, **filters) |
+                Q(id__icontains=query, **filters) |
+                Q(activityrecipientcountry__country__name__icontains=query, **filters) |
                 Q(title__title__icontains=query, **filters) |
                 Q(description__description__icontains=query, **filters)
             )
 
             return base_object_list.filter(qset).distinct()
-        return base_object_list.filter(**filters).distinct()
+        return base_object_list.filter(**filters)
 
     def get_list(self, request, **kwargs):
 

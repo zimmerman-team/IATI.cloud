@@ -153,7 +153,8 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                     if country_csv:
                         country_not_found.append(country_csv)
                         country_id = None
-
+                    else:
+                        country_id = None
 
                 city_from_db = find_city(city_name=city_csv, cities=cities, country_id=country_id)
 
@@ -216,7 +217,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
             }
 
         except Exception as e:
-                    print e
+                        print e
 
     def delete_file(self, pk, request):
         '''

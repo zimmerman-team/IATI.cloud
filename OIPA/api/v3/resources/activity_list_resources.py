@@ -92,7 +92,7 @@ class ActivityListResource(ModelResource):
                 return base_object_list.filter(start_planned__year=filter_year, **filters).distinct()
 
 
-        return base_object_list.filter(**filters).distinct()
+        return base_object_list.filter(**filters)
 
     def get_list(self, request, **kwargs):
 

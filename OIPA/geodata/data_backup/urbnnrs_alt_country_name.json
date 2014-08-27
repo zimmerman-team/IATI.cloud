@@ -6,6 +6,10 @@
     "US": {"alt_name": "United States of America"},
     "TZ": {"alt_name": "United Republic of Tanzania"},
     "RU": {"alt_name": "Russia"},
-    "BO": {"alt_name": "Bolivia"}
-
+    "BO": {"alt_name": "Bolivia"},
+    "CD": {"alt_name": "Democratic Republic of the Congo"},
+    "KR": {"alt_name": "Republic of Korea"},
+    "VE": {"alt_name": "Venezuela (Bolivarian Republic of)"},
+    "CF": {"alt_name": "Central African Rep."},
+    "KP": {"alt_name": "Democratic Peoples Republic of Korea"}
 }
