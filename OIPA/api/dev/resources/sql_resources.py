@@ -15,9 +15,9 @@ import xmlrpclib
 
 
 # Helpers
-from api.v3.resources.csv_serializer import CsvSerializer
-from api.v3.resources.csv_helper import CsvHelper
-from api.v3.resources.custom_call_helper import CustomCallHelper
+from api.dev.resources.csv_serializer import CsvSerializer
+from api.dev.resources.csv_helper import CsvHelper
+from api.dev.resources.custom_call_helper import CustomCallHelper
 
 
 class ActivityFilterOptionsResource(ModelResource):

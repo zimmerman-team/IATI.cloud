@@ -12,7 +12,7 @@ from django.db import connection
 from django.http import HttpResponse
 
 # Helpers
-from api.v3.resources.custom_call_helper import CustomCallHelper
+from api.dev.resources.custom_call_helper import CustomCallHelper
 
 class IndicatorAggregationResource(ModelResource):
 

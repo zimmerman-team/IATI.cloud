@@ -10,11 +10,11 @@ from tastypie.serializers import Serializer
 
 # Data specific
 from iati.models import Activity
-from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
+from api.dev.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource
 from api.cache import NoTransformCache
-from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
-from api.v3.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource,ActivityViewActivityScopeResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
-from api.v3.resources.helper_resources import DocumentResource
+from api.dev.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
+from api.dev.resources.activity_view_resources import ActivityViewTiedStatusResource, ActivityViewAidTypeResource, ActivityViewOrganisationResource, ActivityViewActivityStatusResource,ActivityViewActivityScopeResource, ActivityViewSectorResource, ActivityViewCollaborationTypeResource, ActivityViewFlowTypeResource, ActivityViewCurrencyResource
+from api.dev.resources.helper_resources import DocumentResource
 #cache specific
 from django.http import HttpResponse
 from cache.validator import Validator

@@ -1,6 +1,6 @@
 from tastypie.serializers import Serializer
 from indicator.models import *
-from api.v3.resources.helper_resources import *
+from api.dev.resources.helper_resources import *
 
 
 

@@ -2,8 +2,8 @@
 from django.template.response import TemplateResponse
 
 # Api specific
-from api.v3.resources.model_resources import *
-from api.v3.resources.activity_view_resources import *
+from api.dev.resources.model_resources import *
+from api.dev.resources.activity_view_resources import *
 
 def docs_index(request):
     context = dict()
