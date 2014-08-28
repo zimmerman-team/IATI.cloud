@@ -22,6 +22,7 @@ class IndicatorAggregationResource(ModelResource):
         resource_name = 'indicator-region-aggregation'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -77,6 +78,7 @@ class IndicatorCountryDataResource(ModelResource):
         resource_name = 'indicator-country-data'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -153,6 +155,7 @@ class IndicatorCityDataResource(ModelResource):
         resource_name = 'indicator-city-data'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -234,6 +237,7 @@ class IndicatorRegionDataResource(ModelResource):
         resource_name = 'indicator-region-data'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -306,6 +310,7 @@ class IndicatorDataResource(ModelResource):
         resource_name = 'indicator-data'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -482,6 +487,7 @@ class IndicatorFilterOptionsResource(ModelResource):
         resource_name = 'indicator-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):

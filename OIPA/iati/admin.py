@@ -57,13 +57,22 @@ class SectorAdmin(admin.ModelAdmin):
         urls = super(SectorAdmin, self).get_urls()
 
         my_urls = patterns('',
-            (r'^update-unesco-sectors', self.admin_site.admin_view(self.update_unesco_sectors))
+            (r'^update-unesco-sectors', self.admin_site.admin_view(self.update_unesco_sectors)),
+            (r'^update-rain-sectors', self.admin_site.admin_view(self.update_rain_sectors))
         )
         return my_urls + urls
 
     def update_unesco_sectors(self, request):
         sector_updater = SectorUpdater()
         success = sector_updater.update_unesco_sectors()
+        if success:
+            return HttpResponse('Success')
+        else:
+            return False
+
+    def update_rain_sectors(self, request):
+        sector_updater = SectorUpdater()
+        success = sector_updater.update_rain_sectors()
         if success:
             return HttpResponse('Success')
         else:

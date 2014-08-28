@@ -61,6 +61,7 @@ class ActivityListResource(ModelResource):
             'participating_organisations': ('exact', 'in'),
         }
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def apply_filters(self, request, applicable_filters):
@@ -92,7 +93,7 @@ class ActivityListResource(ModelResource):
                 return base_object_list.filter(start_planned__year=filter_year, **filters).distinct()
 
 
-        return base_object_list.filter(**filters)
+        return base_object_list.filter(**filters).distinct()
 
     def get_list(self, request, **kwargs):
 

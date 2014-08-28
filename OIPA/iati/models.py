@@ -674,7 +674,8 @@ class Description(models.Model):
     description = models.TextField(null=True, default=None, db_index=True, max_length=40000)
     language = models.ForeignKey(Language, null=True, default=None)
     type = models.ForeignKey(DescriptionType, related_name="description_type", null=True, default=None)
-    rsr_description_type_id = models.IntegerField(null=True, default=None)
+    rsr_description_type_id = models.IntegerField(null=True, default=None) # remove
+
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.type)
@@ -688,6 +689,7 @@ class Budget(models.Model):
     value = models.DecimalField(max_digits=15, decimal_places=2)
     value_date = models.DateField(null=True, default=None)
     currency = models.ForeignKey(Currency, null=True, default=None)
+
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.period_start)

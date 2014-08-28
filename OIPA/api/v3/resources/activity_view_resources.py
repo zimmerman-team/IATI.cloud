@@ -10,7 +10,7 @@ from tastypie.serializers import Serializer
 # Data specific
 from api.cache import NoTransformCache
 from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope
-from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource
+from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
 # cache specific
@@ -76,6 +76,7 @@ class ActivityViewTransactionResource(ModelResource):
         queryset = Transaction.objects.all()
         include_resource_uri = False
         excludes = ['id', 'ref', 'description', 'provider_activity']
+        allowed_methods = ['get']
 
     def dehydrate(self, bundle):
 
@@ -110,10 +111,6 @@ class ActivityViewCurrencyResource(ModelResource):
 
 
 
-
-
-
-
 class ActivityResource(ModelResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
@@ -124,7 +121,7 @@ class ActivityResource(ModelResource):
     sectors = fields.ToManyField(ActivityViewSectorResource, 'sector', full=True, null=True)
     titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
     descriptions = fields.ToManyField(DescriptionResource, 'description_set', full=True, null=True)
-    websites = fields.ToManyField(WebsiteResource, 'activity_website_set', full=True, null=True)
+    websites = fields.ToManyField(WebsiteResource, 'activitywebsite_set', full=True, null=True)
     policy_markers = fields.ToManyField(PolicyMarkerResource, 'policy_marker', full=True, null=True)
     collaboration_type = fields.ForeignKey(ActivityViewCollaborationTypeResource, attribute='collaboration_type', full=True, null=True)
     default_flow_type = fields.ForeignKey(ActivityViewFlowTypeResource, attribute='default_flow_type', full=True, null=True)
@@ -136,6 +133,7 @@ class ActivityResource(ModelResource):
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True)
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True)
+    other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True)
 
     class Meta:
         queryset = Activity.objects.all()
@@ -174,7 +172,7 @@ class ActivityResource(ModelResource):
             )
 
             return base_object_list.filter(qset).distinct()
-        return base_object_list.filter(**filters)
+        return base_object_list.filter(**filters).distinct()
 
     def get_list(self, request, **kwargs):
 

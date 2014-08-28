@@ -349,7 +349,7 @@ class Parser():
                     owner_name = self.return_first_exist(t.xpath( '@owner-name' ))
                     other_identifier = self.return_first_exist(t.xpath( 'text()' ))
                     if not other_identifier:
-                        continue
+                        other_identifier = " "
                     new_other_identifier = models.OtherIdentifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
                     new_other_identifier.save()
 
@@ -416,10 +416,44 @@ class Parser():
                             if not description:
                                 description = type_ref
 
+                    if not description:
+                        continue
+
                     # if rsr_type_ref:
                     #     if models.rsr_description_type.objects.filter(code=rsr_type_ref).exists():
                     #         rsr_type = models.rsr_description_type.objects.get(code=rsr_type_ref)
 
+                    # RAIN exceptions
+                    if activity.reporting_organisation_id == "NL-KVK-34200988":
+
+                        rain_type = self.return_first_exist(t.xpath('@rain:type', namespaces={'rain': 'http://data.rainfoundation.org'}))
+
+                        lookuplist = {}
+
+                        if rain_type == "d_context":
+
+                            type = models.DescriptionType.objects.get(name=rain_type)
+                            new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
+                            new_description.save()
+                            continue
+
+                        if rain_type == "services": # rain_services
+                            lookuplist = {'ADV': 'Advice', 'INT': 'Intelligence', 'IMP': 'Implementation'}
+                        if rain_type == "type": # cat rain_project_type
+                            lookuplist = {'CAP': 'Capacity Development', 'R-D': 'Research and Development', 'L-P': 'Lobby and Promotion', 'INF': 'Infrastructure'}
+                        if rain_type == "d_themes": # cat rain_themes
+                            lookuplist = {'WASH': 'WASH', '3R': '3R', 'MUS': 'MUS', 'BDEV': 'Business Development', 'FSEC': 'Food Security', 'OTH': 'Other'}
+                        if rain_type == "d_subjects": # cat rain_sustainability
+                            lookuplist = {'F': 'Financial', 'I': 'Institutional', 'E': 'Environmental', 'T': 'Technical', 'S': 'Social'}
+
+                        if rain_type in ['services', 'type', 'd_themes', 'd_subjects']:
+                            splitted_sectors = description.split(",")
+                            for sec in splitted_sectors:
+                                if sec in lookuplist:
+                                    secname = lookuplist[sec]
+                                    sector = models.Sector.objects.get(name=secname)
+                                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=None, vocabulary=None, percentage=None)
+                                    new_activity_sector.save()
 
 
                     new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
@@ -483,6 +517,21 @@ class Parser():
                     if not value:
                         continue
 
+                    # RAIN SPECIFIC
+                    if activity.reporting_organisation_id == "NL-KVK-34200988":
+
+                        # save budget per rain type
+                        for curvalue in t.xpath('value'):
+
+                            value = self.return_first_exist(curvalue.xpath('text()'))
+                            rain_type = self.return_first_exist(curvalue.xpath('@rain:type', namespaces={'rain': 'http://data.rainfoundation.org'}))
+
+                            if models.BudgetType.objects.filter(name=rain_type).exists():
+
+                                budget_type = models.BudgetType.objects.get(name=rain_type)
+                                new_budget = models.Budget(activity=activity, type=budget_type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)
+                                new_budget.save()
+                        continue
 
 
                     new_budget = models.Budget(activity=activity, type=type, period_start=period_start, period_end=period_end, value=value, value_date=value_date, currency=currency)

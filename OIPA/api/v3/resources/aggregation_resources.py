@@ -26,6 +26,7 @@ class ActivityCountResource(ModelResource):
         resource_name = 'activity-count'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -157,6 +158,7 @@ class ActivityAggregatedAnyResource(ModelResource):
         resource_name = 'activity-aggregate-any'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -317,6 +319,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
         resource_name = 'activity-aggregate-any-names'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
