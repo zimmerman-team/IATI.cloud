@@ -11,6 +11,7 @@ class RegionResource(ModelResource):
         resource_name = 'regions'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
+        allowed_methods = ['get']
 
 class CityResource(ModelResource):
 
@@ -22,6 +23,7 @@ class CityResource(ModelResource):
         filtering = {
             'id': ['exact'],
         }
+        allowed_methods = ['get']
 
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
@@ -36,11 +38,11 @@ class CountryResource(ModelResource):
         filtering = {
             'code': ['exact'],
         }
+        allowed_methods = ['get']
 
     def dehydrate(self, bundle):
         bundle.data['region_id'] = bundle.obj.region_id
         return bundle
-
 
 
 
@@ -52,7 +54,7 @@ class SectorResource(ModelResource):
         resource_name = 'sectors'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
-
+        allowed_methods = ['get']
 
 class OrganisationResource(ModelResource):
     type = fields.OneToOneField(OrganisationTypeResource, 'type', full=True, null=True)

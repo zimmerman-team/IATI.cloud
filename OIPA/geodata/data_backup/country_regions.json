@@ -1521,102 +1521,939 @@
 		"type": "Country"
 	},
     {
-		"country_name": "Andorra",
-		"dac_country_code": "",
-		"iso2": "AD",
-		"iso3": "",
-		"dac_region_code": "89",
-		"dac_region_name": "Europe, regional",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	},
-    {
-		"country_name": "",
-		"dac_country_code": "",
-		"iso2": "",
-		"iso3": "",
-		"dac_region_code": "",
-		"dac_region_name": "",
-		"type": "Country"
-	}
+    "country_name":"Andorra",
+    "dac_country_code":"",
+    "iso2":"AD",
+    "iso3":"AND",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"United arab emirates",
+    "dac_country_code":"",
+    "iso2":"AE",
+    "iso3":"ARE",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Netherland antilles",
+    "dac_country_code":"",
+    "iso2":"AN",
+    "iso3":"ANT",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Antarctica",
+    "dac_country_code":"",
+    "iso2":"AQ",
+    "iso3":"ATA",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Argentina",
+    "dac_country_code":"",
+    "iso2":"AR",
+    "iso3":"ARG",
+    "dac_region_code":489,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"American samoa",
+    "dac_country_code":"",
+    "iso2":"AS",
+    "iso3":"ASM",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Austria",
+    "dac_country_code":"",
+    "iso2":"AT",
+    "iso3":"AUT",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Australia",
+    "dac_country_code":"",
+    "iso2":"AU",
+    "iso3":"AUS",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Aruba",
+    "dac_country_code":"",
+    "iso2":"AW",
+    "iso3":"ABW",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"��land islands",
+    "dac_country_code":"",
+    "iso2":"AX",
+    "iso3":"ALA",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Belgium",
+    "dac_country_code":"",
+    "iso2":"BE",
+    "iso3":"BEL",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bulgaria",
+    "dac_country_code":"",
+    "iso2":"BG",
+    "iso3":"BGR",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bahrain",
+    "dac_country_code":"",
+    "iso2":"BH",
+    "iso3":"BHR",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Benin",
+    "dac_country_code":"",
+    "iso2":"BJ",
+    "iso3":"BEN",
+    "dac_region_code":289,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Saint barth��lemy",
+    "dac_country_code":"",
+    "iso2":"BL",
+    "iso3":"BLM",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bermuda",
+    "dac_country_code":"",
+    "iso2":"BM",
+    "iso3":"BMU",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Brunei darussalam",
+    "dac_country_code":"",
+    "iso2":"BN",
+    "iso3":"BRN",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bonaire, saint eustatius and saba",
+    "dac_country_code":"",
+    "iso2":"BQ",
+    "iso3":"BES",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bahamas",
+    "dac_country_code":"",
+    "iso2":"BS",
+    "iso3":"BHS",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Bouvet island",
+    "dac_country_code":"",
+    "iso2":"BV",
+    "iso3":"BVT",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Canada",
+    "dac_country_code":"",
+    "iso2":"CA",
+    "iso3":"CAN",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Cocos (keeling) islands",
+    "dac_country_code":"",
+    "iso2":"CC",
+    "iso3":"CCK",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Congo, the democratic republic of the",
+    "dac_country_code":"",
+    "iso2":"CD",
+    "iso3":"COD",
+    "dac_region_code":289,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Switzerland",
+    "dac_country_code":"",
+    "iso2":"CH",
+    "iso3":"CHE",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Cura��ao",
+    "dac_country_code":"",
+    "iso2":"CW",
+    "iso3":"CUW",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Christmas island",
+    "dac_country_code":"",
+    "iso2":"CX",
+    "iso3":"CXR",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Cyprus",
+    "dac_country_code":"",
+    "iso2":"CY",
+    "iso3":"CYP",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Czech republic",
+    "dac_country_code":"",
+    "iso2":"CZ",
+    "iso3":"CZE",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Germany",
+    "dac_country_code":"",
+    "iso2":"DE",
+    "iso3":"DEU",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Denmark",
+    "dac_country_code":"",
+    "iso2":"DK",
+    "iso3":"DNK",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Estonia",
+    "dac_country_code":"",
+    "iso2":"EE",
+    "iso3":"EST",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Western sahara",
+    "dac_country_code":"",
+    "iso2":"EH",
+    "iso3":"ESH",
+    "dac_region_code":189,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Spain",
+    "dac_country_code":"",
+    "iso2":"ES",
+    "iso3":"ESP",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Finland",
+    "dac_country_code":"",
+    "iso2":"FI",
+    "iso3":"FIN",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Falkland islands (malvinas)",
+    "dac_country_code":"",
+    "iso2":"FK",
+    "iso3":"FLK",
+    "dac_region_code":489,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Faroe islands",
+    "dac_country_code":"",
+    "iso2":"FO",
+    "iso3":"FRO",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"France",
+    "dac_country_code":"",
+    "iso2":"FR",
+    "iso3":"FRA",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"United kingdom",
+    "dac_country_code":"",
+    "iso2":"GB",
+    "iso3":"GBR",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"French guiana",
+    "dac_country_code":"",
+    "iso2":"GF",
+    "iso3":"GUF",
+    "dac_region_code":489,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Guernsey",
+    "dac_country_code":"",
+    "iso2":"GG",
+    "iso3":"GGY",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Gibraltar",
+    "dac_country_code":"",
+    "iso2":"GI",
+    "iso3":"GIB",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Greenland",
+    "dac_country_code":"",
+    "iso2":"GL",
+    "iso3":"GRL",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Guadeloupe",
+    "dac_country_code":"",
+    "iso2":"GP",
+    "iso3":"GLP",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Greece",
+    "dac_country_code":"",
+    "iso2":"GR",
+    "iso3":"GRC",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"South georgia and the south sandwich islands",
+    "dac_country_code":"",
+    "iso2":"GS",
+    "iso3":"SGS",
+    "dac_region_code":489,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Guam",
+    "dac_country_code":"",
+    "iso2":"GU",
+    "iso3":"GUM",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Hong kong",
+    "dac_country_code":"",
+    "iso2":"HK",
+    "iso3":"HKG",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Heard island and mcdonald islands",
+    "dac_country_code":"",
+    "iso2":"HM",
+    "iso3":"HMD",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Hungary",
+    "dac_country_code":"",
+    "iso2":"HU",
+    "iso3":"HUN",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Ireland",
+    "dac_country_code":"",
+    "iso2":"IE",
+    "iso3":"IRL",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Israel",
+    "dac_country_code":"",
+    "iso2":"IL",
+    "iso3":"ISR",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Isle of man",
+    "dac_country_code":"",
+    "iso2":"IM",
+    "iso3":"IMN",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"British indian ocean territory",
+    "dac_country_code":"",
+    "iso2":"IO",
+    "iso3":"IOT",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Iceland",
+    "dac_country_code":"",
+    "iso2":"IS",
+    "iso3":"ISL",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Italy",
+    "dac_country_code":"",
+    "iso2":"IT",
+    "iso3":"ITA",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Jersey",
+    "dac_country_code":"",
+    "iso2":"JE",
+    "iso3":"JEY",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Japan",
+    "dac_country_code":"",
+    "iso2":"JP",
+    "iso3":"JPN",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Korea, republic of",
+    "dac_country_code":"",
+    "iso2":"KR",
+    "iso3":"KOR",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Kuwait",
+    "dac_country_code":"",
+    "iso2":"KW",
+    "iso3":"KWT",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Cayman islands",
+    "dac_country_code":"",
+    "iso2":"KY",
+    "iso3":"CYM",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Liechtenstein",
+    "dac_country_code":"",
+    "iso2":"LI",
+    "iso3":"LIE",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Lithuania",
+    "dac_country_code":"",
+    "iso2":"LT",
+    "iso3":"LTU",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Luxembourg",
+    "dac_country_code":"",
+    "iso2":"LU",
+    "iso3":"LUX",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Latvia",
+    "dac_country_code":"",
+    "iso2":"LV",
+    "iso3":"LVA",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Monaco",
+    "dac_country_code":"",
+    "iso2":"MC",
+    "iso3":"MCO",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Saint martin (french part)",
+    "dac_country_code":"",
+    "iso2":"MF",
+    "iso3":"MAF",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Macao",
+    "dac_country_code":"",
+    "iso2":"MO",
+    "iso3":"MAC",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Northern mariana islands",
+    "dac_country_code":"",
+    "iso2":"MP",
+    "iso3":"MNP",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Martinique",
+    "dac_country_code":"",
+    "iso2":"MQ",
+    "iso3":"MTQ",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Malta",
+    "dac_country_code":"",
+    "iso2":"MT",
+    "iso3":"MLT",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"New caledonia",
+    "dac_country_code":"",
+    "iso2":"NC",
+    "iso3":"NCL",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Norfolk island",
+    "dac_country_code":"",
+    "iso2":"NF",
+    "iso3":"NFK",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Netherlands",
+    "dac_country_code":"",
+    "iso2":"NL",
+    "iso3":"NLD",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Norway",
+    "dac_country_code":"",
+    "iso2":"NO",
+    "iso3":"NOR",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"New zealand",
+    "dac_country_code":"",
+    "iso2":"NZ",
+    "iso3":"NZL",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"French polynesia",
+    "dac_country_code":"",
+    "iso2":"PF",
+    "iso3":"PYF",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Poland",
+    "dac_country_code":"",
+    "iso2":"PL",
+    "iso3":"POL",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Saint pierre and miquelon",
+    "dac_country_code":"",
+    "iso2":"PM",
+    "iso3":"SPM",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Pitcairn",
+    "dac_country_code":"",
+    "iso2":"PN",
+    "iso3":"PCN",
+    "dac_region_code":889,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Puerto rico",
+    "dac_country_code":"",
+    "iso2":"PR",
+    "iso3":"PRI",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Portugal",
+    "dac_country_code":"",
+    "iso2":"PT",
+    "iso3":"PRT",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Qatar",
+    "dac_country_code":"",
+    "iso2":"QA",
+    "iso3":"QAT",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Reunion",
+    "dac_country_code":"",
+    "iso2":"RE",
+    "iso3":"REU",
+    "dac_region_code":289,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Romania",
+    "dac_country_code":"",
+    "iso2":"RO",
+    "iso3":"ROU",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Russian federation",
+    "dac_country_code":"",
+    "iso2":"RU",
+    "iso3":"RUS",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Saudi arabia",
+    "dac_country_code":"",
+    "iso2":"SA",
+    "iso3":"SAU",
+    "dac_region_code":589,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Sweden",
+    "dac_country_code":"",
+    "iso2":"SE",
+    "iso3":"SWE",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Singapore",
+    "dac_country_code":"",
+    "iso2":"SG",
+    "iso3":"SGP",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Slovenia",
+    "dac_country_code":"",
+    "iso2":"SI",
+    "iso3":"SVN",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Svalbard and jan mayen",
+    "dac_country_code":"",
+    "iso2":"SJ",
+    "iso3":"SJM",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Slovakia",
+    "dac_country_code":"",
+    "iso2":"SK",
+    "iso3":"SVK",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"San marino",
+    "dac_country_code":"",
+    "iso2":"SM",
+    "iso3":"SMR",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"South sudan",
+    "dac_country_code":"",
+    "iso2":"SS",
+    "iso3":"SSD",
+    "dac_region_code":289,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Sint maarten (dutch part)",
+    "dac_country_code":"",
+    "iso2":"SX",
+    "iso3":"SXM",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Turks and caicos islands",
+    "dac_country_code":"",
+    "iso2":"TC",
+    "iso3":"TCA",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"French southern territories",
+    "dac_country_code":"",
+    "iso2":"TF",
+    "iso3":"ATF",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Taiwan, province of china",
+    "dac_country_code":"",
+    "iso2":"TW",
+    "iso3":"TWN",
+    "dac_region_code":789,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"United states minor outlying islands",
+    "dac_country_code":"",
+    "iso2":"UM",
+    "iso3":"UMI",
+    "dac_region_code":998,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"United states",
+    "dac_country_code":"",
+    "iso2":"US",
+    "iso3":"USA",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Holy see (vatican city state)",
+    "dac_country_code":"",
+    "iso2":"VA",
+    "iso3":"VAT",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Virgin islands, british",
+    "dac_country_code":"",
+    "iso2":"VG",
+    "iso3":"VGB",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Virgin islands, u.s.",
+    "dac_country_code":"",
+    "iso2":"VI",
+    "iso3":"VIR",
+    "dac_region_code":389,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Kosovo",
+    "dac_country_code":"",
+    "iso2":"XK",
+    "iso3":"XKK",
+    "dac_region_code":89,
+    "dac_region_name":"",
+    "type":"Country"
+  },
+  {
+    "country_name":"Mayotte",
+    "dac_country_code":"",
+    "iso2":"YT",
+    "iso3":"MYT",
+    "dac_region_code":289,
+    "dac_region_name":"",
+    "type":"Country"
+  }
 ]

@@ -13,7 +13,7 @@ class UnescoIndicatorResource(ModelResource):
         resource_name = 'unesco-indicators'
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
-
+        allowed_methods = ['get']
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(UnescoIndicatorResource, self).apply_filters(request, applicable_filters)

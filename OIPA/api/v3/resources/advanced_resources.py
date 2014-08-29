@@ -12,6 +12,7 @@ class OnlyCountryResource(ModelResource):
         filtering = {
             'code' : 'gte',
         }
+        allowed_methods = ['get']
 
 
 class OnlyRegionResource(ModelResource):
@@ -22,6 +23,7 @@ class OnlyRegionResource(ModelResource):
         filtering = {
             'code' : 'gte',
         }
+        allowed_methods = ['get']
 
 class OnlyCityResource(ModelResource):
     class Meta:
@@ -30,6 +32,7 @@ class OnlyCityResource(ModelResource):
         include_resource_uri = False
         excludes = ['alt_name', 'ascii_name', 'geoname_id', 'location']
         limit = 150
+        allowed_methods = ['get']
 
     def dehydrate(self, bundle):
         bundle.data['country'] = bundle.obj.country.code

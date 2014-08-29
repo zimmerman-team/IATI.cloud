@@ -106,6 +106,31 @@ def find_city(city_name, cities, country_id):
                             if difflib.SequenceMatcher(None, city_name, name_par_db).ratio() > 0.85:
                                 return city
 
+
+                for city in cities:
+                    if city.country_id == country_id:
+                        city_name_db = city.name.lower()
+                        ascii_name_db = city.ascii_name
+                        alt_name_db = city.alt_name
+                        name_par_db = city.namepar
+
+                        if city_name_db in city_name:
+                            return city
+                        if ascii_name_db:
+                            ascii_name_db = ascii_name_db.lower()
+                            if ascii_name_db in city_name:
+                                return city
+                        if alt_name_db:
+                            alt_name_db = alt_name_db.lower()
+                            if alt_name_db in city_name:
+                                return city
+                        if name_par_db:
+                            name_par_db = name_par_db.lower()
+                            if name_par_db in city_name:
+                                return city
+
+
+
             else:
                 return None
         except Exception as e:

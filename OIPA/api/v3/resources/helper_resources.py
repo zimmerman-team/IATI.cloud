@@ -19,8 +19,13 @@ class TitleResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
 
+class DescriptionTypeResource(ModelResource):
+    class Meta:
+        queryset = DescriptionType.objects.all()
+        include_resource_uri = False
 
 class DescriptionResource(ModelResource):
+    type = fields.ForeignKey(DescriptionTypeResource, 'type', full=True, null=True)
     language = fields.ToOneField(LanguageResource, 'language', full=True, null=True)
     class Meta:
         queryset = Description.objects.all()
@@ -83,11 +88,25 @@ class TiedStatusResource(ModelResource):
         queryset = TiedStatus.objects.all()
         include_resource_uri = False
 
+
+class ActivityBudgetTypeResource(ModelResource):
+
+    class Meta:
+        queryset = BudgetType.objects.all()
+        include_resource_uri = False
+        excludes = ['language']
+
+
+
 class ActivityBudgetResource(ModelResource):
+    type = fields.ForeignKey(ActivityBudgetTypeResource, 'type', full=True, null=True)
+
     class Meta:
         queryset = Budget.objects.all()
         include_resource_uri = False
         excludes = ['id']
+
+
 
 
 class TransactionResource(ModelResource):
@@ -122,5 +141,11 @@ class RecipientRegionResource(ModelResource):
 class WebsiteResource(ModelResource):
     class Meta:
         queryset = ActivityWebsite.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
+
+class OtherIdentifierResource(ModelResource):
+    class Meta:
+        queryset = OtherIdentifier.objects.all()
         include_resource_uri = False
         excludes = ['id']

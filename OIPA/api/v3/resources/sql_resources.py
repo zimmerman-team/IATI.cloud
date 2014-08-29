@@ -28,6 +28,7 @@ class ActivityFilterOptionsResource(ModelResource):
         resource_name = 'activity-filter-options'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -179,6 +180,7 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         resource_name = 'activity-filter-options-unesco'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -374,6 +376,7 @@ class CountryGeojsonResource(ModelResource):
         resource_name = 'country-geojson'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -460,6 +463,7 @@ class Adm1RegionGeojsonResource(ModelResource):
         resource_name = 'adm1-region-geojson'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -508,6 +512,7 @@ class CountryActivitiesResource(ModelResource):
         include_resource_uri = True
         cache = NoTransformCache()
         serializer = serializer = CsvSerializer()
+        allowed_methods = ['get']
 
     def get_list(self, request, **kwargs):
 
@@ -644,6 +649,7 @@ class RegionActivitiesResource(ModelResource):
         resource_name = 'region-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -777,6 +783,7 @@ class GlobalActivitiesResource(ModelResource):
         resource_name = 'global-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -888,6 +895,7 @@ class SectorActivitiesResource(ModelResource):
         resource_name = 'sector-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def get_list(self, request, **kwargs):
@@ -986,7 +994,7 @@ class DonorActivitiesResource(ModelResource):
         resource_name = 'donor-activities'
         include_resource_uri = True
         cache = NoTransformCache()
-
+        allowed_methods = ['get']
 
     def get_list(self, request, **kwargs):
 

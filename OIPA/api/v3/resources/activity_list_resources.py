@@ -61,6 +61,7 @@ class ActivityListResource(ModelResource):
             'participating_organisations': ('exact', 'in'),
         }
         cache = NoTransformCache()
+        allowed_methods = ['get']
 
 
     def apply_filters(self, request, applicable_filters):
