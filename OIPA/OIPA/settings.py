@@ -166,7 +166,8 @@ INSTALLED_APPS = (
 
     'indicator_unesco',
     'translation_model',
-    'debug_toolbar',
+    'debug_toolbar', #Used for debuging SQL Queries
+	'rest_framework',
 )
 
 
@@ -210,6 +211,11 @@ SUIT_CONFIG = {
         # {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
 
 
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGINATE_BY': 10
 }
 
 
