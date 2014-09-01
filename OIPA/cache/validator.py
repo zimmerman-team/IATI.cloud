@@ -13,19 +13,23 @@ class Validator():
 
     def is_cached(self, call):
 
-        # check if call is in requested_calls table
-        if RequestedCall.objects.filter(call=call).exists():
-            the_call = RequestedCall.objects.get(call=call)
-            the_call.count = the_call.count + 1
-            the_call.save()
-            if the_call.cached:
-                if CachedCall.objects.filter(call=call).exists():
-                    return True
-        else:
-            if not "flush" in call:
-                the_call = RequestedCall(call=call, cached=False, response_time=None, count=1)
+        if call.__len__() < 255:
+
+            # check if call is in requested_calls table
+            if RequestedCall.objects.filter(call=call).exists():
+                the_call = RequestedCall.objects.get(call=call)
+                the_call.count = the_call.count + 1
                 the_call.save()
-        return False
+                if the_call.cached:
+                    if CachedCall.objects.filter(call=call).exists():
+                        return True
+            else:
+                if not "flush" in call:
+                    the_call = RequestedCall(call=call, cached=False, response_time=None, count=1)
+                    the_call.save()
+            return False
+        else:
+            return False
 
     def update_response_times_and_add_to_cache(self):
 
