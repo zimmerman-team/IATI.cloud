@@ -8,11 +8,12 @@ from tastypie.resources import ModelResource
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, Description
+from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope
 from api.dev.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource
 from api.dev.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
 # cache specific
+from django.http import HttpResponse
 from cache.validator import Validator
 
 from api.dev.resources.csv_serializer import CsvSerializer
@@ -164,15 +165,20 @@ class ActivityResource(ModelResource):
 		filters = {}
 		if query:
 
-			qset = (
-				# Q(id__in=query, **filters) |
-				# Q(activityrecipientcountry__country__name__in=query, **filters) |
-				Q(search_title__search=query, **filters) |
-				Q(search_description__search=query, **filters)
-			)
+			#Modify the query for full text search boolean mode
+			#This ads a + and * char to each word. + sets boolean AND search. * activates wildcard search
+			fts_query = ''
+			for word in query.split():
+				fts_query += '+' + word+'* '
+			fts_query = fts_query[:-1]
 
-			return base_object_list.filter(qset).distinct().prefetch_related('title_set').prefetch_related('description_set')
-		return base_object_list.filter(**filters)
+			qset = (
+				Q(id__icontains=query, **filters) |
+				Q(search_title__search=fts_query, **filters) |
+				Q(search_description__search=fts_query, **filters)
+			)
+			return base_object_list.filter(qset).distinct()
+		return base_object_list.distinct()
 
 	def get_list(self, request, **kwargs):
 
@@ -181,7 +187,7 @@ class ActivityResource(ModelResource):
 		validator = Validator()
 		cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
-		#if not 'flush' in cururl and validator.is_cached(cururl):
-		#    return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
-		#else:
-		return super(ActivityResource, self).get_list(request, **kwargs)
+		if not 'flush' in cururl and validator.is_cached(cururl):
+			return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+		else:
+			return super(ActivityResource, self).get_list(request, **kwargs)
