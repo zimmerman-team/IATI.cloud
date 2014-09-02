@@ -679,7 +679,7 @@ class Description(models.Model):
     rsr_description_type_id = models.IntegerField(null=True, default=None) # remove
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity, self.description[:30]+'...')
+        return "%s - %s" % (self.activity, self.type)
 
 
 class Budget(models.Model):
