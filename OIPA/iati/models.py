@@ -444,8 +444,8 @@ class Activity(models.Model):
 	scope = models.ForeignKey(ActivityScope, null=True, default=None)
 	iati_standard_version = models.CharField(max_length=30, null=True, default=None)
 
-	search_description = models.TextField(null=True, default='', db_index=True, max_length=80000)
-	search_title = models.CharField(max_length=(300), default=''	)
+	search_description = models.TextField(null=True, db_index=True, max_length=80000)
+	search_title = models.TextField(null=True, db_index=True, max_length=80000)
 
 	def __unicode__(self):
 		return self.id
