@@ -5,9 +5,6 @@ from django.contrib import admin
 
 from api.v3.urls import api_v3_docs
 
-from django.conf.urls import patterns, url, include
-from drf import views
-
 admin.autodiscover()
 
 urlpatterns = patterns(
