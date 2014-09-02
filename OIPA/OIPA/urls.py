@@ -10,13 +10,8 @@ from drf import views
 
 admin.autodiscover()
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browseable API.
-
-
 urlpatterns = patterns(
     '',
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/task_queue/', include('task_queue.urls')),
     # url(r'^admin/geoadmin/', 'geodata.views.geoadmin'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
