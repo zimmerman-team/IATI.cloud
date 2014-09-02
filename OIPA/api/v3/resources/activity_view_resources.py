@@ -164,15 +164,20 @@ class ActivityResource(ModelResource):
         filters = {}
         if query:
 
+            #Modify the query for full text search boolean mode
+            #This ads a + and * char to each word. + sets boolean AND search. * activates wildcard search
+            fts_query = ''
+            for word in query.split():
+                fts_query += '+' + word+'* '
+            fts_query = fts_query[:-1]
+
             qset = (
                 Q(id__icontains=query, **filters) |
-                Q(activityrecipientcountry__country__name__icontains=query, **filters) |
-                Q(title__title__icontains=query, **filters) |
-                Q(description__description__icontains=query, **filters)
+                Q(search_title__search=fts_query, **filters) |
+                Q(search_description__search=fts_query, **filters)
             )
-
             return base_object_list.filter(qset).distinct()
-        return base_object_list.filter(**filters).distinct()
+        return base_object_list.distinct()
 
     def get_list(self, request, **kwargs):
 

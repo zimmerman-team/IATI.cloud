@@ -6,15 +6,9 @@ from django.contrib import admin
 from api.v3.urls import api_v3_docs
 
 from django.conf.urls import patterns, url, include
-from rest_framework import routers
 from drf import views
 
 admin.autodiscover()
-
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-router.register(r'activities', views.ActivityViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
@@ -22,7 +16,6 @@ router.register(r'activities', views.ActivityViewSet)
 
 urlpatterns = patterns(
     '',
-	url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/task_queue/', include('task_queue.urls')),
     # url(r'^admin/geoadmin/', 'geodata.views.geoadmin'),
@@ -40,16 +33,3 @@ if settings.DEBUG:
             'document_root': settings.MEDIA_ROOT,
             }),
     )
-
-REST_FRAMEWORK = {
-    # Use hyperlinked styles by default.
-    # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
-
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}

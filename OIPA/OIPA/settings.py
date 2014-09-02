@@ -37,21 +37,6 @@ XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', '*']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 
-#
-# HAYSTACK_SEARCH_ENGINE = 'solr'
-#
-# #where we interface with the solr server
-# HAYSTACK_SOLR_URL = 'http://127.0.0.1:8080/solr'
-#
-# HAYSTACK_CONNECTIONS = {
-#     'default': {
-#         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-#         'URL': 'http://127.0.0.1:8983/solr'
-#         # ...or for multicore...
-#         # 'URL': 'http://127.0.0.1:8983/solr/mysite',
-#     },
-# }
-
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -166,8 +151,6 @@ INSTALLED_APPS = (
 
     'indicator_unesco',
     'translation_model',
-    'debug_toolbar', #Used for debuging SQL Queries
-	'rest_framework',
 )
 
 
@@ -212,12 +195,6 @@ SUIT_CONFIG = {
 
 
 }
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGINATE_BY': 10
-}
-
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
