@@ -444,6 +444,8 @@ class Activity(models.Model):
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
     iati_standard_version = models.CharField(max_length=30, null=True, default=None)
 
+    search_description = models.TextField(null=True, db_index=True, max_length=80000)
+    search_title = models.TextField(null=True, db_index=True, max_length=80000)
 
     def __unicode__(self):
         return self.id
@@ -676,7 +678,6 @@ class Description(models.Model):
     type = models.ForeignKey(DescriptionType, related_name="description_type", null=True, default=None)
     rsr_description_type_id = models.IntegerField(null=True, default=None) # remove
 
-
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.type)
 
@@ -693,7 +694,6 @@ class Budget(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.period_start)
-
 
 class Condition(models.Model):
     activity = models.ForeignKey(Activity)
