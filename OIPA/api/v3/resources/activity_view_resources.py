@@ -9,7 +9,7 @@ from tastypie.serializers import Serializer
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope
+from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
@@ -68,6 +68,11 @@ class ActivityViewOrganisationResource(ModelResource):
             'iati_identifier': 'exact'
         }
 
+
+
+
+
+
 class ActivityViewTransactionResource(ModelResource):
     provider_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'provider_organisation', full=True, null=True)
     receiver_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'receiver_organisation', full=True, null=True)
@@ -85,6 +90,21 @@ class ActivityViewTransactionResource(ModelResource):
         bundle.data['tied_status'] = bundle.obj.tied_status_id
         bundle.data['transaction_type'] = bundle.obj.transaction_type_id
         return bundle
+
+
+
+class ActivityViewParticipatingOrganisationResource(ModelResource):
+    class Meta:
+        queryset = ActivityParticipatingOrganisation.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
+
+    def dehydrate(self, bundle):
+        bundle.data['role_id'] = bundle.obj.role_id
+        bundle.data['code'] = bundle.obj.organisation_id
+        return bundle
+
+
 
 class ActivityViewActivityStatusResource(ModelResource):
     class Meta:
@@ -114,7 +134,7 @@ class ActivityViewCurrencyResource(ModelResource):
 class ActivityResource(ModelResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
-    participating_organisations = fields.ToManyField(ActivityViewOrganisationResource, 'participating_organisation', full=True, null=True)
+    participating_organisations = fields.ToManyField(ActivityViewParticipatingOrganisationResource, 'activityparticipatingorganisation_set', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)

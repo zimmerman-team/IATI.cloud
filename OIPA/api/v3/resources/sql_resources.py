@@ -537,6 +537,7 @@ class CountryActivitiesResource(ModelResource):
         country_query = request.GET.get("country", None)
         project_query = request.GET.get("query", None)
         format = request.GET.get("format", "json")
+        include_unesco_empty = request.GET.get("include_unesco_empty", False)
 
 
         if budget_q_gte:
@@ -573,15 +574,25 @@ class CountryActivitiesResource(ModelResource):
 
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
-                'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
+                'FROM geodata_country c '\
+                'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
+                'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
                 '%s %s %s %s'\
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' \
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string, order_by, order_asc_desc, limit, offset)
-        print query
+
+
+
+        if include_unesco_empty and organisation_q:
+            query = query.replace(organisation_q, "")
+            query = query.replace(' AND (' + organisation_q[:-6], "")
+            query = query.replace(organisation_q[:-6], "")
+            query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
+            query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
+            print query
+
         cursor.execute(query)
 
         activities = []
@@ -615,12 +626,20 @@ class CountryActivitiesResource(ModelResource):
 
         cursor = connection.cursor()
         query = 'SELECT c.code '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
-                'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
+                'FROM geodata_country c '\
+                'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
+                'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
                 '%s %s %s %s'\
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string)
+
+        if include_unesco_empty and organisation_q:
+            query = query.replace(organisation_q, "")
+            query = query.replace(' AND (' + organisation_q[:-6], "")
+            query = query.replace(organisation_q[:-6], "")
+            query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
+            query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
+            print query
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
