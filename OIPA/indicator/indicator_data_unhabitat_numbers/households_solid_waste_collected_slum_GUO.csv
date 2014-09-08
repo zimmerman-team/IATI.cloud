@@ -1,0 +1,14 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2001;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Benin;;;9.7;Multiple sources;Slum dwellers
+2005;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Egypt;;;68;Multiple sources;Slum dwellers
+2005;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Ethiopia;;;30.8;Multiple sources;Slum dwellers
+2003;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Ghana;;;28.2;Multiple sources;Slum dwellers
+2003;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Kenya;;;15.3;Multiple sources;Slum dwellers
+2004;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Madagascar;;;94.6;Multiple sources;Slum dwellers
+1997;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Senegal;;;80.2;Multiple sources;Slum dwellers
+2005;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Colombia;;;91;Multiple sources;Slum dwellers
+1998;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Guatemala;;;43.7;Multiple sources;Slum dwellers
+2002;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Dominican Republic;;;69.2;Multiple sources;Slum dwellers
+2001;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Nicaragua;;;53.1;Multiple sources;Slum dwellers
+1991;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Peru;;;52;Multiple sources;Slum dwellers
+2000;;households_solid_waste_collected_slum;Proportion of households whose solid waste is collected (by public or private services) – Slum;p;Slum;;Suriname;;;11.7;Multiple sources;Slum dwellers

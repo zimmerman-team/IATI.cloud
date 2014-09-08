@@ -1,0 +1,70 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+1995;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Egypt;;;30;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Egypt;;;34.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Egypt;;;42.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Egypt;;;64.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Benin;;;9.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Benin;;;12.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2006;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Benin;;;27.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Burkina Faso;;;5.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Burkina Faso;;;3.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Burkina Faso;;;5.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Cameroon;;;41.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Cameroon;;;53.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Chad;;;9.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Congo;;;62;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Côte d’Ivoire;;;24.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Côte d’Ivoire;;;27.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Ethiopia;;;15.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Ethiopia;;;31.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Ghana;;;30.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Ghana;;;47.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Guinea;;;4.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Guinea;;;14.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Mali;;;4.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Mali;;;5.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Morocco;;;12;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Morocco;;;24.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Mozambique;;;23.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Mozambique;;;21.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Nigeria;;;27.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Nigeria;;;45.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Nigeria;;;37.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Rwanda;;;59.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Rwanda;;;62;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Rwanda;;;75.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Senegal;;;6.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Senegal;;;11.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Senegal;;;24.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;South Africa;;;87.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Uganda;;;48;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Uganda;;;52.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Tanzania;;;61.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Tanzania;;;60.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Tanzania;;;57.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Tanzania;;;61.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Zambia;;;53.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Zambia;;;48.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Zimbabwe;;;53.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Zimbabwe;;;63.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Brazil;;;80.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Colombia;;;88.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Colombia;;;53.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Guatemala;;;60.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Bangladesh;;;33.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Bangladesh;;;41.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;India;;;27.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Kazakhstan;;;99.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Pakistan;;;11;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Uzbekistan;;;99.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Indonesia;;;72.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Indonesia;;;77.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Indonesia;;;82.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Philippines;;;94.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Philippines;;;93.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Vietnam;;;90;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Armenia;;;99.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Armenia;;;99.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Turkey;;;64.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Turkey;;;77.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;literacy_rate_rural;Literacy rate by shelter deprivation – Rural;p;Rural;;Yemen;;;6.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers

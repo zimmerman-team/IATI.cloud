@@ -18,9 +18,15 @@ class IndicatorAdmin(admin.ModelAdmin):
             (r'^update-indicator/$', self.admin_site.admin_view(self.update_indicators)),
             (r'^update-indicator-data/$', self.admin_site.admin_view(self.update_indicator_data)),
             (r'^update-indicator-city-data/$', self.admin_site.admin_view(self.update_indicator_city_data)),
-            (r'^update-wbi-indicator/$', self.admin_site.admin_view(self.update_WBI_indicators))
+            (r'^update-wbi-indicator/$', self.admin_site.admin_view(self.update_WBI_indicators)),
+            (r'^old-to-new-urbnnrs/$', self.admin_site.admin_view(self.old_to_new_urbnnrs))
         )
         return my_urls + urls
+
+    def old_to_new_urbnnrs(self, request):
+        admTools = IndicatorAdminTools()
+        csv_text = admTools.old_to_new_urbnnrs()
+        return HttpResponse(csv_text, mimetype='text/csv')
 
     def update_indicator_data(self, request):
         admTools = IndicatorAdminTools()
@@ -128,6 +134,9 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 year_csv = line.get('year')
                 type_data_csv = line.get('type_data')
                 category_csv = line.get('category')
+
+                value_csv = str(value_csv)
+                value_csv = value_csv.replace(".", ",")
 
                 #here we are checking if this indicator already exists, or if we have to create a new one
                 if line_counter == 0:

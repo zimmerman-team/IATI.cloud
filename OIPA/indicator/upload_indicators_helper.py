@@ -28,6 +28,9 @@ def find_country(country_name, countries, iso2=None):
         try:
             if country_name:
 
+                if len(country_name) == 2 and Country.objects.filter(code=country_name).exists():
+                    return Country.objects.get(code=country_name)
+
                 country_name = country_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
 
                 for country in countries:
@@ -40,6 +43,17 @@ def find_country(country_name, countries, iso2=None):
                         country_alt_name_db = country_alt_name_db.lower()
                         if country_name in country_alt_name_db:
                             return country
+
+                # import by iso3 (unh)
+                if len(country_name) > 6:
+
+                    country_iso3 = country_name[3:6]
+
+                    for country in countries:
+                        country_iso3_db = country.iso3.lower()
+                        if country_iso3 == country_iso3_db:
+                            return country
+
             else:
                 return None
         except Exception as e:

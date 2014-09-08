@@ -8,6 +8,54 @@ import ujson
 
 class IndicatorAdminTools():
 
+    def old_to_new_urbnnrs(self):
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/indicator_city_data.json"
+        location2 = base + "/data_backup/indicator_city_info.json"
+        json_data = open(location)
+        indicator_data_set = ujson.load(json_data)
+        json_data2 = open(location2)
+        city_info_set = ujson.load(json_data2)
+
+        csv_text = "year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category\n"
+
+        for d in indicator_data_set:
+
+            indicator_id = d['indicator_id']
+            city_id = d['city_id']
+            city_name = "unknown"
+            value = d['value']
+            year = d['year']
+
+            if value == None or value == "NULL":
+                continue
+
+            found_city = None
+
+            for c in city_info_set:
+                if (c['id'] == city_id):
+                    city_name = c['name']
+                    country_id = c['country_id']
+
+                    if indicator_id == 'cpi_4_dimensions':
+
+                        if value and value != "NULL":
+                            csv_text = csv_text + year + ";;" + indicator_id + ";4 dimensions;p;;;" + country_id + ";" + city_name + ";;" + value + ";;\n"
+
+        return csv_text
+
+
+
+
+
+
+
+
+
+
+
+
     def update_indicators(self):
 
         base = os.path.dirname(os.path.abspath(__file__))

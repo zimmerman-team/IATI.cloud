@@ -1,0 +1,121 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Egypt;;;89.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Egypt;;;88.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Egypt;;;81.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Egypt;;;81.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Egypt;;;86.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Morocco;;;67.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Morocco;;;91.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Angola;;;62.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Benin;;;67.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Benin;;;65;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Burkina Faso;;;71.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Burkina Faso;;;72.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Burkina Faso;;;75.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Cameroon;;;71;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Cameroon;;;81.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Cameroon;;;83.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Central African Republic;;;72.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Chad;;;51;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Chad;;;57.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Comoros;;;47.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Congo;;;86.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Côte d’Ivoire;;;64.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Côte d’Ivoire;;;62.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Côte d’Ivoire;;;53.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Congo Dem. Rep.;;;70.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Ethiopia;;;74.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Ethiopia;;;76.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Gabon;;;93.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Gambia The;;;55.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Ghana;;;88.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Ghana;;;84.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Ghana;;;64.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Guinea;;;47.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Guinea;;;61.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kenya;;;76.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kenya;;;79.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kenya;;;80.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Lesotho;;;65.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Lesotho;;;80.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Madagascar;;;73.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Madagascar;;;82;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Malawi;;;75.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Malawi;;;87.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Malawi;;;88.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Mali;;;58;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Mali;;;64.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Mozambique;;;77.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Mozambique;;;73.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Namibia;;;81.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Namibia;;;89.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Niger;;;50.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Niger;;;61.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nigeria;;;66.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nigeria;;;66.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Rwanda;;;71.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Rwanda;;;78.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Rwanda;;;86.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Senegal;;;52.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Senegal;;;60.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Sierra Leone;;;73.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;South Africa;;;77.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Tanzania;;;51.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Tanzania;;;55;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Tanzania;;;65;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Tanzania;;;83.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Togo;;;87;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Uganda;;;81.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Uganda;;;89.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Zambia;;;73.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Zambia;;;67.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Zimbabwe;;;90.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Zimbabwe;;;100;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Bolivia;;;92.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Bolivia;;;82.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Brazil;;;51.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Colombia;;;77.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Colombia;;;85.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Colombia;;;89.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Colombia;;;73.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Dominican Republic;;;44.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Dominican Republic;;;44.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Dominican Republic;;;78.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Guatemala;;;65.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Guatemala;;;62.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Haiti;;;85.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Haiti;;;65.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Honduras;;;76.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nicaragua;;;74.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nicaragua;;;81.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Peru;;;87.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Peru;;;86.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Peru;;;76.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Peru;;;89.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Armenia;;;57.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Azerbaijan;;;89.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;India;;;86.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Indonesia;;;75;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Indonesia;;;78.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Indonesia;;;78.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Indonesia;;;77.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Iraq;;;74.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kazakhstan;;;89.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kazakhstan;;;84.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Kazakhstan;;;76.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Republic of Moldova;;;85.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Republic of Moldova;;;84.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nepal;;;80.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Nepal;;;87.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Pakistan;;;73.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Philippines;;;64.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Philippines;;;82.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Philippines;;;86.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Tajikistan;;;69.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Turkey;;;65.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Turkey;;;68;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Uzbekistan;;;56.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Uzbekistan;;;79;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Vietnam;;;84.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Vietnam;;;95.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;net_enrolment_rate_slum;Net enrolment rate  in primary education in urban and rural areas (Male) – Slum;p;Slum;;Yemen;;;59.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers

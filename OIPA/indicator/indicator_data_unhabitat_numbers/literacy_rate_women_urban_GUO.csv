@@ -1,0 +1,71 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2006;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Benin;;;58.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Benin;;;42.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Benin;;;40.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Burkina Faso;;;52.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Burkina Faso;;;47;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Burkina Faso;;;43.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Cameroon;;;80.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Cameroon;;;69.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Central African Republic;;;62.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Chad;;;40.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Congo;;;88.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Côte d’Ivoire;;;54.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Côte d’Ivoire;;;48.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Egypt;;;77.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Egypt;;;73.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Egypt;;;69.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Egypt;;;65.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Ethiopia;;;78.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Ethiopia;;;65.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Ghana;;;72.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Ghana;;;62.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Guinea;;;51.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Guinea;;;33.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Mali;;;35.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Mali;;;31.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Morocco;;;67.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Morocco;;;57.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Mozambique;;;64.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Mozambique;;;62.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Nigeria;;;67.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Nigeria;;;70.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Nigeria;;;66.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Rwanda;;;86;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Rwanda;;;86;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Rwanda;;;81.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Senegal;;;56.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Senegal;;;50.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Senegal;;;46.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;South Africa;;;96.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2001;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Uganda;;;84.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Uganda;;;81.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2004;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Tanzania;;;85.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Tanzania;;;80.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Tanzania;;;82.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1992;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Tanzania;;;78.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Zambia;;;78.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Zambia;;;82.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Zimbabwe;;;90.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Zimbabwe;;;83.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Brazil;;;94.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Colombia;;;88;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1995;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Colombia;;;97.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Guatemala;;;83.7;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Bangladesh;;;62.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Bangladesh;;;58.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;India;;;62.2;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1999;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Kazakhstan;;;99.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1990;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Pakistan;;;50.6;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1996;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Uzbekistan;;;99.9;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Indonesia;;;91.5;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1997;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Indonesia;;;92.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1994;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Indonesia;;;89.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2003;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Philippines;;;97.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Philippines;;;99;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2002;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Vietnam;;;97.3;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2000;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Armenia;;;99.8;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+2005;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Armenia;;;100;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1998;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Turkey;;;88;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1993;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Turkey;;;82.1;UNHABITAT_UNHABITAT_DHS;Slum dwellers
+1991;;literacy_rate_women_urban;Literacy rate by shelter deprivation (Women) – Urban;p;Urban;;Yemen;;;37.4;UNHABITAT_UNHABITAT_DHS;Slum dwellers

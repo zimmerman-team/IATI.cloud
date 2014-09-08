@@ -23,7 +23,7 @@ class IndicatorSource(models.Model):
     name = models.TextField()
 
 class Indicator(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+    id = models.CharField(max_length=255, primary_key=True)
     description = models.TextField(null=True, blank=True)
     friendly_label = models.CharField(max_length=255, null=True, blank=True)
     type_data = models.CharField(max_length=255, null=True, blank=True)
@@ -69,7 +69,7 @@ def file_upload_to(instance, filename):
 class CsvUploadLog(models.Model):
     upload_date = models.DateTimeField(_('Upload date'), auto_now_add=True)
     upload = models.FileField(_('File'), upload_to=file_upload_to,
-        blank=True, null=True)
+        blank=True, null=True, max_length=255)
     title = models.CharField(_('title'), max_length=100, null=True, blank=True)
     slug = models.SlugField(_('slug'), max_length=100, unique=True)
     link = models.URLField(_('link'), max_length=500, null=True, blank=True)

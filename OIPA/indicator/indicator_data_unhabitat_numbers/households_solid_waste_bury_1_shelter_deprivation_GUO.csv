@@ -1,0 +1,10 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2001;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Benin;;;1.4;Multiple sources;Slum dwellers
+2003;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Ghana;;;2.8;Multiple sources;Slum dwellers
+2003;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Kenya;;;15.3;Multiple sources;Slum dwellers
+1997;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Senegal;;;3;Multiple sources;Slum dwellers
+2005;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Colombia;;;0.2;Multiple sources;Slum dwellers
+1998;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Guatemala;;;2.8;Multiple sources;Slum dwellers
+2001;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Nicaragua;;;3.1;Multiple sources;Slum dwellers
+1991;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Peru;;;1.6;Multiple sources;Slum dwellers
+2000;;households_solid_waste_bury_1_shelter_deprivation;Proportion of households who bury solid waste - 1 Shelter deprivation;p;1 Shelter deprivation;;Suriname;;;4;Multiple sources;Slum dwellers
