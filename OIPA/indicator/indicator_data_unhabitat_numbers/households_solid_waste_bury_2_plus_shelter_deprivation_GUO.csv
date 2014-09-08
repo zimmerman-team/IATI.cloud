@@ -1,10 +1,10 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2001;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Benin;;;2.5;Multiple sources;Slum dwellers
-2003;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Ghana;;;8.4;Multiple sources;Slum dwellers
-2003;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Kenya;;;14.9;Multiple sources;Slum dwellers
-1997;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Senegal;;;4.8;Multiple sources;Slum dwellers
-2005;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Colombia;;;0.7;Multiple sources;Slum dwellers
-1998;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Guatemala;;;6.5;Multiple sources;Slum dwellers
-2001;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Nicaragua;;;5.3;Multiple sources;Slum dwellers
-1991;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Peru;;;4.7;Multiple sources;Slum dwellers
-2000;;households_solid_waste_bury_2_plus_shelter_deprivation;Proportion of households who bury solid waste - 2+ shelter deprivation;p;2+ shelter deprivation;;Suriname;;;2;Multiple sources;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+2001;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Benin";;;05/02/14;"Multiple sources";"Slum dwellers"
+2003;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Ghana";;;04/08/14;"Multiple sources";"Slum dwellers"
+2003;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Kenya";;;09/14/14;"Multiple sources";"Slum dwellers"
+1997;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Senegal";;;08/04/14;"Multiple sources";"Slum dwellers"
+2005;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Colombia";;;"0.7";"Multiple sources";"Slum dwellers"
+1998;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Guatemala";;;05/06/14;"Multiple sources";"Slum dwellers"
+2001;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Nicaragua";;;03/05/14;"Multiple sources";"Slum dwellers"
+1991;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Peru";;;07/04/14;"Multiple sources";"Slum dwellers"
+2000;;"households_solid_waste_bury_2_plus_shelter_deprivation";"Proportion of households who bury solid waste – 2+ shelter deprivation";"p";"2+ shelter deprivation";;"Suriname";;;2;"Multiple sources";"Slum dwellers"

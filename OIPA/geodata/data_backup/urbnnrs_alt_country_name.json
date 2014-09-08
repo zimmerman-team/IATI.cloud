@@ -11,5 +11,6 @@
     "KR": {"alt_name": "Republic of Korea"},
     "VE": {"alt_name": "Venezuela (Bolivarian Republic of)"},
     "CF": {"alt_name": "Central African Rep."},
-    "KP": {"alt_name": "Democratic Peoples Republic of Korea"}
+    "KP": {"alt_name": "Democratic Peoples Republic of Korea"},
+    "VN": {"alt_name": "Vietnam"}
 }

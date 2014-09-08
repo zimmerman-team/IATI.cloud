@@ -1,119 +1,119 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Benin;;;80.3;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Benin;;;77.6;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Burkina Faso;;;81.1;UNHABITAT_DHS;Slum dwellers
-1999;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Burkina Faso;;;83.4;UNHABITAT_DHS;Slum dwellers
-1991;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Cameroon;;;84;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Cameroon;;;88.4;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Cameroon;;;87.7;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Central African Republic;;;85;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Chad;;;67.4;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Chad;;;70.7;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Comoros;;;72.6;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Côte d’Ivoire;;;70;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Côte d’Ivoire;;;74.8;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Egypt;;;75.8;UNHABITAT_DHS;Slum dwellers
-1995;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Egypt;;;80.8;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Egypt;;;95.6;UNHABITAT_DHS;Slum dwellers
-2003;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Egypt;;;97.4;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Egypt;;;97.3;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Ethiopia;;;61.3;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Ethiopia;;;63.9;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Gabon;;;86.5;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Ghana;;;75.7;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Ghana;;;78.7;UNHABITAT_DHS;Slum dwellers
-1999;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Guinea;;;73.8;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Guinea;;;0;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kenya;;;78.3;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kenya;;;78;UNHABITAT_DHS;Slum dwellers
-2003;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kenya;;;79;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Madagascar;;;55.3;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Malawi;;;74.6;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Malawi;;;82.9;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Mali;;;76.8;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Mali;;;74.7;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Morocco;;;72.2;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Morocco;;;83.6;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Mozambique;;;73.7;UNHABITAT_DHS;Slum dwellers
-2003;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Mozambique;;;81.5;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Namibia;;;79;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Namibia;;;84.4;UNHABITAT_DHS;Slum dwellers
-2007;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Namibia;;;87.1;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Niger;;;67.6;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Niger;;;68.1;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Niger;;;64.4;UNHABITAT_DHS;Slum dwellers
-1999;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nigeria;;;72.5;UNHABITAT_DHS;Slum dwellers
-2003;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nigeria;;;76.1;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Rwanda;;;85.5;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Senegal;;;68;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Senegal;;;67.9;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Tanzania;;;77.6;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Tanzania;;;82.4;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Tanzania;;;84.4;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Togo;;;79.6;UNHABITAT_DHS;Slum dwellers
-1995;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Uganda;;;64.7;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Uganda;;;70.8;UNHABITAT_DHS;Slum dwellers
-1992;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Zambia;;;70;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Zambia;;;73.4;UNHABITAT_DHS;Slum dwellers
-2007;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Zambia;;;73.3;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Zimbabwe;;;83.2;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Zimbabwe;;;85;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Bolivia;;;67.6;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Bolivia;;;67.1;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Bolivia;;;72.2;UNHABITAT_DHS;Slum dwellers
-1991;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Brazil;;;89.3;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Brazil;;;89.9;UNHABITAT_DHS;Slum dwellers
-1990;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Colombia;;;83.2;UNHABITAT_DHS;Slum dwellers
-1995;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Colombia;;;85.7;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Colombia;;;87.9;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Colombia;;;89.2;UNHABITAT_DHS;Slum dwellers
-1991;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Dominican Republic;;;81.3;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Dominican Republic;;;82.5;UNHABITAT_DHS;Slum dwellers
-2002;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Dominican Republic;;;86.6;UNHABITAT_DHS;Slum dwellers
-2007;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Dominican Republic;;;91;UNHABITAT_DHS;Slum dwellers
-1995;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Guatemala;;;68.7;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Guatemala;;;69;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Haiti;;;64.1;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Haiti;;;71.9;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nicaragua;;;61.2;UNHABITAT_DHS;Slum dwellers
-2001;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nicaragua;;;64.8;UNHABITAT_DHS;Slum dwellers
-1991;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Peru;;;75;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Peru;;;71.4;UNHABITAT_DHS;Slum dwellers
-2000;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Peru;;;80;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Peru;;;83.8;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Armenia;;;91.4;UNHABITAT_DHS;Slum dwellers
-1994;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Bangladesh;;;57.6;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Bangladesh;;;68.2;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;India;;;72.7;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;India;;;77.4;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;India;;;62.7;UNHABITAT_DHS;Slum dwellers
-1995;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kazakhstan;;;98.2;UNHABITAT_DHS;Slum dwellers
-1999;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kazakhstan;;;0;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Kyrgyzstan;;;95.2;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nepal;;;65.7;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Nepal;;;74.5;UNHABITAT_DHS;Slum dwellers
-1990;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Pakistan;;;39.6;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Pakistan;;;46;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Philippines;;;63;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Philippines;;;71.9;UNHABITAT_DHS;Slum dwellers
-1993;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Turkey;;;87;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Turkey;;;89.2;UNHABITAT_DHS;Slum dwellers
-2004;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Turkey;;;89.1;UNHABITAT_DHS;Slum dwellers
-1996;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Uzbekistan;;;91.3;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Vietnam;;;65.9;UNHABITAT_DHS;Slum dwellers
-2002;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Vietnam;;;77.7;UNHABITAT_DHS;Slum dwellers
-1991;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Yemen;;;52.8;UNHABITAT_DHS;Slum dwellers
-1998;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;South Africa;;;87.5;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Honduras;;;77.4;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Republic of Moldova;;;97.5;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Congo;;;77.1;UNHABITAT_DHS;Slum dwellers
-2001;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Mauritania;;;49.3;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Cambodia;;;42.2;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Switzerland;;;89.2;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Angola;;;100;UNHABITAT_DHS;Slum dwellers
-2005;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Guyana;;;87.1;UNHABITAT_DHS;Slum dwellers
-2006;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Azerbaijan;;;81.6;UNHABITAT_DHS;Slum dwellers
-1997;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Jordan;;;65.4;UNHABITAT_DHS;Slum dwellers
-2002;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Jordan;;;77.5;UNHABITAT_DHS;Slum dwellers
-2007;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Jordan;;;77.3;UNHABITAT_DHS;Slum dwellers
-2007;;proportion_urban_population_sufficient_living_area;Proportion of urban population with sufficient living area;p;Total;;Ukraine;;;99;UNHABITAT_DHS;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Benin";;;"80.3";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Benin";;;"77.6";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Burkina Faso";;;"81.1";"UNHABITAT_DHS";"Slum dwellers"
+1999;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Burkina Faso";;;"83.4";"UNHABITAT_DHS";"Slum dwellers"
+1991;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Cameroon";;;84;"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Cameroon";;;"88.4";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Cameroon";;;"87.7";"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Central African Republic";;;85;"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Chad";;;"67.4";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Chad";;;"70.7";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Comoros";;;"72.6";"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Côte d’Ivoire";;;70;"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Côte d’Ivoire";;;"74.8";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Egypt";;;"75.8";"UNHABITAT_DHS";"Slum dwellers"
+1995;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Egypt";;;"80.8";"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Egypt";;;"95.6";"UNHABITAT_DHS";"Slum dwellers"
+2003;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Egypt";;;"97.4";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Egypt";;;"97.3";"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Ethiopia";;;"61.3";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Ethiopia";;;"63.9";"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Gabon";;;"86.5";"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Ghana";;;"75.7";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Ghana";;;"78.7";"UNHABITAT_DHS";"Slum dwellers"
+1999;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Guinea";;;"73.8";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Guinea";;;0;"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kenya";;;"78.3";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kenya";;;78;"UNHABITAT_DHS";"Slum dwellers"
+2003;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kenya";;;79;"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Madagascar";;;"55.3";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Malawi";;;"74.6";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Malawi";;;"82.9";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Mali";;;"76.8";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Mali";;;"74.7";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Morocco";;;"72.2";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Morocco";;;"83.6";"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Mozambique";;;"73.7";"UNHABITAT_DHS";"Slum dwellers"
+2003;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Mozambique";;;"81.5";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Namibia";;;79;"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Namibia";;;"84.4";"UNHABITAT_DHS";"Slum dwellers"
+2007;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Namibia";;;"87.1";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Niger";;;"67.6";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Niger";;;"68.1";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Niger";;;"64.4";"UNHABITAT_DHS";"Slum dwellers"
+1999;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nigeria";;;"72.5";"UNHABITAT_DHS";"Slum dwellers"
+2003;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nigeria";;;"76.1";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Rwanda";;;"85.5";"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Senegal";;;68;"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Senegal";;;"67.9";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Tanzania";;;"77.6";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Tanzania";;;"82.4";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Tanzania";;;"84.4";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Togo";;;"79.6";"UNHABITAT_DHS";"Slum dwellers"
+1995;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Uganda";;;"64.7";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Uganda";;;"70.8";"UNHABITAT_DHS";"Slum dwellers"
+1992;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Zambia";;;70;"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Zambia";;;"73.4";"UNHABITAT_DHS";"Slum dwellers"
+2007;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Zambia";;;"73.3";"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Zimbabwe";;;"83.2";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Zimbabwe";;;85;"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Bolivia";;;"67.6";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Bolivia";;;"67.1";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Bolivia";;;"72.2";"UNHABITAT_DHS";"Slum dwellers"
+1991;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Brazil";;;"89.3";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Brazil";;;"89.9";"UNHABITAT_DHS";"Slum dwellers"
+1990;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Colombia";;;"83.2";"UNHABITAT_DHS";"Slum dwellers"
+1995;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Colombia";;;"85.7";"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Colombia";;;"87.9";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Colombia";;;"89.2";"UNHABITAT_DHS";"Slum dwellers"
+1991;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Dominican Republic";;;"81.3";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Dominican Republic";;;"82.5";"UNHABITAT_DHS";"Slum dwellers"
+2002;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Dominican Republic";;;"86.6";"UNHABITAT_DHS";"Slum dwellers"
+2007;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Dominican Republic";;;91;"UNHABITAT_DHS";"Slum dwellers"
+1995;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Guatemala";;;"68.7";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Guatemala";;;69;"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Haiti";;;"64.1";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Haiti";;;"71.9";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nicaragua";;;"61.2";"UNHABITAT_DHS";"Slum dwellers"
+2001;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nicaragua";;;"64.8";"UNHABITAT_DHS";"Slum dwellers"
+1991;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Peru";;;75;"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Peru";;;"71.4";"UNHABITAT_DHS";"Slum dwellers"
+2000;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Peru";;;80;"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Peru";;;"83.8";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Armenia";;;"91.4";"UNHABITAT_DHS";"Slum dwellers"
+1994;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Bangladesh";;;"57.6";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Bangladesh";;;"68.2";"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"India";;;"72.7";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"India";;;"77.4";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"India";;;"62.7";"UNHABITAT_DHS";"Slum dwellers"
+1995;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kazakhstan";;;"98.2";"UNHABITAT_DHS";"Slum dwellers"
+1999;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kazakhstan";;;0;"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Kyrgyzstan";;;"95.2";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nepal";;;"65.7";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Nepal";;;"74.5";"UNHABITAT_DHS";"Slum dwellers"
+1990;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Pakistan";;;"39.6";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Pakistan";;;46;"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Philippines";;;63;"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Philippines";;;"71.9";"UNHABITAT_DHS";"Slum dwellers"
+1993;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Turkey";;;87;"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Turkey";;;"89.2";"UNHABITAT_DHS";"Slum dwellers"
+2004;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Turkey";;;"89.1";"UNHABITAT_DHS";"Slum dwellers"
+1996;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Uzbekistan";;;"91.3";"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Vietnam";;;"65.9";"UNHABITAT_DHS";"Slum dwellers"
+2002;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Vietnam";;;"77.7";"UNHABITAT_DHS";"Slum dwellers"
+1991;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Yemen";;;"52.8";"UNHABITAT_DHS";"Slum dwellers"
+1998;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"South Africa";;;"87.5";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Honduras";;;"77.4";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Republic of Moldova";;;"97.5";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Congo";;;"77.1";"UNHABITAT_DHS";"Slum dwellers"
+2001;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Mauritania";;;"49.3";"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Cambodia";;;"42.2";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Switzerland";;;"89.2";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Angola";;;100;"UNHABITAT_DHS";"Slum dwellers"
+2005;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Guyana";;;"87.1";"UNHABITAT_DHS";"Slum dwellers"
+2006;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Azerbaijan";;;"81.6";"UNHABITAT_DHS";"Slum dwellers"
+1997;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Jordan";;;"65.4";"UNHABITAT_DHS";"Slum dwellers"
+2002;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Jordan";;;"77.5";"UNHABITAT_DHS";"Slum dwellers"
+2007;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Jordan";;;"77.3";"UNHABITAT_DHS";"Slum dwellers"
+2007;;"proportion_urban_population_sufficient_living_area";"Proportion of urban population with sufficient living area – Countries";"p";"Total";;"Ukraine";;;99;"UNHABITAT_DHS";"Slum dwellers"
