@@ -1,0 +1,20 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Burundi;;;0.1;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Chad;;;0.33;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Ethiopia;;;0.57;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Guinea;;;0.14;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Kenya;;;0.29;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Madagascar;;;0.24;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Mauritania;;;0.33;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Mozambique;;;0.43;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Somalia;;;0.24;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Sudan;;;0.48;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Uganda;;;0.29;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;China;;;0.86;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Korea Rep;;;0.1;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;India;;;0.38;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Indonesia;;;0.29;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Pakistan;;;0.05;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Philippines;;;0.24;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Brazil;;;0.43;UNDP_United Nations Development Programme, 2005;Slum dwellers
+1980;2000;number_of_droughts;Average annual number of events in droughts;n;Total;;Papua New Guinea;;;0.14;UNDP_United Nations Development Programme, 2005;Slum dwellers
