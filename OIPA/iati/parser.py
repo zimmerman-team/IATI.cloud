@@ -1296,7 +1296,7 @@ class Parser():
 
 
 
-                    document_link = models.DocumentLink(activity=activity, url=url, file_format=file_format, document_category=doc_category)
+                    document_link = models.DocumentLink(activity=activity, url=url, file_format=file_format, document_category=doc_category, title=title)
                     document_link.save()
 
 
