@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from geodata.models import Country, City
 import os.path
 import ujson
+import StringIO
+from decimal import Decimal
 
 class IndicatorAdminTools():
 
@@ -47,6 +49,56 @@ class IndicatorAdminTools():
 
 
 
+    def reformat_values(self, name, data_type, keep_dot):
+
+
+        import csv
+
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        file_name = base + "/indicator_data_unhabitat_numbers/"+name+".csv"
+
+        delimiter = ';'
+        quote_character = '"'
+
+        csv_fp = open(file_name, 'rb')
+        csv_reader = csv.DictReader(csv_fp, fieldnames=[], restkey='undefined-fieldnames', delimiter=delimiter, quotechar=quote_character)
+
+        current_row = 0
+        raw_data = StringIO.StringIO()
+
+
+        for row in csv_reader:
+            current_row += 1
+
+            # Use heading rows as field names for all other rows.
+            if current_row == 1:
+                csv_reader.fieldnames = row['undefined-fieldnames']
+                writer = csv.DictWriter(raw_data, csv_reader.fieldnames, delimiter=";", quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+                continue
+
+
+
+            if data_type == "index" and keep_dot == "1":
+
+                csv_value = Decimal(row['value'])
+                if 1 <= csv_value < 1000:
+
+                    csv_value = csv_value / 1000
+                    row['value'] = csv_value
+
+            if data_type == "n" and keep_dot == "0":
+
+                csv_value = row['value']
+                csv_value = csv_value.replace(".", "")
+                row['value'] = csv_value
+
+
+            writer.writerow(row)
+
+
+        CSVContent=raw_data.getvalue()
+        return CSVContent
 
 
 
