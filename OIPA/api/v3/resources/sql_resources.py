@@ -427,7 +427,7 @@ class CountryGeojsonResource(ModelResource):
 
         cursor.execute(query)
 
-        activity_result = {'type' : 'FeatureCollection', 'features' : []}
+        activity_result = {'type': 'FeatureCollection', 'features': []}
 
         activities = []
 

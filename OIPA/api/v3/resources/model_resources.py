@@ -28,11 +28,13 @@ class CityResource(ModelResource):
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
     unesco_region = fields.ForeignKey(RegionResource, 'unesco_region', full=True, null=True)
+    cities = fields.ToManyField(CityResource, 'city_set', full=True, null=True, use_in="detail")
+
 
     class Meta:
         queryset = Country.objects.all()
         resource_name = 'countries'
-        excludes = ['polygon']
+        # excludes = ['polygon']
         include_resource_uri = False
         serializer = Serializer(formats=['xml', 'json'])
         filtering = {

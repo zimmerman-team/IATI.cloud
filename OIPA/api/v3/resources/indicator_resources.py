@@ -322,10 +322,11 @@ class IndicatorDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
         selection_type_q = helper.get_and_query(request, 'selection_type__in', 'id.selection_type')
         limit_q = request.GET.get("limit", None)
+
         if limit_q:
             limit_q = int(limit_q)
 
-        if not indicator_q:
+        if not indicator_q and not country_q and not city_q:
             return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
 
 
@@ -379,9 +380,11 @@ class IndicatorDataResource(ModelResource):
         ]
 
         indicator_q = indicator_q.replace(" ) AND (", "")
+        if indicator_q:
+            indicator_q = "AND " + indicator_q
 
         cursor_max = connection.cursor()
-        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
+        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE 1 %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
         desc = cursor_max.description
         max_results = [
         dict(zip([col[0] for col in desc], row))

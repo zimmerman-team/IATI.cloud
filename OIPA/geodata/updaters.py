@@ -121,6 +121,7 @@ class CountryUpdater():
                         continue
 
                     geometry = k['geometry']
+                    geometry = ujson.dumps(geometry)
                     the_country.polygon = geometry
 
                     # pol_string = geojson_to_wkt.dumps(geometry)
