@@ -135,7 +135,7 @@ class FinanceType(models.Model):
 
 class FlowType(models.Model):
     code = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=150)
     description = models.TextField()
 
     def __unicode__(self,):

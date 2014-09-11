@@ -1,109 +1,109 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Egypt;;;13.3;Global_UNHABITAT-DHS;Slum dwellers
-1995;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Egypt;;;15.7;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Egypt;;;6.1;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Egypt;;;16.8;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Morocco;;;10.4;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Morocco;;;11.5;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Benin;;;24.2;Global_UNHABITAT-DHS;Slum dwellers
-2001;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Benin;;;11.3;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Benin;;;7.8;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Burkina Faso;;;18.5;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Burkina Faso;;;19.2;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Burkina Faso;;;21.1;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Central African Republic;;;19.5;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Chad;;;24.8;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Comoros;;;27.5;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Côte d’Ivoire;;;24.5;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Côte d’Ivoire;;;16.7;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ethiopia;;;16.7;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ethiopia;;;12.1;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ethiopia;;;12.1;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Gabon;;;16.3;Global_UNHABITAT-DHS;Slum dwellers
-1993;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ghana;;;17.2;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ghana;;;16.7;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Ghana;;;13.6;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Guinea;;;17.8;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Guinea;;;15.4;Global_UNHABITAT-DHS;Slum dwellers
-1993;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kenya;;;11.8;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kenya;;;17.1;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kenya;;;17;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Lesotho;;;8.9258226237;Global_UNHABITAT-DHS;Slum dwellers
-1997;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Madagascar;;;30;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Madagascar;;;8.6198252715;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Madagascar;;;8.6;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Malawi;;;19.2;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Malawi;;;14.3;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Malawi;;;17.5;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Mali;;;19.2;Global_UNHABITAT-DHS;Slum dwellers
-2001;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Mali;;;13.1;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Mali;;;9.2;Global_UNHABITAT-DHS;Slum dwellers
-1997;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Mozambique;;;30.6;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Mozambique;;;15.9;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Niger;;;19.9;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Niger;;;31.6;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Niger;;;17.5;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Nigeria;;;13.9;Global_UNHABITAT-DHS;Slum dwellers
-2003;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Nigeria;;;14.5;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Rwanda;;;21.3;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Rwanda;;;12.3;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Rwanda;;;12.7;Global_UNHABITAT-DHS;Slum dwellers
-1993;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Senegal;;;15.4;Global_UNHABITAT-DHS;Slum dwellers
-1997;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Senegal;;;13.9;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Senegal;;;22.2;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;South Africa;;;10.8;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Togo;;;27;Global_UNHABITAT-DHS;Slum dwellers
-1995;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Uganda;;;19.4;Global_UNHABITAT-DHS;Slum dwellers
-2001;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Uganda;;;15.5359471615;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Uganda;;;19.7;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Tanzania;;;14.7;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Tanzania;;;12.3;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Tanzania;;;9.8;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Tanzania;;;10;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zambia;;;19.7;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zambia;;;23.8;Global_UNHABITAT-DHS;Slum dwellers
-2002;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zambia;;;21.1;Global_UNHABITAT-DHS;Slum dwellers
-2007;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zambia;;;17.2;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zimbabwe;;;17.9;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zimbabwe;;;11.9;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Zimbabwe;;;9.1;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bolivia;;;30.7;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bolivia;;;18.1;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bolivia;;;21.1;Global_UNHABITAT-DHS;Slum dwellers
-1991;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Brazil;;;17.3;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Brazil;;;12.6;Global_UNHABITAT-DHS;Slum dwellers
-1990;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Colombia;;;12.5;Global_UNHABITAT-DHS;Slum dwellers
-1995;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Colombia;;;16.4;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Colombia;;;13.2;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Colombia;;;13.2;Global_UNHABITAT-DHS;Slum dwellers
-1991;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Dominican Republic;;;16.7;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Dominican Republic;;;15.568898681;Global_UNHABITAT-DHS;Slum dwellers
-2002;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Dominican Republic;;;13.5;Global_UNHABITAT-DHS;Slum dwellers
-2007;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Dominican Republic;;;13.9739500411;Global_UNHABITAT-DHS;Slum dwellers
-1995;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Guatemala;;;19.9;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Guatemala;;;12.8;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Haiti;;;27;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Haiti;;;24.1;Global_UNHABITAT-DHS;Slum dwellers
-2000;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Armenia;;;7.8;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Armenia;;;15;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bangladesh;;;8;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bangladesh;;;7.1;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bangladesh;;;6.7;Global_UNHABITAT-DHS;Slum dwellers
-2007;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Bangladesh;;;10.2;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;India;;;8.7;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;India;;;19.3;Global_UNHABITAT-DHS;Slum dwellers
-2005;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;India;;;8.9;Global_UNHABITAT-DHS;Slum dwellers
-1992;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Indonesia;;;11.9;Global_UNHABITAT-DHS;Slum dwellers
-1994;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Indonesia;;;12.373610735;Global_UNHABITAT-DHS;Slum dwellers
-1997;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Indonesia;;;9.0835148076;Global_UNHABITAT-DHS;Slum dwellers
-2004;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Indonesia;;;11.2;Global_UNHABITAT-DHS;Slum dwellers
-1995;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kazakhstan;;;15;Global_UNHABITAT-DHS;Slum dwellers
-1999;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kazakhstan;;;14.8;Global_UNHABITAT-DHS;Slum dwellers
-1997;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Kyrgyzstan;;;15.1;Global_UNHABITAT-DHS;Slum dwellers
-1996;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Nepal;;;23.8;Global_UNHABITAT-DHS;Slum dwellers
-2001;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Nepal;;;16.6;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Nepal;;;11.5;Global_UNHABITAT-DHS;Slum dwellers
-1990;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Pakistan;;;15;Global_UNHABITAT-DHS;Slum dwellers
-2006;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Pakistan;;;22.0526896342;Global_UNHABITAT-DHS;Slum dwellers
-1993;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Philippines;;;9.7;Global_UNHABITAT-DHS;Slum dwellers
-1998;;children_with_diarrhea_urban;Proportion of children with diarrhea in last two weeks – Urban;p;Urban;;Philippines;;;6.5;Global_UNHABITAT-DHS;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Egypt";;;13.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+1995;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Egypt";;;15.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Egypt";;;6.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Egypt";;;16.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Morocco";;;10.4;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Morocco";;;11.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Benin";;;24.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+2001;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Benin";;;11.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Benin";;;7.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Burkina Faso";;;18.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Burkina Faso";;;19.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Burkina Faso";;;21.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Central African Republic";;;19.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Chad";;;24.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Comoros";;;27.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Côte d’Ivoire";;;24.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Côte d’Ivoire";;;16.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ethiopia";;;16.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ethiopia";;;12.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ethiopia";;;12.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Gabon";;;16.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+1993;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ghana";;;17.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ghana";;;16.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Ghana";;;13.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Guinea";;;17.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Guinea";;;15.4;"Global_UNHABITAT-DHS";"Slum dwellers"
+1993;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kenya";;;11.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kenya";;;17.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kenya";;;17;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Lesotho";;;8.9258226237;"Global_UNHABITAT-DHS";"Slum dwellers"
+1997;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Madagascar";;;30;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Madagascar";;;8.6198252715;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Madagascar";;;8.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Malawi";;;19.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Malawi";;;14.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Malawi";;;17.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Mali";;;19.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+2001;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Mali";;;13.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Mali";;;9.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1997;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Mozambique";;;30.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Mozambique";;;15.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Niger";;;19.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Niger";;;31.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Niger";;;17.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Nigeria";;;13.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+2003;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Nigeria";;;14.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Rwanda";;;21.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Rwanda";;;12.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Rwanda";;;12.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1993;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Senegal";;;15.4;"Global_UNHABITAT-DHS";"Slum dwellers"
+1997;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Senegal";;;13.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Senegal";;;22.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"South Africa";;;10.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Togo";;;27;"Global_UNHABITAT-DHS";"Slum dwellers"
+1995;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Uganda";;;19.4;"Global_UNHABITAT-DHS";"Slum dwellers"
+2001;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Uganda";;;15.5359471615;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Uganda";;;19.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Tanzania";;;14.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Tanzania";;;12.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Tanzania";;;9.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Tanzania";;;10;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zambia";;;19.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zambia";;;23.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+2002;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zambia";;;21.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2007;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zambia";;;17.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zimbabwe";;;17.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zimbabwe";;;11.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Zimbabwe";;;9.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bolivia";;;30.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bolivia";;;18.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bolivia";;;21.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+1991;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Brazil";;;17.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Brazil";;;12.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+1990;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Colombia";;;12.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1995;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Colombia";;;16.4;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Colombia";;;13.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Colombia";;;13.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1991;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Dominican Republic";;;16.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Dominican Republic";;;15.568898681;"Global_UNHABITAT-DHS";"Slum dwellers"
+2002;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Dominican Republic";;;13.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+2007;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Dominican Republic";;;13.9739500411;"Global_UNHABITAT-DHS";"Slum dwellers"
+1995;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Guatemala";;;19.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Guatemala";;;12.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Haiti";;;27;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Haiti";;;24.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2000;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Armenia";;;7.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Armenia";;;15;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bangladesh";;;8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bangladesh";;;7.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bangladesh";;;6.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+2007;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Bangladesh";;;10.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"India";;;8.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"India";;;19.3;"Global_UNHABITAT-DHS";"Slum dwellers"
+2005;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"India";;;8.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1992;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Indonesia";;;11.9;"Global_UNHABITAT-DHS";"Slum dwellers"
+1994;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Indonesia";;;12.373610735;"Global_UNHABITAT-DHS";"Slum dwellers"
+1997;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Indonesia";;;9.0835148076;"Global_UNHABITAT-DHS";"Slum dwellers"
+2004;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Indonesia";;;11.2;"Global_UNHABITAT-DHS";"Slum dwellers"
+1995;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kazakhstan";;;15;"Global_UNHABITAT-DHS";"Slum dwellers"
+1999;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kazakhstan";;;14.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+1997;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Kyrgyzstan";;;15.1;"Global_UNHABITAT-DHS";"Slum dwellers"
+1996;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Nepal";;;23.8;"Global_UNHABITAT-DHS";"Slum dwellers"
+2001;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Nepal";;;16.6;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Nepal";;;11.5;"Global_UNHABITAT-DHS";"Slum dwellers"
+1990;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Pakistan";;;15;"Global_UNHABITAT-DHS";"Slum dwellers"
+2006;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Pakistan";;;22.0526896342;"Global_UNHABITAT-DHS";"Slum dwellers"
+1993;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Philippines";;;9.7;"Global_UNHABITAT-DHS";"Slum dwellers"
+1998;;"children_with_diarrhea_urban";"Proportion of children with diarrhea in last two weeks – Urban";"p";"Urban";;"Philippines";;;6.5;"Global_UNHABITAT-DHS";"Slum dwellers"

@@ -363,7 +363,7 @@ class IndicatorDataResource(ModelResource):
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.type_data,  '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.type_data, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc '
                        'FROM indicator_indicatordata id '
@@ -432,7 +432,7 @@ class IndicatorDataResource(ModelResource):
                     longitude = None
                     latitude = None
 
-                geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
+                geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'region_id' : c['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
             geolocs[c['indicator_id']]['locs'][c['country_id']]['years'][c['year']] = c['value']
 
@@ -467,7 +467,7 @@ class IndicatorDataResource(ModelResource):
                     longitude = None
                     latitude = None
 
-                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name' : r['city_name'], 'id' : r['city_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
+                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name' : r['city_name'], 'id' : r['city_id'], 'country_id' : r['country_id'], 'region_id' : r['region_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
 
             geolocs[r['indicator_id']]['locs'][r['city_id']]['years'][r['year']] = r['value']
 

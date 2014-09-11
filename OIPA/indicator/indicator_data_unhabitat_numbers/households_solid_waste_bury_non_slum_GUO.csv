@@ -1,10 +1,10 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2001;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Benin;;;1.5;Multiple sources;Slum dwellers
-2003;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Ghana;;;2;Multiple sources;Slum dwellers
-2003;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Kenya;;;8.9;Multiple sources;Slum dwellers
-1997;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Senegal;;;0.6;Multiple sources;Slum dwellers
-2005;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Colombia;;;0.1;Multiple sources;Slum dwellers
-1998;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Guatemala;;;1.5;Multiple sources;Slum dwellers
-2001;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Nicaragua;;;1;Multiple sources;Slum dwellers
-1991;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Peru;;;0.6;Multiple sources;Slum dwellers
-2000;;households_solid_waste_bury_non_slum;Proportion of households who bury solid waste – Non slum;p;Non-slum;;Suriname;;;4;Multiple sources;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+2001;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Benin";;;1.5;"Multiple sources";"Slum dwellers"
+2003;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Ghana";;;2;"Multiple sources";"Slum dwellers"
+2003;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Kenya";;;8.9;"Multiple sources";"Slum dwellers"
+1997;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Senegal";;;0.6;"Multiple sources";"Slum dwellers"
+2005;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Colombia";;;0.1;"Multiple sources";"Slum dwellers"
+1998;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Guatemala";;;1.5;"Multiple sources";"Slum dwellers"
+2001;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Nicaragua";;;1;"Multiple sources";"Slum dwellers"
+1991;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Peru";;;0.6;"Multiple sources";"Slum dwellers"
+2000;;"households_solid_waste_bury_non_slum";"Proportion of households who bury solid waste – Non slum";"p";"Non-slum";;"Suriname";;;4;"Multiple sources";"Slum dwellers"

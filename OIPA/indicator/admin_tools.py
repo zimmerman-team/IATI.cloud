@@ -5,10 +5,41 @@ from django.core.exceptions import ValidationError
 from geodata.models import Country, City
 import os.path
 import ujson
+import StringIO
+from decimal import Decimal
 
 class IndicatorAdminTools():
 
-    def old_to_new_urbnnrs(self):
+
+    def old_to_new_urbnnrs_country(self,indicator_id, name, data_type):
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        location = base + "/data_backup/indicator_data.json"
+
+        json_data = open(location)
+        indicator_data = ujson.load(json_data)
+
+        csv_text = "year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category\n"
+
+        for d in indicator_data:
+
+            indicator_name = d['indicator_name']
+            country_iso = d['country_iso']
+
+            value = d['value']
+            year = d['year']
+
+            if value == None or value == "NULL":
+                continue
+
+            if indicator_name == indicator_id:
+                csv_text = csv_text + year + ";;" + indicator_name + ";"+name+";"+data_type+";;;" + country_iso + ";;;" + value + ";;\n"
+
+        return csv_text
+
+
+
+    def old_to_new_urbnnrs_city(self, indicator__par_id, name, data_type):
 
         base = os.path.dirname(os.path.abspath(__file__))
         location = base + "/data_backup/indicator_city_data.json"
@@ -38,21 +69,68 @@ class IndicatorAdminTools():
                     city_name = c['name']
                     country_id = c['country_id']
 
-                    if indicator_id == 'cpi_4_dimensions':
+                    if indicator_id == indicator__par_id:
 
                         if value and value != "NULL":
-                            csv_text = csv_text + year + ";;" + indicator_id + ";4 dimensions;p;;;" + country_id + ";" + city_name + ";;" + value + ";;\n"
+                            csv_text = csv_text + year + ";;" + indicator_id + ";"+name+";"+data_type+";;;" + country_id + ";" + city_name + ";;" + value + ";;\n"
 
         return csv_text
 
 
 
+    def reformat_values(self, name, data_type, keep_dot):
+
+
+        import csv
+
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        file_name = base + "/indicator_data_unhabitat_numbers/"+name+".csv"
+
+        delimiter = ';'
+        quote_character = '"'
+
+        csv_fp = open(file_name, 'rb')
+        csv_reader = csv.DictReader(csv_fp, fieldnames=[], restkey='undefined-fieldnames', delimiter=delimiter, quotechar=quote_character)
+
+        current_row = 0
+        raw_data = StringIO.StringIO()
+
+
+        for row in csv_reader:
+            current_row += 1
+
+            # Use heading rows as field names for all other rows.
+            if current_row == 1:
+                csv_reader.fieldnames = row['undefined-fieldnames']
+                writer = csv.DictWriter(raw_data, csv_reader.fieldnames, delimiter=";", quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+                writer.writeheader()
+                continue
 
 
 
+            if data_type == "index" and keep_dot == "1":
+                if row['value']:
+                    csv_value = row['value']
+                    csv_value = csv_value.replace(",", ".")
+                    csv_value = Decimal(csv_value)
+                    if 1 < csv_value <= 1000:
+
+                        csv_value = csv_value / 1000
+                        row['value'] = csv_value
+
+            if data_type == "n" and keep_dot == "0":
+
+                csv_value = row['value']
+                csv_value = csv_value.replace(".", "")
+                row['value'] = csv_value
 
 
+            writer.writerow(row)
 
+
+        CSVContent=raw_data.getvalue()
+        return CSVContent
 
 
 

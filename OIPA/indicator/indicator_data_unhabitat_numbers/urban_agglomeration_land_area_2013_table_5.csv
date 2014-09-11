@@ -1,46 +1,46 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Egypt;Cairo;;1.658;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Central African Rep.;Bangui;;111;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Nigeria;Lagos;;907;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Kenya;Nairobi;;557;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Ghana;Accra;;945;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Tanzania;Dar es Salaam;;570;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Senegal;Dakar;;194;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Ethiopia;Addis Abeba;;389;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Morocco;Casablanca;;220;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Nigeria;Abuja;;225;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Burkina Faso;Ouagadougou;;350;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Rwanda;Kigali;;114;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Japan;Tokyo-Yokohama;;8.547;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Indonesia;Jakarta (Jabotabek);;2.784;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Philippines;Manila;;1.437;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;China;Beijing, BJ;;3.497;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;India;Mumbai, MAH;;546;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;India;Kolkota, WB;;1.204;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;India;Chandigarh, CH;;202;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Thailand;Bangkok;;2.331;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Bangladesh;Dhaka;;324;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;China;Hong Kong, HK;;275;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Malaysia;Kuala Lumpur;;1.943;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Singapore;Singapore;;518;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Armenia;Yerevan;;324;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;United States;New York, NY-NJ-CT;;11.642;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;United States;Los Angeles, CA;;6.299;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;France;Paris;;2.845;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;United Kingdom;London;;1.623;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;United States;Washington, DC-VA-MD;;3.424;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Spain;Barcelona;;1.075;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;United States;Phoenix, AZ;;3.276;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Greece;Athens;;583;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Belgium;Brussels;;751;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;New Zealand;Auckland;;544;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Denmark;Copenhagen;;453;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Finland;Helsinki;;492;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Netherlands;Amsterdam;;414;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Russia;Moscow;;4.403;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Russia;St. Petersburg;;1.191;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Mexico;Guadalajara;;699;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Colombia;Medellin;;189;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Brazil;Sao Paulo;;3.173;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Brazil;Brasilia;;673;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
-2013;;urban_agglomeration_land_area;Urban agglomeration land area;km2;;;Guyana;Gerogetown;;70;Table 5 Population Density of Urban Agglomerations in Selected Cities;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Egypt";"Cairo";;1658;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Central African Rep.";"Bangui";;111;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Nigeria";"Lagos";;907;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Kenya";"Nairobi";;557;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Ghana";"Accra";;945;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Tanzania";"Dar es Salaam";;570;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Senegal";"Dakar";;194;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Ethiopia";"Addis Abeba";;389;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Morocco";"Casablanca";;220;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Nigeria";"Abuja";;225;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Burkina Faso";"Ouagadougou";;350;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Rwanda";"Kigali";;114;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Japan";"Tokyo-Yokohama";;8547;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Indonesia";"Jakarta (Jabotabek)";;2784;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Philippines";"Manila";;1437;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"China";"Beijing, BJ";;3497;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"India";"Mumbai, MAH";;546;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"India";"Kolkota, WB";;1204;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"India";"Chandigarh, CH";;202;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Thailand";"Bangkok";;2331;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Bangladesh";"Dhaka";;324;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"China";"Hong Kong, HK";;275;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Malaysia";"Kuala Lumpur";;1943;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Singapore";"Singapore";;518;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Armenia";"Yerevan";;324;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"United States";"New York, NY-NJ-CT";;11642;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"United States";"Los Angeles, CA";;6299;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"France";"Paris";;2845;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"United Kingdom";"London";;1623;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"United States";"Washington, DC-VA-MD";;3424;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Spain";"Barcelona";;1075;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"United States";"Phoenix, AZ";;3276;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Greece";"Athens";;583;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Belgium";"Brussels";;751;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"New Zealand";"Auckland";;544;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Denmark";"Copenhagen";;453;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Finland";"Helsinki";;492;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Netherlands";"Amsterdam";;414;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Russia";"Moscow";;4403;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Russia";"St. Petersburg";;1191;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Mexico";"Guadalajara";;699;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Colombia";"Medellin";;189;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Brazil";"Sao Paulo";;3173;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Brazil";"Brasilia";;673;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
+2013;;"urban_agglomeration_land_area";"Urban agglomeration land area (km²)";"n";;;"Guyana";"Gerogetown";;70;"Table 5 Population Density of Urban Agglomerations in Selected Cities";"Slum dwellers"
