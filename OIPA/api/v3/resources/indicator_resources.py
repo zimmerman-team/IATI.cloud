@@ -384,7 +384,7 @@ class IndicatorDataResource(ModelResource):
             indicator_q = "AND " + indicator_q
 
         cursor_max = connection.cursor()
-        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE 1 %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
+        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE 1 %s GROUP BY indicator_indicatordata.indicator_id order by max_value DESC' % indicator_q)
         desc = cursor_max.description
         max_results = [
         dict(zip([col[0] for col in desc], row))
@@ -413,9 +413,7 @@ class IndicatorDataResource(ModelResource):
 
 
                 if not c['indicator_id'] in geolocs:
-                    for mr in max_results:
-                        if mr['indicator_id']:
-                            max_value = mr['max_value']
+                    max_value = max_results[0]['max_value']
                     geolocs[c['indicator_id']] = {'indicator_friendly': c['friendly_label'], 'type_data': c['type_data'], 'indicator': c['indicator_id'], 'selection_type': c['selection_type'], 'max_value' : max_value, 'locs': {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
@@ -448,9 +446,7 @@ class IndicatorDataResource(ModelResource):
             except:
 
                 if not r['indicator_id'] in geolocs:
-                    for mr in max_results:
-                        if mr['indicator_id']:
-                            max_value = mr['max_value']
+                    max_value = max_results[0]['max_value']
                     geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'selection_type': r['selection_type'], 'max_value' : max_value, 'locs' : {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
