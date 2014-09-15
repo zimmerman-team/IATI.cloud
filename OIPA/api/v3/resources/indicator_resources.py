@@ -447,7 +447,7 @@ class IndicatorDataResource(ModelResource):
 
                 if not r['indicator_id'] in geolocs:
                     max_value = max_results[0]['max_value']
-                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'selection_type': r['selection_type'], 'max_value' : max_value, 'locs' : {}}
+                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
                 if limit_q:
@@ -466,7 +466,7 @@ class IndicatorDataResource(ModelResource):
                     longitude = None
                     latitude = None
 
-                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name' : r['city_name'], 'id' : r['city_id'], 'country_id' : r['country_id'], 'region_id' : r['region_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
+                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name': r['city_name'], 'id': r['city_id'], 'country_id': r['country_id'], 'region_id': r['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
             geolocs[r['indicator_id']]['locs'][r['city_id']]['years'][r['year']] = r['value']
 

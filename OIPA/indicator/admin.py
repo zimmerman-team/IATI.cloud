@@ -162,6 +162,11 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 value_csv = str(value_csv)
                 value_csv = value_csv.replace(".", ",")
 
+
+                if value_csv == None or value_csv == "NULL":
+                    continue
+
+
                 #here we are checking if this indicator already exists, or if we have to create a new one
                 if line_counter == 0:
                     #try to find the indicator that is uploaded or create a new one

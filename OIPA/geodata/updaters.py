@@ -298,6 +298,23 @@ class RegionUpdater():
         json_data.close()
 
 
+    def update_center_longlat(self):
+            base = os.path.dirname(os.path.abspath(__file__))
+            location = base + "/data_backup/region_center_locations.json"
+
+            json_data = open(location)
+            region_centers = ujson.load(json_data)
+            for r in region_centers:
+                if Region.objects.filter(code=r).exists():
+                    current_region = Region.objects.get(code=r)
+
+                    point_loc_str = 'POINT(' + str(region_centers[r]["longitude"]) + ' ' + str(region_centers[r]["latitude"]) + ')'
+                    longlat = fromstr(point_loc_str, srid=4326)
+                    current_region.center_longlat = longlat
+                    current_region.save()
+
+            json_data.close()
+
 
 class CityUpdater():
 
