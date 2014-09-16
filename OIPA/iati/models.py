@@ -453,7 +453,7 @@ class Activity(models.Model):
 
 
 class ActivityParticipatingOrganisation(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, related_name="participating_organisations")
     organisation = models.ForeignKey(Organisation, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
     name = models.TextField(null=True, default=None)

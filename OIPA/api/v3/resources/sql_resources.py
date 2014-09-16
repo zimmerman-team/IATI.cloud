@@ -560,7 +560,7 @@ class CountryActivitiesResource(ModelResource):
         budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         start_actual_q = helper.get_year_and_query(request, 'start_actual__in', 'a.start_actual')
         start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')

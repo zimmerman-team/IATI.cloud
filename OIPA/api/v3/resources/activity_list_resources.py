@@ -25,7 +25,7 @@ from api.v3.resources.csv_serializer import CsvSerializer
 class ActivityListResource(ModelResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
-    participating_organisations = fields.ToManyField(ActivityViewParticipatingOrganisationResource, 'activityparticipatingorganisation_set', full=True, null=True)
+    participating_organisations = fields.ToManyField(ActivityViewParticipatingOrganisationResource, 'participating_organisations', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
     activity_scope = fields.ForeignKey(ActivityViewActivityScopeResource, 'scope', full=True, null=True)
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
@@ -61,7 +61,8 @@ class ActivityListResource(ModelResource):
             'regions': ALL_WITH_RELATIONS,
             'countries': ALL_WITH_RELATIONS,
             'reporting_organisation': ('exact', 'in'),
-            'participating_organisations': ('exact', 'in'),
+            'participating_organisation': ALL,
+            'participating_organisations': ALL_WITH_RELATIONS
         }
         cache = NoTransformCache()
         allowed_methods = ['get']

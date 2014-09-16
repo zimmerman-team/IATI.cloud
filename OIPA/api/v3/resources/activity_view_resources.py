@@ -65,7 +65,8 @@ class ActivityViewOrganisationResource(ModelResource):
         include_resource_uri = False
         excludes = ['abbreviation', 'reported_by_organisation']
         filtering = {
-            'iati_identifier': 'exact'
+            'iati_identifier': 'exact',
+            'code': ALL_WITH_RELATIONS
         }
 
 
@@ -94,10 +95,15 @@ class ActivityViewTransactionResource(ModelResource):
 
 
 class ActivityViewParticipatingOrganisationResource(ModelResource):
+    organisation = fields.ToOneField(ActivityViewOrganisationResource, 'organisation', full=True, null=True)
+
     class Meta:
         queryset = ActivityParticipatingOrganisation.objects.all()
         include_resource_uri = False
         excludes = ['id']
+        filtering = {
+            'organisation': ALL_WITH_RELATIONS
+        }
 
     def dehydrate(self, bundle):
         bundle.data['role_id'] = bundle.obj.role_id
