@@ -14,6 +14,7 @@ johnny-cache==1.4
 contexttimer==0.2.0
 mechanize==0.2.5
 django-suit==0.2.7
+django-rq==0.7.0
 objgraph
 guppy
 ujson==1.33
