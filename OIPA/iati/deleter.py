@@ -66,6 +66,8 @@ class Deleter():
             models.Budget.objects.filter(activity=cur_activity).delete()
             models.Condition.objects.filter(activity=cur_activity).delete()
 
+            models.ActivitySearchData.objects.filter(activity=cur_activity).delete()
+
             for r in models.Result.objects.filter(activity=cur_activity):
                 for ri in models.ResultIndicator.objects.filter(result=r):
                     models.ResultIndicatorPeriod.objects.filter(result_indicator=ri).delete()
