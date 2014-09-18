@@ -255,7 +255,6 @@ class RegionUpdater():
                     longitude = unesco_regions[cr]['longitude']
                     name = unesco_regions[cr]['name']
                     if counter_unfind_region == 3:
-                        print region_text_xml
                         counter_unfind_region = 0
                     #try to match the region of the XML file with the json Unesco region file
                     if name.lower() == region_text_xml.lower():
