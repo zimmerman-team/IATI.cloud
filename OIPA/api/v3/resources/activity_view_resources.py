@@ -121,7 +121,6 @@ class ActivityViewActivityScopeResource(ModelResource):
     class Meta:
         queryset = ActivityScope.objects.all()
         include_resource_uri = False
-2
 
 class ActivityViewCurrencyResource(ModelResource):
     class Meta:
@@ -241,3 +240,10 @@ class ActivityResource(ModelResource):
             return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
         else:
             return super(ActivityResource, self).get_list(request, **kwargs)
+
+    def alter_list_data_to_serialize(self, request, data):
+        select_related_param = request.GET.get('select_related', None)
+        if select_related_param:
+            select_related = comma_separated_parameter_to_list(select_related_param)
+            data['meta']['selectable_fields'] = {f[0] for f in self.fields.items()} - {f for f in select_related}
+        return data
