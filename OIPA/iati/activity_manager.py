@@ -53,7 +53,7 @@ class ActivityQuerySet(query.QuerySet):
 			prepared_filter.append(Q(**{'start_planned__year':years}))
 
 		if len(prepared_filter) > 1:
-			return self.filter(reduce(operator.or_, prepared_filter))
+			return self.filter(reduce(operator.or_, prepared_filter)).distinct()
 		else: return self.filter(prepared_filter[0])
 
 	def _create_full_text_query(self, query):
