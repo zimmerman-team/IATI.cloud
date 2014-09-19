@@ -14,6 +14,8 @@ from api.v3.resources.helper_resources import DocumentResource
 from api.v3.resources.csv_serializer import CsvSerializer
 from activity_view_resources import ActivityResource
 
+from api.paginator import NoCountPaginator
+
 class ActivityListResource(ActivityResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
@@ -58,3 +60,4 @@ class ActivityListResource(ActivityResource):
         }
         cache = NoTransformCache()
         allowed_methods = ['get']
+        paginator_class = NoCountPaginator

@@ -1,6 +1,3 @@
-# Django specific
-from django.db.models import Q
-
 # Tastypie specific
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -18,6 +15,8 @@ from cache.validator import Validator
 
 from api.v3.resources.csv_serializer import CsvSerializer
 from api.dev.api_tools import comma_separated_parameter_to_list
+
+from api.paginator import NoCountPaginator
 
 class ActivityViewAidTypeResource(ModelResource):
     class Meta:
@@ -180,6 +179,7 @@ class ActivityResource(ModelResource):
             'documents': ALL_WITH_RELATIONS
         }
         cache = NoTransformCache()
+        paginator_class = NoCountPaginator
 
 
     def apply_filters(self, request, applicable_filters):
