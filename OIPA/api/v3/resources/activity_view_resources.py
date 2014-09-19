@@ -198,6 +198,38 @@ class ActivityResource(ModelResource):
 
         return activity_list.distinct_if_necessary(applicable_filters)
 
+    def full_dehydrate(self, bundle, for_list=False):
+        select_related_param = bundle.request.GET.get('select_related', None)
+        #If the select related param is found, run this overwritten method.
+        #Otherwise run the default Tastypie method
+        if select_related_param:
+            select_related = comma_separated_parameter_to_list(select_related_param)
+            for field_name, field_object in self.fields.items():
+                #If the field_name is in the list of requested fields dehydrate it
+                if (field_name) in select_related:
+
+                    #################################################
+                    ##  From here on its all copied Tastypie code  ##
+                    #################################################
+
+                    # A touch leaky but it makes URI resolution work.
+                    if getattr(field_object, 'dehydrated_type', None) == 'related':
+                        field_object.api_name = self._meta.api_name
+                        field_object.resource_name = self._meta.resource_name
+
+                    bundle.data[field_name] = field_object.dehydrate(bundle, for_list=for_list)
+
+                    # Check for an optional method to do further dehydration.
+                    method = getattr(self, "dehydrate_%s" % field_name, None)
+
+                    if method:
+                        bundle.data[field_name] = method(bundle)
+
+            bundle = self.dehydrate(bundle)
+            return bundle
+        else:
+            return super(ActivityResource, self).full_dehydrate(bundle, for_list)
+
     def get_list(self, request, **kwargs):
 
         # check if call is cached using validator.is_cached
