@@ -36,7 +36,16 @@ class TestActivityQuerySet:
 
 	def test__prepare_search_filter__wrong_field(self):
 		with pytest.raises(Exception) as ex:
-			'''should raise an exception when an invalid search_field is used'''
+			'''should raise an exception when an invalid search_field (in this case 'spam') is used'''
 			a = ActivityQuerySet()
-			a._prepare_search_filter(['descriptions', 'title'], 'food water')
+			a._prepare_search_filter(['descriptions', 'spam'], 'food water')
 		assert 'unsupported search_field' in str(ex.value)
+
+	@pytest.mark.parametrize("input", [
+    	([2012,2013]), #should work with a list containing multiple years
+    	([2012]), #should work with a list containing 1 year
+		(2012), #should work with an integer instead of a list
+	])
+	def test__filter_years(self, input):
+		a = models.Activity.objects.all()
+		a_filter = a.filter_years(input)

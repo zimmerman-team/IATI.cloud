@@ -11,6 +11,9 @@ class ActivityManager(models.Manager):
 	def search(self, query, search_fields):
 		return self.get_query_set().search(query, search_fields)
 
+	def filter_years(self, years):
+		return self.get_query_set().filter_years(years)
+
 class ActivityQuerySet(query.QuerySet):
 	class Meta:
 		DEFAULT_SEARCH_FIELDS = ('titles', 'descriptions', 'identifiers')
@@ -39,6 +42,19 @@ class ActivityQuerySet(query.QuerySet):
 			if key[-4:] == '__in':
 				return self.distinct()
 		return self
+
+	def filter_years(self, years):
+		prepared_filter = []
+
+		try:
+			for f in years:
+				prepared_filter.append(Q(**{'start_planned__year':f}))
+		except TypeError:
+			prepared_filter.append(Q(**{'start_planned__year':years}))
+
+		if len(prepared_filter) > 1:
+			return self.filter(reduce(operator.or_, prepared_filter))
+		else: return self.filter(prepared_filter[0])
 
 	def _create_full_text_query(self, query):
 		'''Modifies the query for full text search boolean mode. This adds a + and * char to each word. + sets boolean AND search. * activates wildcard search'''
