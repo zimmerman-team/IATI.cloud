@@ -157,6 +157,7 @@ class ActivityResource(ModelResource):
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True, use_in='detail')
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True, use_in='detail')
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
+    other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True)
 
     class Meta:
         queryset = Activity.objects.all()
