@@ -74,6 +74,10 @@ class CsvSerializer(Serializer):
                             participating_org_implementing = []
 
                             for org in data[dest_key]:
+
+                                if not org["name"]:
+                                    continue
+
                                 if org["role_id"] == "Accountable":
                                     participating_org_accountable.append(org["name"])
                                 if org["role_id"] == "Extending":
@@ -142,11 +146,11 @@ class CsvSerializer(Serializer):
                     column_dict[dest_key] = data[dest_key]
 
 
-            column_dict.pop("participating_organisations", None)
+            del column_dict["participating_organisations"]
 
             for dest_key in column_dict:
                 if column_dict[dest_key]:
-                        column_dict[dest_key] = column_dict[dest_key].encode('utf-8', 'ignore')
+                    column_dict[dest_key] = column_dict[dest_key].encode('utf-8', 'ignore')
 
 
         except Exception as e:
