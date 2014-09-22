@@ -132,9 +132,6 @@ class ActivityViewCurrencyResource(ModelResource):
 
 
 
-
-
-
 class ActivityResource(ModelResource):
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True, use_in='all')
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True, use_in='all')
@@ -156,7 +153,7 @@ class ActivityResource(ModelResource):
     budget = fields.ToManyField(ActivityBudgetResource, 'budget_set', full=True, null=True, use_in='detail')
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True, use_in='detail')
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
-    other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True)
+    other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
 
     class Meta:
         queryset = Activity.objects.all()
