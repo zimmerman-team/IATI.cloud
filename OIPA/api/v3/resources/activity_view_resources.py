@@ -122,7 +122,7 @@ class ActivityViewActivityScopeResource(ModelResource):
     class Meta:
         queryset = ActivityScope.objects.all()
         include_resource_uri = False
-2
+
 
 class ActivityViewCurrencyResource(ModelResource):
     class Meta:
@@ -134,13 +134,10 @@ class ActivityViewCurrencyResource(ModelResource):
 
 
 
-
-
-
 class ActivityResource(ModelResource):
 
     reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True)
-    participating_organisations = fields.ToManyField(ActivityViewParticipatingOrganisationResource, 'activityparticipatingorganisation_set', full=True, null=True)
+    participating_organisations = fields.ToManyField(ActivityViewParticipatingOrganisationResource, 'participating_organisations', full=True, null=True)
     activity_status = fields.ForeignKey(ActivityViewActivityStatusResource, 'activity_status', full=True, null=True)
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True)
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)

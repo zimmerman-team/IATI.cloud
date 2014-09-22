@@ -28,30 +28,12 @@ DATABASES = DATABASES
 JENKINS_TASKS = JENKINS_TASKS
 PROJECT_APPS = PROJECT_APPS
 
-ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO',
-                              'csv_files')
-
+ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO', 'csv_files')
 
 XS_SHARING_ALLOWED_ORIGINS = '*'
 XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', '*']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
-
-#
-# HAYSTACK_SEARCH_ENGINE = 'solr'
-#
-# #where we interface with the solr server
-# HAYSTACK_SOLR_URL = 'http://127.0.0.1:8080/solr'
-#
-# HAYSTACK_CONNECTIONS = {
-#     'default': {
-#         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-#         'URL': 'http://127.0.0.1:8983/solr'
-#         # ...or for multicore...
-#         # 'URL': 'http://127.0.0.1:8983/solr/mysite',
-#     },
-# }
-
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -86,7 +68,6 @@ USE_TZ = False
 # Example: "/var/www/example.com/static/"
 MEDIA_ROOT = rel('../media')
 STATIC_ROOT = STATIC_ROOT
-
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -125,8 +106,6 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'api.v3.ajax_allower.XsSharing',
-    # 'johnny.middleware.LocalStoreClearMiddleware',
-    # 'johnny.middleware.QueryCacheMiddleware',
 )
 
 ROOT_URLCONF = 'OIPA.urls'
@@ -148,80 +127,45 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     # 'django.contrib.gis',
-    'django_jenkins',
     'iati',
     'iati_synchroniser',
     'geodata',
     'indicator',
-    # 'logviewer',
     'api',
     'rsr',
     'cache',
     'task_queue',
     'south',
     'multiupload',
-
     'django_rq',
     'djsupervisor',
-
     'indicator_unesco',
     'translation_model',
-
 )
-
 
 SUIT_CONFIG = {
     'ADMIN_NAME': 'OIPA',
     'MENU': (
         # Keep original label and models
         'sites',
-
         # Rename app and set icon
         {'app': 'auth', 'label': 'Authorization', 'icon':'icon-lock'},
         {'app': 'iati', 'label': 'IATI', 'icon':'icon-th'},
         {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon':'icon-refresh'},
-
         {'app': 'geodata', 'label': 'Geo data', 'icon':'icon-globe'},
         {'app': 'indicator', 'label': 'Indicators', 'icon':'icon-signal'},
-
         {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon':'icon-signal'},
-
-
         {'app': 'cache', 'label': 'API call cache', 'icon':'icon-hdd'},
-
         {'label': 'Task queue', 'url': ( '/admin/task-queue/'), 'icon':'icon-tasks', 'models': [
-
             {'label': 'Task overview', 'url': ( '/admin/task_queue/')},
             {'label': 'Default queue', 'url': ( '/admin/task_queue/queues/0/')},
             {'label': 'Parse queue', 'url': ( '/admin/task_queue/queues/1/')},
             {'label': 'Failed tasks', 'url': ( '/admin/task_queue/queues/2/')},
-
         ]},
-
-
-
     )
-
-        # Keep original label and models
-        # 'sites',
-
-
-        # Custom app, with models
-        # {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
-
-
 }
 
-
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-
-RQ_SHOW_ADMIN_LINK = True
-
+RQ_SHOW_ADMIN_LINK = False
 LOGGING = LOGGING
-
 RQ_QUEUES = RQ_QUEUES
 

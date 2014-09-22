@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     (r'^reschedule_all_failed/', 'task_queue.views.reschedule_all_failed'),
 
     # task queue pages
-    # (r'', include('django_rq.urls')),
+    (r'', include('django_rq.urls')),
 )
 
 

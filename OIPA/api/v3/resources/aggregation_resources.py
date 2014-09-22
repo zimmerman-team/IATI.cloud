@@ -259,7 +259,6 @@ class ActivityAggregatedAnyResource(ModelResource):
         else:
             if 'AND ()' in filter_string:
                 filter_string = filter_string[:-6]
-        print filter_string
 
         query_where += filter_string
 
@@ -282,7 +281,6 @@ class ActivityAggregatedAnyResource(ModelResource):
 
         # execute query
 
-        print query_select + query_from + query_where + query_group_by
 
         cursor.execute(query_select + query_from + query_where + query_group_by)
         results1 = helper.get_fields(cursor=cursor)
@@ -420,7 +418,6 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
         else:
             if 'AND ()' in filter_string:
                 filter_string = filter_string[:-6]
-        print filter_string
 
         query_where += filter_string
 
@@ -443,7 +440,6 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
 
         # execute query
 
-        print query_select + query_from + query_where + query_group_by
 
         cursor.execute(query_select + query_from + query_where + query_group_by)
         results1 = helper.get_fields(cursor=cursor)
