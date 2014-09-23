@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
-from multiupload.admin import MultiUploadAdmin
+# from multiupload.admin import MultiUploadAdmin
 from indicator.models import Indicator, IndicatorData, IndicatorSource, IncomeLevel, LendingType, IndicatorTopic, CsvUploadLog
 from django.conf.urls import patterns
 from indicator.admin_tools import IndicatorAdminTools
@@ -82,7 +82,7 @@ class IndicatorDataAdmin(admin.ModelAdmin):
     search_fields = ['year', 'indicator__friendly_label', 'value']
     list_filter = ['indicator', 'city', 'country', 'year']
 
-class IndicatorDataUploadAdmin(MultiUploadAdmin):
+class IndicatorDataUploadAdmin(admin.ModelAdmin):
     list_display = ['indicator','selection_type', 'city','country', 'region', 'year', 'value']
     search_fields = ['year', 'indicator__friendly_label', 'value']
     list_filter = ['indicator','selection_type', 'city', 'country', 'year']
