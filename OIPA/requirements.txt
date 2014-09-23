@@ -12,6 +12,7 @@ django-suit==0.2.11
 objgraph==1.8.1
 guppy==0.1.10
 ujson==1.33
+simplejson
 redis==2.10.3
 rq==0.4.6
 rq-scheduler==0.5.0
