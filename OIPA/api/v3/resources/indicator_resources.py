@@ -338,7 +338,7 @@ class IndicatorDataResource(ModelResource):
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, id.selection_type, id.category, ci.name as city_name, '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, id.selection_type, da.category, ci.name as city_name, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
                        'FROM indicator_indicatordata id '
@@ -364,7 +364,7 @@ class IndicatorDataResource(ModelResource):
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, id.category, da.type_data, '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.category, da.type_data, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc '
                        'FROM indicator_indicatordata id '
