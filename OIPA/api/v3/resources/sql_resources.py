@@ -36,7 +36,7 @@ class ActivityFilterOptionsResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
 
         helper = CustomCallHelper()
@@ -166,7 +166,7 @@ class ActivityFilterOptionsResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 class ActivityFilterOptionsUnescoResource(ModelResource):
@@ -188,7 +188,7 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
 
         helper = CustomCallHelper()
@@ -360,7 +360,7 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 
@@ -383,7 +383,7 @@ class CountryGeojsonResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -445,7 +445,7 @@ class CountryGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
 
 
 
@@ -485,7 +485,7 @@ class Adm1RegionGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
 
 
 
@@ -681,7 +681,7 @@ class CountryActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
         if format == "json":
-            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
         if format == "xml":
 
@@ -689,12 +689,12 @@ class CountryActivitiesResource(ModelResource):
                 item["name"] = item["name"].encode('utf-8', 'ignore')
 
             xml = dict2xml(return_json, "objects", True, "country")
-            return HttpResponse(xml, mimetype='application/xml')
+            return HttpResponse(xml, content_type='application/xml')
 
         if format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
-            return HttpResponse(csv_content, mimetype='text/csv')
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
@@ -719,7 +719,7 @@ class RegionActivitiesResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -831,7 +831,7 @@ class RegionActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
         if format == "json":
-            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
         if format == "xml":
 
@@ -840,12 +840,12 @@ class RegionActivitiesResource(ModelResource):
                 item["name"] = item["name"].replace("&", "and")
 
             xml = dict2xml(return_json, "objects", True, "region")
-            return HttpResponse(xml, mimetype='application/xml')
+            return HttpResponse(xml, content_type='application/xml')
 
         if format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
-            return HttpResponse(csv_content, mimetype='text/csv')
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
@@ -870,7 +870,7 @@ class GlobalActivitiesResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -958,7 +958,7 @@ class GlobalActivitiesResource(ModelResource):
 
         return_json["meta"] = {"total_count": len(results2)}
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
 
 
@@ -1057,7 +1057,7 @@ class SectorActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
         if format == "json":
-            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
         if format == "xml":
 
@@ -1066,12 +1066,12 @@ class SectorActivitiesResource(ModelResource):
                 item["name"] = item["name"].replace("&", "and")
 
             xml = dict2xml(return_json, "objects", True, "sector")
-            return HttpResponse(xml, mimetype='application/xml')
+            return HttpResponse(xml, content_type='application/xml')
 
         if format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
-            return HttpResponse(csv_content, mimetype='text/csv')
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
@@ -1165,7 +1165,7 @@ class DonorActivitiesResource(ModelResource):
 
 
         if format == "json":
-            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
         if format == "xml":
 
@@ -1174,12 +1174,12 @@ class DonorActivitiesResource(ModelResource):
                 item["name"] = item["name"].replace("&", "and")
 
             xml = dict2xml(return_json, "objects", True, "donor")
-            return HttpResponse(xml, mimetype='application/xml')
+            return HttpResponse(xml, content_type='application/xml')
 
         if format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
-            return HttpResponse(csv_content, mimetype='text/csv')
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 

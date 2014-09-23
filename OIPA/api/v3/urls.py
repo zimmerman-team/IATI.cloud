@@ -13,7 +13,7 @@ from api.v3.resources.indicator_resources import IndicatorAggregationResource, I
 from api.v2 import views as old_views
 from api.v3 import views
 
-from api.v2.urls import v2_api;
+from api.v2.urls import v2_api
 from api.v3.resources.unesco_indicator_resources import UnescoIndicatorResource
 
 v3_api = Api(api_name='v3')
@@ -54,12 +54,6 @@ def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
 
 urlpatterns = patterns('',
-    url(r'^v2/docs/$', 'api.v2.views.docs_index', name='docsv2'),
-    url(r'^v2/docs/getting-started/$', 'api.v2.views.docs_start', name='start_docsv2'),
-    url(r'^v2/docs/resources/$', old_views.docs_resources, name='resource_docsv2'),
-    url(r'^v2/docs/filtering/$', old_views.docs_filtering, name='filter_docsv2'),
-    url(r'^v2/docs/ordering/$', old_views.docs_ordering, name='ordering_docsv2'),
-    url(r'^v2/docs/about/$', old_views.docs_about, name='about_docsv2'),
     url(r'^v3/docs/$', views.docs_index, name='docs'),
     url(r'^v3/docs/getting-started/$', views.docs_start, name='start_docs'),
     url(r'^v3/docs/resources/$', views.docs_resources, name='resource_docs'),

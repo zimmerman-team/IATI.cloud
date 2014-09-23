@@ -9,7 +9,7 @@ from tastypie.serializers import Serializer
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
+from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
@@ -130,7 +130,11 @@ class ActivityViewCurrencyResource(ModelResource):
         include_resource_uri = False
         excludes = ['language']
 
-
+class ActivityViewContactInfoResource(ModelResource):
+    class Meta:
+        queryset = ContactInfo.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
 
 
 
@@ -157,6 +161,7 @@ class ActivityResource(ModelResource):
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True)
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True)
+    contact_info = fields.ToManyField(ActivityViewContactInfoResource, 'contactinfo_set', full=True, null=True)
 
     class Meta:
         queryset = Activity.objects.all()
