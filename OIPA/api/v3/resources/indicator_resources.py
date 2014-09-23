@@ -447,7 +447,7 @@ class IndicatorDataResource(ModelResource):
 
                 if not r['indicator_id'] in geolocs:
                     max_value = max_results[0]['max_value']
-                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'category': c['category'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
+                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'category': r['category'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
                 if limit_q:
