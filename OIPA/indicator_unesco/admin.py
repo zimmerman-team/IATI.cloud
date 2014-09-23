@@ -1,14 +1,15 @@
 import xml.etree.cElementTree as etree
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
-from multiupload.admin import MultiUploadAdmin
+# from multiupload.admin import MultiUploadAdmin
 
 from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, get_value, save_log, save_city_data, save_country_data
 from indicator_unesco.models import UnescoIndicatorData, UnescoIndicator
 from translation_model.models import TranslationModel
 
 
-class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
+# class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
+class UnescoIndicatorDataUploadAdmin(admin.ModelAdmin):
     list_display = ['unesco_indicator','country', 'value']
     search_fields = ['unesco_indicator']
     list_filter = ['unesco_indicator', 'country']
