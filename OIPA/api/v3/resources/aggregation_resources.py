@@ -37,7 +37,7 @@ class ActivityCountResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         cursor = connection.cursor()
@@ -65,7 +65,7 @@ class ActivityCountResource(ModelResource):
         field = request.GET.get("group_field", "start_actual") # used for year filtering, valid : start_planned, start_actual, end_planned, end_actual, defaults to start_actual
 
         if not group_by:
-            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), content_type='application/json')
 
         #create the query
         query_select = 'SELECT count(a.id) as activity_count, '
@@ -146,7 +146,7 @@ class ActivityCountResource(ModelResource):
 
             options[r['group_field']] = r['activity_count']
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 
@@ -204,7 +204,7 @@ class ActivityAggregatedAnyResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         cursor = connection.cursor()
@@ -231,20 +231,20 @@ class ActivityAggregatedAnyResource(ModelResource):
                 aggregation_where_addition = aggregation_info["where_addition"]
         else:
 
-            return HttpResponse(ujson.dumps({"error": "Invalid aggregation key, see included list for viable keys.","valid_aggregation_keys": list(aggregation_element_dict.keys())}), mimetype='application/json')
+            return HttpResponse(ujson.dumps({"error": "Invalid aggregation key, see included list for viable keys.","valid_aggregation_keys": list(aggregation_element_dict.keys())}), content_type='application/json')
 
         if group_by_key in group_by_element_dict:
             group_by_info = group_by_element_dict[group_by_key]
             group_select = group_by_info["select"]
             group_from_addition = group_by_info["from_addition"]
         else:
-            return HttpResponse(ujson.dumps({"error": "Invalid group by key, see included list for viable keys.","valid_group_by_keys": list(group_by_element_dict.keys())}), mimetype='application/json')
+            return HttpResponse(ujson.dumps({"error": "Invalid group by key, see included list for viable keys.","valid_group_by_keys": list(group_by_element_dict.keys())}), content_type='application/json')
 
         # make sure group key and aggregation key are set
         if not group_by_key:
-            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), content_type='application/json')
         if not aggregation_key:
-            return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), content_type='application/json')
 
         #create the query
         query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field '
@@ -295,7 +295,7 @@ class ActivityAggregatedAnyResource(ModelResource):
 
 
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 
@@ -363,7 +363,7 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         cursor = connection.cursor()
@@ -390,20 +390,20 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
                 aggregation_where_addition = aggregation_info["where_addition"]
         else:
 
-            return HttpResponse(ujson.dumps({"error": "Invalid aggregation key, see included list for viable keys.","valid_aggregation_keys": list(aggregation_element_dict.keys())}), mimetype='application/json')
+            return HttpResponse(ujson.dumps({"error": "Invalid aggregation key, see included list for viable keys.","valid_aggregation_keys": list(aggregation_element_dict.keys())}), content_type='application/json')
 
         if group_by_key in group_by_element_dict:
             group_by_info = group_by_element_dict[group_by_key]
             group_select = group_by_info["select"]
             group_from_addition = group_by_info["from_addition"]
         else:
-            return HttpResponse(ujson.dumps({"error": "Invalid group by key, see included list for viable keys.","valid_group_by_keys": list(group_by_element_dict.keys())}), mimetype='application/json')
+            return HttpResponse(ujson.dumps({"error": "Invalid group by key, see included list for viable keys.","valid_group_by_keys": list(group_by_element_dict.keys())}), content_type='application/json')
 
         # make sure group key and aggregation key are set
         if not group_by_key:
-            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No field to group by. add parameter group_by (country/region/etc.. see docs)"), content_type='application/json')
         if not aggregation_key:
-            return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No field to aggregate on. add parameter aggregation_key (iati-identifier/reporting-org/etc.. see docs)"), content_type='application/json')
 
         #create the query
         query_select = 'SELECT '+aggregation_type+'(' + aggregation_key + ') as aggregation_field, ' + group_select + ' as group_field, o.name   as org_name '
@@ -450,10 +450,10 @@ class ActivityAggregatedAnyNamesResource(ModelResource):
 
         for r in results1:
 
-            options[r['group_field']] = [r['aggregation_field'], r['org_name']];
+            options[r['group_field']] = [r['aggregation_field'], r['org_name']]
 
 
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
