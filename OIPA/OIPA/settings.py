@@ -130,7 +130,7 @@ INSTALLED_APPS = (
     'cache',
     'task_queue',
     'south',
-    # 'multiupload',
+    'multiupload',
     'django_rq',
     'djsupervisor',
     'indicator_unesco',
