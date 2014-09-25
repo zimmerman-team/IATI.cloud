@@ -190,7 +190,7 @@ class ActivityAggregatedAnyResource(ModelResource):
 
         group_by_element_dict = {
             'recipient-country': {'select': 'rc.country_id', 'from_addition': 'JOIN iati_activityrecipientcountry as rc on a.id = rc.activity_id '},
-            'recipient-region': {'select': 'rr.region_id', 'from_addition': 'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '},
+            'recipient-region': {'select': 'r.name, rr.region_id', 'from_addition': 'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id join geodata_region as r on rr.region_id = r.code '},
             'year': {'select': 'YEAR('+group_field+')', 'from_addition': ''},
             'sector': {'select': 'acts.sector_id', 'from_addition': 'JOIN iati_activitysector as acts on a.id = acts.activity_id '},
             'reporting-org': {'select': 'a.reporting_organisation_id', 'from_addition': ''},
@@ -198,17 +198,8 @@ class ActivityAggregatedAnyResource(ModelResource):
             'policy-marker': {'select': 'pm.policy_marker_id', 'from_addition': 'JOIN iati_activitypolicymarker as pm on a.id = pm.activity_id '},
         }
 
-        # check if call is cached using validator.is_cached
-        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
-        validator = Validator()
-        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-
-        if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
-
         helper = CustomCallHelper()
         cursor = connection.cursor()
-
 
         # get filters
         reporting_organisations = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
@@ -281,17 +272,22 @@ class ActivityAggregatedAnyResource(ModelResource):
 
         # execute query
 
+        print (query_select + query_from + query_where + query_group_by)
 
         cursor.execute(query_select + query_from + query_where + query_group_by)
         results1 = helper.get_fields(cursor=cursor)
 
         # query result -> json output
 
-        options = {}
+        options = []
 
         for r in results1:
 
-            options[r['group_field']] = r['aggregation_field']
+
+
+            options.append(r)
+
+            # options[r['group_field']] = r['aggregation_field']
 
 
 

@@ -1183,3 +1183,36 @@ class DonorActivitiesResource(ModelResource):
 
 
 
+
+class ActivityListVisResource(ModelResource):
+
+    class Meta:
+        resource_name = 'activity-list-vis'
+        allowed_methods = ['get']
+
+
+    def get_list(self, request, **kwargs):
+
+        helper = CustomCallHelper()
+        cursor = connection.cursor()
+        organisations = request.GET.get("reporting_organisation__in", None)
+        if organisations:
+            q_organisations = 'AND a.reporting_organisation_id = "' + organisations + '"'
+        else:
+            q_organisations = ""
+
+        cursor.execute('SELECT a.id, r.code, r.name, t.title, a.total_budget '
+        'FROM iati_activity as a '
+        'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '
+        'JOIN geodata_region as r on r.code = rr.region_id '
+        'JOIN iati_title as t on a.id = t.activity_id '
+        'WHERE 1 %s '
+        'order by a.id LIMIT 5000' % (q_organisations))
+        results1 = helper.get_fields(cursor=cursor)
+
+        activities = []
+
+        for r in results1:
+            activities.append(r)
+
+        return HttpResponse(ujson.dumps(activities), content_type='application/json')

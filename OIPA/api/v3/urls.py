@@ -6,8 +6,8 @@ from tastypie.api import Api
 from api.v3.resources.model_resources import OrganisationResource, CityResource, CountryResource, RegionResource, SectorResource, RecipientCountryResource
 from api.v3.resources.advanced_resources import OnlyCityResource, OnlyRegionResource, OnlyCountryResource
 from api.v3.resources.activity_view_resources import ActivityResource
-from api.v3.resources.activity_list_resources import ActivityListResource
-from api.v3.resources.sql_resources import ActivityFilterOptionsResource, CountryGeojsonResource, Adm1RegionGeojsonResource, CountryActivitiesResource, RegionActivitiesResource, GlobalActivitiesResource,  DonorActivitiesResource, SectorActivitiesResource, ActivityFilterOptionsUnescoResource
+from api.v3.resources.activity_list_resources import ActivityListResource, ActivityTempForVisResource
+from api.v3.resources.sql_resources import ActivityListVisResource, ActivityFilterOptionsResource, CountryGeojsonResource, Adm1RegionGeojsonResource, CountryActivitiesResource, RegionActivitiesResource, GlobalActivitiesResource,  DonorActivitiesResource, SectorActivitiesResource, ActivityFilterOptionsUnescoResource
 from api.v3.resources.aggregation_resources import ActivityCountResource, ActivityAggregatedAnyResource, ActivityAggregatedAnyNamesResource
 from api.v3.resources.indicator_resources import IndicatorAggregationResource, IndicatorCountryDataResource, IndicatorCityDataResource, IndicatorRegionDataResource, IndicatorFilterOptionsResource, IndicatorDataResource
 from api.v2 import views as old_views
@@ -47,6 +47,8 @@ v3_api.register(DonorActivitiesResource())
 v3_api.register(SectorActivitiesResource())
 v3_api.register(UnescoIndicatorResource())
 v3_api.register(ActivityFilterOptionsUnescoResource())
+v3_api.register(ActivityTempForVisResource())
+v3_api.register(ActivityListVisResource())
 
 
 
