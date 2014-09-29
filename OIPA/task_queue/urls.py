@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     (r'^reschedule_all_failed/', 'task_queue.views.reschedule_all_failed'),
 
     # task queue pages
-    (r'', include('django_rq.urls')),
+    # (r'', include('django_rq.urls')),
 
     # url(r'^$', 'django_rq.views.stats', name='rq_home'),
     # url(r'^queues/(?P<queue_index>[\d]+)/$', 'django_rq.views.jobs', name='rq_jobs'),
