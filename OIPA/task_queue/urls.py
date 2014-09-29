@@ -1,6 +1,6 @@
 # Django specific
 from django.conf.urls import *
-from django_rq import urls, views
+# from django_rq import urls, views
 
 urlpatterns = patterns('',
 
