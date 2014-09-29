@@ -178,6 +178,7 @@ class ActivityAggregatedAnyResource(ModelResource):
             'description': {'select': 'd.description', 'type': 'count', 'from_addition':'JOIN iati_description as d on a.id = d.activity_id '},
             'commitment': {'select': 't.value', 'type': 'sum', 'from_addition': 'JOIN iati_transaction as t on a.id = t.activity_id ', 'where_addition': 'AND t.transaction_type_id = "C" '},
             'disbursement': {'select': 't.value', 'type': 'sum', 'from_addition': 'JOIN iati_transaction as t on a.id = t.activity_id ', 'where_addition': 'AND t.transaction_type_id = "D" '},
+            'expenditure': {'select': 't.value', 'type': 'sum', 'from_addition': 'JOIN iati_transaction as t on a.id = t.activity_id ', 'where_addition': 'AND t.transaction_type_id = "E" '},
             'incoming-fund': {'select': 't.value', 'type': 'sum', 'from_addition': 'JOIN iati_transaction as t on a.id = t.activity_id ', 'where_addition': 'AND t.transaction_type_id = "IF" '},
             'location': {'select': 'l.activity_id', 'type': 'count', 'from_addition': 'JOIN iati_location as l on a.id = l.activity_id '},
             'policy-marker': {'select': 'pm.policy_marker_id', 'type': 'count', 'from_addition': 'JOIN iati_activitypolicymarker as pm on a.id = pm.activity_id '},

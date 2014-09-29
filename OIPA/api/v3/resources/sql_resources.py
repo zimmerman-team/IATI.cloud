@@ -1216,3 +1216,4 @@ class ActivityListVisResource(ModelResource):
             activities.append(r)
 
         return HttpResponse(ujson.dumps(activities), content_type='application/json')
+
