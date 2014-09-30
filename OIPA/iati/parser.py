@@ -1455,6 +1455,7 @@ class Parser():
     def add_activity_search_data(self, activity):
         search_data = models.ActivitySearchData(activity = activity)
 
+        search_data.search_identifier = activity.iati_identifier
         for title in activity.title_set.all():
             search_data.search_title += title.title + ' '
 
