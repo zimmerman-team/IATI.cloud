@@ -26,7 +26,7 @@ DATABASES = DATABASES
 ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO', 'csv_files')
 
 XS_SHARING_ALLOWED_ORIGINS = '*'
-XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
+XS_SHARING_ALLOWED_METHODS = ['GET', 'OPTIONS']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', '*']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 
@@ -112,13 +112,13 @@ import os
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').replace('\\','/'),)
 
 INSTALLED_APPS = (
+    'django_rq',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_rq',
     'suit',
     'django.contrib.admin',
     'django.contrib.admindocs',
