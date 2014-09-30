@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from cache.validator import Validator
 
 from api.v3.resources.csv_serializer import CsvSerializer
-from api.dev.api_tools import comma_separated_parameter_to_list
+from api.api_tools import comma_separated_parameter_to_list
 
 from api.paginator import NoCountPaginator
 
