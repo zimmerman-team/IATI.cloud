@@ -199,14 +199,14 @@ class ActivityResource(ModelResource):
         return activity_list.distinct_if_necessary(applicable_filters)
 
     def full_dehydrate(self, bundle, for_list=False):
-        select_related_param = bundle.request.GET.get('select_related', None)
+        select_fields_param = bundle.request.GET.get('select_fields', None)
         #If the select related param is found, run this overwritten method.
         #Otherwise run the default Tastypie method
-        if select_related_param:
-            select_related = comma_separated_parameter_to_list(select_related_param)
+        if select_fields_param:
+            select_fields = comma_separated_parameter_to_list(select_fields_param)
             for field_name, field_object in self.fields.items():
                 #If the field_name is in the list of requested fields dehydrate it
-                if (field_name) in select_related:
+                if (field_name) in select_fields:
 
                     #################################################
                     ##  From here on its all copied Tastypie code  ##
@@ -243,8 +243,8 @@ class ActivityResource(ModelResource):
             return super(ActivityResource, self).get_list(request, **kwargs)
 
     def alter_list_data_to_serialize(self, request, data):
-        select_related_param = request.GET.get('select_related', None)
-        if select_related_param:
-            select_related = comma_separated_parameter_to_list(select_related_param)
-            data['meta']['selectable_fields'] = {f[0] for f in self.fields.items()} - {f for f in select_related}
+        select_fields_param = request.GET.get('select_fields', None)
+        if select_fields_param:
+            select_fields = comma_separated_parameter_to_list(select_fields_param)
+            data['meta']['selectable_fields'] = {f[0] for f in self.fields.items()} - {f for f in select_fields}
         return data
