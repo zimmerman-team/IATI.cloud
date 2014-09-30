@@ -13,6 +13,8 @@ OIPA is licensed under the GNU AGPL license.
 
 Check the full documentation and how to use OIPA here: http://oipa.openaidsearch.org/api/v3/docs/
 
+Codebase maintained by Zimmerman & Zimmerman in Amsterdam.
+
 ============
 
 

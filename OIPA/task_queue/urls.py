@@ -1,5 +1,6 @@
 # Django specific
 from django.conf.urls import *
+# from django_rq import urls, views
 
 urlpatterns = patterns('',
 
@@ -27,7 +28,17 @@ urlpatterns = patterns('',
     (r'^reschedule_all_failed/', 'task_queue.views.reschedule_all_failed'),
 
     # task queue pages
-    (r'', include('django_rq.urls')),
+    # (r'', include('django_rq.urls')),
+
+    # url(r'^$', 'django_rq.views.stats', name='rq_home'),
+    # url(r'^queues/(?P<queue_index>[\d]+)/$', 'django_rq.views.jobs', name='rq_jobs'),
+    # url(r'^queues/(?P<queue_index>[\d]+)/empty/$', 'django_rq.views.clear_queue', name='rq_clear'),
+    # url(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w]+)/$', 'django_rq.views.job_detail', name='rq_job_detail'),
+    # url(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w]+)/delete/$', 'django_rq.views.delete_job', name='rq_delete_job'),
+    # url(r'^queues/actions/(?P<queue_index>[\d]+)/$', 'django_rq.views.actions', name='rq_actions'),
+    # url(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w]+)/requeue/$', 'django_rq.views.requeue_job_view', name='rq_requeue_job'),
+
+
 )
 
 

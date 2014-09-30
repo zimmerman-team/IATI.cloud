@@ -5,7 +5,7 @@ from tastypie.resources import ModelResource
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
+from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
@@ -128,7 +128,11 @@ class ActivityViewCurrencyResource(ModelResource):
         include_resource_uri = False
         excludes = ['language']
 
-
+class ActivityViewContactInfoResource(ModelResource):
+    class Meta:
+        queryset = ContactInfo.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
 
 
 

@@ -31,7 +31,7 @@ class IndicatorAdmin(admin.ModelAdmin):
         keep_dot = request.GET["keep_dot"]
         admTools = IndicatorAdminTools()
         csv_text = admTools.reformat_values(name, data_type, keep_dot)
-        response = HttpResponse(csv_text, mimetype="text/csv")
+        response = HttpResponse(csv_text, content_type="text/csv")
         response["Content-Disposition"] = "attachment; filename="+name+".csv"
         return response
 
@@ -41,7 +41,7 @@ class IndicatorAdmin(admin.ModelAdmin):
         data_type = request.GET["data_type"]
         indicator_id = request.GET["id"]
         csv_text = admTools.old_to_new_urbnnrs_city(indicator_id, name, data_type)
-        return HttpResponse(csv_text, mimetype='text/csv')
+        return HttpResponse(csv_text, content_type='text/csv')
 
 
     def old_to_new_urbnnrs_country(self, request):
@@ -50,7 +50,7 @@ class IndicatorAdmin(admin.ModelAdmin):
         data_type = request.GET["data_type"]
         indicator_id = request.GET["id"]
         csv_text = admTools.old_to_new_urbnnrs_country(indicator_id, name, data_type)
-        return HttpResponse(csv_text, mimetype='text/csv')
+        return HttpResponse(csv_text, content_type='text/csv')
 
     def update_indicator_data(self, request):
         admTools = IndicatorAdminTools()

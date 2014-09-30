@@ -20,13 +20,8 @@ DEBUG = DEBUG
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ADMINS
-
 MANAGERS = ADMINS
-
 DATABASES = DATABASES
-
-JENKINS_TASKS = JENKINS_TASKS
-PROJECT_APPS = PROJECT_APPS
 
 ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO', 'csv_files')
 
@@ -123,6 +118,7 @@ INSTALLED_APPS = (
     # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_rq',
     'suit',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -132,12 +128,10 @@ INSTALLED_APPS = (
     'geodata',
     'indicator',
     'api',
-    'rsr',
     'cache',
     'task_queue',
     'south',
     'multiupload',
-    'django_rq',
     'djsupervisor',
     'indicator_unesco',
     'translation_model',
