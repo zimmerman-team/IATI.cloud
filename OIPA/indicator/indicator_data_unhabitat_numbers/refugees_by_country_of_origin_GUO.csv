@@ -1,186 +1,186 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Algeria;;;12006;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Angola;;;215777;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Benin;;;411;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Botswana;;;4;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Burkina Faso;;;607;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Burundi;;;438663;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Cameroon;;;9016;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Cape Verde;;;5;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Central African Republic;;;42890;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Chad;;;48400;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Comoros;;;61;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Congo;;;24413;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Côte d’Ivoire;;;18303;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Congo Dem. Rep.;;;430625;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Djibouti;;;503;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Egypt;;;6291;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Equatorial Guinea;;;477;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Eritrea;;;143594;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Ethiopia;;;65293;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Gabon;;;81;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Gambia The;;;1678;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Ghana;;;18432;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Guinea;;;5820;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Guinea-Bissau;;;1050;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Kenya;;;4620;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Lesotho;;;6;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Liberia;;;231114;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Libya;;;1535;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Madagascar;;;203;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Malawi;;;101;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mali;;;520;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mauritania;;;31651;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mauritius;;;27;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Morocco;;;2920;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mozambique;;;104;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Namibia;;;1226;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Niger;;;655;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Nigeria;;;22098;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Rwanda;;;100244;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Sao Tome and Principe;;;24;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Senegal;;;8671;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Seychelles;;;40;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Sierra Leone;;;40447;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Somalia;;;394760;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;South Africa;;;268;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Sudan;;;693267;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Swaziland;;;13;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Togo;;;51107;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Tunisia;;;3129;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Uganda;;;34170;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Tanzania;;;1544;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Zambia;;;151;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Zimbabwe;;;10793;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Afghanistan;;;1908052;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Armenia;;;13965;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Azerbaijan;;;233675;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bahrain;;;41;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bangladesh;;;7294;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bhutan;;;106537;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Brunei;;;49;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Cambodia;;;17806;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;China;;;124021;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Macau SAR;;;9;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Cyprus;;;5;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Korea Rep;;;268;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Georgia;;;7301;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;India;;;16275;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Indonesia;;;34384;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Iran;;;262142;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Iraq;;;98722;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Israel;;;632;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Japan;;;13;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Jordan;;;1789;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Kazakhstan;;;4316;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Kuwait;;;381;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Kyrgyzstan;;;3122;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Lao PDR;;;24442;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Lebanon;;;18323;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Malaysia;;;394;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Maldives;;;13;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mongolia;;;654;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Myanmar;;;164864;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Nepal;;;2065;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Palestinian Territory, Occupied;;;349673;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Oman;;;12;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Pakistan;;;29698;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Philippines;;;465;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Qatar;;;11;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Saudi Arabia;;;151;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Singapore;;;39;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Sri Lanka;;;108059;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Syria;;;16281;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Tajikistan;;;54753;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Thailand;;;424;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Timor Leste;;;251;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Turkey;;;170131;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Turkmenistan;;;820;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;United Arab Emirates;;;30;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Uzbekistan;;;8323;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Vietnam;;;358248;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Yemen;;;1325;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Albania;;;12702;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Andorra;;;9;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Austria;;;66;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Belarus;;;8857;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Belgium;;;95;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bosnia and Herzegovina;;;109930;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Costa Rica;;;178;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Czech Republic;;;3589;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Denmark;;;12;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Estonia;;;743;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Finland;;;5;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;France;;;286;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Germany;;;78;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Greece;;;331;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Hungary;;;3519;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Iceland;;;7;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Ireland;;;21;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Italy;;;217;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Latvia;;;2430;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Lithuania;;;1448;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Luxembourg;;;1;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Malta;;;5;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Monaco;;;0;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Netherlands;;;159;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Norway;;;15;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Poland;;;19641;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Portugal;;;74;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Republic of Moldova;;;12063;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Romania;;;11492;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Russian Federation;;;102965;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;San Marino;;;1;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Serbia and Montenegro;;;189850;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Slovakia;;;791;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Slovenia;;;155;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Spain;;;49;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Sweden;;;75;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Switzerland;;;16;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Macedonia;;;8599;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Ukraine;;;84213;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;United Kingdom;;;135;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Antigua and Barbuda;;;13;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Argentina;;;856;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bahamas;;;11;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Barbados;;;8;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Belize;;;8;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Bolivia;;;2;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Brazil;;;269;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;British Virgin Islands;;;370;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Chile;;;938;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Colombia;;;60415;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Cuba;;;19000;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Dominica;;;30;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Dominican Republic;;;67;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Ecuador;;;770;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;El Salvador;;;4281;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Grenada;;;152;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Guadeloupe;;;3379;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Guyana;;;406;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Haiti;;;13542;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Honduras;;;535;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Jamaica;;;450;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Mexico;;;2313;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Nicaragua;;;1463;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Panama;;;42;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Paraguay;;;44;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Peru;;;4865;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Saint Kitts and Nevis;;;31;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Saint Lucia;;;99;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;St Vincent and the Grenadines;;;279;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Suriname;;;29;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Trinidad and Tobago;;;63;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Uruguay;;;111;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Venezuela;;;2590;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Canada;;;122;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;United States of America;;;683;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Australia;;;44;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Fiji;;;1379;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;French Polynesia;;;1;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Kiribati;;;33;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Federated States of Micronesia;;;1;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;New Zealand;;;4;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Papua New Guinea;;;23;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Solomon Islands;;;27;UNHCR, 2006_United Nations_2006.;Slum dwellers
-2005;;refugees_by_country_of_origin;Number of refugees by country of origin;n;Persons;;Tonga;;;4;UNHCR, 2006_United Nations_2006.;Slum dwellers
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Algeria";;;12006;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Angola";;;215777;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Benin";;;411;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Botswana";;;4;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Burkina Faso";;;607;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Burundi";;;438663;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Cameroon";;;9016;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Cape Verde";;;5;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Central African Republic";;;42890;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Chad";;;48400;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Comoros";;;61;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Congo";;;24413;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Côte d’Ivoire";;;18303;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Congo Dem. Rep.";;;430625;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Djibouti";;;503;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Egypt";;;6291;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Equatorial Guinea";;;477;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Eritrea";;;143594;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Ethiopia";;;65293;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Gabon";;;81;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Gambia The";;;1678;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Ghana";;;18432;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Guinea";;;5820;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Guinea-Bissau";;;1050;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Kenya";;;4620;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Lesotho";;;6;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Liberia";;;231114;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Libya";;;1535;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Madagascar";;;203;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Malawi";;;101;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mali";;;520;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mauritania";;;31651;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mauritius";;;27;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Morocco";;;2920;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mozambique";;;104;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Namibia";;;1226;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Niger";;;655;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Nigeria";;;22098;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Rwanda";;;100244;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Sao Tome and Principe";;;24;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Senegal";;;8671;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Seychelles";;;40;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Sierra Leone";;;40447;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Somalia";;;394760;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"South Africa";;;268;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Sudan";;;693267;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Swaziland";;;13;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Togo";;;51107;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Tunisia";;;3129;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Uganda";;;34170;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Tanzania";;;1544;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Zambia";;;151;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Zimbabwe";;;10793;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Afghanistan";;;1908052;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Armenia";;;13965;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Azerbaijan";;;233675;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bahrain";;;41;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bangladesh";;;7294;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bhutan";;;106537;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Brunei";;;49;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Cambodia";;;17806;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"China";;;124021;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Macau SAR";;;9;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Cyprus";;;5;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Korea Rep";;;268;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Georgia";;;7301;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"India";;;16275;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Indonesia";;;34384;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Iran";;;262142;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Iraq";;;98722;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Israel";;;632;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Japan";;;13;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Jordan";;;1789;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Kazakhstan";;;4316;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Kuwait";;;381;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Kyrgyzstan";;;3122;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Lao PDR";;;24442;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Lebanon";;;18323;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Malaysia";;;394;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Maldives";;;13;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mongolia";;;654;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Myanmar";;;164864;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Nepal";;;2065;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Palestinian Territory, Occupied";;;349673;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Oman";;;12;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Pakistan";;;29698;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Philippines";;;465;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Qatar";;;11;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Saudi Arabia";;;151;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Singapore";;;39;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Sri Lanka";;;108059;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Syria";;;16281;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Tajikistan";;;54753;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Thailand";;;424;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Timor Leste";;;251;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Turkey";;;170131;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Turkmenistan";;;820;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"United Arab Emirates";;;30;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Uzbekistan";;;8323;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Vietnam";;;358248;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Yemen";;;1325;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Albania";;;12702;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Andorra";;;9;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Austria";;;66;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Belarus";;;8857;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Belgium";;;95;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bosnia and Herzegovina";;;109930;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Costa Rica";;;178;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Czech Republic";;;3589;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Denmark";;;12;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Estonia";;;743;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Finland";;;5;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"France";;;286;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Germany";;;78;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Greece";;;331;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Hungary";;;3519;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Iceland";;;7;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Ireland";;;21;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Italy";;;217;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Latvia";;;2430;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Lithuania";;;1448;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Luxembourg";;;1;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Malta";;;5;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Monaco";;;0;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Netherlands";;;159;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Norway";;;15;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Poland";;;19641;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Portugal";;;74;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Republic of Moldova";;;12063;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Romania";;;11492;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Russian Federation";;;102965;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"San Marino";;;1;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Serbia and Montenegro";;;189850;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Slovakia";;;791;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Slovenia";;;155;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Spain";;;49;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Sweden";;;75;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Switzerland";;;16;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Macedonia";;;8599;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Ukraine";;;84213;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"United Kingdom";;;135;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Antigua and Barbuda";;;13;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Argentina";;;856;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bahamas";;;11;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Barbados";;;8;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Belize";;;8;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Bolivia";;;2;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Brazil";;;269;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"British Virgin Islands";;;370;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Chile";;;938;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Colombia";;;60415;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Cuba";;;19000;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Dominica";;;30;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Dominican Republic";;;67;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Ecuador";;;770;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"El Salvador";;;4281;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Grenada";;;152;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Guadeloupe";;;3379;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Guyana";;;406;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Haiti";;;13542;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Honduras";;;535;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Jamaica";;;450;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Mexico";;;2313;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Nicaragua";;;1463;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Panama";;;42;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Paraguay";;;44;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Peru";;;4865;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Saint Kitts and Nevis";;;31;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Saint Lucia";;;99;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"St Vincent and the Grenadines";;;279;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Suriname";;;29;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Trinidad and Tobago";;;63;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Uruguay";;;111;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Venezuela";;;2590;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Canada";;;122;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"United States of America";;;683;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Australia";;;44;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Fiji";;;1379;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"French Polynesia";;;1;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Kiribati";;;33;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Federated States of Micronesia";;;1;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"New Zealand";;;4;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Papua New Guinea";;;23;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Solomon Islands";;;27;"UNHCR, 2006_United Nations_2006.";"Resilience"
+2005;;"refugees_by_country_of_origin";"Number of refugees by country of origin";"n";"Persons";;"Tonga";;;4;"UNHCR, 2006_United Nations_2006.";"Resilience"
