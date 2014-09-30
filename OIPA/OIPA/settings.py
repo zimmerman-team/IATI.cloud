@@ -149,11 +149,11 @@ SUIT_CONFIG = {
         {'app': 'indicator', 'label': 'Indicators', 'icon':'icon-signal'},
         {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon':'icon-signal'},
         {'app': 'cache', 'label': 'API call cache', 'icon':'icon-hdd'},
-        {'label': 'Task queue', 'url': ( '/admin/task-queue/'), 'icon':'icon-tasks', 'models': [
-            {'label': 'Task overview', 'url': ( '/admin/task_queue/')},
-            {'label': 'Default queue', 'url': ( '/admin/task_queue/queues/0/')},
-            {'label': 'Parse queue', 'url': ( '/admin/task_queue/queues/1/')},
-            {'label': 'Failed tasks', 'url': ( '/admin/task_queue/queues/2/')},
+        {'label': 'Task queue', 'url': ( '/django-rq/'), 'icon':'icon-tasks', 'models': [
+            {'label': 'Task overview', 'url': ( '/django-rq/')},
+            {'label': 'Default queue', 'url': ( '/django-rq/queues/0/')},
+            {'label': 'Parse queue', 'url': ( '/django-rq/queues/1/')},
+            {'label': 'Failed tasks', 'url': ( '/django-rq/queues/2/')},
         ]},
     )
 }
