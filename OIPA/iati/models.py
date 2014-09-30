@@ -1,6 +1,6 @@
 from django.db import models
 from geodata.models import Country, Region
-from activity_manager import ActivityManager
+from activity_manager import ActivityQuerySet
 
 
 class ActivityDateType(models.Model):
@@ -445,7 +445,7 @@ class Activity(models.Model):
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
     iati_standard_version = models.CharField(max_length=30, null=True, default=None)
 
-    objects = ActivityManager()
+    objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
         return self.id

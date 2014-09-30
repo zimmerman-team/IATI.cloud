@@ -1,18 +1,6 @@
-__author__ = 'Robin Altena'
 from django.db import models
 from django.db.models import query, Q
 import operator
-
-class ActivityManager(models.Manager):
-
-	def get_query_set(self):
-		return ActivityQuerySet(self.model, using=self._db)
-
-	def search(self, query, search_fields):
-		return self.get_query_set().search(query, search_fields)
-
-	def filter_years(self, years):
-		return self.get_query_set().filter_years(years)
 
 class ActivityQuerySet(query.QuerySet):
 	class Meta:
@@ -42,6 +30,7 @@ class ActivityQuerySet(query.QuerySet):
 			if key[-4:] == '__in':
 				return self.distinct()
 		return self
+	distinct_if_necessary.queryset_only = True
 
 	def filter_years(self, years):
 		prepared_filter = []
