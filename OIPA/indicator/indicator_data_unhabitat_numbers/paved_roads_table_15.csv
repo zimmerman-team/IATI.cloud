@@ -1,38 +1,38 @@
-year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
-2009;;paved_road;Paved roads;p;;;Burkina Faso;;;4,2;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Central African Republic;;;;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Egypt;;;89,4;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Ethiopia;;;13,7;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Ghana;;;12,6;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Kenya;;;14,3;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Morocco;;;70,3;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Nigeria;;;15,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Rwanda;;;19,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Senegal;;;32,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;United Republic of Tanzania;;;6,7;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Armenia;;;93,6;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Bangladesh;;;9,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;China;;;53,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;China, Hong Kong SAR;;;100,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;India;;;49,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Indonesia;;;56,9;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Japan;;;80,1;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Malaysia;;;81,3;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Philippines;;;9,9;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Singapore;;;100,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Thailand;;;98,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Belgium;;;78,2;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Denmark;;;100,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Finland;;;65,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;France;;;100,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Greece;;;91,8;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Netherlands;;;90,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Russian Federation;;;80,1;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Spain;;;99,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;United Kingdom;;;100,0;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Brazil;;;5,5;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Colombia;;;;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Guyana;;;;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;Mexico;;;35,3;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;United States of America;;;67,4;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
-2009;;paved_road;Paved roads;p;;;New Zealand;;;66,2;Table 15: Length of Street Network, Street Density and Percentage of Paved Streets;Public spaces
+"year";"year_range";"indicator_id";"friendly_name";"type_data";"selection_type";"deprivation_type";"country";"city";"region";"value";"description";"category"
+2009;;"paved_road";"Paved roads";"p";;;"Burkina Faso";;;4.2;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Central African Republic";;;;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Egypt";;;89.4;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Ethiopia";;;13.7;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Ghana";;;12.6;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Kenya";;;14.3;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Morocco";;;70.3;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Nigeria";;;15;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Rwanda";;;19;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Senegal";;;32;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"United Republic of Tanzania";;;6.7;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Armenia";;;93.6;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Bangladesh";;;9.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"China";;;53.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"China, Hong Kong SAR";;;100;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"India";;;49.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Indonesia";;;56.9;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Japan";;;80.1;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Malaysia";;;81.3;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Philippines";;;9.9;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Singapore";;;100;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Thailand";;;98.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Belgium";;;78.2;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Denmark";;;100;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Finland";;;65.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"France";;;100;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Greece";;;91.8;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Netherlands";;;90;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Russian Federation";;;80.1;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Spain";;;99;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"United Kingdom";;;100;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Brazil";;;5.5;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Colombia";;;;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Guyana";;;;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"Mexico";;;35.3;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"United States of America";;;67.4;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"
+2009;;"paved_road";"Paved roads";"p";;;"New Zealand";;;66.2;"Table 15: Length of Street Network, Street Density and Percentage of Paved Streets";"Streets"

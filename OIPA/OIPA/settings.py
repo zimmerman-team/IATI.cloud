@@ -130,7 +130,6 @@ INSTALLED_APPS = (
     'api',
     'cache',
     'task_queue',
-    'south',
     'multiupload',
     'djsupervisor',
     'indicator_unesco',

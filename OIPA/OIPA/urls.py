@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
+    (r'^django-rq/', include('django_rq.urls')),
     url(r'^admin/task_queue/', include('task_queue.urls')),
     # url(r'^admin/geoadmin/', 'geodata.views.geoadmin'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -16,6 +17,7 @@ urlpatterns = patterns(
     url(r'^api/', include('api.urls')),
     url(r'^$', api_v3_docs),
     url(r'', api_v3_docs),
+
 )
 
 if settings.DEBUG:
