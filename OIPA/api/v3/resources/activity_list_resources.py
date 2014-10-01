@@ -63,20 +63,3 @@ class ActivityListResource(ActivityResource):
         allowed_methods = ['get']
         paginator_class = NoCountPaginator
 
-class ActivityTempForVisResource(ModelResource):
-    reporting_organisation = fields.ForeignKey(ActivityViewOrganisationResource, 'reporting_organisation', full=True, null=True, use_in="detail")
-    regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True)
-    titles = fields.ToManyField(TitleResource, 'title_set', full=True, null=True)
-    class Meta:
-        queryset = Activity.objects.all()
-        resource_name = 'activity-vis-list'
-        max_limit = 5000
-        include_resource_uri = False
-        excludes = ['date_created', 'capital_spend', 'end_actual', 'end_planned', 'hierarchy', 'iati_identifier', 'iati_standard_version', 'last_updated_datetime', 'linked_data_uri', 'resource_uri', 'secondary_publisher', 'start_actual', 'start_planned', 'xml_source_ref']
-        serializer = CsvSerializer()
-        filtering = {
-             'reporting_organisation': ('exact', 'in'),
-             'regions': ALL_WITH_RELATIONS
-        }
-        cache = NoTransformCache()
-        allowed_methods = ['get']

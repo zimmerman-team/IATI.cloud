@@ -162,7 +162,7 @@ class ActivityResource(ModelResource):
     class Meta:
         queryset = Activity.objects.all()
         resource_name = 'activities'
-        max_limit = 100
+        max_limit = 1000
         serializer = CsvSerializer()
         excludes = ['date_created']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
