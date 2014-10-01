@@ -47,7 +47,6 @@ v3_api.register(DonorActivitiesResource())
 v3_api.register(SectorActivitiesResource())
 v3_api.register(UnescoIndicatorResource())
 v3_api.register(ActivityFilterOptionsUnescoResource())
-v3_api.register(ActivityTempForVisResource())
 v3_api.register(ActivityListVisResource())
 
 
