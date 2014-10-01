@@ -1,4 +1,4 @@
-from iati.activity_manager import ActivityManager, ActivityQuerySet
+from iati.activity_manager import ActivityQuerySet
 from iati import models
 import pytest
 

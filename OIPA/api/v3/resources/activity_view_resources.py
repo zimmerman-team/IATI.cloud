@@ -199,18 +199,14 @@ class ActivityResource(ModelResource):
         return activity_list.distinct_if_necessary(applicable_filters)
 
     def full_dehydrate(self, bundle, for_list=False):
-        select_fields_param = bundle.request.GET.get('select_fields', None)
-        #If the select related param is found, run this overwritten method.
+        #If the select_fields param is found, run this overwritten method.
         #Otherwise run the default Tastypie method
+        select_fields_param = bundle.request.GET.get('select_fields', None)
         if select_fields_param:
             select_fields = comma_separated_parameter_to_list(select_fields_param)
             for field_name, field_object in self.fields.items():
                 #If the field_name is in the list of requested fields dehydrate it
                 if (field_name) in select_fields:
-
-                    #################################################
-                    ##  From here on its all copied Tastypie code  ##
-                    #################################################
 
                     # A touch leaky but it makes URI resolution work.
                     if getattr(field_object, 'dehydrated_type', None) == 'related':
