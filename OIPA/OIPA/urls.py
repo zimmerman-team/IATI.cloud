@@ -7,17 +7,15 @@ from api.v3.urls import api_v3_docs
 admin.autodiscover()
 
 urlpatterns = patterns(
-    '',
-    (r'^admin/queue/', include('django_rq.urls')),
+    url(r'^admin/queue/', include('django_rq.urls')),
     url(r'^admin/task_queue/', include('task_queue.urls')),
-    # url(r'^admin/geoadmin/', 'geodata.views.geoadmin'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
     url(r'^$', api_v3_docs),
     url(r'', api_v3_docs),
-
 )
+
 
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()

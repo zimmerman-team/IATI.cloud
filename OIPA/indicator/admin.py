@@ -10,6 +10,7 @@ from indicator.wbi_parser import WBI_Parser
 
 
 class IndicatorAdmin(admin.ModelAdmin):
+    list_display = ['friendly_label', 'category','type_data']
 
     def get_urls(self):
         urls = super(IndicatorAdmin, self).get_urls()
