@@ -1,5 +1,6 @@
 from django.db import models
 from geodata.models import Country, Region
+from activity_manager import ActivityQuerySet
 
 
 class ActivityDateType(models.Model):
@@ -444,6 +445,7 @@ class Activity(models.Model):
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
     iati_standard_version = models.CharField(max_length=30, null=True, default=None)
 
+    objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
         return self.id
@@ -451,6 +453,17 @@ class Activity(models.Model):
     class Meta:
         verbose_name_plural = "activities"
 
+class ActivitySearchData(models.Model):
+    activity = models.OneToOneField(Activity)
+    search_identifier = models.CharField(db_index=True, max_length=150)
+    search_description = models.TextField(max_length=80000)
+    search_title = models.TextField(max_length=80000)
+    search_country_name = models.TextField(max_length=80000)
+    search_region_name = models.TextField(max_length=80000)
+    search_sector_name = models.TextField(max_length=80000)
+    search_participating_organisation_name = models.TextField(max_length=80000)
+    search_reporting_organisation_name = models.TextField(max_length=80000)
+    search_documentlink_title = models.TextField(max_length=80000)
 
 class ActivityParticipatingOrganisation(models.Model):
     activity = models.ForeignKey(Activity, related_name="participating_organisations")

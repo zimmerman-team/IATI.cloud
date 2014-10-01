@@ -161,3 +161,5 @@ SUIT_CONFIG = {
 RQ_SHOW_ADMIN_LINK = False
 LOGGING = LOGGING
 RQ_QUEUES = RQ_QUEUES
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'

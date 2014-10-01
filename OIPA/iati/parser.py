@@ -122,6 +122,7 @@ class Parser():
 
                 # Extras
                 self.add_total_budget(activity)
+                self.add_activity_search_data(activity)
 
         except Exception as e:
                 exception_handler(e, iati_identifier, "add_all_activity_data")
@@ -1450,3 +1451,33 @@ class Parser():
             updater.update_single_activity(activity.id)
         except Exception as e:
             exception_handler(e, activity.id, "add_total_budget")
+
+    def add_activity_search_data(self, activity):
+        search_data = models.ActivitySearchData(activity = activity)
+
+        search_data.search_identifier = activity.iati_identifier
+        for title in activity.title_set.all():
+            search_data.search_title += title.title + ' '
+
+        for description in activity.description_set.all():
+            search_data.search_description += description.description + ' '
+
+        for country in activity.recipient_country.all():
+            search_data.search_country_name +=  country.name + ' '
+
+        for region in activity.recipient_region.all():
+            search_data.search_region_name += region.name + ' '
+
+        for sector in activity.sector.all():
+            search_data.search_sector_name += sector.name + ' '
+
+        for organisation in activity.participating_organisations.all():
+            search_data.search_participating_organisation_name += organisation.name + ' '
+
+        if not activity.reporting_organisation is None:
+            search_data.search_reporting_organisation_name += activity.reporting_organisation.name
+
+        for document in activity.documentlink_set.all():
+            search_data.search_documentlink_title += document.title + ' '
+
+        search_data.save()
