@@ -58,6 +58,6 @@ class ActivityQuerySet(query.QuerySet):
         for field in  search_fields:
             if field in self.Meta.SEARCHABLE_PROPERTIES:
                 property = self.Meta.SEARCHABLE_PROPERTIES.get(field)
-                prepared_filter.append((property.get('name').join(property.get('method')), fts_query if property.get('method') == '__search' else query))
+                prepared_filter.append((property.get('name') + property.get('method'), fts_query if property.get('method') == '__search' else query))
             else: raise Exception('unsupported search_field. Choices are: ' +  str(self.Meta.SEARCHABLE_PROPERTIES.keys()))
         return prepared_filter

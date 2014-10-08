@@ -158,6 +158,20 @@ class ActivityResource(ModelResource):
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True, use_in='detail')
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
+    # to add:
+    # locations
+    # conditions
+    # contact
+    # country-budget?
+    # crsadd
+    # disbursement channel?
+    # ffs
+    # ffs forecast?
+    # planned disbursement
+    # related activity
+    # verification status
+    # vocabulary?
+
 
     class Meta:
         queryset = Activity.objects.all()
