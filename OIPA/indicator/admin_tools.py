@@ -125,6 +125,14 @@ class IndicatorAdminTools():
                 csv_value = csv_value.replace(".", "")
                 row['value'] = csv_value
 
+            if data_type == "multiyear":
+                year = row['year']
+                years = year.split("-")
+                print years
+                for num in range(int(years[0]), int(years[1])):
+                    row['year'] = num
+                    writer.writerow(row)
+                continue
 
             writer.writerow(row)
 
