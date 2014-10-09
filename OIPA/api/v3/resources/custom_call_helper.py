@@ -29,7 +29,7 @@ class CustomCallHelper():
         query = ''
         if values:
             if not values[0]:
-                return None
+                return ''
 
             for v in values:
                 query = '{query}  YEAR({name}) = "{v}" OR'.format(query=query, name=name, v=v)
