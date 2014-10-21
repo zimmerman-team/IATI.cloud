@@ -10,6 +10,7 @@ from indicator.wbi_parser import WBI_Parser
 
 
 class IndicatorAdmin(admin.ModelAdmin):
+    list_display = ['friendly_label', 'category','type_data']
 
     def get_urls(self):
         urls = super(IndicatorAdmin, self).get_urls()
@@ -18,9 +19,39 @@ class IndicatorAdmin(admin.ModelAdmin):
             (r'^update-indicator/$', self.admin_site.admin_view(self.update_indicators)),
             (r'^update-indicator-data/$', self.admin_site.admin_view(self.update_indicator_data)),
             (r'^update-indicator-city-data/$', self.admin_site.admin_view(self.update_indicator_city_data)),
-            (r'^update-wbi-indicator/$', self.admin_site.admin_view(self.update_WBI_indicators))
+            (r'^update-wbi-indicator/$', self.admin_site.admin_view(self.update_WBI_indicators)),
+            (r'^old-to-new-urbnnrs-city/$', self.admin_site.admin_view(self.old_to_new_urbnnrs_city)),
+            (r'^old-to-new-urbnnrs-country/$', self.admin_site.admin_view(self.old_to_new_urbnnrs_country)),
+            (r'^reformat-values/$', self.admin_site.admin_view(self.reformat_values))
         )
         return my_urls + urls
+
+    def reformat_values(self, request):
+        name = request.GET["name"]
+        data_type = request.GET["data_type"]
+        keep_dot = request.GET["keep_dot"]
+        admTools = IndicatorAdminTools()
+        csv_text = admTools.reformat_values(name, data_type, keep_dot)
+        response = HttpResponse(csv_text, content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename="+name+".csv"
+        return response
+
+    def old_to_new_urbnnrs_city(self, request):
+        admTools = IndicatorAdminTools()
+        name = request.GET["name"]
+        data_type = request.GET["data_type"]
+        indicator_id = request.GET["id"]
+        csv_text = admTools.old_to_new_urbnnrs_city(indicator_id, name, data_type)
+        return HttpResponse(csv_text, content_type='text/csv')
+
+
+    def old_to_new_urbnnrs_country(self, request):
+        admTools = IndicatorAdminTools()
+        name = request.GET["name"]
+        data_type = request.GET["data_type"]
+        indicator_id = request.GET["id"]
+        csv_text = admTools.old_to_new_urbnnrs_country(indicator_id, name, data_type)
+        return HttpResponse(csv_text, content_type='text/csv')
 
     def update_indicator_data(self, request):
         admTools = IndicatorAdminTools()
@@ -128,6 +159,14 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
                 year_csv = line.get('year')
                 type_data_csv = line.get('type_data')
                 category_csv = line.get('category')
+
+                value_csv = str(value_csv)
+                value_csv = value_csv.replace(".", ",")
+
+
+                if value_csv == None or value_csv == "NULL":
+                    continue
+
 
                 #here we are checking if this indicator already exists, or if we have to create a new one
                 if line_counter == 0:

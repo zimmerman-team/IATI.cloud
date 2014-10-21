@@ -11,11 +11,8 @@ from cache.validator import Validator
 import ujson
 from django.db import connection
 from django.http import HttpResponse
-import xmlrpclib
-
 
 # Helpers
-from api.v3.resources.csv_serializer import CsvSerializer
 from api.v3.resources.csv_helper import CsvHelper
 from api.v3.resources.custom_call_helper import CustomCallHelper
 
@@ -39,7 +36,7 @@ class ActivityFilterOptionsResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
 
         helper = CustomCallHelper()
@@ -169,7 +166,7 @@ class ActivityFilterOptionsResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 class ActivityFilterOptionsUnescoResource(ModelResource):
@@ -191,7 +188,7 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
 
         helper = CustomCallHelper()
@@ -231,7 +228,6 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
                        'LEFT JOIN iati_activity a on rc.activity_id = a.id '
                        'WHERE 1 %s %s '
                        'GROUP BY c.code' % (q_organisations, w_perspective))
-        print query
 
         #making query for country results
         cursor.execute('SELECT c.code, c.name, count(c.code) as total_amount '
@@ -364,7 +360,7 @@ class ActivityFilterOptionsUnescoResource(ModelResource):
                 org_item['total'] = r['total_amount']
                 options['reporting_organisations'][r['reporting_organisation_id']] = org_item
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 
@@ -387,7 +383,7 @@ class CountryGeojsonResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -429,11 +425,9 @@ class CountryGeojsonResource(ModelResource):
                 'WHERE 1 %s'\
                 'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
 
-        print query
         cursor.execute(query)
-        print connection.queries
 
-        activity_result = {'type' : 'FeatureCollection', 'features' : []}
+        activity_result = {'type': 'FeatureCollection', 'features': []}
 
         activities = []
 
@@ -451,7 +445,7 @@ class CountryGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
 
 
 
@@ -491,7 +485,7 @@ class Adm1RegionGeojsonResource(ModelResource):
         result = {}
 
         activity_result['features'] = activities
-        return HttpResponse(ujson.dumps(activity_result), mimetype='application/json')
+        return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
 
 
 
@@ -499,7 +493,48 @@ class Adm1RegionGeojsonResource(ModelResource):
 
 
 
+def dict2xml(d, root_node, first, listname):
+        wrap          =     False if None == root_node or isinstance(d, list) else True
+        root          = 'objects' if None == root_node else root_node
+        root_singular = root[:-1] if 's' == root[-1] and None == root_node else root
+        xml           = ''
+        children      = []
 
+        if isinstance(d, dict):
+            for key, value in dict.items(d):
+                if isinstance(value, dict):
+                    children.append(dict2xml(value, key, False, listname))
+                elif isinstance(value, list):
+                    children.append(dict2xml(value, key, False, listname))
+                else:
+                    # children.append(str(value), key)
+                    # print key
+                    # print str(value)
+                    xml = xml + '<' + key + '>' + str(value) + '</' + key + '>'
+        else:
+            if isinstance(d, list):
+                for value in d:
+                    children.append(dict2xml(value, listname, False, listname))
+            else:
+                for value in d:
+                    children.append(dict2xml(value, root_singular, False, listname))
+
+        end_tag = '>'
+
+        if wrap or isinstance(d, dict):
+            if first:
+                xml = '<' + root + end_tag + xml
+            else:
+                xml = '<' + root + end_tag + xml + '</' + root + end_tag
+
+        if 0 < len(children):
+            for child in children:
+                xml = xml + child
+
+            if wrap or isinstance(d, dict):
+                xml = xml + '</' + root + '>'
+
+        return xml
 
 
 
@@ -511,7 +546,7 @@ class CountryActivitiesResource(ModelResource):
         resource_name = 'country-activities'
         include_resource_uri = True
         cache = NoTransformCache()
-        serializer = serializer = CsvSerializer()
+        serializer = CsvHelper()
         allowed_methods = ['get']
 
     def get_list(self, request, **kwargs):
@@ -525,7 +560,7 @@ class CountryActivitiesResource(ModelResource):
         budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         start_actual_q = helper.get_year_and_query(request, 'start_actual__in', 'a.start_actual')
         start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')
@@ -570,7 +605,7 @@ class CountryActivitiesResource(ModelResource):
         filter_project_query = ''
         if project_query:
             filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
-            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" '
+            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" AND c.name LIKE "%%' + project_query + '%%"'
 
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
@@ -591,7 +626,6 @@ class CountryActivitiesResource(ModelResource):
             query = query.replace(organisation_q[:-6], "")
             query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
             query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
-            print query
 
         cursor.execute(query)
 
@@ -639,7 +673,6 @@ class CountryActivitiesResource(ModelResource):
             query = query.replace(organisation_q[:-6], "")
             query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
             query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
-            print query
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
@@ -648,15 +681,21 @@ class CountryActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
         if format == "json":
-            return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
         if format == "xml":
-            return HttpResponse(xmlrpclib.dumps(return_json), mimetype='application/xml')
+
+            for item in return_json["objects"]:
+                item["name"] = item["name"].encode('utf-8', 'ignore')
+
+            xml = dict2xml(return_json, "objects", True, "country")
+            return HttpResponse(xml, content_type='application/xml')
 
         if format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
-            return HttpResponse(csv_content, mimetype='text/csv')
+            return HttpResponse(csv_content, content_type='text/csv')
+
 
 
 
@@ -668,6 +707,7 @@ class RegionActivitiesResource(ModelResource):
         resource_name = 'region-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        serializer = CsvHelper()
         allowed_methods = ['get']
 
 
@@ -679,7 +719,7 @@ class RegionActivitiesResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -699,6 +739,8 @@ class RegionActivitiesResource(ModelResource):
         region_query = request.GET.get("region", None)
         project_query = request.GET.get("query", None)
         donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        format = request.GET.get("format", "json")
+
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -742,7 +784,7 @@ class RegionActivitiesResource(ModelResource):
                 'GROUP BY r.code ' \
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string, order_by, order_asc_desc, limit, offset)
-        print query
+
         cursor.execute(query)
 
         activities = []
@@ -788,8 +830,22 @@ class RegionActivitiesResource(ModelResource):
 
         return_json["meta"] = {"total_count": len(results2)}
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        if format == "json":
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
+        if format == "xml":
+
+            for item in return_json["objects"]:
+                item["name"] = item["name"].encode('utf-8', 'ignore')
+                item["name"] = item["name"].replace("&", "and")
+
+            xml = dict2xml(return_json, "objects", True, "region")
+            return HttpResponse(xml, content_type='application/xml')
+
+        if format == "csv":
+            csvh = CsvHelper()
+            csv_content = csvh.to_csv(return_json)
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
@@ -802,6 +858,7 @@ class GlobalActivitiesResource(ModelResource):
         resource_name = 'global-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        serializer = CsvHelper()
         allowed_methods = ['get']
 
 
@@ -813,7 +870,7 @@ class GlobalActivitiesResource(ModelResource):
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
 
         if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), mimetype='application/json')
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -874,7 +931,7 @@ class GlobalActivitiesResource(ModelResource):
                 '%s %s %s %s %s '\
                 'WHERE a.scope_id = 1 %s'\
                 'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
-        print query
+
         cursor.execute(query)
 
         activities = []
@@ -901,7 +958,7 @@ class GlobalActivitiesResource(ModelResource):
 
         return_json["meta"] = {"total_count": len(results2)}
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
 
 
@@ -914,6 +971,7 @@ class SectorActivitiesResource(ModelResource):
         resource_name = 'sector-activities'
         include_resource_uri = True
         cache = NoTransformCache()
+        serializer = CsvHelper()
         allowed_methods = ['get']
 
 
@@ -932,6 +990,7 @@ class SectorActivitiesResource(ModelResource):
         order_by = request.GET.get("order_by", "sector_name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         query = request.GET.get("query", None)
+        format = request.GET.get("format", "json")
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -997,8 +1056,22 @@ class SectorActivitiesResource(ModelResource):
         results2 = helper.get_fields(cursor=cursor)
         return_json["meta"] = {"total_count": len(results2)}
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        if format == "json":
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
+        if format == "xml":
+
+            for item in return_json["objects"]:
+                item["name"] = item["name"].encode('utf-8', 'ignore')
+                item["name"] = item["name"].replace("&", "and")
+
+            xml = dict2xml(return_json, "objects", True, "sector")
+            return HttpResponse(xml, content_type='application/xml')
+
+        if format == "csv":
+            csvh = CsvHelper()
+            csv_content = csvh.to_csv(return_json)
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
@@ -1014,6 +1087,7 @@ class DonorActivitiesResource(ModelResource):
         include_resource_uri = True
         cache = NoTransformCache()
         allowed_methods = ['get']
+        serializer = CsvHelper()
 
     def get_list(self, request, **kwargs):
 
@@ -1036,6 +1110,7 @@ class DonorActivitiesResource(ModelResource):
         order_by = request.GET.get("order_by", "apo.name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         query = request.GET.get("query", None)
+        format = request.GET.get("format", "json")
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -1089,9 +1164,56 @@ class DonorActivitiesResource(ModelResource):
         return_json["meta"] = {"total_count": len(results2)}
 
 
-        return HttpResponse(ujson.dumps(return_json), mimetype='application/json')
+        if format == "json":
+            return HttpResponse(ujson.dumps(return_json), content_type='application/json')
+
+        if format == "xml":
+
+            for item in return_json["objects"]:
+                item["name"] = item["name"].encode('utf-8', 'ignore')
+                item["name"] = item["name"].replace("&", "and")
+
+            xml = dict2xml(return_json, "objects", True, "donor")
+            return HttpResponse(xml, content_type='application/xml')
+
+        if format == "csv":
+            csvh = CsvHelper()
+            csv_content = csvh.to_csv(return_json)
+            return HttpResponse(csv_content, content_type='text/csv')
 
 
 
 
+class ActivityListVisResource(ModelResource):
+
+    class Meta:
+        resource_name = 'activity-list-vis'
+        allowed_methods = ['get']
+
+
+    def get_list(self, request, **kwargs):
+
+        helper = CustomCallHelper()
+        cursor = connection.cursor()
+        organisations = request.GET.get("reporting_organisation__in", None)
+        if organisations:
+            q_organisations = 'AND a.reporting_organisation_id = "' + organisations + '"'
+        else:
+            q_organisations = ""
+
+        cursor.execute('SELECT a.id, r.code, r.name, t.title, a.total_budget '
+        'FROM iati_activity as a '
+        'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '
+        'JOIN geodata_region as r on r.code = rr.region_id '
+        'JOIN iati_title as t on a.id = t.activity_id '
+        'WHERE 1 %s '
+        'order by a.id LIMIT 5000' % (q_organisations))
+        results1 = helper.get_fields(cursor=cursor)
+
+        activities = []
+
+        for r in results1:
+            activities.append(r)
+
+        return HttpResponse(ujson.dumps(activities), content_type='application/json')
 

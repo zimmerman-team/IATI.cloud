@@ -1,0 +1,208 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_modify %}
+{% load url from future %}
+{% load raw %}
+
+{% block title %}Multiupload {{ block.super }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+  <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
+  <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+{% url 'admin:jsi18n' as jsi18nurl %}
+  <script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{{ media }}
+  <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js" /></script>
+
+<script src="{{ STATIC_URL }}jquery/jquery.1.8.0.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/jquery.ui.widget.js"></script>
+<script src="{{ STATIC_URL }}jquery/tmpl.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/load-image.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/canvas-to-blob.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/bootstrap-image-gallery.min.js"></script>
+<script src="{{ STATIC_URL }}jquery/jquery.iframe-transport.js"></script>
+<script src="{{ STATIC_URL }}jquery/jquery.fileupload.js"></script>
+<script src="{{ STATIC_URL }}jquery/jquery.fileupload-fp.js"></script>
+<script src="{{ STATIC_URL }}jquery/jquery.fileupload-ui.js"></script>
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+<!--[if gte IE 8]><script src="{{ STATIC_URL }}jquery/jquery.xdr-transport.js"></script><![endif]-->
+
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+  <!-- Bootstrap Image Gallery styles -->
+  <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+  <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+  <link rel="stylesheet" href="http://blueimp.github.com/jQuery-File-Upload/css/jquery.fileupload-ui.css">
+{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+  {% if object %}
+     <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="../../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     <a href="../">{{ object }}</a> &rsaquo;
+     {% trans "Multiupload" %}
+  {% else %}
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     {% trans "Multiupload" %}
+  {% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<a href="../{%if is_popup %}?pop=1{% endif %}">{% trans 'back' %}</a>
+
+<form id="fileupload" action="." method="POST" enctype="multipart/form-data">
+    <div class="row fileupload-buttonbar">
+        <div class="span7">
+            <span class="btn btn-success fileinput-button">
+                <i class="icon-plus icon-white"></i>
+                <span>{% trans 'Add files' %}</span>
+                <input type="file" name="files[]" multiple="">
+            </span>
+            <button type="submit" class="btn btn-primary start">
+                <i class="icon-upload icon-white"></i>
+                <span>{% trans 'Start upload' %}</span>
+            </button>
+            <button type="reset" class="btn btn-warning cancel">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>{% trans 'Cancel upload' %}</span>
+            </button>
+            <button type="button" class="btn btn-danger delete">
+                <i class="icon-trash icon-white"></i>
+                <span>{% trans 'Delete' %}</span>
+            </button>
+            <input type="checkbox" class="toggle">
+        </div>
+        <!-- The global progress information -->
+        <div class="span5 fileupload-progress fade">
+            <!-- The global progress bar -->
+            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="bar" style="width:0%;"></div>
+            </div>
+            <!-- The extended global progress information -->
+            <div class="progress-extended">&nbsp;</div>
+        </div>
+    </div>
+    <!-- The loading indicator is shown during file processing -->
+    <div class="fileupload-loading"></div>
+    <br>
+    <!-- The table listing the files available for upload/download -->
+    <table role="presentation" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+</form>
+
+
+{% verbatim %}
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td>
+                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+            </td>
+            <td class="start">
+              <!--<label>{%=locale.fileupload.titleLabel%}</label>-->
+              <input type="text" name="title" placeholder="{%=locale.fileupload.titleLabel%}"/>
+              {% if (!o.options.autoUpload) { %}
+            <button style="display: none";>
+                <i class="icon-ban-circle icon-white"></i>
+                <span>{%=locale.fileupload.start%}</span>
+            </button>
+            {% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel">{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-warning-sign icon-white"></i>
+                <span>{%=locale.fileupload.cancel%}</span>
+            </button>
+        {% } %}</td>
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        {% if (file.error) { %}
+            <td></td>
+            <td class="name"><span>{%=file.name%}</span></td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else { %}
+            <td class="preview">{% if (file.thumbnail_url) { %}
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+            {% } %}</td>
+            <td class="name">
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+            </td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td colspan="2"></td>
+        {% } %}
+        <td class="delete">
+            <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
+                <i class="icon-trash icon-white"></i>
+                <span>{%=locale.fileupload.destroy%}</span>
+            </button>
+            <input type="checkbox" name="delete" value="1">
+        </td>
+    </tr>
+{% } %}
+</script>
+{% endverbatim %}
+
+
+<script type="text/javascript">
+$(function () {
+    'use strict';
+
+    // Initialize the jQuery File Upload widget:
+    $('#fileupload').fileupload({
+      formData: [{ name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}]
+      }).bind('fileuploadsubmit', function (e, data) {
+        var inputs = data.context.find(':input');
+        if (inputs.filter('[required][value=""]').first().focus().length) {
+          return false;
+        }
+        data.formData = inputs.serializeArray();
+      }).bind('fileuploaddestroy', function (e, data) {
+        $.post(data.url, {});
+      });
+});
+window.locale = {
+    "fileupload": {
+        "errors": {
+            "maxFileSize": "{% trans 'File is too big' %}",
+            "minFileSize": "{% trans 'File is too small' %}",
+            "acceptFileTypes": "{% trans 'Filetype not allowed' %}",
+            "maxNumberOfFiles": "{% trans 'Max number of files exceeded' %}",
+            "uploadedBytes": "{% trans 'Uploaded bytes exceed file size' %}",
+            "emptyResult": "{% trans 'Empty file upload result' %}"
+        },
+        "error": "{% trans 'Error' %}",
+        "start": "{% trans 'Start' %}",
+        "cancel": "{% trans 'Cancel' %}",
+        "destroy": "{% trans 'Delete' %}",
+        "titleLabel": "{% trans 'Title' %}"
+    }
+};
+</script>
+
+{% endblock %}

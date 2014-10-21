@@ -15,7 +15,8 @@ class RegionAdmin(admin.ModelAdmin):
 
         my_urls = patterns('',
             (r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions)),
-            (r'^import-unesco-regions/$', self.admin_site.admin_view(self.import_unesco_regions))
+            (r'^import-unesco-regions/$', self.admin_site.admin_view(self.import_unesco_regions)),
+            (r'^update-region-center/$', self.admin_site.admin_view(self.update_region_center))
         )
         return my_urls + urls
 
@@ -27,6 +28,11 @@ class RegionAdmin(admin.ModelAdmin):
     def import_unesco_regions(self, request):
         ru = RegionUpdater()
         ru.update_unesco_regions()
+        return HttpResponse('Success')
+
+    def update_region_center(self, request):
+        ru = RegionUpdater()
+        ru.update_center_longlat()
         return HttpResponse('Success')
 
 

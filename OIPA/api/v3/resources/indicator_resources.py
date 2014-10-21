@@ -41,7 +41,7 @@ class IndicatorAggregationResource(ModelResource):
         if (current_indicator.type_data == "p"):
             aggregation_type = "AVG"
         else :
-            return HttpResponse(ujson.dumps(["Indicator type not recognized"]), mimetype='application/json')
+            return HttpResponse(ujson.dumps(["Indicator type not recognized"]), content_type='application/json')
 
         #create the query
         query = 'SELECT year, r.code as region_id, ' + aggregation_type + '(id.value) as aggregation ' \
@@ -65,7 +65,7 @@ class IndicatorAggregationResource(ModelResource):
 
             options[r['region_id']] = r['aggregation']
 
-        return HttpResponse(ujson.dumps(options), mimetype='application/json')
+        return HttpResponse(ujson.dumps(options), content_type='application/json')
 
 
 
@@ -91,7 +91,7 @@ class IndicatorCountryDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
 
         if not indicator_q:
-            return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No indicator given"), content_type='application/json')
 
         filter_string = '  (' + country_q + region_q + year_q + indicator_q + ')'
 
@@ -144,7 +144,7 @@ class IndicatorCountryDataResource(ModelResource):
 
         country['max_value'] = result_max[0]
 
-        return HttpResponse(ujson.dumps(country), mimetype='application/json')
+        return HttpResponse(ujson.dumps(country), content_type='application/json')
 
 
 class IndicatorCityDataResource(ModelResource):
@@ -167,7 +167,7 @@ class IndicatorCityDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
 
         if not indicator_q:
-            return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
+            return HttpResponse(ujson.dumps("No indicator given"), content_type='application/json')
 
         filter_string = '  (' + city_q + country_q + region_q + year_q + indicator_q + ')'
 
@@ -224,7 +224,7 @@ class IndicatorCityDataResource(ModelResource):
 
 
 
-        return HttpResponse(ujson.dumps(city), mimetype='application/json')
+        return HttpResponse(ujson.dumps(city), content_type='application/json')
 
 
 
@@ -294,7 +294,7 @@ class IndicatorRegionDataResource(ModelResource):
 
         country['max_value'] = result_max[0]
 
-        return HttpResponse(ujson.dumps(country), mimetype='application/json')
+        return HttpResponse(ujson.dumps(country), content_type='application/json')
 
 
 
@@ -322,11 +322,12 @@ class IndicatorDataResource(ModelResource):
         indicator_q = helper.get_and_query(request, 'indicators__in', 'indicator_id')
         selection_type_q = helper.get_and_query(request, 'selection_type__in', 'id.selection_type')
         limit_q = request.GET.get("limit", None)
+
         if limit_q:
             limit_q = int(limit_q)
 
-        if not indicator_q:
-            return HttpResponse(ujson.dumps("No indicator given"), mimetype='application/json')
+        if not indicator_q and not country_q and not city_q:
+            return HttpResponse(ujson.dumps("No indicator given"), content_type='application/json')
 
 
 
@@ -337,7 +338,7 @@ class IndicatorDataResource(ModelResource):
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, id.selection_type, ci.name as city_name, '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, da.type_data, id.selection_type, da.category, ci.name as city_name, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(ci.location) as loc, ci.id as city_id '
                        'FROM indicator_indicatordata id '
@@ -363,7 +364,7 @@ class IndicatorDataResource(ModelResource):
             filter_string = filter_string[:-6]
 
         cursor = connection.cursor()
-        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.type_data,  '
+        cursor.execute('SELECT da.id as indicator_id, da.friendly_label, id.selection_type, da.category, da.type_data, '
                        'r.code as region_id, r.name as region_name, c.code as country_id, c.name as country_name, '
                        'id.value, id.year, AsText(c.center_longlat) as loc '
                        'FROM indicator_indicatordata id '
@@ -379,9 +380,11 @@ class IndicatorDataResource(ModelResource):
         ]
 
         indicator_q = indicator_q.replace(" ) AND (", "")
+        if indicator_q:
+            indicator_q = "AND " + indicator_q
 
         cursor_max = connection.cursor()
-        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE %s GROUP BY indicator_indicatordata.indicator_id' % indicator_q)
+        cursor_max.execute('SELECT indicator_id, max(value) as max_value FROM indicator_indicatordata WHERE 1 %s GROUP BY indicator_indicatordata.indicator_id order by max_value DESC' % indicator_q)
         desc = cursor_max.description
         max_results = [
         dict(zip([col[0] for col in desc], row))
@@ -410,10 +413,8 @@ class IndicatorDataResource(ModelResource):
 
 
                 if not c['indicator_id'] in geolocs:
-                    for mr in max_results:
-                        if mr['indicator_id']:
-                            max_value = mr['max_value']
-                    geolocs[c['indicator_id']] = {'indicator_friendly': c['friendly_label'], 'type_data': c['type_data'], 'indicator': c['indicator_id'], 'selection_type': c['selection_type'], 'max_value' : max_value, 'locs': {}}
+                    max_value = max_results[0]['max_value']
+                    geolocs[c['indicator_id']] = {'indicator_friendly': c['friendly_label'], 'type_data': c['type_data'], 'indicator': c['indicator_id'], 'category': c['category'], 'selection_type': c['selection_type'], 'max_value' : max_value, 'locs': {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
                 if limit_q:
@@ -432,7 +433,7 @@ class IndicatorDataResource(ModelResource):
                     longitude = None
                     latitude = None
 
-                geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
+                geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'region_id' : c['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
             geolocs[c['indicator_id']]['locs'][c['country_id']]['years'][c['year']] = c['value']
 
@@ -445,10 +446,8 @@ class IndicatorDataResource(ModelResource):
             except:
 
                 if not r['indicator_id'] in geolocs:
-                    for mr in max_results:
-                        if mr['indicator_id']:
-                            max_value = mr['max_value']
-                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'selection_type': r['selection_type'], 'max_value' : max_value, 'locs' : {}}
+                    max_value = max_results[0]['max_value']
+                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'category': r['category'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
 
                 # if the amount of locs to be shown is reached, do not add the new loc
                 if limit_q:
@@ -467,12 +466,12 @@ class IndicatorDataResource(ModelResource):
                     longitude = None
                     latitude = None
 
-                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name' : r['city_name'], 'id' : r['city_id'], 'longitude' : longitude, 'latitude' : latitude, 'years' : {}}
+                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name': r['city_name'], 'id': r['city_id'], 'country_id': r['country_id'], 'region_id': r['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
             geolocs[r['indicator_id']]['locs'][r['city_id']]['years'][r['year']] = r['value']
 
 
-        return HttpResponse(ujson.dumps(geolocs), mimetype='application/json')
+        return HttpResponse(ujson.dumps(geolocs), content_type='application/json')
 
 
 
@@ -626,4 +625,4 @@ class IndicatorFilterOptionsResource(ModelResource):
         jsondata['cities'] = cities
         jsondata['indicators'] = indicators
 
-        return HttpResponse(ujson.dumps(jsondata), mimetype='application/json')
+        return HttpResponse(ujson.dumps(jsondata), content_type='application/json')

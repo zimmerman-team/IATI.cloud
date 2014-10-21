@@ -1,0 +1,14 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2001;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Benin;;;66.3;Multiple sources;Slum dwellers
+2005;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Egypt;;;11.5;Multiple sources;Slum dwellers
+2005;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Ethiopia;;;40.5;Multiple sources;Slum dwellers
+2003;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Ghana;;;50;Multiple sources;Slum dwellers
+2003;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Kenya;;;59.2;Multiple sources;Slum dwellers
+2004;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Madagascar;;;1;Multiple sources;Slum dwellers
+1997;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Senegal;;;3.9;Multiple sources;Slum dwellers
+2005;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Colombia;;;1.3;Multiple sources;Slum dwellers
+1998;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Guatemala;;;16.8;Multiple sources;Slum dwellers
+2002;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Dominican Republic;;;9.3;Multiple sources;Slum dwellers
+2001;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Nicaragua;;;5.5;Multiple sources;Slum dwellers
+1991;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Peru;;;26.1;Multiple sources;Slum dwellers
+2000;;households_solid_waste_other_disposal_urban;Proportion of households who use other source disposal of solid waste – Urban;p;Urban;;Suriname;;;10.6;Multiple sources;Slum dwellers

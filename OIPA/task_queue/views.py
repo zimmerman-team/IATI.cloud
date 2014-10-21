@@ -59,7 +59,7 @@ def get_workers(request):
         worker_dict = {'pid': w.pid, 'name': w.name, 'state': w.get_state(), 'current_job': cjinfo}
         workerdata.append(worker_dict)
     data = json.dumps(workerdata)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 
 
@@ -87,7 +87,7 @@ def get_current_job(request):
     job = get_current_job(q)
     import json
     data = json.dumps(job)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 @staff_member_required
 def test(request):
@@ -160,7 +160,7 @@ def get_queue(request):
         job_dict = { 'job_id': job._id, 'created_at':job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'enqueued_at':job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"), 'status': job.get_status(), 'function': job.func_name, 'args': job.args}
         jobdata.append(job_dict)
     data = json.dumps(jobdata)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 @staff_member_required
 def get_scheduled_tasks(request):
@@ -193,7 +193,7 @@ def get_scheduled_tasks(request):
     #     jobdata.append(job_dict)
 
     data = json.dumps(jobdata)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 @staff_member_required
 def cancel_scheduled_task(request):
@@ -224,7 +224,7 @@ def get_failed_tasks(request):
         jobdata.append(job_dict)
 
     data = json.dumps(jobdata)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 
 

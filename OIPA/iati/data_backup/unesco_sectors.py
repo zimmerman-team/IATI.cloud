@@ -15,5 +15,5 @@ unesco_sectors = {
     "IOS": 14,
     "MSS/BKI": 15,
     "AFR": 16,
-    "UIS": 1
+    "UIS": 17
 }

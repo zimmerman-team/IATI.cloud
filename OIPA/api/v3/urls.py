@@ -7,13 +7,13 @@ from api.v3.resources.model_resources import OrganisationResource, CityResource,
 from api.v3.resources.advanced_resources import OnlyCityResource, OnlyRegionResource, OnlyCountryResource
 from api.v3.resources.activity_view_resources import ActivityResource
 from api.v3.resources.activity_list_resources import ActivityListResource
-from api.v3.resources.sql_resources import ActivityFilterOptionsResource, CountryGeojsonResource, Adm1RegionGeojsonResource, CountryActivitiesResource, RegionActivitiesResource, GlobalActivitiesResource,  DonorActivitiesResource, SectorActivitiesResource, ActivityFilterOptionsUnescoResource
+from api.v3.resources.sql_resources import ActivityListVisResource, ActivityFilterOptionsResource, CountryGeojsonResource, Adm1RegionGeojsonResource, CountryActivitiesResource, RegionActivitiesResource, GlobalActivitiesResource,  DonorActivitiesResource, SectorActivitiesResource, ActivityFilterOptionsUnescoResource
 from api.v3.resources.aggregation_resources import ActivityCountResource, ActivityAggregatedAnyResource, ActivityAggregatedAnyNamesResource
 from api.v3.resources.indicator_resources import IndicatorAggregationResource, IndicatorCountryDataResource, IndicatorCityDataResource, IndicatorRegionDataResource, IndicatorFilterOptionsResource, IndicatorDataResource
 from api.v2 import views as old_views
 from api.v3 import views
 
-from api.v2.urls import v2_api;
+from api.v2.urls import v2_api
 from api.v3.resources.unesco_indicator_resources import UnescoIndicatorResource
 
 v3_api = Api(api_name='v3')
@@ -47,6 +47,7 @@ v3_api.register(DonorActivitiesResource())
 v3_api.register(SectorActivitiesResource())
 v3_api.register(UnescoIndicatorResource())
 v3_api.register(ActivityFilterOptionsUnescoResource())
+v3_api.register(ActivityListVisResource())
 
 
 
@@ -54,12 +55,6 @@ def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
 
 urlpatterns = patterns('',
-    url(r'^v2/docs/$', 'api.v2.views.docs_index', name='docsv2'),
-    url(r'^v2/docs/getting-started/$', 'api.v2.views.docs_start', name='start_docsv2'),
-    url(r'^v2/docs/resources/$', old_views.docs_resources, name='resource_docsv2'),
-    url(r'^v2/docs/filtering/$', old_views.docs_filtering, name='filter_docsv2'),
-    url(r'^v2/docs/ordering/$', old_views.docs_ordering, name='ordering_docsv2'),
-    url(r'^v2/docs/about/$', old_views.docs_about, name='about_docsv2'),
     url(r'^v3/docs/$', views.docs_index, name='docs'),
     url(r'^v3/docs/getting-started/$', views.docs_start, name='start_docs'),
     url(r'^v3/docs/resources/$', views.docs_resources, name='resource_docs'),

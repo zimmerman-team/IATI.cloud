@@ -1,0 +1,10 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2001;;income_gini_coefficient_countries;Income Gini Coefficient – Countries;r;Urban;;Nicaragua;;;0.447;Different sources;Slum dwellers
+2006;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Kenya;;;0.484;Different sources;Slum dwellers
+2006;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Uganda;;;0.673;Different sources;Slum dwellers
+2006;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Tanzania;;;0.578;Different sources;Slum dwellers
+1993;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;South Africa;;;0.58;Different sources;Slum dwellers
+1997;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;India;;;0.53;Different sources;Slum dwellers
+2001;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Bulgaria;;;0.4;Different sources;Slum dwellers
+2003;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Tajikistan;;;0.5;Different sources;Slum dwellers
+2001;;income_gini_coefficient_cities;Income Gini Coefficient – Cities;r;Urban;;Bosnia and Herzegovina;;;0.34;Different sources;Slum dwellers

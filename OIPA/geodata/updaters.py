@@ -121,6 +121,7 @@ class CountryUpdater():
                         continue
 
                     geometry = k['geometry']
+                    geometry = ujson.dumps(geometry)
                     the_country.polygon = geometry
 
                     # pol_string = geojson_to_wkt.dumps(geometry)
@@ -254,7 +255,6 @@ class RegionUpdater():
                     longitude = unesco_regions[cr]['longitude']
                     name = unesco_regions[cr]['name']
                     if counter_unfind_region == 3:
-                        print region_text_xml
                         counter_unfind_region = 0
                     #try to match the region of the XML file with the json Unesco region file
                     if name.lower() == region_text_xml.lower():
@@ -296,6 +296,23 @@ class RegionUpdater():
         print "Total countries found: %s, Total regions detected: %s" % (counter_countries, counter_region_found_for_country)
         json_data.close()
 
+
+    def update_center_longlat(self):
+            base = os.path.dirname(os.path.abspath(__file__))
+            location = base + "/data_backup/region_center_locations.json"
+
+            json_data = open(location)
+            region_centers = ujson.load(json_data)
+            for r in region_centers:
+                if Region.objects.filter(code=r).exists():
+                    current_region = Region.objects.get(code=r)
+
+                    point_loc_str = 'POINT(' + str(region_centers[r]["longitude"]) + ' ' + str(region_centers[r]["latitude"]) + ')'
+                    longlat = fromstr(point_loc_str, srid=4326)
+                    current_region.center_longlat = longlat
+                    current_region.save()
+
+            json_data.close()
 
 
 class CityUpdater():

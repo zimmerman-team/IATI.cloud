@@ -1,0 +1,284 @@
+year;year_range;indicator_id;friendly_name;type_data;selection_type;deprivation_type;country;city;region;value;description;category
+2005;;slum_population;Slum population;1000;Urban;;Angola;;;7512;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Benin;;;1416;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Benin;;;1753;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Benin;;;2058;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Benin;;;2439;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Benin;;;2608;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Burkina Faso;;;966;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Burkina Faso;;;1125;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Burkina Faso;;;1300;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Burkina Faso;;;1520;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Burkina Faso;;;1682;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Burundi;;;481;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Cameroon;;;2534;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Cameroon;;;3161;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Cameroon;;;3825;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Cameroon;;;4578;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Cameroon;;;4841;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Central African Republic;;;969;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Central African Republic;;;1152;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Central African Republic;;;1337;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Central African Republic;;;1502;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Central African Republic;;;1582;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Chad;;;1259;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Chad;;;1512;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Chad;;;1858;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Chad;;;2341;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Chad;;;2546;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Comoros;;;96;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Comoros;;;112;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Comoros;;;128;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Comoros;;;153;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Comoros;;;162;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Congo;;;1160;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Côte d’Ivoire;;;2710;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Côte d’Ivoire;;;3367;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Côte d’Ivoire;;;4102;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Côte d’Ivoire;;;4892;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Côte d’Ivoire;;;5249;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Congo Dem. Rep.;;;14409;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Egypt;;;12029;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Egypt;;;10166;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Egypt;;;7978;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Egypt;;;5312;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Egypt;;;5505;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Equatorial Guinea;;;125;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Ethiopia;;;6163;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Ethiopia;;;8001;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Ethiopia;;;9164;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Ethiopia;;;10380;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Ethiopia;;;10923;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Gabon;;;418;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Gambia The;;;396;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Ghana;;;3717;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Ghana;;;4221;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Ghana;;;4615;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Ghana;;;4890;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Ghana;;;4945;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Guinea;;;1359;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Guinea;;;1485;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Guinea;;;1458;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Guinea;;;1358;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Guinea;;;1451;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Guinea-Bissau;;;393;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Kenya;;;2345;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Kenya;;;2848;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Kenya;;;3379;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Kenya;;;4044;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Kenya;;;4370;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Lesotho;;;162;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Madagascar;;;2636;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Madagascar;;;3186;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Madagascar;;;3694;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Madagascar;;;4283;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Madagascar;;;4470;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Malawi;;;725;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Malawi;;;889;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Malawi;;;1171;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Malawi;;;1522;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Malawi;;;1722;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Mali;;;1685;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Mali;;;1890;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Mali;;;2101;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Mali;;;2332;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Mali;;;2569;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Morocco;;;4490;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Morocco;;;4904;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Morocco;;;3713;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Morocco;;;2196;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Morocco;;;2276;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Mozambique;;;2161;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Mozambique;;;3216;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Mozambique;;;4368;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Mozambique;;;5632;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Mozambique;;;6175;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Namibia;;;135;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Namibia;;;169;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Namibia;;;206;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Namibia;;;240;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Namibia;;;252;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Niger;;;1005;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Niger;;;1217;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Niger;;;1487;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Niger;;;1774;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Niger;;;1909;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Nigeria;;;25763;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Nigeria;;;31127;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Nigeria;;;36930;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Nigeria;;;42928;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Nigeria;;;45309;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Rwanda;;;379;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Rwanda;;;411;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Rwanda;;;898;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Rwanda;;;1160;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Rwanda;;;1198;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Senegal;;;2172;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Senegal;;;2154;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Senegal;;;2055;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Senegal;;;1863;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Senegal;;;1982;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Sierra Leone;;;1995;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Somalia;;;2120;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;South Africa;;;8794;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;South Africa;;;8978;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;South Africa;;;8575;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;South Africa;;;8156;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;South Africa;;;8399;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Sudan;;;6502;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Sudan;;;8697;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Sudan;;;11336;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Sudan;;;14170;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Sudan;;;15468;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Togo;;;1548;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Uganda;;;1482;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Uganda;;;1858;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Uganda;;;2238;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Uganda;;;2423;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Uganda;;;2507;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Tanzania;;;3725;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Tanzania;;;4528;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Tanzania;;;5291;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Tanzania;;;6186;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Tanzania;;;6580;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Zambia;;;1826;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Zambia;;;1962;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Zambia;;;2080;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Zambia;;;2298;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Zambia;;;2404;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Zimbabwe;;;122;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Zimbabwe;;;138;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Zimbabwe;;;142;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Zimbabwe;;;842;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Zimbabwe;;;879;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;China;;;137272;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;China;;;153985;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;China;;;169600;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;China;;;174587;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;China;;;173988;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Mongolia;;;866;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Mongolia;;;905;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Mongolia;;;907;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Mongolia;;;847;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Mongolia;;;867;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Bangladesh;;;19552;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Bangladesh;;;23206;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Bangladesh;;;25574;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Bangladesh;;;27860;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Bangladesh;;;29871;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;India;;;120746;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;India;;;122376;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;India;;;120117;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;India;;;113223;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;India;;;109501;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Nepal;;;1194;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Nepal;;;1589;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Nepal;;;2099;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Nepal;;;2591;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Nepal;;;2798;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Pakistan;;;17620;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Pakistan;;;20271;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Pakistan;;;23304;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Pakistan;;;26189;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Pakistan;;;27508;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Cambodia;;;2172;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Indonesia;;;28407;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Indonesia;;;29912;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Indonesia;;;30620;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Indonesia;;;28574;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Indonesia;;;26852;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Lao PDR;;;1230;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Myanmar;;;6703;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Philippines;;;16224;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Philippines;;;18817;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Philippines;;;21080;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Philippines;;;23175;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Philippines;;;23891;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Thailand;;;5291;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Vietnam;;;8109;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Vietnam;;;8897;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Vietnam;;;9366;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Vietnam;;;9274;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Vietnam;;;9137;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Iraq;;;2182;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Iraq;;;2516;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Iraq;;;2873;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Iraq;;;9889;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Iraq;;;10199;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Jordan;;;686;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Lebanon;;;1844;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Saudi Arabia;;;3442;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Syria;;;1055;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Turkey;;;7947;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Turkey;;;8055;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Turkey;;;7911;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Turkey;;;7610;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Turkey;;;7202;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Yemen;;;4102;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Argentina;;;8644;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Argentina;;;9790;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Argentina;;;10940;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Argentina;;;9278;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Argentina;;;8530;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Belize;;;65;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Bolivia;;;2304;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Bolivia;;;2589;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Bolivia;;;2794;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Bolivia;;;2972;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Bolivia;;;3030;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Brazil;;;40998;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Brazil;;;42856;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Brazil;;;44601;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Brazil;;;45613;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Brazil;;;45708;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Chile;;;1285;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Colombia;;;7433;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Colombia;;;7224;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Colombia;;;6711;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Colombia;;;5920;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Colombia;;;5520;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Costa Rica;;;291;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Dominican Republic;;;1123;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Dominican Republic;;;1131;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Dominican Republic;;;1146;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Dominican Republic;;;1110;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Dominican Republic;;;1079;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Ecuador;;;1786;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;El Salvador;;;1152;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;French Guiana;;;15;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Grenada;;;2;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Guadeloupe;;;23;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Guatemala;;;2145;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Guatemala;;;2300;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Guatemala;;;2438;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Guatemala;;;2572;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Guatemala;;;2619;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Guyana;;;70;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Haiti;;;1893;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Haiti;;;2385;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Haiti;;;2851;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Haiti;;;2786;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Haiti;;;3065;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Honduras;;;1109;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Jamaica;;;855;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Mexico;;;13859;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Mexico;;;14484;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Mexico;;;14830;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Mexico;;;11457;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Mexico;;;11801;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Nicaragua;;;1931;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Nicaragua;;;1861;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Nicaragua;;;1678;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Nicaragua;;;1390;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Nicaragua;;;1439;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Panama;;;526;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Paraguay;;;608;UNHABITAT_2010;Slum dwellers
+1990;;slum_population;Slum population;1000;Urban;;Peru;;;9958;UNHABITAT_2010;Slum dwellers
+1995;;slum_population;Slum population;1000;Urban;;Peru;;;9439;UNHABITAT_2010;Slum dwellers
+2000;;slum_population;Slum population;1000;Urban;;Peru;;;8382;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Peru;;;7001;UNHABITAT_2010;Slum dwellers
+2007;;slum_population;Slum population;1000;Urban;;Peru;;;7180;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Saint Lucia;;;5;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Suriname;;;13;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Trinidad and Tobago;;;40;UNHABITAT_2010;Slum dwellers
+2005;;slum_population;Slum population;1000;Urban;;Venezuela;;;7896;UNHABITAT_2010;Slum dwellers
