@@ -16,18 +16,6 @@ sys.path.insert(0, rel('..','lib'))
 
 from local_settings import *
 
-DEBUG = DEBUG
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = ADMINS
-
-MANAGERS = ADMINS
-
-DATABASES = DATABASES
-
-JENKINS_TASKS = JENKINS_TASKS
-PROJECT_APPS = PROJECT_APPS
-
 ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO',
                               'csv_files')
 
@@ -85,13 +73,11 @@ USE_TZ = False
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 MEDIA_ROOT = rel('../media')
-STATIC_ROOT = STATIC_ROOT
 
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 MEDIA_URL = '/media/'
-STATIC_URL = STATIC_URL
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -220,8 +206,4 @@ SUIT_CONFIG = {
 # more details on how to customize your logging configuration.
 
 RQ_SHOW_ADMIN_LINK = True
-
-LOGGING = LOGGING
-
-RQ_QUEUES = RQ_QUEUES
 
