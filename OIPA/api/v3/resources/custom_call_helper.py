@@ -10,7 +10,8 @@ class CustomCallHelper():
                 return None
 
             for v in values:
-                query += '  ' + name + ' = "' + v +'" OR'
+                query = '{query} {name} = "{v}" OR'.format(
+                    query=query, name=name, v=v)
             query = query[:-2]
         return query
 
@@ -20,7 +21,7 @@ class CustomCallHelper():
         filters = filters.lstrip(',').rstrip(',')
         if filters:
             query = self.make_where_query(values=filters.split(','), name=queryparameter)
-            query += ') AND ('
+            query = '{query}) AND ('.format(query=query)
         else:
             query = ''
         return query
@@ -29,10 +30,10 @@ class CustomCallHelper():
         query = ''
         if values:
             if not values[0]:
-                return None
+                return ''
 
             for v in values:
-                query += '  YEAR(' + name + ') = "' + v + '" OR'
+                query = '{query}  YEAR({name}) = "{v}" OR'.format(query=query, name=name, v=v)
             query = query[:-2]
         return query
 
@@ -41,7 +42,7 @@ class CustomCallHelper():
         filters = request.GET.get(parameter, None)
         if filters:
             query = self.make_year_where_query(values=filters.split(','), name=queryparameter)
-            query += ') AND ('
+            query = '{query}) AND ('.format(query=query)
         else:
             query = ''
         return query
@@ -62,11 +63,9 @@ class CustomCallHelper():
                 values = f[f.keys()[0]].split(',')
             else:
                 values = None
-            q += self.make_where_query(values=values, name=f.keys()[0]) + ') and ('
+            q = "{q} {custom}) and (".format(q=q, custom=self.make_where_query(values=values, name=f.keys()[0]))
 
-        q = q.replace(' and ()', '')
-        q = q[:-5]
-        q = " AND (" + q
+        q = " AND ({q}".format(q=q.replace(' and ()', '')[:-5])
         try:
             q[8]
             return q
