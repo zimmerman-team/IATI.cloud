@@ -16,7 +16,8 @@ class CustomCallHelper():
 
     def get_and_query(self, request, parameter, queryparameter):
 
-        filters = request.GET.get(parameter, None)
+        filters = request.GET.get(parameter, '')
+        filters = filters.lstrip(',').rstrip(',')
         if filters:
             query = self.make_where_query(values=filters.split(','), name=queryparameter)
             query += ') AND ('
