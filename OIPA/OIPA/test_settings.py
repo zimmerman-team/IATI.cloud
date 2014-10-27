@@ -25,15 +25,21 @@ MANAGERS = ADMINS
 
 SECRET_KEY = "4g*t76mgdhna-=fdqx0@ek8=*c(cdj0djitnw10g5kvv6brc9d"
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.mysql',
-        'NAME': 'oipa', # <- change with database name
-        'USER': 'travis', # <- change with db user
-        'PASSWORD': 'travis',
-        'HOST': '/var/run/mysqld/mysqld.sock',
-        'PORT': '3306',
-        'OPTIONS': { 'init_command': 'SET storage_engine=INNODB;' }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.contrib.gis.db.backends.mysql',
+#        'NAME': 'oipa', # <- change with database name
+#        'USER': 'travis', # <- change with db user
+#        'PASSWORD': 'travis',
+#        'HOST': '/var/run/mysqld/mysqld.sock',
+#        'PORT': '3306',
+#        'OPTIONS': { 'init_command': 'SET storage_engine=INNODB;' }
+#    }
+#}
+
+DATABASES = {'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
+        'NAME': ':memory:',
     }
 }
 

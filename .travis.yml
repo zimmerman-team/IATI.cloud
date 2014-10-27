@@ -1,0 +1,12 @@
+language: python
+python:
+  - "2.7"
+
+# command to install dependencies
+install: 
+  - "pip install -r OIPA/requirements.txt"
+  - "pip install -r OIPA/test_requirements.txt"
+  - "echo -e 'no\n' | OIPA/manage.py syncdb --settings=OIPA.test_settings"
+
+# command to run tests
+script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
