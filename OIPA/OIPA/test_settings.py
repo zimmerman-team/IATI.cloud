@@ -30,7 +30,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'NAME': 'oipa_test', # <- change with database name
         'USER': 'root', # <- change with db user
-	'HOST': '127.0.0.1'
+	'HOST': '127.0.0.1',
         'OPTIONS': { 'init_command': 'SET storage_engine=INNODB;' }
     }
 }
