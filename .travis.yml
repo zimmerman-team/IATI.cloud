@@ -2,13 +2,16 @@ language: python
 python:
   - "2.7"
 
+# setup database
+before_install:
+  - mysql -e 'create database oipa_test COLLATE utf8_unicode_ci;'
+
+
 # command to install dependencies
 install: 
   - "pip install -r OIPA/requirements.txt"
   - "pip install -r OIPA/test_requirements.txt"
   - "echo -e 'no\n' | OIPA/manage.py syncdb --settings=OIPA.test_settings"
-
-before_script: mysql -e 'create database oipa_test COLLATE utf8_unicode_ci;'
 
 # command to run tests
 script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
