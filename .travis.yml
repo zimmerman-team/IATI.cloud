@@ -13,9 +13,9 @@ install:
   - "pip install -r OIPA/test_requirements.txt"
   - "echo -e 'no\n' | OIPA/manage.py syncdb --settings=OIPA.test_settings"
 
-# create full text search indexes after running syncdb
-before_script:
-  - mysql oipa_test < OIPA/create_fts_indexes.sql
+# create full text search indexes after running syncdb (disabled for now because of problems with mysql version
+#before_script:
+#  - mysql oipa_test < OIPA/create_fts_indexes.sql
 
 # command to run tests
 script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
