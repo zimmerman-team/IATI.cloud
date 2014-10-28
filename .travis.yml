@@ -15,7 +15,7 @@ install:
 
 # create full text search indexes after running syncdb
 before_script:
-  - mysql oipa_test < create_fts_indexes.sql
+  - mysql oipa_test < OIPA/create_fts_indexes.sql
 
 # command to run tests
 script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
