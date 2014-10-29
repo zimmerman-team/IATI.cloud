@@ -1,0 +1,10 @@
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`activity_id`); 
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_identifier`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_description`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_title`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_country_name`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_region_name`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_sector_name`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_participating_organisation_name`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_reporting_organisation_name`);
+ALTER TABLE `iati_activitysearchdata` ADD FULLTEXT(`search_documentlink_title`);
