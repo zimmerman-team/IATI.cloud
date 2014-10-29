@@ -15,7 +15,8 @@ before_install:
 install:
   - "pip install -r OIPA/requirements.txt"
   - "pip install -r OIPA/test_requirements.txt"
-  - "echo -e 'no\n' | OIPA/manage.py syncdb --settings=OIPA.test_settings"
+  - "echo -e 'no\n' | OIPA/manage.py migrate --settings=OIPA.test_settings" 
+  - "echo -e 'no\n' | OIPA/manage.py migrate --database=mysql --settings=OIPA.test_settings"
 
 # create full text search indexes after running syncdb
 before_script:
