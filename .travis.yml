@@ -1,9 +1,26 @@
 language: python
 python:
-  - "3.3"
   - "2.7"
-  - "2.6"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: PLEASE CHANGE ME
-# command to run tests, e.g. python setup.py test
-script:  PLEASE CHANGE ME
+
+# setup database
+before_install:
+  # Build the Spatialite db backend
+  - .travis/build_pysqlite2.sh
+  - sudo apt-get install libspatialite-dev
+  # Build the mysql 5.6 db backend  
+  - .travis/install-mysql-5.6
+  - mysql -e 'create database oipa_test COLLATE utf8_unicode_ci;'
+
+# command to install dependencies
+install:
+  - "pip install -r OIPA/requirements.txt"
+  - "pip install -r OIPA/test_requirements.txt"
+  - "echo -e 'no\n' | OIPA/manage.py migrate --settings=OIPA.test_settings" 
+  - "echo -e 'no\n' | OIPA/manage.py migrate --database=mysql --settings=OIPA.test_settings"
+
+# create full text search indexes after running syncdb
+before_script:
+  - mysql oipa_test < .travis/create_fts_indexes.sql
+
+# command to run tests
+script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
