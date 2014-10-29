@@ -159,6 +159,5 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 try:
     from local_settings import *
 except ImportError:
-    import warnings
-    warnings.warn('local_settings not found')
+    pass
 
