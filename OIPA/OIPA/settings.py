@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'djsupervisor',
     'indicator_unesco',
     'translation_model',
+    'rest_framework',
 )
 
 SUIT_CONFIG = {
