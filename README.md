@@ -11,7 +11,7 @@ OIPA is extended to support a variety of global health indicators published by U
 
 OIPA is licensed under the GNU AGPL license.
 
-Check the full documentation and how to use OIPA here: http://oipa.openaidsearch.org/api/v3/docs/
+Check the full documentation and how to use OIPA here: http://www.oipa.nl/
 
 Codebase maintained by team Zimmerman & Zimmerman in Amsterdam.
 
