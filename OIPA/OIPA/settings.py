@@ -2,7 +2,6 @@
 import sys
 import os
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-from django.conf import settings
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
@@ -13,12 +12,7 @@ def rel(*x):
 
 sys.path.insert(0, rel('..','lib'))
 
-
-from local_settings import *
-
-ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO',
-                              'csv_files')
-ADMINFILES_UPLOAD_TO = getattr(settings, 'ADMINFILES_UPLOAD_TO', 'csv_files')
+ADMINFILES_UPLOAD_TO = 'csv_files'
 
 XS_SHARING_ALLOWED_ORIGINS = '*'
 XS_SHARING_ALLOWED_METHODS = ['GET', 'OPTIONS']
@@ -158,5 +152,13 @@ SUIT_CONFIG = {
 # more details on how to customize your logging configuration.
 
 RQ_SHOW_ADMIN_LINK = True
+RQ_QUEUES = {}
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+try:
+    from local_settings import *
+except ImportError:
+    import warnings
+    warnings.warn('local_settings not found')
+
