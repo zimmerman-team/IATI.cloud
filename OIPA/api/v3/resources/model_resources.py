@@ -25,6 +25,11 @@ class CityResource(ModelResource):
         }
         allowed_methods = ['get']
 
+    def dehydrate(self, bundle):
+        bundle.data['country_id'] = bundle.obj.country_id
+        return bundle
+
+
 class CountryResource(ModelResource):
     capital_city = fields.OneToOneField(CityResource, 'capital_city', full=True, null=True)
     unesco_region = fields.ForeignKey(RegionResource, 'unesco_region', full=True, null=True)
