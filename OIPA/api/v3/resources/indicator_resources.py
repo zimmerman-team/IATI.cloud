@@ -483,15 +483,14 @@ class IndicatorFilterOptionsResource(ModelResource):
         cache = NoTransformCache()
         allowed_methods = ['get']
 
-
     def get_list(self, request, **kwargs):
         helper = CustomCallHelper()
-        city_q = helper.get_and_query(request, 'cities__in', 'city.id')
-        country_q = helper.get_and_query(request, 'countries__in', 'country.code')
-        region_q = helper.get_and_query(request, 'regions__in', 'region.code')
-        indicator_q = helper.get_and_query(request, 'indicators__in', 'i.indicator_id')
-        category_q = helper.get_and_query(request, 'categories__in', 'ind.category')
-        adm_division_q = request.GET.get("adm_division__in", "city,country,region")
+        city_q = helper.get_and_query(request, 'cities__in', 'city.id') or ""
+        country_q = helper.get_and_query(request, 'countries__in', 'country.code') or ""
+        region_q = helper.get_and_query(request, 'regions__in', 'region.code') or ""
+        indicator_q = helper.get_and_query(request, 'indicators__in', 'i.indicator_id') or ""
+        category_q = helper.get_and_query(request, 'categories__in', 'ind.category') or ""
+        adm_division_q = request.GET.get("adm_division__in", "city,country,region") or ""
         adm_divisions = adm_division_q.split(",")
 
         filter_string = ' AND (' + city_q + country_q + region_q + indicator_q + category_q + ')'
