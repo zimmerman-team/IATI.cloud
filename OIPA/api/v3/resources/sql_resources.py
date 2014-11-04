@@ -1109,7 +1109,8 @@ class DonorActivitiesResource(ModelResource):
         offset = request.GET.get("offset", 0)
         order_by = request.GET.get("order_by", "apo.name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
-        query = request.GET.get("query", None)
+        donor_query = request.GET.get("donor", None)
+        project_query = request.GET.get("query", None)
         format = request.GET.get("format", "json")
 
         if budget_q_gte:
@@ -1121,19 +1122,44 @@ class DonorActivitiesResource(ModelResource):
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
+
+        filter_region = ''
+        if region_q:
+            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+
+        filter_sector = ''
+        if sector_q:
+            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+
+        filter_country = ''
+        if country_q:
+            filter_country = 'LEFT JOIN iati_activityrecipientcountry as rc on rc.activity_id = a.id LEFT JOIN geodata_country c on rc.country_id = c.code '
+            filter_string += ' AND apo.role_id = "Funding" '
+
+
         filter_string += ' AND apo.role_id = "Funding" '
 
-        if query:
-            filter_string += 'AND apo.name LIKE "%%' + query + '%%" '
+        if donor_query:
+            filter_string += 'AND apo.name LIKE "%%' + donor_query + '%%" '
+
+        filter_project_query = ''
+
+        if project_query:
+            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
+            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" '
+
+
+
 
         cursor = connection.cursor()
         query = 'SELECT apo.organisation_id as organisation_id, apo.name as organisation_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM iati_activity a '\
-                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
+                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ' \
+                '%s %s %s '\
                 'WHERE apo.name is not null %s'\
                 'GROUP BY apo.name ' \
-                'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_string, order_by, order_asc_desc, limit, offset)
+                'ORDER BY %s %s %s ' \
+                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_country, filter_string, order_by, filter_project_query, order_asc_desc, limit, offset)
         cursor.execute(query)
 
         activities = []
@@ -1151,12 +1177,13 @@ class DonorActivitiesResource(ModelResource):
         return_json["objects"] = activities
 
 
-
         query = 'SELECT apo.organisation_id as organisation_id '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
+                '%s %s %s %s'\
                 'WHERE apo.name is not null %s'\
-                'GROUP BY apo.name ' % (filter_string)
+                'GROUP BY apo.name ' % (filter_region, filter_sector, filter_country, filter_project_query, filter_string)
+
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
