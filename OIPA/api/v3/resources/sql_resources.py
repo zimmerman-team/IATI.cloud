@@ -430,7 +430,7 @@ class CountryGeojsonResource(ModelResource):
         filter_project_query = ''
         if project_query:
             filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
-            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" AND c.name LIKE "%%' + project_query + '%%"'
+            filter_string += 'AND ( t.title LIKE "%%' + project_query + '%%" OR c.name LIKE "%%' + project_query + '%%" ) '
 
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
@@ -441,6 +441,7 @@ class CountryGeojsonResource(ModelResource):
                 'WHERE 1 %s'\
                 'GROUP BY c.code' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string)
 
+        print query
         cursor.execute(query)
 
         activity_result = {'type': 'FeatureCollection', 'features': []}
