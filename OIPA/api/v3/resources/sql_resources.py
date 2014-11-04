@@ -391,8 +391,11 @@ class CountryGeojsonResource(ModelResource):
         budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         budget_q = ''
+        country_query = request.GET.get("country", None)
+        project_query = request.GET.get("query", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -416,14 +419,27 @@ class CountryGeojsonResource(ModelResource):
         else:
             filter_sector = ''
 
+        filter_donor = ''
+        if donor_q:
+            filter_donor = 'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            filter_string += ' AND apo.role_id = "Funding" '
+
+        if country_query:
+            filter_string += 'AND c.name LIKE "%%' + country_query + '%%" '
+
+        filter_project_query = ''
+        if project_query:
+            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
+            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" AND c.name LIKE "%%' + project_query + '%%"'
+
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, count(a.id) as total_projects '\
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
                 'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
-                '%s %s'\
+                '%s %s %s %s '\
                 'WHERE 1 %s'\
-                'GROUP BY c.code' % (filter_region, filter_sector, filter_string)
+                'GROUP BY c.code' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string)
 
         cursor.execute(query)
 
@@ -508,8 +524,6 @@ def dict2xml(d, root_node, first, listname):
                     children.append(dict2xml(value, key, False, listname))
                 else:
                     # children.append(str(value), key)
-                    # print key
-                    # print str(value)
                     xml = xml + '<' + key + '>' + str(value) + '</' + key + '>'
         else:
             if isinstance(d, list):

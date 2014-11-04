@@ -272,9 +272,6 @@ class ActivityAggregatedAnyResource(ModelResource):
                 query_group_by = "GROUP BY sector_id"
 
         # execute query
-
-        print (query_select + query_from + query_where + query_group_by)
-
         cursor.execute(query_select + query_from + query_where + query_group_by)
         results1 = helper.get_fields(cursor=cursor)
 

@@ -51,8 +51,6 @@ class IndicatorAggregationResource(ModelResource):
                 'WHERE id.indicator_id = "'+indicator_id+'" ' \
                 'GROUP BY year, r.code'
 
-        print query
-
         # execute query
         cursor.execute(query)
         results1 = helper.get_fields(cursor=cursor)
@@ -403,72 +401,69 @@ class IndicatorDataResource(ModelResource):
 
         for c in country_results:
 
+            if c['value']:
+                try:
+                    geolocs[c['indicator_id']]['locs'][c['country_id']]['years']
 
+                except:
 
-            try:
-                geolocs[c['indicator_id']]['locs'][c['country_id']]['years']
+                    if not c['indicator_id'] in geolocs:
+                        max_value = max_results[0]['max_value']
+                        geolocs[c['indicator_id']] = {'indicator_friendly': c['friendly_label'], 'type_data': c['type_data'], 'indicator': c['indicator_id'], 'category': c['category'], 'selection_type': c['selection_type'], 'max_value' : max_value, 'locs': {}}
 
-            except:
+                    # if the amount of locs to be shown is reached, do not add the new loc
+                    if limit_q:
+                        if geolocs[c['indicator_id']]['locs'].__len__() == limit_q:
+                            continue
 
+                    loc = c['loc']
+                    if loc:
 
+                        loc = loc.replace("POINT(", "")
+                        loc = loc.replace(")", "")
+                        loc_array = loc.split(" ")
+                        longitude = loc_array[0]
+                        latitude = loc_array[1]
+                    else:
+                        longitude = None
+                        latitude = None
 
-                if not c['indicator_id'] in geolocs:
-                    max_value = max_results[0]['max_value']
-                    geolocs[c['indicator_id']] = {'indicator_friendly': c['friendly_label'], 'type_data': c['type_data'], 'indicator': c['indicator_id'], 'category': c['category'], 'selection_type': c['selection_type'], 'max_value' : max_value, 'locs': {}}
+                    geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'region_id' : c['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
-                # if the amount of locs to be shown is reached, do not add the new loc
-                if limit_q:
-                    if geolocs[c['indicator_id']]['locs'].__len__() == limit_q:
-                        continue
-
-                loc = c['loc']
-                if loc:
-
-                    loc = loc.replace("POINT(", "")
-                    loc = loc.replace(")", "")
-                    loc_array = loc.split(" ")
-                    longitude = loc_array[0]
-                    latitude = loc_array[1]
-                else:
-                    longitude = None
-                    latitude = None
-
-                geolocs[c['indicator_id']]['locs'][c['country_id']] = {'name': c['country_name'], 'id' : c['country_id'], 'region_id' : c['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
-
-            geolocs[c['indicator_id']]['locs'][c['country_id']]['years'][c['year']] = c['value']
+                geolocs[c['indicator_id']]['locs'][c['country_id']]['years'][c['year']] = c['value']
 
 
         for r in city_results:
 
+            if r['value']:
+                try:
+                    geolocs[r['indicator_id']]['locs'][r['city_id']]['years']
+                except:
 
-            try:
-                geolocs[r['indicator_id']]['locs'][r['city_id']]['years']
-            except:
+                    if not r['indicator_id'] in geolocs:
+                        max_value = max_results[0]['max_value']
+                        geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'category': r['category'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
 
-                if not r['indicator_id'] in geolocs:
-                    max_value = max_results[0]['max_value']
-                    geolocs[r['indicator_id']] = {'indicator_friendly': r['friendly_label'], 'type_data': r['type_data'], 'indicator': r['indicator_id'], 'category': r['category'], 'selection_type': r['selection_type'], 'max_value': max_value, 'locs': {}}
+                    # if the amount of locs to be shown is reached, do not add the new loc
+                    if limit_q:
+                        if geolocs[r['indicator_id']]['locs'].__len__() == limit_q:
+                            continue
 
-                # if the amount of locs to be shown is reached, do not add the new loc
-                if limit_q:
-                    if geolocs[r['indicator_id']]['locs'].__len__() == limit_q:
-                        continue
+                    loc = r['loc']
+                    if loc:
 
-                loc = r['loc']
-                if loc:
+                        loc = loc.replace("POINT(", "")
+                        loc = loc.replace(")", "")
+                        loc_array = loc.split(" ")
+                        longitude = loc_array[0]
+                        latitude = loc_array[1]
+                    else:
+                        longitude = None
+                        latitude = None
 
-                    loc = loc.replace("POINT(", "")
-                    loc = loc.replace(")", "")
-                    loc_array = loc.split(" ")
-                    longitude = loc_array[0]
-                    latitude = loc_array[1]
-                else:
-                    longitude = None
-                    latitude = None
+                    geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name': r['city_name'], 'id': r['city_id'], 'country_id': r['country_id'], 'region_id': r['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
 
-                geolocs[r['indicator_id']]['locs'][r['city_id']] = {'name': r['city_name'], 'id': r['city_id'], 'country_id': r['country_id'], 'region_id': r['region_id'], 'longitude': longitude, 'latitude': latitude, 'years': {}}
-
-            geolocs[r['indicator_id']]['locs'][r['city_id']]['years'][r['year']] = r['value']
+                geolocs[r['indicator_id']]['locs'][r['city_id']]['years'][r['year']] = r['value']
 
 
         return HttpResponse(ujson.dumps(geolocs), content_type='application/json')
