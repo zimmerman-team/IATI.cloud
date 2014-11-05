@@ -1238,18 +1238,47 @@ class ActivityListVisResource(ModelResource):
         helper = CustomCallHelper()
         cursor = connection.cursor()
         organisations = request.GET.get("reporting_organisation__in", None)
+        country_q = helper.get_and_query(request, 'countries__in', 'c.code')
+        region_q = helper.get_and_query(request, 'regions__in', 'r.code')
+        sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
+        budget_q_gte = request.GET.get('total_budget__gt', None)
+        budget_q_lte = request.GET.get('total_budget__lt', None)
+        query = request.GET.get("query", None)
+
+        budget_q = ''
+        if budget_q_gte:
+            budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
+        if budget_q_lte:
+            budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
+
         if organisations:
             q_organisations = 'AND a.reporting_organisation_id = "' + organisations + '"'
         else:
             q_organisations = ""
+
+        filter_string = ' AND (' + country_q + region_q + sector_q + budget_q + ')'
+        if 'AND ()' in filter_string:
+            filter_string = filter_string[:-6]
+
+        filter_country = ''
+        if country_q:
+            filter_country = 'LEFT JOIN iati_activityrecipientcountry as rc on rc.activity_id = a.id LEFT JOIN geodata_country c on rc.country_id = c.code '
+
+        filter_sector = ''
+        if sector_q:
+            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+
+        if query:
+            filter_string += 'AND t.title LIKE "%%' + query + '%%" '
 
         cursor.execute('SELECT a.id, r.code, r.name, t.title, a.total_budget '
         'FROM iati_activity as a '
         'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '
         'JOIN geodata_region as r on r.code = rr.region_id '
         'JOIN iati_title as t on a.id = t.activity_id '
-        'WHERE 1 %s '
-        'order by a.id LIMIT 5000' % (q_organisations))
+        '%s %s '
+        'WHERE 1 %s %s '
+        'order by a.id LIMIT 5000' % (filter_country, filter_sector, q_organisations, filter_string))
         results1 = helper.get_fields(cursor=cursor)
 
         activities = []
