@@ -14,8 +14,8 @@ INTERVAL_CHOICES = (
 )
 
 class Publisher(models.Model):
-    org_id = models.CharField(max_length=100, blank=True, null=True)
-    org_abbreviate = models.CharField(max_length=55, blank=True, null=True)
+    org_id = models.CharField(max_length=100)
+    org_abbreviate = models.CharField(max_length=55)
     org_name = models.CharField(max_length=255)
     default_interval = models.CharField(verbose_name=_(u"Interval"), max_length=55, choices=INTERVAL_CHOICES, default=u'MONTHLY')
     XML_total_activity_count = models.IntegerField(null=True, default=None)
@@ -36,23 +36,23 @@ class IatiXmlSource(models.Model):
         ("month", _(u"Month")),
         ("year", _(u"Year")),
     )
-    ref = models.CharField(verbose_name=_(u"Reference"), max_length=70, help_text=_(u"Reference for the XML file. Preferred usage: 'collection' or single country or region name"))
-    title = models.CharField(max_length=255, null=True)
+    ref = models.CharField(verbose_name=_(u"Reference"), max_length=70, help_text=_(u"Reference for the XML file. Preferred usage: Name on IATI registry"))
+    title = models.CharField(max_length=255)
     type = models.IntegerField(choices=TYPE_CHOICES, default=1)
     publisher = models.ForeignKey(Publisher)
     source_url = models.CharField(max_length=255, unique=True, help_text=_(u"Hyperlink to an iati activity or organisation XML file."))
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
-    update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month", null=True, blank=True)
+    update_interval = models.CharField(max_length=20, choices=INTERVAL_CHOICES, default="month")
     last_found_in_registry = models.DateTimeField(default=None, null=True)
     xml_activity_count = models.IntegerField(null=True, default=None)
     oipa_activity_count = models.IntegerField(null=True, default=None)
-    iati_standard_version = models.CharField(max_length=10, null=True, default=None)
+    iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
 
     class Meta:
-        verbose_name_plural = "iati XML sources"
+        verbose_name_plural = "IATI XML sources"
         ordering = ["ref"]
 
     def __unicode__(self):
