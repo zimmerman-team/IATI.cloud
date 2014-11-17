@@ -157,6 +157,12 @@ RQ_QUEUES = {}
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 100,
+}
+
 try:
     from local_settings import *
 except ImportError:
