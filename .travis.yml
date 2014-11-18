@@ -23,4 +23,6 @@ before_script:
   - mysql oipa_test < .travis/create_fts_indexes.sql
 
 # command to run tests
-script: cd OIPA/ && py.test --ds=OIPA.travis_test_settings && cd ..
+script: coverage run --source=. --omit=*__init__*,*data_backup* -m py.test
+after_success:
+  - coveralls

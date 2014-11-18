@@ -1,3 +1,4 @@
 pytest
 pytest_django
 factory-boy
+python-coveralls
