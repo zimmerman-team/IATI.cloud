@@ -15,12 +15,12 @@ before_install:
 install:
   - "pip install -r OIPA/requirements.txt"
   - "pip install -r OIPA/test_requirements.txt"
-  - "echo -e 'no\n' | OIPA/manage.py migrate --settings=OIPA.test_settings" 
-  - "echo -e 'no\n' | OIPA/manage.py migrate --database=mysql --settings=OIPA.test_settings"
+  - "echo -e 'no\n' | OIPA/manage.py migrate --settings=OIPA.travis_test_settings" 
+  - "echo -e 'no\n' | OIPA/manage.py migrate --database=mysql --settings=OIPA.travis_test_settings"
 
 # create full text search indexes after running syncdb
 before_script:
   - mysql oipa_test < .travis/create_fts_indexes.sql
 
 # command to run tests
-script: cd OIPA/ && py.test --ds=OIPA.test_settings && cd ..
+script: cd OIPA/ && py.test --ds=OIPA.travis_test_settings && cd ..
