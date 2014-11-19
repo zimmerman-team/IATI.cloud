@@ -1,38 +1,9 @@
 import pytest
-from django.test.client import Client
-from iati.factory import iati_factory
+from api.tests.endpoint_base import EndpointBase
 
 
 @pytest.mark.django_db
-class TestEndpoints:
-
-    @pytest.fixture
-    def client(self):
-        return Client()
-
-    @pytest.fixture
-    def activity(self):
-        return iati_factory.ActivityFactory()
-
-    @pytest.fixture
-    def region(self):
-        return iati_factory.RegionFactory()
-
-    @pytest.fixture
-    def country(self):
-        return iati_factory.CountryFactory()
-
-    @pytest.fixture
-    def city(self):
-        return iati_factory.CityFactory()
-
-    @pytest.fixture
-    def organisation(self):
-        return iati_factory.OrganisationFactory()
-
-    @pytest.fixture
-    def sector(self):
-        return iati_factory.SectorFactory()
+class TestEndpoints(EndpointBase):
 
     def test_activities_endpoint(self, client, activity):
         response = client.get('/api/v3/activities/')
