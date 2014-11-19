@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'djsupervisor',
     'indicator_unesco',
     'translation_model',
+    'rest_framework',
 )
 
 SUIT_CONFIG = {
@@ -155,6 +156,12 @@ RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {}
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 100,
+}
 
 try:
     from local_settings import *
