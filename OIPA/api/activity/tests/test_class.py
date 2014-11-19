@@ -4,10 +4,10 @@ import pytest
 
 
 @pytest.mark.django_db
-class TestBasicResources:
+class TestActivityEndpoints:
 
     def test_activities_endpoint(self):
         url = reverse('activity-list')
         client = Client()
-        client.get(url)
-        # should not raise
+        response = client.get(url)
+        assert response.status_code == 200

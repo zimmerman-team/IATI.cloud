@@ -13,7 +13,6 @@ urlpatterns = patterns(
     url(r'^admin/task_queue/', include('task_queue.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/dev/', include('drf_api.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^$', api_v3_docs),
     url(r'', api_v3_docs),

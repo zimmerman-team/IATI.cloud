@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from drf_api import views
+import views
 
 
 urlpatterns = patterns(
