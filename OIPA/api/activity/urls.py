@@ -4,9 +4,9 @@ from api.activity import views
 
 urlpatterns = patterns(
     '',
-    url(r'^activities/$', views.ActivityList.as_view(), name='activity-list'),
+    url(r'^/$', views.ActivityList.as_view(), name='activity-list'),
     url(
-        r'^activities/(?P<pk>[^@$&+,/:;=?]+)/$',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/$',
         views.ActivityDetail.as_view(),
         name='activity-detail'
     ),
