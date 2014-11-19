@@ -10,25 +10,25 @@ class EndpointBase:
         return APIClient()
 
     @pytest.fixture
-    def basic_activity(self):
+    def activity(self):
         return iati_factory.ActivityFactory()
 
     @pytest.fixture
-    def basic_region(self):
+    def region(self):
         return iati_factory.RegionFactory()
 
     @pytest.fixture
-    def basic_country(self):
+    def country(self):
         return iati_factory.CountryFactory()
 
     @pytest.fixture
-    def basic_city(self):
+    def city(self):
         return iati_factory.CityFactory()
 
     @pytest.fixture
-    def basic_organisation(self):
+    def organisation(self):
         return iati_factory.OrganisationFactory()
 
     @pytest.fixture
-    def basic_sector(self):
+    def sector(self):
         return iati_factory.SectorFactory()

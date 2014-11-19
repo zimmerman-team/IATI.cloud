@@ -1,6 +1,6 @@
 from rest_framework import generics
 import iati
-import serializers
+from api.activity import serializers
 
 
 class ActivityList(generics.ListAPIView):
