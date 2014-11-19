@@ -1,9 +1,6 @@
-from django.test.client import Client
-from iati.factory.iati_factory import(
-    ActivityFactory, RegionFactory, CountryFactory, CityFactory,
-    OrganisationFactory, SectorFactory,
-)
 import pytest
+from django.test.client import Client
+from iati.factory import iati_factory
 
 
 @pytest.mark.django_db
@@ -15,27 +12,27 @@ class TestEndpoints:
 
     @pytest.fixture
     def activity(self):
-        return ActivityFactory()
+        return iati_factory.ActivityFactory()
 
     @pytest.fixture
     def region(self):
-        return RegionFactory()
+        return iati_factory.RegionFactory()
 
     @pytest.fixture
     def country(self):
-        return CountryFactory()
+        return iati_factory.CountryFactory()
 
     @pytest.fixture
     def city(self):
-        return CityFactory()
+        return iati_factory.CityFactory()
 
     @pytest.fixture
     def organisation(self):
-        return OrganisationFactory()
+        return iati_factory.OrganisationFactory()
 
     @pytest.fixture
     def sector(self):
-        return SectorFactory()
+        return iati_factory.SectorFactory()
 
     def test_activities_endpoint(self, client, activity):
         response = client.get('/api/v3/activities/')
