@@ -7,6 +7,7 @@ urlpatterns = patterns(
     '',
     url('activities', include('api.activity.urls')),
     url('regions', include('api.region.urls')),
+    url('country', include('api.country.urls')),
     url('^v1/', include('api.v1.urls')),
     url('', include('api.v3.urls')),
 )
