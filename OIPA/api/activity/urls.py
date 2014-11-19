@@ -1,8 +1,13 @@
 from django.conf.urls import patterns, url
-import views
+from api.activity import views
 
 
 urlpatterns = patterns(
     '',
-    url('^activities/$', views.ActivityList.as_view(), name='activity-list'),
+    url(r'^activities/$', views.ActivityList.as_view(), name='activity-list'),
+    url(
+        r'^activities/(?P<pk>[^@$&+,/:;=?]+)/$',
+        views.ActivityDetail.as_view(),
+        name='activity-detail'
+    ),
 )
