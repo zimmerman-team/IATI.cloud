@@ -43,9 +43,6 @@ class CountryDetailSerializer(serializers.ModelSerializer):
             'unescoindicatordata_set',
         )
 
-    def transform_url(self, obj, value):
-        pass
-
 
 class CountryListSerializer(CountryDetailSerializer):
     class Meta:
