@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 
 
-class TestActivityEndpoints:
+class TestRootEndpoint:
 
     def test_root_endpoint(self, client):
         url = reverse('api-root')
