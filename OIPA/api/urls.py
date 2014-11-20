@@ -1,10 +1,12 @@
 from django.conf.urls import patterns
 from django.conf.urls import url
 from django.conf.urls import include
+from api import views
 
 
 urlpatterns = patterns(
     '',
+    url('^$', views.api_root, name='api-root'),
     url('activities', include('api.activity.urls')),
     url('regions', include('api.region.urls')),
     url('countries', include('api.country.urls')),
