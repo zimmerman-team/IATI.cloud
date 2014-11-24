@@ -43,9 +43,9 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'hierarchy',
             'last_updated_datetime',
             'linked_data_uri',
-            'reporting_organisation',  # iati: reporting_org
+            'reporting_organisation',
             'secondary_publisher',
-            'activity_status',  # iati: activity-status
+            'activity_status',
             'start_planned',
             'end_planned',
             'start_actual',
@@ -81,15 +81,15 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'countrybudgetitem_set',
             'crsadd_set',
             'current_activity',
-            'description_set',  # iati: description || set name descriptions?
+            'description_set',
             'documentlink_set',
             'ffs_set',
             'location_set',
-            'otheridentifier_set',  # iati: other-identifier || not a set
+            'otheridentifier_set',
             'participating_organisations',
             'planneddisbursement_set',
             'result_set',
-            'title_set',  # iati: title || use plural (titles) for set name?
+            'title_set',
             'transaction_set',
         )
 
