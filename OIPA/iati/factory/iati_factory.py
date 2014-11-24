@@ -75,3 +75,14 @@ class OrganisationFactory(factory.django.DjangoModelFactory):
 
     code = 'GB-COH-03580586'
     name = 'PWC'
+
+
+class ActivitySectorFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.ActivitySector
+        django_get_or_create = ('id',)
+
+    id = 1
+    sector = factory.SubFactory(SectorFactory)
+    activity = factory.SubFactory(ActivityFactory)
+    percentage = 100

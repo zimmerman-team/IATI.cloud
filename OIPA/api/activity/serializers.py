@@ -5,6 +5,11 @@ import iati
 class ActivityDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
 
+    # Linked fields
+    sectors = serializers.HyperlinkedIdentityField(
+        view_name='activity-sectors')
+
+    # Reverse linked fields
     activitypolicymarker_set = serializers.RelatedField(many=True)
     activityrecipientcountry_set = serializers.RelatedField(many=True)
     activityrecipientregion_set = serializers.RelatedField(many=True)
@@ -30,7 +35,7 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.Activity
         fields = (
-            # Normal data
+            # Normal fields
             'url',
             'id',
             'iati_identifier',
@@ -38,9 +43,9 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'hierarchy',
             'last_updated_datetime',
             'linked_data_uri',
-            'reporting_organisation',
+            'reporting_organisation',  # iati: reporting_org
             'secondary_publisher',
-            'activity_status',
+            'activity_status',  # iati: activity-status
             'start_planned',
             'end_planned',
             'start_actual',
@@ -57,14 +62,14 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'scope',
             'iati_standard_version',
 
-            # Linked data
+            # Linked fields
             'participating_organisation',
             'policy_marker',
-            'sector',
+            'sectors',
             'recipient_country',
             'recipient_region',
 
-            # Reverse linked data
+            # Reverse linked fields
             'activitypolicymarker_set',
             'activityrecipientcountry_set',
             'activityrecipientregion_set',
@@ -76,15 +81,15 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'countrybudgetitem_set',
             'crsadd_set',
             'current_activity',
-            'description_set',
+            'description_set',  # iati: description || set name descriptions?
             'documentlink_set',
             'ffs_set',
             'location_set',
-            'otheridentifier_set',
+            'otheridentifier_set',  # iati: other-identifier || not a set
             'participating_organisations',
             'planneddisbursement_set',
             'result_set',
-            'title_set',
+            'title_set',  # iati: title || use plural (titles) for set name?
             'transaction_set',
         )
 
@@ -93,3 +98,18 @@ class ActivityListSerializer(ActivityDetailSerializer):
     class Meta:
         model = iati.models.Activity
         fields = ('id', 'url', 'title_set')
+
+
+class ActivitySectorSerializer(serializers.ModelSerializer):
+    activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    sector = serializers.HyperlinkedRelatedField(view_name='sector-detail')
+
+    class Meta:
+        model = iati.models.ActivitySector
+        fields = (
+            'activity',
+            'sector',
+            'alt_sector_name',
+            'vocabulary',
+            'percentage',
+        )

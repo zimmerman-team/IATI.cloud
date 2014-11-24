@@ -15,3 +15,8 @@ class TestActivityEndpoints(EndpointBase):
         url = reverse('activity-detail', args={'IATI-0001'})
         response = client.get(url)
         assert response.status_code == 200
+
+    def test_activity_sectors_endpoint(self, client, activitysector):
+        url = reverse('activity-sectors', args={'IATI-0001'})
+        response = client.get(url)
+        assert response.status_code == 200
