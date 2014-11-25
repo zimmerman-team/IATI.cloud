@@ -13,6 +13,16 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
         )
 
 
+class RecipientCountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ActivityRecipientCountry
+        fields = (
+            'activity',
+            'country',
+            'percentage',
+        )
+
+
 class ActivityDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
 
@@ -21,9 +31,11 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
         view_name='activity-sectors')
     participating_orgs = serializers.HyperlinkedIdentityField(
         view_name='activity-participating-organisations')
+
     # Reverse linked fields
     activitypolicymarker_set = serializers.RelatedField(many=True)
-    activityrecipientcountry_set = serializers.RelatedField(many=True)
+    activityrecipientcountry_set = serializers.HyperlinkedIdentityField(
+        view_name='activity-recipient-countries')
     activityrecipientregion_set = serializers.RelatedField(many=True)
     activitysector_set = serializers.RelatedField(many=True)
     activitywebsite_set = serializers.RelatedField(many=True)
