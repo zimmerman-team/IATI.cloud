@@ -32,3 +32,7 @@ class EndpointBase:
     @pytest.fixture
     def sector(self):
         return iati_factory.SectorFactory()
+
+    @pytest.fixture
+    def activitysector(self):
+        return iati_factory.ActivitySectorFactory()

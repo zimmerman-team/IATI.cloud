@@ -1,13 +1,23 @@
 from django.conf.urls import patterns, url
-from api.activity import views
+import api.activity.views
+import api.sector.views
 
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.ActivityList.as_view(), name='activity-list'),
+    url(
+        r'^$',
+        api.activity.views.ActivityList.as_view(),
+        name='activity-list'
+    ),
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/$',
-        views.ActivityDetail.as_view(),
+        api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'
+    ),
+    url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/sectors',
+        api.activity.views.ActivitySectors.as_view(),
+        name='activity-sectors'
     ),
 )
