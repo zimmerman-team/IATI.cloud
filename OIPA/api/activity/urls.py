@@ -26,7 +26,7 @@ urlpatterns = patterns(
         name='activity-participating-organisations'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/participating-orgs',
+        r'^(?P<pk>[^@$&+,/:;=?]+)/recipient-countries',
         api.activity.views.ActivityRecipientCountry.as_view(),
         name='activity-recipient-countries'),
 )

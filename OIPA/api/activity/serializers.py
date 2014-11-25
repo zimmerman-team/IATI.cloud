@@ -3,10 +3,18 @@ import iati
 
 
 class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
+    activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    activity_id = serializers.Field(source='activity.id')
+    organisation = serializers.HyperlinkedRelatedField(
+        view_name='organisation-detail')
+    organisation_id = serializers.Field(source='organisation.code')
+
     class Meta:
         model = iati.models.ActivityParticipatingOrganisation
         fields = (
+            'activity_id',
             'activity',
+            'organisation_id',
             'organisation',
             'role',
             'name',
@@ -14,10 +22,17 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
 
 
 class RecipientCountrySerializer(serializers.ModelSerializer):
+    activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    activity_id = serializers.Field(source='activity.id')
+    country = serializers.HyperlinkedRelatedField(view_name='country-detail')
+    country_id = serializers.Field(source='country.code')
+
     class Meta:
         model = iati.models.ActivityRecipientCountry
         fields = (
+            'activity_id',
             'activity',
+            'country_id',
             'country',
             'percentage',
         )
@@ -125,13 +140,17 @@ class ActivityListSerializer(ActivityDetailSerializer):
 
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
+    activity_id = serializers.Field(source='activity.id')
     activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    sector_id = serializers.Field(source='sector.code')
     sector = serializers.HyperlinkedRelatedField(view_name='sector-detail')
 
     class Meta:
         model = iati.models.ActivitySector
         fields = (
+            'activity_id',
             'activity',
+            'sector_id',
             'sector',
             'alt_sector_name',
             'vocabulary',
