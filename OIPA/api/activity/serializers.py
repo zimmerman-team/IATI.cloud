@@ -2,13 +2,25 @@ from rest_framework import serializers
 import iati
 
 
+class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ActivityParticipatingOrganisation
+        fields = (
+            'activity',
+            'organisation',
+            'role',
+            'name',
+        )
+
+
 class ActivityDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
 
     # Linked fields
     sectors = serializers.HyperlinkedIdentityField(
         view_name='activity-sectors')
-
+    participating_orgs = serializers.HyperlinkedIdentityField(
+        view_name='activity-participating-organisations')
     # Reverse linked fields
     activitypolicymarker_set = serializers.RelatedField(many=True)
     activityrecipientcountry_set = serializers.RelatedField(many=True)
@@ -86,7 +98,7 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'ffs_set',
             'location_set',
             'otheridentifier_set',  # iati: other-identifier || not a set
-            'participating_organisations',
+            'participating_orgs',
             'planneddisbursement_set',
             'result_set',
             'title_set',  # iati: title || use plural (titles) for set name?
