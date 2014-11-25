@@ -20,4 +20,13 @@ urlpatterns = patterns(
         api.activity.views.ActivitySectors.as_view(),
         name='activity-sectors'
     ),
+    url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/participating-orgs',
+        api.activity.views.ActivityParticipatingOrganisations.as_view(),
+        name='activity-participating-organisations'
+    ),
+    url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/recipient-countries',
+        api.activity.views.ActivityRecipientCountry.as_view(),
+        name='activity-recipient-countries'),
 )

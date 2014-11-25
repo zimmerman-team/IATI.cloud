@@ -36,3 +36,11 @@ class EndpointBase:
     @pytest.fixture
     def activitysector(self):
         return iati_factory.ActivitySectorFactory()
+
+    @pytest.fixture
+    def recipientcountry(self):
+        return iati_factory.RecipientCountryFactory()
+
+    @pytest.fixture
+    def participatingorg(self):
+        return iati_factory.ParticipatingOrganisationFactory()

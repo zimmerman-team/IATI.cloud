@@ -19,3 +19,19 @@ class ActivitySectors(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return iati.models.Activity(pk=pk).activitysector_set.all()
+
+
+class ActivityParticipatingOrganisations(generics.ListAPIView):
+    serializer_class = serializers.ParticipatingOrganisationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati.models.Activity(pk=pk).participating_organisations.all()
+
+
+class ActivityRecipientCountry(generics.ListAPIView):
+    serializer_class = serializers.RecipientCountrySerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati.models.Activity(pk=pk).activityrecipientcountry_set.all()

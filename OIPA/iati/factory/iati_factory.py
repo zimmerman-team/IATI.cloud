@@ -86,3 +86,24 @@ class ActivitySectorFactory(factory.django.DjangoModelFactory):
     sector = factory.SubFactory(SectorFactory)
     activity = factory.SubFactory(ActivityFactory)
     percentage = 100
+
+
+class ParticipatingOrganisationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.ActivityParticipatingOrganisation
+        django_get_or_create = ('id',)
+
+    id = 1
+    activity = factory.SubFactory(ActivityFactory)
+    organisation = factory.SubFactory(OrganisationFactory)
+
+
+class RecipientCountryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.ActivityRecipientCountry
+        django_get_or_create = ('id',)
+
+    id = 1
+    activity = factory.SubFactory(ActivityFactory)
+    country = factory.SubFactory(CountryFactory)
+    percentage = 50
