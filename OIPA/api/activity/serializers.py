@@ -2,6 +2,73 @@ from rest_framework import serializers
 import iati
 
 
+class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ActivityPolicyMarker
+        fields = (
+            'policy_marker',
+            'alt_policy_marker',
+            'activity',
+            'vocabulary',
+            'policy_significance',
+        )
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.Title
+        fields = (
+            'title',
+            'language',
+        )
+
+
+class DescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.Description
+        fields = (
+            'description',
+            'language',
+        )
+
+
+class ActivitySectorSerializer(serializers.ModelSerializer):
+    activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    activity_id = serializers.Field(source='activity.id')
+    sector = serializers.HyperlinkedRelatedField(
+        view_name='sector-detail')
+    sector_code = serializers.Field(source='sector.code')
+
+    class Meta:
+        model = iati.models.ActivitySector
+        fields = (
+            'activity_id',
+            'activity',
+            'sector_code',
+            'sector',
+            'percentage',
+            'vocabulary',
+        )
+
+
+class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
+    activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
+    activity_id = serializers.Field(source='activity.id')
+    region = serializers.HyperlinkedRelatedField(
+        view_name='region-detail')
+    region_code = serializers.Field(source='region.code')
+
+    class Meta:
+        model = iati.models.ActivityRecipientRegion
+        fields = (
+            'activity_id',
+            'activity',
+            'region_code',
+            'region',
+            'percentage',
+        )
+
+
 class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     activity = serializers.HyperlinkedRelatedField(view_name='activity-detail')
     activity_id = serializers.Field(source='activity.id')
@@ -44,15 +111,15 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     # Linked fields
     sectors = serializers.HyperlinkedIdentityField(
         view_name='activity-sectors')
-    participating_orgs = serializers.HyperlinkedIdentityField(
+    participating_organisations = serializers.HyperlinkedIdentityField(
         view_name='activity-participating-organisations')
 
     # Reverse linked fields
-    activitypolicymarker_set = serializers.RelatedField(many=True)
+    activitypolicymarker_set = ActivityPolicyMarkerSerializer(many=True)
     activityrecipientcountry_set = serializers.HyperlinkedIdentityField(
         view_name='activity-recipient-countries')
-    activityrecipientregion_set = serializers.RelatedField(many=True)
-    activitysector_set = serializers.RelatedField(many=True)
+    activityrecipientregion_set = ActivityRecipientRegionSerializer(many=True)
+    activitysector_set = ActivitySectorSerializer(many=True)
     activitywebsite_set = serializers.RelatedField(many=True)
     budget_set = serializers.RelatedField(many=True)
     condition_set = serializers.RelatedField(many=True)
@@ -60,15 +127,14 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     countrybudgetitem_set = serializers.RelatedField(many=True)
     crsadd_set = serializers.RelatedField(many=True)
     current_activity = serializers.RelatedField(many=True)
-    description_set = serializers.RelatedField(many=True)
+    description_set = DescriptionSerializer(many=True)
     documentlink_set = serializers.RelatedField(many=True)
     ffs_set = serializers.RelatedField(many=True)
     location_set = serializers.RelatedField(many=True)
     otheridentifier_set = serializers.RelatedField(many=True)
-    participating_organisations = serializers.RelatedField(many=True)
     planneddisbursement_set = serializers.RelatedField(many=True)
     result_set = serializers.RelatedField(many=True)
-    title_set = serializers.RelatedField(many=True)
+    title_set = TitleSerializer(many=True)
     transaction_set = serializers.RelatedField(many=True)
 
     class Meta:
@@ -102,11 +168,8 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'iati_standard_version',
 
             # Linked fields
-            'participating_organisation',
-            'policy_marker',
             'sectors',
             'recipient_country',
-            'recipient_region',
 
             # Reverse linked fields
             'activitypolicymarker_set',
