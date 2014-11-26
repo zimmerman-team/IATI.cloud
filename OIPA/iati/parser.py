@@ -1493,8 +1493,8 @@ class Parser():
             )
 
         if not activity.reporting_organisation is None:
-            search_data.search_reporting_organisation_name = '{orig_organisation_name} {add_organisation_name} '.formrat(
-                orig_organisation_name = search_data.search_participating_organisation_name
+            search_data.search_reporting_organisation_name = '{add_organisation_name}'.format(
+                add_organisation_name=activity.reporting_organisation.name or ''
             )
 
         for document in activity.documentlink_set.all():
