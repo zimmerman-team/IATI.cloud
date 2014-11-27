@@ -309,10 +309,25 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
 
 
 class ActivityListSerializer(ActivityDetailSerializer):
+    def __init__(self, *args, **kwargs):
+        # Instantiate the superclass normally
+        super(ActivityListSerializer, self).__init__(*args, **kwargs)
+
+        fields = ['id', 'url', 'title_set']
+        fields_param = self.context['request'].QUERY_PARAMS.get('fields', None)
+
+        if fields_param is not None:
+            fields.extend(fields_param.split(','))
+        
+        keep_fields = set(fields)
+        all_fields = set(self.fields.keys())
+        for field_name in all_fields - keep_fields:
+            self.fields.pop(field_name)
+
     class Meta:
         model = iati.models.Activity
-        fields = ('id', 'url', 'title_set')
-
+        
+    
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     activity_id = serializers.Field(source='activity.id')
