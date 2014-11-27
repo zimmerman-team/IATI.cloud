@@ -3,6 +3,34 @@ import iati
 from api.fields import RootField
 
 
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.Transaction
+        fields = ()
+
+    def transform_id(self, obj, value):
+        pass
+    # id
+    # activity
+    # aid_type
+    # currency
+    # description
+    # description_type
+    # disbursement_channel
+    # finance_type
+    # flow_type
+    # provider_organisation
+    # provider_organisation_name
+    # receiver_organisation
+    # tied_status
+    # transaction_date
+    # transaction_type
+    # value_date
+    # value
+    # currency
+    # ref
+
+
 class AidTypeCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.AidTypeCategory
@@ -228,7 +256,7 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     planneddisbursement_set = serializers.RelatedField(many=True)
     result_set = serializers.RelatedField(many=True)
     title_set = TitleSerializer(many=True)
-    transaction_set = serializers.RelatedField(many=True)
+    transaction_set = TransactionSerializer(many=True)
 
     class Meta:
         model = iati.models.Activity
