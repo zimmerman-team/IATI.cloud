@@ -1,6 +1,5 @@
 from rest_framework import serializers
 import iati
-from api.fields import RootField
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -100,15 +99,14 @@ class BudgetSerializer(serializers.ModelSerializer):
 
 
 class ActivityDateSerializer(serializers.Serializer):
-    start_planned = RootField()
-    end_planned = RootField()
-    start_actual = RootField()
-    end_actual = RootField()
+    start_planned = serializers.Field()
+    end_planned = serializers.Field()
+    start_actual = serializers.Field()
+    end_actual = serializers.Field()
 
 
 class ReportingOrganisationSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-    secondary_publisher = RootField()
+    secondary_publisher = serializers.Field()
 
     class Meta:
         model = iati.models.Organisation
@@ -318,7 +316,7 @@ class ActivityListSerializer(ActivityDetailSerializer):
 
         if fields_param is not None:
             fields.extend(fields_param.split(','))
-        
+
         keep_fields = set(fields)
         all_fields = set(self.fields.keys())
         for field_name in all_fields - keep_fields:
@@ -326,8 +324,7 @@ class ActivityListSerializer(ActivityDetailSerializer):
 
     class Meta:
         model = iati.models.Activity
-        
-    
+
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     activity_id = serializers.Field(source='activity.id')
