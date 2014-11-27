@@ -107,6 +107,8 @@ class ActivityDateSerializer(serializers.Serializer):
 
 class ReportingOrganisationSerializer(serializers.ModelSerializer):
     secondary_publisher = serializers.Field()
+    code = serializers.Field(source='reporting_organisation.code')
+    name = serializers.Field(source='reporting_organisation.name')
 
     class Meta:
         model = iati.models.Organisation
@@ -228,9 +230,9 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     default_aid_type = DefaultAidTypeSerializer()
 
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
-    activity_dates = ActivityDateSerializer(source='start_planned')
+    activity_dates = ActivityDateSerializer(source='*')
     total_budget = TotalBudgetSerializer(source='*')
-    reporting_organisation = ReportingOrganisationSerializer()
+    reporting_organisation = ReportingOrganisationSerializer(source='*')
     # Linked fields
     participating_organisations = ParticipatingOrganisationSerializer()
 
