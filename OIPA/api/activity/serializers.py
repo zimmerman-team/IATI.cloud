@@ -3,6 +3,74 @@ import iati
 from api.fields import RootField
 
 
+class AidTypeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.AidTypeCategory
+        fields = ()
+
+
+class DefaultAidTypeSerializer(serializers.ModelSerializer):
+    category = AidTypeCategorySerializer()
+
+    class Meta:
+        model = iati.models.AidType
+        fields = (
+            'code',
+            'name',
+            'description',
+            'category',
+        )
+
+
+class DefaultFlowTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.FlowType
+        fields = (
+            'code',
+            'name',
+            'description',
+        )
+
+
+class CollaborationTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.CollaborationType
+        fields = (
+            'code',
+            'name',
+            'description',
+        )
+
+
+class ActivityStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ActivityStatus
+        fields = ()
+
+
+class TotalBudgetSerializer(serializers.Serializer):
+    currency = serializers.Field(source='total_budget_currency')
+    value = serializers.Field(source='total_budget')
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+    class ValueSerializer(serializers.Serializer):
+        value = serializers.Field()
+        date = serializers.Field(source='value_date')
+        currencty = serializers.Field(source='currency')
+
+    value = ValueSerializer(source='*')
+
+    class Meta:
+        model = iati.models.Budget
+        fields = (
+            'type',
+            'period_start',
+            'period_end',
+            'value',
+        )
+
+
 class ActivityDateSerializer(serializers.Serializer):
     start_planned = RootField()
     end_planned = RootField()
@@ -128,23 +196,25 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
 
 
 class ActivityDetailSerializer(serializers.ModelSerializer):
+    activity_status = ActivityStatusSerializer()
+    collaboration_type = CollaborationTypeSerializer()
+    default_flow_type = DefaultFlowTypeSerializer()
+    default_aid_type = DefaultAidTypeSerializer()
+
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
     activity_dates = ActivityDateSerializer(source='start_planned')
+    total_budget = TotalBudgetSerializer(source='*')
     reporting_organisation = ReportingOrganisationSerializer()
     # Linked fields
-    sectors = serializers.HyperlinkedIdentityField(
-        view_name='activity-sectors')
-    participating_organisations = serializers.HyperlinkedIdentityField(
-        view_name='activity-participating-organisations')
+    participating_organisations = ParticipatingOrganisationSerializer()
 
     # Reverse linked fields
     activitypolicymarker_set = ActivityPolicyMarkerSerializer(many=True)
-    activityrecipientcountry_set = serializers.HyperlinkedIdentityField(
-        view_name='activity-recipient-countries')
+    activityrecipientcountry_set = RecipientCountrySerializer()
     activityrecipientregion_set = ActivityRecipientRegionSerializer(many=True)
     activitysector_set = ActivitySectorSerializer(many=True)
     activitywebsite_set = serializers.RelatedField(many=True)
-    budget_set = serializers.RelatedField(many=True)
+    budget_set = BudgetSerializer(many=True)
     condition_set = serializers.RelatedField(many=True)
     contactinfo_set = serializers.RelatedField(many=True)
     countrybudgetitem_set = serializers.RelatedField(many=True)
@@ -167,6 +237,9 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'url',
             'id',
             'iati_identifier',
+            'budget_set',
+            'total_budget',
+            'capital_spend',
             'default_currency',
             'hierarchy',
             'last_updated_datetime',
@@ -180,15 +253,8 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'default_finance_type',
             'default_tied_status',
             'xml_source_ref',
-            'total_budget_currency',
-            'total_budget',
-            'capital_spend',
             'scope',
             'iati_standard_version',
-
-            # Linked fields
-            'sectors',
-            'recipient_country',
 
             # Reverse linked fields
             'activitypolicymarker_set',
@@ -196,7 +262,6 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'activityrecipientregion_set',
             'activitysector_set',
             'activitywebsite_set',
-            'budget_set',
             'condition_set',
             'contactinfo_set',
             'countrybudgetitem_set',
