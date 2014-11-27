@@ -1,8 +1,30 @@
 from rest_framework import serializers
 import iati
+from api.fields import RootField
+
+
+class ActivityDateSerializer(serializers.Serializer):
+    start_planned = RootField()
+    end_planned = RootField()
+    start_actual = RootField()
+    end_actual = RootField()
+
+
+class ReportingOrganisationSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    secondary_publisher = RootField()
+
+    class Meta:
+        model = iati.models.Organisation
+        fields = (
+            'code',
+            'name',
+            'secondary_publisher',
+        )
 
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = iati.models.ActivityPolicyMarker
         fields = (
@@ -107,7 +129,8 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
 
 class ActivityDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
-
+    activity_dates = ActivityDateSerializer(source='start_planned')
+    reporting_organisation = ReportingOrganisationSerializer()
     # Linked fields
     sectors = serializers.HyperlinkedIdentityField(
         view_name='activity-sectors')
@@ -149,12 +172,8 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'last_updated_datetime',
             'linked_data_uri',
             'reporting_organisation',
-            'secondary_publisher',
             'activity_status',
-            'start_planned',
-            'end_planned',
-            'start_actual',
-            'end_actual',
+            'activity_dates',
             'collaboration_type',
             'default_flow_type',
             'default_aid_type',
