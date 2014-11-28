@@ -109,7 +109,7 @@ INSTALLED_APPS = (
     'suit',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    # 'django.contrib.gis',
+    'django.contrib.gis',
     'iati',
     'iati_synchroniser',
     'geodata',
