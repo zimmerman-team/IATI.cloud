@@ -3,6 +3,32 @@ import geodata
 import factory
 
 
+class AidTypeCategoryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.AidTypeCategory
+    code = 1
+    name = 'test-category'
+    description = 'test-category-description'
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+
+class AidTypeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.AidType
+
+    code = 1
+    name = 'test'
+    description = 'test'
+    category = factory.SubFactory(AidTypeCategoryFactory)
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+
 class TitleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = iati.models.Title
