@@ -325,7 +325,7 @@ class CodeListImporter():
                     new_codelist = Codelist(name=name, description=description, count=count, fields=fields, date_updated=date_updated)
                     new_codelist.save()
 
-            cur_downloaded_xml = "http://dev.iatistandard.org/codelists/downloads/clv1/codelist/" + name + ".xml"
+            cur_downloaded_xml = "http://dev.iatistandard.org/105/codelists/downloads/clv1/codelist/" + name + ".xml"
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
@@ -342,7 +342,7 @@ class CodeListImporter():
         get_codelist_data(name="DocumentCategory-category")
 
         #get the file
-        downloaded_xml = urllib2.Request("http://dev.iatistandard.org/codelists/downloads/clv1/codelist.xml")
+        downloaded_xml = urllib2.Request("http://dev.iatistandard.org/105/codelists/downloads/clv1/codelist.xml")
         file_opener = urllib2.build_opener()
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')
