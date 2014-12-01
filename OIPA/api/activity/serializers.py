@@ -30,22 +30,11 @@ class TransactionSerializer(serializers.ModelSerializer):
     # ref
 
 
-class AidTypeCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati.models.AidTypeCategory
-        fields = ()
-
-
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
-    category = AidTypeCategorySerializer()
-
     class Meta:
         model = iati.models.AidType
         fields = (
             'code',
-            'name',
-            'description',
-            'category',
         )
 
 
