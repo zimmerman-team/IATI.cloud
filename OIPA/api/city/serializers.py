@@ -5,8 +5,8 @@ import geodata
 class CityDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='city-detail')
 
-    indicatordata_set = serializers.RelatedField(many=True)
-    capital_city = serializers.RelatedField(many=True)
+    # indicatordata_set = serializers.RelatedField(many=True, read_only=True)
+    # capital_city = serializers.RelatedField(read_only=True)
 
     class Meta:
         model = geodata.models.City
@@ -22,12 +22,11 @@ class CityDetailSerializer(serializers.ModelSerializer):
             'namepar',
 
             # Reverse linked data
-            'indicatordata_set',
-            'capital_city',
+            # 'indicatordata_set',
+            # 'capital_city',
         )
 
 
 class CityListSerializer(CityDetailSerializer):
     class Meta:
         model = geodata.models.City
-        fields = ('url', 'id', 'name')

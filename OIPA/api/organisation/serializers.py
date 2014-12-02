@@ -5,11 +5,16 @@ import iati
 class OrganisationDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='organisation-detail')
 
-    activity_reporting_organisation = serializers.RelatedField(many=True)
-    activity_set = serializers.RelatedField(many=True)
-    activityparticipatingorganisation_set = serializers.RelatedField(many=True)
-    transaction_providing_organisation = serializers.RelatedField(many=True)
-    transaction_receiving_organisation = serializers.RelatedField(many=True)
+    activity_reporting_organisation = serializers.RelatedField(
+        many=True, read_only=True)
+    activity_set = serializers.RelatedField(
+        many=True, read_only=True)
+    activityparticipatingorganisation_set = serializers.RelatedField(
+        many=True, read_only=True)
+    transaction_providing_organisation = serializers.RelatedField(
+        many=True, read_only=True)
+    transaction_receiving_organisation = serializers.RelatedField(
+        many=True, read_only=True)
 
     class Meta:
         model = iati.models.Organisation
@@ -37,4 +42,3 @@ class OrganisationDetailSerializer(serializers.ModelSerializer):
 class OrganisationListSerializer(OrganisationDetailSerializer):
     class Meta:
         model = iati.models.Organisation
-        fields = ('url', 'code', 'name',)
