@@ -43,8 +43,6 @@ class DefaultFlowTypeSerializer(serializers.ModelSerializer):
         model = iati.models.FlowType
         fields = (
             'code',
-            'name',
-            'description',
         )
 
 
@@ -53,19 +51,19 @@ class CollaborationTypeSerializer(serializers.ModelSerializer):
         model = iati.models.CollaborationType
         fields = (
             'code',
-            'name',
-            'description',
         )
 
 
 class ActivityStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.ActivityStatus
-        fields = ()
+        fields = (
+            'code',
+        )
 
 
 class TotalBudgetSerializer(serializers.Serializer):
-    currency = serializers.Field(source='total_budget_currency')
+    currency = serializers.Field(source='total_budget_currency.code')
     value = serializers.Field(source='total_budget')
 
 
@@ -73,7 +71,7 @@ class BudgetSerializer(serializers.ModelSerializer):
     class ValueSerializer(serializers.Serializer):
         value = serializers.Field()
         date = serializers.Field(source='value_date')
-        currencty = serializers.Field(source='currency')
+        currency = serializers.Field(source='currency.code')
 
     value = ValueSerializer(source='*')
 
