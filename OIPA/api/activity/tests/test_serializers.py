@@ -147,6 +147,28 @@ class TestActivitySerializers:
             end_actual by the ActivityDateSerializer
             """
 
+    def test_ReportingOrganisationSerializer(self):
+        organisation = iati_factory.OrganisationFactory.build()
+        activity = iati_factory.ActivityFactory.build(
+            secondary_publisher=True,
+            reporting_organisation=organisation,
+        )
+        data = serializers.ReportingOrganisationSerializer(activity).data
+        assert data['secondary_reporter'] == activity.secondary_publisher,\
+            """
+            activity.secondary_publisher should be serialized to a field
+            called 'secondary_reporter' by the ReportingOrganisationSerializer
+            """
+        assert 'organisation' in data, \
+            """
+            serializer.data should contain an object called 'organisation'
+            """
+        assert 'code' and 'name' and 'type' in data['organisation'], \
+            """
+            The organisation serialized by the ReportingOrganisationSerializer
+            should atleast contain the fields 'code', 'name', and 'type'
+            """
+
     def test_ActivitySerializerDynamicFields(self):
         activity = iati_factory.ActivityFactory.build(
             id='identifier',
