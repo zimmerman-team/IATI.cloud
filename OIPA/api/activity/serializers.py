@@ -3,33 +3,6 @@ import iati
 import geodata.models
 
 
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati.models.Transaction
-        fields = ()
-
-    # AVAILABLE FIELDS:
-    # id
-    # activity
-    # aid_type
-    # currency
-    # description
-    # description_type
-    # disbursement_channel
-    # finance_type
-    # flow_type
-    # provider_organisation
-    # provider_organisation_name
-    # receiver_organisation
-    # tied_status
-    # transaction_date
-    # transaction_type
-    # value_date
-    # value
-    # currency
-    # ref
-
-
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.AidType
@@ -215,7 +188,6 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
     budget_set = BudgetSerializer(many=True)
     description_set = DescriptionSerializer(many=True, read_only=True)
     title_set = TitleSerializer(many=True, read_only=True)
-    transaction_set = TransactionSerializer(many=True, read_only=True)
 
     class Meta:
         model = iati.models.Activity
@@ -249,21 +221,6 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             'description_set',
             'participating_organisations',
             'title_set',
-            'transaction_set',
-
-            # AVAILABLE FIELDS
-            # 'planneddisbursement_set',
-            # 'result_set',
-            # 'documentlink_set',
-            # 'ffs_set',
-            # 'location_set',
-            # 'otheridentifier_set',
-            # 'activitywebsite_set',
-            # 'condition_set',
-            # 'contactinfo_set',
-            # 'countrybudgetitem_set',
-            # 'crsadd_set',
-            # 'current_activity',
         )
 
 
