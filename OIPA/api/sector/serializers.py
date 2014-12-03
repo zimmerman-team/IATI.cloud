@@ -5,8 +5,8 @@ import iati
 class SectorDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='sector-detail')
 
-    activity_set = serializers.RelatedField(many=True)
-    activitysector_set = serializers.RelatedField(many=True)
+    activity_set = serializers.RelatedField(many=True, read_only=True)
+    activitysector_set = serializers.RelatedField(many=True, read_only=True)
 
     class Meta:
         model = iati.models.Sector
@@ -26,4 +26,3 @@ class SectorDetailSerializer(serializers.ModelSerializer):
 class SectorListSerializer(SectorDetailSerializer):
     class Meta:
         model = iati.models.Sector
-        fields = ('url', 'code', 'name',)

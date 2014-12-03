@@ -5,13 +5,15 @@ import geodata
 class CountryDetailSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='country-detail')
 
-    activity_set = serializers.RelatedField(many=True)
-    activityrecipientcountry_set = serializers.RelatedField(many=True)
-    adm1region_set = serializers.RelatedField(many=True)
-    city_set = serializers.RelatedField(many=True)
-    indicatordata_set = serializers.RelatedField(many=True)
-    location_set = serializers.RelatedField(many=True)
-    unescoindicatordata_set = serializers.RelatedField(many=True)
+    activity_set = serializers.RelatedField(many=True, read_only=True)
+    activityrecipientcountry_set = serializers.RelatedField(
+        many=True, read_only=True)
+    adm1region_set = serializers.RelatedField(many=True, read_only=True)
+    city_set = serializers.RelatedField(many=True, read_only=True)
+    indicatordata_set = serializers.RelatedField(many=True, read_only=True)
+    location_set = serializers.RelatedField(many=True, read_only=True)
+    unescoindicatordata_set = serializers.RelatedField(
+        many=True, read_only=True)
 
     class Meta:
         model = geodata.models.Country
@@ -41,10 +43,10 @@ class CountryDetailSerializer(serializers.ModelSerializer):
             'indicatordata_set',
             'location_set',
             'unescoindicatordata_set',
+            'activityrecipientcountry_set',
         )
 
 
 class CountryListSerializer(CountryDetailSerializer):
     class Meta:
         model = geodata.models.Country
-        fields = ('url', 'code', 'name',)

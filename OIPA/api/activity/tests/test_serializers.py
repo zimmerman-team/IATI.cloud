@@ -9,7 +9,7 @@ class TestActivitySerializers:
             code=10,
         )
         serializer = serializers.DefaultAidTypeSerializer(aidtype)
-        assert serializer.data['code'] == aidtype.code, \
+        assert serializer.data['code'] == str(aidtype.code), \
             """
             the data in aidtype.code should be serialized to a field named code
             inside the serialized object
