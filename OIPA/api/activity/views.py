@@ -9,19 +9,9 @@ class ActivityList(generics.ListAPIView):
     queryset = iati.models.Activity.objects.all()
     serializer_class = serializers.ActivitySerializer
 
-    def get_serializer(self, instance=None, data=None, many=True, partial=False):
+    def get_pagination_serializer(self, page):
         # get serializer never gets called because ListAPIView calls paginator.
         # paginator class def get_serializer_class but not get_serializer
-
-        serializer_class = self.get_serializer_class()
-        context = self.get_serializer_context()
-        fields = ['id', 'title_set']
-        request_fields = context['request'].query_params.get('fields', None)
-        if request_fields is not None:
-            fields.extend(request_fields)
-        return serializer_class(instance, data=data, many=many, partial=partial, context=context, fields=fields)
-
-    def get_pagination_serializer(self, page):
         # overwrite pagination serializer since it's the method that does get called
         class SerializerClass(self.pagination_serializer_class):
             class Meta:
@@ -36,7 +26,6 @@ class ActivityList(generics.ListAPIView):
 
                 try:
                     object_serializer = self.Meta.object_serializer_class
-                    print object_serializer
                 except AttributeError:
                     object_serializer = drf_pagination.DefaultObjectSerializer
 
@@ -76,6 +65,7 @@ class ActivityDetail(generics.RetrieveAPIView):
 
 class ActivitySectors(generics.ListAPIView):
     serializer_class = serializers.ActivitySectorSerializer
+
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')

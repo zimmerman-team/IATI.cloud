@@ -203,7 +203,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         # Instantiate the superclass normally
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
 
-        print selected_fields
         if selected_fields is not None:
             keep_fields = set(selected_fields)
             all_fields = set(self.fields.keys())
