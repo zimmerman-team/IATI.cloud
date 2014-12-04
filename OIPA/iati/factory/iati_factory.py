@@ -9,6 +9,23 @@ class NoDatabaseFactory(factory.django.DjangoModelFactory):
         return 0
 
 
+class LanguageFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Language
+
+    code = 'fr'
+    name = 'french'
+
+
+class DescriptionTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DescriptionType
+
+    code = 1
+    name = 'General'
+    description = 'description here'
+
+
 class BudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Budget
@@ -77,6 +94,7 @@ class TitleFactory(NoDatabaseFactory):
         model = iati.models.Title
 
     title = 'title factory'
+    language = LanguageFactory.build()
 
 
 class DescriptionFactory(NoDatabaseFactory):
@@ -84,6 +102,9 @@ class DescriptionFactory(NoDatabaseFactory):
         model = iati.models.Description
 
     description = 'description factory'
+    language = LanguageFactory.build()
+    type = DescriptionTypeFactory.build()
+    rsr_description_type_id = 1
 
 
 class ActivityFactory(NoDatabaseFactory):
