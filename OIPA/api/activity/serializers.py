@@ -121,21 +121,33 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
         )
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati.models.Title
-        fields = (
-            'title',
-            'language',
-        )
+class TitleSerializer(serializers.Serializer):
+    class NarrativeSerializer(serializers.ModelSerializer):
+        text = serializers.CharField(source='title')
+
+        class Meta:
+            model = iati.models.Title
+            fields = ('text', 'language')
+
+    narratives = NarrativeSerializer(many=True, source='title_set')
 
 
 class DescriptionSerializer(serializers.ModelSerializer):
+    class NarrativeSerializer(serializers.ModelSerializer):
+        text = serializers.CharField(source='description')
+
+        class Meta:
+            model = iati.models.Description
+            fields = ('text', 'language')
+
+    narratives = NarrativeSerializer(source='*')
+
     class Meta:
         model = iati.models.Description
         fields = (
-            'description',
-            'language',
+            'type',
+            'rsr_description_type_id',
+            'narratives'
         )
 
 
@@ -211,8 +223,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     activityrecipientregion_set = ActivityRecipientRegionSerializer(many=True)
     activitysector_set = ActivitySectorSerializer(many=True)
     budget_set = BudgetSerializer(many=True)
-    description_set = DescriptionSerializer(many=True, read_only=True)
-    title_set = TitleSerializer(many=True, read_only=True)
+    descriptions = DescriptionSerializer(
+        many=True, read_only=True, source='description_set')
+    title = TitleSerializer(source='*')
 
     class Meta:
         model = iati.models.Activity
@@ -243,7 +256,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'activityrecipientcountry_set',
             'activityrecipientregion_set',
             'activitysector_set',
-            'description_set',
+            'descriptions',
             'participating_organisations',
-            'title_set',
+            'title',
         )
