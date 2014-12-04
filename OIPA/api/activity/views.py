@@ -41,6 +41,7 @@ class ActivityList(generics.ListAPIView):
         request_fields = self.request.QUERY_PARAMS.get('fields', None)
 
         if request_fields is not None:
+            fields = ['url','id']
             fields.extend(request_fields.split(','))
 
         return pagination_serializer_class(instance=page, context=context, fields=fields)
