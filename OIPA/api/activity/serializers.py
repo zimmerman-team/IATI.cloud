@@ -90,14 +90,33 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
 
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+    class PolicyMarkerSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.PolicyMarker
+            fields = ('code',)
+
+    class PolicySignificanceSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.PolicySignificance
+            fields = ('code',)
+
+    class VocabularySerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.Vocabulary
+            fields = ('code',)
+
+    vocabulary = VocabularySerializer(serializers.ModelSerializer)
+    code = PolicyMarkerSerializer(source='policy_marker')
+    significance = PolicySignificanceSerializer(source='policy_significance')
+    narative = serializers.CharField(source='alt_policy_marker')
+
     class Meta:
         model = iati.models.ActivityPolicyMarker
         fields = (
-            'policy_marker',
-            'alt_policy_marker',
-            'activity',
+            'narative',
             'vocabulary',
-            'policy_significance',
+            'significance',
+            'code',
         )
 
 

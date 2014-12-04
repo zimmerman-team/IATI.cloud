@@ -201,3 +201,52 @@ class RecipientCountryFactory(factory.django.DjangoModelFactory):
     activity = factory.SubFactory(ActivityFactory)
     country = factory.SubFactory(CountryFactory)
     percentage = 50
+
+
+class PolicyMarkerFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.PolicyMarker
+    code = 1
+    name = 'Gender Equality'
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+
+class VocabularyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.Vocabulary
+    code = 1
+    name = 'OECD DAC CRS'
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+
+class PolicySignificanceFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.PolicySignificance
+    code = 0
+    name = 'not targeted'
+    description = 'test description'
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+
+class ActivityPolicyMarkerFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = iati.models.ActivityPolicyMarker
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        return 0
+
+    policy_marker = PolicyMarkerFactory.build()
+    alt_policy_marker = 'alt_policy_marker'
+    vocabulary = VocabularyFactory.build()
+    policy_significance = PolicySignificanceFactory.build()
+    activity = ActivityFactory.build()
