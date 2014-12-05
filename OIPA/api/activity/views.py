@@ -13,7 +13,6 @@ class ActivityList(api.generics.DynamicListAPIView):
 class ActivityDetail(api.generics.DynamicRetrieveAPIView):
     queryset = iati.models.Activity.objects.all()
     serializer_class = serializers.ActivitySerializer
-    fields = ['url', 'id', 'title_set']
 
 
 class ActivitySectors(generics.ListAPIView):
