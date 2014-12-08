@@ -152,7 +152,7 @@ class TestActivitySerializers:
             id='identifier',
             iati_identifier='iati-identifier'
         )
-        fields = ["id"]
+        fields = ['id']
         serializer = serializers.ActivitySerializer(activity, fields=fields)
         assert serializer.data['id'] == 'identifier', \
             """
@@ -164,5 +164,3 @@ class TestActivitySerializers:
             activity.iati_identifier should NOT be serialized since it is
             not specified in the fields parameter
             """
-
-

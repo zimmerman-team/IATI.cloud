@@ -37,7 +37,8 @@ def get_dynamic_pagination_serializer(self, page):
         instance=page, context=context, fields=self.fields)
 
 
-def get_dynamic_serializer(self, instance=None, data=None, many=False, partial=False):
+def get_dynamic_serializer(
+        self, instance=None, data=None, many=False, partial=False):
     serializer_class = self.get_serializer_class()
     context = self.get_serializer_context()
     fields = serializer_class.Meta.fields
@@ -47,7 +48,13 @@ def get_dynamic_serializer(self, instance=None, data=None, many=False, partial=F
         fields = request_fields.split(',')
 
     return serializer_class(
-        instance, data=data, many=many, partial=partial, context=context, fields=fields)
+        instance,
+        data=data,
+        many=many,
+        partial=partial,
+        context=context,
+        fields=fields
+    )
 
 
 class DynamicListAPIView(generics.ListAPIView):
