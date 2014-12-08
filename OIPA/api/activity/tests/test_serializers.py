@@ -147,6 +147,114 @@ class TestActivitySerializers:
             end_actual by the ActivityDateSerializer
             """
 
+    def test_ReportingOrganisationSerializer(self):
+        organisation = iati_factory.OrganisationFactory.build()
+        activity = iati_factory.ActivityFactory.build(
+            secondary_publisher=True,
+            reporting_organisation=organisation,
+        )
+        data = serializers.ReportingOrganisationSerializer(activity).data
+        assert data['secondary_reporter'] == activity.secondary_publisher,\
+            """
+            activity.secondary_publisher should be serialized to a field
+            called 'secondary_reporter' by the ReportingOrganisationSerializer
+            """
+        assert 'organisation' in data, \
+            """
+            serializer.data should contain an object called 'organisation'
+            """
+        assert 'code' and 'name' and 'type' in data['organisation'], \
+            """
+            The organisation serialized by the ReportingOrganisationSerializer
+            should atleast contain the fields 'code', 'name', and 'type'
+            """
+
+    def test_ActivityPolicyMarkerSerializer(self):
+        policy_marker = iati_factory.ActivityPolicyMarkerFactory.build(
+            alt_policy_marker='alt_policy_marker',
+        )
+        data = serializers.ActivityPolicyMarkerSerializer(policy_marker).data
+        assert data['narative'] == policy_marker.alt_policy_marker,\
+            """
+            policy_marker.alt_policy_marker should be serialized to a field
+            called 'narative'
+            """
+        assert 'vocabulary' in data,\
+            'serializer.data should contain an object called vocabulary'
+        assert 'significance' in data,\
+            'serializer.data should contain an object called significance'
+        assert 'code' in data,\
+            'serializer.data should contain an object called code'
+
+    def test_PolicyMarkerSerializer(self):
+        policy_marker = iati_factory.PolicyMarkerFactory.build(code=1)
+        serializer = serializers.ActivityPolicyMarkerSerializer.\
+            PolicyMarkerSerializer(policy_marker)
+        assert serializer.data['code'] == policy_marker.code,\
+            "policy_marker.code should be serialized to a field called 'code'"
+
+    def test_VocabularySerializer(self):
+        vocabulary = iati_factory.VocabularyFactory.build(code=1)
+        serializer = serializers.ActivityPolicyMarkerSerializer.\
+            VocabularySerializer(vocabulary)
+        assert serializer.data['code'] == str(vocabulary.code),\
+            "vocabulary.code should be serialized to a field called 'code'"
+
+    def test_PolicySignificanceSerializer(self):
+        significance = iati_factory.PolicySignificanceFactory.build(code=1)
+        serializer = serializers.ActivityPolicyMarkerSerializer.\
+            PolicySignificanceSerializer(significance)
+        assert serializer.data['code'] == significance.code,\
+            "significance.code should be serialized to a field called 'code'"
+
+    def test_TitleSerializer(self):
+        activity = iati_factory.ActivityFactory.build(id=None)
+        serializer = serializers.TitleSerializer(activity)
+        assert 'narratives' in serializer.data,\
+            "A serialized title should containt a object 'narratives'"
+
+    def test_TitleNarrativesSerializer(self):
+        title = iati_factory.TitleFactory.build(
+            title='activity title',
+            language=iati_factory.LanguageFactory.build(code='fr')
+        )
+        serializer = serializers.TitleSerializer.NarrativeSerializer(title)
+        assert serializer.data['text'] == title.title,\
+            "'title.title' should be serialized to a field called 'text'"
+        assert serializer.data['language'] == title.language.code,\
+            """
+            'title.language' should be serialized to a field called 'language'
+            """
+
+    def test_DescriptionSerializer(self):
+        description = iati_factory.DescriptionFactory.build(
+            type=iati_factory.DescriptionTypeFactory.build(code=1)
+        )
+        serializer = serializers.DescriptionSerializer(description)
+        assert serializer.data['type'] == description.type.code,\
+            """
+            'description.type.code' should be serialized to a field called
+            'type'
+            """
+
+    def test_DescriptionNarrativeSerializer(seslf):
+        description = iati_factory.DescriptionFactory.build(
+            description='some text to describe an activity',
+            language=iati_factory.LanguageFactory.build(code='fr'),
+        )
+        serializer = serializers.DescriptionSerializer.NarrativeSerializer(
+            description)
+        assert serializer.data['language'] == description.language.code,\
+            """
+            'description.language' should be serialized to a field called
+            'language'
+            """
+        assert serializer.data['text'] == description.description,\
+            """
+            'description.description' should be serialid to a field called
+            'text'
+            """
+
     def test_ActivitySerializerDynamicFields(self):
         activity = iati_factory.ActivityFactory.build(
             id='identifier',

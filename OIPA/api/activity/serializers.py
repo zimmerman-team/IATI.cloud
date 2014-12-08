@@ -2,33 +2,7 @@ from rest_framework import serializers
 import iati
 import geodata.models
 from api.serializers import DynamicFieldsModelSerializer
-
-
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati.models.Transaction
-        fields = ()
-
-    # AVAILABLE FIELDS:
-    # id
-    # activity
-    # aid_type
-    # currency
-    # description
-    # description_type
-    # disbursement_channel
-    # finance_type
-    # flow_type
-    # provider_organisation
-    # provider_organisation_name
-    # receiver_organisation
-    # tied_status
-    # transaction_date
-    # transaction_type
-    # value_date
-    # value
-    # currency
-    # ref
+from api.organisation.serializers import OrganisationDetailSerializer
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
@@ -104,41 +78,76 @@ class ActivityDateSerializer(serializers.Serializer):
 
 
 class ReportingOrganisationSerializer(serializers.ModelSerializer):
-    def to_representation(self, obj):
-        return {
-            'code': getattr(obj.reporting_organisation, 'code', None),
-            'name': getattr(obj.reporting_organisation, 'name', None),
-            'secondary_publisher': obj.secondary_publisher
+    organisation = OrganisationDetailSerializer(
+        source='reporting_organisation')
+    secondary_reporter = serializers.BooleanField(source='secondary_publisher')
+
+    class Meta:
+        model = iati.models.Activity
+        fields = {
+            'organisation',
+            'secondary_reporter',
         }
 
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+    class PolicyMarkerSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.PolicyMarker
+            fields = ('code',)
+
+    class PolicySignificanceSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.PolicySignificance
+            fields = ('code',)
+
+    class VocabularySerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.Vocabulary
+            fields = ('code',)
+
+    vocabulary = VocabularySerializer(serializers.ModelSerializer)
+    code = PolicyMarkerSerializer(source='policy_marker')
+    significance = PolicySignificanceSerializer(source='policy_significance')
+    narative = serializers.CharField(source='alt_policy_marker')
+
     class Meta:
         model = iati.models.ActivityPolicyMarker
         fields = (
-            'policy_marker',
-            'alt_policy_marker',
-            'activity',
+            'narative',
             'vocabulary',
-            'policy_significance',
+            'significance',
+            'code',
         )
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati.models.Title
-        fields = (
-            'title',
-            'language',
-        )
+class TitleSerializer(serializers.Serializer):
+    class NarrativeSerializer(serializers.ModelSerializer):
+        text = serializers.CharField(source='title')
+
+        class Meta:
+            model = iati.models.Title
+            fields = ('text', 'language')
+
+    narratives = NarrativeSerializer(many=True, source='title_set')
 
 
 class DescriptionSerializer(serializers.ModelSerializer):
+    class NarrativeSerializer(serializers.ModelSerializer):
+        text = serializers.CharField(source='description')
+
+        class Meta:
+            model = iati.models.Description
+            fields = ('text', 'language')
+
+    narratives = NarrativeSerializer(source='*')
+
     class Meta:
         model = iati.models.Description
         fields = (
-            'description',
-            'language',
+            'type',
+            'rsr_description_type_id',
+            'narratives'
         )
 
 
@@ -214,9 +223,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     activityrecipientregion_set = ActivityRecipientRegionSerializer(many=True)
     activitysector_set = ActivitySectorSerializer(many=True)
     budget_set = BudgetSerializer(many=True)
-    description_set = DescriptionSerializer(many=True, read_only=True)
-    title_set = TitleSerializer(many=True, read_only=True)
-    transaction_set = TransactionSerializer(many=True, read_only=True)
+    descriptions = DescriptionSerializer(
+        many=True, read_only=True, source='description_set')
+    title = TitleSerializer(source='*')
 
     class Meta:
         model = iati.models.Activity
@@ -247,22 +256,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'activityrecipientcountry_set',
             'activityrecipientregion_set',
             'activitysector_set',
-            'description_set',
+            'descriptions',
             'participating_organisations',
-            'title_set',
-            'transaction_set',
-
-            # AVAILABLE FIELDS
-            # 'planneddisbursement_set',
-            # 'result_set',
-            # 'documentlink_set',
-            # 'ffs_set',
-            # 'location_set',
-            # 'otheridentifier_set',
-            # 'activitywebsite_set',
-            # 'condition_set',
-            # 'contactinfo_set',
-            # 'countrybudgetitem_set',
-            # 'crsadd_set',
-            # 'current_activity',
+            'title',
         )
