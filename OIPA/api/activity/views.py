@@ -1,16 +1,18 @@
 from rest_framework import generics
 import iati
 from api.activity import serializers
+import api.generics
 
 
-class ActivityList(generics.ListAPIView):
+class ActivityList(api.generics.DynamicListAPIView):
     queryset = iati.models.Activity.objects.all()
-    serializer_class = serializers.ActivityListSerializer
+    serializer_class = serializers.ActivitySerializer
+    fields = ['url', 'id', 'title_set']
 
 
-class ActivityDetail(generics.RetrieveAPIView):
+class ActivityDetail(api.generics.DynamicRetrieveAPIView):
     queryset = iati.models.Activity.objects.all()
-    serializer_class = serializers.ActivityDetailSerializer
+    serializer_class = serializers.ActivitySerializer
 
 
 class ActivitySectors(generics.ListAPIView):

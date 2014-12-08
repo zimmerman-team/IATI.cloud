@@ -146,3 +146,21 @@ class TestActivitySerializers:
             activity.end_actual should be serialized to a field called
             end_actual by the ActivityDateSerializer
             """
+
+    def test_ActivitySerializerDynamicFields(self):
+        activity = iati_factory.ActivityFactory.build(
+            id='identifier',
+            iati_identifier='iati-identifier'
+        )
+        fields = ['id']
+        serializer = serializers.ActivitySerializer(activity, fields=fields)
+        assert serializer.data['id'] == 'identifier', \
+            """
+            activity.id should be serialized since it is specified with
+            the fields parameter
+            """
+        assert 'iati_identifier' not in serializer.data, \
+            """
+            activity.iati_identifier should NOT be serialized since it is
+            not specified in the fields parameter
+            """

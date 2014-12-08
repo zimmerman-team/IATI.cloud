@@ -1,6 +1,7 @@
 from rest_framework import serializers
 import iati
 import geodata.models
+from api.serializers import DynamicFieldsModelSerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -196,7 +197,7 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
         )
 
 
-class ActivityDetailSerializer(serializers.ModelSerializer):
+class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_status = ActivityStatusSerializer()
     collaboration_type = CollaborationTypeSerializer()
     default_flow_type = DefaultFlowTypeSerializer()
@@ -265,8 +266,3 @@ class ActivityDetailSerializer(serializers.ModelSerializer):
             # 'crsadd_set',
             # 'current_activity',
         )
-
-
-class ActivityListSerializer(ActivityDetailSerializer):
-    class Meta:
-        model = iati.models.Activity
