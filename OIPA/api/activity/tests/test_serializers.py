@@ -1,3 +1,5 @@
+import pytest
+from django.test import RequestFactory
 from iati.factory import iati_factory
 from api.activity import serializers
 
@@ -147,13 +149,18 @@ class TestActivitySerializers:
             end_actual by the ActivityDateSerializer
             """
 
+    @pytest.mark.django_db
     def test_ReportingOrganisationSerializer(self):
+        request_dummy = RequestFactory().get('/')
         organisation = iati_factory.OrganisationFactory.build()
         activity = iati_factory.ActivityFactory.build(
             secondary_publisher=True,
             reporting_organisation=organisation,
         )
-        data = serializers.ReportingOrganisationSerializer(activity).data
+        data = serializers.ReportingOrganisationSerializer(
+            activity,
+            context={'request': request_dummy}
+        ).data
         assert data['secondary_reporter'] == activity.secondary_publisher,\
             """
             activity.secondary_publisher should be serialized to a field

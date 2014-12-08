@@ -1,13 +1,14 @@
-from rest_framework import generics
+from api import generics
 import geodata
 from api.region import serializers
 
 
-class RegionList(generics.ListAPIView):
+class RegionList(generics.DynamicListAPIView):
     queryset = geodata.models.Region.objects.all()
-    serializer_class = serializers.RegionListSerializer
+    serializer_class = serializers.RegionSerializer
+    fields = ('url', 'code', 'name')
 
 
-class RegionDetail(generics.RetrieveAPIView):
+class RegionDetail(generics.DynamicRetrieveAPIView):
     queryset = geodata.models.Region.objects.all()
-    serializer_class = serializers.RegionDetailSerializer
+    serializer_class = serializers.RegionSerializer
