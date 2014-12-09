@@ -280,7 +280,6 @@ class TestActivitySerializers:
             not specified in the fields parameter
             """
 
-    @pytest.mark.django_db
     def test_ActivitySectorSerializer(self):
         request_dummy = RequestFactory().get('/')
         activity_sector = iati_factory.ActivitySectorFactory.build(
@@ -352,4 +351,31 @@ class TestActivitySerializers:
         assert serializer.data['code'] == vocabulary.code,\
             """
             'vocabulary.code' should be serialized to a field called 'code'
+            """
+
+    def test_ParticipatingOrganisationSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        part_org = iati_factory.ParticipatingOrganisationFactory.build()
+        serializer = serializers.ParticipatingOrganisationSerializer(
+            part_org,
+            context={'request': request_dummy}
+        )
+        assert 'organisation' and 'role' in serializer.data,\
+            """
+            a serialized ParticipatingOrganisation should contain the fields
+            'organisation' and 'role'
+            """
+        assert 'url' and 'code' and 'name' in serializer.data['organisation'],\
+            """
+            the organisation serialized by ParticipatingOrganisationSerializer
+            should contain the fields 'url', 'code' and 'name'
+            """
+
+    def test_ParticipatingOrganisationRoleSerializer(self):
+        role = iati_factory.OrganisationRoleFactory.build(code=1)
+        serializer = serializers.ParticipatingOrganisationSerializer.\
+            OrganisationRoleSerializer(role)
+        assert serializer.data['code'] == str(role.code),\
+            """
+            'role.code' should be serialized to a field called 'code'
             """

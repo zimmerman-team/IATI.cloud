@@ -169,6 +169,15 @@ class ActivitySectorFactory(NoDatabaseFactory):
     percentage = 100
 
 
+class OrganisationRoleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.OrganisationRole
+
+    code = 1
+    name = 'funding'
+    description = 'role description'
+
+
 class ParticipatingOrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityParticipatingOrganisation

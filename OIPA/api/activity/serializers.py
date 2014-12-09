@@ -194,16 +194,19 @@ class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
 
 
 class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
-    organisation = serializers.HyperlinkedRelatedField(
-        queryset=iati.models.Organisation.objects.all(),
-        view_name='organisation-detail')
+    class OrganisationRoleSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.OrganisationRole
+            fields = ('code',)
+
+    role = OrganisationRoleSerializer()
+    organisation = OrganisationSerializer(fields=('url', 'name', 'code'))
 
     class Meta:
         model = iati.models.ActivityParticipatingOrganisation
         fields = (
             'organisation',
             'role',
-            'name',
         )
 
 
