@@ -379,3 +379,28 @@ class TestActivitySerializers:
             """
             'role.code' should be serialized to a field called 'code'
             """
+
+    def test_RecipientCountrySerializer(self):
+        request_dummy = RequestFactory().get('/')
+        recipient_country = iati_factory.RecipientCountryFactory.build(
+            percentage=80
+        )
+        serializer = serializers.RecipientCountrySerializer(
+            recipient_country,
+            context={'request': request_dummy}
+        )
+        assert serializer.data['percentage'] == '{0:.2f}'.format(
+            recipient_country.percentage),\
+            """
+            'recipient_country.percentage' should be serializer to a field
+            called 'percentage'
+            """
+        assert 'country' in serializer.data,\
+            """
+            a serialized RecipientCountry should contain the field 'country'
+            """
+        assert 'url' and 'code' and 'name' in serializer.data['country'],\
+            """
+            the serialized country should contain the fields 'url', 'code' and
+            'name'
+            """

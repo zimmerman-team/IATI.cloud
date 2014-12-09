@@ -1,10 +1,10 @@
 from rest_framework import serializers
 import iati
-import geodata.models
 from api.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
+from api.country.serializers import CountrySerializer
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
@@ -211,9 +211,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
 
 
 class RecipientCountrySerializer(serializers.ModelSerializer):
-    country = serializers.HyperlinkedRelatedField(
-        queryset=geodata.models.Country.objects.all(),
-        view_name='country-detail')
+    country = CountrySerializer(fields=('url', 'code', 'name'))
 
     class Meta:
         model = iati.models.ActivityRecipientCountry
@@ -236,9 +234,14 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True)
 
     activitypolicymarker_set = ActivityPolicyMarkerSerializer(many=True)
-    activityrecipientcountry_set = RecipientCountrySerializer(many=True)
+    recipient_countries = RecipientCountrySerializer(
+        many=True,
+        source='activityrecipientcountry_set'
+    )
     sectors = ActivitySectorSerializer(
-        many=True, source='activitysector_set')
+        many=True,
+        source='activitysector_set'
+    )
     recipient_regions = ActivityRecipientRegionSerializer(
         many=True,
         source='activityrecipientregion_set'
@@ -274,7 +277,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
             'budget_set',
             'activitypolicymarker_set',
-            'activityrecipientcountry_set',
+            'recipient_countries',
             'sectors',
             'recipient_regions',
             'descriptions',
