@@ -7,7 +7,7 @@ import api.generics
 class ActivityList(api.generics.DynamicListAPIView):
     queryset = iati.models.Activity.objects.all()
     serializer_class = serializers.ActivitySerializer
-    fields = ['url', 'id', 'title_set']
+    fields = ['url', 'id', 'title', 'total_budget']
 
 
 class ActivityDetail(api.generics.DynamicRetrieveAPIView):

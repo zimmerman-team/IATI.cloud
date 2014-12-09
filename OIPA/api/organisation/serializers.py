@@ -1,12 +1,15 @@
-from rest_framework import serializers
 import iati
+from rest_framework import serializers
+from api.serializers import DynamicFieldsModelSerializer
 
 
-class OrganisationDetailSerializer(serializers.ModelSerializer):
+class OrganisationSerializer(DynamicFieldsModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='organisation-detail')
 
     class Meta:
         model = iati.models.Organisation
         fields = (
+            'url',
             'code',
             'abbreviation',
             'type',
@@ -15,14 +18,9 @@ class OrganisationDetailSerializer(serializers.ModelSerializer):
             'original_ref',
 
             # Reverse linked data
-            # 'activity_reporting_organisation',
-            # 'activity_set',
-            # 'activityparticipatingorganisation_set',
-            # 'transaction_providing_organisation',
-            # 'transaction_receiving_organisation',
+            'activity_reporting_organisation',
+            'activity_set',
+            'activityparticipatingorganisation_set',
+            'transaction_providing_organisation',
+            'transaction_receiving_organisation',
         )
-
-
-class OrganisationListSerializer(OrganisationDetailSerializer):
-    class Meta:
-        model = iati.models.Organisation

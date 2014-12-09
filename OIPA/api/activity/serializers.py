@@ -2,7 +2,7 @@ from rest_framework import serializers
 import iati
 import geodata.models
 from api.serializers import DynamicFieldsModelSerializer
-from api.organisation.serializers import OrganisationDetailSerializer
+from api.organisation.serializers import OrganisationSerializer
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
@@ -78,7 +78,7 @@ class ActivityDateSerializer(serializers.Serializer):
 
 
 class ReportingOrganisationSerializer(serializers.ModelSerializer):
-    organisation = OrganisationDetailSerializer(
+    organisation = OrganisationSerializer(
         source='reporting_organisation')
     secondary_reporter = serializers.BooleanField(source='secondary_publisher')
 
