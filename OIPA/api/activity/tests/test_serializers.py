@@ -279,3 +279,41 @@ class TestActivitySerializers:
             activity.iati_identifier should NOT be serialized since it is
             not specified in the fields parameter
             """
+
+    @pytest.mark.django_db
+    def test_ActivitySectorSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        activity_sector = iati_factory.ActivitySectorFactory.build(
+            percentage=80.00
+        )
+        serializer = serializers.ActivitySectorSerializer(
+            activity_sector,
+            context={'request': request_dummy},
+        )
+        assert serializer.data['percentage'] == '{0:.2f}'.format(
+            activity_sector.percentage),\
+            """
+            'activity_sector.percentage' should be serialized to a field
+            called percentage
+            """
+        assert 'sector' and 'vocabulary' in serializer.data,\
+            """
+            a serialized ActivitySector should contain the objects 'sector'
+            and 'vocabulary'
+            """
+        assert 'url' and 'code' and 'name' in serializer.data['sector'],\
+            """
+            the serialized sector should contain the fields 'url, 'code', and
+            'name'
+            """
+
+    def test_ActivitySectorVocabularySerializer(self):
+        vocabulary = iati_factory.VocabularyFactory.build(
+            code='DAC'
+        )
+        serializer = serializers.ActivitySectorSerializer.VocabularySerializer(
+            vocabulary)
+        assert serializer.data['code'] == vocabulary.code,\
+            """
+            'vocabulary.code' should be serialized to a field called 'code'
+            """
