@@ -222,3 +222,21 @@ class ActivityPolicyMarkerFactory(NoDatabaseFactory):
     vocabulary = VocabularyFactory.build()
     policy_significance = PolicySignificanceFactory.build()
     activity = ActivityFactory.build()
+
+
+class RegionVocabularyFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.RegionVocabulary
+
+    code = 1
+    name = 'test vocabulary'
+
+
+class ActivityRecipientRegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityRecipientRegion
+
+    percentage = 100
+    region = RegionFactory.build()
+    region_vocabulary = RegionVocabularyFactory.build()
+    activity = ActivityFactory.build()

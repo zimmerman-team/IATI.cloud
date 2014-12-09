@@ -4,6 +4,7 @@ import geodata.models
 from api.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
+from api.region.serializers import RegionSerializer
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
@@ -173,16 +174,22 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
 
 class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
-    region = serializers.HyperlinkedRelatedField(
-        queryset=geodata.models.Region.objects.all(),
-        view_name='region-detail')
+    class RegionVocabularySerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.RegionVocabulary
+            fields = ('code',)
+
+    vocabulary = RegionVocabularySerializer(source='region_vocabulary')
+    region = RegionSerializer(
+        fields=('url', 'code', 'name')
+    )
 
     class Meta:
         model = iati.models.ActivityRecipientRegion
         fields = (
-            'activity',
             'region',
             'percentage',
+            'vocabulary',
         )
 
 
@@ -227,9 +234,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     activitypolicymarker_set = ActivityPolicyMarkerSerializer(many=True)
     activityrecipientcountry_set = RecipientCountrySerializer(many=True)
-    activityrecipientregion_set = ActivityRecipientRegionSerializer(many=True)
     sectors = ActivitySectorSerializer(
         many=True, source='activitysector_set')
+    recipient_regions = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activityrecipientregion_set'
+    )
     budget_set = BudgetSerializer(many=True)
     descriptions = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
@@ -262,8 +272,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'budget_set',
             'activitypolicymarker_set',
             'activityrecipientcountry_set',
-            'activityrecipientregion_set',
             'sectors',
+            'recipient_regions',
             'descriptions',
             'participating_organisations',
             'title',
