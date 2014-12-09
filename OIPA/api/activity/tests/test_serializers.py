@@ -317,3 +317,39 @@ class TestActivitySerializers:
             """
             'vocabulary.code' should be serialized to a field called 'code'
             """
+
+    def test_ActivityRecipientRegionSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        recipient_region = iati_factory.ActivityRecipientRegionFactory.build(
+            percentage=80)
+        serializer = serializers.ActivityRecipientRegionSerializer(
+            recipient_region,
+            context={'request': request_dummy}
+        )
+        assert serializer.data['percentage'] == '{0:.2f}'.format(
+            recipient_region.percentage),\
+            """
+            'recipient_region.percentage' should be serialized to a field
+            called 'percentage'
+            """
+        assert 'region' and 'vocabulary' in serializer.data,\
+            """
+            a serialized RecipientRegion should contain the fields 'region'
+            and 'vocabulary'
+            """
+        assert 'url' and 'code' and 'name' in serializer.data['region'],\
+            """
+            a region, serialized by the ActivityRecipientRegionSerializer
+            should contain the fields 'url', 'code' and 'name'
+            """
+
+    def test_ActivityRecipientRegionVocabularySerializer(self):
+        vocabulary = iati_factory.RegionVocabularyFactory.build(
+            code=2,
+        )
+        serializer = serializers.ActivityRecipientRegionSerializer.\
+            RegionVocabularySerializer(vocabulary)
+        assert serializer.data['code'] == vocabulary.code,\
+            """
+            'vocabulary.code' should be serialized to a field called 'code'
+            """
