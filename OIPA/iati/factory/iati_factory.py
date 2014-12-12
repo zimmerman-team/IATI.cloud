@@ -249,3 +249,11 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
     region = RegionFactory.build()
     region_vocabulary = RegionVocabularyFactory.build()
     activity = ActivityFactory.build()
+
+
+class ActivityScopeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityScope
+
+    code = 1
+    name = 'example scope'

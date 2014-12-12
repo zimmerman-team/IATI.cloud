@@ -7,6 +7,12 @@ from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 
 
+class ActivityScopeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ActivityScope
+        fields = ('code',)
+
+
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.AidType
@@ -223,7 +229,7 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_status = ActivityStatusSerializer()
-    activity_scope = serializers.CharField(source='scope')
+    activity_scope = ActivityScopeSerializer(source='scope')
     collaboration_type = CollaborationTypeSerializer()
     default_flow_type = DefaultFlowTypeSerializer()
     default_aid_type = DefaultAidTypeSerializer()

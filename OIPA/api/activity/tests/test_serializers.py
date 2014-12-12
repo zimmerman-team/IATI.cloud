@@ -392,7 +392,7 @@ class TestActivitySerializers:
         assert serializer.data['percentage'] == '{0:.2f}'.format(
             recipient_country.percentage),\
             """
-            'recipient_country.percentage' should be serializer to a field
+            'recipient_country.percentage' should be serialized to a field
             called 'percentage'
             """
         assert 'country' in serializer.data,\
@@ -403,4 +403,16 @@ class TestActivitySerializers:
             """
             the serialized country should contain the fields 'url', 'code' and
             'name'
+            """
+
+    def test_ActivityScopeSerializer(self):
+        activity_scope = iati_factory.ActivityScopeFactory.build(
+            code=1,
+            name='global',
+        )
+        serializer = serializers.ActivityScopeSerializer(activity_scope)
+        assert serializer.data['code'] == activity_scope.code,\
+            """
+            'activity_scope.code' should be serialized to a field called
+            'code'
             """
