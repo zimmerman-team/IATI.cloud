@@ -447,3 +447,91 @@ class TestActivitySerializers:
             'activity.capital_spend' should be serialized to a field called
             'percentage'
             """
+
+    @pytest.mark.django_db
+    def test_activitySerializer(self):
+        request_dummy = RequestFactory().get('/')
+        activity = iati_factory.ActivityFactory.build(
+            iati_identifier='IATI-0001',
+            id='IATI-0001',
+            last_updated_datetime='2014-12-03',
+            hierarchy=1,
+            linked_data_uri='www.data.example.org/123',
+            xml_source_ref='www.data.example.org/123/1234.xml'
+        )
+        serializer = serializers.ActivitySerializer(
+            activity, context={'request': request_dummy})
+        assert serializer.data['id'] == activity.id,\
+            """
+            a serialized activity should contain a field 'id' that contains
+            the data in activity.id
+            """
+        assert serializer.data['iati_identifier'] == activity.iati_identifier,\
+            """
+            a serialized activity should contain a field 'iati_identifier' that
+            contains the data in activity.iati_identifier
+            """
+
+        assert serializer.data['last_updated_datetime'] ==\
+            activity.last_updated_datetime,\
+            """
+            a serialized activity should contain a field 'last_updated_datetime
+            that contains the data in activity.last_updated_datetime
+            """
+        assert serializer.data['hierarchy'] == activity.hierarchy,\
+            """
+            a serialized activity should contain a field 'hierarchy' that
+            contains the data in activity.hierarchy
+            """
+        assert serializer.data['linked_data_uri'] == activity.linked_data_uri,\
+            """
+            a serialized activity should contain a field 'linked_data_uri'
+            that contains the data in activity.linked_data_uri
+            """
+        assert serializer.data['xml_source_ref'] == activity.xml_source_ref,\
+            """
+            a serialized activity should contain a field 'xml_source_ref' that
+            contains the data in activity.xml_source_ref
+            """
+
+    @pytest.mark.django_db
+    def test_activitySerializer_required_fields(self):
+        request_dummy = RequestFactory().get('/')
+        activity = iati_factory.ActivityFactory.build()
+        serializer = serializers.ActivitySerializer(
+            activity, context={'request': request_dummy})
+
+        required_fields = (
+            'url',
+            'id',
+            'iati_identifier',
+            'last_updated_datetime',
+            'default_currency',
+            'hierarchy',
+            'linked_data_uri',
+            'reporting_organisation',
+            'title',
+            'descriptions',
+            'participating_organisations',
+            'activity_status',
+            'activity_dates',
+            'activity_scope',
+            'recipient_countries',
+            'recipient_regions',
+            'sectors',
+            'policy_markers',
+            'collaboration_type',
+            'default_flow_type',
+            'default_finance_type',
+            'default_aid_type',
+            'default_tied_status',
+            'budgets',
+            'capital_spend',
+
+            'total_budget',
+            'xml_source_ref',
+        )
+        assertion_msg = "the field '{0}' should be in the serialized activity"
+        for field in required_fields:
+
+            assert field in serializer.data, assertion_msg.format(field)
