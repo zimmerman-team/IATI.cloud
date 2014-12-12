@@ -223,6 +223,7 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_status = ActivityStatusSerializer()
+    activity_scope = serializers.CharField(source='scope')
     collaboration_type = CollaborationTypeSerializer()
     default_flow_type = DefaultFlowTypeSerializer()
     default_aid_type = DefaultAidTypeSerializer()
@@ -233,7 +234,10 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)
 
-    activitypolicymarker_set = ActivityPolicyMarkerSerializer(many=True)
+    policy_markers = ActivityPolicyMarkerSerializer(
+        many=True,
+        source='activitypolicymarker_set'
+    )
     recipient_countries = RecipientCountrySerializer(
         many=True,
         source='activityrecipientcountry_set'
@@ -246,7 +250,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True,
         source='activityrecipientregion_set'
     )
-    budget_set = BudgetSerializer(many=True)
+    budgets = BudgetSerializer(many=True, source='budget_set')
     descriptions = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
     title = TitleSerializer(source='*')
@@ -257,30 +261,29 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'url',
             'id',
             'iati_identifier',
-            'total_budget',
-            'capital_spend',
+            'last_updated_datetime',
             'default_currency',
             'hierarchy',
-            'last_updated_datetime',
             'linked_data_uri',
             'reporting_organisation',
-            'activity_status',
-            'activity_dates',
-            'collaboration_type',
-            'default_flow_type',
-            'default_aid_type',
-            'default_finance_type',
-            'default_tied_status',
-            'xml_source_ref',
-            'scope',
-            'iati_standard_version',
-
-            'budget_set',
-            'activitypolicymarker_set',
-            'recipient_countries',
-            'sectors',
-            'recipient_regions',
+            'title',
             'descriptions',
             'participating_organisations',
-            'title',
+            'activity_status',
+            'activity_dates',
+            'activity_scope',
+            'recipient_countries',
+            'recipient_regions',
+            'sectors',
+            'policy_markers',
+            'collaboration_type',
+            'default_flow_type',
+            'default_finance_type',
+            'default_aid_type',
+            'default_tied_status',
+            'budgets',
+            'capital_spend',
+
+            'total_budget',
+            'xml_source_ref',
         )
