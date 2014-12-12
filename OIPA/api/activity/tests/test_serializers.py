@@ -6,6 +6,8 @@ from api.activity import serializers
 
 class TestActivitySerializers:
 
+    request_dummy = RequestFactory().get('/')
+
     def test_DefaultAidTypeSerializer(self):
         aidtype = iati_factory.AidTypeFactory.build(
             code=10,
@@ -149,7 +151,6 @@ class TestActivitySerializers:
 
     @pytest.mark.django_db
     def test_ReportingOrganisationSerializer(self):
-        request_dummy = RequestFactory().get('/')
         organisation = iati_factory.OrganisationFactory.build()
         activity = iati_factory.ActivityFactory.build(
             secondary_publisher=True,
@@ -157,7 +158,7 @@ class TestActivitySerializers:
         )
         data = serializers.ReportingOrganisationSerializer(
             activity,
-            context={'request': request_dummy}
+            context={'request': self.request_dummy}
         ).data
         assert data['secondary_reporter'] == activity.secondary_publisher,\
             """
@@ -279,13 +280,12 @@ class TestActivitySerializers:
             """
 
     def test_ActivitySectorSerializer(self):
-        request_dummy = RequestFactory().get('/')
         activity_sector = iati_factory.ActivitySectorFactory.build(
             percentage=80.00
         )
         serializer = serializers.ActivitySectorSerializer(
             activity_sector,
-            context={'request': request_dummy},
+            context={'request': self.request_dummy},
         )
         assert serializer.data['percentage'] == '{0:.2f}'.format(
             activity_sector.percentage),\
@@ -316,12 +316,11 @@ class TestActivitySerializers:
             """
 
     def test_ActivityRecipientRegionSerializer(self):
-        request_dummy = RequestFactory().get('/')
         recipient_region = iati_factory.ActivityRecipientRegionFactory.build(
             percentage=80)
         serializer = serializers.ActivityRecipientRegionSerializer(
             recipient_region,
-            context={'request': request_dummy}
+            context={'request': self.request_dummy}
         )
         assert serializer.data['percentage'] == '{0:.2f}'.format(
             recipient_region.percentage),\
@@ -352,11 +351,10 @@ class TestActivitySerializers:
             """
 
     def test_ParticipatingOrganisationSerializer(self):
-        request_dummy = RequestFactory().get('/')
         part_org = iati_factory.ParticipatingOrganisationFactory.build()
         serializer = serializers.ParticipatingOrganisationSerializer(
             part_org,
-            context={'request': request_dummy}
+            context={'request': self.request_dummy}
         )
         assert 'organisation' and 'role' in serializer.data,\
             """
@@ -379,13 +377,12 @@ class TestActivitySerializers:
             """
 
     def test_RecipientCountrySerializer(self):
-        request_dummy = RequestFactory().get('/')
         recipient_country = iati_factory.RecipientCountryFactory.build(
             percentage=80
         )
         serializer = serializers.RecipientCountrySerializer(
             recipient_country,
-            context={'request': request_dummy}
+            context={'request': self.request_dummy}
         )
         assert serializer.data['percentage'] == '{0:.2f}'.format(
             recipient_country.percentage),\
