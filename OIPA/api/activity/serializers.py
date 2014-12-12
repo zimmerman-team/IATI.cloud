@@ -7,6 +7,33 @@ from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 
 
+class CapitalSpendSerializer(serializers.ModelSerializer):
+    percentage = serializers.DecimalField(
+        max_digits=5, decimal_places=2, source='capital_spend')
+
+    class Meta:
+        model = iati.models.Activity
+        fields = ('percentage',)
+
+
+class TiedStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.TiedStatus
+        fields = ('code',)
+
+
+class FinanceTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.FinanceType
+        fields = ('code',)
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.Currency
+        fields = ('code',)
+
+
 class ActivityScopeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.ActivityScope
@@ -46,22 +73,28 @@ class ActivityStatusSerializer(serializers.ModelSerializer):
 
 
 class TotalBudgetSerializer(serializers.Serializer):
-    def to_representation(self, obj):
-        return {
-            'currency': getattr(obj.total_budget_currency, 'code', None),
-            'value': obj.total_budget,
-        }
+    currency = CurrencySerializer(source='total_budget_currency')
+    value = serializers.CharField(source='total_budget')
+
+    class Meta:
+        model = iati.models.Activity
+        fields = ('currency', 'value')
 
 
 class BudgetSerializer(serializers.ModelSerializer):
 
     class ValueSerializer(serializers.Serializer):
-        def to_representation(self, obj):
-            return {
-                'value': obj.value,
-                'date': obj.value_date,
-                'currency': getattr(obj.currency, 'code', None),
-            }
+        currency = CurrencySerializer()
+        date = serializers.CharField(source='value_date')
+        value = serializers.CharField()
+
+        class Meta:
+            model = iati.models.Budget
+            fields = (
+                'value',
+                'date',
+                'currency',
+            )
 
     value = ValueSerializer(source='*')
 
@@ -230,9 +263,13 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
 class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_status = ActivityStatusSerializer()
     activity_scope = ActivityScopeSerializer(source='scope')
+    capital_spend = CapitalSpendSerializer(source='*')
     collaboration_type = CollaborationTypeSerializer()
-    default_flow_type = DefaultFlowTypeSerializer()
     default_aid_type = DefaultAidTypeSerializer()
+    default_currency = CurrencySerializer()
+    default_finance_type = FinanceTypeSerializer()
+    default_flow_type = DefaultFlowTypeSerializer()
+    default_tied_status = TiedStatusSerializer()
     url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
     activity_dates = ActivityDateSerializer(source='*')
     total_budget = TotalBudgetSerializer(source='*')

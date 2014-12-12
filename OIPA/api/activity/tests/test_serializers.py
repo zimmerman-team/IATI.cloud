@@ -58,16 +58,15 @@ class TestActivitySerializers:
                 code='USD')
         )
         serializer = serializers.TotalBudgetSerializer(activity)
-        assert serializer.data['value'] == activity.total_budget, \
+        assert serializer.data['value'] == str(activity.total_budget), \
             """
             activity.total_budget should be serialized to a field called value
             inside the serialized object
             """
-        assert serializer.data['currency'] == \
-            activity.total_budget_currency.code, \
+        assert 'currency' in serializer.data,\
             """
-            activity.total_budget.code should be serialized to a field called
-            currency inside the serialized object
+            a serialized total_budget object should contain a field called
+            'currency'
             """
 
     def test_BudgetSerializer(self):
@@ -104,7 +103,7 @@ class TestActivitySerializers:
             currency=iati_factory.CurrencyFactory.build(code='USD')
         )
         serializer = serializers.BudgetSerializer.ValueSerializer(budget)
-        assert serializer.data['value'] == budget.value, \
+        assert serializer.data['value'] == str(budget.value), \
             """
             budget.value should be serialized to a field called value
             by the ValueSerializer
@@ -114,10 +113,9 @@ class TestActivitySerializers:
             budget.value_date should be serialized to  field called
             date by the ValueSerialized
             """
-        assert serializer.data['currency'] == 'USD', \
+        assert 'currency' in serializer.data,\
             """
-            budget.currency.code should be serialized to a field called
-            currency by the ValueSerializer
+            a serialized value should contain an object valled 'currency'
             """
 
     def test_ActivityDateSerializer(self):
@@ -415,4 +413,40 @@ class TestActivitySerializers:
             """
             'activity_scope.code' should be serialized to a field called
             'code'
+            """
+
+    def test_CurrencySerializer(self):
+        currency = iati_factory.CurrencyFactory.build(code='EUR')
+        serializer = serializers.CurrencySerializer(currency)
+        assert serializer.data['code'] == currency.code,\
+            """
+            'currency.code' should be serialized to a field called
+            'code'
+            """
+
+    def test_FinanceTypeSerializer(self):
+        finance_type = iati_factory.FinanceTypeFactory.build(code=110)
+        serializer = serializers.FinanceTypeSerializer(finance_type)
+        assert serializer.data['code'] == finance_type.code,\
+            """
+            'finance_type.code' should be serialized to a field called
+            'code'
+            """
+
+    def test_TiedStatusSerializer(self):
+        tied_status = iati_factory.TiedStatusFactory.build(code=3)
+        serializer = serializers.TiedStatusSerializer(tied_status)
+        assert serializer.data['code'] == tied_status.code,\
+            """
+            'tied_status.code' should be serialized to a field called
+            'code'
+            """
+
+    def test_CapitalSpendSerializer(self):
+        activity = iati_factory.ActivityFactory.build(capital_spend=80)
+        serializer = serializers.CapitalSpendSerializer(activity)
+        assert serializer.data['percentage'] == '{0:.2f}'.format(activity.capital_spend),\
+            """
+            'activity.capital_spend' should be serialized to a field called
+            'percentage'
             """
