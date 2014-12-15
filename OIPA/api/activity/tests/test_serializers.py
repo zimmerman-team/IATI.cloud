@@ -60,7 +60,7 @@ class TestActivitySerializers:
                 code='USD')
         )
         serializer = serializers.TotalBudgetSerializer(activity)
-        assert serializer.data['value'] == str(activity.total_budget), \
+        assert serializer.data['value'] == activity.total_budget, \
             """
             activity.total_budget should be serialized to a field called value
             inside the serialized object
@@ -105,7 +105,7 @@ class TestActivitySerializers:
             currency=iati_factory.CurrencyFactory.build(code='USD')
         )
         serializer = serializers.BudgetSerializer.ValueSerializer(budget)
-        assert serializer.data['value'] == str(budget.value), \
+        assert serializer.data['value'] == budget.value, \
             """
             budget.value should be serialized to a field called value
             by the ValueSerializer
@@ -281,14 +281,13 @@ class TestActivitySerializers:
 
     def test_ActivitySectorSerializer(self):
         activity_sector = iati_factory.ActivitySectorFactory.build(
-            percentage=80.00
+            percentage=80
         )
         serializer = serializers.ActivitySectorSerializer(
             activity_sector,
             context={'request': self.request_dummy},
         )
-        assert serializer.data['percentage'] == '{0:.2f}'.format(
-            activity_sector.percentage),\
+        assert serializer.data['percentage'] == activity_sector.percentage,\
             """
             'activity_sector.percentage' should be serialized to a field
             called percentage
@@ -322,8 +321,7 @@ class TestActivitySerializers:
             recipient_region,
             context={'request': self.request_dummy}
         )
-        assert serializer.data['percentage'] == '{0:.2f}'.format(
-            recipient_region.percentage),\
+        assert serializer.data['percentage'] == recipient_region.percentage,\
             """
             'recipient_region.percentage' should be serialized to a field
             called 'percentage'
@@ -384,8 +382,7 @@ class TestActivitySerializers:
             recipient_country,
             context={'request': self.request_dummy}
         )
-        assert serializer.data['percentage'] == '{0:.2f}'.format(
-            recipient_country.percentage),\
+        assert serializer.data['percentage'] == recipient_country.percentage,\
             """
             'recipient_country.percentage' should be serialized to a field
             called 'percentage'
@@ -442,7 +439,7 @@ class TestActivitySerializers:
     def test_CapitalSpendSerializer(self):
         activity = iati_factory.ActivityFactory.build(capital_spend=80)
         serializer = serializers.CapitalSpendSerializer(activity)
-        assert serializer.data['percentage'] == '{0:.2f}'.format(activity.capital_spend),\
+        assert serializer.data['percentage'] == activity.capital_spend,\
             """
             'activity.capital_spend' should be serialized to a field called
             'percentage'
@@ -533,5 +530,4 @@ class TestActivitySerializers:
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:
-
             assert field in serializer.data, assertion_msg.format(field)
