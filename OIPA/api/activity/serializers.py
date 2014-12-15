@@ -106,6 +106,12 @@ class TotalBudgetSerializer(serializers.Serializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    class BudgetTypeSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
+        class Meta:
+            model = iati.models.BudgetType
+            fields = ('code',)
 
     class ValueSerializer(serializers.Serializer):
         currency = CurrencySerializer()
@@ -125,6 +131,7 @@ class BudgetSerializer(serializers.ModelSerializer):
             )
 
     value = ValueSerializer(source='*')
+    type = BudgetTypeSerializer()
 
     class Meta:
         model = iati.models.Budget
@@ -210,6 +217,13 @@ class TitleSerializer(serializers.Serializer):
 
 
 class DescriptionSerializer(serializers.ModelSerializer):
+    class DescriptionTypeSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
+        class Meta:
+            model = iati.models.DescriptionType
+            fields = ('code',)
+
     class NarrativeSerializer(serializers.ModelSerializer):
         text = serializers.CharField(source='description')
 
@@ -218,12 +232,12 @@ class DescriptionSerializer(serializers.ModelSerializer):
             fields = ('text', 'language')
 
     narratives = NarrativeSerializer(source='*')
+    type = DescriptionTypeSerializer()
 
     class Meta:
         model = iati.models.Description
         fields = (
             'type',
-            'rsr_description_type_id',
             'narratives'
         )
 

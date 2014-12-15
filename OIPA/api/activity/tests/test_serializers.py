@@ -73,15 +73,13 @@ class TestActivitySerializers:
 
     def test_BudgetSerializer(self):
         budget = iati_factory.BudgetFactory.build(
-            type_id=1,
             period_start='2014-12-1',
             period_end='2014-12-2',
         )
         serializer = serializers.BudgetSerializer(budget)
-        assert serializer.data['type'] == budget.type_id, \
+        assert 'type' in serializer.data,\
             """
-            budget.type_id should be serialized to a field called 'type' inside
-            the serializer object
+            a serialized budget should contain a field called 'type'
             """
         assert serializer.data['period_start'] == budget.period_start, \
             """
@@ -96,6 +94,15 @@ class TestActivitySerializers:
         assert 'value' in serializer.data, \
             """
             a serialized budget should contain an object called value
+            """
+
+    def test_BudgetTypeSerializer(self):
+        budget_type = iati_factory.BudgetTypeFactory.build(code='1')
+        serializer = serializers.BudgetSerializer.BudgetTypeSerializer(
+            budget_type)
+        assert serializer.data['code'] == budget_type.code,\
+            """
+            'budget_type.code' should be serialized to a vield callded 'code'
             """
 
     def test_ValueSerializer(self):
@@ -237,10 +244,20 @@ class TestActivitySerializers:
             type=iati_factory.DescriptionTypeFactory.build(code='1')
         )
         serializer = serializers.DescriptionSerializer(description)
-        assert serializer.data['type'] == description.type.code,\
+        assert 'type' and 'narratives' in serializer.data,\
             """
-            'description.type.code' should be serialized to a field called
-            'type'
+            a serialized description should contain the fields 'type' and
+            'narratives'
+            """
+
+    def test_DescriptionTypeSerializer(self):
+        description_type = iati_factory.DescriptionTypeFactory.build(code='1')
+        serializer = serializers.DescriptionSerializer.\
+            DescriptionTypeSerializer(description_type)
+        assert serializer.data['code'] == description_type.code,\
+            """
+            'description_type.code' should be serialized to a field called
+            'code'
             """
 
     def test_DescriptionNarrativeSerializer(seslf):
