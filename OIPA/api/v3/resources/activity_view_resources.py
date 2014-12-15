@@ -5,8 +5,11 @@ from tastypie.resources import ModelResource
 
 # Data specific
 from api.cache import NoTransformCache
-from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, ActivityParticipatingOrganisation
-from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
+from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, \
+    TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, \
+    ActivityParticipatingOrganisation, Location, Result
+from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, \
+    ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
 
 # cache specific
@@ -136,6 +139,23 @@ class ActivityViewContactInfoResource(ModelResource):
 
 
 
+class ActivityLocationResource(ModelResource):
+
+    class Meta:
+        queryset = Location.objects.all()
+        include_resource_uri = False
+        excludes = ['id', 'activity_description', 'adm_code', 'adm_country_adm1', 'adm_country_adm2',
+                    'adm_country_name', 'adm_level', 'gazetteer_entry', 'location_id_code', 'point_srs_name',
+                    'ref', 'type_description', 'point_pos']
+
+
+class ActivityResultResource(ModelResource):
+
+    class Meta:
+        queryset = Result.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
+
 class ActivityResource(ModelResource):
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True, use_in='all')
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True, use_in='all')
@@ -158,8 +178,9 @@ class ActivityResource(ModelResource):
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True, use_in='detail')
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
+    locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
+    results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='detail')
     # to add:
-    # locations
     # conditions
     # contact
     # country-budget?
