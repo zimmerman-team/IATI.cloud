@@ -249,3 +249,27 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
     region = RegionFactory.build()
     region_vocabulary = RegionVocabularyFactory.build()
     activity = ActivityFactory.build()
+
+
+class ActivityScopeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityScope
+
+    code = 1
+    name = 'example scope'
+
+
+class FinanceTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.FinanceType
+
+    code = 110
+    name = 'Aid grant excluding debt reorganisation'
+
+
+class TiedStatusFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.TiedStatus
+
+    code = 3
+    name = 'Partially tied'
