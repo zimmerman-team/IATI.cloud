@@ -139,7 +139,7 @@ class ActivityViewContactInfoResource(ModelResource):
 
 
 
-class ActivityViewLocationResource(ModelResource):
+class ActivityLocationResource(ModelResource):
 
     class Meta:
         queryset = Location.objects.all()
@@ -149,7 +149,7 @@ class ActivityViewLocationResource(ModelResource):
                     'ref', 'type_description', 'point_pos']
 
 
-class ActivityViewResultResource(ModelResource):
+class ActivityResultResource(ModelResource):
 
     class Meta:
         queryset = Result.objects.all()
@@ -178,8 +178,8 @@ class ActivityResource(ModelResource):
     transactions = fields.ToManyField(ActivityViewTransactionResource, 'transaction_set', full=True, null=True, use_in='detail')
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
-    locations = fields.ToManyField(ActivityViewLocationResource, 'location_set', full=True, null=True, use_in='all')
-    results = fields.ToManyField(ActivityViewResultResource, 'result_set', full=True, null=True, use_in='detail')
+    locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
+    results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='detail')
     # to add:
     # conditions
     # contact
