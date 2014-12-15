@@ -88,10 +88,10 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = iati.models.Activity
-        fields = {
+        fields = (
             'organisation',
             'secondary_reporter',
-        }
+        )
 
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
