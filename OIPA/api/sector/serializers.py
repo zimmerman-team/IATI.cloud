@@ -5,6 +5,7 @@ from api.serializers import DynamicFieldsModelSerializer
 
 class SectorSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='sector-detail')
+    code = serializers.CharField()
 
     class Meta:
         model = iati.models.Sector

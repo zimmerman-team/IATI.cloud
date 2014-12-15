@@ -17,12 +17,16 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
 
 
 class TiedStatusSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.TiedStatus
         fields = ('code',)
 
 
 class FinanceTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.FinanceType
         fields = ('code',)
@@ -35,12 +39,16 @@ class CurrencySerializer(serializers.ModelSerializer):
 
 
 class ActivityScopeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.ActivityScope
         fields = ('code',)
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.AidType
         fields = (
@@ -49,6 +57,8 @@ class DefaultAidTypeSerializer(serializers.ModelSerializer):
 
 
 class DefaultFlowTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.FlowType
         fields = (
@@ -57,6 +67,8 @@ class DefaultFlowTypeSerializer(serializers.ModelSerializer):
 
 
 class CollaborationTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.CollaborationType
         fields = (
@@ -65,6 +77,8 @@ class CollaborationTypeSerializer(serializers.ModelSerializer):
 
 
 class ActivityStatusSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.ActivityStatus
         fields = (
@@ -135,16 +149,22 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     class PolicyMarkerSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.PolicyMarker
             fields = ('code',)
 
     class PolicySignificanceSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.PolicySignificance
             fields = ('code',)
 
     class VocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.Vocabulary
             fields = ('code',)
@@ -196,6 +216,8 @@ class DescriptionSerializer(serializers.ModelSerializer):
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     class VocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.Vocabulary
             fields = ('code',)
@@ -214,6 +236,8 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
 class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
     class RegionVocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.RegionVocabulary
             fields = ('code',)

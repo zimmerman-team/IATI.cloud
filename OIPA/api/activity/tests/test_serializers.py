@@ -10,10 +10,10 @@ class TestActivitySerializers:
 
     def test_DefaultAidTypeSerializer(self):
         aidtype = iati_factory.AidTypeFactory.build(
-            code=10,
+            code='10',
         )
         serializer = serializers.DefaultAidTypeSerializer(aidtype)
-        assert serializer.data['code'] == str(aidtype.code), \
+        assert serializer.data['code'] == aidtype.code, \
             """
             the data in aidtype.code should be serialized to a field named code
             inside the serialized object
@@ -21,7 +21,7 @@ class TestActivitySerializers:
 
     def test_DefaultFlowTypeSerializer(self):
         flowtype = iati_factory.FlowTypeFactory.build(
-            code=10,
+            code='10',
         )
         serializer = serializers.DefaultFlowTypeSerializer(flowtype)
         assert serializer.data['code'] == flowtype.code, \
@@ -32,7 +32,7 @@ class TestActivitySerializers:
 
     def test_ActivityStatusSerializer(self):
         activity_status = iati_factory.ActivityStatusFactory.build(
-            code=10,
+            code='10',
         )
         serializer = serializers.ActivityStatusSerializer(activity_status)
         assert serializer.data['code'] == activity_status.code, \
@@ -43,7 +43,7 @@ class TestActivitySerializers:
 
     def test_CollaborationTypeSerializer(self):
         collaboration_type = iati_factory.CollaborationTypeFactory.build(
-            code=1,
+            code='1',
         )
         serializer = serializers.CollaborationTypeSerializer(
             collaboration_type)
@@ -193,21 +193,21 @@ class TestActivitySerializers:
             'serializer.data should contain an object called code'
 
     def test_PolicyMarkerSerializer(self):
-        policy_marker = iati_factory.PolicyMarkerFactory.build(code=1)
+        policy_marker = iati_factory.PolicyMarkerFactory.build(code='1')
         serializer = serializers.ActivityPolicyMarkerSerializer.\
             PolicyMarkerSerializer(policy_marker)
         assert serializer.data['code'] == policy_marker.code,\
             "policy_marker.code should be serialized to a field called 'code'"
 
     def test_VocabularySerializer(self):
-        vocabulary = iati_factory.VocabularyFactory.build(code=1)
+        vocabulary = iati_factory.VocabularyFactory.build(code='1')
         serializer = serializers.ActivityPolicyMarkerSerializer.\
             VocabularySerializer(vocabulary)
-        assert serializer.data['code'] == str(vocabulary.code),\
+        assert serializer.data['code'] == vocabulary.code,\
             "vocabulary.code should be serialized to a field called 'code'"
 
     def test_PolicySignificanceSerializer(self):
-        significance = iati_factory.PolicySignificanceFactory.build(code=1)
+        significance = iati_factory.PolicySignificanceFactory.build(code='1')
         serializer = serializers.ActivityPolicyMarkerSerializer.\
             PolicySignificanceSerializer(significance)
         assert serializer.data['code'] == significance.code,\
@@ -234,7 +234,7 @@ class TestActivitySerializers:
 
     def test_DescriptionSerializer(self):
         description = iati_factory.DescriptionFactory.build(
-            type=iati_factory.DescriptionTypeFactory.build(code=1)
+            type=iati_factory.DescriptionTypeFactory.build(code='1')
         )
         serializer = serializers.DescriptionSerializer(description)
         assert serializer.data['type'] == description.type.code,\
@@ -341,7 +341,7 @@ class TestActivitySerializers:
 
     def test_ActivityRecipientRegionVocabularySerializer(self):
         vocabulary = iati_factory.RegionVocabularyFactory.build(
-            code=2,
+            code='2',
         )
         serializer = serializers.ActivityRecipientRegionSerializer.\
             RegionVocabularySerializer(vocabulary)
@@ -368,10 +368,10 @@ class TestActivitySerializers:
             """
 
     def test_ParticipatingOrganisationRoleSerializer(self):
-        role = iati_factory.OrganisationRoleFactory.build(code=1)
+        role = iati_factory.OrganisationRoleFactory.build(code='1')
         serializer = serializers.ParticipatingOrganisationSerializer.\
             OrganisationRoleSerializer(role)
-        assert serializer.data['code'] == str(role.code),\
+        assert serializer.data['code'] == role.code,\
             """
             'role.code' should be serialized to a field called 'code'
             """
@@ -402,7 +402,7 @@ class TestActivitySerializers:
 
     def test_ActivityScopeSerializer(self):
         activity_scope = iati_factory.ActivityScopeFactory.build(
-            code=1,
+            code='1',
             name='global',
         )
         serializer = serializers.ActivityScopeSerializer(activity_scope)
@@ -422,7 +422,7 @@ class TestActivitySerializers:
             """
 
     def test_FinanceTypeSerializer(self):
-        finance_type = iati_factory.FinanceTypeFactory.build(code=110)
+        finance_type = iati_factory.FinanceTypeFactory.build(code='110')
         serializer = serializers.FinanceTypeSerializer(finance_type)
         assert serializer.data['code'] == finance_type.code,\
             """
@@ -431,7 +431,7 @@ class TestActivitySerializers:
             """
 
     def test_TiedStatusSerializer(self):
-        tied_status = iati_factory.TiedStatusFactory.build(code=3)
+        tied_status = iati_factory.TiedStatusFactory.build(code='3')
         serializer = serializers.TiedStatusSerializer(tied_status)
         assert serializer.data['code'] == tied_status.code,\
             """
