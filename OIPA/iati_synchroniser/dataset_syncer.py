@@ -6,9 +6,12 @@ import datetime
 from iati.models import OrganisationIdentifier
 from iati_synchroniser.exception_handler import exception_handler
 
+
 IATI_URL = "http://www.iatiregistry.org/api/search/dataset?{options}"
 
+
 class DatasetSyncer():
+    # TODO: Clean unnecessary exception catchers.
     def __init__(self):
         """
         Prefetch data, to minify amount of DB queries
@@ -17,6 +20,8 @@ class DatasetSyncer():
             'source_url', flat=True)
         self.publisher_ids = models.Publisher.objects.value_list(
             'org_id', flat=True)
+        self.organisation_identifiers = OrganisationIdentifier.objects \
+            .value_list('code', flat=True)
 
     def synchronize_with_iati_api(self, data_type):
         """
@@ -40,6 +45,7 @@ class DatasetSyncer():
         """
         Loop through the datasets by page
         """
+        # TODO: Clean this function
         try:
             req = urllib2.Request(url)
             opener = urllib2.build_opener()
@@ -68,20 +74,22 @@ class DatasetSyncer():
             else:
                 return None
 
-
     def update_publisher(self, iati_id, abbreviation, name):
         try:
             # if already in the database, get the publisher_id,
             # else add the publisher
-            if (models.Publisher.objects.filter(org_id=publisher_iati_id).exists()):
-                current_publisher = models.Publisher.objects.get(org_id=publisher_iati_id)
+            if iati_id not in self.publisher_ids:
+                # TODO: optimize
+                current_publisher = models.Publisher.objects.get(org_id=iati_id)
             else:
                 # get the abbreviation from organisation_identifier table
-                if(OrganisationIdentifier.objects.filter(code=publisher_iati_id).exists()):
-                    current_publisher_meta = OrganisationIdentifier.objects.get(code=publisher_iati_id)
-                    publisher_abbreviation = current_publisher_meta.abbreviation
+                if iati_id in self.organisation_identifiers:
+                    current_publisher_meta = OrganisationIdentifier.objects.get(
+                        code=iati_id)
+                    abbreviation = current_publisher_meta.abbreviation
 
-                current_publisher = self.add_publisher_to_db(publisher_iati_id, publisher_abbreviation, publisher_name)
+                current_publisher = self.add_publisher_to_db(
+                    iati_id, abbreviation, name)
 
             return current_publisher
 
@@ -89,7 +97,11 @@ class DatasetSyncer():
             exception_handler(e, publisher_iati_id, "dataset_syncer.update_publisher")
 
     def add_publisher_to_db(self, org_id, org_abbreviate_value, org_name_value):
-        new_publisher = models.Publisher(org_id=org_id, org_abbreviate=org_abbreviate_value, org_name=org_name_value, default_interval='MONTHLY')
+        new_publisher = models.Publisher(
+            org_id=org_id,
+            org_abbreviate=org_abbreviate_value,
+            org_name=org_name_value,
+            default_interval='MONTHLY')
         new_publisher.save()
         return new_publisher
 
