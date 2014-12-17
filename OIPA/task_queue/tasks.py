@@ -64,6 +64,11 @@ def get_new_sources_from_iati_api():
     from iati_synchroniser.dataset_syncer import DatasetSyncer
     ds = DatasetSyncer()
     ds.synchronize_with_iati_api(1)
+    
+    # Add parse_all_over_parse_interval job, to parse all new sources
+    queue = django_rq.get_queue("parser")
+    queue.enqueue(parse_all_over_parse_interval, timeout=7200)
+    
 
 @job
 def parse_source_by_url(url):
