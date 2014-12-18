@@ -26,11 +26,18 @@ class DescriptionTypeFactory(NoDatabaseFactory):
     description = 'description here'
 
 
+class BudgetTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.BudgetType
+
+    code = 1
+    name = 'Original'
+
+
 class BudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Budget
 
-    type_id = 1
     period_start = '2011-01-01 00:00:00'
     period_end = '2011-12-30 00:00:00'
     value = 100

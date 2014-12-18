@@ -5,6 +5,7 @@ from api.serializers import DynamicFieldsModelSerializer
 
 class RegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='region-detail')
+    code = serializers.CharField()
 
     class Meta:
         model = geodata.models.Region

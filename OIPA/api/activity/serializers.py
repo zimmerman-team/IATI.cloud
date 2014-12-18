@@ -9,7 +9,11 @@ from api.country.serializers import CountrySerializer
 
 class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
-        max_digits=5, decimal_places=2, source='capital_spend')
+        max_digits=5,
+        decimal_places=2,
+        source='capital_spend',
+        coerce_to_string=False
+    )
 
     class Meta:
         model = iati.models.Activity
@@ -17,12 +21,16 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
 
 
 class TiedStatusSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.TiedStatus
         fields = ('code',)
 
 
 class FinanceTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.FinanceType
         fields = ('code',)
@@ -35,12 +43,16 @@ class CurrencySerializer(serializers.ModelSerializer):
 
 
 class ActivityScopeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.ActivityScope
         fields = ('code',)
 
 
 class DefaultAidTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.AidType
         fields = (
@@ -49,6 +61,8 @@ class DefaultAidTypeSerializer(serializers.ModelSerializer):
 
 
 class DefaultFlowTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.FlowType
         fields = (
@@ -57,6 +71,8 @@ class DefaultFlowTypeSerializer(serializers.ModelSerializer):
 
 
 class CollaborationTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.CollaborationType
         fields = (
@@ -65,6 +81,8 @@ class CollaborationTypeSerializer(serializers.ModelSerializer):
 
 
 class ActivityStatusSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
     class Meta:
         model = iati.models.ActivityStatus
         fields = (
@@ -74,7 +92,12 @@ class ActivityStatusSerializer(serializers.ModelSerializer):
 
 class TotalBudgetSerializer(serializers.Serializer):
     currency = CurrencySerializer(source='total_budget_currency')
-    value = serializers.CharField(source='total_budget')
+    value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False,
+        source='total_budget',
+    )
 
     class Meta:
         model = iati.models.Activity
@@ -82,11 +105,21 @@ class TotalBudgetSerializer(serializers.Serializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    class BudgetTypeSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
+        class Meta:
+            model = iati.models.BudgetType
+            fields = ('code',)
 
     class ValueSerializer(serializers.Serializer):
         currency = CurrencySerializer()
         date = serializers.CharField(source='value_date')
-        value = serializers.CharField()
+        value = serializers.DecimalField(
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+        )
 
         class Meta:
             model = iati.models.Budget
@@ -97,6 +130,7 @@ class BudgetSerializer(serializers.ModelSerializer):
             )
 
     value = ValueSerializer(source='*')
+    type = BudgetTypeSerializer()
 
     class Meta:
         model = iati.models.Budget
@@ -135,16 +169,22 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     class PolicyMarkerSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.PolicyMarker
             fields = ('code',)
 
     class PolicySignificanceSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.PolicySignificance
             fields = ('code',)
 
     class VocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.Vocabulary
             fields = ('code',)
@@ -176,6 +216,13 @@ class TitleSerializer(serializers.Serializer):
 
 
 class DescriptionSerializer(serializers.ModelSerializer):
+    class DescriptionTypeSerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
+        class Meta:
+            model = iati.models.DescriptionType
+            fields = ('code',)
+
     class NarrativeSerializer(serializers.ModelSerializer):
         text = serializers.CharField(source='description')
 
@@ -184,23 +231,30 @@ class DescriptionSerializer(serializers.ModelSerializer):
             fields = ('text', 'language')
 
     narratives = NarrativeSerializer(source='*')
+    type = DescriptionTypeSerializer()
 
     class Meta:
         model = iati.models.Description
         fields = (
             'type',
-            'rsr_description_type_id',
             'narratives'
         )
 
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     class VocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.Vocabulary
             fields = ('code',)
 
     sector = SectorSerializer(fields=('url', 'code', 'name'))
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
+    )
     vocabulary = VocabularySerializer()
 
     class Meta:
@@ -214,6 +268,8 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
 class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
     class RegionVocabularySerializer(serializers.ModelSerializer):
+        code = serializers.CharField()
+
         class Meta:
             model = iati.models.RegionVocabulary
             fields = ('code',)
@@ -221,6 +277,11 @@ class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
     vocabulary = RegionVocabularySerializer(source='region_vocabulary')
     region = RegionSerializer(
         fields=('url', 'code', 'name')
+    )
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
     )
 
     class Meta:
@@ -251,6 +312,11 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
 
 class RecipientCountrySerializer(serializers.ModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
+    )
 
     class Meta:
         model = iati.models.ActivityRecipientCountry
