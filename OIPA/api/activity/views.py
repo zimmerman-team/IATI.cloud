@@ -1,11 +1,13 @@
 from rest_framework import generics
 import iati
 from api.activity import serializers
+from api.backend import filters
 import api.generics
 
 
 class ActivityList(api.generics.DynamicListAPIView):
     queryset = iati.models.Activity.objects.all()
+    filter_backends = (filters.SearchFilter,)
     serializer_class = serializers.ActivitySerializer
     fields = ['url', 'id', 'title', 'total_budget']
 
