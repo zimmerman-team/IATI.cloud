@@ -38,23 +38,15 @@ def get_dynamic_pagination_serializer(self, page):
 
 
 def get_dynamic_serializer(
-        self, instance=None, data=None, many=False, partial=False):
+        self, *args, **kwargs):
     serializer_class = self.get_serializer_class()
-    context = self.get_serializer_context()
-    fields = serializer_class.Meta.fields
+    kwargs['context'] = self.get_serializer_context()
+
     request_fields = self.request.QUERY_PARAMS.get('fields', None)
-
     if request_fields is not None:
-        fields = request_fields.split(',')
+        kwargs['fields'] = request_fields.split(',')
 
-    return serializer_class(
-        instance,
-        data=data,
-        many=many,
-        partial=partial,
-        context=context,
-        fields=fields
-    )
+    return serializer_class(*args, **kwargs)
 
 
 class DynamicListAPIView(generics.ListAPIView):
