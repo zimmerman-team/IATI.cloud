@@ -1,5 +1,5 @@
 import pytest
-from api.tests.endpoint_base import EndpointBase
+from api.v3.tests.endpoint_base import EndpointBase
 
 
 @pytest.mark.django_db
