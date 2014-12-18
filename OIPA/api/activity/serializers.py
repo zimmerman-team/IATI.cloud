@@ -92,7 +92,6 @@ class ActivityStatusSerializer(serializers.ModelSerializer):
 
 class TotalBudgetSerializer(serializers.Serializer):
     currency = CurrencySerializer(source='total_budget_currency')
-    value = serializers.CharField(source='total_budget')
     value = serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
