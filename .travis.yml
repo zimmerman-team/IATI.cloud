@@ -15,6 +15,7 @@ before_install:
 install:
   - "pip install -r OIPA/requirements.txt"
   - "pip install -r OIPA/test_requirements.txt"
+  - "pip freeze -q"
   - "echo -e 'no\n' | OIPA/manage.py migrate --settings=OIPA.travis_test_settings" 
   - "echo -e 'no\n' | OIPA/manage.py migrate --database=mysql --settings=OIPA.travis_test_settings"
 
