@@ -1,4 +1,4 @@
-from api.backend.filters import BasicFilter, FilterField, BasicFilterBackend
+from api.generics.filters import BasicFilter, FilterField, BasicFilterBackend
 from django.db import models
 from unittest import TestCase
 
@@ -10,7 +10,8 @@ class TestModel(models.Model):
 
 class TestFilter(TestCase):
     def test_incorrect_lookup(self):
-        self.assertRaises(AssertionError, FilterField, lookup_type='i', field='code')
+        self.assertRaises(
+            AssertionError, FilterField, lookup_type='i', field='code')
 
     def test_unknown_model_filter(self):
         class UnknownModelFieldFilter(BasicFilter):
@@ -54,8 +55,11 @@ class TestFilter(TestCase):
             'name': 'test'
         }
         expected_result = {
-            'code__in': ['1','3'],
+            'code__in': ['1', '3'],
             'name__icontains': 'test'
         }
-        result = BasicFilterBackend().queryset_parameters(params=params, filter=CorrectFilter)
+        result = BasicFilterBackend().queryset_parameters(
+            params=params,
+            filter=CorrectFilter
+        )
         assert result == expected_result

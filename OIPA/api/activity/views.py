@@ -3,7 +3,7 @@ import iati
 from api.activity import serializers
 from api.generics.views import DynamicListAPIView
 from api.generics.views import DynamicRetrieveAPIView
-from api.backend.filters import SearchFilter, BasicFilterBackend
+from api.generics.filters import SearchFilter, BasicFilterBackend
 from api.activity import filters
 
 
