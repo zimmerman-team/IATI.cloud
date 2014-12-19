@@ -1,6 +1,6 @@
 import iati
 from rest_framework import serializers
-from api.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
 
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):

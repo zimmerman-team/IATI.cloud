@@ -1,6 +1,6 @@
 from rest_framework import serializers
 import geodata
-from api.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
 
 
 class CitySerializer(DynamicFieldsModelSerializer):
