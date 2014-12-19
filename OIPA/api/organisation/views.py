@@ -1,14 +1,15 @@
-from api import generics
 import iati
 from api.organisation import serializers
+from api.generics.views import DynamicListAPIView
+from api.generics.views import DynamicRetrieveAPIView
 
 
-class OrganisationList(generics.DynamicListAPIView):
+class OrganisationList(DynamicListAPIView):
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'code', 'name')
 
 
-class OrganisationDetail(generics.DynamicRetrieveAPIView):
+class OrganisationDetail(DynamicRetrieveAPIView):
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
