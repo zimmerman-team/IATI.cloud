@@ -1,5 +1,6 @@
-from api.generics.filters import FilterField, BasicFilter
-import iati
+from api.generics.filters import BasicFilter
+from api.generics.filters import FilterField
+from iati.models import Activity
 
 
 class ActivityFilter(BasicFilter):
@@ -17,7 +18,7 @@ class ActivityFilter(BasicFilter):
     max_total_budget = FilterField(lookup_type='lte', field='total_budget')
 
     class Meta:
-        model = iati.models.Activity
+        model = Activity
         fields = [
             'recipient_countries',
             'recipient_regions',

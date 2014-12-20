@@ -1,4 +1,6 @@
-from api.generics.filters import BasicFilter, FilterField, BasicFilterBackend
+from api.generics.filters import BasicFilter
+from api.generics.filters import BasicFilterBackend
+from api.generics.filters import FilterField
 from django.db import models
 from unittest import TestCase
 
