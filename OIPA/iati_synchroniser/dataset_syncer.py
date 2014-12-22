@@ -39,12 +39,12 @@ class DatasetSyncer():
                     try:
 
                         publisher_iati_id = None
-                        publisher_abbreviation = None
+                        publisher_abbreviation = ""
                         publisher_name = "Unknown"
                         source_url = str(object["res_url"][0])
                         source_url = source_url.replace(" ", "%20")
                         source_name = object["name"]
-                        source_title = None
+                        source_title = ""
                         if "title" in object:
                             source_title = object["title"]
 
