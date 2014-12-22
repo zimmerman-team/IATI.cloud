@@ -104,7 +104,7 @@ class IndicatorDataUploadAdmin(MultiUploadAdmin):
     # min allowed filesize for uploads in bytes
     multiupload_minfilesize = 0
     # tuple with mimetype accepted
-    multiupload_acceptedformats = ( "text/csv", "text/xml")
+    multiupload_acceptedformats = ( "text/csv", "text/xml", "text/comma-separated-values")
 
     def process_uploaded_file(self, uploaded, object,request, **kwargs):
         '''
