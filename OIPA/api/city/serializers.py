@@ -15,7 +15,6 @@ class IndicatorDataSerializer(serializers.ModelSerializer):
 class CitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='city-detail')
     country = CountrySerializer(fields=('url', 'code', 'name'))
-    indicator_data = IndicatorDataSerializer(many=True, source='indicators')
 
     class Meta:
         model = geodata.models.City
@@ -26,8 +25,5 @@ class CitySerializer(DynamicFieldsModelSerializer):
             'name',
             'country',
             'location',
-            'indicator_data',
-
-            # Reverse linked data
-            'capital_city',
+            'is_capital',
         )

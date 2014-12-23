@@ -53,6 +53,10 @@ class City(models.Model):
     namepar = models.CharField(max_length=200, null=True, blank=True)
     objects = models.GeoManager()
 
+    @property
+    def is_capital(self):
+        return hasattr(self, 'capital_of')
+
     def __unicode__(self):
         return self.name
 
