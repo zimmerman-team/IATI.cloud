@@ -18,7 +18,7 @@ class Country(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     alt_name = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True)
-    capital_city = models.ForeignKey("City", related_name='capital_city', null=True, blank=True)
+    capital_city = models.OneToOneField("City", related_name='capital_of', null=True, blank=True)
     region = models.ForeignKey(Region, null=True, blank=True)
     un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_region')
     unesco_region = models.ForeignKey('Region', null=True, blank=True, related_name='unesco_region')
