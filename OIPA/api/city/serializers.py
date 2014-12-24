@@ -3,14 +3,7 @@ import geodata
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.country.serializers import CountrySerializer
 from indicator.models import Indicator
-
-
-class GeometryField(serializers.Field):
-    def to_representation(self, obj):
-        return {
-            'type': 'Point',
-            'coordinates': [obj.x, obj.y]
-        }
+from api.fields import GeometryField
 
 
 class IndicatorDataSerializer(serializers.ModelSerializer):
