@@ -32,5 +32,4 @@ class RegionCountries(DynamicListAPIView):
 class RegionActivities(ActivityList):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        region = geodata.models.Region.objects.get(pk=pk)
-        return Activity.objects.filter(recipient_region__in=region.get_all_regions())
+        return Activity.objects.in_region(pk)
