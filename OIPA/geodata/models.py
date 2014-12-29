@@ -1,5 +1,5 @@
-
 from django.contrib.gis.db import models
+
 
 class Region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
@@ -9,8 +9,36 @@ class Region(models.Model):
     center_longlat = models.PointField(null=True, blank=True)
     objects = models.GeoManager()
 
+    def get_all_regions(self):
+        regions = [self]
+        if self.region_set.exists():
+            sub_regions = self.region_set.all()
+            for sub_region in sub_regions:
+                regions.extend(sub_region.get_all_regions())
+        return regions
+
+    def get_country_set(self):
+        if self.country_set.exists():
+            return self.country_set
+        elif self.un_countries.exists():
+            return self.un_countries
+        elif self.unesco_countries.exists():
+            return self.unesco_countries
+        else:
+            return Country.objects.none()
+
+    @property
+    def countries(self):
+        child_regions = self.region_set.all()
+        countries = list(self.get_country_set().all())
+        if child_regions.exists():
+            for region in child_regions:
+                countries.extend(region.countries)
+        return countries
+
     def __unicode__(self):
         return self.name
+
 
 class Country(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
@@ -20,8 +48,8 @@ class Country(models.Model):
     language = models.CharField(max_length=2, null=True)
     capital_city = models.OneToOneField("City", related_name='capital_of', null=True, blank=True)
     region = models.ForeignKey(Region, null=True, blank=True)
-    un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_region')
-    unesco_region = models.ForeignKey('Region', null=True, blank=True, related_name='unesco_region')
+    un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_countries')
+    unesco_region = models.ForeignKey('Region', null=True, blank=True, related_name='unesco_countries')
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)
@@ -42,6 +70,7 @@ class Country(models.Model):
     #     if self.polygon and isinstance(self.polygon, geos.Polygon):
     #         self.polygon = geos.MultiPolygon(self.polygon)
     #     super(country, self).save(*args, **kwargs)
+
 
 class City(models.Model):
     geoname_id = models.IntegerField(null=True, blank=True)
@@ -108,7 +137,7 @@ class Adm1Region(models.Model):
     adm0_a3 = models.CharField(null=True, blank=True, max_length=3)
     adm0_label = models.IntegerField(null=True, blank=True)
     admin = models.CharField(null=True, blank=True, max_length=100)
-    geonunit =models.CharField(null=True, blank=True, max_length=100)
+    geonunit = models.CharField(null=True, blank=True, max_length=100)
     gu_a3 = models.CharField(null=True, blank=True, max_length=3)
     gn_id = models.IntegerField(null=True, blank=True)
     gn_name = models.CharField(null=True, blank=True, max_length=100)
