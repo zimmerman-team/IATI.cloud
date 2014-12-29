@@ -2,14 +2,7 @@ from rest_framework import serializers
 import geodata
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.country.serializers import CountrySerializer
-from indicator.models import Indicator
 from api.fields import GeometryField
-
-
-class IndicatorDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Indicator
-        fields = ('id',)
 
 
 class CitySerializer(DynamicFieldsModelSerializer):
