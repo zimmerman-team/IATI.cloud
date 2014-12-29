@@ -34,7 +34,7 @@ class RegionSerializer(BasicRegionSerializer):
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
     countries = serializers.HyperlinkedIdentityField(view_name='region-countries')
     activities = serializers.HyperlinkedIdentityField(view_name='region-activities')
-    center_longlat = GeometryField()
+    location = GeometryField(source='center_longlat')
 
     class Meta:
         model = geodata.models.Region
@@ -46,7 +46,6 @@ class RegionSerializer(BasicRegionSerializer):
             'parental_region',
             'countries',
             'activities',
-            'center_longlat',
-            'indicatordata_set',
+            'location',
             'child_regions',
         )

@@ -2,7 +2,6 @@ import pytest
 from django.test import RequestFactory
 from iati.factory import iati_factory
 from api.activity import serializers
-from api.region.serializers import RegionVocabularySerializer
 
 
 class TestActivitySerializers:
@@ -353,16 +352,6 @@ class TestActivitySerializers:
             """
             a region, serialized by the ActivityRecipientRegionSerializer
             should contain the fields 'url', 'code' and 'name'
-            """
-
-    def test_ActivityRecipientRegionVocabularySerializer(self):
-        vocabulary = iati_factory.RegionVocabularyFactory.build(
-            code='2',
-        )
-        serializer = RegionVocabularySerializer(vocabulary)
-        assert serializer.data['code'] == vocabulary.code,\
-            """
-            'vocabulary.code' should be serialized to a field called 'code'
             """
 
     def test_ParticipatingOrganisationSerializer(self):
