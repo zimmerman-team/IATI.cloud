@@ -9,12 +9,12 @@ class Region(models.Model):
     center_longlat = models.PointField(null=True, blank=True)
     objects = models.GeoManager()
 
-    def get_all_regions(self):
+    def get_self_and_subregions(self):
         regions = [self]
         if self.region_set.exists():
             sub_regions = self.region_set.all()
             for sub_region in sub_regions:
-                regions.extend(sub_region.get_all_regions())
+                regions.extend(sub_region.get_self_and_subregions())
         return regions
 
     def get_country_set(self):

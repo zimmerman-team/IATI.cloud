@@ -110,5 +110,5 @@ class ActivityQuerySet(query.QuerySet):
 
     def in_region(self, pk):
         region = Region.objects.get(pk=pk)
-        return self.filter(recipient_region__in=region.get_all_regions())
+        return self.filter(recipient_region__in=region.get_self_and_subregions())
 
