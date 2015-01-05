@@ -1,4 +1,5 @@
 from django.db.models import query, Q
+from geodata.models import Region
 import operator
 
 
@@ -106,3 +107,8 @@ class ActivityQuerySet(query.QuerySet):
                     )
                 )
         return prepared_filter
+
+    def in_region(self, pk):
+        region = Region.objects.get(pk=pk)
+        return self.filter(recipient_region__in=region.get_self_and_subregions())
+

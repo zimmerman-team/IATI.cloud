@@ -4,6 +4,7 @@ from api.generics.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
+from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
 
 
@@ -267,13 +268,6 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
 
 class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
-    class RegionVocabularySerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
-
-        class Meta:
-            model = iati.models.RegionVocabulary
-            fields = ('code',)
-
     vocabulary = RegionVocabularySerializer(source='region_vocabulary')
     region = RegionSerializer(
         fields=('url', 'code', 'name')

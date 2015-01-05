@@ -354,17 +354,6 @@ class TestActivitySerializers:
             should contain the fields 'url', 'code' and 'name'
             """
 
-    def test_ActivityRecipientRegionVocabularySerializer(self):
-        vocabulary = iati_factory.RegionVocabularyFactory.build(
-            code='2',
-        )
-        serializer = serializers.ActivityRecipientRegionSerializer.\
-            RegionVocabularySerializer(vocabulary)
-        assert serializer.data['code'] == vocabulary.code,\
-            """
-            'vocabulary.code' should be serialized to a field called 'code'
-            """
-
     def test_ParticipatingOrganisationSerializer(self):
         part_org = iati_factory.ParticipatingOrganisationFactory.build()
         serializer = serializers.ParticipatingOrganisationSerializer(
