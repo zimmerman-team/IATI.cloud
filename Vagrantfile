@@ -9,6 +9,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell", path: "bin/setup/install_dependencies.sh"
   config.vm.provision "shell", path: "bin/setup/install_virtualenv.sh"
+  config.vm.provision "shell", path: "bin/setup/create_local_settings.sh"
+  config.vm.provision "shell", path: "bin/setup/sync_db.sh"
 
   config.vm.define "oipa" do |oipa|
   end
