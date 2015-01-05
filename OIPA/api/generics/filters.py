@@ -64,7 +64,7 @@ class BasicFilter(object):
 
 class BasicFilterBackend(filters.BaseFilterBackend):
 
-    def queryset_parameters(self, params=None, filter=None):
+    def filter_field_queryset_parameters(self, params=None, filter=None):
         filter = filter()
 
         to_filter_fields = set(filter.fields) & set(params.keys())
@@ -85,12 +85,19 @@ class BasicFilterBackend(filters.BaseFilterBackend):
 
         return lookup_parameters
 
+    def filter_field_queryset(self, params=None, filter=None, queryset=None):
+        queryset_parameters = self.filter_field_queryset_parameters(
+            params=params, filter=filter)
+
+        return queryset.filter(**queryset_parameters)
+
     def filter_queryset(self, request, queryset, view):
         filter_class = getattr(view, 'filter_class', None)
 
         if filter_class is None:
             return queryset
 
-        queryset_parameters = self.queryset_parameters(
-            params=request.QUERY_PARAMS, filter=filter_class)
-        return queryset.filter(**queryset_parameters)
+        queryset = self.filter_field_queryset(
+            params=request.QUERY_PARAMS, filter=filter_class, queryset=queryset)
+
+        return queryset

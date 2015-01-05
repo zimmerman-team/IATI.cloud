@@ -5,12 +5,13 @@ from api.generics.views import DynamicListAPIView
 from api.generics.views import DynamicRetrieveAPIView
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
+from rest_framework.filters import OrderingFilter
 from api.activity import filters
 
 
 class ActivityList(DynamicListAPIView):
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, BasicFilterBackend,)
+    filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = serializers.ActivitySerializer
     fields = ['url', 'id', 'title', 'total_budget']

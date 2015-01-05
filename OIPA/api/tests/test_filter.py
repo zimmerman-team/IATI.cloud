@@ -60,7 +60,7 @@ class TestFilter(TestCase):
             'code__in': ['1', '3'],
             'name__icontains': 'test'
         }
-        result = BasicFilterBackend().queryset_parameters(
+        result = BasicFilterBackend().filter_field_queryset_parameters(
             params=params,
             filter=CorrectFilter
         )
