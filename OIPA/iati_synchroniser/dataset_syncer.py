@@ -16,12 +16,10 @@ class DatasetSyncer():
         """
         Prefetch data, to minify amount of DB queries
         """
-        self.source_urls = models.IatiXmlSource.objects.values_list(
-            'source_url', flat=True)
-        self.publisher_ids = models.Publisher.objects.value_list(
-            'org_id', flat=True)
-        self.organisation_identifiers = OrganisationIdentifier.objects \
-            .value_list('code', flat=True)
+        self.source_urls = models.IatiXmlSource.objects.values('source_url')
+        self.publisher_ids = models.Publisher.objects.values('org_id')
+        self.organisation_identifiers = OrganisationIdentifier \
+            .objects.values('code')
 
     def synchronize_with_iati_api(self, data_type):
         """
@@ -78,7 +76,7 @@ class DatasetSyncer():
         try:
             # if already in the database, get the publisher_id,
             # else add the publisher
-            if iati_id not in self.publisher_ids:
+            if iati_id in self.publisher_ids:
                 # TODO: optimize
                 current_publisher = models.Publisher \
                     .objects.get(org_id=iati_id)
@@ -137,7 +135,10 @@ class DatasetSyncer():
 
         publisher_abbreviation = ""
         publisher_name = "Unknown"
-        source_url = str(line["res_url"].get(0, '')).replace(" ", "%20")
+        try:
+            source_url = str(line["res_url"][0]).replace(" ", "%20")
+        except IndexError:
+            source_url = ''
         source_name = line.get('name', '')
         source_title = line.get('title', "")
 
