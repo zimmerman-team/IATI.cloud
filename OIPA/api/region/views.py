@@ -1,26 +1,24 @@
-
 import geodata
 from iati.models import Activity
 from api.region import serializers
-from rest_framework import generics
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 from api.country.serializers import CountrySerializer
 from api.activity.views import ActivityList
-from api.generics.views import DynamicListAPIView
-from api.generics.views import DynamicRetrieveAPIView
 
 
-class RegionList(DynamicListAPIView):
+class RegionList(ListAPIView):
     queryset = geodata.models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
     fields = ('url', 'code', 'name')
 
 
-class RegionDetail(DynamicRetrieveAPIView):
+class RegionDetail(RetrieveAPIView):
     queryset = geodata.models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
 
 
-class RegionCountries(DynamicListAPIView):
+class RegionCountries(ListAPIView):
     serializer_class = CountrySerializer
     fields = ('url', 'code', 'name')
 

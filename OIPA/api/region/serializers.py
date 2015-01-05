@@ -3,6 +3,7 @@ import geodata
 import iati.models
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.fields import GeometryField
+from api.activity.aggregation import AggregationsSerializer
 
 
 class RegionVocabularySerializer(serializers.ModelSerializer):
@@ -28,12 +29,15 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
         )
 
 
-class RegionSerializer(BasicRegionSerializer):
+class RegionSerializer(DynamicFieldsModelSerializer):
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
-    countries = serializers.HyperlinkedIdentityField(view_name='region-countries')
-    activities = serializers.HyperlinkedIdentityField(view_name='region-activities')
+    aggregations = AggregationsSerializer(source='activity_set', fields=())
+    countries = serializers.HyperlinkedIdentityField(
+        view_name='region-countries')
+    activities = serializers.HyperlinkedIdentityField(
+        view_name='region-activities')
     location = GeometryField(source='center_longlat')
 
     class Meta:
@@ -48,4 +52,5 @@ class RegionSerializer(BasicRegionSerializer):
             'activities',
             'location',
             'child_regions',
+            'aggregations'
         )

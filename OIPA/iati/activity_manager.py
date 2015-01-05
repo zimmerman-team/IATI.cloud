@@ -1,5 +1,6 @@
 from django.db.models import query, Q
 from geodata.models import Region
+from django.db.models import Sum
 import operator
 
 
@@ -76,6 +77,37 @@ class ActivityQuerySet(query.QuerySet):
             ).distinct()
         else:
             return self.filter(prepared_filter[0])
+
+    def aggregate_total_budget(self):
+        sum = self.aggregate(
+            total_budget=Sum('total_budget')
+        ).get('total_budget', 0.00)
+        return sum
+
+    def aggregate_disbursement(self):
+        queryset = self.filter(transaction__transaction_type='D')
+        sum = queryset.aggregate(
+            disbursement=Sum('transaction__value')
+        ).get('disbursement', 0.00)
+        return sum
+
+    def aggregate_commitment(self):
+        queryset = self.filter(transaction__transaction_type='C')
+        sum = queryset.aggregate(
+            commitment=Sum('transaction__value')
+        ).get('commitment', 0.00)
+        return sum
+
+    def aggregate_incoming_fund(self):
+        queryset = self.filter(transaction__transaction_type='IF')
+        sum = queryset.aggregate(
+            incoming_fund=Sum('transaction__value')
+        ).get('incoming_fund', 0.00)
+        return sum
+
+    def aggregate_title(self):
+        queryset = self.exclude(title__isnull=True)
+        return queryset.count()
 
     def _create_full_text_query(self, query):
         """
