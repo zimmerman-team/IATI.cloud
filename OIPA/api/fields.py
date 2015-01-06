@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import json
 
 
 class GeometryField(serializers.Field):
@@ -7,3 +8,8 @@ class GeometryField(serializers.Field):
             'type': 'Point',
             'coordinates': [obj.x, obj.y]
         }
+
+
+class JSONField(serializers.Field):
+    def to_representation(self, obj):
+        return json.loads(obj)
