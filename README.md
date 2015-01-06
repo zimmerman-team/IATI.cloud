@@ -36,3 +36,17 @@ Setup includes:
  - mysql database created (name: `oipa`, user: `oipa`, password: `oipa`)
  - OIPA/local_settings.py file created
  - inital superuser created (name: `vagrant`, password: `vagrant`)
+
+As this is not production ready setup, OIPA is not running as a service.
+
+To start:
+
+```#!bash
+vagrant ssh
+# ...logs you onto VM
+./manage.py runserver 0.0.0.0:8080
+```
+
+and open your browser at `http://localhost:19088/`.
+
+This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.
