@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create oipa db
-Q1="DROP DATABASE IF EXISTS oipa;CREATE DATABASE IF NOT EXISTS oipa;"
+Q1="CREATE DATABASE IF NOT EXISTS oipa;"
 Q2="GRANT ALL PRIVILEGES ON oipa.* TO oipa@localhost IDENTIFIED BY 'oipa';"
 Q3="FLUSH PRIVILEGES;"
 SQL="${Q1}${Q2}${Q3}"

@@ -241,3 +241,4 @@ def reschedule_all_failed(request):
         requeue_job(job.id, connection=queue.connection)
 
     return HttpResponse('Success')
+
