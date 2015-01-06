@@ -1,4 +1,4 @@
-OIPA 
+OIPA
 ============
 
 ![Build status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=master)
@@ -19,3 +19,13 @@ Check the full documentation and how to use OIPA here: http://www.oipa.nl/
 Codebase maintained by team Zimmerman & Zimmerman in Amsterdam.
 
 ============
+
+Development on [Vagrant](https://www.vagrantup.com/)
+========
+
+Initial setup scripts and Vagrantfile included,
+in order to setup new instance type following inside repository root directory:
+
+```#!bash
+vagrant up
+```
