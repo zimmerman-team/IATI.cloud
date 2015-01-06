@@ -7,7 +7,6 @@ if [ ! -d "/home/vagrant/.env/" ]; then
     sudo -u vagrant /home/vagrant/.env/bin/pip install -r OIPA/test_requirements.txt
 
     sudo -u vagrant echo "source ~/.env/bin/activate" >> /home/vagrant/.bashrc
-    sudo -u vagrant echo "cd /vagrant/OIPA" >> /home/vagrant/.bashrc
 else
     echo "Virtualenv already created."
 fi
