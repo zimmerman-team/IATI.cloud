@@ -1,5 +1,4 @@
 from django.contrib.admin.views.decorators import staff_member_required
-import django_rq
 from task_queue import tasks
 from api.v3.resources.activity_view_resources import HttpResponse
 
@@ -123,9 +122,8 @@ def add_scheduled_task(request):
     from rq_scheduler import Scheduler
     from datetime import datetime
 
-    # use_connection() # Use RQ's default Redis connection
-    # scheduler = Scheduler(queue) # Get a scheduler for the "default" queue
-    scheduler = django_rq.get_scheduler('default')
+    use_connection() # Use RQ's default Redis connection
+    scheduler = Scheduler(queue) # Get a scheduler for the "default" queue
 
     if parameters:
         scheduler.schedule(
