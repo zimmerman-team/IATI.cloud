@@ -1,3 +1,5 @@
+DEBUG = True
+
 SECRET_KEY = '__SECRET_KEY__'
 
 DATABASES = {
@@ -11,4 +13,19 @@ DATABASES = {
             'init_command': 'SET storage_engine=INNODB;',
         }
     },
+}
+
+STATIC_URL = '/static/'
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'parser': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    }
 }

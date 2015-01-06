@@ -14,4 +14,7 @@ sudo apt-get install -y libmysqld-dev
 sudo apt-get install -y mysql-server-5.6
 
 # GEOS
-sudo apt-get install binutils libproj-dev gdal-bin libgeos-3.4.2 libgeos-dev
+sudo apt-get install -y binutils libproj-dev gdal-bin libgeos-3.4.2 libgeos-dev
+
+# redis
+sudo apt-get install -y redis-server

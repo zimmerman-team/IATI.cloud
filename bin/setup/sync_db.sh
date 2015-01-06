@@ -10,5 +10,3 @@ mysql --user=root --password=oipa --execute="${SQL}"
 
 # Run syncdb
 sudo -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py syncdb --noinput 
-#;/bin/ls /vagrant'
-#';#python manage.py syncdb'
