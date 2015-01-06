@@ -29,3 +29,10 @@ in order to setup new instance type following inside repository root directory:
 ```#!bash
 vagrant up
 ```
+
+Setup includes:
+ - OIPA directory mounted into /vagrant on VM
+ - all dependencies installed
+ - mysql database created (name: `oipa`, user: `oipa`, password: `oipa`)
+ - OIPA/local_settings.py file created
+ - inital superuser created (name: `vagrant`, password: `vagrant`)
