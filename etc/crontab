@@ -1,0 +1,1 @@
+01 01 * * * /var/www/iopav21/bin/cronjob.daily.sh
