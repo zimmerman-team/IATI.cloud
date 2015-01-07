@@ -25,7 +25,8 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     location = JSONField(source='center_longlat.json')
     polygon = JSONField()
     activities = serializers.HyperlinkedIdentityField(view_name='country-activities')
-    cities = BasicCitySerializer(source='city_set', many=True)
+    indicators = serializers.HyperlinkedIdentityField(view_name='country-indicators')
+    cities = serializers.HyperlinkedIdentityField(view_name='country-cities')
 
     class Meta:
         model = geodata.models.Country
@@ -44,14 +45,11 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'iso3',
             'alpha3',
             'fips10',
-            'location',
-            'polygon',
             'data_source',
-
-            # Reverse linked data
             'activities',
+            'indicators',
             # 'adm1region_set',
             'cities',
-            'indicatordata_set',
-            'unescoindicatordata_set',
+            'location',
+            'polygon',
         )
