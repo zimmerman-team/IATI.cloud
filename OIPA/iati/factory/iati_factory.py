@@ -9,9 +9,9 @@ class NoDatabaseFactory(factory.django.DjangoModelFactory):
         return 0
 
 
-class DocumentFormatFactory(NoDatabaseFactory):
+class FileFormatFactory(NoDatabaseFactory):
     class Meta:
-        model = iati.models.DocumentFormat
+        model = iati.models.FileFormat
 
     code = 'application/json'
     name = ''

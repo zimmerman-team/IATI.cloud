@@ -8,6 +8,66 @@ class TestActivitySerializers:
 
     request_dummy = RequestFactory().get('/')
 
+    def test_DocumentLinkSerializer(self):
+        doc_link = iati_factory.DocumentLinkFactory.build(
+            url='http://someuri.com')
+        serializer = serializers.DocumentLinkSerializer(doc_link)
+        assert serializer.data['url'] == doc_link.url,\
+            """
+            'document_link.url' should be serialized to a field called 'url'
+            """
+        assert 'format' and 'category' and 'title' in serializer.data,\
+            """
+            a serialized document_link should also contain the fields 'format'
+            'category' and 'title'
+            """
+
+        assert type(serializer.fields['format']) is serializers.\
+            DocumentLinkSerializer.FileFormatSerializer,\
+            """
+            the field 'format' should be a FileFormatSerializer
+            """
+
+        assert type(serializer.fields['category']) is serializers.\
+            DocumentLinkSerializer.DocumentCategorySerializer,\
+            """
+            the field 'category' should be a DocumentCategorySerializer
+            """
+
+        assert type(serializer.fields['title']) is serializers.\
+            DocumentLinkSerializer.TitleSerializer,\
+            """
+            the field 'title' should be a TitleSerializer
+            """
+
+    def test_FileFormatSerializer(self):
+        file_format = iati_factory.FileFormatFactory.build(
+            code='application/json')
+        serializer = serializers.DocumentLinkSerializer.FileFormatSerializer(
+            file_format)
+        assert serializer.data['code'] == file_format.code,\
+            """
+            'file_format.code' should be serialized to a field called 'code'
+            """
+
+    def test_DocumentCategorySerializer(self):
+        doc_category = iati_factory.DocumentCategoryFactory.build(code='A06')
+        serializer = serializers.DocumentLinkSerializer.\
+            DocumentCategorySerializer(doc_category)
+        assert serializer.data['code'] == doc_category.code,\
+            """
+            'document_category.code' should be serialized to a field called
+            'code'
+            """
+
+    def test_DocumentTitleSerializer(self):
+        title = 'Sometitle'
+        serializer = serializers.DocumentLinkSerializer.TitleSerializer(title)
+        assert serializer.data['narratives'][0]['text']() == title,\
+            """
+            'title' should be serialized as 'title.narratives.text'
+            """
+
     def test_DefaultAidTypeSerializer(self):
         aidtype = iati_factory.AidTypeFactory.build(
             code='10',
