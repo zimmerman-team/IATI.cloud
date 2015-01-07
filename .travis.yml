@@ -10,6 +10,7 @@ before_install:
   # Build the mysql 5.6 db backend  
   - .travis/install-mysql-5.6
   - mysql -e 'create database oipa_test COLLATE utf8_unicode_ci;'
+  - sudo apt-get -q -y install binutils gdal-bin libgdal1h
 
 # command to install dependencies
 install:

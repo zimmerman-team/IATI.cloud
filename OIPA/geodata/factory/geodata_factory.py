@@ -16,3 +16,12 @@ class CityFactory(NoDatabaseFactory):
     geoname_id = 1000
     name = 'dummy_city'
     location = Point(5, 23)
+
+
+class CountryFactory(NoDatabaseFactory):
+    class Meta:
+        model = geodata.models.Country
+
+    code = 'OO'
+    name = 'dummy_country'
+    center_longlat = Point(1, 3)
