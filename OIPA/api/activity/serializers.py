@@ -8,6 +8,35 @@ from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
 
 
+class DocumentLinkSerializer(serializers.ModelSerializer):
+    class FileFormatSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.FileFormat
+            fields = ('code',)
+
+    class DocumentCategorySerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.DocumentCategory
+            fields = ('code',)
+
+    class TitleSerializer(serializers.Serializer):
+        def to_representation(self, obj):
+            return {'narratives': [{'text': obj.title}, ], }
+
+    format = FileFormatSerializer(source='file_format')
+    category = DocumentCategorySerializer(source='document_category')
+    title = TitleSerializer(source='*')
+
+    class Meta:
+        model = iati.models.DocumentLink
+        fields = (
+            'url',
+            'format',
+            'category',
+            'title'
+        )
+
+
 class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -330,7 +359,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     default_finance_type = FinanceTypeSerializer()
     default_flow_type = DefaultFlowTypeSerializer()
     default_tied_status = TiedStatusSerializer()
-    url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
     activity_dates = ActivityDateSerializer(source='*')
     total_budget = TotalBudgetSerializer(source='*')
     reporting_organisation = ReportingOrganisationSerializer(source='*')
@@ -357,6 +385,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     descriptions = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
     title = TitleSerializer(source='*')
+    document_links = DocumentLinkSerializer(
+        many=True,
+        source='documentlink_set')
 
     class Meta:
         model = iati.models.Activity
@@ -389,4 +420,5 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
             'total_budget',
             'xml_source_ref',
+            'document_links',
         )

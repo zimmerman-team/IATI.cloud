@@ -9,6 +9,30 @@ class NoDatabaseFactory(factory.django.DjangoModelFactory):
         return 0
 
 
+class FileFormatFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.FileFormat
+
+    code = 'application/json'
+    name = ''
+
+
+class DocumentCategoryFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentCategory
+
+    code = 'A04'
+    name = 'Conditions'
+
+
+class DocumentLinkFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentLink
+
+    url = 'http://someuri.com'
+    title = 'some title'
+
+
 class LanguageFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Language
