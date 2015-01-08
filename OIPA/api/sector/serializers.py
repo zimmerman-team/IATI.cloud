@@ -3,9 +3,18 @@ import iati
 from api.generics.serializers import DynamicFieldsModelSerializer
 
 
+class SectorCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.SectorCategory
+        fields = (
+            'code',
+        )
+
+
 class SectorSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='sector-detail')
-    code = serializers.CharField()
+    category = SectorCategorySerializer()
+    activities = serializers.HyperlinkedIdentityField(view_name='sector-activities')
 
     class Meta:
         model = iati.models.Sector
@@ -15,8 +24,5 @@ class SectorSerializer(DynamicFieldsModelSerializer):
             'name',
             'description',
             'category',
-
-            # Reverse linked data
-            'activity_set',
-            'activitysector_set',
+            'activities',
         )

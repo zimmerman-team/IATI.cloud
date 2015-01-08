@@ -182,6 +182,15 @@ class SectorFactory(NoDatabaseFactory):
     description = ''
 
 
+class SectorCategoryFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.SectorCategory
+
+    code = 200
+    name = 'education'
+    description = 'education description'
+
+
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Organisation
