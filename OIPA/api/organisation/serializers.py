@@ -1,23 +1,47 @@
-import django.utils.http
 import iati
 from rest_framework import serializers
 from api.generics.serializers import DynamicFieldsModelSerializer
+from api.fields import EncodedHyperlinkedIdentityField
+
+
+class BasicOrganisationSerializer(DynamicFieldsModelSerializer):
+    class NameSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.Organisation
+            fields = ('name',)
+
+    class Meta:
+        model = iati.models.Organisation
+        fields = ('url', 'code', 'name')
+
+    url = EncodedHyperlinkedIdentityField(view_name='organisation-detail')
 
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):
-    class EncodedHyperlinkedIdentityField(
-            serializers.HyperlinkedIdentityField):
-        def get_url(self, obj, view_name, request, format):
-            if obj.pk is None:
-                return None
-            lookup_value = getattr(obj, self.lookup_field)
-            quoted_lookup_value = django.utils.http.urlquote(lookup_value)
-
-            kwargs = {self.lookup_url_kwarg: quoted_lookup_value}
-            return self.reverse(
-                view_name, kwargs=kwargs, request=request, format=format)
+    class TypeSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.OrganisationType
+            fields = ('code',)
 
     url = EncodedHyperlinkedIdentityField(view_name='organisation-detail')
+    type = TypeSerializer()
+    reported_activities = serializers.HyperlinkedIdentityField(
+        source='activity_reporting_organisation',
+        view_name='organisation-reported-activities')
+    participated_activities = serializers.HyperlinkedIdentityField(
+        source='activity_participating_organisation',
+        view_name='organisation-participated-activities')
+
+    # These fields will need to be replaced once the TransactionSerializer
+    # is done
+    provided_transactions = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=iati.models.Transaction.objects.all(),
+        source='transaction_providing_organisation')
+    received_transactions = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=iati.models.Transaction.objects.all(),
+        source='transaction_receiving_organisation')
 
     class Meta:
         model = iati.models.Organisation
@@ -26,14 +50,11 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'code',
             'abbreviation',
             'type',
-            'reported_by_organisation',
             'name',
             'original_ref',
 
-            # Reverse linked data
-            'activity_reporting_organisation',
-            'activity_set',
-            'activityparticipatingorganisation_set',
-            'transaction_providing_organisation',
-            'transaction_receiving_organisation',
+            'reported_activities',
+            'participated_activities',
+            'provided_transactions',
+            'received_transactions',
         )
