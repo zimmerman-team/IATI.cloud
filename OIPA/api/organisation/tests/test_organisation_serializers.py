@@ -12,7 +12,6 @@ class TestCountrySerializers:
         organisation = iati_factory.OrganisationFactory.build(
             code=' some code',
             abbreviation='sc',
-            name='some name',
             original_ref=' some code')
 
         serializer = serializers.OrganisationSerializer(
@@ -28,10 +27,6 @@ class TestCountrySerializers:
             'organisation.abbreviation' should be serialized to a field called
             'abbreviation'
             """
-        assert serializer.data['name'] == organisation.name,\
-            """
-            'organisation.name' should be serialized to a field called 'name'
-            """
         assert serializer.data['original_ref'] == organisation.original_ref,\
             """
             'organisation.original_ref' should be serialized to a field called
@@ -40,6 +35,7 @@ class TestCountrySerializers:
 
         required_fields = (
             'url',
+            'name',
             'reported_activities',
             'participated_activities',
             'provided_transactions',
@@ -60,4 +56,12 @@ class TestCountrySerializers:
             """
             'organisation_type.code' should be serialized to a field called
             'code'
+            """
+
+    def test_OrganisationNameSerializer(self):
+        name = 'some name'
+        serializer = serializers.OrganisationSerializer.NameSerializer(name)
+        assert serializer.data['narratives'][0]['text'] == name,\
+            """
+            'organisation.name' should be serialized to a field called 'name'
             """

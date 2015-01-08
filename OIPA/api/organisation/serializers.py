@@ -5,25 +5,24 @@ from api.fields import EncodedHyperlinkedIdentityField
 
 
 class BasicOrganisationSerializer(DynamicFieldsModelSerializer):
-    class NameSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = iati.models.Organisation
-            fields = ('name',)
+    class NameSerializer(serializers.Serializer):
+        def to_representation(self, obj):
+            return {'narratives': [{'text': obj}, ], }
 
     class Meta:
         model = iati.models.Organisation
         fields = ('url', 'code', 'name')
 
     url = EncodedHyperlinkedIdentityField(view_name='organisation-detail')
+    name = NameSerializer()
 
 
-class OrganisationSerializer(DynamicFieldsModelSerializer):
+class OrganisationSerializer(BasicOrganisationSerializer):
     class TypeSerializer(serializers.ModelSerializer):
         class Meta:
             model = iati.models.OrganisationType
             fields = ('code',)
 
-    url = EncodedHyperlinkedIdentityField(view_name='organisation-detail')
     type = TypeSerializer()
     reported_activities = serializers.HyperlinkedIdentityField(
         source='activity_reporting_organisation',
