@@ -6,6 +6,7 @@ from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
 from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
+from api.fields import JSONField
 
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
@@ -357,11 +358,12 @@ class ResultTypeSerializer(serializers.ModelSerializer):
         )
 
 
-class ResultSerializer(serializers.ModelSerializer):
-    class NarrativeSerializer(serializers.Serializer):
+class NarrativeSerializer(serializers.Serializer):
         def to_representation(self, obj):
             return {'narratives': [{'text': obj}, ], }
 
+
+class ResultSerializer(serializers.ModelSerializer):
     result_type = ResultTypeSerializer()
     title = NarrativeSerializer()
     description = NarrativeSerializer()
@@ -372,7 +374,89 @@ class ResultSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'result_type',
-            'aggregation_status'
+            'aggregation_status',
+        )
+
+
+class GeographicVocabularySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.GeographicVocabulary
+        fields = (
+            'code',
+        )
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class LocationIdSerializer(serializers.Serializer):
+        vocabulary = GeographicVocabularySerializer(source='location_id_vocabulary')
+        code = serializers.CharField(source='location_id_code')
+
+    class AdministrativeSerializer(serializers.Serializer):
+        vocabulary = GeographicVocabularySerializer(source='adm_vocabulary')
+        level = serializers.IntegerField(source='adm_level')
+        code = serializers.CharField(source='adm_code')
+
+    class GeographicLocationClassSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.GeographicLocationClass
+            fields = (
+                'code',
+            )
+
+    class GeographicLocationReachSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.GeographicLocationReach
+            fields = (
+                'code',
+            )
+
+    class GeographicExactnessSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = iati.models.GeographicExactness
+            fields = (
+                'code',
+            )
+
+    class LocationTypeSerializer(serializers.ModelSerializer):
+        class LocationTypeCategorySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = iati.models.LocationTypeCategory
+                fields = (
+                    'code',
+                )
+        category = LocationTypeCategorySerializer
+
+        class Meta:
+            model = iati.models.LocationType
+            fields = (
+                'code',
+                'category',
+            )
+
+    location_reach = GeographicLocationReachSerializer()
+    location_id = LocationIdSerializer(source='*')
+    name = NarrativeSerializer()
+    description = NarrativeSerializer()
+    activity_description = NarrativeSerializer()
+    administrative = AdministrativeSerializer(source='*')
+    point = JSONField(source='point.json')
+    exactness = GeographicExactnessSerializer()
+    location_class = GeographicLocationClassSerializer()
+    feature_designation = LocationTypeSerializer()
+
+    class Meta:
+        model = iati.models.Location
+        fields = (
+            'location_reach',
+            'location_id',
+            'name',
+            'description',
+            'activity_description',
+            'administrative',
+            'point',
+            'exactness',
+            'location_class',
+            'feature_designation',
         )
 
 
@@ -416,6 +500,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         many=True,
         source='documentlink_set')
     results = ResultSerializer(many=True, source='result_set')
+    locations = LocationSerializer(many=True, source='location_set')
 
     class Meta:
         model = iati.models.Activity
@@ -450,4 +535,5 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'xml_source_ref',
             'document_links',
             'results',
+            'locations'
         )
