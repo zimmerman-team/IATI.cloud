@@ -15,7 +15,6 @@ class TransactionList(DynamicListAPIView):
     fields = (
         'id',
         'url'
-        'activity_id',
         'aid_type',
         'description',
         'finance_type',
