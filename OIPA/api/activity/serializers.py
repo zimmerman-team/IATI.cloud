@@ -81,7 +81,7 @@ class ActivityScopeSerializer(serializers.ModelSerializer):
         fields = ('code',)
 
 
-class DefaultAidTypeSerializer(serializers.ModelSerializer):
+class AidTypeSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
 
     class Meta:
@@ -91,7 +91,7 @@ class DefaultAidTypeSerializer(serializers.ModelSerializer):
         )
 
 
-class DefaultFlowTypeSerializer(serializers.ModelSerializer):
+class FlowTypeSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
 
     class Meta:
@@ -246,14 +246,15 @@ class TitleSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True, source='title_set')
 
 
+class DescriptionTypeSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
+    class Meta:
+        model = iati.models.DescriptionType
+        fields = ('code',)
+
+
 class DescriptionSerializer(serializers.ModelSerializer):
-    class DescriptionTypeSerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
-
-        class Meta:
-            model = iati.models.DescriptionType
-            fields = ('code',)
-
     class NarrativeSerializer(serializers.ModelSerializer):
         text = serializers.CharField(source='description')
 
@@ -461,14 +462,15 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
     activity_status = ActivityStatusSerializer()
     activity_scope = ActivityScopeSerializer(source='scope')
     capital_spend = CapitalSpendSerializer(source='*')
     collaboration_type = CollaborationTypeSerializer()
-    default_aid_type = DefaultAidTypeSerializer()
+    default_aid_type = AidTypeSerializer()
     default_currency = CurrencySerializer()
     default_finance_type = FinanceTypeSerializer()
-    default_flow_type = DefaultFlowTypeSerializer()
+    default_flow_type = FlowTypeSerializer()
     default_tied_status = TiedStatusSerializer()
     activity_dates = ActivityDateSerializer(source='*')
     total_budget = TotalBudgetSerializer(source='*')

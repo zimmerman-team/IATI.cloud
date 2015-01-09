@@ -1,9 +1,10 @@
 import iati
 import geodata
-import factory
+from factory import SubFactory
+from factory.django import DjangoModelFactory
 
 
-class NoDatabaseFactory(factory.django.DjangoModelFactory):
+class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):
         return 0
@@ -117,7 +118,7 @@ class AidTypeFactory(NoDatabaseFactory):
     code = 1
     name = 'test'
     description = 'test'
-    category = factory.SubFactory(AidTypeCategoryFactory)
+    category = SubFactory(AidTypeCategoryFactory)
 
 
 class TitleFactory(NoDatabaseFactory):
@@ -212,8 +213,8 @@ class ActivitySectorFactory(NoDatabaseFactory):
         model = iati.models.ActivitySector
 
     id = 1
-    sector = factory.SubFactory(SectorFactory)
-    activity = factory.SubFactory(ActivityFactory)
+    sector = SubFactory(SectorFactory)
+    activity = SubFactory(ActivityFactory)
     percentage = 100
 
 
@@ -231,8 +232,8 @@ class ParticipatingOrganisationFactory(NoDatabaseFactory):
         model = iati.models.ActivityParticipatingOrganisation
 
     id = 1
-    activity = factory.SubFactory(ActivityFactory)
-    organisation = factory.SubFactory(OrganisationFactory)
+    activity = SubFactory(ActivityFactory)
+    organisation = SubFactory(OrganisationFactory)
 
 
 class RecipientCountryFactory(NoDatabaseFactory):
@@ -240,8 +241,8 @@ class RecipientCountryFactory(NoDatabaseFactory):
         model = iati.models.ActivityRecipientCountry
 
     id = 1
-    activity = factory.SubFactory(ActivityFactory)
-    country = factory.SubFactory(CountryFactory)
+    activity = SubFactory(ActivityFactory)
+    country = SubFactory(CountryFactory)
     percentage = 50
 
 
