@@ -35,7 +35,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     provider_organisation = OrganisationSerializer()
     receiver_organisation = OrganisationSerializer()
     tied_status = TiedStatusSerializer()
-    transaction_type = TransactionTypeSerializer()
+    transaction_type = TransactionTypeSerializer(fields=('code', ))
     currency = CurrencySerializer()
 
     class Meta:
