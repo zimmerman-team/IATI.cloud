@@ -10,4 +10,9 @@ urlpatterns = patterns(
         views.SectorDetail.as_view(),
         name='sector-detail'
     ),
+    url(
+        r'^(?P<pk>[0-9]+)/activities/$',
+        views.SectorActivities.as_view(),
+        name='sector-activities'
+    ),
 )
