@@ -349,6 +349,33 @@ class RecipientCountrySerializer(serializers.ModelSerializer):
         )
 
 
+class ResultTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.ResultType
+        fields = (
+            'code',
+        )
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    class NarrativeSerializer(serializers.Serializer):
+        def to_representation(self, obj):
+            return {'narratives': [{'text': obj}, ], }
+
+    result_type = ResultTypeSerializer()
+    title = NarrativeSerializer()
+    description = NarrativeSerializer()
+
+    class Meta:
+        model = iati.models.Result
+        fields = (
+            'title',
+            'description',
+            'result_type',
+            'aggregation_status'
+        )
+
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_status = ActivityStatusSerializer()
     activity_scope = ActivityScopeSerializer(source='scope')
@@ -388,6 +415,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
+    results = ResultSerializer(many=True, source='result_set')
 
     class Meta:
         model = iati.models.Activity
@@ -421,4 +449,5 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'total_budget',
             'xml_source_ref',
             'document_links',
+            'results',
         )
