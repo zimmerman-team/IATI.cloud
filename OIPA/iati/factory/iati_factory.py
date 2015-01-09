@@ -304,3 +304,22 @@ class TiedStatusFactory(NoDatabaseFactory):
 
     code = 3
     name = 'Partially tied'
+
+
+class ResultTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ResultType
+
+    code = 2
+    name = 'ResultType'
+
+
+class ResultFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Result
+
+    activity = ActivityFactory.build()
+    result_type = ResultTypeFactory.build()
+    title = 'Title'
+    description = 'Description'
+    aggregation_status = False

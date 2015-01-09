@@ -511,6 +511,45 @@ class TestActivitySerializers:
             'percentage'
             """
 
+    def test_ResultTypeSerializer(self):
+        result_type = iati_factory.ResultTypeFactory.build(
+            code=1,
+        )
+        serializer = serializers.ResultTypeSerializer(result_type)
+        assert serializer.data['code'] == result_type.code,\
+            """
+            'result_type.code' should be serialized to a field called
+            'code'
+            """
+
+    def test_ResultSerializer(self):
+        result = iati_factory.ResultFactory.build(
+            title='Title',
+            description='Description',
+            aggregation_status=False,
+        )
+        serializer = serializers.ResultSerializer(result)
+
+        assert serializer.data['title']['narratives'][0]['text'] == result.title,\
+            """
+            'result.title' should be serialized to a field called
+            'title'
+            """
+        assert serializer.data['description']['narratives'][0]['text'] == result.description,\
+            """
+            'result.description' should be serialized to a field called
+            'description'
+            """
+        assert serializer.data['aggregation_status'] == result.aggregation_status,\
+            """
+            'result.aggregation_status' should be serialized to a field called
+            'aggregation_status'
+            """
+        assert 'result_type' in serializer.data, \
+            """
+            result.result_type should be serialized in result
+            """
+
     @pytest.mark.django_db
     def test_activitySerializer(self):
         request_dummy = RequestFactory().get('/')
