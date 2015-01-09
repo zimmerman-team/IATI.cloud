@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from datetime import date
 from factory import SubFactory
 # TODO: move transaction models and factories separate app
