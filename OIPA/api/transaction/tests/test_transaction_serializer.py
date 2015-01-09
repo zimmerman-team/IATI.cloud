@@ -2,7 +2,7 @@ import pytest
 from django.test import RequestFactory
 from django.core.urlresolvers import reverse
 from api.transaction.serializers import TransactionSerializer
-from iati.factory.transaction_factory import TransactionFactory
+from iati.transaction.factories import TransactionFactory
 
 
 class TestTransactionSerializer:

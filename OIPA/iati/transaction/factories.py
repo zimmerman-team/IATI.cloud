@@ -1,6 +1,5 @@
 from datetime import date
 from factory import SubFactory
-# TODO: move transaction models and factories separate app
 from iati.models import Transaction
 from iati.models import TransactionType
 from iati.factory.iati_factory import NoDatabaseFactory
