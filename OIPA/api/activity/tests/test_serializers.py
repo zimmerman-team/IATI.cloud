@@ -550,6 +550,126 @@ class TestActivitySerializers:
             result.result_type should be serialized in result
             """
 
+    def test_GeographicVocabularySerializer(self):
+        request_dummy = RequestFactory().get('/')
+        vocabulary = iati_factory.GeographicVocabularyFactory.build()
+        serializer = serializers.GeographicVocabularySerializer(
+            vocabulary, context={'request': request_dummy})
+
+        assert serializer.data['code'] == vocabulary.code,\
+            """
+            'code' should be serialized in GeographicVocabularySerializer
+            """
+
+    def test_GeographicLocationClassSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        geo_location = iati_factory.GeographicLocationClassFactory.build()
+        serializer = serializers.LocationSerializer.GeographicLocationClassSerializer(
+            geo_location, context={'request': request_dummy})
+
+        assert serializer.data['code'] == geo_location.code,\
+            """
+            'code' should be serialized in GeographicLocationClassSerializer
+            """
+
+    def test_GeographicLocationReachSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        location_reach = iati_factory.GeographicLocationReachFactory.build()
+        serializer = serializers.LocationSerializer.GeographicLocationReachSerializer(
+            location_reach, context={'request': request_dummy})
+
+        assert serializer.data['code'] == location_reach.code,\
+            """
+            'code' should be serialized in GeographicLocationReachSerializer
+            """
+
+    def test_GeographicExactnessSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        exactness = iati_factory.GeographicExactnessFactory.build()
+        serializer = serializers.LocationSerializer.GeographicExactnessSerializer(
+            exactness, context={'request': request_dummy})
+
+        assert serializer.data['code'] == exactness.code,\
+            """
+            'code' should be serialized in GeographicExactnessSerializer
+            """
+
+    def test_LocationTypeSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        type = iati_factory.LocationTypeFactory.build()
+        serializer = serializers.LocationSerializer.LocationTypeSerializer(
+            type, context={'request': request_dummy})
+
+        assert serializer.data['code'] == type.code,\
+            """
+            'code' should be serialized in LocationTypeSerializer
+            """
+
+    def test_LocationIdSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        location = iati_factory.LocationFactory.build()
+        serializer = serializers.LocationSerializer.LocationIdSerializer(
+            location, context={'request': request_dummy})
+
+        assert serializer.data['code'] == location.location_id_code,\
+            """
+            'code' should be serialized in LocationIdSerializer
+            """
+        assert 'vocabulary' in serializer.data,\
+            """
+            LocationIdSerializer should serialize vocabulary
+            """
+
+    def test_AdministrativeSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        location = iati_factory.LocationFactory.build()
+        serializer = serializers.LocationSerializer.AdministrativeSerializer(
+            location, context={'request': request_dummy})
+
+        assert serializer.data['code'] == location.adm_code,\
+            """
+            'code' should be serialized in AdministrativeSerializer
+            """
+        assert serializer.data['level'] == location.adm_level,\
+            """
+            'level' should be serialized in AdministrativeSerializer
+            """
+        assert 'vocabulary' in serializer.data,\
+            """
+            AdministrativeSerializer should serialize vocabulary
+            """
+
+    def test_LocationSerializer(self):
+        request_dummy = RequestFactory().get('/')
+        location = iati_factory.LocationFactory.build()
+        serializer = serializers.LocationSerializer(
+            location, context={'request': request_dummy})
+
+        assert serializer.data['name']['narratives'][0]['text'] == location.name,\
+            """
+            'name' should be serialized in location
+            """
+        assert serializer.data['description']['narratives'][0]['text'] == location.description,\
+            """
+            'description' should be serialized in location
+            """
+        assert serializer.data['activity_description']['narratives'][0]['text'] == location.activity_description,\
+            """
+            'activity_description' should be serialized in location
+            """
+        required_fields = (
+            'location_reach',
+            'location_id',
+            'administrative',
+            'point',
+            'exactness',
+            'location_class',
+            'feature_designation',
+        )
+        assertion_msg = "the field '{0}' should be in the serialized location"
+        for field in required_fields:
+            assert field in serializer.data, assertion_msg.format(field)
+
     @pytest.mark.django_db
     def test_activitySerializer(self):
         request_dummy = RequestFactory().get('/')

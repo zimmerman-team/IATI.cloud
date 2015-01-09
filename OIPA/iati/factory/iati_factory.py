@@ -340,3 +340,76 @@ class ResultFactory(NoDatabaseFactory):
     title = 'Title'
     description = 'Description'
     aggregation_status = False
+
+
+class GeographicLocationClassFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.GeographicLocationClass
+
+    code = 2
+    name = 'Populated place'
+
+
+class GeographicLocationReachFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.GeographicLocationReach
+
+    code = 1
+    name = 'Activity'
+
+
+class GeographicExactnessFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.GeographicExactness
+
+    code = 1
+    name = 'Exact'
+
+
+class LocationTypeCategoryFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationTypeCategory
+
+    code = 'S'
+    name = 'Spot Features'
+
+
+class LocationTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationType
+
+    code = 'AIRQ'
+    name = 'abandoned airfield'
+    description = 'abandoned airfield'
+    category = LocationTypeCategoryFactory.build()
+
+
+class GeographicVocabularyFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.GeographicVocabulary
+
+    code = 'A1'
+    name = 'Global Admininistrative Unit Layers'
+    description = 'description'
+    category = '1'
+    url = 'http://www.fao.org/geonetwork/srv/en/metadata.show?id=12691'
+
+
+class LocationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Location
+
+    activity = ActivityFactory.build()
+    ref = 'AF-KAN'
+    name = 'Location name'
+    description = 'Location description'
+    activity_description = 'A description that qualifies the activity taking place at the location'
+    adm_code = '1453782'
+    adm_level = 1
+    adm_vocabulary = GeographicVocabularyFactory.build()
+    location_id_vocabulary = GeographicVocabularyFactory.build()
+    location_id_code = '23213'
+    location_reach = GeographicLocationReachFactory.build()
+    point_pos = '31.616944 65.716944'
+    exactness = GeographicExactnessFactory.build()
+    feature_designation = LocationTypeFactory.build()

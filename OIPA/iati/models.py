@@ -1,6 +1,7 @@
 from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
+from django.contrib.gis.geos import Point
 
 
 class ActivityDateType(models.Model):
@@ -724,14 +725,14 @@ class GeographicVocabulary(models.Model):
     url = models.TextField(null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity, self.type)
+        return "%s - %s" % (self.code, self.name)
 
 class GeographicLocationReach(models.Model):
     code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=80)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity, self.type)
+        return "%s - %s" % (self.code, self.name)
 
 class OrganisationRegistrationAgency(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -752,7 +753,7 @@ class GeographicExactness(models.Model):
     url = models.TextField(null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity, self.type)
+        return "%s - %s" % (self.code, self.name)
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
@@ -784,6 +785,14 @@ class Location(models.Model):
     exactness = models.ForeignKey(GeographicExactness, null=True, default=None) # new in v1.04
     feature_designation = models.ForeignKey(LocationType, null=True, default=None, related_name="feature_designation") #new in v1.04
     location_class = models.ForeignKey(GeographicLocationClass, null=True, default=None) #new in v1.04
+
+    @property
+    def point(self):
+        if self.point_pos:
+            coo = self.point_pos.split(' ')
+            return Point(float(coo[0]), float(coo[1]))
+        else:
+            return Point(float(self.latitude), float(self.longitude))
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.name)
