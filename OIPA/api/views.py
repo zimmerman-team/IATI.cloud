@@ -5,6 +5,9 @@ from rest_framework.response import Response
 
 @api_view(('GET',))
 def api_root(request, format=None):
+    """
+    OIPA REST API
+    """
     return Response({
         'cities': reverse('city-list', request=request, format=format),
         'regions': reverse('region-list', request=request, format=format),

@@ -6,7 +6,9 @@ from iati.transaction.factories import TransactionFactory
 
 
 class TestTransactionSerializer:
-
+    """
+    Test if transaction model is serialized correctly.
+    """
     request_dummy = RequestFactory().get('/')
     transaction = TransactionFactory.build(id=1)
 
@@ -16,7 +18,7 @@ class TestTransactionSerializer:
         """
         return TransactionSerializer(
             transaction or self.transaction,
-            context={'request': self.request_dummy}
+            context={'request': self.request_dummy},
         )
 
     @pytest.mark.django_db
@@ -29,6 +31,7 @@ class TestTransactionSerializer:
             """serialized data should include url"""
 
         expected_url = "http://testserver{reverse}".format(
-            reverse=reverse('transaction-detail', args=(self.transaction.id,)))
+            reverse=reverse('transactions:detail',
+            args=(self.transaction.id,)))
         assert serializer.data.get('url', '') == expected_url, \
             """serialized url should point to transaction detail page"""

@@ -13,7 +13,8 @@ urlpatterns = patterns(
     url(r'^cities/', include('api.city.urls')),
     url(r'^organisations/', include('api.organisation.urls')),
     url(r'^sectors/', include('api.sector.urls')),
-    url(r'^transactions/', include('api.transaction.urls')),
+    url(r'^transactions/', include('api.transaction.urls',
+        namespace='transactions')),
     url('^v1/', include('api.v1.urls')),
     url('', include('api.v3.urls')),
 )

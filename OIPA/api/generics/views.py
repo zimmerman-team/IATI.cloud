@@ -33,6 +33,8 @@ def get_dynamic_pagination_serializer(self, page):
     if request_fields is not None:
         self.fields = request_fields.split(',')
 
+    print(self.fields)
+
     return pagination_serializer_class(
         instance=page, context=context, fields=self.fields)
 
