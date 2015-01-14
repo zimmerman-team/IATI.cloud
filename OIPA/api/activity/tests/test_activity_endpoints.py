@@ -13,7 +13,7 @@ class TestActivityEndpoints():
         url = reverse('activity-detail', args={'activity_id'})
 
         msg = 'activity detail endpoint should be localed at {0}'
-        expect_url = '/api/activities/activity_id/'
+        expect_url = '/api/activities/activity_id'
         assert url == expect_url, msg.format(expect_url)
 
     def test_activity_sectors_endpoint(self):
