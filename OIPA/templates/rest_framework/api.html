@@ -1,0 +1,15 @@
+{% extends 'rest_framework/base.html' %}
+{% load staticfiles %}
+
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+    <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "css/oipa.css" %}"/>
+{% endblock %}
+
+{% block title %}OIPA API{% endblock %}
+
+
+{% block branding %}<a class="navbar-brand" href="#">OIPA API v4</a>{% endblock %}

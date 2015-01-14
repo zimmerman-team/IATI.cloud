@@ -24,10 +24,13 @@ class TransactionTypeSerializer(DynamicFieldsModelSerializer):
 
 
 class TransactionSerializer(DynamicFieldsModelSerializer):
+    """
+    Transaction serializer class
+    """
     url = serializers.HyperlinkedIdentityField(
-        view_name='transaction-detail',
-        lookup_field='id')
-    activity = ActivitySerializer()
+        view_name='transactions:detail',
+        lookup_field='pk')
+    activity = ActivitySerializer(fields=('id', 'url'))
     aid_type = AidTypeSerializer
     description_type = DescriptionTypeSerializer()
     finance_type = FinanceTypeSerializer()

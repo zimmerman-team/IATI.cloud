@@ -11,7 +11,7 @@ urlpatterns = patterns(
         name='activity-list'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/$',
+        r'^(?P<pk>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'
     ),

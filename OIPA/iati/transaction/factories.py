@@ -6,7 +6,7 @@ from iati.factory.iati_factory import NoDatabaseFactory
 from iati.factory.iati_factory import ActivityFactory
 
 
-class TransacrionTypeFactory(NoDatabaseFactory):
+class TransactionTypeFactory(NoDatabaseFactory):
     code = "tes-type"
     name = "test transaction type"
     description = ""
@@ -20,7 +20,7 @@ class TransactionFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     description = ""
     transaction_date = date.today()
-    transaction_type = SubFactory(TransacrionTypeFactory)
+    transaction_type = SubFactory(TransactionTypeFactory, code=1)
 
     class Meta:
         model = Transaction
