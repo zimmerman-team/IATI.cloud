@@ -1,7 +1,7 @@
-import django_filters
 from api.generics.views import DynamicListAPIView
 from api.generics.views import DynamicRetrieveAPIView
 from api.transaction.serializers import TransactionSerializer
+from api.transaction.filters import TransactionFilter
 from iati.models import Transaction
 
 
@@ -9,9 +9,18 @@ class TransactionDetail(DynamicRetrieveAPIView):
     """
     Returns detailed information about Transaction.
 
-    Parameters:
+    ## URI Format:
 
-    - **`id`**: Numerical ID of desired Transaction
+    ```
+    /api/transactions/{transaction_id}
+    ```
+
+    ### URI Parameters:
+
+    - `transaction_id`: Numerical ID of desired Transaction
+
+    ## Request parameters:
+
     - `fields` (*optional*): List of fields to display
 
     """
@@ -19,34 +28,21 @@ class TransactionDetail(DynamicRetrieveAPIView):
     serializer_class = TransactionSerializer
 
 
-class TransactionFilter(django_filters.FilterSet):
-    """
-    Transaction filter class
-    """
-    class Meta:
-        model = Transaction
-        fields = {
-            'id': ['exact', ],
-            'aid_type': ['exact', ],
-            'transaction_type': ['exact', ],
-            'value': ['exact', 'gte', 'lte'],
-        }
-
-
 class TransactionList(DynamicListAPIView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
-    Parameters:
+    ## Request parameters:
 
     - `id` (*optional*): Transaction identifier
     - `aid_type` (*optional*): Aid type identifier
     - `transaction_type` (*optional*): Transaction type identifier
     - `value` (*optional*): Transaction value.
-      Possible options `value`, `value__gte`, `value__lte`
+    - `min_value` (*optional*): Minimal transaction value
+    - `max_value` (*optional*): Maximal transaction value
     - `fields` (*optional*): List of fields to display
 
-    Searching is performed on fields:
+    ## Searching is performed on fields:
 
     - `description`
     - `provider_organisation_name`
