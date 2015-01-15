@@ -6,6 +6,7 @@ from api.organisation import serializers
 from api.generics.views import DynamicListAPIView
 from api.generics.views import DynamicRetrieveAPIView
 from api.activity.views import ActivityList
+from api.transaction.views import TransactionList
 
 
 def custom_get_object(self):
@@ -14,6 +15,9 @@ def custom_get_object(self):
     OrganisationSerializer
     """
     queryset = self.filter_queryset(self.get_queryset())
+    return custom_get_object_from_queryset(self, queryset)
+
+def custom_get_object_from_queryset(self, queryset):
     lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
     lookup_url = self.kwargs[lookup_url_kwarg]
 
@@ -35,36 +39,31 @@ class OrganisationDetail(DynamicRetrieveAPIView):
 
 
 class ParticipatedActivities(ActivityList):
-    get_object = custom_get_object
 
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        organisation = iati.models.Organisation.objects.get(pk=pk)
+        organisation = custom_get_object_from_queryset(self,
+            iati.models.Organisation.objects.all())
         return organisation.activity_set.all()
 
 
 class ReportedActivities(ActivityList):
-    get_object = custom_get_object
-
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        organisation = iati.models.Organisation.objects.get(pk=pk)
+        organisation = custom_get_object_from_queryset(self,
+            iati.models.Organisation.objects.all())
         return organisation.activity_reporting_organisation.all()
 
 
-class ProvidedTransactions(generics.ListAPIView):
-    get_object = custom_get_object
+class ProvidedTransactions(TransactionList):
 
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        organisation = iati.models.Organisation.objects.get(pk=pk)
+        organisation = custom_get_object_from_queryset(self,
+            iati.models.Organisation.objects.all())
         return organisation.transaction_providing_organisation.all()
 
 
-class ReceivedTransactions(ActivityList):
-    get_object = custom_get_object
+class ReceivedTransactions(TransactionList):
 
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        organisation = iati.models.Organisation.objects.get(pk=pk)
+        organisation = custom_get_object_from_queryset(self,
+            iati.models.Organisation.objects.all())
         return organisation.transaction_receiving_organisation.all()

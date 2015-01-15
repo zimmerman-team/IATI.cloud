@@ -24,23 +24,15 @@ class OrganisationSerializer(BasicOrganisationSerializer):
             fields = ('code',)
 
     type = TypeSerializer()
-    reported_activities = serializers.HyperlinkedIdentityField(
-        source='activity_reporting_organisation',
+    reported_activities = EncodedHyperlinkedIdentityField(
         view_name='organisation-reported-activities')
-    participated_activities = serializers.HyperlinkedIdentityField(
-        source='activity_participating_organisation',
+    participated_activities = EncodedHyperlinkedIdentityField(
         view_name='organisation-participated-activities')
-
-    # These fields will need to be replaced once the TransactionSerializer
-    # is done
-    provided_transactions = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=iati.models.Transaction.objects.all(),
-        source='transaction_providing_organisation')
-    received_transactions = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=iati.models.Transaction.objects.all(),
-        source='transaction_receiving_organisation')
+    
+    provided_transactions = EncodedHyperlinkedIdentityField(
+        view_name='organisation-provided-transactions')
+    received_transactions = EncodedHyperlinkedIdentityField(
+        view_name='organisation-received-transactions')
 
     class Meta:
         model = iati.models.Organisation
