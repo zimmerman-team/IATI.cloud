@@ -46,6 +46,20 @@ class TestCountrySerializers:
         for field in required_fields:
             assert field in serializer.data, msg.format(field)
 
+    def test_OrganisationDifficultNameSerializer(self):
+        difficult_name = u'"Campa\xc3\x83\xc6\x92\xc3\x82\xc2\xb1aGlobalporlaLibertaddeExpresi\xc3\x83\xc6\x92\xc3\x82\xc2\xb3nA19",Asociaci\xc3\x83\xc6\x92\xc3\x82\xc2\xb3nCivil'
+        organisation = iati_factory.OrganisationFactory.build(
+            code=difficult_name,
+            abbreviation='sc',
+            original_ref=' some code')
+        try:
+            serializer = serializers.OrganisationSerializer(
+                organisation,
+                context={'request': self.request_dummy})
+            serializer.data['reported_activities']
+        except Exception as e:
+            assert e is None, e
+
     def test_OrganisationTypeSerializer(self):
         type = iati_factory.OrganisationTypeFactory.build(
             code=10,
