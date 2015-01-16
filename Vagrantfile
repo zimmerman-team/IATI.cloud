@@ -14,6 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "bin/setup/sync_db.sh"
 
   config.vm.network "forwarded_port", guest: 8080, host: 19088
+  config.vm.network "forwarded_port", guest: 4200, host: 19420
 
   config.vm.define "oipa" do |oipa|
   end
