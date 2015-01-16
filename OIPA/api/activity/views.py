@@ -53,9 +53,17 @@ class ActivityParticipatingOrganisations(ListAPIView):
         return Activity(pk=pk).participating_organisations.all()
 
 
-class ActivityRecipientCountry(ListAPIView):
+class ActivityRecipientCountries(ListAPIView):
     serializer_class = serializers.RecipientCountrySerializer
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).activityrecipientcountry_set.all()
+
+
+class ActivityRecipientRegions(ListAPIView):
+    serializer_class = serializers.ActivityRecipientRegionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).activityrecipientregion_set.all()

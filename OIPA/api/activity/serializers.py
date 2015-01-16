@@ -299,7 +299,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         )
 
 
-class ActivityRecipientRegionSerializer(serializers.ModelSerializer):
+class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     vocabulary = RegionVocabularySerializer(source='region_vocabulary')
     region = RegionSerializer(
         fields=('url', 'code', 'name')
@@ -336,7 +336,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
         )
 
 
-class RecipientCountrySerializer(serializers.ModelSerializer):
+class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
