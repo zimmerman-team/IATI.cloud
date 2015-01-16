@@ -1,10 +1,9 @@
 from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
 import iati
 from api.organisation import serializers
-from api.generics.views import DynamicListAPIView
-from api.generics.views import DynamicRetrieveAPIView
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
 
@@ -26,13 +25,13 @@ def custom_get_object_from_queryset(self, queryset):
     return get_object_or_404(queryset, **filter_kwargs)
 
 
-class OrganisationList(DynamicListAPIView):
+class OrganisationList(ListAPIView):
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'code', 'name')
 
 
-class OrganisationDetail(DynamicRetrieveAPIView):
+class OrganisationDetail(RetrieveAPIView):
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     get_object = custom_get_object

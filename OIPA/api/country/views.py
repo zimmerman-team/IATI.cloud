@@ -1,22 +1,21 @@
 import geodata
-from rest_framework import generics
 from api.country import serializers
-from api.generics.views import DynamicListAPIView
-from api.generics.views import DynamicRetrieveAPIView
 from api.activity.views import ActivityList
 from api.city.serializers import CitySerializer
 from api.indicator.serializers import IndicatorSerializer
 from geodata.models import Country
 from indicator.models import IndicatorData
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 
 
-class CountryList(DynamicListAPIView):
+class CountryList(ListAPIView):
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     fields = ('url', 'code', 'name')
 
 
-class CountryDetail(DynamicRetrieveAPIView):
+class CountryDetail(RetrieveAPIView):
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
 
@@ -28,7 +27,7 @@ class CountryActivities(ActivityList):
         return country.activity_set.all()
 
 
-class CountryIndicators(generics.ListAPIView):
+class CountryIndicators(ListAPIView):
     queryset = IndicatorData.objects.all()
     serializer_class = IndicatorSerializer
 
@@ -38,7 +37,7 @@ class CountryIndicators(generics.ListAPIView):
         return country.indicatordata_set.all()
 
 
-class CountryCities(generics.ListAPIView):
+class CountryCities(ListAPIView):
     queryset = IndicatorData.objects.all()
     serializer_class = CitySerializer
 

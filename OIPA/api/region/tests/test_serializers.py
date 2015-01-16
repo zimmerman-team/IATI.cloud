@@ -11,7 +11,7 @@ class TestRegionSerializers:
     @pytest.mark.django_db
     def test_RegionSerializer(self):
         region = iati_factory.RegionFactory.build(
-            code='10',
+            code=10,
             name='Region A'
         )
         serializer = serializers.RegionSerializer(

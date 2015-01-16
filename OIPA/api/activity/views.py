@@ -1,28 +1,43 @@
-from rest_framework import generics
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 from iati.models import Activity
 from api.activity import serializers
-from api.generics.views import DynamicListAPIView
-from api.generics.views import DynamicRetrieveAPIView
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from api.activity import filters
+from api.activity.aggregation import AggregationsSerializer
 
 
-class ActivityList(DynamicListAPIView):
+class ActivityList(ListAPIView):
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = serializers.ActivitySerializer
-    fields = ['url', 'id', 'title', 'total_budget']
+    fields = ('url', 'id', 'title', 'total_budget')
+
+    def get_pagination_serializer(self, page):
+        class SerializerClass(self.pagination_serializer_class):
+            aggregations = AggregationsSerializer(
+                source='paginator.object_list',
+                query_field='aggregations',
+                fields=()
+            )
+
+            class Meta:
+                object_serializer_class = self.get_serializer_class()
+
+        pagination_serializer_class = SerializerClass
+        context = self.get_serializer_context()
+        return pagination_serializer_class(instance=page, context=context)
 
 
-class ActivityDetail(DynamicRetrieveAPIView):
+class ActivityDetail(RetrieveAPIView):
     queryset = Activity.objects.all()
     serializer_class = serializers.ActivitySerializer
 
 
-class ActivitySectors(generics.ListAPIView):
+class ActivitySectors(ListAPIView):
     serializer_class = serializers.ActivitySectorSerializer
 
     def get_queryset(self):
@@ -30,7 +45,7 @@ class ActivitySectors(generics.ListAPIView):
         return Activity(pk=pk).activitysector_set.all()
 
 
-class ActivityParticipatingOrganisations(generics.ListAPIView):
+class ActivityParticipatingOrganisations(ListAPIView):
     serializer_class = serializers.ParticipatingOrganisationSerializer
 
     def get_queryset(self):
@@ -38,7 +53,7 @@ class ActivityParticipatingOrganisations(generics.ListAPIView):
         return Activity(pk=pk).participating_organisations.all()
 
 
-class ActivityRecipientCountry(generics.ListAPIView):
+class ActivityRecipientCountry(ListAPIView):
     serializer_class = serializers.RecipientCountrySerializer
 
     def get_queryset(self):

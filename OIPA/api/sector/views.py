@@ -1,17 +1,18 @@
 import iati
-from api.generics.views import DynamicListAPIView
-from api.generics.views import DynamicRetrieveAPIView
+from rest_framework import generics
 from api.sector import serializers
 from api.activity.views import ActivityList
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveAPIView
 
 
-class SectorList(DynamicListAPIView):
+class SectorList(ListAPIView):
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
     fields = ('url', 'code', 'name')
 
 
-class SectorDetail(DynamicRetrieveAPIView):
+class SectorDetail(RetrieveAPIView):
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
 
