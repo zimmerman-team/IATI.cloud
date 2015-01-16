@@ -10,6 +10,58 @@ from api.activity.aggregation import AggregationsSerializer
 
 
 class ActivityList(ListAPIView):
+    """
+    Returns a list of IATI Activities stored in OIPA.
+
+    ## Request parameters
+
+    - `recipient_countries` (*optional*): Recipient countries list.
+        Comma separated list of integers.
+    - `recipient_regions` (*optional*): Recipient regions list.
+        Comma separated list of integers.
+    - `sectors` (*optional*): Sectors list. Comma separated list of integers.
+    - `participating_organisations` (*optional*): Organisation IDs list.
+        Comma separated list of strings.
+    - `min_total_budget` (*optional*): Minimal total budget value.
+    - `max_total_budget` (*optional*): Maximal total budget value.
+    - `aggregations` (*optional*): Aggregate available information.
+        See [Available aggregations]() section for details.
+    - `q` (*optional*): Search specific value in activities list.
+        See [Searching]() section for details.
+    - `fields` (*optional*): List of fields to display
+
+    ## Available aggregations
+
+    API request may include `aggregations` parameter.
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
+
+    - `total_budget`: Calculate total budget of activities
+        presented in filtered activities list.
+    - `disbursement`: Calculate total disbursement of activities presented in
+        filtered activities list.
+    - `commitment`: Calculate total commitment of activities presented in
+        filtered activities list.
+
+    ## Searching
+
+    API request may include `q` parameter. This parameter controls searching and contains
+    expected value.
+
+    Searching is performed on fields:
+
+    - `id`
+    - `title`
+    - `total_budget`
+
+    ## Result details
+
+    Each result item contains short information about transaction
+    including URI to transaction details.
+
+    URI is constructed as follows: `/api/activities/{activity_id}`
+
+    """
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
@@ -33,11 +85,63 @@ class ActivityList(ListAPIView):
 
 
 class ActivityDetail(RetrieveAPIView):
+    """
+    Returns detailed information about Activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    ## Extra endpoints
+
+    Detailed information about activity sectors, participating organizations and
+    recipient countries can be found in separate pages:
+
+    - `/api/activities/{activity_id}/sectors`: Lists sectors activity presents
+    - `/api/activities/{activity_id}/participating-orgs`: List of participating
+        organizations in this activity
+    - `/api/activities/{activity_id}/recipient-countries`: List of recipient countries.
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
     queryset = Activity.objects.all()
     serializer_class = serializers.ActivitySerializer
 
 
 class ActivitySectors(ListAPIView):
+    """
+    Returns a list of IATI Activities stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/sectors
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    ## Result details
+
+    Each result item contains:
+
+    - `sector`: Sector name
+    - `percentage`: The percentage of total commitments or total
+        activity budget to this activity sector.
+    - `vocabulary`: An IATI code for the vocabulary (see codelist) used
+        for sector classifications.
+
+    """
     serializer_class = serializers.ActivitySectorSerializer
 
     def get_queryset(self):

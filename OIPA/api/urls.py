@@ -6,7 +6,7 @@ from api import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.api_root, name='api-root'),
+    url(r'^$', views.welcome, name='api-root'),
     url(r'^activities', include('api.activity.urls')),
     url(r'^regions', include('api.region.urls')),
     url(r'^countries', include('api.country.urls')),
