@@ -27,6 +27,12 @@ urlpatterns = patterns(
     ),
     url(
         r'^/(?P<pk>[^@$&+,/:;=?]+)/recipient-countries$',
-        api.activity.views.ActivityRecipientCountry.as_view(),
-        name='activity-recipient-countries'),
+        api.activity.views.ActivityRecipientCountries.as_view(),
+        name='activity-recipient-countries'
+    ),
+    url(
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/recipient-regions',
+        api.activity.views.ActivityRecipientRegions.as_view(),
+        name='activity-recipient-regions'
+    ),
 )
