@@ -11,22 +11,22 @@ urlpatterns = patterns(
         name='activity-list'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)$',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/sectors',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/sectors$',
         api.activity.views.ActivitySectors.as_view(),
         name='activity-sectors'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/participating-orgs',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/participating-orgs$',
         api.activity.views.ActivityParticipatingOrganisations.as_view(),
         name='activity-participating-organisations'
     ),
     url(
-        r'^(?P<pk>[^@$&+,/:;=?]+)/recipient-countries',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/recipient-countries$',
         api.activity.views.ActivityRecipientCountry.as_view(),
         name='activity-recipient-countries'),
 )

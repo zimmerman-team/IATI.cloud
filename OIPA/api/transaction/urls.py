@@ -7,5 +7,5 @@ from api.transaction.views import TransactionDetail
 urlpatterns = patterns(
     '',
     url(r'^$', TransactionList.as_view(), name='list'),
-    url(r'^(?P<pk>\d+)$', TransactionDetail.as_view(), name='detail'),
+    url(r'^/(?P<pk>\d+)$', TransactionDetail.as_view(), name='detail'),
 )

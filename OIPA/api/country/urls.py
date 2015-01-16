@@ -6,22 +6,22 @@ urlpatterns = patterns(
     '',
     url(r'^$', views.CountryList.as_view(), name='country-list'),
     url(
-        r'^(?P<pk>[A-Za-z]+)/$',
+        r'^/(?P<pk>[A-Za-z]+)$',
         views.CountryDetail.as_view(),
         name='country-detail'
     ),
     url(
-        r'^(?P<pk>[A-Za-z]+)/activities/$',
+        r'^/(?P<pk>[A-Za-z]+)/activities$',
         views.CountryActivities.as_view(),
         name='country-activities'
     ),
     url(
-        r'^(?P<pk>[A-Za-z]+)/indicators/$',
+        r'^/(?P<pk>[A-Za-z]+)/indicators$',
         views.CountryIndicators.as_view(),
         name='country-indicators'
     ),
     url(
-        r'^(?P<pk>[A-Za-z]+)/cities/$',
+        r'^/(?P<pk>[A-Za-z]+)/cities$',
         views.CountryIndicators.as_view(),
         name='country-cities'
     ),

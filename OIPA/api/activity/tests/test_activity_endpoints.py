@@ -6,7 +6,7 @@ class TestActivityEndpoints():
         url = reverse('activity-list')
 
         msg = 'activities endpoint should be localed at {0}'
-        expect_url = '/api/activities/'
+        expect_url = '/api/activities'
         assert url == expect_url, msg.format(expect_url)
 
     def test_activity_detail_endpoint(self):
