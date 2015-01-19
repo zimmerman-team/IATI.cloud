@@ -16,6 +16,7 @@ def custom_get_object(self):
     queryset = self.filter_queryset(self.get_queryset())
     return custom_get_object_from_queryset(self, queryset)
 
+
 def custom_get_object_from_queryset(self, queryset):
     lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
     lookup_url = self.kwargs[lookup_url_kwarg]
@@ -26,19 +27,68 @@ def custom_get_object_from_queryset(self, queryset):
 
 
 class OrganisationList(ListAPIView):
+    """
+    Returns a list of IATI Organisations stored in OIPA.
+
+    ## Result details
+
+    Each result item contains short information about organisation
+    including URI to city details.
+
+    URI is constructed as follows: `/api/organisations/{organisation_id}`
+
+    """
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'code', 'name')
 
 
 class OrganisationDetail(RetrieveAPIView):
+    """
+    Returns detailed information about Organisation.
+
+    ## URI Format
+
+    ```
+    /api/organisations/{city_id}
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Numerical ID of desired Organisation
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
     queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     get_object = custom_get_object
 
 
 class ParticipatedActivities(ActivityList):
+    """
+    Returns a list of IATI Activities Organisation participated in.
 
+    ## URI Format
+
+    ```
+    /api/organisations/{organisation_id}/participated-activities
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Numerical ID of desired Organisation
+
+    ## Result details
+
+    Each result item contains short information about activity including URI
+    to activity details.
+
+    URI is constructed as follows: `/api/activities/{activity_id}`
+
+    """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(self,
             iati.models.Organisation.objects.all())
@@ -46,6 +96,27 @@ class ParticipatedActivities(ActivityList):
 
 
 class ReportedActivities(ActivityList):
+    """
+    Returns a list of IATI Activities Organisation reported.
+
+    ## URI Format
+
+    ```
+    /api/organisations/{organisation_id}/reported-activities
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Numerical ID of desired Organisation
+
+    ## Result details
+
+    Each result item contains short information about activity including URI
+    to activity details.
+
+    URI is constructed as follows: `/api/activities/{activity_id}`
+
+    """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(self,
             iati.models.Organisation.objects.all())
@@ -53,7 +124,27 @@ class ReportedActivities(ActivityList):
 
 
 class ProvidedTransactions(TransactionList):
+    """
+    Returns a list of IATI Transactions provided by Organisation.
 
+    ## URI Format
+
+    ```
+    /api/organisations/{organisation_id}/provided-transactions
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Numerical ID of desired Organisation
+
+    ## Result details
+
+    Each result item contains short information about transaction including URI
+    to transaction details.
+
+    URI is constructed as follows: `/api/transactions/{activity_id}`
+
+    """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(self,
             iati.models.Organisation.objects.all())
@@ -61,7 +152,27 @@ class ProvidedTransactions(TransactionList):
 
 
 class ReceivedTransactions(TransactionList):
+    """
+    Returns a list of IATI Transactions received by Organisation.
 
+    ## URI Format
+
+    ```
+    /api/organisations/{organisation_id}/received-transactions
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Numerical ID of desired Organisation
+
+    ## Result details
+
+    Each result item contains short information about transaction including URI
+    to transaction details.
+
+    URI is constructed as follows: `/api/transactions/{activity_id}`
+
+    """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(self,
             iati.models.Organisation.objects.all())
