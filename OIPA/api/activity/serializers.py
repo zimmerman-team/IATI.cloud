@@ -478,6 +478,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     reporting_organisation = ReportingOrganisationSerializer(source='*')
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)
+    transactions = serializers.HyperlinkedIdentityField(
+        view_name='activity-transactions',
+    )
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,
@@ -525,6 +528,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'recipient_countries',
             'recipient_regions',
             'sectors',
+            'transactions',
             'policy_markers',
             'collaboration_type',
             'default_flow_type',
