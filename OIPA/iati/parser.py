@@ -1463,7 +1463,7 @@ class Parser():
             )
 
         for description in activity.description_set.all():
-            search_data.search_title = u'{orig_description} {add_description} '.format(
+            search_data.search_description = u'{orig_description} {add_description} '.format(
                 orig_description=search_data.search_description or '',
                 add_description=description.description or ''
             )
