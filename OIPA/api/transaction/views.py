@@ -36,6 +36,7 @@ class TransactionList(ListAPIView):
 
     - `id` (*optional*): Transaction identifier
     - `aid_type` (*optional*): Aid type identifier
+    - `activity__id` (*optional*): Activity id
     - `transaction_type` (*optional*): Transaction type identifier
     - `value` (*optional*): Transaction value.
     - `min_value` (*optional*): Minimal transaction value
@@ -64,6 +65,7 @@ class TransactionList(ListAPIView):
     fields = (
         'id',
         'url',
+        'activity',
         'aid_type',
         'description',
         'finance_type',

@@ -1,12 +1,13 @@
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from iati.models import Activity
 from api.activity import serializers
-from api.generics.filters import BasicFilterBackend
-from api.generics.filters import SearchFilter
-from rest_framework.filters import OrderingFilter
 from api.activity import filters
 from api.activity.aggregation import AggregationsSerializer
+from api.generics.filters import BasicFilterBackend
+from api.generics.filters import SearchFilter
+from api.transaction.serializers import TransactionSerializer
 
 
 class ActivityList(ListAPIView):
@@ -56,8 +57,8 @@ class ActivityList(ListAPIView):
 
     ## Result details
 
-    Each result item contains short information about transaction
-    including URI to transaction details.
+    Each result item contains short information about activity
+    including URI to activity details.
 
     URI is constructed as follows: `/api/activities/{activity_id}`
 
@@ -213,3 +214,42 @@ class ActivityRecipientRegions(ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).activityrecipientregion_set.all()
+
+
+class ActivityTransactions(ListAPIView):
+    """
+    Returns a list of IATI Activity Transactions stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/transactions
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    ## Request parameters:
+
+    - `id` (*optional*): Transaction identifier
+    - `aid_type` (*optional*): Aid type identifier
+    - `activity__id` (*optional*): Activity id
+    - `transaction_type` (*optional*): Transaction type identifier
+    - `value` (*optional*): Transaction value.
+    - `min_value` (*optional*): Minimal transaction value
+    - `max_value` (*optional*): Maximal transaction value
+    - `fields` (*optional*): List of fields to display
+
+    ## Searching is performed on fields:
+
+    - `description`
+    - `provider_organisation_name`
+    - `receiver_organisation_name`
+
+    """
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).transaction_set.all()
