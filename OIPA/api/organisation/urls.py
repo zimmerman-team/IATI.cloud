@@ -21,7 +21,7 @@ urlpatterns = patterns(
         name='organisation-participated-activities'
     ),
     url(
-        r'^/(?P<pk>[^@$&+,/:;=?]+)/provided-transaction$',
+        r'^/(?P<pk>[^@$&+,/:;=?]+)/provided-transactions$',
         views.ProvidedTransactions.as_view(),
         name='organisation-provided-transactions'
     ),

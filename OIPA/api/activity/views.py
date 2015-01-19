@@ -45,8 +45,8 @@ class ActivityList(ListAPIView):
 
     ## Searching
 
-    API request may include `q` parameter. This parameter controls searching and contains
-    expected value.
+    API request may include `q` parameter. This parameter controls searching
+    and contains expected value.
 
     Searching is performed on fields:
 
@@ -73,8 +73,7 @@ class ActivityList(ListAPIView):
             aggregations = AggregationsSerializer(
                 source='paginator.object_list',
                 query_field='aggregations',
-                fields=()
-            )
+                fields=())
 
             class Meta:
                 object_serializer_class = self.get_serializer_class()
@@ -100,13 +99,14 @@ class ActivityDetail(RetrieveAPIView):
 
     ## Extra endpoints
 
-    Detailed information about activity sectors, participating organizations and
-    recipient countries can be found in separate pages:
+    Detailed information about activity sectors, participating organizations
+    and recipient countries can be found in separate pages:
 
     - `/api/activities/{activity_id}/sectors`: Lists sectors activity presents
     - `/api/activities/{activity_id}/participating-orgs`: List of participating
         organizations in this activity
-    - `/api/activities/{activity_id}/recipient-countries`: List of recipient countries.
+    - `/api/activities/{activity_id}/recipient-countries`:
+        List of recipient countries.
 
     ## Request parameters
 
@@ -119,7 +119,7 @@ class ActivityDetail(RetrieveAPIView):
 
 class ActivitySectors(ListAPIView):
     """
-    Returns a list of IATI Activities stored in OIPA.
+    Returns a list of IATI Activity Sectors stored in OIPA.
 
     ## URI Format
 
@@ -150,6 +150,20 @@ class ActivitySectors(ListAPIView):
 
 
 class ActivityParticipatingOrganisations(ListAPIView):
+    """
+    Returns a list of IATI Activity Participating Organizations stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/participating-orgs
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    """
     serializer_class = serializers.ParticipatingOrganisationSerializer
 
     def get_queryset(self):
@@ -158,6 +172,20 @@ class ActivityParticipatingOrganisations(ListAPIView):
 
 
 class ActivityRecipientCountries(ListAPIView):
+    """
+    Returns a list of IATI Activity Recipient Countries stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/recipient-countries
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    """
     serializer_class = serializers.RecipientCountrySerializer
 
     def get_queryset(self):
