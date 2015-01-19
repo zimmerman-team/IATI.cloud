@@ -9,17 +9,17 @@ class TransactionDetail(RetrieveAPIView):
     """
     Returns detailed information about Transaction.
 
-    ## URI Format:
+    ## URI Format
 
     ```
     /api/transactions/{transaction_id}
     ```
 
-    ### URI Parameters:
+    ### URI Parameters
 
     - `transaction_id`: Numerical ID of desired Transaction
 
-    ## Request parameters:
+    ## Request parameters
 
     - `fields` (*optional*): List of fields to display
 
@@ -32,7 +32,7 @@ class TransactionList(ListAPIView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
-    ## Request parameters:
+    ## Request parameters
 
     - `id` (*optional*): Transaction identifier
     - `aid_type` (*optional*): Aid type identifier
@@ -40,13 +40,21 @@ class TransactionList(ListAPIView):
     - `value` (*optional*): Transaction value.
     - `min_value` (*optional*): Minimal transaction value
     - `max_value` (*optional*): Maximal transaction value
+    - `q` (*optional*): Search specific value in activities list.
+        See [Searching]() section for details.
     - `fields` (*optional*): List of fields to display
 
-    ## Searching is performed on fields:
+    ## Searching
 
     - `description`
     - `provider_organisation_name`
     - `receiver_organisation_name`
+
+    ## Result details
+
+    Each result item contains short information about transaction including URI to transaction details.
+
+    URI is constructed as follows: `/api/transactions/{transaction_id}`
 
     """
     queryset = Transaction.objects.all()
