@@ -194,6 +194,20 @@ class ActivityRecipientCountries(ListAPIView):
 
 
 class ActivityRecipientRegions(ListAPIView):
+    """
+    Returns a list of IATI Activity Recipient Regions stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/recipient-regions
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    """
     serializer_class = serializers.ActivityRecipientRegionSerializer
 
     def get_queryset(self):
