@@ -12,17 +12,22 @@ class SectorList(ListAPIView):
 
     ## Request parameters
 
-    - `aggregations` (*optional*): Aggregate available information.
-        See [Available aggregations]() section for details.
     - `fields` (*optional*): List of fields to display
+    - `fields[aggregations]` (*optional*): Aggregate available information.
+        See [Available aggregations]() section for details.
 
     ## Available aggregations
 
-    API request may include `aggregations` parameter.
+    API request may include `fields[aggregations]` parameter.
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
-    - `activities_set`: Activities present in filtered sectors list.
+    - `total_budget`: Calculate total budget of activities
+        presented in sector activities list.
+    - `disbursement`: Calculate total disbursement of activities
+        presented in sector activities list.
+    - `commitment`: Calculate total commitment of activities
+        presented in sector activities list.
 
     ## Result details
 

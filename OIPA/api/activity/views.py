@@ -16,7 +16,7 @@ class ActivityList(ListAPIView):
     ## Request parameters
 
     - `recipient_countries` (*optional*): Recipient countries list.
-        Comma separated list of integers.
+        Comma separated list of strings.
     - `recipient_regions` (*optional*): Recipient regions list.
         Comma separated list of integers.
     - `sectors` (*optional*): Sectors list. Comma separated list of integers.
