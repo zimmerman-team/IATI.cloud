@@ -3,6 +3,7 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics import utils
 from api.generics.filters import BasicFilterBackend
 from api.activity.filters import ActivityFilter
+from api.generics.serializers import NoCountPaginationSerializer
 
 
 class AggregationsSerializer(DynamicFieldsSerializer):
@@ -37,3 +38,12 @@ class AggregationsSerializer(DynamicFieldsSerializer):
             queryset = filter_class.filter_queryset(queryset, params)
 
         return super(AggregationsSerializer, self).to_representation(queryset)
+
+
+class AggregationsPaginationSerializer(NoCountPaginationSerializer):
+    """PaginationSerializer with aggregations for a list of activities."""
+    aggregations = AggregationsSerializer(
+        source='paginator.object_list',
+        query_field='aggregations',
+        fields=()
+    )
