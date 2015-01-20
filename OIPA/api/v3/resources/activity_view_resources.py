@@ -189,7 +189,7 @@ class ActivityResource(ModelResource):
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
     locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
     results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='detail')
-    related_activities = fields.ToManyField(RelatedActivityResource, 'related_activity', full=True, null=True, use_in='detail')
+    related_activities = fields.ToManyField(RelatedActivityResource, 'related_activities', full=True, null=True, use_in='detail')
 
     # to add:
     # conditions
