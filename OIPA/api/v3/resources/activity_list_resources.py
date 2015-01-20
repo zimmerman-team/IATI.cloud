@@ -39,6 +39,7 @@ class ActivityListResource(ActivityResource):
     default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True)
 
+
     class Meta:
         queryset = Activity.objects.all()
         resource_name = 'activity-list'
@@ -47,7 +48,7 @@ class ActivityListResource(ActivityResource):
         serializer = CsvSerializer()
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget', 'activity_status']
         filtering = {
-            'id': ('iregex'),
+            'id': ('iregex', 'in'),
             'iati_identifier': 'exact',
             'start_planned': ALL,
             #'start_actual': ALL,
