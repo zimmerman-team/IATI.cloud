@@ -608,7 +608,7 @@ class PlannedDisbursement(models.Model):
 
 
 class RelatedActivity(models.Model):
-    current_activity = models.ForeignKey(Activity, related_name="current_activity")
+    current_activity = models.ForeignKey(Activity, related_name="related_activities")
     type = models.ForeignKey(RelatedActivityType, max_length=200, null=True, default=None)
     ref = models.CharField(max_length=200, default="")
     text = models.TextField(default="")

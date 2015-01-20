@@ -47,7 +47,7 @@ class ActivityListResource(ActivityResource):
         serializer = CsvSerializer()
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget', 'activity_status']
         filtering = {
-            'id': ('iregex'),
+            'id': ('iregex', 'in'),
             'iati_identifier': 'exact',
             'start_planned': ALL,
             #'start_actual': ALL,

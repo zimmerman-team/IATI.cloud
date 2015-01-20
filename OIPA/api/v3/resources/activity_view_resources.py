@@ -7,7 +7,7 @@ from tastypie.resources import ModelResource
 from api.cache import NoTransformCache
 from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, \
     TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, \
-    ActivityParticipatingOrganisation, Location, Result
+    ActivityParticipatingOrganisation, Location, Result, RelatedActivity
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, \
     ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource
@@ -156,6 +156,15 @@ class ActivityResultResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
 
+
+class RelatedActivityResource(ModelResource):
+
+    class Meta:
+        queryset = RelatedActivity.objects.all()
+        include_resource_uri = False
+        excludes = ['id']
+
+
 class ActivityResource(ModelResource):
     countries = fields.ToManyField(OnlyCountryResource, 'recipient_country', full=True, null=True, use_in='all')
     regions = fields.ToManyField(OnlyRegionResource, 'recipient_region', full=True, null=True, use_in='all')
@@ -180,6 +189,8 @@ class ActivityResource(ModelResource):
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
     locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
     results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='detail')
+    related_activities = fields.ToManyField(RelatedActivityResource, 'related_activities', full=True, null=True, use_in='detail')
+
     # to add:
     # conditions
     # contact
@@ -202,6 +213,7 @@ class ActivityResource(ModelResource):
         excludes = ['date_created']
         ordering = ['start_actual', 'start_planned', 'end_actual', 'end_planned', 'sectors', 'total_budget']
         filtering = {
+            'id': 'in',
             'iati_identifier': 'exact',
             'start_planned': ALL,
             'start_actual': ALL,
