@@ -39,7 +39,6 @@ class ActivityListResource(ActivityResource):
     default_currency = fields.ForeignKey(ActivityViewCurrencyResource, attribute='default_currency', full=True, null=True)
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True)
 
-
     class Meta:
         queryset = Activity.objects.all()
         resource_name = 'activity-list'
