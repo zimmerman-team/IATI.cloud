@@ -31,8 +31,7 @@ class Transaction(models.Model):
         default=None)
     provider_organisation_name = models.CharField(
         max_length=255,
-        null=True,
-        default=None)
+        default="")
     provider_activity = models.CharField(max_length=100, null=True)
     receiver_organisation = models.ForeignKey(
         'Organisation',
@@ -41,8 +40,7 @@ class Transaction(models.Model):
         default=None)
     receiver_organisation_name = models.CharField(
         max_length=255,
-        null=True,
-        default=None)
+        default="")
     tied_status = models.ForeignKey('TiedStatus', null=True, default=None)
     transaction_date = models.DateField(null=True, default=None)
     transaction_type = models.ForeignKey(
@@ -52,7 +50,7 @@ class Transaction(models.Model):
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey('Currency', null=True, default=None)
-    ref = models.CharField(max_length=255, null=True, default=None)
+    ref = models.CharField(max_length=255, default="")
 
     def __unicode__(self,):
         return "%s: %s - %s" % (self.activity,
