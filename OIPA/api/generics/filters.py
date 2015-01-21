@@ -24,6 +24,10 @@ class FilterField(object):
         self.lookup_type = lookup_type
         self.field = field
 
+    @property
+    def lookup_parameter(self):
+        return self.field + '__' + self.lookup_type
+
 
 class BasicFilter(object):
 
@@ -61,35 +65,29 @@ class BasicFilter(object):
             assert len(unknown_model_fields) == 0,\
                 'field does not exist in model'
 
-
-class BasicFilterBackend(filters.BaseFilterBackend):
-
-    def filter_field_queryset_parameters(self, params=None, filter=None):
-        filter = filter()
-
-        to_filter_fields = set(filter.fields) & set(params.keys())
+    def lookup_parameters(self, params):
+        to_filter_fields = set(self.fields) & set(params.keys())
 
         lookup_parameters = {}
         for field in to_filter_fields:
-            filter_field = getattr(filter, field, None)
+            filter_field = getattr(self, field, None)
 
-            lookup_type = filter_field.lookup_type
-            field_name = filter_field.field
-
-            if lookup_type == 'in':
+            if filter_field.lookup_type == 'in':
                 parameter_value = params[field].split(',')
             else:
                 parameter_value = params[field]
 
-            lookup_parameters[field_name + '__' + lookup_type] = parameter_value
+            lookup_parameters[filter_field.lookup_parameter] = parameter_value
 
         return lookup_parameters
 
-    def filter_field_queryset(self, params=None, filter=None, queryset=None):
-        queryset_parameters = self.filter_field_queryset_parameters(
-            params=params, filter=filter)
+    def filter_queryset(self, queryset, params):
+        queryset_parameters = self.lookup_parameters(params)
 
         return queryset.filter(**queryset_parameters)
+
+
+class BasicFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         filter_class = getattr(view, 'filter_class', None)
@@ -97,7 +95,10 @@ class BasicFilterBackend(filters.BaseFilterBackend):
         if filter_class is None:
             return queryset
 
-        queryset = self.filter_field_queryset(
-            params=request.QUERY_PARAMS, filter=filter_class, queryset=queryset)
+        filter_class = filter_class()
+        queryset = filter_class.filter_queryset(
+            queryset=queryset,
+            params=request.QUERY_PARAMS
+            )
 
         return queryset
