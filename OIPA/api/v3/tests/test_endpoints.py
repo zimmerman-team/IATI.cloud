@@ -86,10 +86,6 @@ class TestEndpoints(EndpointBase):
         response = client.get('/api/v3/indicator-filter-options/')
         assert response.status_code == 200
 
-    def test_adm1_region_geojson_endpoint(self, client):
-        response = client.get('/api/v3/adm1-region-geojson/?country_id=NL')
-        assert response.status_code == 200
-
     def test_global_activities_endpoint(self, client):
         response = client.get('/api/v3/global-activities/')
         assert response.status_code == 200
