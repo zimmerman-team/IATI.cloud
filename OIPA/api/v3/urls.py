@@ -21,7 +21,6 @@ from api.v3.resources.sql_resources import \
     ActivityListVisResource, \
     ActivityFilterOptionsResource, \
     CountryGeojsonResource, \
-    Adm1RegionGeojsonResource, \
     CountryActivitiesResource, \
     RegionActivitiesResource, \
     GlobalActivitiesResource, \
@@ -49,7 +48,6 @@ v3_api.register(OnlyCountryResource())
 v3_api.register(OnlyRegionResource())
 v3_api.register(RecipientCountryResource())
 v3_api.register(CountryGeojsonResource())
-v3_api.register(Adm1RegionGeojsonResource())
 v3_api.register(CountryActivitiesResource())
 v3_api.register(ActivityAggregatedAnyResource())
 v3_api.register(IndicatorFilterOptionsResource())
