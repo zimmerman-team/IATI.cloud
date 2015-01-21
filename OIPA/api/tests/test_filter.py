@@ -5,7 +5,7 @@ from django.db import models
 from unittest import TestCase
 
 
-class TestModel(models.Model):
+class Model(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=160)
 
@@ -20,7 +20,7 @@ class TestFilter(TestCase):
             codes = FilterField(lookup_type='in', field='unknown_field')
 
             class Meta:
-                model = TestModel
+                model = Model
                 fields = [
                     'codes'
                 ]
@@ -32,7 +32,7 @@ class TestFilter(TestCase):
             codes = FilterField(lookup_type='in', field='code')
 
             class Meta:
-                model = TestModel
+                model = Model
                 fields = [
                     'codes',
                     'name'
@@ -46,7 +46,7 @@ class TestFilter(TestCase):
             name = FilterField(lookup_type='icontains', field='name')
 
             class Meta:
-                model = TestModel
+                model = Model
                 fields = [
                     'codes',
                     'name'
