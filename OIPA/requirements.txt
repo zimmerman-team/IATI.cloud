@@ -21,3 +21,4 @@ django-supervisor==0.3.2
 djangorestframework
 django-filter
 markdown
+git+git://github.com/gkuhn1/django-admin-multiupload.git
