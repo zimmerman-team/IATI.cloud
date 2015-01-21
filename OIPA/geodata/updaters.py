@@ -104,17 +104,15 @@ class CountryUpdater():
 
 
         def update_polygon_set(self):
-
-            #  "update_polygon_set not implemented yet as polygon sql field: need gis"
             base = os.path.dirname(os.path.abspath(__file__))
-            location = base + "/data_backup/admin_0_countries.json"
+            location = base + "/data_backup/country_data.json"
 
             json_data = open(location)
             admin_countries = ujson.load(json_data)
 
             for k in admin_countries['features']:
                 try:
-                    country_iso2 = k['properties']['ISO_A2']
+                    country_iso2 = k['properties']['iso2']
                     if Country.objects.filter(code=country_iso2).exists():
                             the_country = Country.objects.get(code=country_iso2)
                     else:
@@ -124,9 +122,6 @@ class CountryUpdater():
                     geometry = ujson.dumps(geometry)
                     the_country.polygon = geometry
 
-                    # pol_string = geojson_to_wkt.dumps(geometry)
-                    # pol = GEOSGeometry(pol_string)
-                    # the_country.polygon = pol
                     the_country.save()
 
                 except ValueError, e:
@@ -134,11 +129,7 @@ class CountryUpdater():
                 except TypeError, e:
                     print "Type error update_polygon_set" + e.message
                 except Exception as e:
-                    print "Error in update_polygon_set", sys.exc_info()[0]
-
-
-
-
+                    print "Error in update_polygon_set", sys.exc_info()
 
 
 class RegionUpdater():

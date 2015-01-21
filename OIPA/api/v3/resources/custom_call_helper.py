@@ -1,7 +1,10 @@
-# Data specific
-from geodata.data_backup.country_data import countryData
+import ujson
+
 
 class CustomCallHelper():
+
+    country_geojson_file= open("geodata/data_backup/country_data.json")
+    country_geojson = ujson.load(country_geojson_file)
 
     def make_where_query(self, values, name):
         query = ''
@@ -74,16 +77,17 @@ class CustomCallHelper():
 
     def find_polygon(self, iso2):
         polygon = None
-        for k in countryData['features']:
+
+        for k in country_geojson['features']:
             try:
                 if k['properties']['iso2'] == iso2:
                     polygon = k['geometry']
             except KeyError:
                 pass
+
         if not polygon:
             polygon = {
                 "type" : "Polygon",
                 "coordinates" : []
             }
-
         return polygon
