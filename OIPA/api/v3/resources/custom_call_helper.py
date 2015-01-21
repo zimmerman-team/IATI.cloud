@@ -1,5 +1,8 @@
-# Data specific
-from geodata.data_backup.country_data import countryData
+import ujson
+
+country_geojson_file = open("geodata/data_backup/country_data.json")
+country_geojson = ujson.load(country_geojson_file)
+
 
 class CustomCallHelper():
 
@@ -20,7 +23,9 @@ class CustomCallHelper():
         filters = request.GET.get(parameter, '')
         filters = filters.lstrip(',').rstrip(',')
         if filters:
-            query = self.make_where_query(values=filters.split(','), name=queryparameter)
+            query = self.make_where_query(
+                values=filters.split(','),
+                name=queryparameter)
             query = '{query}) AND ('.format(query=query)
         else:
             query = ''
@@ -33,7 +38,10 @@ class CustomCallHelper():
                 return ''
 
             for v in values:
-                query = '{query}  YEAR({name}) = "{v}" OR'.format(query=query, name=name, v=v)
+                query = '{query}  YEAR({name}) = "{v}" OR'.format(
+                    query=query,
+                    name=name,
+                    v=v)
             query = query[:-2]
         return query
 
@@ -41,7 +49,9 @@ class CustomCallHelper():
 
         filters = request.GET.get(parameter, None)
         if filters:
-            query = self.make_year_where_query(values=filters.split(','), name=queryparameter)
+            query = self.make_year_where_query(
+                values=filters.split(','),
+                name=queryparameter)
             query = '{query}) AND ('.format(query=query)
         else:
             query = ''
@@ -50,20 +60,22 @@ class CustomCallHelper():
     def get_fields(self, cursor):
         desc = cursor.description
         results = [
-        dict(zip([col[0] for col in desc], row))
-        for row in cursor.fetchall()
+            dict(zip([col[0] for col in desc], row))
+            for row in cursor.fetchall()
         ]
         return results
 
     def get_filter_query(self, filters):
-        q= ''
+        q = ''
 
         for f in filters:
             if f[f.keys()[0]]:
                 values = f[f.keys()[0]].split(',')
             else:
                 values = None
-            q = "{q} {custom}) and (".format(q=q, custom=self.make_where_query(values=values, name=f.keys()[0]))
+            q = "{q} {custom}) and (".format(
+                q=q,
+                custom=self.make_where_query(values=values, name=f.keys()[0]))
 
         q = " AND ({q}".format(q=q.replace(' and ()', '')[:-5])
         try:
@@ -74,16 +86,17 @@ class CustomCallHelper():
 
     def find_polygon(self, iso2):
         polygon = None
-        for k in countryData['features']:
+
+        for k in country_geojson['features']:
             try:
                 if k['properties']['iso2'] == iso2:
                     polygon = k['geometry']
             except KeyError:
                 pass
+
         if not polygon:
             polygon = {
-                "type" : "Polygon",
-                "coordinates" : []
+                "type": "Polygon",
+                "coordinates": []
             }
-
         return polygon

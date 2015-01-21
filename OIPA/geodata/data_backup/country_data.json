@@ -1,5 +1,4 @@
-
-countryData = {
+{
     "type": "FeatureCollection",
     "features": [
         {

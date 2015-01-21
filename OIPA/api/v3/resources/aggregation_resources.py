@@ -1,9 +1,6 @@
 # Tastypie specific
 from tastypie.resources import ModelResource
 
-# Data specific
-from geodata.data_backup.country_data import countryData
-
 # cache specific
 from api.cache import NoTransformCache
 from iati.models import AidType
