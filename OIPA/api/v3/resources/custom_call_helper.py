@@ -1,6 +1,10 @@
+import os
 import ujson
+import geodata
 
-country_geojson_file = open("geodata/data_backup/country_data.json")
+geodata_path = os.path.abspath(geodata.__path__[0])
+country_geojson_file = open(
+    "{geodata}/data_backup/country_data.json".format(geodata=geodata_path))
 country_geojson = ujson.load(country_geojson_file)
 
 
