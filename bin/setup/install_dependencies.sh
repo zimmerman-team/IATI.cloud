@@ -2,7 +2,7 @@
 
 sudo apt-get update
 
-sudo apt-get insyall -y git
+sudo apt-get install -y git
 sudo apt-get install -y python-virtualenv
 sudo apt-get install -y python-dev
 sudo apt-get install -y libxml2-dev libxslt1-dev
