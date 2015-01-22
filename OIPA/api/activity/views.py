@@ -4,7 +4,7 @@ from rest_framework.generics import RetrieveAPIView
 from iati.models import Activity
 from api.activity import serializers
 from api.activity import filters
-from api.activity.aggregation import AggregationsSerializer
+from api.activity.aggregation import AggregationsPaginationSerializer
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
 from api.transaction.serializers import TransactionSerializer
@@ -68,20 +68,7 @@ class ActivityList(ListAPIView):
     filter_class = filters.ActivityFilter
     serializer_class = serializers.ActivitySerializer
     fields = ('url', 'id', 'title', 'total_budget')
-
-    def get_pagination_serializer(self, page):
-        class SerializerClass(self.pagination_serializer_class):
-            aggregations = AggregationsSerializer(
-                source='paginator.object_list',
-                query_field='aggregations',
-                fields=())
-
-            class Meta:
-                object_serializer_class = self.get_serializer_class()
-
-        pagination_serializer_class = SerializerClass
-        context = self.get_serializer_context()
-        return pagination_serializer_class(instance=page, context=context)
+    pagination_serializer_class = AggregationsPaginationSerializer
 
 
 class ActivityDetail(RetrieveAPIView):
