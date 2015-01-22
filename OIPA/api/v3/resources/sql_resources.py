@@ -464,51 +464,6 @@ class CountryGeojsonResource(ModelResource):
         return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
 
 
-
-class Adm1RegionGeojsonResource(ModelResource):
-
-    class Meta:
-        #aid_type is used as dummy
-        queryset = AidType.objects.all()
-        resource_name = 'adm1-region-geojson'
-        include_resource_uri = True
-        cache = NoTransformCache()
-        allowed_methods = ['get']
-
-
-    def get_list(self, request, **kwargs):
-        helper = CustomCallHelper()
-        country_id = request.GET.get("country_id", None)
-
-        cursor = connection.cursor()
-
-        cursor.execute('SELECT r.adm1_code, r.name, r.polygon, r.geometry_type  '\
-                'FROM geodata_adm1region r '\
-                'WHERE r.country_id = "%s"' % (country_id))
-
-        activity_result = {'type' : 'FeatureCollection', 'features' : []}
-
-        activities = []
-
-        results = helper.get_fields(cursor=cursor)
-        for r in results:
-            region = {}
-            region['type'] = 'Feature'
-            region['geometry'] = {'type' : r['geometry_type'], 'coordinates' : r['polygon']}
-            region['properties'] = {'id' : r['adm1_code'], 'name' : r['name']}
-            activities.append(region)
-
-        result = {}
-
-        activity_result['features'] = activities
-        return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
-
-
-
-
-
-
-
 def dict2xml(d, root_node, first, listname):
         wrap          =     False if None == root_node or isinstance(d, list) else True
         root          = 'objects' if None == root_node else root_node
