@@ -47,6 +47,14 @@ vagrant ssh
 ./manage.py runserver 0.0.0.0:8080
 ```
 
+Or install fabric locally: `sudo pip install fabric`
+
+and run:
+
+```#!bash
+fab serve
+```
+
 and open your browser at `http://localhost:19088/`.
 
 This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.
