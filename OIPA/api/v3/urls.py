@@ -1,38 +1,32 @@
 from django.conf.urls import *
 from django.http import HttpResponseRedirect
-
 from tastypie.api import Api
-
 from api.v2.urls import v2_api
-from api.v3.resources.model_resources import \
-    OrganisationResource, \
-    CityResource, \
-    CountryResource, \
-    RegionResource, \
-    SectorResource, \
-    RecipientCountryResource
-from api.v3.resources.advanced_resources import \
-    OnlyCityResource, \
-    OnlyRegionResource, \
-    OnlyCountryResource
+from api.v3.resources.model_resources import OrganisationResource
+from api.v3.resources.model_resources import CityResource
+from api.v3.resources.model_resources import CountryResource
+from api.v3.resources.model_resources import RegionResource
+from api.v3.resources.model_resources import SectorResource
+from api.v3.resources.model_resources import RecipientCountryResource
+from api.v3.resources.advanced_resources import OnlyCityResource
+from api.v3.resources.advanced_resources import OnlyRegionResource
+from api.v3.resources.advanced_resources import OnlyCountryResource
 from api.v3.resources.activity_view_resources import ActivityResource
 from api.v3.resources.activity_list_resources import ActivityListResource
-from api.v3.resources.sql_resources import \
-    ActivityListVisResource, \
-    ActivityFilterOptionsResource, \
-    CountryGeojsonResource, \
-    CountryActivitiesResource, \
-    RegionActivitiesResource, \
-    GlobalActivitiesResource, \
-    DonorActivitiesResource, \
-    SectorActivitiesResource, \
-    ActivityFilterOptionsUnescoResource
+from api.v3.resources.sql_resources import ActivityListVisResource
+from api.v3.resources.sql_resources import ActivityFilterOptionsResource
+from api.v3.resources.sql_resources import CountryGeojsonResource
+from api.v3.resources.sql_resources import CountryActivitiesResource
+from api.v3.resources.sql_resources import RegionActivitiesResource
+from api.v3.resources.sql_resources import GlobalActivitiesResource
+from api.v3.resources.sql_resources import DonorActivitiesResource
+from api.v3.resources.sql_resources import SectorActivitiesResource
+from api.v3.resources.sql_resources import ActivityFilterOptionsUnescoResource
 from api.v3.resources.aggregation_resources import ActivityAggregatedAnyResource
-from api.v3.resources.indicator_resources import \
-    IndicatorFilterOptionsResource, \
-    IndicatorDataResource
-from api.v3 import views
+from api.v3.resources.indicator_resources import IndicatorFilterOptionsResource
+from api.v3.resources.indicator_resources import IndicatorDataResource
 from api.v3.resources.unesco_indicator_resources import UnescoIndicatorResource
+from api.v3 import views
 
 v3_api = Api(api_name='v3')
 v3_api.register(OrganisationResource())
