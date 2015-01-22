@@ -1,6 +1,7 @@
 from django.conf.urls import patterns
 from django.conf.urls import url
 from django.conf.urls import include
+from rest_framework.urlpatterns import format_suffix_patterns
 from api import views
 
 
@@ -18,3 +19,5 @@ urlpatterns = patterns(
     url('^v1/', include('api.v1.urls')),
     url('/', include('api.v3.urls')),
 )
+urlpatterns = format_suffix_patterns(
+    urlpatterns, allowed=['json', 'api', 'xml', 'csv'])

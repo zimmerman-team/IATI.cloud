@@ -22,3 +22,4 @@ djangorestframework
 django-filter
 markdown
 git+git://github.com/gkuhn1/django-admin-multiupload.git
+djangorestframework-csv

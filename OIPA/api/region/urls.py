@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from rest_framework.urlpatterns import format_suffix_patterns
 from api.region import views
 
 
@@ -21,3 +22,5 @@ urlpatterns = patterns(
         name='region-activities'
     ),
 )
+urlpatterns = format_suffix_patterns(
+    urlpatterns, allowed=['json', 'api', 'xml', 'csv'])
