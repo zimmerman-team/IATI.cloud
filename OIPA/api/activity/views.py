@@ -21,6 +21,7 @@ class ActivityList(ListAPIView):
     - `recipient_regions` (*optional*): Recipient regions list.
         Comma separated list of integers.
     - `sectors` (*optional*): Sectors list. Comma separated list of integers.
+    - `reporting_organisations` (*optional*): Organisation ID's list.
     - `participating_organisations` (*optional*): Organisation IDs list.
         Comma separated list of strings.
     - `min_total_budget` (*optional*): Minimal total budget value.
