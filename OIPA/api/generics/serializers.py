@@ -5,6 +5,28 @@ from rest_framework.pagination import PaginationSerializer
 
 class DynamicFields(object):
 
+    @property
+    def is_root_dynamic_fields(self):
+        """
+        Returns true if the current DynamicFields serializer is the root
+        DynamicFields serializer.
+        """
+        parent = self.parent
+        root = self.root
+        result = None
+
+        if parent is None:
+            return True
+
+        while result is None:
+            if root == parent or not hasattr(parent, 'parent'):
+                result = True
+            if isinstance(parent, DynamicFields):
+                result = False
+            else:
+                parent = parent.parent
+        return result
+
     def __init__(self, *args, **kwargs):
         self.query_field = kwargs.pop('query_field', 'fields')
         self._selected_fields = kwargs.pop('fields', None)
@@ -34,7 +56,7 @@ class DynamicFields(object):
         query_params = utils.query_params_from_context(self.context)
         view = self.context.get('view')
 
-        if not isinstance(self.parent, DynamicFields):
+        if self.is_root_dynamic_fields:
             if view and self._selected_fields is None:
                 fields = getattr(view, 'fields', None)
                 if fields:
