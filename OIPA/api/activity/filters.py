@@ -14,12 +14,17 @@ class ActivityFilter(BasicFilter):
         lookup_type='in',
         field='participating_organisation'
     )
+    reporting_organisations = FilterField(
+        lookup_type='in',
+        field='reporting_organisation'
+    )
     min_total_budget = FilterField(lookup_type='gte', field='total_budget')
     max_total_budget = FilterField(lookup_type='lte', field='total_budget')
 
     class Meta:
         model = Activity
         fields = [
+            'reporting_organisations',
             'recipient_countries',
             'recipient_regions',
             'sectors',
