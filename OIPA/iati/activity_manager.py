@@ -84,6 +84,13 @@ class ActivityQuerySet(query.QuerySet):
         ).get('total_budget', 0.00)
         return sum
 
+    def aggregate_expenditure(self):
+        queryset = self.filter(transaction__transaction_type='E')
+        sum = queryset.aggregate(
+            expenditure=Sum('transaction__value')
+        ).get('expenditure', 0.00)
+        return sum
+
     def aggregate_disbursement(self):
         queryset = self.filter(transaction__transaction_type='D')
         sum = queryset.aggregate(
@@ -143,4 +150,3 @@ class ActivityQuerySet(query.QuerySet):
     def in_region(self, pk):
         region = Region.objects.get(pk=pk)
         return self.filter(recipient_region__in=region.get_self_and_subregions())
-

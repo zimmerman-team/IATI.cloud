@@ -160,7 +160,7 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 100,
+    'MAX_PAGINATE_BY': 400,
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
@@ -171,4 +171,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

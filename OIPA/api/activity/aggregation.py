@@ -28,6 +28,12 @@ class AggregationsSerializer(DynamicFieldsSerializer):
         decimal_places=2,
         coerce_to_string=False
     )
+    expenditure = serializers.DecimalField(
+        source='aggregate_expenditure',
+        max_digits=999,
+        decimal_places=2,
+        coerce_to_string=False
+    )
     title = serializers.IntegerField(source='aggregate_title')
 
     def to_representation(self, queryset):
