@@ -1,7 +1,6 @@
 from django.conf.urls import *
 from django.http import HttpResponseRedirect
 from tastypie.api import Api
-from api.v2.urls import v2_api
 from api.v3.resources.model_resources import OrganisationResource
 from api.v3.resources.model_resources import CityResource
 from api.v3.resources.model_resources import CountryResource
@@ -66,7 +65,6 @@ urlpatterns = patterns('',
     url(r'^v3/docs/ordering/$', views.docs_ordering, name='ordering_docs'),
     url(r'^v3/docs/about/$', views.docs_about, name='about_docs'),
     (r'', include(v3_api.urls)),
-    (r'', include(v2_api.urls)),
     url(r'^$', api_v3_docs),
     (r'^v3/$', api_v3_docs),
 )
