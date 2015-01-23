@@ -27,10 +27,6 @@ class Indicator(models.Model):
     description = models.TextField(null=True, blank=True)
     friendly_label = models.CharField(max_length=255, null=True, blank=True)
     type_data = models.CharField(max_length=255, null=True, blank=True)
-    #selection type is used for i.e. table 14 type of fuel this attribute is removed to IndicatorData (31-03-2014)
-    #selection_type = models.CharField(max_length=255, null=True, blank=True)
-
-    #deprivation type is used for i.e. table 14 urban, non slum household, one sheltar deprivation
     deprivation_type = models.CharField(max_length=255, null=True, blank=True)
     source = models.ForeignKey(IndicatorSource, null=True, blank=True)
     topic = models.ForeignKey(IndicatorTopic, null=True, blank=True)
@@ -39,13 +35,12 @@ class Indicator(models.Model):
     def __unicode__(self):
         return self.friendly_label
 
+
 class IndicatorData(models.Model):
     indicator = models.ForeignKey(Indicator)
     country = models.ForeignKey(Country, null=True)
     city = models.ForeignKey(City, null=True)
     region = models.ForeignKey(Region, null=True)
-    value = models.DecimalField(null=True, blank=True, db_index=True, max_digits=17, decimal_places=4)
-    year = models.IntegerField(max_length=5)
     selection_type = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -53,6 +48,13 @@ class IndicatorData(models.Model):
 
     def __unicode__(self):
         return self.indicator.friendly_label
+
+
+class IndicatorDataValue(models.Model):
+    indicator_data = models.ForeignKey(IndicatorData)
+    year = models.IntegerField(max_length=5, db_index=True)
+    value = models.DecimalField(null=True, blank=True, db_index=True, max_digits=17, decimal_places=4)
+
 
 def file_upload_to(instance, filename):
     path = settings.ADMINFILES_UPLOAD_TO
