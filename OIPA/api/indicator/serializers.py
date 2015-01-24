@@ -3,6 +3,11 @@ from rest_framework import serializers
 
 
 class IndicatorDataValueSerializer(serializers.ModelSerializer):
+    value = serializers.DecimalField(
+        decimal_places=2,
+        max_digits=17,
+        coerce_to_string=False)
+
     class Meta:
         model = models.IndicatorDataValue
         fields = ('year', 'value')
