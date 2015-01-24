@@ -23,7 +23,7 @@ from api.v3.resources.sql_resources import SectorActivitiesResource
 from api.v3.resources.sql_resources import ActivityFilterOptionsUnescoResource
 from api.v3.resources.aggregation_resources import ActivityAggregatedAnyResource
 from api.v3.resources.indicator_resources import IndicatorFilterOptionsResource
-from api.v3.resources.indicator_resources import IndicatorDataResource
+from api.v3.resources.indicator_data_resource import IndicatorDataResource
 from api.v3.resources.unesco_indicator_resources import UnescoIndicatorResource
 from api.v3 import views
 

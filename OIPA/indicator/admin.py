@@ -79,14 +79,14 @@ class IndicatorAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 class IndicatorDataAdmin(admin.ModelAdmin):
-    list_display = ['indicator', 'city','country', 'region', 'year', 'value']
-    search_fields = ['year', 'indicator__friendly_label', 'value']
-    list_filter = ['indicator', 'city', 'country', 'year']
+    list_display = ['indicator', 'city', 'country', 'region']
+    search_fields = ['indicator__friendly_label']
+    list_filter = ['indicator', 'city', 'country']
 
 class IndicatorDataUploadAdmin(MultiUploadAdmin):
-    list_display = ['indicator','selection_type', 'city','country', 'region', 'year', 'value']
-    search_fields = ['year', 'indicator__friendly_label', 'value']
-    list_filter = ['indicator','selection_type', 'city', 'country', 'year']
+    list_display = ['indicator', 'selection_type', 'city', 'country', 'region']
+    search_fields = ['indicator__friendly_label']
+    list_filter = ['indicator', 'selection_type', 'city', 'country', 'region']
     # default value of all parameters:
     change_form_template = 'multiupload/change_form.html'
     change_list_template = 'multiupload/change_list.html'
