@@ -51,7 +51,7 @@ class IndicatorData(models.Model):
 
 
 class IndicatorDataValue(models.Model):
-    indicator_data = models.ForeignKey(IndicatorData)
+    indicator_data = models.ForeignKey(IndicatorData, related_name='values')
     year = models.IntegerField(max_length=5, db_index=True)
     value = models.DecimalField(null=True, blank=True, db_index=True, max_digits=17, decimal_places=4)
 

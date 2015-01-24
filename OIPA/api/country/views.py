@@ -2,7 +2,7 @@ import geodata
 from api.country import serializers
 from api.activity.views import ActivityList
 from api.city.serializers import CitySerializer
-from api.indicator.serializers import IndicatorSerializer
+from api.indicator.serializers import IndicatorDataSerializer
 from geodata.models import Country
 from indicator.models import IndicatorData
 from rest_framework.generics import ListAPIView
@@ -120,7 +120,7 @@ class CountryIndicators(ListAPIView):
     """
 
     queryset = IndicatorData.objects.all()
-    serializer_class = IndicatorSerializer
+    serializer_class = IndicatorDataSerializer
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
