@@ -2,9 +2,9 @@ import geodata
 from api.country import serializers
 from api.activity.views import ActivityList
 from api.city.serializers import CitySerializer
-from api.indicator.serializers import IndicatorDataSerializer
 from geodata.models import Country
 from indicator.models import IndicatorData
+from api.indicator.views import IndicatorList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 
@@ -96,7 +96,7 @@ class CountryActivities(ActivityList):
         return country.activity_set.all()
 
 
-class CountryIndicators(ListAPIView):
+class CountryIndicators(IndicatorList):
     """
     Returns a list of IATI Country indicators stored in OIPA.
 
@@ -118,10 +118,6 @@ class CountryIndicators(ListAPIView):
     URI is constructed as follows: `/api/indicators/{city_id}`
 
     """
-
-    queryset = IndicatorData.objects.all()
-    serializer_class = IndicatorDataSerializer
-
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         country = Country.objects.get(pk=pk)
