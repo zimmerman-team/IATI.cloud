@@ -4,6 +4,7 @@ from iati.models import Activity
 
 
 class ActivityFilter(BasicFilter):
+    activity_scope = FilterField(lookup_type='in', field='scope')
     recipient_countries = FilterField(
         lookup_type='in',
         field='recipient_country'
@@ -24,6 +25,7 @@ class ActivityFilter(BasicFilter):
     class Meta:
         model = Activity
         fields = [
+            'activity_scope',
             'reporting_organisations',
             'recipient_countries',
             'recipient_regions',
