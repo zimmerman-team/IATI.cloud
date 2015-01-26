@@ -34,7 +34,7 @@ def welcome(request, format=None):
 
     Legacy API (v3) is still accesseble but will be depricated soon.
 
-    [`/api/v3/`](/api/v3/)
+    [`/api/v3/docs/`](/api/v3/docs/)
 
     """
     return Response({

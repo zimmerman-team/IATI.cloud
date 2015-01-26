@@ -59,11 +59,10 @@ def api_v3_docs(request):
 
 urlpatterns = patterns(
     '',
-    url(r'^docs/$', views.docs_index, name='docs'),
-    url(r'^docs/getting-started/$', views.docs_start, name='start_docs'),
-    url(r'^docs/resources/$', views.docs_resources, name='resource_docs'),
-    url(r'^docs/filtering/$', views.docs_filtering, name='filter_docs'),
-    url(r'^docs/ordering/$', views.docs_ordering, name='ordering_docs'),
-    url(r'^docs/about/$', views.docs_about, name='about_docs'),
-    (r'^$', api_v3_docs),
+    url(r'^/docs/$', views.docs_index, name='docs'),
+    url(r'^/docs/getting-started/$', views.docs_start, name='start_docs'),
+    url(r'^/docs/resources/$', views.docs_resources, name='resource_docs'),
+    url(r'^/docs/filtering/$', views.docs_filtering, name='filter_docs'),
+    url(r'^/docs/ordering/$', views.docs_ordering, name='ordering_docs'),
+    url(r'^/docs/about/$', views.docs_about, name='about_docs'),
 )
