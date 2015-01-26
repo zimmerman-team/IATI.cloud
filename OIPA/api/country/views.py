@@ -115,7 +115,7 @@ class CountryIndicators(IndicatorList):
     Each result item contains short information about indicator including URI
     to indicator details.
 
-    URI is constructed as follows: `/api/indicators/{city_id}`
+    URI is constructed as follows: `/api/indicators/{indicator_id}`
 
     """
     def get_queryset(self):
