@@ -53,7 +53,7 @@ class CodeListImporter():
 
 
         def add_code_list_item(elem):
-            type = elem.tag
+            tag = elem.tag
 
             db_row = None
 
@@ -107,202 +107,193 @@ class CodeListImporter():
 
 
             try:
-                if type == "ActivityDateType":
+                if tag == "ActivityDateType":
                     db_row = ActivityDateType(code=code, name=name)
 
-                elif type == "ActivityStatus":
+                elif tag == "ActivityStatus":
                     db_row = ActivityStatus(code=code, name=name, language=language_name)
 
-                elif type == "Country":
+                elif tag == "Country":
                     name = name.lower().capitalize()
                     db_row = Country(code=code, name=name, language=language_name, data_source="IATI")
 
-                elif type == "BudgetType":
+                elif tag == "BudgetType":
                     db_row = BudgetType(code=code, name=name, language=language_name)
 
-                elif type == "CollaborationType":
+                elif tag == "CollaborationType":
                     db_row = CollaborationType(code=code, name=name, description=description, language=language_name)
 
-                elif type == "ConditionType":
+                elif tag == "ConditionType":
                     db_row = ConditionType(code=code, name=name, language=language_name)
 
-                elif type == "Currency":
+                elif tag == "Currency":
                     db_row = Currency(code=code, name=name, language=language_name)
 
-                elif type == "DescriptionType":
+                elif tag == "DescriptionType":
                     db_row = DescriptionType(code=code, name=name, description=description)
 
-                elif type == "DisbursementChannel":
+                elif tag == "DisbursementChannel":
                     db_row = DisbursementChannel(code=code, name=name)
 
-                elif type == "DocumentCategory-category":
+                elif tag == "DocumentCategory-category":
                     db_row = DocumentCategoryCategory(code=code, name=name)
 
-                elif type == "DocumentCategory":
+                elif tag == "DocumentCategory":
                     dcc = DocumentCategoryCategory.objects.get(code=category)
                     db_row = DocumentCategory(code=code, name=name, description=description, category=dcc)
 
-                elif type == "GeographicLocationClass":
+                elif tag == "GeographicLocationClass":
                     db_row = GeographicLocationClass(code=code, name=name)
 
-                elif type == "FileFormat":
+                elif tag == "FileFormat":
                     db_row = FileFormat(code=code, name=name)
 
-                elif type == "FlowType":
+                elif tag == "FlowType":
                     db_row = FlowType(code=code, name=name, description=description)
 
-                elif type == "GazetteerAgency":
+                elif tag == "GazetteerAgency":
                     db_row = GazetteerAgency(code=code, name=name)
 
-                elif type == "GeographicalPrecision":
+                elif tag == "GeographicalPrecision":
                     db_row = GeographicalPrecision(code=code, name=name, description=description)
 
-                elif type == "IndicatorMeasure":
+                elif tag == "IndicatorMeasure":
                     db_row = ResultIndicatorMeasure(code=code, name=name)
 
-                elif type == "Language":
+                elif tag == "Language":
                     db_row = Language(code=code, name=name)
 
-                elif type == "LocationType-category":
+                elif tag == "LocationType-category":
                     db_row = LocationTypeCategory(code=code, name=name)
 
-                elif type == "LocationType":
+                elif tag == "LocationType":
                     ltc = LocationTypeCategory.objects.get(code=category)
                     db_row = LocationType(code=code, name=name, description=description, category=ltc)
 
-                elif type == "OrganisationIdentifier":
+                elif tag == "OrganisationIdentifier":
                     db_row = OrganisationIdentifier(code=code,abbreviation=abbreviation, name=name)
 
-                elif type == "OrganisationRole":
+                elif tag == "OrganisationRole":
                     db_row = OrganisationRole(code=code, name=name, description=description)
 
-                elif type == "OrganisationType":
+                elif tag == "OrganisationType":
                     db_row = OrganisationType(code=code, name=name)
 
-                elif type == "PolicyMarker":
+                elif tag == "PolicyMarker":
                     db_row = PolicyMarker(code=code, name=name)
 
-                elif type == "PolicySignificance":
+                elif tag == "PolicySignificance":
                     db_row = PolicySignificance(code=code, name=name, description=description)
 
-                elif type == "PublisherType":
+                elif tag == "PublisherType":
                     db_row = PublisherType(code=code, name=name)
 
-                elif type == "RelatedActivityType":
+                elif tag == "RelatedActivityType":
                     db_row = RelatedActivityType(code=code, name=name, description=description)
 
-                elif type == "ResultType":
+                elif tag == "ResultType":
                     db_row = ResultType(code=code, name=name)
 
-                elif type == "SectorCategory":
+                elif tag == "SectorCategory":
                     name = name.lower().capitalize()
                     db_row = SectorCategory(code=code, name=name, description=description)
 
-                elif type == "TiedStatus":
+                elif tag == "TiedStatus":
                     db_row = TiedStatus(code=code, name=name, description=description)
 
-                elif type == "TransactionType":
+                elif tag == "TransactionType":
                     db_row = TransactionType(code=code, name=name, description=description)
 
-                elif type == "ValueType":
+                elif tag == "ValueType":
                     db_row = ValueType(code=code, name=name, description=description)
 
-                elif type == "VerificationStatus":
+                elif tag == "VerificationStatus":
                     db_row = VerificationStatus(code=code, name=name)
 
-                elif type == "Vocabulary":
+                elif tag == "Vocabulary":
                     db_row = Vocabulary(code=code, name=name)
 
-                elif type == "ActivityScope":
+                elif tag == "ActivityScope":
                     db_row = ActivityScope(code=code, name=name)
 
-                elif type == "AidTypeFlag":
+                elif tag == "AidTypeFlag":
                     db_row = AidTypeFlag(code=code, name=name)
 
-                elif type == "BudgetIdentifier":
+                elif tag == "BudgetIdentifier":
                     db_row = BudgetIdentifier(code=code, name=name, category=category, sector=sector)
 
-                elif type == "BudgetIdentifierSector-category":
+                elif tag == "BudgetIdentifierSector-category":
                     db_row = BudgetIdentifierSectorCategory(code=code, name=name)
 
-                elif type == "BudgetIdentifierSector":
+                elif tag == "BudgetIdentifierSector":
                     bisc = BudgetIdentifierSectorCategory.objects.get(code=category)
                     db_row = BudgetIdentifierSector(code=code, name=name, category=bisc)
 
-
-                elif type == "BudgetIdentifierVocabulary":
+                elif tag == "BudgetIdentifierVocabulary":
                     db_row = BudgetIdentifierVocabulary(code=code, name=name)
 
-                elif type == "ContactType":
+                elif tag == "ContactType":
                     db_row = ContactType(code=code, name=name)
 
-                elif type == "LoanRepaymentPeriod":
+                elif tag == "LoanRepaymentPeriod":
                     db_row = LoanRepaymentPeriod(code=code, name=name)
 
-                elif type == "LoanRepaymentType":
+                elif tag == "LoanRepaymentType":
                     db_row = LoanRepaymentType(code=code, name=name)
 
-                elif type == "RegionVocabulary":
+                elif tag == "RegionVocabulary":
                     db_row = RegionVocabulary(code=code, name=name)
 
-                elif type == "FinanceType":
+                elif tag == "FinanceType":
                     ftc = FinanceTypeCategory.objects.get(code=category)
                     db_row = FinanceType(code=code, name=name, category=ftc)
 
-                elif type == "FinanceType-category":
+                elif tag == "FinanceType-category":
                     db_row = FinanceTypeCategory(code=code, name=name ,description=description)
 
-                elif type == "Region":
+                elif tag == "Region":
                     region_voc = RegionVocabulary.objects.get(code=1)
                     db_row = Region(code=code, name=name, region_vocabulary=region_voc)
 
-                elif type == "AidType-category":
+                elif tag == "AidType-category":
                     db_row = AidTypeCategory(code=code, name=name, description=description)
 
-                elif type == "AidType":
+                elif tag == "AidType":
                     atc = AidTypeCategory.objects.get(code=category)
                     db_row = AidType(code=code, name=name, description=description, category=atc)
 
-                elif type == "Sector":
+                elif tag == "Sector":
                     sector_cat = SectorCategory.objects.get(code=category)
                     db_row = Sector(code=code, name=name, description=description, category=sector_cat)
 
                 # v1.04 added codelists
 
-                elif type == "GeographicLocationReach":
+                elif tag == "GeographicLocationReach":
                     db_row = GeographicLocationReach(code=code, name=name)
 
-                elif type == "OrganisationRegistrationAgency":
+                elif tag == "OrganisationRegistrationAgency":
                     db_row = OrganisationRegistrationAgency(code=code, name=name, description=description, category=category, category_name=category_name, url=url)
 
-                elif type == "GeographicExactness":
+                elif tag == "GeographicExactness":
                     db_row = GeographicExactness(code=code, name=name, description=description, category=category, url=url)
 
-                elif type == "GeographicVocabulary":
+                elif tag == "GeographicVocabulary":
                     db_row = GeographicVocabulary(code=code, name=name, description=description, category=category, url=url)
 
-
-
-
-
-
                 else:
-                    print "type not saved: " + type
+                    print "type not saved: " + tag
 
                 if (db_row is not None):
                     db_row.save()
 
             except Exception as e:
-
                 logger.info("error in codelists")
                 logger.info('%s (%s)' % (e.message, type(e)))
-                logger.info(e.messages)
 
         def add_missing_items():
             if not Country.objects.filter(code="XK").exists():
                 kosovo = Country(code="XK", name="Kosovo", language="en")
                 kosovo.save()
-
 
         def get_codelist_data(elem=None, name=None):
 
