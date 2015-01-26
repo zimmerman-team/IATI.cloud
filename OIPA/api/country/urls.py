@@ -22,7 +22,7 @@ urlpatterns = patterns(
     ),
     url(
         r'^/(?P<pk>[A-Za-z]+)/cities$',
-        views.CountryIndicators.as_view(),
+        views.CountryCities.as_view(),
         name='country-cities'
     ),
 )
