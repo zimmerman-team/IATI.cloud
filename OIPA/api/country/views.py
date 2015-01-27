@@ -7,6 +7,7 @@ from indicator.models import IndicatorData
 from api.indicator.views import IndicatorList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
+from api.country.filters import CountryFilter
 
 
 class CountryList(ListAPIView):
@@ -15,7 +16,10 @@ class CountryList(ListAPIView):
 
     ## Request parameters
 
-    - `fields` (*optional*): List of fields to display
+    - `code` (*optional*): Country code to search for.
+    - `name` (*optional*): Country name to search for.
+    - `region_code` (*optional*): Filter countries by Region code.
+    - `fields` (*optional*): List of fields to display.
     - `fields[aggregations]` (*optional*): Aggregate available information.
         See [Available aggregations]() section for details.
 
@@ -42,6 +46,7 @@ class CountryList(ListAPIView):
     """
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
+    filter_class = CountryFilter
     fields = ('url', 'code', 'name')
 
 
