@@ -57,14 +57,12 @@ v3_api.register(ActivityListVisResource())
 def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')
 
-urlpatterns = patterns('',
-    url(r'^v3/docs/$', views.docs_index, name='docs'),
-    url(r'^v3/docs/getting-started/$', views.docs_start, name='start_docs'),
-    url(r'^v3/docs/resources/$', views.docs_resources, name='resource_docs'),
-    url(r'^v3/docs/filtering/$', views.docs_filtering, name='filter_docs'),
-    url(r'^v3/docs/ordering/$', views.docs_ordering, name='ordering_docs'),
-    url(r'^v3/docs/about/$', views.docs_about, name='about_docs'),
-    (r'', include(v3_api.urls)),
-    url(r'^$', api_v3_docs),
-    (r'^v3/$', api_v3_docs),
+urlpatterns = patterns(
+    '',
+    url(r'^/docs/$', views.docs_index, name='docs'),
+    url(r'^/docs/getting-started/$', views.docs_start, name='start_docs'),
+    url(r'^/docs/resources/$', views.docs_resources, name='resource_docs'),
+    url(r'^/docs/filtering/$', views.docs_filtering, name='filter_docs'),
+    url(r'^/docs/ordering/$', views.docs_ordering, name='ordering_docs'),
+    url(r'^/docs/about/$', views.docs_about, name='about_docs'),
 )

@@ -2,6 +2,7 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.conf.urls import include
 from api import views
+from api.v3.urls import v3_api
 
 
 urlpatterns = patterns(
@@ -15,5 +16,6 @@ urlpatterns = patterns(
     url(r'^/sectors', include('api.sector.urls')),
     url(r'^/transactions', include('api.transaction.urls',
         namespace='transactions')),
-    url('/', include('api.v3.urls')),
+    url(r'^/v3', include('api.v3.urls')),
+    url(r'^/', include(v3_api.urls)),
 )

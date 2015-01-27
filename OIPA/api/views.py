@@ -1,3 +1,5 @@
+from django.shortcuts import render
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -27,6 +29,12 @@ def welcome(request, format=None):
     * Countries: [`/api/countries`](/api/countries)
 
     * Cities: [`/api/cities`](/api/cities)
+
+    # Legacy API
+
+    Legacy API (v3) is still accesseble but will be depricated soon.
+
+    [`/api/v3/docs/`](/api/v3/docs/)
 
     """
     return Response({
