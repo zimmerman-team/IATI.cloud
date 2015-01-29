@@ -1,7 +1,8 @@
-import geodata
-from api.city import serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
+from geodata.models import City
+from api.city import serializers
+from api.indicator.views import IndicatorList
 
 
 class CityList(ListAPIView):
@@ -35,7 +36,7 @@ class CityList(ListAPIView):
     URI is constructed as follows: `/api/cities/{city_id}`
 
     """
-    queryset = geodata.models.City.objects.all()
+    queryset = City.objects.all()
     serializer_class = serializers.CitySerializer
     fields = ('url', 'id', 'name')
 
@@ -58,6 +59,41 @@ class CityDetail(RetrieveAPIView):
 
     - `fields` (*optional*): List of fields to display
 
+    ## Extra Endpoints
+
+    ### City Indicators
+
+    `/api/cities/{city_id}/indicators`: List of indicators
+    connected to specified city.
+
     """
-    queryset = geodata.models.City.objects.all()
+    queryset = City.objects.all()
     serializer_class = serializers.CitySerializer
+
+
+class CityIndicators(IndicatorList):
+    """
+    Returns a list of IATI City indicators stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/cities/{city_id}/indicators
+    ```
+
+    ### URI Parameters
+
+    - `city_id`: Numerical ID of desired City
+
+    ## Result details
+
+    Each result item contains short information about indicator including URI
+    to indicator details.
+
+    URI is constructed as follows: `/api/indicators/{indicator_id}`
+
+    """
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        city = City.objects.get(pk=pk)
+        return city.indicatordata_set.all()
