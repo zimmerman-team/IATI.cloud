@@ -44,3 +44,7 @@ class TestCitySerializers:
             """
             a serialized city should contain a field called 'is_capital'
             """
+        assert 'indicators' in serializer.data,\
+            """
+            a serialized city shoud contain a field called 'indicators'
+            """
