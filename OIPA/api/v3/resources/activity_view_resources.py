@@ -156,7 +156,7 @@ class ActivityResultResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
         filtering = {
-            'title': ALL
+            'title': 'exact',
         }
 
 
@@ -191,7 +191,7 @@ class ActivityResource(ModelResource):
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
     locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
-    results = fields.ToManyField(ActivityResultResource, 'results', full=True, null=True, use_in='all')
+    results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='all')
     related_activities = fields.ToManyField(RelatedActivityResource, 'related_activities', full=True, null=True, use_in='detail')
 
     # to add:

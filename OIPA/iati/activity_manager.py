@@ -44,12 +44,8 @@ class ActivityQuerySet(query.QuerySet):
                 'name': 'activitysearchdata__search_documentlink_title',
                 'method': '__search'
             },
-            'results': {
-                'name': 'result__title',
-                'method': ''
-            },
         }
-
+    
     def search(self, query, search_fields):
         prepared_filter = self._prepare_search_filter(
             self.Meta.DEFAULT_SEARCH_FIELDS if search_fields is None
