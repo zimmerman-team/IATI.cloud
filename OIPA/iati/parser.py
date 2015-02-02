@@ -233,15 +233,10 @@ class Parser():
             default_currency = None
 
             hierarchy = self.return_first_exist(elem.xpath('@hierarchy'))
-            last_updated_datetime = self.return_first_exist(elem.xpath('@last-updated-datetime'))
-            # if last_updated_datetime:
-            #     last_updated_datetime = last_updated_datetime.split('+')[0]
-            #     last_updated_datetime = last_updated_datetime.split('-')[0]
-            # strp_time = time.strptime(last_updated_datetime_str, '%Y-%m-%d %H:%M:%S')
-            # last_updated_datetime = datetime.fromtimestamp(time.mktime(strp_time))
+            last_updated_datetime = self.return_first_exist(elem.xpath('@last-updated-datetime')) or ""
 
-            linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri'))
-            iati_standard_version = self.return_first_exist(elem.xpath('@version'))
+            linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri')) or ""
+            iati_standard_version = self.return_first_exist(elem.xpath('@version')) or ""
 
             reporting_organisation_ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
             reporting_organisation = None
@@ -346,9 +341,9 @@ class Parser():
             for t in elem.xpath('other-identifier'):
 
                 try:
-                    owner_ref = self.return_first_exist(t.xpath( '@owner-ref' ))
-                    owner_name = self.return_first_exist(t.xpath( '@owner-name' ))
-                    other_identifier = self.return_first_exist(t.xpath( 'text()' ))
+                    owner_ref = self.return_first_exist(t.xpath('@owner-ref')) or ""
+                    owner_name = self.return_first_exist(t.xpath('@owner-name')) or ""
+                    other_identifier = self.return_first_exist(t.xpath('text()'))
                     if not other_identifier:
                         other_identifier = " "
                     new_other_identifier = models.OtherIdentifier(activity=activity, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
@@ -395,7 +390,7 @@ class Parser():
         try:
             for t in elem.xpath('description'):
                 try:
-                    description = self.return_first_exist(t.xpath('text()'))
+                    description = self.return_first_exist(t.xpath('text()')) or ""
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
                     language_ref = self.return_first_exist(t.xpath('@xml:lang'))
@@ -453,7 +448,7 @@ class Parser():
                                 if sec in lookuplist:
                                     secname = lookuplist[sec]
                                     sector = models.Sector.objects.get(name=secname)
-                                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=None, vocabulary=None, percentage=None)
+                                    new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name="", vocabulary=None, percentage=None)
                                     new_activity_sector.save()
 
 
@@ -478,12 +473,12 @@ class Parser():
                     period_start = self.return_first_exist(t.xpath( 'period-start/@iso-date'))
                     if not period_start:
                         period_start = self.return_first_exist(t.xpath('period-start/text()'))
-                    period_start = self.validate_date(period_start)
+                    period_start = self.validate_date(period_start) or ""
 
                     period_end = self.return_first_exist(t.xpath( 'period-end/@iso-date'))
                     if not period_end:
                         period_end = self.return_first_exist(t.xpath('period-end/text()'))
-                    period_end = self.validate_date(period_end)
+                    period_end = self.validate_date(period_end) or ""
 
                     value = self.return_first_exist(t.xpath('value/text()'))
 
@@ -552,12 +547,13 @@ class Parser():
             for t in elem.xpath('planned-disbursement'):
 
                 try:
-                    period_start = self.return_first_exist(t.xpath( 'period_start/@iso-date'))
+                    period_start = self.return_first_exist(t.xpath( 'period_start/@iso-date')) or ""
                     if not period_start:
-                        period_start = self.return_first_exist(t.xpath('period_start/text()'))
-                    period_end = self.return_first_exist(t.xpath( 'period_end/@iso-date'))
+                        period_start = self.return_first_exist(t.xpath('period_start/text()')) or ""
+
+                    period_end = self.return_first_exist(t.xpath( 'period_end/@iso-date')) or ""
                     if not period_end:
-                        period_end = self.return_first_exist(t.xpath('period_end/text()'))
+                        period_end = self.return_first_exist(t.xpath('period_end/text()')) or ""
 
                     value = self.return_first_exist(t.xpath( 'value/text()' ))
                     value_date = self.return_first_exist(t.xpath('value/@value-date'))
@@ -606,11 +602,11 @@ class Parser():
             for t in elem.xpath('contact-info'):
 
                 try:
-                    person_name = self.return_first_exist(t.xpath('person-name/text()'))
-                    organisation = self.return_first_exist(t.xpath('organisation/text()'))
-                    telephone = self.return_first_exist(t.xpath('telephone/text()'))
-                    email = self.return_first_exist(t.xpath('email/text()'))
-                    mailing_address = self.return_first_exist(t.xpath('mailing-address/text()'))
+                    person_name = self.return_first_exist(t.xpath('person-name/text()')) or ""
+                    organisation = self.return_first_exist(t.xpath('organisation/text()')) or ""
+                    telephone = self.return_first_exist(t.xpath('telephone/text()')) or ""
+                    email = self.return_first_exist(t.xpath('email/text()')) or ""
+                    mailing_address = self.return_first_exist(t.xpath('mailing-address/text()')) or ""
 
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
@@ -637,10 +633,10 @@ class Parser():
 
                 try:
 
-                    ref = self.return_first_exist(t.xpath('@ref'))
+                    ref = self.return_first_exist(t.xpath('@ref')) or ""
                     aid_type_ref = self.return_first_exist(t.xpath('aid-type/@code'))
                     aid_type = None
-                    description = self.return_first_exist(t.xpath('description/text()'))
+                    description = self.return_first_exist(t.xpath('description/text()')) or ""
 
                     description_type_ref = self.return_first_exist(t.xpath('description/@type'))
                     description_type = None
@@ -652,11 +648,11 @@ class Parser():
                     flow_type = None
                     provider_organisation_ref = self.return_first_exist(t.xpath('provider-org/@ref'))
                     provider_organisation = None
-                    provider_organisation_name = self.return_first_exist(t.xpath('provider-org/text()'))
+                    provider_organisation_name = self.return_first_exist(t.xpath('provider-org/text()')) or ""
                     provider_activity = self.return_first_exist(t.xpath('provider-org/@provider-activity-id'))
                     receiver_organisation_ref = self.return_first_exist(t.xpath('receiver-org/@ref'))
                     receiver_organisation = None
-                    receiver_organisation_name = self.return_first_exist(t.xpath('receiver-org/text()'))
+                    receiver_organisation_name = self.return_first_exist(t.xpath('receiver-org/text()')) or ""
                     tied_status_ref = self.return_first_exist(t.xpath('tied-status/@code'))
                     tied_status = None
                     transaction_date = self.validate_date(self.return_first_exist(t.xpath('transaction-date/@iso-date')))
@@ -793,9 +789,9 @@ class Parser():
                             found_org.save()
                             break
             # ref no name, exists
-            elif models.Organisation.objects.filter(code=ref, name=None).exists():
+            elif models.Organisation.objects.filter(code=ref, name="").exists():
                 #org with no name, if found get, else create new org
-                found_org = models.Organisation.objects.filter(code=ref, name=None)[0]
+                found_org = models.Organisation.objects.filter(code=ref, name="")[0]
 
             # ref and name, does not exist,
             # ref no name, does not exist
@@ -825,10 +821,10 @@ class Parser():
                 try:
                     type_ref = self.return_first_exist(t.xpath('@type'))
                     type = None
-                    title = self.return_first_exist(t.xpath('title/text()'))
+                    title = self.return_first_exist(t.xpath('title/text()')) or ""
                     if title and title.__len__ > 255:
                         title = title[:255]
-                    description = self.return_first_exist(t.xpath('description/text()'))
+                    description = self.return_first_exist(t.xpath('description/text()')) or ""
 
                     if type_ref:
                         type_ref = type_ref.lower()
@@ -886,9 +882,9 @@ class Parser():
                             vocabulary = models.Vocabulary.objects.get(code=vocabulary_code)
 
                     if not sector:
-                        alt_sector_name = sector_code
+                        alt_sector_name = sector_code or ""
                     else:
-                        alt_sector_name = None
+                        alt_sector_name = ""
 
                     new_activity_sector = models.ActivitySector(activity=activity, sector=sector,alt_sector_name=alt_sector_name, vocabulary=vocabulary, percentage=percentage)
                     new_activity_sector.save()
@@ -989,7 +985,7 @@ class Parser():
 
                 try:
                     participating_organisation_ref = self.return_first_exist(t.xpath('@ref'))
-                    name = self.return_first_exist(t.xpath('text()'))
+                    name = self.return_first_exist(t.xpath('text()')) or ""
 
                     participating_organisation = self.find_or_create_organisation(participating_organisation_ref, name)
 
@@ -1017,9 +1013,9 @@ class Parser():
             for t in elem.xpath('policy-marker'):
                 try:
                     policy_marker_code = self.return_first_exist(t.xpath( '@code' ))
-                    alt_policy_marker = None
+                    alt_policy_marker = ""
                     policy_marker = None
-                    policy_marker_voc = self.return_first_exist(t.xpath( '@vocabulary' ))
+                    policy_marker_voc = self.return_first_exist(t.xpath( '@vocabulary' )) or ""
                     vocabulary = None
                     policy_marker_significance = self.return_first_exist(t.xpath( '@significance' ))
                     significance = None
@@ -1117,8 +1113,8 @@ class Parser():
                 try:
                     type_ref = self.return_first_exist(t.xpath( '@type' ))
                     type = None
-                    ref = self.return_first_exist(t.xpath('@ref'))
-                    text = self.return_first_exist(t.xpath('text()'))
+                    ref = self.return_first_exist(t.xpath('@ref')) or ""
+                    text = self.return_first_exist(t.xpath('text()')) or ""
 
                     if type_ref:
                         if self.isInt(type_ref) and models.RelatedActivityType.objects.filter(code=type_ref).exists():
@@ -1143,35 +1139,35 @@ class Parser():
             for t in elem.xpath('location'):
 
                 try:
-                    ref = self.return_first_exist(t.xpath('@ref'))
-                    name = self.return_first_exist(t.xpath('name/text()'))
+                    ref = self.return_first_exist(t.xpath('@ref')) or ""
+                    name = self.return_first_exist(t.xpath('name/text()')) or ""
                     type_ref = self.return_first_exist(t.xpath('location-type/@code'))
                     type = None
-                    type_description = self.return_first_exist(t.xpath('location-type/text()'))
-                    description = self.return_first_exist(t.xpath('description/text()'))
+                    type_description = self.return_first_exist(t.xpath('location-type/text()')) or ""
+                    description = self.return_first_exist(t.xpath('description/text()')) or ""
                     description_type_ref = self.return_first_exist(t.xpath('description/@type'))
                     description_type = None
                     adm_country_iso_ref = self.return_first_exist(t.xpath('administrative/@country'))
                     adm_country_iso = None
-                    adm_country_adm1 = self.return_first_exist(t.xpath('administrative/@adm1'))
-                    adm_country_adm2 = self.return_first_exist(t.xpath('administrative/@adm2'))
-                    adm_country_name = self.return_first_exist(t.xpath('administrative/text()'))
+                    adm_country_adm1 = self.return_first_exist(t.xpath('administrative/@adm1')) or ""
+                    adm_country_adm2 = self.return_first_exist(t.xpath('administrative/@adm2')) or ""
+                    adm_country_name = self.return_first_exist(t.xpath('administrative/text()')) or ""
                     percentage = self.return_first_exist(t.xpath('@percentage')) # Deprecated since 1.04
-                    latitude = self.return_first_exist(t.xpath('coordinates/@latitude'))
-                    longitude = self.return_first_exist(t.xpath('coordinates/@longitude'))
+                    latitude = self.return_first_exist(t.xpath('coordinates/@latitude')) or ""
+                    longitude = self.return_first_exist(t.xpath('coordinates/@longitude')) or ""
                     precision_ref = self.return_first_exist(t.xpath('coordinates/@precision'))
                     precision = None
-                    gazetteer_entry = self.return_first_exist(t.xpath('gazetteer-entry/text()'))
+                    gazetteer_entry = self.return_first_exist(t.xpath('gazetteer-entry/text()')) or ""
                     gazetteer_ref_ref = self.return_first_exist(t.xpath('gazetteer-entry/@gazetteer-ref'))
                     gazetteer_ref = None
                     location_id_vocabulary_ref = self.return_first_exist(t.xpath('location-id/@vocabulary'))
                     location_id_vocabulary = None
-                    location_id_code = self.return_first_exist(t.xpath('location-id/@code'))
-                    adm_code = self.return_first_exist(t.xpath('administrative/@code'))
+                    location_id_code = self.return_first_exist(t.xpath('location-id/@code')) or ""
+                    adm_code = self.return_first_exist(t.xpath('administrative/@code')) or ""
                     adm_vocabulary_ref = self.return_first_exist(t.xpath('administrative/@vocabulary'))
                     adm_vocabulary = None
                     adm_level = self.return_first_exist(t.xpath('administrative/@level'))
-                    activity_description = self.return_first_exist(t.xpath('activity-description/text()'))
+                    activity_description = self.return_first_exist(t.xpath('activity-description/text()')) or ""
                     exactness_ref = self.return_first_exist(t.xpath('exactness/@code'))
                     exactness = None
                     location_reach_ref = self.return_first_exist(t.xpath('location-reach/@code'))
@@ -1180,9 +1176,8 @@ class Parser():
                     location_class = None
                     feature_designation_ref = self.return_first_exist(t.xpath('feature-designation/@code'))
                     feature_designation = None
-                    point_srs_name = self.return_first_exist(t.xpath('point/@srsName'))
-                    point_pos = self.return_first_exist(t.xpath('point/pos/text()'))
-
+                    point_srs_name = self.return_first_exist(t.xpath('point/@srsName')) or ""
+                    point_pos = self.return_first_exist(t.xpath('point/pos/text()')) or ""
 
                     if type_ref:
                         if models.LocationType.objects.filter(code=type_ref).exists():
@@ -1248,7 +1243,7 @@ class Parser():
                 try:
                     condition_type_ref = self.return_first_exist(t.xpath('@type'))
                     condition_type = None
-                    condition = self.return_first_exist(t.xpath('text()'))
+                    condition = self.return_first_exist(t.xpath('text()')) or ""
 
                     if condition_type_ref:
                         if models.ConditionType.objects.filter(code=condition_type_ref).exists():
@@ -1274,7 +1269,7 @@ class Parser():
                     url = self.return_first_exist(t.xpath('@url'))
                     file_format_ref = self.return_first_exist(t.xpath('@format'))
                     file_format = None
-                    title = self.return_first_exist(t.xpath('title/text()'))
+                    title = self.return_first_exist(t.xpath('title/text()')) or ""
                     # doc_category_text = self.return_first_exist(t.xpath('category/text()'))
                     doc_category_ref = self.return_first_exist(t.xpath('category/@code'))
                     doc_category = None
@@ -1368,7 +1363,7 @@ class Parser():
                         repayment_type = None
                         repayment_plan_ref = self.return_first_exist(lt.xpath('repayment-plan/@code'))
                         repayment_plan = None
-                        repayment_plan_text = self.return_first_exist(lt.xpath('repayment-plan/text()'))
+                        repayment_plan_text = self.return_first_exist(lt.xpath('repayment-plan/text()')) or ""
                         commitment_date = self.return_first_exist(lt.xpath('commitment-date/@iso-date'))
                         repayment_first_date = self.return_first_exist(lt.xpath('repayment-first-date/@iso-date'))
                         repayment_final_date = self.return_first_exist(lt.xpath('repayment-final-date/@iso-date'))
