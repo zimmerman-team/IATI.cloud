@@ -505,7 +505,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
-    results = ResultSerializer(many=True, source='result_set')
+    results = ResultSerializer(many=True)
     locations = LocationSerializer(many=True, source='location_set')
 
     class Meta:
