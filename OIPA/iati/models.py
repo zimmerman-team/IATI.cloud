@@ -660,7 +660,7 @@ class DocumentLink(models.Model):
 
 
 class Result(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, related_name="results")
     result_type = models.ForeignKey(ResultType, null=True, default=None)
     title = models.CharField(max_length=255, default="")
     description = models.TextField(default="")

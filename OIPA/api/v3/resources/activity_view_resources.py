@@ -155,6 +155,9 @@ class ActivityResultResource(ModelResource):
         queryset = Result.objects.all()
         include_resource_uri = False
         excludes = ['id']
+        filtering = {
+            'title': ALL
+        }
 
 
 class RelatedActivityResource(ModelResource):
@@ -188,7 +191,7 @@ class ActivityResource(ModelResource):
     documents = fields.ToManyField(DocumentResource, 'documentlink_set', full=True, null=True, use_in='detail')
     other_identifier = fields.ToManyField(OtherIdentifierResource, 'otheridentifier_set', full=True, null=True, use_in='detail')
     locations = fields.ToManyField(ActivityLocationResource, 'location_set', full=True, null=True, use_in='all')
-    results = fields.ToManyField(ActivityResultResource, 'result_set', full=True, null=True, use_in='detail')
+    results = fields.ToManyField(ActivityResultResource, 'results', full=True, null=True, use_in='all')
     related_activities = fields.ToManyField(RelatedActivityResource, 'related_activities', full=True, null=True, use_in='detail')
 
     # to add:
@@ -224,7 +227,8 @@ class ActivityResource(ModelResource):
             'regions': ('exact', 'in'),
             'countries': ('exact', 'in'),
             'reporting_organisation': ('exact', 'in'),
-            'documents': ALL_WITH_RELATIONS
+            'documents': ALL_WITH_RELATIONS,
+            'results': ALL_WITH_RELATIONS
         }
         cache = NoTransformCache()
         paginator_class = NoCountPaginator

@@ -44,6 +44,10 @@ class ActivityQuerySet(query.QuerySet):
                 'name': 'activitysearchdata__search_documentlink_title',
                 'method': '__search'
             },
+            'results': {
+                'name': 'result__title',
+                'method': ''
+            },
         }
 
     def search(self, query, search_fields):
