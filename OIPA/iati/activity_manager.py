@@ -45,7 +45,7 @@ class ActivityQuerySet(query.QuerySet):
                 'method': '__search'
             },
         }
-    
+
     def search(self, query, search_fields):
         prepared_filter = self._prepare_search_filter(
             self.Meta.DEFAULT_SEARCH_FIELDS if search_fields is None
