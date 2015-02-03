@@ -396,18 +396,16 @@ class CountryGeojsonResource(ModelResource):
         budget_q = ''
         country_query = request.GET.get("country", None)
         project_query = request.GET.get("query", None)
+        result_title_q = helper.get_and_query(request, 'result_title', 'r.title')
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
-
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + ')'
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + result_title_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
-
-
 
         if region_q:
             filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
@@ -418,6 +416,10 @@ class CountryGeojsonResource(ModelResource):
             filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
         else:
             filter_sector = ''
+
+        filter_result = ''
+        if result_title_q:
+            filter_result = 'LEFT JOIN iati_result r ON a.id = r.activity_id '
 
         filter_donor = ''
         if donor_q:
@@ -437,9 +439,9 @@ class CountryGeojsonResource(ModelResource):
                 'FROM iati_activity a '\
                 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '\
                 'LEFT JOIN geodata_country c ON rc.country_id = c.code '\
-                '%s %s %s %s '\
+                '%s %s %s %s %s '\
                 'WHERE 1 %s'\
-                'GROUP BY c.code' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string)
+                'GROUP BY c.code' % (filter_region, filter_sector, filter_result, filter_donor, filter_project_query, filter_string)
 
         cursor.execute(query)
 
@@ -453,12 +455,10 @@ class CountryGeojsonResource(ModelResource):
             country['type'] = 'Feature'
             country['id'] = r['country_id']
 
-            country['properties'] = {'name' : r['country_name'], 'project_amount' : r['total_projects']}
+            country['properties'] = {'name': r['country_name'], 'project_amount': r['total_projects']}
             country['geometry'] = helper.find_polygon(r['country_id'])
 
             activities.append(country)
-
-        result = {}
 
         activity_result['features'] = activities
         return HttpResponse(ujson.dumps(activity_result), content_type='application/json')
