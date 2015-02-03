@@ -636,7 +636,6 @@ class CountryActivitiesResource(ModelResource):
                 'ORDER BY %s %s ' \
                 'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_result, filter_string, order_by, order_asc_desc, limit, offset)
 
-        print query
 
         if include_unesco_empty and organisation_q:
             query = query.replace(organisation_q, "")
@@ -644,7 +643,6 @@ class CountryActivitiesResource(ModelResource):
             query = query.replace(organisation_q[:-6], "")
             query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
             query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
-        print query
 
         cursor.execute(query)
 
@@ -1171,15 +1169,28 @@ class DonorActivitiesResource(ModelResource):
 
 
         cursor = connection.cursor()
-        query = 'SELECT apo.organisation_id as organisation_id, apo.name as organisation_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ' \
-                '%s %s %s '\
-                'WHERE apo.name is not null %s'\
-                'GROUP BY apo.name ' \
-                'ORDER BY %s %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_country, filter_string, order_by, filter_project_query, order_asc_desc, limit, offset)
-        cursor.execute(query)
+        cursor.execute(
+            'SELECT apo.organisation_id as organisation_id, '
+            'apo.name as organisation_name, '
+            'count(a.id) as total_projects, '
+            'sum(a.total_budget) as total_budget '
+            'FROM iati_activity a '
+            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            '%s %s %s %s '
+            'WHERE apo.name is not null %s'
+            'GROUP BY apo.name '
+            'ORDER BY %s %s '
+            'LIMIT %s OFFSET %s'
+            % (
+                filter_region,
+                filter_sector,
+                filter_country,
+                filter_project_query,
+                filter_string,
+                order_by,
+                order_asc_desc,
+                limit,
+                offset))
 
         activities = []
 
@@ -1195,16 +1206,19 @@ class DonorActivitiesResource(ModelResource):
         return_json = {}
         return_json["objects"] = activities
 
-
-        query = 'SELECT apo.organisation_id as organisation_id '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
-                '%s %s %s %s'\
-                'WHERE apo.name is not null %s'\
-                'GROUP BY apo.name ' % (filter_region, filter_sector, filter_country, filter_project_query, filter_string)
-
-
-        cursor.execute(query)
+        cursor.execute(
+            'SELECT apo.organisation_id as organisation_id '
+            'FROM iati_activity a '
+            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            '%s %s %s %s'
+            'WHERE apo.name is not null %s'
+            'GROUP BY apo.name '
+            % (
+                filter_region,
+                filter_sector,
+                filter_country,
+                filter_project_query,
+                filter_string))
         results2 = helper.get_fields(cursor=cursor)
 
         return_json["meta"] = {"total_count": len(results2)}
