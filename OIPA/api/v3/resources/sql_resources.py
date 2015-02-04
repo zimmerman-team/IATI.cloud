@@ -542,7 +542,7 @@ class CountryActivitiesResource(ModelResource):
         project_query = request.GET.get("query", None)
         format = request.GET.get("format", "json")
         include_unesco_empty = request.GET.get("include_unesco_empty", False)
-
+        result_title_q = helper.get_and_query(request, 'result_title', 'r.title')
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
@@ -550,7 +550,7 @@ class CountryActivitiesResource(ModelResource):
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + donor_q + ')'
+        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + donor_q + result_title_q + ')'
         if 'AND ()' in filter_string:
             filter_string = filter_string[:-6]
 
@@ -576,17 +576,20 @@ class CountryActivitiesResource(ModelResource):
             filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
             filter_string += 'AND t.title LIKE "%%' + project_query + '%%" AND c.name LIKE "%%' + project_query + '%%"'
 
+        filter_result = ''
+        if result_title_q:
+            filter_result = 'LEFT JOIN iati_result r ON a.id = r.activity_id '
+
         cursor = connection.cursor()
         query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
                 'FROM geodata_country c '\
                 'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
                 'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
-                '%s %s %s %s'\
+                '%s %s %s %s %s '\
                 'WHERE c.code is not null %s'\
                 'GROUP BY c.code ' \
                 'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string, order_by, order_asc_desc, limit, offset)
-
+                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_result, filter_string, order_by, order_asc_desc, limit, offset)
 
 
         if include_unesco_empty and organisation_q:
@@ -632,9 +635,9 @@ class CountryActivitiesResource(ModelResource):
                 'FROM geodata_country c '\
                 'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
                 'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
-                '%s %s %s %s'\
+                '%s %s %s %s %s '\
                 'WHERE c.code is not null %s'\
-                'GROUP BY c.code ' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_string)
+                'GROUP BY c.code ' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_result, filter_string)
 
         if include_unesco_empty and organisation_q:
             query = query.replace(organisation_q, "")
@@ -1121,15 +1124,28 @@ class DonorActivitiesResource(ModelResource):
 
 
         cursor = connection.cursor()
-        query = 'SELECT apo.organisation_id as organisation_id, apo.name as organisation_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ' \
-                '%s %s %s '\
-                'WHERE apo.name is not null %s'\
-                'GROUP BY apo.name ' \
-                'ORDER BY %s %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_country, filter_string, order_by, filter_project_query, order_asc_desc, limit, offset)
-        cursor.execute(query)
+        cursor.execute(
+            'SELECT apo.organisation_id as organisation_id, '
+            'apo.name as organisation_name, '
+            'count(a.id) as total_projects, '
+            'sum(a.total_budget) as total_budget '
+            'FROM iati_activity a '
+            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            '%s %s %s %s '
+            'WHERE apo.name is not null %s'
+            'GROUP BY apo.name '
+            'ORDER BY %s %s '
+            'LIMIT %s OFFSET %s'
+            % (
+                filter_region,
+                filter_sector,
+                filter_country,
+                filter_project_query,
+                filter_string,
+                order_by,
+                order_asc_desc,
+                limit,
+                offset))
 
         activities = []
 
@@ -1145,16 +1161,19 @@ class DonorActivitiesResource(ModelResource):
         return_json = {}
         return_json["objects"] = activities
 
-
-        query = 'SELECT apo.organisation_id as organisation_id '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '\
-                '%s %s %s %s'\
-                'WHERE apo.name is not null %s'\
-                'GROUP BY apo.name ' % (filter_region, filter_sector, filter_country, filter_project_query, filter_string)
-
-
-        cursor.execute(query)
+        cursor.execute(
+            'SELECT apo.organisation_id as organisation_id '
+            'FROM iati_activity a '
+            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            '%s %s %s %s'
+            'WHERE apo.name is not null %s'
+            'GROUP BY apo.name '
+            % (
+                filter_region,
+                filter_sector,
+                filter_country,
+                filter_project_query,
+                filter_string))
         results2 = helper.get_fields(cursor=cursor)
 
         return_json["meta"] = {"total_count": len(results2)}
