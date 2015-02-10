@@ -1,0 +1,1310 @@
+[
+  {
+    "Country ID":"AE",
+    "Country ID ISO3":"ARE",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"BH",
+    "Country ID ISO3":"BHR",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"DJ",
+    "Country ID ISO3":"DJI",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"DZ",
+    "Country ID ISO3":"DZA",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"EG",
+    "Country ID ISO3":"EGY",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"IQ",
+    "Country ID ISO3":"IRQ",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"JO",
+    "Country ID ISO3":"JOR",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"KW",
+    "Country ID ISO3":"KWT",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"LB",
+    "Country ID ISO3":"LBN",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"LY",
+    "Country ID ISO3":"LBY",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"MA",
+    "Country ID ISO3":"MAR",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"MR",
+    "Country ID ISO3":"MRT",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"MT",
+    "Country ID ISO3":"MLT",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"OM",
+    "Country ID ISO3":"OMN",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"PS",
+    "Country ID ISO3":"PSE",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"QA",
+    "Country ID ISO3":"QAT",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"SA",
+    "Country ID ISO3":"SAU",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"SD",
+    "Country ID ISO3":"SDN",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"SO",
+    "Country ID ISO3":"SOM",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"SY",
+    "Country ID ISO3":"SYR",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"TN",
+    "Country ID ISO3":"TUN",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"YE",
+    "Country ID ISO3":"YEM",
+    "UNESCO Region Code":66,
+    "UNESCO Region Text":"Arab States"
+  },
+  {
+    "Country ID":"AO",
+    "Country ID ISO3":"AGO",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"BF",
+    "Country ID ISO3":"BFA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"BI",
+    "Country ID ISO3":"BDI",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"BJ",
+    "Country ID ISO3":"BEN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"BW",
+    "Country ID ISO3":"BWA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CD",
+    "Country ID ISO3":"COD",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CF",
+    "Country ID ISO3":"CAF",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CG",
+    "Country ID ISO3":"COG",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CI",
+    "Country ID ISO3":"CIV",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CM",
+    "Country ID ISO3":"CMR",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"CV",
+    "Country ID ISO3":"CPV",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"DJ",
+    "Country ID ISO3":"DJI",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"DZ",
+    "Country ID ISO3":"DZA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"EG",
+    "Country ID ISO3":"EGY",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ER",
+    "Country ID ISO3":"ERI",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ET",
+    "Country ID ISO3":"ETH",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GA",
+    "Country ID ISO3":"GAB",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GH",
+    "Country ID ISO3":"GHA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GM",
+    "Country ID ISO3":"GMB",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GN",
+    "Country ID ISO3":"GIN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GQ",
+    "Country ID ISO3":"GNQ",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"GW",
+    "Country ID ISO3":"GNB",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"KE",
+    "Country ID ISO3":"KEN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"KM",
+    "Country ID ISO3":"COM",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"LR",
+    "Country ID ISO3":"LBR",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"LS",
+    "Country ID ISO3":"LSO",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"LY",
+    "Country ID ISO3":"LBY",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MA",
+    "Country ID ISO3":"MAR",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MG",
+    "Country ID ISO3":"MDG",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ML",
+    "Country ID ISO3":"MLI",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MR",
+    "Country ID ISO3":"MRT",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MU",
+    "Country ID ISO3":"MUS",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MW",
+    "Country ID ISO3":"MWI",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"MZ",
+    "Country ID ISO3":"MOZ",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"NA",
+    "Country ID ISO3":"NAM",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"NE",
+    "Country ID ISO3":"NER",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"NG",
+    "Country ID ISO3":"NGA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"RW",
+    "Country ID ISO3":"RWA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SC",
+    "Country ID ISO3":"SYC",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SD",
+    "Country ID ISO3":"SDN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SL",
+    "Country ID ISO3":"SLE",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SN",
+    "Country ID ISO3":"SEN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SO",
+    "Country ID ISO3":"SOM",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SS",
+    "Country ID ISO3":"SSD",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ST",
+    "Country ID ISO3":"STP",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"SZ",
+    "Country ID ISO3":"SWZ",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"TD",
+    "Country ID ISO3":"TCD",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"TG",
+    "Country ID ISO3":"TGO",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"TN",
+    "Country ID ISO3":"TUN",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"TZ",
+    "Country ID ISO3":"TZA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"UG",
+    "Country ID ISO3":"UGA",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ZA",
+    "Country ID ISO3":"ZAF",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ZM",
+    "Country ID ISO3":"ZMB",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"ZW",
+    "Country ID ISO3":"ZWE",
+    "UNESCO Region Code":67,
+    "UNESCO Region Text":"Africa"
+  },
+  {
+    "Country ID":"AF",
+    "Country ID ISO3":"AFG",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"AU",
+    "Country ID ISO3":"AUS",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"BD",
+    "Country ID ISO3":"BGD",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"BN",
+    "Country ID ISO3":"BRN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"BT",
+    "Country ID ISO3":"BTN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"CK",
+    "Country ID ISO3":"COK",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"CN",
+    "Country ID ISO3":"CHN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"FJ",
+    "Country ID ISO3":"FJI",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"FM",
+    "Country ID ISO3":"FSM",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"ID",
+    "Country ID ISO3":"IDN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"IN",
+    "Country ID ISO3":"IND",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"IR",
+    "Country ID ISO3":"IRN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"JP",
+    "Country ID ISO3":"JPN",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KG",
+    "Country ID ISO3":"KGZ",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KH",
+    "Country ID ISO3":"KHM",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KI",
+    "Country ID ISO3":"KIR",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KP",
+    "Country ID ISO3":"PRK",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KR",
+    "Country ID ISO3":"KOR",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"KZ",
+    "Country ID ISO3":"KAZ",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"LA",
+    "Country ID ISO3":"LAO",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"LK",
+    "Country ID ISO3":"LKA",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MH",
+    "Country ID ISO3":"MHL",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MM",
+    "Country ID ISO3":"MMR",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MN",
+    "Country ID ISO3":"MNG",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MO",
+    "Country ID ISO3":"MAC",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MV",
+    "Country ID ISO3":"MDV",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"MY",
+    "Country ID ISO3":"MYS",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"NP",
+    "Country ID ISO3":"NPL",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"NR",
+    "Country ID ISO3":"NRU",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"NU",
+    "Country ID ISO3":"NIU",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"NZ",
+    "Country ID ISO3":"NZL",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"PG",
+    "Country ID ISO3":"PNG",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"PH",
+    "Country ID ISO3":"PHL",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"PK",
+    "Country ID ISO3":"PAK",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"PW",
+    "Country ID ISO3":"PLW",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"RU",
+    "Country ID ISO3":"RUS",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"SB",
+    "Country ID ISO3":"SLB",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"SG",
+    "Country ID ISO3":"SGP",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TH",
+    "Country ID ISO3":"THA",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TJ",
+    "Country ID ISO3":"TJK",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TK",
+    "Country ID ISO3":"TKL",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TL",
+    "Country ID ISO3":"TLS",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TM",
+    "Country ID ISO3":"TKM",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TO",
+    "Country ID ISO3":"TON",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TR",
+    "Country ID ISO3":"TUR",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"TV",
+    "Country ID ISO3":"TUV",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"UZ",
+    "Country ID ISO3":"UZB",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"VN",
+    "Country ID ISO3":"VNM",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"VU",
+    "Country ID ISO3":"VUT",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"WS",
+    "Country ID ISO3":"WSM",
+    "UNESCO Region Code":68,
+    "UNESCO Region Text":"Asia and the Pacific"
+  },
+  {
+    "Country ID":"AD",
+    "Country ID ISO3":"AND",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"AL",
+    "Country ID ISO3":"ALB",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"AM",
+    "Country ID ISO3":"ARM",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"AT",
+    "Country ID ISO3":"AUT",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"AZ",
+    "Country ID ISO3":"AZE",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"BA",
+    "Country ID ISO3":"BIH",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"BE",
+    "Country ID ISO3":"BEL",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"BG",
+    "Country ID ISO3":"BGR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"BY",
+    "Country ID ISO3":"BLR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"CA",
+    "Country ID ISO3":"CAN",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"CH",
+    "Country ID ISO3":"CHE",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"CY",
+    "Country ID ISO3":"CYP",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"CZ",
+    "Country ID ISO3":"CZE",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"DE",
+    "Country ID ISO3":"DEU",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"DK",
+    "Country ID ISO3":"DNK",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"EE",
+    "Country ID ISO3":"EST",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"ES",
+    "Country ID ISO3":"ESP",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"FI",
+    "Country ID ISO3":"FIN",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"FO",
+    "Country ID ISO3":"FRO",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"FR",
+    "Country ID ISO3":"FRA",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"GB",
+    "Country ID ISO3":"GBR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"GE",
+    "Country ID ISO3":"GEO",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"GR",
+    "Country ID ISO3":"GRC",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"HR",
+    "Country ID ISO3":"HRV",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"HU",
+    "Country ID ISO3":"HUN",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"IE",
+    "Country ID ISO3":"IRL",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"IL",
+    "Country ID ISO3":"ISR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"IS",
+    "Country ID ISO3":"ISL",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"IT",
+    "Country ID ISO3":"ITA",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"KZ",
+    "Country ID ISO3":"KAZ",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"LT",
+    "Country ID ISO3":"LTU",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"LU",
+    "Country ID ISO3":"LUX",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"LV",
+    "Country ID ISO3":"LVA",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"MC",
+    "Country ID ISO3":"MCO",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"MD",
+    "Country ID ISO3":"MDA",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"ME",
+    "Country ID ISO3":"MNE",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"MK",
+    "Country ID ISO3":"MKD",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"MT",
+    "Country ID ISO3":"MLT",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"NL",
+    "Country ID ISO3":"NLD",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"NO",
+    "Country ID ISO3":"NOR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"PL",
+    "Country ID ISO3":"POL",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"PT",
+    "Country ID ISO3":"PRT",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"RO",
+    "Country ID ISO3":"ROU",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"RU",
+    "Country ID ISO3":"RUS",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"SE",
+    "Country ID ISO3":"SWE",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"SI",
+    "Country ID ISO3":"SVN",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"SK",
+    "Country ID ISO3":"SVK",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"SM",
+    "Country ID ISO3":"SMR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"TJ",
+    "Country ID ISO3":"TJK",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"TR",
+    "Country ID ISO3":"TUR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"UA",
+    "Country ID ISO3":"UKR",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"US",
+    "Country ID ISO3":"USA",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"YU",
+    "Country ID ISO3":"SRB",
+    "UNESCO Region Code":69,
+    "UNESCO Region Text":"Europe and North America"
+  },
+  {
+    "Country ID":"AG",
+    "Country ID ISO3":"ATG",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"AI",
+    "Country ID ISO3":"AIA",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"AR",
+    "Country ID ISO3":"ARG",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"AW",
+    "Country ID ISO3":"ABW",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"BB",
+    "Country ID ISO3":"BRB",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"BO",
+    "Country ID ISO3":"BOL",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"BR",
+    "Country ID ISO3":"BRA",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"BS",
+    "Country ID ISO3":"BHS",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"BZ",
+    "Country ID ISO3":"BLZ",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"CL",
+    "Country ID ISO3":"CHL",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"CO",
+    "Country ID ISO3":"COL",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"CR",
+    "Country ID ISO3":"CRI",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"CU",
+    "Country ID ISO3":"CUB",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"CW",
+    "Country ID ISO3":"CUW",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"DM",
+    "Country ID ISO3":"DMA",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"DO",
+    "Country ID ISO3":"DOM",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"EC",
+    "Country ID ISO3":"ECU",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"GD",
+    "Country ID ISO3":"GRD",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"GT",
+    "Country ID ISO3":"GTM",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"GY",
+    "Country ID ISO3":"GUY",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"HN",
+    "Country ID ISO3":"HND",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"HT",
+    "Country ID ISO3":"HTI",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"JM",
+    "Country ID ISO3":"JAM",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"KN",
+    "Country ID ISO3":"KNA",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"KY",
+    "Country ID ISO3":"CYM",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"LC",
+    "Country ID ISO3":"LCA",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"MX",
+    "Country ID ISO3":"MEX",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"NI",
+    "Country ID ISO3":"NIC",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"PA",
+    "Country ID ISO3":"PAN",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"PE",
+    "Country ID ISO3":"PER",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"PY",
+    "Country ID ISO3":"PRY",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"SR",
+    "Country ID ISO3":"SUR",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"SV",
+    "Country ID ISO3":"SLV",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"SX",
+    "Country ID ISO3":"SXM",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"TT",
+    "Country ID ISO3":"TTO",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"UY",
+    "Country ID ISO3":"URY",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"VC",
+    "Country ID ISO3":"VCT",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"VE",
+    "Country ID ISO3":"VEN",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  },
+  {
+    "Country ID":"VG",
+    "Country ID ISO3":"VGB",
+    "UNESCO Region Code":70,
+    "UNESCO Region Text":"Latin America and the Caribbean"
+  }
+]
