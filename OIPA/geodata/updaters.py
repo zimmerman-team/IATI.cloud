@@ -249,6 +249,7 @@ class RegionUpdater():
             for region in regions:
                 if region.code == region_id:
                     country.unesco_region = region
+                    country.save()
 
     def update_center_longlat(self):
             base = os.path.dirname(os.path.abspath(__file__))
