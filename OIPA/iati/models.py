@@ -1,6 +1,7 @@
 from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
+from organisation_manager import OrganisationQuerySet
 from django.contrib.gis.geos import Point
 from iati.transaction.models import Transaction
 from iati.transaction.models import TransactionType
@@ -417,6 +418,8 @@ class Organisation(models.Model):
 
     def total_activities(self):
         return self.activity_set.count()
+
+    objects = OrganisationQuerySet.as_manager()
 
 
 class Activity(models.Model):
