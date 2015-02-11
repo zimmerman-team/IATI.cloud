@@ -189,104 +189,58 @@ class RegionUpdater():
                     print e.args
         json_data.close()
 
-
-
     def update_unesco_regions(self):
-        '''
-        This code will loop over the XML unesco file ("Country_list_unesco.xml")
-
-        It will try to find a unesco region and relate it to a country
-
-        '''
-
-        from geodata.models import Region
-        import ujson
+        """
+        This code will create/update unesco regions and update the country -> region mapping
+        """
         import os
+        import ujson
+        from geodata.models import Region
         from iati.models import RegionVocabulary
 
-        #find the base path of the files
         base = os.path.dirname(os.path.abspath(__file__))
 
-        #location of the unesco regions
-        location = base + "/data_backup/unesco_regions.json"
+        location = base + '/data_backup/unesco_regions.json'
         json_data = open(location)
         unesco_regions = ujson.load(json_data)
-
-        #parsing the country XML file
-        xmlDoc = etree.parse(base + "/data_backup/Country_list_unesco.xml")
-
-        #a tracker to see how many countries the XML file contains
-        counter_countries = 0
-
-        #a tracker to see how many countries are found with a detected region
-        counter_region_found_for_country = 0
-
-
-
-        #loop over the countries in the XML file
-        for indicator in xmlDoc.iter('Country'):
-            #count total countries
-            counter_countries += 1
-
-            #get iso country from XML
-            iso2_xml =  indicator.get('countryid').rstrip()
-            #get region text
-            region_text_xml = indicator[18].getchildren()[0].text
-
-
-            #keeping track of unfind regions
-            counter_unfind_region = 0
-
-            #loop over the unesco regions json file #TODO create a function in a dictionary to increase performance
-            for cr in unesco_regions:
-                try:
-                    #getting the unesco region properties from the json file
-                    code = cr
-                    latitude = unesco_regions[cr]['latitude']
-                    longitude = unesco_regions[cr]['longitude']
-                    name = unesco_regions[cr]['name']
-                    if counter_unfind_region == 3:
-                        counter_unfind_region = 0
-                    #try to match the region of the XML file with the json Unesco region file
-                    if name.lower() == region_text_xml.lower():
-                        counter_unfind_region = 0
-                        counter_region_found_for_country += 1
-                        #trying to get the region form the database
-                        if Region.objects.filter(code=code).exists():
-                            the_region = Region.objects.get(code=code)
-                            the_region.name = name
-
-                        #create a region
-                        else:
-                            #region has not been found, we need to create a region vocabulary for Unesco and create a region unless it exists
-                            if RegionVocabulary.objects.filter(name="UNESCO").exists():
-                                the_region_voc = RegionVocabulary.objects.get(name="UNESCO")
-                            else:
-                                the_region_voc = RegionVocabulary(code=999, name="UNESCO")
-                                the_region_voc.save()
-                            point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
-                            center_location = fromstr(point_loc_str, srid=4326)
-                            the_region = Region(code=code, name=name, region_vocabulary=the_region_voc, parental_region=None, center_longlat=center_location)
-                            the_region.save()
-
-
-                        #now we have the correct region and are we able to relate this region to the specific country
-                        #find country
-                        country = Country.objects.get(code=iso2_xml)
-                        #add the unesco region
-                        country.unesco_region = the_region
-                        country.save()
-                    else:
-                        counter_unfind_region += 1
-
-                except Exception as e:
-                    print "error in update_country_regions" + str(type)
-                    print e.args
-
-
-        print "Total countries found: %s, Total regions detected: %s" % (counter_countries, counter_region_found_for_country)
         json_data.close()
 
+        location_map = base + '/data_backup/unesco_country_region_mapping.json'
+        json_data_map = open(location_map)
+        unesco_mapping = ujson.load(json_data_map)
+        json_data_map.close()
+
+        #save regions and put in list
+        regions = []
+        region_vocabulary = RegionVocabulary.objects.get_or_create(
+            code=999,
+            name='UNESCO')[0]
+
+        for region_id, info in unesco_regions.iteritems():
+
+            center_location_string = 'POINT(' + info['longitude'] + ' ' + info['latitude'] + ')'
+            center_location = fromstr(
+                center_location_string,
+                srid=4326)
+            region = Region.objects.get_or_create(
+                code=region_id,
+                defaults={
+                    'name': info['name'],
+                    'region_vocabulary': region_vocabulary,
+                    'parental_region': None,
+                    'center_longlat': center_location})[0]
+            regions.append(region)
+
+        # save country -> region mapping
+        for line in unesco_mapping:
+
+            region_id = line["UNESCO Region Code"]
+            country_id = line["Country ID"]
+            country = Country.objects.get(code=country_id)
+            for region in regions:
+                if region.code == region_id:
+                    country.unesco_region = region
+                    country.save()
 
     def update_center_longlat(self):
             base = os.path.dirname(os.path.abspath(__file__))

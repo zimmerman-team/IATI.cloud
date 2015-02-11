@@ -291,9 +291,16 @@ class CodeListImporter():
                 logger.info('%s (%s)' % (e.message, type(e)))
 
         def add_missing_items():
-            if not Country.objects.filter(code="XK").exists():
-                kosovo = Country(code="XK", name="Kosovo", language="en")
-                kosovo.save()
+            Country.objects.get_or_create(
+                code="XK",
+                defaults={
+                    'name': 'Kosovo',
+                    'language': 'en'})
+            Country.objects.get_or_create(
+                code="YU",
+                defaults={
+                    'name': 'Former Yugoslavia',
+                    'language': 'en'})
 
         def get_codelist_data(elem=None, name=None):
 
