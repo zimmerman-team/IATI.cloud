@@ -259,6 +259,12 @@ class DescriptionSerializer(serializers.ModelSerializer):
     class NarrativeSerializer(serializers.ModelSerializer):
         text = serializers.CharField(source='description')
 
+        def to_representation(self, obj):
+            return [
+                super(DescriptionSerializer.NarrativeSerializer, self)
+                .to_representation(obj)
+            ]
+
         class Meta:
             model = iati.models.Description
             fields = ('text', 'language')
@@ -390,7 +396,8 @@ class GeographicVocabularySerializer(serializers.ModelSerializer):
 
 class LocationSerializer(serializers.ModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
-        vocabulary = GeographicVocabularySerializer(source='location_id_vocabulary')
+        vocabulary = GeographicVocabularySerializer(
+            source='location_id_vocabulary')
         code = serializers.CharField(source='location_id_code')
 
     class AdministrativeSerializer(serializers.Serializer):

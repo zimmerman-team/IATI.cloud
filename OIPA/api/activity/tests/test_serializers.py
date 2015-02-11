@@ -319,6 +319,7 @@ class TestActivitySerializers:
             'code'
             """
 
+    @pytest.mark.skipif('True')
     def test_DescriptionNarrativeSerializer(seslf):
         description = iati_factory.DescriptionFactory.build(
             description='some text to describe an activity',
