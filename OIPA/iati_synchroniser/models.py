@@ -11,15 +11,14 @@ class Publisher(models.Model):
     org_abbreviate = models.CharField(max_length=55, default="")
     org_name = models.CharField(max_length=255)
     default_interval = models.CharField(
-        verbose_name=_(u"Interval"),
         max_length=55,
         choices=(
-            (u'YEARLY', _(u"Parse yearly")),
-            (u'MONTHLY', _(u"Parse monthly")),
-            (u'WEEKLY', _(u"Parse weekly")),
-            (u'DAILY', _(u"Parse daily")),
+            ('YEARLY', 'Parse yearly'),
+            ('MONTHLY', 'Parse monthly'),
+            ('WEEKLY', 'Parse weekly'),
+            ('DAILY', 'Parse daily'),
         ),
-        default=u'MONTHLY')
+        default='MONTHLY')
     XML_total_activity_count = models.IntegerField(null=True, default=None)
     OIPA_total_activity_count = models.IntegerField(null=True, default=None)
 
@@ -29,13 +28,12 @@ class Publisher(models.Model):
 
 class IatiXmlSource(models.Model):
     ref = models.CharField(
-        max_length=70,
-        verbose_name=_(u"Reference"))
+        max_length=70)
     title = models.CharField(max_length=255, default="")
     type = models.IntegerField(
         choices=(
-            (1, _(u"Activity Files")),
-            (2, _(u"Organisation Files")),
+            (1, 'Activity Files'),
+            (2, 'Organisation Files'),
         ),
         default=1)
     publisher = models.ForeignKey(Publisher)
@@ -47,10 +45,10 @@ class IatiXmlSource(models.Model):
     update_interval = models.CharField(
         max_length=20,
         choices=(
-            ("day", _(u"Day")),
-            ("week", _(u"Week")),
-            ("month", _(u"Month")),
-            ("year", _(u"Year")),
+            ('day', 'Day'),
+            ('week', 'Week'),
+            ('month', 'Month'),
+            ('year', 'Year'),
         ),
         default="month")
     last_found_in_registry = models.DateTimeField(default=None, null=True)
