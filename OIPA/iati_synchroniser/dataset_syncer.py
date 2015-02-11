@@ -17,7 +17,7 @@ class DatasetSyncer():
         Prefetch data, to minify amount of DB queries
         """
         self.source_urls = models.IatiXmlSource.objects.values('source_url')
-        self.publisher_ids = models.Publisher.objects.values('org_id')
+        self.publisher_ids = list(models.Publisher.objects.values('org_id'))
         self.organisation_identifiers = OrganisationIdentifier \
             .objects.values('code')
 
@@ -89,6 +89,8 @@ class DatasetSyncer():
 
                 current_publisher = self.add_publisher_to_db(
                     iati_id, abbreviation, name)
+
+                self.publisher_ids.append(iati_id)
 
             return current_publisher
 
