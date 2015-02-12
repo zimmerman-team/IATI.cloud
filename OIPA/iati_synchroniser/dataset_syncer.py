@@ -7,7 +7,7 @@ from iati.models import OrganisationIdentifier
 from iati_synchroniser.exception_handler import exception_handler
 
 
-IATI_URL = "http://www.iatiregistry.org/api/search/dataset?{options}"
+IATI_URL = 'http://www.iatiregistry.org/api/search/dataset?{options}'
 
 
 class DatasetSyncer():
@@ -16,7 +16,7 @@ class DatasetSyncer():
         """
         Prefetch data, to minify amount of DB queries
         """
-        self.source_urls = models.IatiXmlSource.objects.values('source_url')
+        self.source_urls = list(models.IatiXmlSource.objects.values('source_url'))
         self.publisher_ids = list(models.Publisher.objects.values('org_id'))
         self.organisation_identifiers = OrganisationIdentifier \
             .objects.values('code')
@@ -35,7 +35,7 @@ class DatasetSyncer():
             url_options[0] = 'extras_filetype=organisation'
 
         for i in range(0, 10000, 200):
-            options = "&".join(url_options + ["offset={}".format(i)])
+            options = '&'.join(url_options + ['offset={}'.format(i)])
             page_url = IATI_URL.format(options=options)
             self.synchronize_with_iati_api_by_page(page_url, data_type)
 
@@ -52,19 +52,19 @@ class DatasetSyncer():
 
             if json_objects is not None:
                 # For each dataset object
-                for line in json_objects["results"]:
+                for line in json_objects['results']:
                     try:
                         self.parse_json_line(line, data_type)
                     except Exception as e:
                         exception_handler(
                             e,
-                            "synchronize_with_iati_api_by_page",
+                            'synchronize_with_iati_api_by_page',
                             "Unexpected error")
 
         except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException), e:
             exception_handler(e, "HTTP error", url)
 
-            if try_number < 6:
+            if try_number < 4:
                 self.synchronize_with_iati_api_by_page(
                     url,
                     data_type,
@@ -73,31 +73,22 @@ class DatasetSyncer():
                 return None
 
     def update_publisher(self, iati_id, abbreviation, name):
-        try:
-            # if already in the database, get the publisher_id,
-            # else add the publisher
-            if iati_id in self.publisher_ids:
-                # TODO: optimize
-                current_publisher = models.Publisher \
-                    .objects.get(org_id=iati_id)
-            else:
-                # get the abbreviation from organisation_identifier table
-                if iati_id in self.organisation_identifiers:
-                    current_publisher_meta = OrganisationIdentifier \
-                        .objects.get(code=iati_id)
-                    abbreviation = current_publisher_meta.abbreviation
 
-                current_publisher = self.add_publisher_to_db(
-                    iati_id, abbreviation, name)
+        if iati_id in self.publisher_ids and iati_id != 'Unknown':
+            current_publisher = models.Publisher \
+                .objects.get(org_id=iati_id)
+        else:
+            if iati_id in self.organisation_identifiers:
+                current_publisher_meta = OrganisationIdentifier \
+                    .objects.get(code=iati_id)
+                abbreviation = current_publisher_meta.abbreviation
 
-                self.publisher_ids.append(iati_id)
+            current_publisher = self.add_publisher_to_db(
+                iati_id, abbreviation, name)
 
-            return current_publisher
+            self.publisher_ids.append(iati_id)
 
-        except Exception as e:
-            exception_handler(e,
-                              iati_id,
-                              "dataset_syncer.update_publisher")
+        return current_publisher
 
     def add_publisher_to_db(self,
                             org_id,
@@ -126,7 +117,7 @@ class DatasetSyncer():
         new_source.save(process=False, added_manually=False)
         return new_source
 
-    def parse_json_line(self, line, data_type, source_urls=[]):
+    def parse_json_line(self, line, data_type):
         """
         Parse line from IATI response
         """
@@ -135,39 +126,37 @@ class DatasetSyncer():
         except KeyError:
             publisher_iati_id = None
 
-        publisher_abbreviation = ""
-        publisher_name = "Unknown"
+        publisher_abbreviation = ''
+        publisher_name = 'Unknown'
         try:
-            source_url = str(line['res_url'][0]).replace(" ", "%20")
+            source_url = str(line['res_url'][0]).replace(' ', '%20')
         except IndexError:
-            source_url = ""
-        source_name = line.get('name', "")
-        source_title = line.get('title', "")
+            source_url = ''
+        source_name = line.get('name', '')
+        source_title = line.get('title', '')
 
         try:
-            data_dict = json.loads(line.get('data_dict', ""))
+            data_dict = json.loads(line.get('data_dict', ''))
             publisher_name = data_dict['organization']['title']
         except (ValueError, KeyError):
             pass
         except Exception as e:
             msg = ("Unexpected error in synchronize_with_iati_api_by_page "
                    "organisation match:")
-            exception_handler(e, "synchronize_with_iati_api_by_page", msg)
+            exception_handler(e, 'synchronize_with_iati_api_by_page', msg)
 
-        # If download url is not already in OIPA
         if source_url not in self.source_urls:
-            #   If publisher_iati_id is given
-            if publisher_iati_id and publisher_iati_id != "":
+
+            if publisher_iati_id:
                 current_publisher = self.update_publisher(
                     publisher_iati_id,
                     publisher_abbreviation,
                     publisher_name)
             else:
-                # else publisher is unknown
                 current_publisher = self.add_publisher_to_db(
-                    "Unknown",
-                    "Unknown",
-                    "Unknown")
+                    'Unknown',
+                    publisher_abbreviation,
+                    publisher_name)
 
             self.add_iati_xml_source_to_db(
                 source_url,
@@ -176,20 +165,20 @@ class DatasetSyncer():
                 current_publisher,
                 data_type)
 
+            self.source_urls.append(source_url)
+
         else:
             msg = "Updated publisher and last found in registry on: "
             exception_handler(None, msg, source_url)
 
             source = models.IatiXmlSource.objects.get(source_url=source_url)
             source.last_found_in_registry = datetime.datetime.now()
-            current_publisher = source.publisher
-            # check if publisher meta is already known,
-            # if not: add it and check if the known publisher already existed
-            #  and add it to the source
+
             if source.publisher.org_id != publisher_iati_id:
-                new_current_publisher = self.update_publisher(
+                new_publisher = self.update_publisher(
                     publisher_iati_id,
                     publisher_abbreviation,
                     publisher_name)
-                source.publisher = new_current_publisher
+                source.publisher = new_publisher
             source.save(process=False, added_manually=False)
+
