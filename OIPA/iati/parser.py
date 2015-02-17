@@ -219,7 +219,7 @@ class Parser():
                 code=ref,
                 defaults={
                     'name': name,
-                    'type_id': org_type,
+                    'type': org_type,
                     'original_ref': ref
 
                 })[0]
