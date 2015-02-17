@@ -89,8 +89,8 @@ class Parser():
 
             # add basics
             iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
-            self.add_organisation(elem)
-            activity = self.add_activity(elem)
+            reporting_org = self.add_organisation(elem)
+            activity = self.add_activity(elem, reporting_org)
             if activity:
                 self.add_other_identifier(elem, activity)
                 self.add_activity_title(elem, activity)
@@ -205,29 +205,37 @@ class Parser():
         deleter.delete_by_source(xml_source_ref)
 
 
-    # entity add functions
     def add_organisation(self, elem):
         try:
             ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
             type_ref = self.return_first_exist(elem.xpath('reporting-org/@type'))
             name = self.return_first_exist(elem.xpath('reporting-org/text()'))
 
-            self.find_or_create_organisation(ref, name, type_ref)
+            org_type = None
+            if self.isInt(type_ref) and models.OrganisationType.objects.filter(code=type_ref).exists():
+                org_type = models.OrganisationType.objects.get(code=type_ref)
+
+            organisation = models.Organisation.objects.get_or_create(
+                code=ref,
+                defaults={
+                    'name': name,
+                    'type_id': org_type,
+                    'original_ref': ref
+
+                })[0]
+            return organisation
 
         except Exception as e:
             exception_handler(e, ref, "add_organisation")
 
 
-
-    def add_activity(self, elem):
+    def add_activity(self, elem, reporting_organisation):
         try:
             iati_identifier = self.return_first_exist(elem.xpath('iati-identifier/text()'))
             iati_identifier = iati_identifier.strip(' \t\n\r')
             activity_id = iati_identifier.replace("/", "-")
             activity_id = activity_id.replace(":", "-")
             activity_id = activity_id.replace(" ", "")
-
-
 
             default_currency_ref = self.return_first_exist(elem.xpath('@default-currency'))
             default_currency = None
@@ -237,9 +245,6 @@ class Parser():
 
             linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri')) or ""
             iati_standard_version = self.return_first_exist(elem.xpath('@version')) or ""
-
-            reporting_organisation_ref = self.return_first_exist(elem.xpath('reporting-org/@ref'))
-            reporting_organisation = None
 
             secondary_publisher = self.return_first_exist(elem.xpath('reporting-org/@secondary-publisher'))
 
@@ -270,10 +275,6 @@ class Parser():
             if activity_status_code and self.isInt(activity_status_code):
                 if models.ActivityStatus.objects.filter(code=activity_status_code).exists():
                     activity_status = models.ActivityStatus.objects.get(code=activity_status_code)
-
-            if reporting_organisation_ref:
-                if models.Organisation.objects.filter(code=reporting_organisation_ref).exists():
-                    reporting_organisation = models.Organisation.objects.get(code=reporting_organisation_ref)
 
             if collaboration_type_ref and self.isInt(collaboration_type_ref):
                 if models.CollaborationType.objects.filter(code=collaboration_type_ref).exists():
@@ -746,68 +747,39 @@ class Parser():
         except Exception as e:
             exception_handler(e, activity.id, "add_transaction")
 
-
     def org_key_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    def find_or_create_organisation(self, ref, org_name, type_ref=None):
-
-        # possibilities :
-        # ref and name, exists
-        # ref and name, does not exist
-        # ref no name, exists
-        # ref no name, does not exist
-        # no ref, has name, exists
-        # no ref, has name, does not exist
-        # no ref, no name
+    def find_or_create_organisation(self, ref, org_name):
 
         try:
-
             if ref:
                 ref = ref.strip()
-            # no ref, no name
+
             if not ref and not org_name:
                 return None
-            # no ref, has name, exists
-            # no ref, has name, does not exist
-            if not ref:
-                ref = "u"
+            elif not ref:
+                ref = 'u'
 
-            # ref and name, exists
-            if models.Organisation.objects.filter(code=ref).exists() and org_name:
-                if models.Organisation.objects.filter(name=org_name, original_ref=ref).exists():
-                    found_org = models.Organisation.objects.filter(name=org_name, original_ref=ref)[0]
-                else:
-                    for x in range(0, 10):
-                        random_key = self.org_key_generator()
+            if models.Organisation.objects.filter(original_ref=ref, name=org_name).exists():
+                found_org = models.Organisation.objects.get(original_ref=ref, name=org_name)
 
-                        temp_ref = ref + "-" + random_key
-                        if models.Organisation.objects.filter(code=temp_ref).exists():
-                                continue
-                        else:
-                            found_org = models.Organisation(code=temp_ref, name=org_name, type=None, original_ref=ref)
-                            found_org.save()
-                            break
-            # ref no name, exists
-            elif models.Organisation.objects.filter(code=ref, name="").exists():
-                #org with no name, if found get, else create new org
-                found_org = models.Organisation.objects.filter(code=ref, name="")[0]
-
-            # ref and name, does not exist,
-            # ref no name, does not exist
             else:
+                # create new with random suffix
+                for x in range(0, 10):
+                    random_key = self.org_key_generator()
+                    temp_ref = ref + "-" + random_key
 
-                if type_ref:
-                    if self.isInt(type_ref):
-                        if models.OrganisationType.objects.filter(code=type_ref).exists():
-                            org_type = models.OrganisationType.objects.get(code=type_ref)
-                    elif models.OrganisationType.objects.filter(name=type_ref).exists():
-                        org_type = models.OrganisationType.objects.filter(name=type_ref)[0]
+                    if models.Organisation.objects.filter(code=temp_ref).exists():
+                        continue
                     else:
-                        org_type = None
-
-                found_org = models.Organisation(code=ref, name=org_name, type=None, original_ref=ref)
-                found_org.save()
+                        found_org = models.Organisation(
+                            code=temp_ref,
+                            name=org_name,
+                            type=None,
+                            original_ref=ref)
+                        found_org.save()
+                        break
 
             return found_org
 
