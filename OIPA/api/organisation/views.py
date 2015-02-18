@@ -38,9 +38,15 @@ class OrganisationList(ListAPIView):
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
     """
-    queryset = iati.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'code', 'name')
+
+    def get_queryset(self):
+        queryset = iati.models.Organisation.objects.all()
+        query = self.request.QUERY_PARAMS.get('reporting_organisations', None)
+        if query is not None:
+            queryset = queryset.reporting_organisations()
+        return queryset
 
 
 class OrganisationDetail(RetrieveAPIView):
@@ -90,8 +96,8 @@ class ParticipatedActivities(ActivityList):
 
     """
     def get_queryset(self):
-        organisation = custom_get_object_from_queryset(self,
-            iati.models.Organisation.objects.all())
+        organisation = custom_get_object_from_queryset(
+            self, iati.models.Organisation.objects.all())
         return organisation.activity_set.all()
 
 
@@ -118,8 +124,8 @@ class ReportedActivities(ActivityList):
 
     """
     def get_queryset(self):
-        organisation = custom_get_object_from_queryset(self,
-            iati.models.Organisation.objects.all())
+        organisation = custom_get_object_from_queryset(
+            self, iati.models.Organisation.objects.all())
         return organisation.activity_reporting_organisation.all()
 
 
@@ -146,8 +152,8 @@ class ProvidedTransactions(TransactionList):
 
     """
     def get_queryset(self):
-        organisation = custom_get_object_from_queryset(self,
-            iati.models.Organisation.objects.all())
+        organisation = custom_get_object_from_queryset(
+            self, iati.models.Organisation.objects.all())
         return organisation.transaction_providing_organisation.all()
 
 
@@ -174,6 +180,6 @@ class ReceivedTransactions(TransactionList):
 
     """
     def get_queryset(self):
-        organisation = custom_get_object_from_queryset(self,
-            iati.models.Organisation.objects.all())
+        organisation = custom_get_object_from_queryset(
+            self, iati.models.Organisation.objects.all())
         return organisation.transaction_receiving_organisation.all()
