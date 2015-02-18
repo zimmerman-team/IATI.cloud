@@ -82,7 +82,7 @@ class IatiXmlSource(models.Model):
         # self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
         self.save(process=False)
 
-    def save(self, process=True, added_manually=True, *args, **kwargs):
+    def save(self, process=False , added_manually=True, *args, **kwargs):
         self.added_manually = added_manually
         super(IatiXmlSource, self).save()
         if process:
