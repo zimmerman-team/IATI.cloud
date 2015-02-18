@@ -762,7 +762,7 @@ class Parser():
                 ref = 'u'
 
             if models.Organisation.objects.filter(original_ref=ref, name=org_name).exists():
-                found_org = models.Organisation.objects.get(original_ref=ref, name=org_name)
+                found_org = models.Organisation.objects.filter(original_ref=ref, name=org_name)[0]
 
             else:
                 # create new with random suffix
