@@ -1,25 +1,53 @@
-from django.db import models
 from django.db.models import query, Q
 import operator
+
 
 class ActivityQuerySet(query.QuerySet):
     class Meta:
         DEFAULT_SEARCH_FIELDS = ('titles', 'descriptions', 'identifiers')
-        #@TODO search in identifier or id??
         SEARCHABLE_PROPERTIES = {
-            #@TODO Change search methods to FTS where possible
-            'identifiers':	{'name': 'activitysearchdata__search_identifier', 'method':''},
-            'titles':		{'name': 'activitysearchdata__search_title', 'method': '__search'},
-            'descriptions':	{'name': 'activitysearchdata__search_description', 'method': '__search'},
-            'countries':	{'name': 'activitysearchdata__search_country_name', 'method': '__search'},
-            'regions':		{'name': 'activitysearchdata__search_region_name', 'method': '__search'},
-            'sectors':		{'name': 'activitysearchdata__search_sector_name', 'method': '__search'},
-            'part_organisations':{'name': 'activitysearchdata__search_participating_organisation_name', 'method': '__search'},
-            'rep_organisations':{'name': 'activitysearchdata__search_reporting_organisation_name', 'method': '__search'},
-            'documents':	{'name': 'activitysearchdata__search_documentlink_title', 'method': '__search'},
+            'identifiers': {
+                'name': 'activitysearchdata__search_identifier',
+                'method': ''
+            },
+            'titles': {
+                'name': 'activitysearchdata__search_title',
+                'method': '__search'
+            },
+            'descriptions': {
+                'name': 'activitysearchdata__search_description',
+                'method': '__search'
+            },
+            'countries': {
+                'name': 'activitysearchdata__search_country_name',
+                'method': '__search'
+            },
+            'regions': {
+                'name': 'activitysearchdata__search_region_name',
+                'method': '__search'
+            },
+            'sectors': {
+                'name': 'activitysearchdata__search_sector_name',
+                'method': '__search'
+            },
+            'part_organisations': {
+                'name': 'activitysearchdata__search_participating_organisation_name',
+                'method': '__search'
+            },
+            'rep_organisations': {
+                'name': 'activitysearchdata__search_reporting_organisation_name',
+                'method': '__search'
+            },
+            'documents': {
+                'name': 'activitysearchdata__search_documentlink_title',
+                'method': '__search'
+            },
+            'other_identifiers': {
+                'name': 'otheridentifier__identifier',
+                'method': ''
+            },
         }
 
-    #@TODO This should be implemented  as Queryset.as_manager() after we move to django 1.7
     def search(self, query, search_fields):
         prepared_filter = self._prepare_search_filter(self.Meta.DEFAULT_SEARCH_FIELDS if search_fields == None else search_fields, query)
         return self.filter(reduce(operator.or_, [Q(f) for f in prepared_filter]))
