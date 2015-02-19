@@ -15,5 +15,10 @@ unesco_sectors = {
     "IOS": 14,
     "MSS/BKI": 15,
     "AFR": 16,
-    "UIS": 17
+    "UIS": 17,
+    "PCPD": 18,
+    "DIG": 19,
+    "CLD": 20,
+    "PPF": 21,
+    "PP": 22,
 }
