@@ -782,7 +782,7 @@ class RegionActivitiesResource(ModelResource):
         vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
         region_query = request.GET.get("region", None)
         project_query = request.GET.get("query", None)
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
         output_format = request.GET.get("format", "json")
         total_commitments_q = request.GET.get("total_commitments", None)
 
@@ -933,7 +933,7 @@ class GlobalActivitiesResource(ModelResource):
         start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')
         vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
         project_query = request.GET.get("query", None)
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
         total_commitments_q = request.GET.get("total_commitments", None)
 
         if budget_q_gte:
