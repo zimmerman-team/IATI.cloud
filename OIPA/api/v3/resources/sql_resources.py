@@ -656,10 +656,10 @@ class CountryActivitiesResource(ModelResource):
                 'LEFT JOIN iati_title as t ON a.id = t.activity_id '
                 'LEFT JOIN iati_description as dis ON a.id = dis.activity_id '
                 'LEFT JOIN iati_otheridentifier as oa ON a.id = oa.activity_id ')
-            filter_string += 'AND ( t.title LIKE "' + project_query + '%%" '
-            filter_string += 'OR dis.description LIKE "' + project_query + '%%" '
-            filter_string += 'OR oa.identifier LIKE "' + project_query + '%%" '
-            filter_string += 'OR c.name LIKE "' + project_query + '%%" ) '
+            filter_string += 'AND ( t.title LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR dis.description LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR oa.identifier LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR c.name LIKE "%%' + project_query + '%%" ) '
 
         if result_title_q:
             query_join.append(
