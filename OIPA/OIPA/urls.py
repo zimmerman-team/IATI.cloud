@@ -17,6 +17,7 @@ urlpatterns = patterns(
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api', include('api.urls')),
+    url(r'', include('two_factor.urls', 'two_factor')),
     url(r'^$',
         RedirectView.as_view(url='/api', permanent=True),
         name='index')
