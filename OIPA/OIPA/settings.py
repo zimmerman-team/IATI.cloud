@@ -2,6 +2,9 @@
 import sys
 import os
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from django.core.urlresolvers import reverse_lazy
+
+LOGIN_URL = reverse_lazy('two_factor:login')
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
@@ -84,6 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -122,6 +126,11 @@ INSTALLED_APPS = (
     'indicator_unesco',
     'translation_model',
     'rest_framework',
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'otp_yubikey',
+    'two_factor',
 )
 
 SUIT_CONFIG = {
@@ -130,18 +139,28 @@ SUIT_CONFIG = {
         # Keep original label and models
         'sites',
         # Rename app and set icon
-        {'app': 'auth', 'label': 'Authorization', 'icon':'icon-lock'},
-        {'app': 'iati', 'label': 'IATI', 'icon':'icon-th'},
-        {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon':'icon-refresh'},
-        {'app': 'geodata', 'label': 'Geo data', 'icon':'icon-globe'},
-        {'app': 'indicator', 'label': 'Indicators', 'icon':'icon-signal'},
-        {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon':'icon-signal'},
-        {'app': 'cache', 'label': 'API call cache', 'icon':'icon-hdd'},
-        {'label': 'Task queue', 'url': ( '/admin/queue/'), 'icon':'icon-tasks', 'models': [
-            {'label': 'Task overview', 'url': ( '/admin/queue/')},
-            {'label': 'Default queue', 'url': ( '/admin/queue/queues/0/')},
-            {'label': 'Parse queue', 'url': ( '/admin/queue/queues/1/')},
-            {'label': 'Failed tasks', 'url': ( '/admin/queue/queues/2/')},
+        {'label': 'Authorization', 'icon':'icon-lock', 'models': (
+            'auth.user',
+            'auth.group',
+            {'label': 'Two Factor Authentication settings', 'url': '/account/two_factor/'},
+            {'label': 'OTP Static devices', 'model': 'otp_static.staticdevice'},
+            {'label': 'OTP TOTP devices', 'model': 'otp_totp.totpdevice'},
+            {'label': 'Two factor phone devices', 'model': 'two_factor.phonedevice'},
+            {'label': 'Local YubiKey devices', 'model': 'otp_yubikey.yubikeydevice'},
+            {'label': 'Remote YubiKey devices', 'model': 'otp_yubikey.remoteyubikeydevice'},
+            {'label': 'YubiKey validation services', 'model': 'otp_yubikey.validationservice'},
+        )},
+        {'app': 'iati', 'label': 'IATI', 'icon': 'icon-th'},
+        {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon': 'icon-refresh'},
+        {'app': 'geodata', 'label': 'Geo data', 'icon': 'icon-globe'},
+        {'app': 'indicator', 'label': 'Indicators', 'icon': 'icon-signal'},
+        {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon': 'icon-signal'},
+        {'app': 'cache', 'label': 'API call cache', 'icon': 'icon-hdd'},
+        {'label': 'Task queue', 'url': '/admin/queue/', 'icon': 'icon-tasks', 'models': [
+            {'label': 'Task overview', 'url': '/admin/queue/'},
+            {'label': 'Default queue', 'url': '/admin/queue/queues/0/'},
+            {'label': 'Parse queue', 'url': '/admin/queue/queues/1/'},
+            {'label': 'Failed tasks', 'url': '/admin/queue/queues/2/'},
         ]},
     )
 }
