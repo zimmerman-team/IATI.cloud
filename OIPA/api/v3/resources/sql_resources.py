@@ -1,6 +1,5 @@
 # Tastypie specific
 from tastypie.resources import ModelResource
-from tastypie.serializers import Serializer
 
 # cache specific
 from api.cache import NoTransformCache
@@ -15,7 +14,6 @@ from django.http import HttpResponse
 # Helpers
 from api.v3.resources.csv_helper import CsvHelper
 from api.v3.resources.custom_call_helper import CustomCallHelper
-
 
 class ActivityFilterOptionsResource(ModelResource):
 
@@ -510,8 +508,7 @@ def dict2xml(d, root_node, first, listname):
 class CountryActivitiesResource(ModelResource):
 
     class Meta:
-        #aid_type is used as dummy
-        queryset = AidType.objects.all()
+        queryset = AidType.objects.none()
         resource_name = 'country-activities'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -520,8 +517,10 @@ class CountryActivitiesResource(ModelResource):
 
     def get_list(self, request, **kwargs):
 
-        # check if call is cached using validator.is_cached
-        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
+        validator = Validator()
+        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
+        if not 'flush' in cururl and validator.is_cached(cururl):
+            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -540,7 +539,8 @@ class CountryActivitiesResource(ModelResource):
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         country_query = request.GET.get("country", None)
         project_query = request.GET.get("query", None)
-        format = request.GET.get("format", "json")
+        total_commitments_q = request.GET.get("total_commitments", None)
+        output_format = request.GET.get("format", "json")
         include_unesco_empty = request.GET.get("include_unesco_empty", False)
         result_title_q = helper.get_and_query(request, 'result_title', 'r.title')
 
@@ -549,70 +549,103 @@ class CountryActivitiesResource(ModelResource):
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
+        filter_string = ''.join([
+            country_q,
+            organisation_q,
+            region_q,
+            sector_q,
+            budget_q,
+            start_planned_q,
+            start_actual_q,
+            donor_q,
+            result_title_q
+        ])
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + donor_q + result_title_q + ')'
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
+        if filter_string:
+            filter_string = ' AND (' + filter_string[:-7] + ') '
 
+        query_select = [
+            'SELECT c.code as country_id',
+            'c.name as country_name',
+            'AsText(c.center_longlat) as location'
+        ]
 
-        filter_region = ''
+        query_join = [
+            'FROM geodata_country c ',
+            'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code ',
+            'LEFT JOIN iati_activity a ON rc.activity_id = a.id '
+        ]
+
+        if total_commitments_q:
+            query_join.append('LEFT JOIN iati_transaction tr ON tr.activity_id = a.id ')
+            query_select.append('sum(tr.value) as total_commitment')
+            query_select.append('count(distinct(a.id)) as total_projects')
+            filter_string += ' AND tr.transaction_type_id = "C" '
+        else:
+            query_select.append('sum(a.total_budget) as total_budget')
+            query_select.append('count(a.id) as total_projects',)
+
         if region_q:
-            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientregion rr '
+                'ON rr.activity_id = a.id '
+                'LEFT JOIN geodata_region r '
+                'ON rr.region_id = r.code ')
 
-        filter_sector = ''
         if sector_q:
-            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+            query_join.append(
+                'LEFT JOIN iati_activitysector s '
+                'ON a.id = s.activity_id ')
 
-        filter_donor = ''
         if donor_q:
-            filter_donor = 'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            query_join.append(
+                'LEFT JOIN iati_activityparticipatingorganisation as apo '
+                'ON a.id = apo.activity_id ')
             filter_string += ' AND apo.role_id = "Funding" '
 
         if country_query:
             filter_string += 'AND c.name LIKE "%%' + country_query + '%%" '
 
-        filter_project_query = ''
         if project_query:
-            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
-            filter_string += 'AND t.title LIKE "%%' + project_query + '%%" AND c.name LIKE "%%' + project_query + '%%"'
+            query_join.append(
+                'LEFT JOIN iati_title as t ON a.id = t.activity_id '
+                'LEFT JOIN iati_description as dis ON a.id = dis.activity_id '
+                'LEFT JOIN iati_otheridentifier as oa ON a.id = oa.activity_id ')
+            filter_string += 'AND ( t.title LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR dis.description LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR oa.identifier LIKE "%%' + project_query + '%%" '
+            filter_string += 'OR c.name LIKE "%%' + project_query + '%%" ) '
 
-        filter_result = ''
         if result_title_q:
-            filter_result = 'LEFT JOIN iati_result r ON a.id = r.activity_id '
+            query_join.append(
+                'LEFT JOIN iati_result r '
+                'ON a.id = r.activity_id ')
 
-        cursor = connection.cursor()
-        query = 'SELECT c.code as country_id, c.name as country_name, AsText(c.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM geodata_country c '\
-                'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
-                'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
-                '%s %s %s %s %s '\
-                'WHERE c.code is not null %s'\
+        query_end = 'WHERE c.code is not null ' \
+                '%s '\
                 'GROUP BY c.code ' \
                 'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_result, filter_string, order_by, order_asc_desc, limit, offset)
-
+                'LIMIT %s OFFSET %s' % (filter_string, order_by, order_asc_desc, limit, offset)
+        query = ','.join(query_select) + ' ' + ''.join(query_join) + query_end
 
         if include_unesco_empty and organisation_q:
             query = query.replace(organisation_q, "")
             query = query.replace(' AND (' + organisation_q[:-6], "")
             query = query.replace(organisation_q[:-6], "")
-            query = query.replace("LEFT JOIN iati_activity a ON rc.activity_id = a.id", "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
+            query = query.replace(
+                "LEFT JOIN iati_activity a ON rc.activity_id = a.id",
+                "LEFT JOIN iati_activity a ON rc.activity_id = a.id AND " + organisation_q[:-8])
             query = query.replace("WHERE ", "WHERE unesco_region_id is not null AND ")
-
+        cursor = connection.cursor()
         cursor.execute(query)
 
         activities = []
-
         results = helper.get_fields(cursor=cursor)
+
         for r in results:
-            country = {}
-            country['id'] = r['country_id']
-            country['name'] = r['country_name']
-            country['total_projects'] = r['total_projects']
 
             loc = r['location']
             if loc:
-
                 loc = loc.replace("POINT(", "")
                 loc = loc.replace(")", "")
                 loc_array = loc.split(" ")
@@ -622,22 +655,26 @@ class CountryActivitiesResource(ModelResource):
                 longitude = None
                 latitude = None
 
-            country['latitude'] = latitude
-            country['longitude'] = longitude
-            country['total_budget'] = r['total_budget']
+            country = {
+                'id': r['country_id'],
+                'name': r['country_name'],
+                'total_projects': r['total_projects'],
+                'latitude': latitude,
+                'longitude': longitude
+            }
+
+            if total_commitments_q:
+                country['total_commitment'] = r['total_commitment']
+            else:
+                country['total_budget'] = r['total_budget']
             activities.append(country)
 
-        return_json = {}
-        return_json["objects"] = activities
-
+        return_json = {
+            'objects': activities
+        }
         cursor = connection.cursor()
-        query = 'SELECT c.code '\
-                'FROM geodata_country c '\
-                'LEFT JOIN iati_activityrecipientcountry rc ON rc.country_id = c.code '\
-                'LEFT JOIN iati_activity a ON rc.activity_id = a.id '\
-                '%s %s %s %s %s '\
-                'WHERE c.code is not null %s'\
-                'GROUP BY c.code ' % (filter_region, filter_sector, filter_donor, filter_project_query, filter_result, filter_string)
+        query = 'SELECT c.code ' + ''.join(query_join)
+        query += 'WHERE c.code is not null %s GROUP BY c.code' % filter_string
 
         if include_unesco_empty and organisation_q:
             query = query.replace(organisation_q, "")
@@ -648,14 +685,12 @@ class CountryActivitiesResource(ModelResource):
 
         cursor.execute(query)
         results2 = helper.get_fields(cursor=cursor)
-
-
         return_json["meta"] = {"total_count": len(results2)}
 
-        if format == "json":
+        if output_format == "json":
             return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
-        if format == "xml":
+        if output_format == "xml":
 
             for item in return_json["objects"]:
                 item["name"] = item["name"].encode('utf-8', 'ignore')
@@ -663,19 +698,17 @@ class CountryActivitiesResource(ModelResource):
             xml = dict2xml(return_json, "objects", True, "country")
             return HttpResponse(xml, content_type='application/xml')
 
-        if format == "csv":
+        if output_format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
             return HttpResponse(csv_content, content_type='text/csv')
-
-
 
 
 class RegionActivitiesResource(ModelResource):
 
     class Meta:
         #aid_type is used as dummy
-        queryset = AidType.objects.all()
+        queryset = AidType.objects.none()
         resource_name = 'region-activities'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -685,16 +718,12 @@ class RegionActivitiesResource(ModelResource):
 
     def get_list(self, request, **kwargs):
 
-        # check if call is cached using validator.is_cached
-        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
         validator = Validator()
         cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-
         if not 'flush' in cururl and validator.is_cached(cururl):
             return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
 
         helper = CustomCallHelper()
-        # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
         budget_q_gte = request.GET.get('total_budget__gt', None)
         budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
@@ -710,67 +739,81 @@ class RegionActivitiesResource(ModelResource):
         vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
         region_query = request.GET.get("region", None)
         project_query = request.GET.get("query", None)
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
-        format = request.GET.get("format", "json")
-
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
+        output_format = request.GET.get("format", "json")
+        total_commitments_q = request.GET.get("total_commitments", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
+        filter_string = ''.join([
+            organisation_q,
+            region_q,
+            sector_q,
+            budget_q,
+            start_planned_q,
+            start_actual_q,
+            vocabulary_q,
+            donor_q])
 
-        filter_string = ' AND (' + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + vocabulary_q + donor_q + ')'
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
+        if filter_string:
+            filter_string = ' AND (' + filter_string[:-7] + ') '
 
-        filter_sector = ''
+        query_select = [
+            'SELECT r.code as region_id',
+            'r.name as region_name',
+            'AsText(r.center_longlat) as location',
+        ]
+
+        query_join = [
+            'FROM iati_activity a ',
+            'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id ',
+            'LEFT JOIN geodata_region r ON rr.region_id = r.code '
+        ]
+
+        if total_commitments_q:
+            query_join.append('LEFT JOIN iati_transaction tr ON tr.activity_id = a.id ')
+            query_select.append('sum(tr.value) as total_commitment')
+            query_select.append('count(distinct(a.id)) as total_projects')
+            filter_string += ' AND tr.transaction_type_id = "C" '
+        else:
+            query_select.append('sum(a.total_budget) as total_budget')
+            query_select.append('count(a.id) as total_projects',)
+
         if sector_q:
-            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+            query_join.append('LEFT JOIN iati_activitysector s ON a.id = s.activity_id ')
 
-        filter_vocabulary = ''
         if vocabulary_q:
-            filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
+            query_join.append("LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code ")
 
         if region_query:
             filter_string += 'AND r.name LIKE "%%' + region_query + '%%" '
 
-        filter_project_query = ''
         if project_query:
-            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
+            query_join.append('LEFT JOIN iati_title as t on a.id = t.activity_id ')
             filter_string += 'AND t.title LIKE "%%' + project_query + '%%" '
 
-        filter_donor = ''
         if donor_q:
-            filter_donor = 'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            query_join.append('LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ')
             filter_string += ' AND apo.role_id = "Funding" '
 
-
         cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
-                'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
-                '%s %s %s %s'\
-                'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' \
-                'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string, order_by, order_asc_desc, limit, offset)
-
-        cursor.execute(query)
+        cursor.execute(
+            ','.join(query_select) + ' ' + ''.join(query_join) +
+            'WHERE r.code is not null %s '\
+            'GROUP BY r.code ' \
+            'ORDER BY %s %s ' \
+            'LIMIT %s OFFSET %s' % (filter_string, order_by, order_asc_desc, limit, offset))
 
         activities = []
 
         results = helper.get_fields(cursor=cursor)
         for r in results:
-            region = {}
-            region['id'] = r['region_id']
-            region['name'] = r['region_name']
-            region['total_projects'] = r['total_projects']
 
             loc = r['location']
             if loc:
-
                 loc = loc.replace("POINT(", "")
                 loc = loc.replace(")", "")
                 loc_array = loc.split(" ")
@@ -780,32 +823,36 @@ class RegionActivitiesResource(ModelResource):
                 longitude = None
                 latitude = None
 
-            region['latitude'] = latitude
-            region['longitude'] = longitude
-            region['total_budget'] = r['total_budget']
+            region = {
+                'id': r['region_id'],
+                'name': r['region_name'],
+                'total_projects': r['total_projects'],
+                'longitude': longitude,
+                'latitude': latitude
+            }
+
+            if total_commitments_q:
+                region['total_commitment'] = r['total_commitment']
+            else:
+                region['total_budget'] = r['total_budget']
+
             activities.append(region)
 
-        return_json = {}
-        return_json["objects"] = activities
-
-        cursor = connection.cursor()
-        query = 'SELECT r.code as region_id, r.name as region_name, AsText(r.center_longlat) as location, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '\
-                'LEFT JOIN geodata_region r ON rr.region_id = r.code '\
-                '%s %s %s %s'\
-                'WHERE r.code is not null %s'\
-                'GROUP BY r.code ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_string)
-
-        cursor.execute(query)
+        cursor.execute(','.join(query_select) +
+                       ' ' +
+                       ''.join(query_join) +
+                       'WHERE r.code is not null %s GROUP BY r.code ' % filter_string)
         results2 = helper.get_fields(cursor=cursor)
 
-        return_json["meta"] = {"total_count": len(results2)}
+        return_json = {
+            'objects': activities,
+            'meta': {"total_count": len(results2)}
+        }
 
-        if format == "json":
+        if output_format == "json":
             return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
-        if format == "xml":
+        if output_format == "xml":
 
             for item in return_json["objects"]:
                 item["name"] = item["name"].encode('utf-8', 'ignore')
@@ -814,138 +861,128 @@ class RegionActivitiesResource(ModelResource):
             xml = dict2xml(return_json, "objects", True, "region")
             return HttpResponse(xml, content_type='application/xml')
 
-        if format == "csv":
+        if output_format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
             return HttpResponse(csv_content, content_type='text/csv')
 
 
-
-
 class GlobalActivitiesResource(ModelResource):
 
     class Meta:
-        #aid_type is used as dummy
-        queryset = AidType.objects.all()
+        queryset = AidType.objects.none()
         resource_name = 'global-activities'
         include_resource_uri = True
         cache = NoTransformCache()
         serializer = CsvHelper()
         allowed_methods = ['get']
 
-
     def get_list(self, request, **kwargs):
 
-        # check if call is cached using validator.is_cached
-        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
-        validator = Validator()
-        cururl = request.META['PATH_INFO'] + "?" + request.META['QUERY_STRING']
-
-        if not 'flush' in cururl and validator.is_cached(cururl):
-            return HttpResponse(validator.get_cached_call(cururl), content_type='application/json')
-
         helper = CustomCallHelper()
-        # country_q = helper.get_and_query(request, 'countries__in', 'c.code')
         budget_q_gte = request.GET.get('total_budget__gt', None)
         budget_q_lte = request.GET.get('total_budget__lt', None)
         region_q = helper.get_and_query(request, 'regions__in', 'r.code')
         sector_q = helper.get_and_query(request, 'sectors__in', 's.sector_id')
         organisation_q = helper.get_and_query(request, 'reporting_organisation__in', 'a.reporting_organisation_id')
         budget_q = ''
-        limit = request.GET.get("limit", 999)
-        offset = request.GET.get("offset", 0)
-        order_by = request.GET.get("order_by", None)
-        order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         start_actual_q = helper.get_year_and_query(request, 'start_actual__in', 'a.start_actual')
         start_planned_q = helper.get_year_and_query(request, 'start_planned__in', 'a.start_planned')
         vocabulary_q = helper.get_and_query(request, "vocabulary__in", "rv.code")
-        region_query = request.GET.get("region", None)
         project_query = request.GET.get("query", None)
-        donor_q = helper.get_and_query(request, 'participating_organisations__in', 'apo.organisation_id')
+        donor_q = helper.get_and_query(request, 'participating_organisations__organisation__code__in', 'apo.organisation_id')
+        total_commitments_q = request.GET.get("total_commitments", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
+        filter_string = ''.join([
+            organisation_q,
+            region_q,
+            sector_q,
+            budget_q,
+            start_planned_q,
+            start_actual_q,
+            vocabulary_q,
+            donor_q])
 
-        filter_string = ' AND (' + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + vocabulary_q + donor_q + ')'
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
+        if filter_string:
+            filter_string = ' AND (' + filter_string[:-7] + ') '
 
-        filter_sector = ''
+        query_select = [
+            'SELECT count(a.id) as total_projects',
+        ]
+
+        query_join = [
+            'FROM iati_activity a '
+        ]
+
+        if total_commitments_q:
+            query_join.append('LEFT JOIN iati_transaction tr ON tr.activity_id = a.id ')
+            query_select.append('sum(tr.value) as total_commitment')
+            query_select.append('count(distinct(a.id)) as total_projects')
+            filter_string += ' AND tr.transaction_type_id = "C" '
+        else:
+            query_select.append('sum(a.total_budget) as total_budget')
+            query_select.append('count(a.id) as total_projects',)
+
         if sector_q:
-            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+            query_join.append('LEFT JOIN iati_activitysector s ON a.id = s.activity_id ')
 
-        filter_vocabulary = ''
         if vocabulary_q:
-            filter_vocabulary = "LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code "
+            query_join.append('LEFT JOIN iati_regionvocabulary rv ON r.region_vocabulary_id = rv.code ')
 
-        filter_region = ''
         if region_q:
-            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '
+                'LEFT JOIN geodata_region r ON rr.region_id = r.code ')
 
-
-        filter_project_query = ''
         if project_query:
-            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
+            query_join.append('LEFT JOIN iati_title as t on a.id = t.activity_id ')
             filter_string += 'AND t.title LIKE "%%' + project_query + '%%" '
 
-        filter_donor = ''
         if donor_q:
-            filter_donor = 'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
+            query_join.append('LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ')
             filter_string += ' AND apo.role_id = "Funding" '
 
-
         cursor = connection.cursor()
-        query = 'SELECT count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                '%s %s %s %s %s '\
-                'WHERE a.scope_id = 1 %s'\
-                'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
-
-        cursor.execute(query)
-
+        cursor.execute(
+            ','.join(query_select) +
+            ' ' +
+            ''.join(query_join) +
+            'WHERE a.scope_id = 1 %s GROUP BY a.scope_id ' % filter_string)
         activities = []
 
         results = helper.get_fields(cursor=cursor)
         for r in results:
-            region = {}
-            region['total_projects'] = r['total_projects']
-            region['total_budget'] = r['total_budget']
-            activities.append(region)
+            global_activities = {
+                'total_projects': r['total_projects'],
+            }
+            if total_commitments_q:
+                global_activities['total_commitment'] = r['total_commitment']
+            else:
+                global_activities['total_budget'] = r['total_budget']
+            activities.append(global_activities)
 
-        return_json = {}
-        return_json["objects"] = activities
-
-        cursor = connection.cursor()
-        query = 'SELECT count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                '%s %s %s %s %s '\
-                'WHERE a.scope_id = 1 %s'\
-                'GROUP BY a.scope_id ' % (filter_sector, filter_vocabulary, filter_project_query, filter_donor, filter_region, filter_string)
-
-        cursor.execute(query)
-        results2 = helper.get_fields(cursor=cursor)
-
-        return_json["meta"] = {"total_count": len(results2)}
+        return_json = {
+            'objects': activities,
+            'meta': {'total_count': 1}
+        }
 
         return HttpResponse(ujson.dumps(return_json), content_type='application/json')
-
-
 
 
 class SectorActivitiesResource(ModelResource):
 
     class Meta:
-        #aid_type is used as dummy
-        queryset = AidType.objects.all()
+        queryset = AidType.objects.none()
         resource_name = 'sector-activities'
         include_resource_uri = True
         cache = NoTransformCache()
         serializer = CsvHelper()
         allowed_methods = ['get']
-
 
     def get_list(self, request, **kwargs):
 
@@ -961,77 +998,97 @@ class SectorActivitiesResource(ModelResource):
         offset = request.GET.get("offset", 0)
         order_by = request.GET.get("order_by", "sector_name")
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
-        query = request.GET.get("query", None)
-        format = request.GET.get("format", "json")
+        search_query = request.GET.get("query", None)
+        output_format = request.GET.get("format", "json")
+        total_commitments_q = request.GET.get("total_commitments", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
+        filter_string = ''.join([
+            country_q,
+            organisation_q,
+            region_q,
+            sector_q,
+            budget_q
+        ])
+        if filter_string:
+            filter_string = ' AND (' + filter_string[:-7] + ') '
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + ')'
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
+        query_select = [
+            'SELECT s.code as sector_id',
+            's.name as sector_name',
+        ]
+
+        query_join = [
+            'FROM iati_activity a ',
+            'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '
+            'LEFT JOIN iati_sector s ON s.code = acts.sector_id '
+        ]
+
+        if total_commitments_q:
+            query_join.append('LEFT JOIN iati_transaction tr ON tr.activity_id = a.id ')
+            query_select.append('sum(tr.value) as total_commitment')
+            query_select.append('count(distinct(a.id)) as total_projects')
+            filter_string += ' AND tr.transaction_type_id = "C" '
+        else:
+            query_select.append('sum(a.total_budget) as total_budget')
+            query_select.append('count(a.id) as total_projects',)
 
 
-        filter_country = ''
         if country_q:
-            filter_country = 'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id LEFT JOIN geodata_country c ON rc.region_id = c.code '
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientcountry rc ON rc.activity_id = a.id '
+                'LEFT JOIN geodata_country c ON rc.region_id = c.code ')
 
         if region_q:
-            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
-        else:
-            filter_region = ''
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '
+                'LEFT JOIN geodata_region r ON rr.region_id = r.code ')
 
-        if query:
-            filter_string += 'AND s.name LIKE "%%' + query + '%%" '
+        if search_query:
+            filter_string += 'AND s.name LIKE "%%' + search_query + '%%" '
 
         cursor = connection.cursor()
-        query = 'SELECT s.code as sector_id, s.name as sector_name, count(a.id) as total_projects, sum(a.total_budget) as total_budget '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '\
-                'LEFT JOIN iati_sector s ON s.code = acts.sector_id '\
-                '%s %s '\
-                'WHERE s.code is not null %s'\
-                'GROUP BY s.code ' \
-                'ORDER BY %s %s ' \
-                'LIMIT %s OFFSET %s' % (filter_country, filter_region, filter_string, order_by, order_asc_desc, limit, offset)
-
-        cursor.execute(query)
+        cursor.execute(
+            ','.join(query_select) + ' ' + ''.join(query_join) +
+            'WHERE s.code is not null %s'\
+            'GROUP BY s.code ' \
+            'ORDER BY %s %s ' \
+            'LIMIT %s OFFSET %s' % (filter_string, order_by, order_asc_desc, limit, offset))
 
         activities = []
 
         results = helper.get_fields(cursor=cursor)
         for r in results:
-            sector = {}
-            sector['id'] = r['sector_id']
-            sector['name'] = r['sector_name']
-            sector['total_projects'] = r['total_projects']
-            sector['total_budget'] = r['total_budget']
+            sector = {
+                'id': r['sector_id'],
+                'name': r['sector_name'],
+                'total_projects': r['total_projects']
+            }
+            if total_commitments_q:
+                sector['total_commitment'] = r['total_commitment']
+            else:
+                sector['total_budget'] = r['total_budget']
+
             activities.append(sector)
 
-        return_json = {}
-        return_json["objects"] = activities
-
-        cursor = connection.cursor()
-        query = 'SELECT s.code as sector_id '\
-                'FROM iati_activity a '\
-                'LEFT JOIN iati_activitysector acts ON acts.activity_id = a.id '\
-                'LEFT JOIN iati_sector s ON s.code = acts.sector_id '\
-                '%s %s '\
-                'WHERE s.code is not null %s'\
-                'GROUP BY s.code ' % (filter_country, filter_region, filter_string)
-
-        cursor.execute(query)
+        cursor.execute(','.join(query_select) + ' ' + ''.join(query_join) +
+                       'WHERE s.code is not null %s GROUP BY s.code ' % filter_string)
 
         results2 = helper.get_fields(cursor=cursor)
-        return_json["meta"] = {"total_count": len(results2)}
 
-        if format == "json":
+        return_json = {
+            'objects': activities,
+            'meta': {'total_count': len(results2)}
+        }
+
+        if output_format == "json":
             return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
-        if format == "xml":
+        if output_format == "xml":
 
             for item in return_json["objects"]:
                 item["name"] = item["name"].encode('utf-8', 'ignore')
@@ -1040,21 +1097,16 @@ class SectorActivitiesResource(ModelResource):
             xml = dict2xml(return_json, "objects", True, "sector")
             return HttpResponse(xml, content_type='application/xml')
 
-        if format == "csv":
+        if output_format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
             return HttpResponse(csv_content, content_type='text/csv')
 
 
-
-
-
-
 class DonorActivitiesResource(ModelResource):
 
     class Meta:
-        #aid_type is used as dummy
-        queryset = AidType.objects.all()
+        queryset = AidType.objects.none()
         resource_name = 'donor-activities'
         include_resource_uri = True
         cache = NoTransformCache()
@@ -1062,9 +1114,6 @@ class DonorActivitiesResource(ModelResource):
         serializer = CsvHelper()
 
     def get_list(self, request, **kwargs):
-
-        # check if call is cached using validator.is_cached
-        # check if call contains flush, if it does the call comes from the cache updater and shouldn't return cached results
 
         helper = CustomCallHelper()
         country_q = helper.get_and_query(request, 'countries__in', 'c.code')
@@ -1083,64 +1132,80 @@ class DonorActivitiesResource(ModelResource):
         order_asc_desc = request.GET.get("order_asc_desc", "ASC")
         donor_query = request.GET.get("donor", None)
         project_query = request.GET.get("query", None)
-        format = request.GET.get("format", "json")
+        output_format = request.GET.get("format", "json")
+        total_commitments_q = request.GET.get("total_commitments", None)
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
         if budget_q_lte:
             budget_q += ' a.total_budget < "' + budget_q_lte + '" ) AND ('
 
-        filter_string = ' AND (' + country_q + organisation_q + region_q + sector_q + budget_q + start_planned_q + start_actual_q + donor_q + ')'
-        if 'AND ()' in filter_string:
-            filter_string = filter_string[:-6]
+        filter_string = ''.join([
+            country_q,
+            organisation_q,
+            region_q,
+            sector_q,
+            budget_q,
+            start_planned_q,
+            start_actual_q,
+            donor_q
+        ])
 
+        if filter_string:
+            filter_string = ' AND (' + filter_string[:-7] + ') '
 
-        filter_region = ''
+        query_select = [
+            'SELECT apo.organisation_id as organisation_id',
+            'apo.name as organisation_name',
+            'count(a.id) as total_projects',
+            'sum(a.total_budget) as total_budget'
+        ]
+
+        query_join = [
+            'FROM iati_activity a ',
+            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id ',
+        ]
+
+        if total_commitments_q:
+            query_join.append('LEFT JOIN iati_transaction tr ON tr.activity_id = a.id ')
+            query_select.append('sum(tr.value) as total_commitment')
+            query_select.append('count(distinct(a.id)) as total_projects')
+            filter_string += ' AND tr.transaction_type_id = "C" '
+        else:
+            query_select.append('sum(a.total_budget) as total_budget')
+            query_select.append('count(a.id) as total_projects',)
+
         if region_q:
-            filter_region = 'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id LEFT JOIN geodata_region r ON rr.region_id = r.code '
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientregion rr ON rr.activity_id = a.id '
+                'LEFT JOIN geodata_region r ON rr.region_id = r.code ')
 
-        filter_sector = ''
         if sector_q:
-            filter_sector = 'LEFT JOIN iati_activitysector s ON a.id = s.activity_id '
+            query_join.append('LEFT JOIN iati_activitysector s ON a.id = s.activity_id ')
 
-        filter_country = ''
         if country_q:
-            filter_country = 'LEFT JOIN iati_activityrecipientcountry as rc on rc.activity_id = a.id LEFT JOIN geodata_country c on rc.country_id = c.code '
+            query_join.append(
+                'LEFT JOIN iati_activityrecipientcountry as rc on rc.activity_id = a.id '
+                'LEFT JOIN geodata_country c on rc.country_id = c.code ')
             filter_string += ' AND apo.role_id = "Funding" '
-
 
         filter_string += ' AND apo.role_id = "Funding" '
 
         if donor_query:
             filter_string += 'AND apo.name LIKE "%%' + donor_query + '%%" '
 
-        filter_project_query = ''
-
         if project_query:
-            filter_project_query = 'LEFT JOIN iati_title as t on a.id = t.activity_id '
+            query_join.append('LEFT JOIN iati_title as t on a.id = t.activity_id ')
             filter_string += 'AND t.title LIKE "%%' + project_query + '%%" '
-
-
-
 
         cursor = connection.cursor()
         cursor.execute(
-            'SELECT apo.organisation_id as organisation_id, '
-            'apo.name as organisation_name, '
-            'count(a.id) as total_projects, '
-            'sum(a.total_budget) as total_budget '
-            'FROM iati_activity a '
-            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
-            '%s %s %s %s '
+            ','.join(query_select) + ' ' + ''.join(query_join) +
             'WHERE apo.name is not null %s'
             'GROUP BY apo.name '
             'ORDER BY %s %s '
             'LIMIT %s OFFSET %s'
             % (
-                filter_region,
-                filter_sector,
-                filter_country,
-                filter_project_query,
                 filter_string,
                 order_by,
                 order_asc_desc,
@@ -1151,38 +1216,36 @@ class DonorActivitiesResource(ModelResource):
 
         results = helper.get_fields(cursor=cursor)
         for r in results:
-            donor = {}
-            donor['id'] = r['organisation_id']
-            donor['name'] = r['organisation_name']
-            donor['total_projects'] = r['total_projects']
-            donor['total_budget'] = r['total_budget']
+            donor = {
+                'id': r['organisation_id'],
+                'name': r['organisation_name'],
+                'total_projects': r['total_projects'],
+            }
+
+            if total_commitments_q:
+                donor['total_commitment'] = r['total_commitment']
+            else:
+                donor['total_budget'] = r['total_budget']
+
             activities.append(donor)
 
-        return_json = {}
-        return_json["objects"] = activities
-
         cursor.execute(
-            'SELECT apo.organisation_id as organisation_id '
-            'FROM iati_activity a '
-            'LEFT JOIN iati_activityparticipatingorganisation as apo on a.id = apo.activity_id '
-            '%s %s %s %s'
+            ','.join(query_select) + ' ' + ''.join(query_join) +
             'WHERE apo.name is not null %s'
             'GROUP BY apo.name '
-            % (
-                filter_region,
-                filter_sector,
-                filter_country,
-                filter_project_query,
-                filter_string))
+            % filter_string
+        )
         results2 = helper.get_fields(cursor=cursor)
 
-        return_json["meta"] = {"total_count": len(results2)}
+        return_json = {
+            'objects': activities,
+            'meta': {"total_count": len(results2)}
+        }
 
-
-        if format == "json":
+        if output_format == "json":
             return HttpResponse(ujson.dumps(return_json), content_type='application/json')
 
-        if format == "xml":
+        if output_format == "xml":
 
             for item in return_json["objects"]:
                 item["name"] = item["name"].encode('utf-8', 'ignore')
@@ -1191,12 +1254,10 @@ class DonorActivitiesResource(ModelResource):
             xml = dict2xml(return_json, "objects", True, "donor")
             return HttpResponse(xml, content_type='application/xml')
 
-        if format == "csv":
+        if output_format == "csv":
             csvh = CsvHelper()
             csv_content = csvh.to_csv(return_json)
             return HttpResponse(csv_content, content_type='text/csv')
-
-
 
 
 class ActivityListVisResource(ModelResource):

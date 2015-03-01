@@ -46,7 +46,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def parse_view(self, request):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
-        obj.save()
+        obj.process()
         return HttpResponse('Success')
 
     def parse_all(self, request):

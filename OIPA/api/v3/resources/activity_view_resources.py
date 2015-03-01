@@ -156,7 +156,7 @@ class ActivityResultResource(ModelResource):
         include_resource_uri = False
         excludes = ['id']
         filtering = {
-            'title': 'exact',
+            'title': ('exact', 'in'),
         }
 
 
