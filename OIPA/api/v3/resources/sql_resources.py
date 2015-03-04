@@ -542,7 +542,7 @@ class CountryActivitiesResource(ModelResource):
         total_commitments_q = request.GET.get("total_commitments", None)
         output_format = request.GET.get("format", "json")
         include_unesco_empty = request.GET.get("include_unesco_empty", False)
-        result_title_q = helper.get_and_query(request, 'result_title', 'r.title')
+        result_title_q = helper.get_and_query(request, 'results_title__in', 'r.title')
 
         if budget_q_gte:
             budget_q += ' a.total_budget > "' + budget_q_gte + '" ) AND ('
