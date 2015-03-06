@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_totp',
     'otp_yubikey',
     'two_factor',
+    'parse_logger'
 )
 
 SUIT_CONFIG = {
