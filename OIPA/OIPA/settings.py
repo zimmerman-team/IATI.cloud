@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'otp_yubikey',
     'two_factor',
     'debug_toolbar',
+    'parse_logger',
 )
 
 SUIT_CONFIG = {
