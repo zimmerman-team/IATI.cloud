@@ -594,6 +594,16 @@ class ActivityRecipientRegion(models.Model):
         return "%s - %s" % (self.activity.idStr, self.region)
 
 
+
+
+class OtherIdentifierType(models.Model):
+    code = models.CharField(max_length=3, default="")
+    name = models.CharField(max_length=56, default="")
+    description = models.CharField(max_length=1024, default="")
+
+    def __unicode__(self,):
+        return self.name
+
 class OtherIdentifier(models.Model):
     activity = models.ForeignKey(Activity)
     owner_ref = models.CharField(max_length=100, default="")
@@ -604,14 +614,6 @@ class OtherIdentifier(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.identifier)
-
-class OtherIdentifierType(models.Model):
-    code = models.CharField(max_length=3, default="")
-    name = models.CharField(max_length=56, default="")
-    description = models.CharField(max_length=1024, default="")
-
-    def __unicode__(self,):
-        return self.name
 
 class ActivityWebsite(models.Model):
     activity = models.ForeignKey(Activity)
@@ -1016,6 +1018,15 @@ class CrsAddLoanStatus(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.year)
+
+class ActivityDate(models.Model):
+    activity = models.ForeignKey(Activity)
+    iso_date = models.DateField()
+    type = models.ForeignKey(ActivityDateType)
+def __unicode__(self):
+    return "%s" % (self.type.name)
+
+
 
 
 
