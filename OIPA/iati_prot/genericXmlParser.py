@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 import datetime
 import inspect
 import traceback
+import re
 
 
 class XMLParser():
@@ -30,13 +31,18 @@ class XMLParser():
         self.parse(root)
         hintsStr = ''
         errorStr = ''
+        send_mail = False
         if len(self.hints) > 0:
             hintsStr = "function that are missing:"
             hintsStr += "\n".join( self.hints )
+            send_mail = True
         if len(self.errors) > 0:
             errorStr = hintsStr+"\n\n errors found:\n"
             errorStr += "\n".join( self.errors)
-            #self.sendErrorMail('daniel@zimmermanzimmerman.nl', hintsStr +"\n"+errorStr)
+            send_mail = True
+
+        if(send_mail):
+            self.sendErrorMail('daniel@zimmermanzimmerman.nl', hintsStr +"\n"+errorStr)
 
     def testWithFile(self,fileName):
         with open(fileName, "r") as myfile:
@@ -53,10 +59,14 @@ class XMLParser():
 
 
         for e in element.getchildren():
+
             if e == None or type(e).__name__ != '_Element':
+                
                 continue
             x_path = self.root.getroottree().getpath(e)
+            print x_path
             function_name = self.generate_function_name(x_path)
+            print function_name
             if function_name.find('comment') != -1 :
                 continue
             if hasattr(self, function_name) and callable(getattr(self, function_name)):
@@ -71,6 +81,7 @@ class XMLParser():
                     self.handle_exception(x_path, function_name, exeception)
                     self.parse(e)
             else:
+                print function_name
                 self.handle_function_not_found(x_path, function_name,e)
                 #print function_name
 
@@ -80,9 +91,10 @@ class XMLParser():
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '_')
         function_name = function_name.replace('-', '_')
-        bracket_location = function_name.find('[')
-        if(bracket_location != -1):
-            return function_name[1:bracket_location]
+        function_name = re.sub("\[[0-9]?\]", "",function_name)
+        #bracket_location = function_name.find('[')
+        #if(bracket_location != -1):
+            #return function_name[1:bracket_location]
         return function_name[1:]
 
     def handle_function_not_found(self, xpath, function_name,element):
