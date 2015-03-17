@@ -128,12 +128,22 @@ class Parse(XMLParser):
     tag:description'''
     def iati_activities_iati_activity_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
-        #store element 
-
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        description = models.Description()
+        description.activity = model
+        desc_type = self.cached_db_call(models.DescriptionType, element.attrib.get('type'))
+        description.type = desc_type
+        description.save()
+        self.set_func_model(description)
         return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities_iati_activity_description_narrative(self,element):
+        model = self.get_func_model()
+        self.add_narrative(element,model)
+        return element
+
 
     '''atributes:
     ref:BB-BBB-123456789
@@ -143,11 +153,21 @@ class Parse(XMLParser):
     tag:participating-org'''
     def iati_activities_iati_activity_participating_org(self,element):
         model = self.get_func_model()
-        #print element.tag 
-        #store element 
+        org = self.add_organisation(element)
+        activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
+        activityParticipatingOrganisation.org = org
+        activityParticipatingOrganisation.activity = model
+        activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
+        activityParticipatingOrganisation.save()
+        self.set_func_model(activityParticipatingOrganisation)
+        return element
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities_iati_activity_participating_org_narrative(self,element):
+        model = self.get_func_model()
+        self.add_narrative(element,model)
         return element
 
     '''atributes:
@@ -157,11 +177,10 @@ class Parse(XMLParser):
     tag:other-identifier'''
     def iati_activities_iati_activity_other_identifier(self,element):
         model = self.get_func_model()
-        #print element.tag 
-        #store element 
+        owner_ref = element.attrib['ref']
+        type = self.cached_db_call(models.OtherIdentifierType, element.attrib.get('type))
+        new_other_identifier = models.OtherIdentifier(activity=model, owner_ref=owner_ref, owner_name=owner_name, identifier=other_identifier)
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -170,11 +189,7 @@ class Parse(XMLParser):
     tag:owner-org'''
     def iati_activities_iati_activity_other_identifier_owner_org(self,element):
         model = self.get_func_model()
-        #print element.tag 
-        #store element 
-
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        
         return element
 
     '''atributes:
@@ -182,11 +197,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_other_identifier_owner_org_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -195,11 +210,11 @@ class Parse(XMLParser):
     tag:activity-status'''
     def iati_activities_iati_activity_activity_status(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -209,11 +224,23 @@ class Parse(XMLParser):
     tag:activity-date'''
     def iati_activities_iati_activity_activity_date(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities_iati_activity_activity_date_narrative(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -222,11 +249,11 @@ class Parse(XMLParser):
     tag:contact-info'''
     def iati_activities_iati_activity_contact_info(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -234,11 +261,11 @@ class Parse(XMLParser):
     tag:organisation'''
     def iati_activities_iati_activity_contact_info_organisation(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -246,11 +273,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_contact_info_organisation_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -258,11 +285,11 @@ class Parse(XMLParser):
     tag:department'''
     def iati_activities_iati_activity_contact_info_department(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -270,11 +297,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_contact_info_department_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -282,11 +309,11 @@ class Parse(XMLParser):
     tag:person-name'''
     def iati_activities_iati_activity_contact_info_person_name(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -294,11 +321,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_contact_info_person_name_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -306,11 +333,11 @@ class Parse(XMLParser):
     tag:job-title'''
     def iati_activities_iati_activity_contact_info_job_title(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -318,11 +345,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_contact_info_job_title_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -330,11 +357,11 @@ class Parse(XMLParser):
     tag:telephone'''
     def iati_activities_iati_activity_contact_info_telephone(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -342,11 +369,11 @@ class Parse(XMLParser):
     tag:email'''
     def iati_activities_iati_activity_contact_info_email(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -354,11 +381,11 @@ class Parse(XMLParser):
     tag:website'''
     def iati_activities_iati_activity_contact_info_website(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -366,11 +393,11 @@ class Parse(XMLParser):
     tag:mailing-address'''
     def iati_activities_iati_activity_contact_info_mailing_address(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -378,11 +405,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_contact_info_mailing_address_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -391,11 +418,11 @@ class Parse(XMLParser):
     tag:activity-scope'''
     def iati_activities_iati_activity_activity_scope(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -405,11 +432,11 @@ class Parse(XMLParser):
     tag:recipient-country'''
     def iati_activities_iati_activity_recipient_country(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -420,11 +447,11 @@ class Parse(XMLParser):
     tag:recipient-region'''
     def iati_activities_iati_activity_recipient_region(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -433,11 +460,11 @@ class Parse(XMLParser):
     tag:location'''
     def iati_activities_iati_activity_location(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -446,11 +473,11 @@ class Parse(XMLParser):
     tag:location-reach'''
     def iati_activities_iati_activity_location_location_reach(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -460,11 +487,11 @@ class Parse(XMLParser):
     tag:location-id'''
     def iati_activities_iati_activity_location_location_id(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -472,11 +499,11 @@ class Parse(XMLParser):
     tag:name'''
     def iati_activities_iati_activity_location_name(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -484,11 +511,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_location_name_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -496,11 +523,11 @@ class Parse(XMLParser):
     tag:description'''
     def iati_activities_iati_activity_location_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -508,11 +535,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_location_description_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -520,11 +547,11 @@ class Parse(XMLParser):
     tag:activity-description'''
     def iati_activities_iati_activity_location_activity_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -532,11 +559,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_location_activity_description_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -547,11 +574,11 @@ class Parse(XMLParser):
     tag:administrative'''
     def iati_activities_iati_activity_location_administrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -560,11 +587,11 @@ class Parse(XMLParser):
     tag:point'''
     def iati_activities_iati_activity_location_point(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -572,11 +599,11 @@ class Parse(XMLParser):
     tag:pos'''
     def iati_activities_iati_activity_location_point_pos(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -585,11 +612,11 @@ class Parse(XMLParser):
     tag:exactness'''
     def iati_activities_iati_activity_location_exactness(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -598,11 +625,11 @@ class Parse(XMLParser):
     tag:location-class'''
     def iati_activities_iati_activity_location_location_class(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -611,11 +638,11 @@ class Parse(XMLParser):
     tag:feature-designation'''
     def iati_activities_iati_activity_location_feature_designation(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -626,11 +653,11 @@ class Parse(XMLParser):
     tag:sector'''
     def iati_activities_iati_activity_sector(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -639,11 +666,11 @@ class Parse(XMLParser):
     tag:country-budget-items'''
     def iati_activities_iati_activity_country_budget_items(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -653,11 +680,35 @@ class Parse(XMLParser):
     tag:budget-item'''
     def iati_activities_iati_activity_country_budget_items_budget_item(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+
+    tag:description'''
+    def iati_activities_iati_activity_country_budget_items_budget_item_description(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities_iati_activity_country_budget_items_budget_item_description_narrative(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -668,11 +719,11 @@ class Parse(XMLParser):
     tag:policy-marker'''
     def iati_activities_iati_activity_policy_marker(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -681,11 +732,11 @@ class Parse(XMLParser):
     tag:collaboration-type'''
     def iati_activities_iati_activity_collaboration_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -694,11 +745,11 @@ class Parse(XMLParser):
     tag:default-flow-type'''
     def iati_activities_iati_activity_default_flow_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -707,11 +758,11 @@ class Parse(XMLParser):
     tag:default-finance-type'''
     def iati_activities_iati_activity_default_finance_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -720,11 +771,11 @@ class Parse(XMLParser):
     tag:default-aid-type'''
     def iati_activities_iati_activity_default_aid_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -733,11 +784,11 @@ class Parse(XMLParser):
     tag:default-tied-status'''
     def iati_activities_iati_activity_default_tied_status(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -746,11 +797,11 @@ class Parse(XMLParser):
     tag:budget'''
     def iati_activities_iati_activity_budget(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -759,11 +810,11 @@ class Parse(XMLParser):
     tag:period-start'''
     def iati_activities_iati_activity_budget_period_start(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -772,11 +823,11 @@ class Parse(XMLParser):
     tag:period-end'''
     def iati_activities_iati_activity_budget_period_end(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -786,11 +837,11 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities_iati_activity_budget_value(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -799,11 +850,51 @@ class Parse(XMLParser):
     tag:planned-disbursement'''
     def iati_activities_iati_activity_planned_disbursement(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+    iso-date:2014-01-01
+
+    tag:period-start'''
+    def iati_activities_iati_activity_planned_disbursement_period_start(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+    iso-date:2014-12-31
+
+    tag:period-end'''
+    def iati_activities_iati_activity_planned_disbursement_period_end(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
+        return element
+
+    '''atributes:
+    currency:EUR
+    value-date:2014-01-01
+
+    tag:value'''
+    def iati_activities_iati_activity_planned_disbursement_value(self,element):
+        model = self.get_func_model()
+        print element.tag 
+        #store element 
+
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -812,11 +903,11 @@ class Parse(XMLParser):
     tag:capital-spend'''
     def iati_activities_iati_activity_capital_spend(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -825,11 +916,11 @@ class Parse(XMLParser):
     tag:transaction'''
     def iati_activities_iati_activity_transaction(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -838,11 +929,11 @@ class Parse(XMLParser):
     tag:transaction-type'''
     def iati_activities_iati_activity_transaction_transaction_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -851,11 +942,11 @@ class Parse(XMLParser):
     tag:transaction-date'''
     def iati_activities_iati_activity_transaction_transaction_date(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -865,11 +956,11 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities_iati_activity_transaction_value(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -877,11 +968,11 @@ class Parse(XMLParser):
     tag:description'''
     def iati_activities_iati_activity_transaction_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -889,11 +980,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_transaction_description_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -903,11 +994,11 @@ class Parse(XMLParser):
     tag:provider-org'''
     def iati_activities_iati_activity_transaction_provider_org(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -915,11 +1006,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_transaction_provider_org_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -929,11 +1020,11 @@ class Parse(XMLParser):
     tag:receiver-org'''
     def iati_activities_iati_activity_transaction_receiver_org(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -941,11 +1032,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_transaction_receiver_org_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -954,11 +1045,11 @@ class Parse(XMLParser):
     tag:disbursement-channel'''
     def iati_activities_iati_activity_transaction_disbursement_channel(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -968,11 +1059,11 @@ class Parse(XMLParser):
     tag:sector'''
     def iati_activities_iati_activity_transaction_sector(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -981,11 +1072,11 @@ class Parse(XMLParser):
     tag:recipient-country'''
     def iati_activities_iati_activity_transaction_recipient_country(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -995,11 +1086,11 @@ class Parse(XMLParser):
     tag:recipient-region'''
     def iati_activities_iati_activity_transaction_recipient_region(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1008,11 +1099,11 @@ class Parse(XMLParser):
     tag:flow-type'''
     def iati_activities_iati_activity_transaction_flow_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1021,11 +1112,11 @@ class Parse(XMLParser):
     tag:finance-type'''
     def iati_activities_iati_activity_transaction_finance_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1034,11 +1125,11 @@ class Parse(XMLParser):
     tag:aid-type'''
     def iati_activities_iati_activity_transaction_aid_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1047,11 +1138,11 @@ class Parse(XMLParser):
     tag:tied-status'''
     def iati_activities_iati_activity_transaction_tied_status(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1061,11 +1152,11 @@ class Parse(XMLParser):
     tag:document-link'''
     def iati_activities_iati_activity_document_link(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1073,11 +1164,11 @@ class Parse(XMLParser):
     tag:title'''
     def iati_activities_iati_activity_document_link_title(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1085,11 +1176,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_document_link_title_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1098,11 +1189,11 @@ class Parse(XMLParser):
     tag:category'''
     def iati_activities_iati_activity_document_link_category(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1111,11 +1202,11 @@ class Parse(XMLParser):
     tag:language'''
     def iati_activities_iati_activity_document_link_language(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1125,11 +1216,11 @@ class Parse(XMLParser):
     tag:related-activity'''
     def iati_activities_iati_activity_related_activity(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1140,11 +1231,11 @@ class Parse(XMLParser):
     tag:legacy-data'''
     def iati_activities_iati_activity_legacy_data(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1153,11 +1244,11 @@ class Parse(XMLParser):
     tag:conditions'''
     def iati_activities_iati_activity_conditions(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1166,11 +1257,11 @@ class Parse(XMLParser):
     tag:condition'''
     def iati_activities_iati_activity_conditions_condition(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1178,11 +1269,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_conditions_condition_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1192,11 +1283,11 @@ class Parse(XMLParser):
     tag:result'''
     def iati_activities_iati_activity_result(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1204,11 +1295,11 @@ class Parse(XMLParser):
     tag:title'''
     def iati_activities_iati_activity_result_title(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1216,11 +1307,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_result_title_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1228,11 +1319,11 @@ class Parse(XMLParser):
     tag:description'''
     def iati_activities_iati_activity_result_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1240,11 +1331,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_result_description_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1254,11 +1345,11 @@ class Parse(XMLParser):
     tag:indicator'''
     def iati_activities_iati_activity_result_indicator(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1266,11 +1357,11 @@ class Parse(XMLParser):
     tag:title'''
     def iati_activities_iati_activity_result_indicator_title(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1278,11 +1369,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_result_indicator_title_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1290,11 +1381,11 @@ class Parse(XMLParser):
     tag:description'''
     def iati_activities_iati_activity_result_indicator_description(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1302,11 +1393,11 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities_iati_activity_result_indicator_description_narrative(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1316,11 +1407,11 @@ class Parse(XMLParser):
     tag:baseline'''
     def iati_activities_iati_activity_result_indicator_baseline(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1328,11 +1419,11 @@ class Parse(XMLParser):
     tag:period'''
     def iati_activities_iati_activity_result_indicator_period(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1341,11 +1432,11 @@ class Parse(XMLParser):
     tag:period-start'''
     def iati_activities_iati_activity_result_indicator_period_period_start(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1354,11 +1445,11 @@ class Parse(XMLParser):
     tag:period-end'''
     def iati_activities_iati_activity_result_indicator_period_period_end(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1367,11 +1458,11 @@ class Parse(XMLParser):
     tag:target'''
     def iati_activities_iati_activity_result_indicator_period_target(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1380,11 +1471,11 @@ class Parse(XMLParser):
     tag:actual'''
     def iati_activities_iati_activity_result_indicator_period_actual(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1392,11 +1483,11 @@ class Parse(XMLParser):
     tag:crs-add'''
     def iati_activities_iati_activity_crs_add(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1406,11 +1497,11 @@ class Parse(XMLParser):
     tag:other-flags'''
     def iati_activities_iati_activity_crs_add_other_flags(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1420,11 +1511,11 @@ class Parse(XMLParser):
     tag:loan-terms'''
     def iati_activities_iati_activity_crs_add_loan_terms(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1433,11 +1524,11 @@ class Parse(XMLParser):
     tag:repayment-type'''
     def iati_activities_iati_activity_crs_add_loan_terms_repayment_type(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1446,11 +1537,11 @@ class Parse(XMLParser):
     tag:repayment-plan'''
     def iati_activities_iati_activity_crs_add_loan_terms_repayment_plan(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1459,11 +1550,11 @@ class Parse(XMLParser):
     tag:commitment-date'''
     def iati_activities_iati_activity_crs_add_loan_terms_commitment_date(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1472,11 +1563,11 @@ class Parse(XMLParser):
     tag:repayment-first-date'''
     def iati_activities_iati_activity_crs_add_loan_terms_repayment_first_date(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1485,11 +1576,11 @@ class Parse(XMLParser):
     tag:repayment-final-date'''
     def iati_activities_iati_activity_crs_add_loan_terms_repayment_final_date(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1500,11 +1591,11 @@ class Parse(XMLParser):
     tag:loan-status'''
     def iati_activities_iati_activity_crs_add_loan_status(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1512,11 +1603,11 @@ class Parse(XMLParser):
     tag:interest-received'''
     def iati_activities_iati_activity_crs_add_loan_status_interest_received(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1524,11 +1615,11 @@ class Parse(XMLParser):
     tag:principal-outstanding'''
     def iati_activities_iati_activity_crs_add_loan_status_principal_outstanding(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1536,11 +1627,11 @@ class Parse(XMLParser):
     tag:principal-arrears'''
     def iati_activities_iati_activity_crs_add_loan_status_principal_arrears(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1548,11 +1639,11 @@ class Parse(XMLParser):
     tag:interest-arrears'''
     def iati_activities_iati_activity_crs_add_loan_status_interest_arrears(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1563,11 +1654,11 @@ class Parse(XMLParser):
     tag:fss'''
     def iati_activities_iati_activity_fss(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
 
     '''atributes:
@@ -1578,11 +1669,10 @@ class Parse(XMLParser):
     tag:forecast'''
     def iati_activities_iati_activity_fss_forecast(self,element):
         model = self.get_func_model()
-        #print element.tag 
+        print element.tag 
         #store element 
 
-        #for key in element.attrib:
-            #print key+' '+element.attrib.get(key)
+        for key in element.attrib:
+            print key+' '+element.attrib.get(key)
         return element
-
 
