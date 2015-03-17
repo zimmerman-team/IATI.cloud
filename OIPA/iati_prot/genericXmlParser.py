@@ -64,9 +64,7 @@ class XMLParser():
                 
                 continue
             x_path = self.root.getroottree().getpath(e)
-            print x_path
             function_name = self.generate_function_name(x_path)
-            print function_name
             if function_name.find('comment') != -1 :
                 continue
             if hasattr(self, function_name) and callable(getattr(self, function_name)):
@@ -81,7 +79,6 @@ class XMLParser():
                     self.handle_exception(x_path, function_name, exeception)
                     self.parse(e)
             else:
-                print function_name
                 self.handle_function_not_found(x_path, function_name,e)
                 #print function_name
 
@@ -89,17 +86,13 @@ class XMLParser():
 
 
     def generate_function_name(self, xpath):
-        function_name = xpath.replace('/', '_')
+        function_name = xpath.replace('/', '__')
         function_name = function_name.replace('-', '_')
         function_name = re.sub("\[[0-9]?\]", "",function_name)
-        #bracket_location = function_name.find('[')
-        #if(bracket_location != -1):
-            #return function_name[1:bracket_location]
-        return function_name[1:]
+
+        return function_name[2:]
 
     def handle_function_not_found(self, xpath, function_name,element):
-        print type(function_name)
-        print function_name
         if function_name in self.logged_functions:
             return  # function already logged
         # add function name to logged functions
@@ -115,11 +108,7 @@ class XMLParser():
     tag:"""+element.tag+"""'''
     def """ + function_name + """(self,element):
         model = self.get_func_model()
-        print element.tag 
         #store element 
-
-        for key in element.attrib:
-            print key+' '+element.attrib.get(key)
         return element"""
         #print hint
         self.hints.append(hint)
@@ -175,10 +164,10 @@ class XMLParser():
 
         
 
-    def get_func_model(self):
+    def get_func_model(self,class_name = None):
 
         caller_name =  inspect.stack()[1][3] # get the name of the caller function
-        caller_name_arr = caller_name.split("_")
+        caller_name_arr = caller_name.split("__")
         key_string = None
         model = None
         for caller_name_part in caller_name_arr:
@@ -187,10 +176,13 @@ class XMLParser():
                 key_string = caller_name_part
                 continue
             else:
-                key_string += '_'+caller_name_part
+                key_string += '__'+caller_name_part
                 #print key_string
                 if key_string in self.model_store:
-                    model = self.model_store[key_string]
+                    model_temp = self.model_store[key_string]
+                    #print model_temp.__class__.__name__
+                    if(class_name == None or class_name == model_temp.__class__.__name__):
+                        model = model_temp
                 
 
         return model
@@ -206,3 +198,4 @@ class XMLParser():
             return True
         except:
             return False
+
