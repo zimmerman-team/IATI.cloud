@@ -1,5 +1,5 @@
 from django.contrib import admin
-from iati.models import Activity, Organisation, Sector
+from iati.models import Activity, Organisation, Sector, Narrative
 from django.conf.urls import patterns
 from iati.management.commands.total_budget_updater import TotalBudgetUpdater
 from iati.management.commands.organisation_name_updater import OrganisationNameUpdater
@@ -81,5 +81,8 @@ class SectorAdmin(admin.ModelAdmin):
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Organisation, OrganisationAdmin)
 admin.site.register(Sector, SectorAdmin)
+admin.site.register(Narrative)
+
+
 
 

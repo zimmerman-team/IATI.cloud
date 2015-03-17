@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.gis',
     'iati',
+    'iati_prot',
     'iati_synchroniser',
     'geodata',
     'indicator',
@@ -163,6 +164,7 @@ SUIT_CONFIG = {
             {'label': 'Parse queue', 'url': '/admin/queue/queues/1/'},
             {'label': 'Failed tasks', 'url': '/admin/queue/queues/2/'},
         ]},
+        {'app': 'parse_logger', 'label': 'Parse Log', 'icon': 'icon-hdd'},
     )
 }
 
