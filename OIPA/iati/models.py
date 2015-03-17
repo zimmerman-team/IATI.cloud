@@ -600,10 +600,18 @@ class OtherIdentifier(models.Model):
     owner_name = models.CharField(max_length=100, default="")
     identifier = models.CharField(max_length=100)
     narratives = generic.GenericRelation(Narrative)
+    type = models.ForeignKey(OtherIdentifierType)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.identifier)
 
+class OtherIdentifierType(models.Model):
+    code = models.CharField(max_length=3, default="")
+    name = models.CharField(max_length=56, default="")
+    description = models.CharField(max_length=1024, default="")
+
+    def __unicode__(self,):
+        return self.name
 
 class ActivityWebsite(models.Model):
     activity = models.ForeignKey(Activity)
