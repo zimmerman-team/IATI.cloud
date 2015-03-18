@@ -221,6 +221,10 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__activity_date(self,element):
         model = self.get_func_model()
         activity_date  = models.ActivityDate()
+        activity_date.iso_date = element.attrib.get('iso_date')
+        activity_date.type = self.cached_db_call(models.ActivityDateType,element.attrib.get('type'))
+        activity_date.save()
+        self.set_func_model(activity_date)
         return element
 
     '''atributes:
@@ -228,7 +232,7 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities__iati_activity__activity_date__narrative(self,element):
         model = self.get_func_model()
-        #store element 
+        self.add_narrative(element,model)
         return element
 
     '''atributes:
