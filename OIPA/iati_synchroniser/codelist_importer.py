@@ -1,31 +1,22 @@
-__author__ = 'vincentvantwestende'
-from iati.models import *
 import urllib2
+import logging
+import datetime
 from lxml import etree
+
+from django.db import IntegrityError
+
+from iati.models import *
 from geodata.models import Country, Region
 from iati.models import RegionVocabulary
-import logging
 from iati_synchroniser.models import Codelist
-import datetime
 
 logger = logging.getLogger(__name__)
 
+
 class CodeListImporter():
 
-        # class wide functions
-    def return_first_exist(self, xpath_find):
-
-        if not xpath_find:
-             xpath_find = None
-        else:
-            try:
-                xpath_find = unicode(xpath_find[0], errors='ignore')
-            except:
-                xpath_find = xpath_find[0]
-
-            xpath_find = xpath_find.encode('utf-8', 'ignore')
-        return xpath_find
-
+    looping_through_version = ""
+    iati_versions = ["104", "105", "201"]
 
     def synchronise_with_codelists(self):
 
@@ -37,258 +28,309 @@ class CodeListImporter():
                     del elem.getparent()[0]
             del context
 
-        def return_first_exist(xpath_find):
-
-            if not xpath_find:
-                 xpath_find = None
+        def return_first(xpath_find):
+            if xpath_find:
+                return xpath_find[0].encode('utf-8')
             else:
-                # xpath_find = xpath_find[0].encode('utf-8')
-                try:
-                    xpath_find = unicode(xpath_find[0], errors='ignore')
-                except:
-                    xpath_find = xpath_find[0]
-
-                xpath_find = xpath_find.encode('utf-8')
-            return xpath_find
-
+                return None
 
         def add_code_list_item(elem):
-            tag = elem.tag
 
+            tag = elem.tag
             db_row = None
 
-            code = elem.xpath('code/text()')
-            name = elem.xpath('name/text()')
-            description = elem.xpath('description/text()')
-            language_name = elem.xpath('language/text()')
-            category = elem.xpath('category/text()')
-            category_name = elem.xpath('category-name/text()')
-            category_description = elem.xpath('category-description/text()')
-            abbreviation = elem.xpath('abbreviation/text()')
-            sector = elem.xpath('sector/text()')
-            url = elem.xpath('url/text()')
+            code = return_first(elem.xpath('code/text()'))
+            name = return_first(elem.xpath('name/text()'))
+            description = return_first(elem.xpath('description/text()')) or ''
+            language_name = return_first(elem.xpath('language/text()'))
+            category = return_first(elem.xpath('category/text()'))
+            url = return_first(elem.xpath('url/text()'))
 
-            if not code:
-                code = ""
+            if tag == "ActivityDateType":
+                db_row = ActivityDateType(
+                    description=description)
+
+            elif tag == "ActivityStatus":
+                db_row = ActivityStatus(
+                    description=description)
+
+            elif tag == "Country":
+                name = name.lower().capitalize()
+                db_row = Country(
+                    language=language_name,
+                    data_source="IATI")
+
+            elif tag == "BudgetType":
+                db_row = BudgetType(
+                    description=description)
+
+            elif tag == "CollaborationType":
+                db_row = CollaborationType(
+                    description=description)
+
+            elif tag == "ConditionType":
+                db_row = ConditionType(
+                    description=description)
+
+            elif tag == "Currency":
+                db_row = Currency(
+                    description=description)
+
+            elif tag == "DescriptionType":
+                db_row = DescriptionType(
+                    description=description)
+
+            elif tag == "DisbursementChannel":
+                db_row = DisbursementChannel(
+                    description=description)
+
+            elif tag == "DocumentCategory-category":
+                db_row = DocumentCategoryCategory(
+                    description=description)
+
+            elif tag == "DocumentCategory":
+                dcc = DocumentCategoryCategory.objects.get(code=category)
+
+                db_row = DocumentCategory(
+                    description=description,
+                    category=dcc)
+
+            elif tag == "GeographicLocationClass":
+                db_row = GeographicLocationClass(
+                    description=description)
+
+            elif tag == "FileFormat":
+                db_row = FileFormat(
+                    description=description,
+                    category=category)
+
+            elif tag == "FlowType":
+                db_row = FlowType(
+                    description=description)
+
+            elif tag == "GazetteerAgency":
+                db_row = GazetteerAgency(
+                    description=description)
+
+            elif tag == "GeographicalPrecision":
+                db_row = GeographicalPrecision(
+                    description=description)
+
+            elif tag == "IndicatorMeasure":
+                db_row = IndicatorMeasure(
+                    description=description)
+
+            elif tag == "Language":
+                db_row = Language(
+                    description=description)
+
+            elif tag == "LocationType-category":
+                db_row = LocationTypeCategory(
+                    description=description)
+
+            elif tag == "LocationType":
+                ltc = LocationTypeCategory.objects.get(
+                    code=category)
+                db_row = LocationType(
+                    description=description,
+                    category=ltc)
+
+            elif tag == "OrganisationIdentifier":
+                db_row = OrganisationIdentifier(
+                    abbreviation=None)
+
+            elif tag == "IATIOrganisationIdentifier":
+                db_row = OrganisationIdentifier(
+                    abbreviation=None)
+
+            elif tag == "OrganisationRole":
+                db_row = OrganisationRole(
+                    description=description)
+
+            elif tag == "OrganisationType":
+                db_row = OrganisationType(
+                    description=description)
+
+            elif tag == "PolicyMarker":
+                db_row = PolicyMarker(
+                    description=description)
+
+            elif tag == "PolicySignificance":
+                db_row = PolicySignificance(
+                    description=description)
+
+            elif tag == "PublisherType":
+                db_row = PublisherType(
+                    description=description)
+
+            elif tag == "RelatedActivityType":
+                db_row = RelatedActivityType(
+                    description=description)
+
+            elif tag == "ResultType":
+                db_row = ResultType(
+                    description=description)
+
+            elif tag == "SectorCategory":
+                name = name.lower().capitalize()
+                db_row = SectorCategory(
+                    description=description)
+
+            elif tag == "TiedStatus":
+                db_row = TiedStatus(
+                    description=description)
+
+            elif tag == "TransactionType":
+                db_row = TransactionType(
+                    description=description)
+
+            elif tag == "ValueType":
+                db_row = ValueType(
+                    description=description)
+
+            elif tag == "VerificationStatus":
+                db_row = VerificationStatus(
+                    description=description)
+
+            elif tag == "Vocabulary":
+                db_row = Vocabulary(
+                    description=description)
+
+            elif tag == "ActivityScope":
+                db_row = ActivityScope(
+                    description=description)
+
+            elif tag == "AidTypeFlag":
+                db_row = AidTypeFlag(
+                    description=description)
+
+            elif tag == "BudgetIdentifier":
+                bis = BudgetIdentifierSector.objects.get(
+                    code=category)
+                db_row = BudgetIdentifier(
+                    description=description,
+                    category=bis)
+
+            elif tag == "BudgetIdentifierSector-category":
+                db_row = BudgetIdentifierSectorCategory(
+                    description=description)
+
+            elif tag == "BudgetIdentifierSector":
+                bisc = BudgetIdentifierSectorCategory.objects.get(
+                    code=category)
+                db_row = BudgetIdentifierSector(
+                    description=description,
+                    category=bisc)
+
+            elif tag == "BudgetIdentifierVocabulary":
+                db_row = BudgetIdentifierVocabulary(
+                    description=description)
+
+            elif tag == "ContactType":
+                db_row = ContactType(
+                    description=description)
+
+            elif tag == "LoanRepaymentPeriod":
+                db_row = LoanRepaymentPeriod(
+                    description=description)
+
+            elif tag == "LoanRepaymentType":
+                db_row = LoanRepaymentType(
+                    description=description)
+
+            elif tag == "RegionVocabulary":
+                db_row = RegionVocabulary(
+                    description=description)
+
+            elif tag == "FinanceType":
+                ftc = FinanceTypeCategory.objects.get(code=category)
+                db_row = FinanceType(
+                    description=description,
+                    category=ftc)
+
+            elif tag == "FinanceType-category":
+                db_row = FinanceTypeCategory(
+                    description=description)
+
+            elif tag == "Region":
+                region_voc = RegionVocabulary.objects.get(code=1)
+                db_row = Region(
+                    region_vocabulary=region_voc)
+
+            elif tag == "AidType-category":
+                db_row = AidTypeCategory(
+                    description=description)
+
+            elif tag == "AidType":
+                atc = AidTypeCategory.objects.get(code=category)
+                db_row = AidType(
+                    description=description,
+                    category=atc)
+
+            elif tag == "Sector":
+                sector_cat = SectorCategory.objects.get(code=category)
+                db_row = Sector(
+                    description=description,
+                    category=sector_cat)
+
+            # v1.04 added codelists
+
+            elif tag == "GeographicLocationReach":
+                db_row = GeographicLocationReach(
+                    description=description)
+
+            elif tag == "OrganisationRegistrationAgency":
+                db_row = OrganisationRegistrationAgency(
+                    description=description,
+                    category=category,
+                    url=url)
+
+            elif tag == "GeographicExactness":
+                db_row = GeographicExactness(
+                    description=description,
+                    category=category,
+                    url=url)
+
+            elif tag == "GeographicVocabulary":
+                db_row = GeographicVocabulary(
+                    description=description,
+                    url=url)
+
+            elif tag == "PolicyMarkerVocabulary":
+                db_row = PolicyMarkerVocabulary(
+                    description=description)
+
+            elif tag == "CRSAddOtherFlags":
+                db_row = OtherFlags(
+                    description=description)
+
+            elif tag == "OtherIdentifierType":
+                db_row = OtherIdentifierType(
+                    description=description)
+
+            elif tag == "SectorVocabulary":
+                db_row = SectorVocabulary(
+                    description=description,
+                    url=url)
+
+            elif tag == "Version":
+                db_row = Version(
+                    description=description,
+                    url=url)
+
             else:
-                code = return_first_exist(code)
-            if not name:
-                name = ""
-            else:
-                name = return_first_exist(name)
-            if not description:
-                description = ""
-            else:
-                description = return_first_exist(description)
-            if not language_name:
-                language_name = ""
-            else:
-                language_name = return_first_exist(language_name)
-            if not category:
-                category = ""
-            else:
-                category = return_first_exist(category)
-            if not category_name:
-                category_name = ""
-            else:
-                category_name = return_first_exist(category_name)
-            if not category_description:
-                category_description = ""
-            else:
-                category_description = return_first_exist(category_description)
-            if not abbreviation:
-                abbreviation = ""
-            else:
-                abbreviation = return_first_exist(abbreviation)
-            if not sector:
-                sector = ""
-            else:
-                sector = return_first_exist(sector)
+                print "type not saved: " + tag
 
+            db_row.code = code
+            db_row.name = name
+            db_row.codelist_iati_version = self.looping_through_version
 
-            try:
-                if tag == "ActivityDateType":
-                    db_row = ActivityDateType(code=code, name=name)
-
-                elif tag == "ActivityStatus":
-                    db_row = ActivityStatus(code=code, name=name, language=language_name)
-
-                elif tag == "Country":
-                    name = name.lower().capitalize()
-                    db_row = Country(code=code, name=name, language=language_name, data_source="IATI")
-
-                elif tag == "BudgetType":
-                    db_row = BudgetType(code=code, name=name, language=language_name)
-
-                elif tag == "CollaborationType":
-                    db_row = CollaborationType(code=code, name=name, description=description, language=language_name)
-
-                elif tag == "ConditionType":
-                    db_row = ConditionType(code=code, name=name, language=language_name)
-
-                elif tag == "Currency":
-                    db_row = Currency(code=code, name=name, language=language_name)
-
-                elif tag == "DescriptionType":
-                    db_row = DescriptionType(code=code, name=name, description=description)
-
-                elif tag == "DisbursementChannel":
-                    db_row = DisbursementChannel(code=code, name=name)
-
-                elif tag == "DocumentCategory-category":
-                    db_row = DocumentCategoryCategory(code=code, name=name)
-
-                elif tag == "DocumentCategory":
-                    dcc = DocumentCategoryCategory.objects.get(code=category)
-                    db_row = DocumentCategory(code=code, name=name, description=description, category=dcc)
-
-                elif tag == "GeographicLocationClass":
-                    db_row = GeographicLocationClass(code=code, name=name)
-
-                elif tag == "FileFormat":
-                    db_row = FileFormat(code=code, name=name)
-
-                elif tag == "FlowType":
-                    db_row = FlowType(code=code, name=name, description=description)
-
-                elif tag == "GazetteerAgency":
-                    db_row = GazetteerAgency(code=code, name=name)
-
-                elif tag == "GeographicalPrecision":
-                    db_row = GeographicalPrecision(code=code, name=name, description=description)
-
-                elif tag == "IndicatorMeasure":
-                    db_row = ResultIndicatorMeasure(code=code, name=name)
-
-                elif tag == "Language":
-                    db_row = Language(code=code, name=name)
-
-                elif tag == "LocationType-category":
-                    db_row = LocationTypeCategory(code=code, name=name)
-
-                elif tag == "LocationType":
-                    ltc = LocationTypeCategory.objects.get(code=category)
-                    db_row = LocationType(code=code, name=name, description=description, category=ltc)
-
-                elif tag == "OrganisationIdentifier":
-                    db_row = OrganisationIdentifier(code=code,abbreviation=abbreviation, name=name)
-
-                elif tag == "OrganisationRole":
-                    db_row = OrganisationRole(code=code, name=name, description=description)
-
-                elif tag == "OrganisationType":
-                    db_row = OrganisationType(code=code, name=name)
-
-                elif tag == "PolicyMarker":
-                    db_row = PolicyMarker(code=code, name=name)
-
-                elif tag == "PolicySignificance":
-                    db_row = PolicySignificance(code=code, name=name, description=description)
-
-                elif tag == "PublisherType":
-                    db_row = PublisherType(code=code, name=name)
-
-                elif tag == "RelatedActivityType":
-                    db_row = RelatedActivityType(code=code, name=name, description=description)
-
-                elif tag == "ResultType":
-                    db_row = ResultType(code=code, name=name)
-
-                elif tag == "SectorCategory":
-                    name = name.lower().capitalize()
-                    db_row = SectorCategory(code=code, name=name, description=description)
-
-                elif tag == "TiedStatus":
-                    db_row = TiedStatus(code=code, name=name, description=description)
-
-                elif tag == "TransactionType":
-                    db_row = TransactionType(code=code, name=name, description=description)
-
-                elif tag == "ValueType":
-                    db_row = ValueType(code=code, name=name, description=description)
-
-                elif tag == "VerificationStatus":
-                    db_row = VerificationStatus(code=code, name=name)
-
-                elif tag == "Vocabulary":
-                    db_row = Vocabulary(code=code, name=name)
-
-                elif tag == "ActivityScope":
-                    db_row = ActivityScope(code=code, name=name)
-
-                elif tag == "AidTypeFlag":
-                    db_row = AidTypeFlag(code=code, name=name)
-
-                elif tag == "BudgetIdentifier":
-                    db_row = BudgetIdentifier(code=code, name=name, category=category, sector=sector)
-
-                elif tag == "BudgetIdentifierSector-category":
-                    db_row = BudgetIdentifierSectorCategory(code=code, name=name)
-
-                elif tag == "BudgetIdentifierSector":
-                    bisc = BudgetIdentifierSectorCategory.objects.get(code=category)
-                    db_row = BudgetIdentifierSector(code=code, name=name, category=bisc)
-
-                elif tag == "BudgetIdentifierVocabulary":
-                    db_row = BudgetIdentifierVocabulary(code=code, name=name)
-
-                elif tag == "ContactType":
-                    db_row = ContactType(code=code, name=name)
-
-                elif tag == "LoanRepaymentPeriod":
-                    db_row = LoanRepaymentPeriod(code=code, name=name)
-
-                elif tag == "LoanRepaymentType":
-                    db_row = LoanRepaymentType(code=code, name=name)
-
-                elif tag == "RegionVocabulary":
-                    db_row = RegionVocabulary(code=code, name=name)
-
-                elif tag == "FinanceType":
-                    ftc = FinanceTypeCategory.objects.get(code=category)
-                    db_row = FinanceType(code=code, name=name, category=ftc)
-
-                elif tag == "FinanceType-category":
-                    db_row = FinanceTypeCategory(code=code, name=name ,description=description)
-
-                elif tag == "Region":
-                    region_voc = RegionVocabulary.objects.get(code=1)
-                    db_row = Region(code=code, name=name, region_vocabulary=region_voc)
-
-                elif tag == "AidType-category":
-                    db_row = AidTypeCategory(code=code, name=name, description=description)
-
-                elif tag == "AidType":
-                    atc = AidTypeCategory.objects.get(code=category)
-                    db_row = AidType(code=code, name=name, description=description, category=atc)
-
-                elif tag == "Sector":
-                    sector_cat = SectorCategory.objects.get(code=category)
-                    db_row = Sector(code=code, name=name, description=description, category=sector_cat)
-
-                # v1.04 added codelists
-
-                elif tag == "GeographicLocationReach":
-                    db_row = GeographicLocationReach(code=code, name=name)
-
-                elif tag == "OrganisationRegistrationAgency":
-                    db_row = OrganisationRegistrationAgency(code=code, name=name, description=description, category=category, category_name=category_name, url=url)
-
-                elif tag == "GeographicExactness":
-                    db_row = GeographicExactness(code=code, name=name, description=description, category=category, url=url)
-
-                elif tag == "GeographicVocabulary":
-                    db_row = GeographicVocabulary(code=code, name=name, description=description, category=category, url=url)
-
-                else:
-                    print "type not saved: " + tag
-
-                if (db_row is not None):
+            if db_row is not None:
+                try:
                     db_row.save()
-
-            except Exception as e:
-                logger.info("error in codelists")
-                logger.info('%s (%s)' % (e.message, type(e)))
+                except IntegrityError:
+                    #already saved
+                    return None
 
         def add_missing_items():
             Country.objects.get_or_create(
@@ -305,14 +347,13 @@ class CodeListImporter():
         def get_codelist_data(elem=None, name=None):
 
             if not name:
-                name = self.return_first_exist(elem.xpath('name/text()'))
-
-                description = self.return_first_exist(elem.xpath('description/text()'))
-                count = self.return_first_exist(elem.xpath('count/text()'))
-                fields = self.return_first_exist(elem.xpath('fields/text()'))
+                name = return_first(elem.xpath('name/text()'))
+                description = return_first(elem.xpath('description/text()'))
+                count = return_first(elem.xpath('count/text()'))
+                fields = return_first(elem.xpath('fields/text()'))
                 date_updated = datetime.datetime.now()
 
-                if (Codelist.objects.filter(name=name).exists()):
+                if Codelist.objects.filter(name=name).exists():
                     current_codelist = Codelist.objects.get(name=name)
                     current_codelist.date_updated = date_updated
                     current_codelist.description = description
@@ -320,31 +361,48 @@ class CodeListImporter():
                     current_codelist.fields = fields
                     current_codelist.save()
                 else:
-                    new_codelist = Codelist(name=name, description=description, count=count, fields=fields, date_updated=date_updated)
+                    new_codelist = Codelist(
+                        name=name,
+                        description=description,
+                        count=count,
+                        fields=fields,
+                        date_updated=date_updated)
                     new_codelist.save()
 
-            cur_downloaded_xml = "http://dev.iatistandard.org/105/codelists/downloads/clv1/codelist/" + name + ".xml"
+            cur_downloaded_xml = ("http://iatistandard.org/"
+                                  + self.looping_through_version +
+                                  "/codelists/downloads/clv1/"
+                                  "codelist/" + name + ".xml")
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
             context2 = etree.iterparse(cur_xml_file, tag=name)
             fast_iter(context2, add_code_list_item)
 
+        def loop_through_codelists(version):
+            downloaded_xml = urllib2.Request(
+                "http://iatistandard.org/"
+                + version +
+                "/codelists/downloads/clv1/codelist.xml")
+            file_opener = urllib2.build_opener()
+            xml_file = file_opener.open(downloaded_xml)
+            context = etree.iterparse(xml_file, tag='codelist')
+            fast_iter(context, get_codelist_data)
+            add_missing_items()
+
         #Do sector categories first
+        self.looping_through_version = "201"
         get_codelist_data(name="SectorCategory")
+        get_codelist_data(name="SectorVocabulary")
         get_codelist_data(name="RegionVocabulary")
+        get_codelist_data(name="PolicyMarkerVocabulary")
         get_codelist_data(name="BudgetIdentifierSector-category")
         get_codelist_data(name="LocationType-category")
         get_codelist_data(name="FinanceType-category")
         get_codelist_data(name="AidType-category")
         get_codelist_data(name="DocumentCategory-category")
+        self.looping_through_version = ""
 
-        #get the file
-        downloaded_xml = urllib2.Request("http://dev.iatistandard.org/105/codelists/downloads/clv1/codelist.xml")
-        file_opener = urllib2.build_opener()
-        xml_file = file_opener.open(downloaded_xml)
-        context = etree.iterparse(xml_file, tag='codelist')
-        fast_iter(context, get_codelist_data)
-        add_missing_items()
-
-
+        for version in self.iati_versions:
+            self.looping_through_version = version
+            loop_through_codelists(version)
