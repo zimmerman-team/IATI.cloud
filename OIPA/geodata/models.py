@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 
 class Region(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=80)
     region_vocabulary = models.ForeignKey('iati.RegionVocabulary', default=1)
     parental_region = models.ForeignKey('self', null=True, blank=True)
