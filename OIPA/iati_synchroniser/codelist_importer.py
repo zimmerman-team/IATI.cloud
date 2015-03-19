@@ -9,7 +9,6 @@ from iati.models import *
 from geodata.models import Country, Region
 from iati.models import RegionVocabulary
 from iati_synchroniser.models import Codelist
-import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 class CodeListImporter():
 
     looping_through_version = ""
-    iati_versions = ["1.04", "1.05", "2.01"]
+    iati_versions = ["104", "105", "201"]
 
     def synchronise_with_codelists(self):
 
@@ -281,24 +280,18 @@ class CodeListImporter():
                     description=description)
 
             elif tag == "OrganisationRegistrationAgency":
-                if url == None:
-                    url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
                 db_row = OrganisationRegistrationAgency(
                     description=description,
                     category=category,
                     url=url)
 
             elif tag == "GeographicExactness":
-                if url == None:
-                    url = 'http://nourl.org/'
                 db_row = GeographicExactness(
                     description=description,
                     category=category,
                     url=url)
 
             elif tag == "GeographicVocabulary":
-                if url == None:
-                    url = 'http://nourl.org/'
                 db_row = GeographicVocabulary(
                     description=description,
                     url=url)
@@ -316,16 +309,11 @@ class CodeListImporter():
                     description=description)
 
             elif tag == "SectorVocabulary":
-                print 'in '+tag
-                if url == None:
-                    url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
                 db_row = SectorVocabulary(
                     description=description,
                     url=url)
 
             elif tag == "Version":
-                if url == None:
-                    url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
                 db_row = Version(
                     description=description,
                     url=url)
@@ -333,25 +321,15 @@ class CodeListImporter():
             else:
                 print "type not saved: " + tag
 
-            if name == None or name == '':
-                logger.log(0,'name is null in '+tag)
-                #print 'name is null in '+tag
-                name = code
-
             db_row.code = code
             db_row.name = name
-
             db_row.codelist_iati_version = self.looping_through_version
 
             if db_row is not None:
                 try:
                     db_row.save()
-                except IntegrityError as err:
-                    print("Error: {}".format(err))
+                except IntegrityError:
                     #already saved
-                    print tag+" not saved"
-                    pprint.pprint(db_row)
-
                     return None
 
         def add_missing_items():
@@ -391,14 +369,10 @@ class CodeListImporter():
                         date_updated=date_updated)
                     new_codelist.save()
 
-            else:
-                print name
-
             cur_downloaded_xml = ("http://iatistandard.org/"
-                                  + self.looping_through_version.replace('.','') +
+                                  + self.looping_through_version +
                                   "/codelists/downloads/clv1/"
                                   "codelist/" + name + ".xml")
-            print cur_downloaded_xml
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
@@ -408,9 +382,8 @@ class CodeListImporter():
         def loop_through_codelists(version):
             downloaded_xml = urllib2.Request(
                 "http://iatistandard.org/"
-                + version.replace('.','') +
+                + version +
                 "/codelists/downloads/clv1/codelist.xml")
-
             file_opener = urllib2.build_opener()
             xml_file = file_opener.open(downloaded_xml)
             context = etree.iterparse(xml_file, tag='codelist')
@@ -418,7 +391,7 @@ class CodeListImporter():
             add_missing_items()
 
         #Do sector categories first
-        self.looping_through_version = "2.01"
+        self.looping_through_version = "201"
         get_codelist_data(name="SectorCategory")
         get_codelist_data(name="SectorVocabulary")
         get_codelist_data(name="RegionVocabulary")

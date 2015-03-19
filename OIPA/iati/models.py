@@ -8,15 +8,16 @@ from iati.transaction.models import TransactionType
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
+
 class Narrative(models.Model):
     content_type = models.ForeignKey(
         ContentType,
-        verbose_name= 'xml Parent',
+        verbose_name='xml Parent',
         null=True,
         blank=True,
     )
     object_id = models.PositiveIntegerField(
-        verbose_name='related object' ,
+        verbose_name='related object',
         null=True,
     )
     parent_object = generic.GenericForeignKey('content_type', 'object_id')
@@ -25,405 +26,579 @@ class Narrative(models.Model):
 
 
 class ActivityDateType(models.Model):
-    code = models.CharField(max_length=20)
+    code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class ActivityStatus(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
-    language = models.CharField(max_length=2)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class AidTypeCategory(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class AidType(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(default="")
     category = models.ForeignKey(AidTypeCategory)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class BudgetType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=20)
-    language = models.CharField(max_length=2)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class CollaborationType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    language = models.CharField(max_length=2)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class ConditionType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=40)
-    language = models.CharField(max_length=2)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class Currency(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=100)
-    language = models.CharField(max_length=2)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class DescriptionType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class DisbursementChannel(models.Model):
-    code = models.SmallIntegerField()
-    name = models.TextField()
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.TextField(default="")
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class DocumentCategoryCategory(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class DocumentCategory(models.Model):
-    code = models.CharField(max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(default="")
     category = models.ForeignKey(DocumentCategoryCategory)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class FileFormat(models.Model):
-    code = models.CharField(max_length=100)
+    code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    category = models.CharField(max_length=100, default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class FinanceTypeCategory(models.Model):
-    code = models.IntegerField()
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class FinanceType(models.Model):
-    code = models.IntegerField()
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=220)
+    description = models.TextField(default="")
     category = models.ForeignKey(FinanceTypeCategory)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class FlowType(models.Model):
-    code = models.IntegerField()
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=150)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class GazetteerAgency(models.Model):
-    code = models.CharField( max_length=3)
+    code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=80)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class GeographicalPrecision(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=80)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class GeographicLocationClass(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=200)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class GeographicVocabulary(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=255)
+    description = models.TextField(default="")
+    url = models.URLField()
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class GeographicLocationReach(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=80)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class GeographicExactness(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=160)
+    description = models.TextField(default="")
+    category = models.CharField(max_length=50)
+    url = models.URLField()
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class Language(models.Model):
-    code = models.CharField(max_length=2)
+    code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=80)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class LocationTypeCategory(models.Model):
-    code = models.CharField(max_length=10)
+    code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class LocationType(models.Model):
-    code = models.CharField( max_length=10)
+    code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     category = models.ForeignKey(LocationTypeCategory)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
+# renamed but unused in 201 (renamed to IATIOrganisationIdentifier)
 class OrganisationIdentifier(models.Model):
-    code = models.CharField( max_length=20)
+    code = models.CharField(primary_key=True, max_length=20)
     abbreviation = models.CharField(max_length=30, default=None, null=True)
     name = models.CharField(max_length=250, default=None, null=True)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class OrganisationRole(models.Model):
-    code = models.CharField( max_length=20)
+    code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=20)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class OrganisationType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class PolicyMarkerVocabulary(models.Model):
+    code = models.IntegerField(primary_key=True, max_length=3)
+    name = models.CharField(max_length=200)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class PolicyMarker(models.Model):
-    code = models.SmallIntegerField()
+    code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
+    description = models.TextField(default="")
+    vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True, default=None)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class PolicySignificance(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class PublisherType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class RelatedActivityType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=20)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class ResultType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=30)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class SectorVocabulary(models.Model):
+    code = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    url = models.URLField()
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class SectorCategory(models.Model):
-    code = models.IntegerField()
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class Sector(models.Model):
-    code = models.IntegerField()
+    code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(default="")
     category = models.ForeignKey(SectorCategory, null=True, default=None)
+    vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class TiedStatus(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=40)
-    description = models.TextField()
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
+# deprecated in 201
 class ValueType(models.Model):
-    code = models.CharField( max_length=2)
+    code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=40)
-    description = models.TextField()
+    description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class VerificationStatus(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=20)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
+# deprecated in 201
 class Vocabulary(models.Model):
-    code = models.CharField( max_length=10)
+    code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=140)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class ActivityScope(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
+# deprecated in 201
 class AidTypeFlag(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
-
-
-class BudgetIdentifier(models.Model):
-    code = models.CharField( max_length=20)
-    name = models.CharField(max_length=160)
-    category = models.CharField(max_length=120)
-    sector = models.CharField(max_length=100)
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
-
-
-class BudgetIdentifierSectorCategory(models.Model):
-    code = models.SmallIntegerField()
-    name = models.CharField(max_length=160)
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
-
-
-class BudgetIdentifierSector(models.Model):
-    code = models.CharField( max_length=20)
-    name = models.CharField(max_length=160)
-    category = models.ForeignKey(BudgetIdentifierSectorCategory)
+    description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class BudgetIdentifierVocabulary(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class BudgetIdentifierSectorCategory(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=160)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class BudgetIdentifierSector(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=160)
+    description = models.TextField(default="")
+    category = models.ForeignKey(BudgetIdentifierSectorCategory)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
+class BudgetIdentifier(models.Model):
+    code = models.CharField(primary_key=True, max_length=20)
+    name = models.CharField(max_length=160)
+    description = models.TextField(default="")
+    category = models.ForeignKey(BudgetIdentifierSector)
+    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary, null=True, default=None)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class ContactType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class LoanRepaymentPeriod(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=20)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class LoanRepaymentType(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class RegionVocabulary(models.Model):
-    code = models.SmallIntegerField()
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=20)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
 
 class Organisation(models.Model):
-    code = models.CharField( max_length=80)
+    code = models.CharField(max_length=80)
     abbreviation = models.CharField(max_length=80, default="")
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     reported_by_organisation = models.CharField(max_length=100, default="")
@@ -439,20 +614,37 @@ class Organisation(models.Model):
     objects = OrganisationQuerySet.as_manager()
 
 
+class Version(models.Model):
+    code = models.CharField(primary_key=True, max_length=4, default="")
+    name = models.CharField(max_length=100, default="")
+    description = models.TextField(default="")
+    url = models.URLField()
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return self.code
+
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
         (2, u"Child"),
     )
 
-    idStr = models.CharField( max_length=150)
+    idStr = models.CharField(max_length=150)
 
     iati_identifier = models.CharField(max_length=150)
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, default="")
     linked_data_uri = models.CharField(max_length=100, default="")
-    reporting_organisation = models.ForeignKey(Organisation, null=True, default=None, related_name="activity_reporting_organisation")
+    reporting_organisation = models.ForeignKey(
+        Organisation,
+        null=True,
+        default=None,
+        related_name="activity_reporting_organisation")
+
     secondary_publisher = models.BooleanField(default=False)
     activity_status = models.ForeignKey(
         ActivityStatus,
@@ -492,7 +684,7 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
-    iati_standard_version = models.CharField(max_length=30, default="")
+    iati_standard_version = models.ForeignKey(Version)
 
     objects = ActivityQuerySet.as_manager()
 
@@ -594,15 +786,16 @@ class ActivityRecipientRegion(models.Model):
         return "%s - %s" % (self.activity.idStr, self.region)
 
 
-
-
 class OtherIdentifierType(models.Model):
-    code = models.CharField(max_length=3, default="")
-    name = models.CharField(max_length=56, default="")
-    description = models.CharField(max_length=1024, default="")
+    code = models.CharField(primary_key=True, max_length=3, default="")
+    name = models.CharField(max_length=100, default="")
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return self.name
+
 
 class OtherIdentifier(models.Model):
     activity = models.ForeignKey(Activity)
@@ -615,9 +808,10 @@ class OtherIdentifier(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.identifier)
 
+
 class ActivityWebsite(models.Model):
     activity = models.ForeignKey(Activity)
-    url = models.CharField(max_length=150)
+    url = models.URLField()
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.url)
@@ -703,9 +897,12 @@ class Result(models.Model):
         return "%s - %s" % (self.activity.idStr, self.title)
 
 
-class ResultIndicatorMeasure(models.Model):
-    code = models.SmallIntegerField()
+class IndicatorMeasure(models.Model):
+    code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=40)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -719,7 +916,7 @@ class ResultIndicator(models.Model):
     baseline_value = models.CharField(max_length=100)
     comment = models.TextField(default="")
     measure = models.ForeignKey(
-        ResultIndicatorMeasure,
+        IndicatorMeasure,
         null=True,
         default=None)
 
@@ -747,23 +944,17 @@ class Title(models.Model):
     title = models.CharField(max_length=255, db_index=True)
     language = models.ForeignKey(Language, null=True, default=None)
     narratives = generic.GenericRelation(Narrative)
+
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.title)
 
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    description = models.TextField(
-        default="",
-        db_index=True,
-        max_length=40000)
-    language = models.ForeignKey(Language, null=True, default=None)
+    description = models.TextField(default="")
     type = models.ForeignKey(
         DescriptionType,
         related_name="description_type",
-        null=True,
-        default=None)
-    rsr_description_type_id = models.IntegerField(  # remove
         null=True,
         default=None)
 
@@ -793,46 +984,18 @@ class Condition(models.Model):
         return "%s - %s" % (self.activity.idStr, self.type)
 
 
-class GeographicVocabulary(models.Model):
-    code = models.CharField( max_length=20)
-    name = models.CharField(max_length=255)
-    description = models.TextField(default="")
-    category = models.CharField(max_length=50)
-    url = models.TextField(default="")
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
-
-
-class GeographicLocationReach(models.Model):
-    code = models.SmallIntegerField()
-    name = models.CharField(max_length=80)
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
-
-
 class OrganisationRegistrationAgency(models.Model):
-    code = models.CharField( max_length=20)
+    code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=160)
     description = models.TextField(default="")
-    category = models.CharField(max_length=10)
-    category_name = models.CharField(max_length=120)
-    url = models.TextField(default="")
+    category = models.CharField(max_length=2)
+    url = models.URLField(default="")
+    public_database = models.BooleanField(default=False)
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.type)
-
-
-class GeographicExactness(models.Model):
-    code = models.SmallIntegerField()
-    name = models.CharField(max_length=160)
-    description = models.TextField(default="")
-    category = models.CharField(max_length=50)
-    url = models.TextField(default="")
-
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
 
 
 class Location(models.Model):
@@ -960,13 +1123,33 @@ class FfsForecast(models.Model):
         return "%s" % (self.year)
 
 
+# Deliberately not named like the codelist CrsAddOtherFlags
+# since this would conflict with the M2M rel CrsAddOtherFlags
+class OtherFlags(models.Model):
+    code = models.IntegerField(primary_key=True, max_length=4)
+    name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
 class CrsAdd(models.Model):
     activity = models.ForeignKey(Activity)
-    aid_type_flag = models.ForeignKey(AidTypeFlag)
-    aid_type_flag_significance = models.IntegerField(null=True, default=None)
 
     def __unicode__(self,):
         return "%s" % (self.id)
+
+
+class CrsAddOtherFlags(models.Model):
+    crs_add = models.ForeignKey(CrsAdd)
+    other_flags = models.ForeignKey(OtherFlags)
+    other_flags_significance = models.IntegerField(null=True, default=None)
+
+    def __unicode__(self,):
+        return "%s" % self.id
 
 
 class CrsAddLoanTerms(models.Model):
@@ -1019,17 +1202,12 @@ class CrsAddLoanStatus(models.Model):
     def __unicode__(self):
         return "%s" % (self.year)
 
+
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
     iso_date = models.DateField()
     type = models.ForeignKey(ActivityDateType)
-def __unicode__(self):
-    return "%s" % (self.type.name)
 
-
-
-
-
-
-
+    def __unicode__(self):
+        return "%s" % (self.type.name)
 
