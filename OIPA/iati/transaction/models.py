@@ -5,6 +5,8 @@ class TransactionType(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=40)
     description = models.TextField()
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
