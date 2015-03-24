@@ -1,5 +1,6 @@
 from genericXmlParser import XMLParser
 from iati import models
+import dateutil.parser
 
 
 class Parse(XMLParser):
@@ -71,7 +72,7 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
-        model = self.get_func_model()#model is activity
+        model = self.get_func_parent_model()#model is activity
         model.iati_identifier = element.text
         
         return # endpoint return None 
@@ -83,7 +84,7 @@ class Parse(XMLParser):
 
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         organisation = self.add_organisation(element)
         organisation.save()
         #print organisation.name
@@ -96,7 +97,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__reporting_org__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
 
         return element
@@ -106,7 +107,7 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         title = models.Title()
         title.activity = model
         title.save()
@@ -117,7 +118,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__title__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
         
         return element
@@ -127,7 +128,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__description(self,element):
-        model = self.get_func_model(class_name='Activity')
+        model = self.get_func_parent_model()
         description = models.Description()
 
         description.activity = model
@@ -141,7 +142,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
         return element
 
@@ -153,7 +154,7 @@ class Parse(XMLParser):
 
     tag:participating-org'''
     def iati_activities__iati_activity__participating_org(self,element):
-        model = self.get_func_model(class_name='Activity')
+        model = self.get_func_parent_model()
         org = self.add_organisation(element)
         activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
         activityParticipatingOrganisation.org = org
@@ -167,7 +168,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__participating_org__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
         return element
 
@@ -177,7 +178,7 @@ class Parse(XMLParser):
 
     tag:other-identifier'''
     def iati_activities__iati_activity__other_identifier(self,element):
-        model = self.get_func_model(class_name='Activity')
+        model = self.get_func_parent_model()
         identifier = element.attrib.get('ref')
         type = self.cached_db_call(models.OtherIdentifierType, element.attrib.get('type'))
 
@@ -191,7 +192,7 @@ class Parse(XMLParser):
 
     tag:owner-org'''
     def iati_activities__iati_activity__other_identifier__owner_org(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         model.owner_ref = element.attrib.get('ref')
         return element
 
@@ -199,7 +200,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__other_identifier__owner_org__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
         return element
 
@@ -208,7 +209,7 @@ class Parse(XMLParser):
 
     tag:activity-status'''
     def iati_activities__iati_activity__activity_status(self,element):
-        model = self.get_func_model(class_name='Activity')
+        model = self.get_func_parent_model()
         model.activity_status = self.cached_db_call(models.ActivityStatus,element.attrib.get('code'))
 
         return element
@@ -219,9 +220,9 @@ class Parse(XMLParser):
 
     tag:activity-date'''
     def iati_activities__iati_activity__activity_date(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         activity_date  = models.ActivityDate()
-        activity_date.iso_date = element.attrib.get('iso_date')
+        activity_date.iso_date = dateutil.parser.parse(element.attrib.get('iso_date'))
         activity_date.type = self.cached_db_call(models.ActivityDateType,element.attrib.get('type'))
         activity_date.save()
         self.set_func_model(activity_date)
@@ -231,8 +232,9 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__activity_date__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         self.add_narrative(element,model)
+
         return element
 
     '''atributes:
@@ -240,15 +242,24 @@ class Parse(XMLParser):
 
     tag:contact-info'''
     def iati_activities__iati_activity__contact_info(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        contactInfo = ContactInfo()
+        contactInfo.save()
+        self.set_func_model(contactInfo)
+
         #store element 
+
         return element
 
     '''atributes:
 
     tag:organisation'''
     def iati_activities__iati_activity__contact_info__organisation(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        contactInfoOrganisation = ContactInfoOrganisation()
+        contactInfoOrganisation.contactInfo = model;
+        contactInfoOrganisation.save()
+        self.set_func_model(contactInfoOrganisation)
         #store element 
         return element
 
@@ -256,7 +267,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__organisation__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         #store element 
         return element
 
@@ -264,7 +276,13 @@ class Parse(XMLParser):
 
     tag:department'''
     def iati_activities__iati_activity__contact_info__department(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        contactInfoDepartment = ContactInfoDepartment()
+        contactInfoDepartment.contactInfo = model
+        contactInfoDepartment.save()
+
+        self.set_func_model(contactInfoDepartment)
+
         #store element 
         return element
 
@@ -272,7 +290,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__department__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         #store element 
         return element
 
@@ -280,7 +299,11 @@ class Parse(XMLParser):
 
     tag:person-name'''
     def iati_activities__iati_activity__contact_info__person_name(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        contactInfoPersonName = ContactInfoPersonName()
+        contactInfoPersonName.contactInfo = model
+        contactInfoPersonName.save()
+        self.set_func_model(contactInfoPersonName)
         #store element 
         return element
 
@@ -288,7 +311,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__person_name__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         #store element 
         return element
 
@@ -296,15 +320,19 @@ class Parse(XMLParser):
 
     tag:job-title'''
     def iati_activities__iati_activity__contact_info__job_title(self,element):
-        model = self.get_func_model()
-        #store element 
+        model = self.get_func_parent_model()
+        contactInfoJobTitle = ContactInfoJobTitle()
+        contactInfoJobTitle.contactInfo = model
+        contactInfoJobTitle.save()
+        self.set_func_model(contactInfoJobTitle)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__job_title__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         #store element 
         return element
 
@@ -312,7 +340,8 @@ class Parse(XMLParser):
 
     tag:telephone'''
     def iati_activities__iati_activity__contact_info__telephone(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        model.telephone = element.text
         #store element 
         return element
 
@@ -320,15 +349,18 @@ class Parse(XMLParser):
 
     tag:email'''
     def iati_activities__iati_activity__contact_info__email(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        model.email = element.text
         #store element 
+
         return element
 
     '''atributes:
 
     tag:website'''
     def iati_activities__iati_activity__contact_info__website(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        model.website = element.text
         #store element 
         return element
 
@@ -336,7 +368,10 @@ class Parse(XMLParser):
 
     tag:mailing-address'''
     def iati_activities__iati_activity__contact_info__mailing_address(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        contactInfoMailingAddress = ContactInfoMailingAddress()
+        contactInfoMailingAddress.contactInfo = model
+        contactInfoMailingAddress.save()
         #store element 
         return element
 
@@ -344,7 +379,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__mailing_address__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         #store element 
         return element
 
@@ -353,7 +389,8 @@ class Parse(XMLParser):
 
     tag:activity-scope'''
     def iati_activities__iati_activity__activity_scope(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+        model.scope = self.cached_db_call(models.ActivityScope,element.attrib.get('code'))
         #store element 
         return element
 
@@ -363,7 +400,8 @@ class Parse(XMLParser):
 
     tag:recipient-country'''
     def iati_activities__iati_activity__recipient_country(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
+
         #store element 
         return element
 
@@ -374,7 +412,7 @@ class Parse(XMLParser):
 
     tag:recipient-region'''
     def iati_activities__iati_activity__recipient_region(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -383,7 +421,7 @@ class Parse(XMLParser):
 
     tag:location'''
     def iati_activities__iati_activity__location(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -392,7 +430,7 @@ class Parse(XMLParser):
 
     tag:location-reach'''
     def iati_activities__iati_activity__location__location_reach(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -402,7 +440,7 @@ class Parse(XMLParser):
 
     tag:location-id'''
     def iati_activities__iati_activity__location__location_id(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -410,7 +448,7 @@ class Parse(XMLParser):
 
     tag:name'''
     def iati_activities__iati_activity__location__name(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -418,7 +456,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__name__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -426,7 +464,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__location__description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -434,7 +472,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -442,7 +480,7 @@ class Parse(XMLParser):
 
     tag:activity-description'''
     def iati_activities__iati_activity__location__activity_description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -450,7 +488,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__activity_description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -461,7 +499,7 @@ class Parse(XMLParser):
 
     tag:administrative'''
     def iati_activities__iati_activity__location__administrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -470,7 +508,7 @@ class Parse(XMLParser):
 
     tag:point'''
     def iati_activities__iati_activity__location__point(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -478,7 +516,7 @@ class Parse(XMLParser):
 
     tag:pos'''
     def iati_activities__iati_activity__location__point__pos(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -487,7 +525,7 @@ class Parse(XMLParser):
 
     tag:exactness'''
     def iati_activities__iati_activity__location__exactness(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -496,7 +534,7 @@ class Parse(XMLParser):
 
     tag:location-class'''
     def iati_activities__iati_activity__location__location_class(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -505,7 +543,7 @@ class Parse(XMLParser):
 
     tag:feature-designation'''
     def iati_activities__iati_activity__location__feature_designation(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -516,7 +554,7 @@ class Parse(XMLParser):
 
     tag:sector'''
     def iati_activities__iati_activity__sector(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -525,7 +563,7 @@ class Parse(XMLParser):
 
     tag:country-budget-items'''
     def iati_activities__iati_activity__country_budget_items(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -535,7 +573,7 @@ class Parse(XMLParser):
 
     tag:budget-item'''
     def iati_activities__iati_activity__country_budget_items__budget_item(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -543,7 +581,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -551,7 +589,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -562,7 +600,7 @@ class Parse(XMLParser):
 
     tag:policy-marker'''
     def iati_activities__iati_activity__policy_marker(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -571,7 +609,7 @@ class Parse(XMLParser):
 
     tag:collaboration-type'''
     def iati_activities__iati_activity__collaboration_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -580,7 +618,7 @@ class Parse(XMLParser):
 
     tag:default-flow-type'''
     def iati_activities__iati_activity__default_flow_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -589,7 +627,7 @@ class Parse(XMLParser):
 
     tag:default-finance-type'''
     def iati_activities__iati_activity__default_finance_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -598,7 +636,7 @@ class Parse(XMLParser):
 
     tag:default-aid-type'''
     def iati_activities__iati_activity__default_aid_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -607,7 +645,7 @@ class Parse(XMLParser):
 
     tag:default-tied-status'''
     def iati_activities__iati_activity__default_tied_status(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -616,7 +654,7 @@ class Parse(XMLParser):
 
     tag:budget'''
     def iati_activities__iati_activity__budget(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -625,7 +663,7 @@ class Parse(XMLParser):
 
     tag:period-start'''
     def iati_activities__iati_activity__budget__period_start(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -634,7 +672,7 @@ class Parse(XMLParser):
 
     tag:period-end'''
     def iati_activities__iati_activity__budget__period_end(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -644,7 +682,7 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__budget__value(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -653,7 +691,7 @@ class Parse(XMLParser):
 
     tag:planned-disbursement'''
     def iati_activities__iati_activity__planned_disbursement(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -662,7 +700,7 @@ class Parse(XMLParser):
 
     tag:period-start'''
     def iati_activities__iati_activity__planned_disbursement__period_start(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -671,7 +709,7 @@ class Parse(XMLParser):
 
     tag:period-end'''
     def iati_activities__iati_activity__planned_disbursement__period_end(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -681,7 +719,7 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__planned_disbursement__value(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -690,7 +728,7 @@ class Parse(XMLParser):
 
     tag:capital-spend'''
     def iati_activities__iati_activity__capital_spend(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -699,7 +737,7 @@ class Parse(XMLParser):
 
     tag:transaction'''
     def iati_activities__iati_activity__transaction(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -708,7 +746,7 @@ class Parse(XMLParser):
 
     tag:transaction-type'''
     def iati_activities__iati_activity__transaction__transaction_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -717,7 +755,7 @@ class Parse(XMLParser):
 
     tag:transaction-date'''
     def iati_activities__iati_activity__transaction__transaction_date(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -727,7 +765,7 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__transaction__value(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -735,7 +773,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__transaction__description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -743,7 +781,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -753,7 +791,7 @@ class Parse(XMLParser):
 
     tag:provider-org'''
     def iati_activities__iati_activity__transaction__provider_org(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -761,7 +799,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__provider_org__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -771,7 +809,7 @@ class Parse(XMLParser):
 
     tag:receiver-org'''
     def iati_activities__iati_activity__transaction__receiver_org(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -779,7 +817,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -788,7 +826,7 @@ class Parse(XMLParser):
 
     tag:disbursement-channel'''
     def iati_activities__iati_activity__transaction__disbursement_channel(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -798,7 +836,7 @@ class Parse(XMLParser):
 
     tag:sector'''
     def iati_activities__iati_activity__transaction__sector(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -807,7 +845,7 @@ class Parse(XMLParser):
 
     tag:recipient-country'''
     def iati_activities__iati_activity__transaction__recipient_country(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -817,7 +855,7 @@ class Parse(XMLParser):
 
     tag:recipient-region'''
     def iati_activities__iati_activity__transaction__recipient_region(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -826,7 +864,7 @@ class Parse(XMLParser):
 
     tag:flow-type'''
     def iati_activities__iati_activity__transaction__flow_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -835,7 +873,7 @@ class Parse(XMLParser):
 
     tag:finance-type'''
     def iati_activities__iati_activity__transaction__finance_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -844,7 +882,7 @@ class Parse(XMLParser):
 
     tag:aid-type'''
     def iati_activities__iati_activity__transaction__aid_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -853,7 +891,7 @@ class Parse(XMLParser):
 
     tag:tied-status'''
     def iati_activities__iati_activity__transaction__tied_status(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -863,7 +901,7 @@ class Parse(XMLParser):
 
     tag:document-link'''
     def iati_activities__iati_activity__document_link(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -871,7 +909,7 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__document_link__title(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -879,7 +917,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__document_link__title__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -888,7 +926,7 @@ class Parse(XMLParser):
 
     tag:category'''
     def iati_activities__iati_activity__document_link__category(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -897,7 +935,7 @@ class Parse(XMLParser):
 
     tag:language'''
     def iati_activities__iati_activity__document_link__language(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -907,7 +945,7 @@ class Parse(XMLParser):
 
     tag:related-activity'''
     def iati_activities__iati_activity__related_activity(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -918,7 +956,7 @@ class Parse(XMLParser):
 
     tag:legacy-data'''
     def iati_activities__iati_activity__legacy_data(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -927,7 +965,7 @@ class Parse(XMLParser):
 
     tag:conditions'''
     def iati_activities__iati_activity__conditions(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -936,7 +974,7 @@ class Parse(XMLParser):
 
     tag:condition'''
     def iati_activities__iati_activity__conditions__condition(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -944,7 +982,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__conditions__condition__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -954,7 +992,7 @@ class Parse(XMLParser):
 
     tag:result'''
     def iati_activities__iati_activity__result(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -962,7 +1000,7 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__result__title(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -970,7 +1008,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__title__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -978,7 +1016,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__result__description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -986,7 +1024,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -996,7 +1034,7 @@ class Parse(XMLParser):
 
     tag:indicator'''
     def iati_activities__iati_activity__result__indicator(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1004,7 +1042,7 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__result__indicator__title(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1012,7 +1050,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1020,7 +1058,7 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__result__indicator__description(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1028,7 +1066,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1038,7 +1076,7 @@ class Parse(XMLParser):
 
     tag:baseline'''
     def iati_activities__iati_activity__result__indicator__baseline(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1046,7 +1084,7 @@ class Parse(XMLParser):
 
     tag:period'''
     def iati_activities__iati_activity__result__indicator__period(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1055,7 +1093,7 @@ class Parse(XMLParser):
 
     tag:period-start'''
     def iati_activities__iati_activity__result__indicator__period__period_start(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1064,7 +1102,7 @@ class Parse(XMLParser):
 
     tag:period-end'''
     def iati_activities__iati_activity__result__indicator__period__period_end(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1073,7 +1111,7 @@ class Parse(XMLParser):
 
     tag:target'''
     def iati_activities__iati_activity__result__indicator__period__target(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1082,7 +1120,7 @@ class Parse(XMLParser):
 
     tag:actual'''
     def iati_activities__iati_activity__result__indicator__period__actual(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1090,7 +1128,7 @@ class Parse(XMLParser):
 
     tag:crs-add'''
     def iati_activities__iati_activity__crs_add(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1100,7 +1138,7 @@ class Parse(XMLParser):
 
     tag:other-flags'''
     def iati_activities__iati_activity__crs_add__other_flags(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1110,7 +1148,7 @@ class Parse(XMLParser):
 
     tag:loan-terms'''
     def iati_activities__iati_activity__crs_add__loan_terms(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1119,7 +1157,7 @@ class Parse(XMLParser):
 
     tag:repayment-type'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1128,7 +1166,7 @@ class Parse(XMLParser):
 
     tag:repayment-plan'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1137,7 +1175,7 @@ class Parse(XMLParser):
 
     tag:commitment-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1146,7 +1184,7 @@ class Parse(XMLParser):
 
     tag:repayment-first-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1155,7 +1193,7 @@ class Parse(XMLParser):
 
     tag:repayment-final-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1166,7 +1204,7 @@ class Parse(XMLParser):
 
     tag:loan-status'''
     def iati_activities__iati_activity__crs_add__loan_status(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1174,7 +1212,7 @@ class Parse(XMLParser):
 
     tag:interest-received'''
     def iati_activities__iati_activity__crs_add__loan_status__interest_received(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1182,7 +1220,7 @@ class Parse(XMLParser):
 
     tag:principal-outstanding'''
     def iati_activities__iati_activity__crs_add__loan_status__principal_outstanding(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1190,7 +1228,7 @@ class Parse(XMLParser):
 
     tag:principal-arrears'''
     def iati_activities__iati_activity__crs_add__loan_status__principal_arrears(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1198,7 +1236,7 @@ class Parse(XMLParser):
 
     tag:interest-arrears'''
     def iati_activities__iati_activity__crs_add__loan_status__interest_arrears(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1209,7 +1247,7 @@ class Parse(XMLParser):
 
     tag:fss'''
     def iati_activities__iati_activity__fss(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
@@ -1220,7 +1258,7 @@ class Parse(XMLParser):
 
     tag:forecast'''
     def iati_activities__iati_activity__fss__forecast(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element
 
