@@ -18,10 +18,13 @@ class XMLParser():
 
     db_call_cache = {}
     model_store = {}
+    db_model_tree 
 
     DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
 
 
+    def __init__():
+        self.db_model_tree = DbModelTree()
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated.xml")
 
@@ -164,13 +167,13 @@ class XMLParser():
 
         
 
-    def get_func_model(self,class_name = None):
+    def get_func_parent_model(self,class_name = None):
 
         caller_name =  inspect.stack()[1][3] # get the name of the caller function
         caller_name_arr = caller_name.split("__")
         key_string = None
         model = None
-        for caller_name_part in caller_name_arr:
+        for caller_name_part in caller_name_arr[:-1]:
             #print caller_name_part
             if key_string == None:
                 key_string = caller_name_part
@@ -189,7 +192,19 @@ class XMLParser():
 
     def set_func_model(self,model):
         caller_name =  inspect.stack()[1][3]# get the name of the caller function
+
         self.model_store[caller_name] = model
+        dbModelTreeChild = DbModelTree()
+        self.db_model_tree.add_child(caller_name,model)
+        caller_name_arr = caller_name.split("__")
+        for caller_name_part in caller_name_arr:
+
+
+
+
+
+
+
 
     #helper function check if integer
     def isInt(self, obj):
@@ -198,4 +213,112 @@ class XMLParser():
             return True
         except:
             return False
+
+    def save_all_models(self,subTree = ''):
+        #make tree
+        saved_models = []
+        for path_name,db_model in self.model_store:
+            if db_model.__class__.__name__ not in saved_models:
+                db_model.save()
+                saved_models.add(db_model.__class__.__name__)
+
+
+
+
+
+
+
+
+
+    
+
+
+class DbModelTree():
+    xpath = ''
+    model = None
+    children = {}
+
+    def __init__(self,xpath,db_model):
+        self.xpath = xpath
+        
+
+        self.model = model
+
+    def add_child(self,db_model_tree,xpath):
+        self.children.put(xpath,db_model_tree)
+
+    def get_children(self):
+        return self.children 
+
+    def get_child_by_name(self,child_name):
+        for child in self.children:
+            if child.xpath = child_name:
+                return child
+        return None
+
+    def get_child_by_xpath(self,xpath):
+        xpath_arr = xpath.split("__")
+        for xpath_part in xpath_arr[1:]:
+            child = self.get_child_by_name()
+
+
+
+
+    def get_last_child(self):
+        if len(self.children > 0):
+            return self.children[-1]
+        else return None
+
+    def set_parent_id(self,parent_model):
+        parent_model_class = parent_model.__class__.__name__
+        #iterate over fields        
+        for field_name in self.model._meta.get_all_field_names():
+            field_object, model, direct, m2m = self.model._meta.get_field_by_name(field_name)
+            if not m2m and direct and isinstance(field_object, ForeignKey):
+                if field_object.rel.to.__name__ == parent_model_class :
+                    setattr(self.model, field_name, parent_model) 
+
+
+
+        return None
+
+    def set_foreign_key_children(self):
+        for child in self.children:
+            child.set_parent_id(self.model)
+
+    def save(self):
+        if(self.model != None):
+            self.model.save()
+            self.set_foreign_key_children()
+        for child in self.children:
+            child.save()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
 
