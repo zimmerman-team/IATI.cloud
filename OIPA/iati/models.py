@@ -833,6 +833,25 @@ class ContactInfo(models.Model):
         return "%s - %s" % (self.activity.idStr, self.person_name)
 
 
+class ContactInfoOrganisation(models.Model):
+    ContactInfo = models.ForeignKey(ContactInfo)
+
+class ContactInfoDepartment(models.Model):
+    ContactInfo = models.ForeignKey(ContactInfo)
+
+class ContactInfoPersonName(models.Model):
+    ContactInfo = models.ForeignKey(ContactInfo)
+
+class ContactInfoJobTitle(models.Model):
+    ContactInfo = models.ForeignKey(ContactInfo)
+
+class ContactInfoMailingAddress(models.Model):
+    ContactInfo = models.ForeignKey(ContactInfo)
+
+
+
+
+
 # class transaction_description(models.Model):
 #     transaction = models.ForeignKey(transaction)
 #     type = models.ForeignKey(description_type, null=True, default=None)
