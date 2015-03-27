@@ -436,7 +436,11 @@ class Sector(models.Model):
     description = models.TextField(default="")
     category = models.ForeignKey(SectorCategory, null=True, default=None)
     vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
-
+    percentage = models.DecimalField(
+            max_digits=5,
+            decimal_places=2,
+            null=True,
+            default=None)
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
@@ -638,6 +642,7 @@ class Activity(models.Model):
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, default="")
+    default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, default="")
     reporting_organisation = models.ForeignKey(
         Organisation,
@@ -771,6 +776,17 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
+class BudgetItem(models.Model):
+    country_budget_item = models.ForeignKey(CountryBudgetItem)
+    code = models.CharField(max_length=50, default="")
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
+
+#class for narrative
+class BudgetItemDescription(models.Model):
+    budget_item = models.ForeignKey(BudgetItem)
+
+
+
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -863,6 +879,7 @@ class ContactInfoMailingAddress(models.Model):
 
 
 class PlannedDisbursement(models.Model):
+    budget_type  = models.ForeignKey(BudgetType,null=True, default=None)
     activity = models.ForeignKey(Activity)
     period_start = models.CharField(max_length=100, default="")
     period_end = models.CharField(max_length=100, default="")
@@ -1017,10 +1034,16 @@ class OrganisationRegistrationAgency(models.Model):
         return "%s - %s" % (self.activity.idStr, self.type)
 
 
+
+
+
+
+
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
     # new in v1.04
     ref = models.CharField(max_length=200, default="")
+    #narrative in 2.05
     name = models.TextField(max_length=1000, default="")
     # deprecated as of v1.04
     type = models.ForeignKey(
@@ -1031,6 +1054,7 @@ class Location(models.Model):
     type_description = models.CharField(
         max_length=200,
         default="")
+    #narrative in  2.05
     description = models.TextField(default="")
     activity_description = models.TextField(default="")
     description_type = models.ForeignKey(
@@ -1067,7 +1091,7 @@ class Location(models.Model):
         null=True,
         default=None)
     # deprecated as of v1.04
-    latitude = models.CharField(max_length=70, default="")
+    point_pos = models.CharField(max_length=70, default="")
     # deprecated as of v1.04
     longitude = models.CharField(max_length=70, default="")
     precision = models.ForeignKey(
@@ -1120,6 +1144,14 @@ class Location(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.idStr, self.name)
 
+class LocationName(models.Model):
+    location = models.ForeignKey(Location)
+
+class LocationDescription(models.Model):
+    location = models.ForeignKey(Location)
+
+class LocationActivityDescription(models.Model):
+    location = models.ForeignKey(Location)
 
 class Ffs(models.Model):
     activity = models.ForeignKey(Activity)
