@@ -27,3 +27,5 @@ django-otp-yubikey
 django-two-factor-auth
 django-formtools==1.0
 git+git://github.com/gkuhn1/django-admin-multiupload.git
+
+
