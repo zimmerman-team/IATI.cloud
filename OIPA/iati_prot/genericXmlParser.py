@@ -18,20 +18,21 @@ class XMLParser():
 
     db_call_cache = {}
     model_store = {}
-    db_model_tree 
 
     DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
 
-
-    def __init__():
-        self.db_model_tree = DbModelTree()
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated.xml")
+
+    def testWithRealFile(self):
+        self.testWithFile("MAEC_IATI_INDONESIA.xml")
 
     def load_and_parse(self, xml):
         root = etree.fromstring(xml)
         self.root = root
         self.parse(root)
+        self.save_all_models()
+
         hintsStr = ''
         errorStr = ''
         send_mail = False
@@ -44,13 +45,14 @@ class XMLParser():
             errorStr += "\n".join( self.errors)
             send_mail = True
 
-        if(send_mail):
+        if(send_mail and False):
             self.sendErrorMail('daniel@zimmermanzimmerman.nl', hintsStr +"\n"+errorStr)
 
     def testWithFile(self,fileName):
         with open(fileName, "r") as myfile:
             data = myfile.read().replace('\n', '')
         self.load_and_parse(data)
+
 
     def parse(self,element):
 
@@ -78,7 +80,7 @@ class XMLParser():
                     print 'error'
                     print function_name
                     traceback.print_exc()
-
+                    return
                     self.handle_exception(x_path, function_name, exeception)
                     self.parse(e)
             else:
@@ -87,6 +89,7 @@ class XMLParser():
 
                 self.parse(e)
 
+        
 
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '__')
@@ -192,12 +195,14 @@ class XMLParser():
 
     def set_func_model(self,model):
         caller_name =  inspect.stack()[1][3]# get the name of the caller function
+        if caller_name in self.model_store:
+            model_temp = self.model_store[caller_name]
+            model_temp.save()
 
+        model.save()
         self.model_store[caller_name] = model
-        dbModelTreeChild = DbModelTree()
-        self.db_model_tree.add_child(caller_name,model)
-        caller_name_arr = caller_name.split("__")
-        for caller_name_part in caller_name_arr:
+
+
 
 
 
@@ -217,108 +222,9 @@ class XMLParser():
     def save_all_models(self,subTree = ''):
         #make tree
         saved_models = []
-        for path_name,db_model in self.model_store:
+        for path_name in self.model_store:
+            db_model = self.model_store[path_name]
             if db_model.__class__.__name__ not in saved_models:
                 db_model.save()
-                saved_models.add(db_model.__class__.__name__)
-
-
-
-
-
-
-
-
-
-    
-
-
-class DbModelTree():
-    xpath = ''
-    model = None
-    children = {}
-
-    def __init__(self,xpath,db_model):
-        self.xpath = xpath
-        
-
-        self.model = model
-
-    def add_child(self,db_model_tree,xpath):
-        self.children.put(xpath,db_model_tree)
-
-    def get_children(self):
-        return self.children 
-
-    def get_child_by_name(self,child_name):
-        for child in self.children:
-            if child.xpath = child_name:
-                return child
-        return None
-
-    def get_child_by_xpath(self,xpath):
-        xpath_arr = xpath.split("__")
-        for xpath_part in xpath_arr[1:]:
-            child = self.get_child_by_name()
-
-
-
-
-    def get_last_child(self):
-        if len(self.children > 0):
-            return self.children[-1]
-        else return None
-
-    def set_parent_id(self,parent_model):
-        parent_model_class = parent_model.__class__.__name__
-        #iterate over fields        
-        for field_name in self.model._meta.get_all_field_names():
-            field_object, model, direct, m2m = self.model._meta.get_field_by_name(field_name)
-            if not m2m and direct and isinstance(field_object, ForeignKey):
-                if field_object.rel.to.__name__ == parent_model_class :
-                    setattr(self.model, field_name, parent_model) 
-
-
-
-        return None
-
-    def set_foreign_key_children(self):
-        for child in self.children:
-            child.set_parent_id(self.model)
-
-    def save(self):
-        if(self.model != None):
-            self.model.save()
-            self.set_foreign_key_children()
-        for child in self.children:
-            child.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
+                saved_models.append(db_model.__class__.__name__)
 
