@@ -58,3 +58,31 @@ class Transaction(models.Model):
         return "%s: %s - %s" % (self.activity,
                                 self.transaction_type,
                                 self.transaction_date)
+
+    class TransactionDescription(models.Model):
+        transaction = models.ForeignKey(Transaction)
+
+    class TransactionProvider(models.Model):
+        transaction = models.ForeignKey(Transaction)
+        organisation =  models.ForeignKey(
+            'Organisation',
+            related_name="transaction_providing_organisation",
+            null=True,
+            default=None)
+        name = models.CharField(
+            max_length=255,
+            default="")
+
+    class TransactionReciever(models.Model):
+        transaction = models.ForeignKey(Transaction)
+        organisation =  models.ForeignKey(
+            'Organisation',
+            related_name="transaction_providing_organisation",
+            null=True,
+            default=None)
+        name = models.CharField(
+            max_length=255,
+            default="")
+
+
+
