@@ -25,3 +25,4 @@ django-otp
 django-otp-yubikey
 django-two-factor-auth
 git+git://github.com/gkuhn1/django-admin-multiupload.git
+django-cors-headers==1.0.0

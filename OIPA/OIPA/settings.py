@@ -83,6 +83,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,6 +127,7 @@ INSTALLED_APPS = (
     'indicator_unesco',
     'translation_model',
     'rest_framework',
+    'corsheaders',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
@@ -185,6 +187,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     )
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 try:
     from local_settings import *
