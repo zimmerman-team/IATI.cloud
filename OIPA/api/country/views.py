@@ -47,8 +47,16 @@ class CountryList(ListAPIView):
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     filter_class = CountryFilter
-    fields = ('url', 'code', 'name')
+    fields = ('url', 'code', 'name', 'activities')
 
+    def get_serializer_context(self):
+        print(self.request.GET)
+        return {
+            'request': self.request,
+            'params': self.request.GET
+        }
+    # def get_serializer_class(self):
+    #     return self.serializer_class
 
 class CountryDetail(RetrieveAPIView):
     """
