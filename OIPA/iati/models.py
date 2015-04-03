@@ -111,7 +111,7 @@ class DocumentCategory(models.Model):
 class FileFormat(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
- 
+
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
@@ -514,6 +514,9 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.code)
+
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -656,8 +659,7 @@ class ResultIndicator(models.Model):
     comment = models.TextField(default="")
     measure = models.ForeignKey(ResultIndicatorMeasure, null=True, default=None)
 
-
-def __unicode__(self,):
+    def __unicode__(self,):
         return "%s - %s" % (self.result, self.year)
 
 class ResultIndicatorPeriod(models.Model):
@@ -669,7 +671,7 @@ class ResultIndicatorPeriod(models.Model):
     target = models.CharField(max_length=50, default="")
     actual = models.CharField(max_length=50, default="")
 
-def __unicode__(self,):
+    def __unicode__(self,):
         return "%s" % (self.result_indicator)
 
 
