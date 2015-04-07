@@ -19,4 +19,5 @@ setup(name='OIPA',
             providing you with direct XML or JSON output. Does Django and MySQL. \
             Codebase maintained by Zimmerman & Zimmerman in Amsterdam. http://www.oipa.nl/",
       packages=find_packages(),
+      install_requires=requirements,
      )
