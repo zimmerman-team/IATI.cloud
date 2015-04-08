@@ -6,7 +6,7 @@ class Region(models.Model):
     name = models.CharField(max_length=80)
     region_vocabulary = models.ForeignKey('iati.RegionVocabulary', default=1)
     parental_region = models.ForeignKey('self', null=True, blank=True)
-    center_longlat = models.PointField(null=True, blank=True)
+    center_longlat = models.PointField(null=False, blank=True)
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -26,7 +26,7 @@ class Country(models.Model):
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)
     fips10 = models.CharField(max_length=2, null=True, blank=True)
-    center_longlat = models.PointField(null=True, blank=True)
+    center_longlat = models.PointField(null=False, blank=True)
     polygon = models.TextField(null=True, blank=True)
     data_source = models.CharField(max_length=20, null=True, blank=True)
     geom = models.MultiPolygonField(srid=4326)
@@ -48,7 +48,7 @@ class City(models.Model):
     geoname_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=200)
     country = models.ForeignKey(Country, null=True, blank=True)
-    location = models.PointField(null=True, blank=True)
+    location = models.PointField(null=False, blank=True)
     ascii_name = models.CharField(max_length=200, null=True, blank=True)
     alt_name = models.CharField(max_length=200, null=True, blank=True)
     namepar = models.CharField(max_length=200, null=True, blank=True)
@@ -100,7 +100,7 @@ class Adm1Region(models.Model):
     woe_id = models.IntegerField(null=True, blank=True)
     woe_label = models.CharField(null=True, blank=True, max_length=100)
     woe_name = models.CharField(null=True, blank=True, max_length=100)
-    center_location = models.PointField(null=True, blank=True)
+    center_location = models.PointField(null=False, blank=True)
     sov_a3 = models.CharField(null=True, blank=True, max_length=3)
     adm0_a3 = models.CharField(null=True, blank=True, max_length=3)
     adm0_label = models.IntegerField(null=True, blank=True)
@@ -123,6 +123,7 @@ class Adm1Region(models.Model):
     polygon = models.TextField(null=True, blank=True)
     geometry_type = models.CharField(null=True, blank=True, max_length=50)
     geom = models.MultiPolygonField(srid=4326)
+    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name
