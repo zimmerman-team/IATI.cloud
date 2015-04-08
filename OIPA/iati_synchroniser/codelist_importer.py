@@ -328,6 +328,10 @@ class CodeListImporter():
                     new_codelist.save()
 
             cur_downloaded_xml = "http://iatistandard.org/105/codelists/downloads/clv1/codelist/" + name + ".xml"
+<<<<<<< HEAD
+=======
+            print "retrieving", cur_downloaded_xml
+>>>>>>> changing import host from dev.iatistandard.org to iatistandard.org
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
@@ -349,6 +353,6 @@ class CodeListImporter():
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')
         fast_iter(context, get_codelist_data)
-        add_missing_items()
+        #add_missing_items()
 
 
