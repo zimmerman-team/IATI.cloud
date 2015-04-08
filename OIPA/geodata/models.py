@@ -29,6 +29,7 @@ class Country(models.Model):
     center_longlat = models.PointField(null=True, blank=True)
     polygon = models.TextField(null=True, blank=True)
     data_source = models.CharField(max_length=20, null=True, blank=True)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     class Meta:
@@ -121,6 +122,7 @@ class Adm1Region(models.Model):
     gns_region = models.CharField(null=True, blank=True, max_length=100)
     polygon = models.TextField(null=True, blank=True)
     geometry_type = models.CharField(null=True, blank=True, max_length=50)
+    geom = models.MultiPolygonField(srid=4326)
 
     def __unicode__(self):
         return self.name
@@ -129,7 +131,13 @@ class Adm1Region(models.Model):
         verbose_name_plural = "admin1 regions"
 
 
+class Adm2Region(models.Model):
 
+    code = models.CharField(primary_key=True, max_length=10)
+    name = models.CharField(null=True, blank=True, max_length=100)
+    region = models.ForeignKey(Adm1Region, null=False, blank=False)
+    geom = models.MultiPolygonField(srid=4326)
+    objects = models.GeoManager()
 
-
-
+    def __unicode__(self):
+        return "Adm1Region %s in %s" % ( self.name, self.region.name )
