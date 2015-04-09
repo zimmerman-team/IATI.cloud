@@ -1,7 +1,5 @@
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import MultiPolygon, Polygon
 
-SIMPLE_MULTIPOLYGON = MultiPolygon([Polygon(((0, 0), (0, 1), (1, 1), (1, 0), (0, 0)))])
 
 class Region(models.Model):
     code = models.SmallIntegerField(primary_key=True)
@@ -31,7 +29,7 @@ class Country(models.Model):
     center_longlat = models.PointField(null=False, blank=True)
     polygon = models.TextField(null=True, blank=True)
     data_source = models.CharField(max_length=20, null=True, blank=True)
-    geom = models.MultiPolygonField(srid=4326, default=SIMPLE_MULTIPOLYGON)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     class Meta:
@@ -124,7 +122,7 @@ class Adm1Region(models.Model):
     gns_region = models.CharField(null=True, blank=True, max_length=100)
     polygon = models.TextField(null=True, blank=True)
     geometry_type = models.CharField(null=True, blank=True, max_length=50)
-    geom = models.MultiPolygonField(srid=4326, default=SIMPLE_MULTIPOLYGON)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -139,7 +137,7 @@ class Adm2Region(models.Model):
     code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(null=True, blank=True, max_length=100)
     region = models.ForeignKey(Adm1Region, null=False, blank=False)
-    geom = models.MultiPolygonField(srid=4326, default=SIMPLE_MULTIPOLYGON)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     def __unicode__(self):

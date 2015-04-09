@@ -345,6 +345,6 @@ class CodeListImporter():
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')
         fast_iter(context, get_codelist_data)
-        #add_missing_items()
+        add_missing_items()
 
 
