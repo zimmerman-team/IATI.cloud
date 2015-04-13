@@ -560,6 +560,9 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.code)
+
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -688,6 +691,7 @@ class ResultIndicator(models.Model):
     baseline_year = models.IntegerField(max_length=4)
     baseline_value = models.CharField(max_length=100)
     comment = models.TextField(default="")
+    
     measure = models.ForeignKey(
         ResultIndicatorMeasure,
         null=True,

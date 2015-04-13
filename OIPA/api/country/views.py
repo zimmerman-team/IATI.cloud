@@ -8,9 +8,10 @@ from api.indicator.views import IndicatorList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from api.country.filters import CountryFilter
+from api.generics.views import PassContextMixin
 
 
-class CountryList(ListAPIView):
+class CountryList(PassContextMixin, ListAPIView):
     """
     Returns a list of IATI Countries stored in OIPA.
 
@@ -48,7 +49,6 @@ class CountryList(ListAPIView):
     serializer_class = serializers.CountrySerializer
     filter_class = CountryFilter
     fields = ('url', 'code', 'name')
-
 
 class CountryDetail(RetrieveAPIView):
     """
