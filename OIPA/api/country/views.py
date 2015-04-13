@@ -48,7 +48,7 @@ class CountryList(PassContextMixin, ListAPIView):
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     filter_class = CountryFilter
-    fields = ('url', 'code', 'name', 'activities')
+    fields = ('url', 'code', 'name')
 
 class CountryDetail(RetrieveAPIView):
     """

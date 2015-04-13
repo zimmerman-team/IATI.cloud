@@ -38,7 +38,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
 
     def get_filtered_activities(self, obj):
         # Circular imports!!!, must be refactored
-        from api.activity.serializers import ActivitySerializer
         from api.activity.filters import ActivityFilter
 
         activity_filter = ActivityFilter()
@@ -53,6 +52,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
         return final_activities
 
     def get_activities(self, obj):
+        from api.activity.serializers import ActivitySerializer
 
         serializer = ActivitySerializer(self.get_filtered_activities(obj),
                                         context={'request': self.context['request']},
@@ -62,7 +62,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
         return serializer.data
 
     def get_aggregations(self, obj):
-        fields = tuple(utils.query_params_from_context(self.context)['fields[aggregations]'].split(','))
+        fields = tuple(utils.query_params_from_context(self.context).get('fields[aggregations]', str()).split(','))
 
         serializer = AggregationsSerializer(
             self.get_filtered_activities(obj),
