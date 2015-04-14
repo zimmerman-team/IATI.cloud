@@ -6,7 +6,7 @@ from setuptools import find_packages
 from pip.req import parse_requirements
 
 os.chdir('OIPA')
-install_requirements = parse_requirements('requirements.txt')
+install_requirements = parse_requirements('requirements.txt', session=False)
 requirements = [str(ir.req) for ir in install_requirements]
 
 setup(name='OIPA',
