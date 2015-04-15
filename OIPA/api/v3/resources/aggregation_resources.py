@@ -121,6 +121,11 @@ class ActivityAggregatedAnyResource(ModelResource):
                 'select': 'r.title',
                 'from_addition': 'JOIN iati_result as r on a.id = r.activity_id ',
                 'where_addition': ' AND r.title = %(query)s '},
+            'transaction_date_year':{
+                'select': 'year(t.transaction_date) ',
+                'from_addition': '',
+                'where_addition': ''},
+            
         }
 
         helper = CustomCallHelper()
