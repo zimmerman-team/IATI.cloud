@@ -16,6 +16,7 @@ urlpatterns = patterns(
     url(r'^/sectors', include('api.sector.urls', namespace='sectors')),
     url(r'^/transactions', include('api.transaction.urls',
         namespace='transactions')),
+    url(r'^/policy_markers', include('api.policy_marker.urls')),
     url(r'^/v3', include('api.v3.urls')),
     url(r'^/', include(v3_api.urls)),
 )

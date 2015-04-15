@@ -32,6 +32,7 @@ class ActivityQuerySet(query.QuerySet):
                 'name': 'activitysearchdata__search_sector_name',
                 'method': '__search'
             },
+            
             'part_organisations': {
                 'name': 'activitysearchdata__search_participating_organisation_name',
                 'method': '__search'

@@ -31,6 +31,13 @@ class ActivityAggregatedAnyResource(ModelResource):
         group_by_key = request.GET.get('group_by', None)
         aggregation_key = request.GET.get('aggregation_key', 'iati-identifier')
         group_field = request.GET.get('group_field', 'start_actual')
+        group_by_arr = [];
+        if ',' in group_by_key:
+            group_by_arr = group_by_key.split(',')
+        else:
+            group_by_arr.append(group_by_key)
+        group_by_key = group_by_arr[0]
+
         query = request.GET.get('query', '')
 
         if group_by_key in {'commitment', 'disbursement', 'incoming-fund'}:
@@ -142,18 +149,21 @@ class ActivityAggregatedAnyResource(ModelResource):
                 "error": "Invalid aggregation key, see included list for viable keys.",
                 "valid_aggregation_keys": list(aggregation_element_dict.keys())}),
                 content_type='application/json')
-
-        if group_by_key in group_by_element_dict:
-            group_by_info = group_by_element_dict[group_by_key]
-            group_select = group_by_info["select"]
-            group_from_addition = group_by_info["from_addition"]
-            if "where_addition" in group_by_info and query:
-                aggregation_where_addition = aggregation_where_addition.join(group_by_info["where_addition"])
-        else:
-            return HttpResponse(ujson.dumps({
-                "error": "Invalid group by key, see included list for viable keys.",
-                "valid_group_by_keys": list(group_by_element_dict.keys())}),
-                content_type='application/json')
+        
+        group_select= [];
+        group_from_addition = [];
+        for group_by_key in group_by_arr:
+            if group_by_key in group_by_element_dict:
+                group_by_info = group_by_element_dict[group_by_key]
+                group_select.append(group_by_info["select"])
+                group_from_addition.append(group_by_info["from_addition"])
+                if "where_addition" in group_by_info and query:
+                    aggregation_where_addition = aggregation_where_addition.join(group_by_info["where_addition"])
+            else:
+                return HttpResponse(ujson.dumps({
+                    "error": "Invalid group by key, see included list for viable keys.",
+                    "valid_group_by_keys": list(group_by_element_dict.keys())}),
+                    content_type='application/json')
 
         # make sure group key and aggregation key are set
         if not group_by_key:
@@ -166,19 +176,27 @@ class ActivityAggregatedAnyResource(ModelResource):
                 "No field to aggregate on. add parameter aggregation_key "),
                 content_type='application/json')
 
+        group_select_str_arr = [];
+        i = 0;
+        index = '';
+        for group_select_part in group_select:
+            if i != 0:
+                index = str(i);
+            group_select_str_arr.append(group_select_part+' as group_field'+index+' ')
+            i = i+1
+        group_select_str = ','.join(group_select_str_arr);
         query_select = ''.join([
             'SELECT ',
             aggregation_type,
             '(',
             aggregation_key,
             ') as aggregation_field, ',
-            group_select,
-            ' as group_field '])
+            group_select_str])
 
         query_from = ''.join([
             'FROM iati_activity as a ',
             aggregation_from_addition,
-            group_from_addition])
+            ' '.join(group_from_addition)])
 
         query_where = ''.join([
             'WHERE 1 ',
@@ -186,7 +204,7 @@ class ActivityAggregatedAnyResource(ModelResource):
 
         query_group_by = ''.join([
             'GROUP BY ',
-            group_select])
+            ','.join(group_select)])
 
         # fill where part
         filter_string = ''.join([
@@ -221,6 +239,7 @@ class ActivityAggregatedAnyResource(ModelResource):
                 query_from = "FROM iati_activitysector "
                 query_group_by = "GROUP BY sector_id"
 
+        print query_select + query_from + query_where + query_group_by, {"query": query, }
         cursor.execute(query_select + query_from + query_where + query_group_by, {"query": query, })
         results1 = helper.get_fields(cursor=cursor)
 

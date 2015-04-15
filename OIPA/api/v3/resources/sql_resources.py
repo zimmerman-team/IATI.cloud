@@ -1322,3 +1322,70 @@ class ActivityListVisResource(ModelResource):
 
         return HttpResponse(ujson.dumps(activities), content_type='application/json')
 
+
+
+class  PoliciyMarkerSectorResource(ModelResource):
+  class Meta:
+        resource_name = 'policy-marker-sector-list-vis'
+        allowed_methods = ['get']
+
+
+  def get_list(self, request, **kwargs):
+
+    helper = CustomCallHelper()
+    cursor = connection.cursor()
+    policy_marker = request.GET.get("policy_marker", "Gender Equality")
+    year = request.GET.get("year", "2015")
+    publisher_org = request.GET.get("publisher_org", "NL-1")
+    query = """SELECT  
+        pm.name AS policy_marker,sector_cat.name AS sector,sector_cat.code AS code, ps.name as significance,SUM(a.total_budget) AS total_budget ,SUM(trans.value) AS total_disbursement
+      FROM 
+        iati_activity AS a 
+        INNER JOIN 
+        iati_activitypolicymarker AS apm ON (a.id = apm.activity_id)
+        INNER JOIN 
+        iati_policymarker AS pm ON (pm.code = apm.policy_marker_id)
+        INNER JOIN 
+        iati_policysignificance AS ps ON (apm.policy_significance_id = ps.code) 
+        INNER JOIN 
+        iati_activitysector AS actsector ON (a.id = actsector.activity_id)
+        INNER JOIN 
+        iati_sector AS sector  ON (actsector.sector_id = sector.code)
+        INNER JOIN 
+        iati_sectorcategory AS sector_cat ON (sector.category_id = sector_cat.code )
+        INNER JOIN
+        iati_transaction AS trans ON (a.id = trans.activity_id)
+        INNER JOIN 
+        iati_transactiontype AS trans_type ON (trans.transaction_type_id = trans_type.code)
+        INNER JOIN 
+        iati_organisation AS reporting_org ON (a.reporting_organisation_id = reporting_org.id)
+      WHERE 
+        trans_type.name = 'Disbursement' AND
+        YEAR(trans.transaction_date) =  {year} AND
+        reporting_org.code = '{publisher_org}'  AND
+        pm.name = '{policy_marker}'
+        
+      GROUP BY pm.code,sector_cat.name,sector_cat.code,ps.code
+      ORDER BY pm.code,sector_cat.name,sector_cat.code,ps.code"""
+    query = query.format(policy_marker=policy_marker, year=year, publisher_org=publisher_org)
+    cursor.execute(query)
+    results1 = helper.get_fields(cursor=cursor)
+
+    sectors = []
+    old_sector = ''
+    current_sector = {}
+    
+
+    for r in results1:
+      if r['sector'] != old_sector:
+        if old_sector != '':
+          sectors.append(current_sector)
+        old_sector = r['sector']
+        current_sector = {}
+        current_sector['name'] = r['sector']
+        current_sector['categrory_code'] = r['code']
+        current_sector['significance'] = {}
+      current_sector['significance'][r['significance']] = r['total_disbursement']
+
+
+    return HttpResponse(ujson.dumps(sectors), content_type='application/json')

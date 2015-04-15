@@ -82,6 +82,20 @@ class Parser():
 
             self.add_all_activity_data(elem)
 
+    def get_or_create_version(self,versionNumber):
+        if not isinstance(versionNumber, basestring):
+            versionNumber = '1.05'
+        if(models.Version.objects.filter(code=versionNumber).exists()):
+            version = models.Version.objects.filter(code=versionNumber).get()
+        else:
+            version = models.Version()
+            version.code = versionNumber
+            version.name = versionNumber
+            version.codelist_iati_version = versionNumber
+            version.url = "http://iatistandard.org/" + versionNumber.replace('.','') + "/" 
+            version.save()
+        return version
+
 
     def add_all_activity_data(self, elem):
 
@@ -244,7 +258,7 @@ class Parser():
             last_updated_datetime = self.return_first_exist(elem.xpath('@last-updated-datetime')) or ""
 
             linked_data_uri = self.return_first_exist(elem.xpath('@linked-data-uri')) or ""
-            iati_standard_version = self.return_first_exist(elem.xpath('@version')) or ""
+            iati_standard_version = self.get_or_create_version(self.return_first_exist(elem.xpath('@version')))
 
             secondary_publisher = self.return_first_exist(elem.xpath('reporting-org/@secondary-publisher'))
 
