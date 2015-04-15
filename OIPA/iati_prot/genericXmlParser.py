@@ -1,5 +1,6 @@
 from lxml import etree
 from parse_logger import models as logModels
+from django.db.models import Q
 from django.core.mail import send_mail
 
 import datetime
@@ -21,11 +22,17 @@ class XMLParser():
 
     DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
 
+
+
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated.xml")
 
     def testWithRealFile(self):
         self.testWithFile("MAEC_IATI_INDONESIA.xml")
+
+    #do stuff if method is not found but the tag has to be used a saved
+    def magicMethod(self,function_name,element):
+        return false
 
     def load_and_parse(self, xml):
         root = etree.fromstring(xml)
@@ -84,7 +91,8 @@ class XMLParser():
                     self.handle_exception(x_path, function_name, exeception)
                     self.parse(e)
             else:
-                self.handle_function_not_found(x_path, function_name,e)
+                if not self.magicMethod(function_name,e):
+                    self.handle_function_not_found(x_path, function_name,e)
                 #print function_name
 
                 self.parse(e)
@@ -148,7 +156,7 @@ class XMLParser():
         send_mail('error mail!', errorString, 'error@oipa.nl',[toAddress], fail_silently=False)
 
     # call db to find a key 
-    def cached_db_call(self,model, key,keyDB = 'code'):
+    def cached_db_call(self,model, key,keyDB = 'code',createNew = False):
         model_name = model.__name__
         print model_name
         if model_name in self.db_call_cache:

@@ -1,5 +1,5 @@
 from django.db import models
-
+from geodata.models import Country, Region
 
 class TransactionType(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
@@ -28,7 +28,7 @@ class Transaction(models.Model):
     flow_type = models.ForeignKey('FlowType', null=True, default=None)
     provider_organisation = models.ForeignKey(
         'Organisation',
-        related_name="transaction_providing_organisation",
+        related_name="transaction_providing_organisation_old",
         null=True,
         default=None)
     provider_organisation_name = models.CharField(
@@ -37,7 +37,7 @@ class Transaction(models.Model):
     provider_activity = models.CharField(max_length=100, null=True)
     receiver_organisation = models.ForeignKey(
         'Organisation',
-        related_name="transaction_receiving_organisation",
+        related_name="transaction_receiving_organisation_old",
         null=True,
         default=None)
     receiver_organisation_name = models.CharField(
@@ -53,36 +53,42 @@ class Transaction(models.Model):
     value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey('Currency', null=True, default=None)
     ref = models.CharField(max_length=255, default="")
+    recipient_region = models.ForeignKey(Region,null=True)
+    recipient_region_vocabulary = models.ForeignKey('RegionVocabulary', default=1)
+    recipient_country = models.ForeignKey(Country, null=True, default=None)
 
     def __unicode__(self,):
         return "%s: %s - %s" % (self.activity,
                                 self.transaction_type,
                                 self.transaction_date)
 
-    class TransactionDescription(models.Model):
-        transaction = models.ForeignKey(Transaction)
+    
+class TransactionDescription(models.Model):
+    transaction = models.ForeignKey( Transaction )
 
-    class TransactionProvider(models.Model):
-        transaction = models.ForeignKey(Transaction)
-        organisation =  models.ForeignKey(
-            'Organisation',
-            related_name="transaction_providing_organisation",
-            null=True,
-            default=None)
-        name = models.CharField(
-            max_length=255,
-            default="")
+class TransactionProvider(models.Model):
+    transaction = models.ForeignKey(Transaction)
+    organisation = models.ForeignKey(
+        'Organisation',
+        related_name="transaction_providing_organisation",
+        null=True,
+        default=None)
+    name = models.CharField(
+        max_length=255,
+        default="")
 
-    class TransactionReciever(models.Model):
-        transaction = models.ForeignKey(Transaction)
-        organisation =  models.ForeignKey(
-            'Organisation',
-            related_name="transaction_providing_organisation",
-            null=True,
-            default=None)
-        name = models.CharField(
-            max_length=255,
-            default="")
+class TransactionReciever(models.Model):
+    transaction = models.ForeignKey(Transaction)
+    organisation = models.ForeignKey(
+        'Organisation',
+        related_name="transaction_recieving_organisation",
+        null=True,
+        default=None)
+    name = models.CharField(
+        max_length=255,
+        default="")
 
-
-
+class TransActionSector(models.Model):
+    transaction = models.ForeignKey(Transaction)
+    sector = models.ForeignKey('Sector')
+    vocabulry = models.ForeignKey('SectorVocabulary')

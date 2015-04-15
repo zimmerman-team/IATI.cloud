@@ -21,6 +21,7 @@ from api.v3.resources.sql_resources import GlobalActivitiesResource
 from api.v3.resources.sql_resources import DonorActivitiesResource
 from api.v3.resources.sql_resources import SectorActivitiesResource
 from api.v3.resources.sql_resources import ActivityFilterOptionsUnescoResource
+from api.v3.resources.sql_resources import PoliciyMarkerSectorResource
 from api.v3.resources.aggregation_resources import ActivityAggregatedAnyResource
 from api.v3.resources.indicator_resources import IndicatorFilterOptionsResource
 from api.v3.resources.indicator_data_resource import IndicatorDataResource
@@ -52,7 +53,7 @@ v3_api.register(SectorActivitiesResource())
 v3_api.register(UnescoIndicatorResource())
 v3_api.register(ActivityFilterOptionsUnescoResource())
 v3_api.register(ActivityListVisResource())
-
+v3_api.register(PoliciyMarkerSectorResource())
 
 def api_v3_docs(request):
     return HttpResponseRedirect('/api/v3/docs/')

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class CodeListImporter():
 
     looping_through_version = ""
-    iati_versions = ["104", "105", "201"]
+    iati_versions = ["1.04", "1.05", "2.01"]
 
     def synchronise_with_codelists(self):
 
@@ -370,7 +370,7 @@ class CodeListImporter():
                     new_codelist.save()
 
             cur_downloaded_xml = ("http://iatistandard.org/"
-                                  + self.looping_through_version +
+                                  + self.looping_through_version.replace('.','') +
                                   "/codelists/downloads/clv1/"
                                   "codelist/" + name + ".xml")
             cur_file_opener = urllib2.build_opener()
@@ -382,8 +382,9 @@ class CodeListImporter():
         def loop_through_codelists(version):
             downloaded_xml = urllib2.Request(
                 "http://iatistandard.org/"
-                + version +
+                + version.replace('.','') +
                 "/codelists/downloads/clv1/codelist.xml")
+
             file_opener = urllib2.build_opener()
             xml_file = file_opener.open(downloaded_xml)
             context = etree.iterparse(xml_file, tag='codelist')
@@ -391,7 +392,7 @@ class CodeListImporter():
             add_missing_items()
 
         #Do sector categories first
-        self.looping_through_version = "201"
+        self.looping_through_version = "2.01"
         get_codelist_data(name="SectorCategory")
         get_codelist_data(name="SectorVocabulary")
         get_codelist_data(name="RegionVocabulary")

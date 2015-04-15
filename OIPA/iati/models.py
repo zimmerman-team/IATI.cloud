@@ -189,7 +189,6 @@ class FinanceType(models.Model):
     category = models.ForeignKey(FinanceTypeCategory)
     codelist_iati_version = models.CharField(max_length=4)
     codelist_successor = models.CharField(max_length=100, null=True)
-
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
@@ -723,11 +722,11 @@ class ActivityParticipatingOrganisation(models.Model):
     narratives = generic.GenericRelation(Narrative)
 
     def __unicode__(self,):
-        return "%s: %s - %s" % (self.activity.idStr, self.organisation, self.name)
+        return "%s: %s - %s" % (self.activity.id, self.organisation, self.name)
 
 
 class ActivityPolicyMarker(models.Model):
-    policy_marker = models.ForeignKey(PolicyMarker, null=True, default=None)
+    policy_marker = models.ForeignKey(PolicyMarker, null=True, default=None,related_name='policy_marker_related')
     alt_policy_marker = models.CharField(max_length=200, default="")
     activity = models.ForeignKey(Activity)
     vocabulary = models.ForeignKey(Vocabulary, null=True, default=None)
@@ -737,7 +736,7 @@ class ActivityPolicyMarker(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.policy_marker)
+        return "%s - %s - %s" % (self.activity.id, self.policy_marker,self.policy_significance)
 
 
 class ActivitySector(models.Model):
@@ -752,7 +751,7 @@ class ActivitySector(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.sector)
+        return "%s - %s" % (self.activity.id, self.sector)
 
 
 class ActivityRecipientCountry(models.Model):
@@ -765,7 +764,7 @@ class ActivityRecipientCountry(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.country)
+        return "%s - %s" % (self.activity.id, self.country)
 
 
 class CountryBudgetItem(models.Model):
@@ -776,10 +775,9 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
-<<<<<<< HEAD
     def __unicode__(self,):
         return "%s - %s" % (self.activity, self.code)
-=======
+
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.CharField(max_length=50, default="")
@@ -788,10 +786,6 @@ class BudgetItem(models.Model):
 #class for narrative
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
-
-
->>>>>>> last tags
-
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -804,7 +798,7 @@ class ActivityRecipientRegion(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.region)
+        return "%s - %s" % (self.activity.id, self.region)
 
 
 class OtherIdentifierType(models.Model):
@@ -827,7 +821,7 @@ class OtherIdentifier(models.Model):
     type = models.ForeignKey(OtherIdentifierType)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.identifier)
+        return "%s - %s" % (self.activity.id, self.identifier)
 
 
 class ActivityWebsite(models.Model):
@@ -835,7 +829,7 @@ class ActivityWebsite(models.Model):
     url = models.URLField()
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.url)
+        return "%s - %s" % (self.activity.id, self.url)
 
 
 #   Class not truly correct, attributes fully open
@@ -851,7 +845,7 @@ class ContactInfo(models.Model):
     job_title = models.CharField(max_length=150, default="")
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.person_name)
+        return "%s - %s" % (self.activity.id, self.person_name)
 
 
 class ContactInfoOrganisation(models.Model):
@@ -894,7 +888,7 @@ class PlannedDisbursement(models.Model):
     updated = models.DateField(null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.period_start)
+        return "%s - %s" % (self.activity.id, self.period_start)
 
 
 class RelatedActivity(models.Model):
@@ -929,7 +923,7 @@ class DocumentLink(models.Model):
     title = models.CharField(max_length=255, default="")
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.url)
+        return "%s - %s" % (self.activity.id, self.url)
 
 
 class Result(models.Model):
@@ -940,7 +934,7 @@ class Result(models.Model):
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.title)
+        return "%s - %s" % (self.activity.id, self.title)
 
 
 class IndicatorMeasure(models.Model):
@@ -992,7 +986,7 @@ class Title(models.Model):
     narratives = generic.GenericRelation(Narrative)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.title)
+        return "%s - %s" % (self.activity.id, self.title)
 
 
 class Description(models.Model):
@@ -1005,7 +999,7 @@ class Description(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.type)
+        return "%s - %s" % (self.activity.id, self.type)
 
 
 class Budget(models.Model):
@@ -1018,7 +1012,7 @@ class Budget(models.Model):
     currency = models.ForeignKey(Currency, null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.period_start)
+        return "%s - %s" % (self.activity.id, self.period_start)
 
 
 class Condition(models.Model):
@@ -1027,7 +1021,7 @@ class Condition(models.Model):
     type = models.ForeignKey(ConditionType, null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.type)
+        return "%s - %s" % (self.activity.id, self.type)
 
 
 class OrganisationRegistrationAgency(models.Model):
@@ -1041,7 +1035,7 @@ class OrganisationRegistrationAgency(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.type)
+        return "%s - %s" % (self.activity.id, self.type)
 
 
 
@@ -1152,7 +1146,7 @@ class Location(models.Model):
             return Point(float(self.latitude), float(self.longitude))
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.idStr, self.name)
+        return "%s - %s" % (self.activity.id, self.name)
 
 class LocationName(models.Model):
     location = models.ForeignKey(Location)
