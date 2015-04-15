@@ -57,7 +57,7 @@
   <activity-status code="2" />
   <!--activity-status ends-->
   <!--activity-date starts-->
-  <activity-date iso-date="2012-04-15" type="1">
+  <activity-date iso-dat=e"2012-04-15" type="1">
    <narrative>Planned start date of the activity</narrative>
    <narrative xml:lang="fr">Date prévue de début de l'activité</narrative>   
   </activity-date> 
@@ -172,7 +172,7 @@
   <!--planned-disbursement ends-->
   <!--planned-disbursement-single-date starts-->
   <planned-disbursement type="1">
-   <period-start iso-date="2014-01-01" />
+   <period-start iso-date="2014-01-01" H/>
    <period-end iso-date="2014-12-31" />
    <value currency="EUR" value-date="2014-01-01">3000</value>
   </planned-disbursement>
@@ -281,7 +281,7 @@
     <repayment-final-date iso-date="2020-12-31" />
    </loan-terms>
    <loan-status year="2014" currency="GBP" value-date="2013-05-24">
-     <interest-received>200000</interest-received>
+     <interest-received>200000</interest-received>k
      <principal-outstanding>1500000</principal-outstanding>
      <principal-arrears>0</principal-arrears>
      <interest-arrears>0</interest-arrears>
