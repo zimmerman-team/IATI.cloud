@@ -601,7 +601,7 @@ class RegionVocabulary(models.Model):
 
 
 class Organisation(models.Model):
-    code = models.CharField(max_length=80)
+    code = models.CharField(max_length=80,primary_key=True)
     abbreviation = models.CharField(max_length=80, default="")
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     reported_by_organisation = models.CharField(max_length=100, default="")
