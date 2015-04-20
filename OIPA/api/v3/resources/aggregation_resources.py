@@ -98,10 +98,13 @@ class ActivityAggregatedAnyResource(ModelResource):
             'recipient-country': {
                 'select': 'rc.country_id',
                 'from_addition': 'JOIN iati_activityrecipientcountry as rc on a.id = rc.activity_id '},
+            'recipient-country-name':{
+                'select': 'country.name',
+                'from_addition': 'JOIN geodata_country as country on rc.country_id = country.code '},
             'recipient-region': {
                 'select': 'r.name, rr.region_id',
                 'from_addition': 'JOIN iati_activityrecipientregion as rr on a.id = rr.activity_id '
-                                 'join geodata_region as r on rr.region_id = r.code '},
+                                'join geodata_region as r on rr.region_id = r.code '},
             'year': {
                 'select': 'YEAR('+group_field+')',
                 'from_addition': ''},
