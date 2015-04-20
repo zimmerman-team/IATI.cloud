@@ -1358,7 +1358,7 @@ class  PoliciyMarkerSectorResource(ModelResource):
         INNER JOIN 
         iati_transactiontype AS trans_type ON (trans.transaction_type_id = trans_type.code)
         INNER JOIN 
-        iati_organisation AS reporting_org ON (a.reporting_organisation_id = reporting_org.id)
+        iati_organisation AS reporting_org ON (a.reporting_organisation_id = reporting_org.code)
       WHERE 
         trans_type.name = 'Disbursement' AND
         YEAR(trans.transaction_date) =  {year} AND
@@ -1383,7 +1383,7 @@ class  PoliciyMarkerSectorResource(ModelResource):
         old_sector = r['sector']
         current_sector = {}
         current_sector['name'] = r['sector']
-        current_sector['categrory_code'] = r['code']
+        current_sector['category_code'] = r['code']
         current_sector['significance'] = {}
       current_sector['significance'][r['significance']] = r['total_disbursement']
 
