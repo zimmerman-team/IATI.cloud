@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from iati.currency_converter import convert
 from iati.models import Transaction
 from iati.models import TransactionType
 
@@ -40,6 +41,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     tied_status = TiedStatusSerializer()
     transaction_type = TransactionTypeSerializer(fields=('code', ))
     currency = CurrencySerializer()
+    converted_value = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
@@ -64,5 +66,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'value_date',
             'value',
             'currency',
+            'xdr_value',
+            'converted_value',
             'ref',
         )
+
+    def get_converted_value(self, obj):
+        return convert.to_currency(
+            obj.currency, obj.value_date, obj.xdr_value)
