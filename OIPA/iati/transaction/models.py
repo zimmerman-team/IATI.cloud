@@ -49,6 +49,7 @@ class Transaction(models.Model):
         default=None)
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
+    xdr_value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey('Currency', null=True, default=None)
     ref = models.CharField(max_length=255, default="")
 
