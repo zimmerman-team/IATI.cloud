@@ -10,6 +10,7 @@ import gc
 from iati.filegrabber import FileGrabber
 from iati_synchroniser.exception_handler import exception_handler
 from iati.data_backup.unesco_sectors import unesco_sectors
+from iati.currency_converter import convert
 import string
 import random
 
@@ -663,8 +664,6 @@ class Parser():
                     value = self.return_first_exist(t.xpath('value/text()'))
                     if value:
                         value = value.strip(' \t\n\r')
-                        xdr_value = value
-
                     # if value:
                     #     value = value.replace(",", ".")
                     #     value = value.replace(" ", "")
@@ -736,6 +735,8 @@ class Parser():
                             currency = models.Currency.objects.get(code=currency_ref)
                     else:
                         currency = activity.default_currency
+
+                    xdr_value = convert.to_xdr(currency, value_date)
 
                     new_transaction = models.Transaction(activity=activity, aid_type=aid_type, description=description, description_type=description_type, disbursement_channel=disbursement_channel, finance_type=finance_type, flow_type=flow_type, provider_organisation=provider_organisation, provider_organisation_name=provider_organisation_name, provider_activity=provider_activity, receiver_organisation=receiver_organisation, receiver_organisation_name=receiver_organisation_name, tied_status=tied_status, transaction_date=transaction_date, transaction_type=transaction_type, value_date=value_date, value=value, ref=ref, currency=currency, xdr_value=xdr_value)
                     new_transaction.save()
