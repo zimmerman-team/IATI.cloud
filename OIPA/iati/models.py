@@ -560,6 +560,9 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
+    def __unicode__(self,):
+        return "%s - %s" % (self.activity, self.code)
+
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
