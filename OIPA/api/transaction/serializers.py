@@ -52,9 +52,12 @@ class ValueSerializer(serializers.Serializer):
         return {'code': self.get_request_currency(), }
 
     def get_converted_value(self, obj):
-        return convert.to_currency(
-            self.get_request_currency(),
-            obj.value_date, obj.xdr_value)
+        if obj.value_date:
+            return convert.to_currency(
+                self.get_request_currency(),
+                obj.value_date, obj.xdr_value)
+        else:
+            return None
 
     def get_request_currency(self):
         request = self.context['request']

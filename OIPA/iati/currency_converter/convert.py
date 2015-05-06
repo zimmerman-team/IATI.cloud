@@ -1,5 +1,7 @@
+import os
 import json
-month_file = open('iati/currency_converter/json/xdr_month.json')
+import iati
+month_file = open(os.path.join(os.path.abspath(iati.__path__[0]), 'currency_converter/json/xdr_month.json'))
 month_data = json.load(month_file)
 
 
