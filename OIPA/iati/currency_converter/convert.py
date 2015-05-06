@@ -9,10 +9,16 @@ def to_xdr(currency, date, value):
     return float(value) * rate
 
 
-def to_currency(currency, date, value):
+def to_currency(target_currency, date, xdr_value):
     date_key = _get_date_key(date)
-    rate = month_data[date_key][currency]
-    return '{0:0.2f}'.format(float(value) / rate)
+    try:
+        rate = month_data[date_key][target_currency]
+    except KeyError:
+        valid_currencies = (', '.join('{}'.format(
+            v) for v in month_data[date_key].keys()))
+        raise Exception('Invalid currency. Valid currencies are: {0}'.format(
+            valid_currencies))
+    return '{0:0.2f}'.format(float(xdr_value) / rate)
 
 
 def _get_date_key(date):

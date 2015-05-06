@@ -15,6 +15,56 @@ from api.activity.serializers import FlowTypeSerializer
 from api.activity.serializers import TiedStatusSerializer
 
 
+class OriginalValueSerializer(serializers.Serializer):
+    currency = CurrencySerializer()
+    date = serializers.CharField(source='value_date')
+    value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=True,
+    )
+
+    class Meta:
+        model = Transaction
+        fields = (
+            'value',
+            'date',
+            'currency',
+        )
+
+
+class ValueSerializer(serializers.Serializer):
+    currency = serializers.SerializerMethodField()
+    date = serializers.CharField(source='value_date')
+    converted_value = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Transaction
+        fields = (
+            'converted_value',
+            'date',
+            'currency',
+        )
+        default_currency = settings.API_SETTINGS['DEFAULT_CURRENCY']
+        currency_param = settings.API_SETTINGS['CURRENCY_PARAM']
+
+    def get_currency(self, obj):
+        return {'code': self.get_request_currency(), }
+
+    def get_converted_value(self, obj):
+        return convert.to_currency(
+            self.get_request_currency(),
+            obj.value_date, obj.xdr_value)
+
+    def get_request_currency(self):
+        request = self.context['request']
+        currency = request.GET.get(
+            self.Meta.currency_param,
+            self.Meta.default_currency
+        )
+        return currency
+
+
 class TransactionTypeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = TransactionType
@@ -41,12 +91,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     receiver_organisation = OrganisationSerializer()
     tied_status = TiedStatusSerializer()
     transaction_type = TransactionTypeSerializer(fields=('code', ))
-    currency = CurrencySerializer()
-    converted_value = serializers.SerializerMethodField()
+    original_value = OriginalValueSerializer(source='*')
+    value = ValueSerializer(source='*')
 
     class Meta:
         model = Transaction
         fields = (
+            'value',
+            'original_value',
             'id',
             'url',
             'activity',
@@ -64,21 +116,5 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'tied_status',
             'transaction_date',
             'transaction_type',
-            'value_date',
-            'value',
-            'currency',
-            'xdr_value',
-            'converted_value',
             'ref',
         )
-        default_currency = settings.API_SETTINGS['DEFAULT_CURRENCY']
-        currency_param = settings.API_SETTINGS['CURRENCY_PARAM']
-
-    def get_converted_value(self, obj):
-        request = self.context['request']
-        currency = request.GET.get(
-            self.Meta.currency_param,
-            self.Meta.default_currency
-        )
-        return convert.to_currency(
-            currency, obj.value_date, obj.xdr_value)
