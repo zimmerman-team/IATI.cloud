@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='transaction',
             name='xdr_value',
-            field=models.DecimalField(default=0.123456789, max_digits=15, decimal_places=2),
+            field=models.DecimalField(default=None, max_digits=15, decimal_places=2),
             preserve_default=False,
         ),
     ]

@@ -4,8 +4,13 @@ month_data = json.load(month_file)
 
 
 def to_xdr(currency, date, value):
-    date_key = _get_date_key(date)
-    rate = month_data[date_key][currency.code]
+    try:
+        date_key = _get_date_key(date)
+        rate = month_data[date_key][currency.code]
+    except KeyError:
+        rate = 0
+    except AttributeError:
+        rate = 0
     return float(value) * rate
 
 
