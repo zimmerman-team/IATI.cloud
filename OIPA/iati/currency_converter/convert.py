@@ -11,7 +11,7 @@ def to_xdr(currency, date, value):
 
 def to_currency(currency, date, value):
     date_key = _get_date_key(date)
-    rate = month_data[date_key][currency.code]
+    rate = month_data[date_key][currency]
     return '{0:0.2f}'.format(float(value) / rate)
 
 

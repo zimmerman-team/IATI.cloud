@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 from iati.currency_converter import convert
 from iati.models import Transaction
@@ -70,7 +71,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'converted_value',
             'ref',
         )
+        default_currency = settings.API_SETTINGS['DEFAULT_CURRENCY']
+        currency_param = settings.API_SETTINGS['CURRENCY_PARAM']
 
     def get_converted_value(self, obj):
+        request = self.context['request']
+        currency = request.GET.get(
+            self.Meta.currency_param,
+            self.Meta.default_currency
+        )
         return convert.to_currency(
-            obj.currency, obj.value_date, obj.xdr_value)
+            currency, obj.value_date, obj.xdr_value)
