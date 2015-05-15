@@ -387,7 +387,7 @@ class Migration(migrations.Migration):
             name='Description',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', models.TextField(default=b'', max_length=40000, db_index=True)),
+                ('description', models.TextField(default=b'', max_length=40000)),
                 ('rsr_description_type_id', models.IntegerField(default=None, null=True)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
             ],
