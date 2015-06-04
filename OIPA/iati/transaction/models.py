@@ -88,7 +88,7 @@ class TransactionReciever(models.Model):
         max_length=255,
         default="")
 
-class TransActionSector(models.Model):
+class TransactionSector(models.Model):
     transaction = models.ForeignKey(Transaction)
     sector = models.ForeignKey('Sector')
     vocabulry = models.ForeignKey('SectorVocabulary')

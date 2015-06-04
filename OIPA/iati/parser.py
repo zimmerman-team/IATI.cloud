@@ -467,7 +467,8 @@ class Parser():
                                     new_activity_sector.save()
 
 
-                    new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
+                    #new_description = models.Description(activity=activity, description=description, type=type, language=language, rsr_description_type_id=rsr_type_ref)
+                    new_description = models.Description(activity=activity, description=description, type=type, language=language)
                     new_description.save()
 
 
