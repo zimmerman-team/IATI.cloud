@@ -77,7 +77,7 @@ class XMLParser():
                 continue
             x_path = self.root.getroottree().getpath(e)
             function_name = self.generate_function_name(x_path)
-            if function_name.find('comment') != -1 :
+            if element.tag == etree.Comment:
                 continue
             if hasattr(self, function_name) and callable(getattr(self, function_name)):
                 elementMethod = getattr(self, function_name)
@@ -156,9 +156,10 @@ class XMLParser():
         send_mail('error mail!', errorString, 'error@oipa.nl',[toAddress], fail_silently=False)
 
     # call db to find a key 
-    def cached_db_call(self,model, key,keyDB = 'code',createNew = False):
+    def cached_db_call(self,model, key,keyDB = 'code',createNew=False):
         model_name = model.__name__
         print model_name
+        print createNew
         if model_name in self.db_call_cache:
             model_cache = self.db_call_cache[model_name]
             if key in model_cache:
@@ -168,13 +169,21 @@ class XMLParser():
                     model_cache[key] = model.objects.get(code=key)
                     return model_cache[key]
                 else:
+                    if createNew == True:
+                        print 'in create new'
+                        modelInstance = model()
+                        modelInstance.code = key
+                        modelInstance.save()
+                        return modelInstance
+                    
                     return None
         else:
             self.db_call_cache[model_name] = {}
             objects = model.objects.all()[:self.DB_CACHE_LIMIT]
             for obj in objects:
                 self.db_call_cache[model_name][obj.code] = obj
-            return self.cached_db_call(model,key)
+            print 'call recursively'
+            return self.cached_db_call(model,key,createNew=createNew)
 
         
 
@@ -226,6 +235,12 @@ class XMLParser():
             return True
         except:
             return False
+
+    #helper function return true boolean
+    def makeBool(self,text):
+        if text == '1':
+            return True
+        return False
 
     def save_all_models(self,subTree = ''):
         #make tree

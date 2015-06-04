@@ -111,6 +111,9 @@ class ActivityAggregatedAnyResource(ModelResource):
             'sector': {
                 'select': 'acts.sector_id',
                 'from_addition': 'JOIN iati_activitysector as acts on a.id = acts.activity_id '},
+            'sector-name': {
+                'select': 'sector.name',
+                'from_addition': 'JOIN iati_sector as sector on acts.sector_id = sector.code '},
             'reporting-org': {
                 'select': 'a.reporting_organisation_id',
                 'from_addition': ''},
