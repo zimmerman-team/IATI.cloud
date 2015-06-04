@@ -689,6 +689,7 @@ class Activity(models.Model):
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
     iati_standard_version = models.ForeignKey(Version)
+    hasConditions = models.BooleanField(default=True)
 
     objects = ActivityQuerySet.as_manager()
 
@@ -916,9 +917,12 @@ class DocumentLink(models.Model):
         null=True,
         default=None)
     title = models.CharField(max_length=255, default="")
-
+    language = models.ForeignKey(Language, null=True, default=None)
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.url)
+
+class DocumentLinkTitle(models.Model):
+    document_link = models.ForeignKey(DocumentLink)
 
 
 class Result(models.Model):
@@ -930,6 +934,12 @@ class Result(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.title)
+
+class ResultTitle(models):
+    result = models.ForeignKey(Result)
+
+class ResultDescription(models.Model):
+    result = models.ForeignKey(Result)
 
 
 class IndicatorMeasure(models.Model):
@@ -958,6 +968,21 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.result, self.year)
 
+class ResultIndicatorTitle(models):
+    result_indicator = models.ForeignKey(ResultIndicator)
+
+class ResultIndicatorDescription(models.Model):
+    result_indicator = models.ForeignKey(ResultIndicator)
+
+class ResultIndicatorBaseLineComment(models):
+    result_indicator = models.ForeignKey(ResultIndicator)
+
+
+
+
+
+
+
 
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
@@ -972,6 +997,12 @@ class ResultIndicatorPeriod(models.Model):
 
     def __unicode__(self,):
         return "%s" % (self.result_indicator)
+
+class ResultIndicatorPeriodTargetComment(models):
+    result_indicator = models.ForeignKey(ResultIndicatorPeriod)
+
+class ResultIndicatorActualComment(models):
+    result_indicator = models.ForeignKey(ResultIndicatorPeriod)
 
 
 class Title(models.Model):
@@ -1260,4 +1291,10 @@ class ActivityDate(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.type.name)
+
+class LegacyData(models.model):
+    activity = models.ForeignKey(Activity)
+    name = models.CharField(max_length=20, null=True)
+    value = models.CharField(max_length=200, null=True)
+    iati_equivalent =  models.CharField(max_length=20, null=True)
 
