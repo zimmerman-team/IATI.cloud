@@ -52,7 +52,7 @@ class Transaction(models.Model):
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey('Currency', null=True, default=None)
-    ref = models.CharField(max_length=255, default="")
+    ref = models.CharField(max_length=255, null=True, default="")
     recipient_region = models.ForeignKey(Region,null=True)
     recipient_region_vocabulary = models.ForeignKey('RegionVocabulary', default=1)
     recipient_country = models.ForeignKey(Country, null=True, default=None)
@@ -91,4 +91,4 @@ class TransactionReciever(models.Model):
 class TransactionSector(models.Model):
     transaction = models.ForeignKey(Transaction)
     sector = models.ForeignKey('Sector')
-    vocabulry = models.ForeignKey('SectorVocabulary')
+    vocabulary = models.ForeignKey('SectorVocabulary')
