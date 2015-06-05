@@ -32,7 +32,7 @@ class XMLParser():
 
     #do stuff if method is not found but the tag has to be used a saved
     def magicMethod(self,function_name,element):
-        return false
+        return False
 
     def load_and_parse(self, xml):
         root = etree.fromstring(xml)
@@ -52,7 +52,8 @@ class XMLParser():
             errorStr += "\n".join( self.errors)
             send_mail = True
 
-        if(send_mail and False):
+        if(send_mail):
+            print 'sending mail'
             self.sendErrorMail('daniel@zimmermanzimmerman.nl', hintsStr +"\n"+errorStr)
 
     def testWithFile(self,fileName):
@@ -77,6 +78,7 @@ class XMLParser():
                 continue
             x_path = self.root.getroottree().getpath(e)
             function_name = self.generate_function_name(x_path)
+            #print function_name
             if element.tag == etree.Comment:
                 continue
             if hasattr(self, function_name) and callable(getattr(self, function_name)):
@@ -85,7 +87,7 @@ class XMLParser():
                     self.parse(elementMethod(e))
                 except Exception as exeception:
                     print 'error'
-                    print function_name
+                    #print function_name
                     traceback.print_exc()
                     return
                     self.handle_exception(x_path, function_name, exeception)
@@ -102,11 +104,12 @@ class XMLParser():
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '__')
         function_name = function_name.replace('-', '_')
-        function_name = re.sub("\[[0-9]?\]", "",function_name)
+        function_name = self.remove_brackets(function_name)
 
         return function_name[2:]
 
     def handle_function_not_found(self, xpath, function_name,element):
+        print 'function not found '+function_name
         if function_name in self.logged_functions:
             return  # function already logged
         # add function name to logged functions
@@ -115,13 +118,12 @@ class XMLParser():
         for key in element.attrib:
             keys += "\t"+key+':'+element.attrib.get(key)+"\n"
 
-
         hint = """
     '''atributes:
 """+keys+"""
     tag:"""+element.tag+"""'''
     def """ + function_name + """(self,element):
-        model = self.get_func_model()
+        model = self.get_func_parent_model()
         #store element 
         return element"""
         #print hint
@@ -134,6 +136,16 @@ class XMLParser():
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
         log_entry.save()
+
+    def remove_brackets(self,function_name):
+
+        result = "" 
+        flag = True 
+        for c in function_name: 
+            if c == "[": flag = False 
+            if flag: result += c 
+            if c == "]": flag = True 
+        return result
 
 
     def handle_exception(self, xpath, function_name, exception):
@@ -157,6 +169,45 @@ class XMLParser():
 
     # call db to find a key 
     def cached_db_call(self,model, key,keyDB = 'code',createNew=False):
+        if key == '' or key == None:
+            return None
+        opts =   model._meta
+        try:
+            opts.get_field('codelist_iati_version')
+        except:
+            return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
+
+        model_name = model.__name__
+        codelist_iati_version = self.VERSION
+        #print model_name
+        #print str(key)+' is the key'
+        if model_name in self.db_call_cache:
+            model_cache = self.db_call_cache[model_name]
+            if key in model_cache:
+                return model_cache[key]
+            else:
+                if model.objects.filter(code=key,codelist_iati_version=codelist_iati_version).exists():
+                    model_cache[key] = model.objects.get(code=key,codelist_iati_version=codelist_iati_version)
+                    return model_cache[key]
+                else:
+                    if createNew == True:
+                        #print 'in create new'
+                        modelInstance = model()
+                        modelInstance.code = key
+                        modelInstance.codelist_iati_version=codelist_iati_version
+                        modelInstance.save()
+                        return modelInstance
+                    
+                    return None
+        else:
+            self.db_call_cache[model_name] = {}
+            objects = model.objects.all()[:self.DB_CACHE_LIMIT]
+            for obj in objects:
+                self.db_call_cache[model_name][obj.code] = obj
+            print 'call recursively'
+            return self.cached_db_call(model,key,keyDB=keyDB,createNew=createNew)
+
+    def cached_db_call_no_version(self,model, key,keyDB = 'code',createNew=False):
         model_name = model.__name__
         print model_name
         print createNew
@@ -183,7 +234,7 @@ class XMLParser():
             for obj in objects:
                 self.db_call_cache[model_name][obj.code] = obj
             print 'call recursively'
-            return self.cached_db_call(model,key,createNew=createNew)
+            return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
 
         
 
