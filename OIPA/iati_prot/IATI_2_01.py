@@ -9,19 +9,12 @@ class Parse(XMLParser):
 
     VERSION = '2.01'#version of iati standard
     default_lang = 'en'
-
+    iati_identifier = ''
 
     def __init__(self, *args, **kwargs):
         self.test = 'blabla'
 
-    def magicMethod(self,function_name,element):
-        #if function is narrative add to parent
-        if(function_name.endsWith('narrative')):
-            model = self.get_func_parent_model()
-            self.add_narrative(element,model)
-        else:
-            return False
-
+   
 
     def add_organisation(self, elem):
         try:
@@ -48,7 +41,7 @@ class Parse(XMLParser):
                     #look for org with different name but same ref
                     if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
                         #found! return this org
-                        found_org = models.Organisation.objects.filter(original_ref=ref, name=org_name)[0]
+                        found_org = models.Organisation.objects.filter(original_ref=ref, name=org.name)[0]
                         return found_org
                     else:
                         #org not found
@@ -73,9 +66,10 @@ class Parse(XMLParser):
         if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
             lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
 
-        #print parent
-        narrative.language = self.cached_db_call(models.Language,element.attrib.get('code'))
+        print 'language = '+lang
+        narrative.language = self.cached_db_call(models.Language,lang)
         narrative.content = element.text
+        narrative.iati_identifier = self.iati_identifier
         narrative.parent_object = parent
         narrative.save()
 
@@ -107,6 +101,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__iati_identifier(self,element):
         model = self.get_func_parent_model()#model is activity
         model.iati_identifier = element.text
+        self.iati_identifier = element.text
         
         return # endpoint return None 
 
@@ -161,9 +156,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__description(self,element):
         model = self.get_func_parent_model()
         description = models.Description()
-
         description.activity = model
-            return organisation
         desc_type = self.cached_db_call(models.DescriptionType, element.attrib.get('type'))
         description.type = desc_type
         self.set_func_model(description)
@@ -178,7 +171,7 @@ class Parse(XMLParser):
         return element
 
 
-    '''atributes:
+    '''atributes:https://docs.djangoproject.com/en/1.8/topics/migrations/
     ref:BB-BBB-123456789
     role:1
     type:40
@@ -205,7 +198,7 @@ class Parse(XMLParser):
     '''atributes:
     ref:ABC123-XYZ
     type:A1
-
+https://docs.djangoproject.com/en/1.8/topics/migrations/
     tag:other-identifier'''
     def iati_activities__iati_activity__other_identifier(self,element):
         model = self.get_func_parent_model()
@@ -702,7 +695,7 @@ class Parse(XMLParser):
         activity_policy_marker.policy_marker = self.cached_db_call(models.PolicyMarker,element.attrib.get('code'))
         activity_policy_marker.vocabulary = self.cached_db_call(models.Vocabulary,element.attrib.get('vocabulary'))
         activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
-        activity_policy_marker.code = element
+        activity_policy_marker.code = element.attrib.get('code')
         activity_policy_marker.save()
         return element
 
@@ -710,7 +703,7 @@ class Parse(XMLParser):
     code:1
 
     tag:collaboration-type'''
-    def iati_activities__iati_activity__collaboration_typeb(self,element):
+    def iati_activities__iati_activity__collaboration_type(self,element):
         model = self.get_func_parent_model()
         model.collaboration_type = self.cached_db_call(models.CollaborationType,element.attrib.get('code'))
          
@@ -765,6 +758,7 @@ class Parse(XMLParser):
         budget = models.Budget()
         budget.activity = model
         budget.type = self.cached_db_call(models.BudgetType,element.attrib.get('type'))
+        budget.value = 0
         self.set_func_model(budget)
          
         return element
@@ -796,6 +790,9 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities__iati_activity__budget__value(self,element):
         model = self.get_func_parent_model()
+        value = element.text
+        if value == '' or value == None:
+            value = 0
         model.value = element.text
         model.value_date = element.attrib.get('value-date')
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
@@ -810,6 +807,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         planned_disbursement = models.PlannedDisbursement()
         planned_disbursement.activity = model
+        planned_disbursement.value = 0
         planned_disbursement.budget_type  = self.cached_db_call(models.BudgetType,element.attrib.get('type'))
         self.set_func_model(planned_disbursement)
          
@@ -866,6 +864,7 @@ class Parse(XMLParser):
         transaction = models.Transaction()
         transaction.activity = model
         transaction.ref = element.attrib.get('ref')
+        transaction.value = 0
         self.set_func_model(transaction)
          
         return element
@@ -930,12 +929,12 @@ class Parse(XMLParser):
     tag:provider-org'''
     def iati_activities__iati_activity__transaction__provider_org(self,element):
         model = self.get_func_parent_model()
-        model.provider_activity = element.attrib.bet('provider-activity-id')
+        model.provider_activity = element.attrib.get('provider-activity-id')
         for e in element :
             provider_organisation_name = e.text
             break
 
-        provider_org = self.add_organisation(element.attrib.bet('ref'), provider_organisation_name)
+        provider_org = self.add_organisation(element)
         transaction_provider = models.TransactionProvider()
         transaction_provider.transaction = model
         #TODO : finish!!!
@@ -961,12 +960,12 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__transaction__receiver_org(self,element):
         model = self.get_func_parent_model()
 
-        model.receiver_activity = element.attrib.bet('receiver-activity-id')
+        model.receiver_activity = element.attrib.get('receiver-activity-id')
         for e in element :
             reciever_organisation_name = e.text
             break
 
-        reciever_org = self.add_organisation(element.attrib.bet('ref'), reciever_organisation_name)
+        reciever_org = self.add_organisation(element)
         transaction_receiver = models.TransactionReciever()
         transaction_receiver.transaction = model
         #TODO : finish!!!
@@ -1002,7 +1001,6 @@ class Parse(XMLParser):
         sector.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
         sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
         sector.transaction = model
-        sector.save()
         self.set_func_model(sector)
         return element
 
@@ -1074,8 +1072,8 @@ class Parse(XMLParser):
         document_link = models.DocumentLink()
         document_link.activity = model
         document_link.url = element.attrib.get('url')
-        document_link.file_format = element.attrib.get('format')
-        document_link.save()
+        document_link.file_format = self.cached_db_call(models.FileFormat,element.attrib.get('format'),createNew=True)
+        self.set_func_model(document_link)
         return element
 
     '''atributes:
@@ -1085,7 +1083,6 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         document_link_title = models.DocumentLinkTitle()
         document_link_title.document_link = model
-        document_link_title.save()
         self.set_func_model(document_link_title)
          
         return element
@@ -1104,7 +1101,7 @@ class Parse(XMLParser):
     tag:category'''
     def iati_activities__iati_activity__document_link__category(self,element):
         model = self.get_func_parent_model()
-        model.document_category = self.cached_db_call(models.TiedStatus,element.attrib.get('code'))
+        model.document_category = self.cached_db_call(models.DocumentCategory,element.attrib.get('code'))
         return element
 
     '''atributes:
@@ -1163,7 +1160,6 @@ class Parse(XMLParser):
         condition = models.Condition()
         condition.activity = model
         condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
-        condition.save()
         self.set_func_model(condition)
         return element
 
@@ -1186,7 +1182,6 @@ class Parse(XMLParser):
         result.result_type = self.cached_db_call(models.ResultType,element.attrib.get('type'))
         result.activity = model
         result.aggregation_status = self.makeBool(element.attrib.get('aggregation-status'))
-        result.save()
         self.set_func_model(result)
         return element
 
@@ -1197,7 +1192,6 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         result_title = models.ResultTitle()
         result_title.result = model
-        result_title.save()
         self.set_func_model(result_title)
         return element
 
@@ -1216,7 +1210,6 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         result_description = models.ResultDescription()
         result_description.result = model
-        result_description.save()
         self.set_func_model(result_description)
         return element
 
@@ -1237,7 +1230,8 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         result_indicator = models.ResultIndicator()
         result_indicator.result = model
-        result_indicator.save()
+        result_indicator.baseline_year = 0
+        result_indicator.baseline_value = 0
         self.set_func_model(result_indicator)
         return element
 
@@ -1248,6 +1242,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         result_indicator_title = models.ResultIndicatorTitle()
         result_indicator_title.result_indicator = model
+        
         self.set_func_model(result_indicator_title)
         return element
 
@@ -1266,7 +1261,6 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         result_indicator_description = models.ResultIndicatorDescription()
         result_indicator_description.result_indicator = model
-        result_indicator_description.save()
         self.set_func_model(result_indicator_description)
         return element
 
@@ -1292,12 +1286,32 @@ class Parse(XMLParser):
 
     '''atributes:
 
+    tag:comment'''
+    def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
+        model = self.get_func_parent_model()
+        indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
+        indicator_baseline_comment.result_indicator = model
+        self.set_func_model(indicator_baseline_comment)
+        #store element 
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
+        #store element 
+        return element
+
+
+    '''atributes:
+
     tag:period'''
     def iati_activities__iati_activity__result__indicator__period(self,element):
         model = self.get_func_parent_model()
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = model
-        result_indicator_period.save()
         self.set_func_model(result_indicator_period)
         return element
 
@@ -1318,7 +1332,6 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         model.period_end = element.attrib.get('iso-date')
         return element
-        return element
 
     '''atributes:
     value:10
@@ -1326,8 +1339,30 @@ class Parse(XMLParser):
     tag:target'''
     def iati_activities__iati_activity__result__indicator__period__target(self,element):
         model = self.get_func_parent_model()
-         
+        model.target = element.attrib.get('value')
+
         return element
+
+    '''atributes:
+
+    tag:comment'''
+    def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
+        model = self.get_func_parent_model()
+        period_target_comment = models.ResultIndicatorPeriodTargetComment()
+        period_target_comment.result_indicator_period = model
+        self.set_func_model(period_target_comment)
+        #store element 
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
+        #store element 
+        return element
+
 
     '''atributes:
     value:11
@@ -1335,7 +1370,27 @@ class Parse(XMLParser):
     tag:actual'''
     def iati_activities__iati_activity__result__indicator__period__actual(self,element):
         model = self.get_func_parent_model()
-         
+        model.actual = element.attrib.get('value')
+        return element
+
+    '''atributes:
+
+    tag:comment'''
+    def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
+        model = self.get_func_parent_model()
+        period_actual_comment = models.ResultIndicatorPeriodActualComment()
+        period_actual_comment.result_indicator_period = model
+        self.set_func_model(period_actual_comment)
+        #store element 
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
+        #store element 
         return element
 
     '''atributes:
@@ -1343,6 +1398,9 @@ class Parse(XMLParser):
     tag:crs-add'''
     def iati_activities__iati_activity__crs_add(self,element):
         model = self.get_func_parent_model()
+        crs_add = models.CrsAdd()
+        crs_add.activity = model
+        self.set_func_model(crs_add)
          
         return element
 
@@ -1353,7 +1411,11 @@ class Parse(XMLParser):
     tag:other-flags'''
     def iati_activities__iati_activity__crs_add__other_flags(self,element):
         model = self.get_func_parent_model()
-         
+        crs_other_flags = models.CrsAddOtherFlags()
+        crs_other_flags.crs_add = model
+        crs_other_flags.other_flags =  self.cached_db_call(models.OtherFlags,element.attrib.get('code'))
+        crs_other_flags.significance = element.attrib.get('significance')
+        crs_other_flags.save()
         return element
 
     '''atributes:
@@ -1363,7 +1425,11 @@ class Parse(XMLParser):
     tag:loan-terms'''
     def iati_activities__iati_activity__crs_add__loan_terms(self,element):
         model = self.get_func_parent_model()
-         
+        add_loan_terms = models.CrsAddLoanTerms()
+        add_loan_terms.crs_add = model
+        add_loan_terms.rate_1 = element.attrib.get('rate-1')
+        add_loan_terms.rate_2 = element.attrib.get('rate-2')
+        self.set_func_model(add_loan_terms)
         return element
 
     '''atributes:
@@ -1372,6 +1438,8 @@ class Parse(XMLParser):
     tag:repayment-type'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self,element):
         model = self.get_func_parent_model()
+        model.repayment_type = self.cached_db_call(models.LoanRepaymentType,element.attrib.get('code'))
+
          
         return element
 
@@ -1381,7 +1449,8 @@ class Parse(XMLParser):
     tag:repayment-plan'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self,element):
         model = self.get_func_parent_model()
-         
+        model.repayment_plan = self.cached_db_call(models.LoanRepaymentPeriod,element.attrib.get('code'))
+
         return element
 
     '''atributes:
@@ -1390,7 +1459,7 @@ class Parse(XMLParser):
     tag:commitment-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self,element):
         model = self.get_func_parent_model()
-         
+        model.commitment_date = dateutil.parser.parse(element.attrib.get('iso-date'))
         return element
 
     '''atributes:
@@ -1399,8 +1468,7 @@ class Parse(XMLParser):
     tag:repayment-first-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self,element):
         model = self.get_func_parent_model()
-         
-        return element
+        model.repayment_first_date = dateutil.parser.parse(element.attrib.get('iso-date'))
 
     '''atributes:
     iso-date:2020-12-31
@@ -1408,7 +1476,7 @@ class Parse(XMLParser):
     tag:repayment-final-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self,element):
         model = self.get_func_parent_model()
-         
+        model.repayment_final_date = dateutil.parser.parse(element.attrib.get('iso-date'))
         return element
 
     '''atributes:
@@ -1419,7 +1487,12 @@ class Parse(XMLParser):
     tag:loan-status'''
     def iati_activities__iati_activity__crs_add__loan_status(self,element):
         model = self.get_func_parent_model()
-         
+        crs_loan_status = models.CrsAddLoanStatus()
+        crs_loan_status.crs_add = model
+        crs_loan_status.year = element.attrib.get('year')
+        crs_loan_status.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
+        crs_loan_status.value_date =  dateutil.parser.parse(element.attrib.get('value-date'))
+        self.set_func_model(crs_loan_status)
         return element
 
     '''atributes:
@@ -1427,7 +1500,7 @@ class Parse(XMLParser):
     tag:interest-received'''
     def iati_activities__iati_activity__crs_add__loan_status__interest_received(self,element):
         model = self.get_func_parent_model()
-         
+        model.interest_received = element.text
         return element
 
     '''atributes:
@@ -1435,7 +1508,7 @@ class Parse(XMLParser):
     tag:principal-outstanding'''
     def iati_activities__iati_activity__crs_add__loan_status__principal_outstanding(self,element):
         model = self.get_func_parent_model()
-         
+        model.principal_outstanding = element.text
         return element
 
     '''atributes:
@@ -1443,7 +1516,7 @@ class Parse(XMLParser):
     tag:principal-arrears'''
     def iati_activities__iati_activity__crs_add__loan_status__principal_arrears(self,element):
         model = self.get_func_parent_model()
-         
+        model.principal_arrears = element.text
         return element
 
     '''atributes:
@@ -1451,7 +1524,7 @@ class Parse(XMLParser):
     tag:interest-arrears'''
     def iati_activities__iati_activity__crs_add__loan_status__interest_arrears(self,element):
         model = self.get_func_parent_model()
-         
+        model.interest_arrears = element.text
         return element
 
     '''atributes:
@@ -1462,7 +1535,11 @@ class Parse(XMLParser):
     tag:fss'''
     def iati_activities__iati_activity__fss(self,element):
         model = self.get_func_parent_model()
-         
+        fss = models.Ffs()
+        fss.activity = model
+        fss.year = element.attrib.get('phaseout-year')
+        fss.extraction_date = dateutil.parser.parse(element.attrib.get('extraction-date'))
+        self.set_func_model(fss)
         return element
 
     '''atributes:
@@ -1473,6 +1550,10 @@ class Parse(XMLParser):
     tag:forecast'''
     def iati_activities__iati_activity__fss__forecast(self,element):
         model = self.get_func_parent_model()
-         
+        fss_forecast = models.FfsForecast()
+        fss_forecast.ffs = model
+        fss_forecast.year = element.attrib.get('year')
+        fss_forecast.value_date = dateutil.parser.parse(element.attrib.get('value-date'))
+        fss_forecast.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
         return element
 
