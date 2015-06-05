@@ -4,10 +4,22 @@ from activity_manager import ActivityQuerySet
 from organisation_manager import OrganisationQuerySet
 from django.contrib.gis.geos import Point
 from iati.transaction.models import Transaction
-from iati.transaction.models import TransactionType
+from iati.transaction.models import TransactionType,TransactionDescription,TransactionProvider,TransactionReciever,TransactionSector
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
+
+
+class Language(models.Model):
+    code = models.CharField(primary_key=True, max_length=2)
+    name = models.CharField(max_length=80)
+    description = models.TextField(default="")
+    codelist_iati_version = models.CharField(max_length=4)
+    codelist_successor = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
 
 class Narrative(models.Model):
     content_type = models.ForeignKey(
@@ -16,13 +28,17 @@ class Narrative(models.Model):
         null=True,
         blank=True,
     )
-    object_id = models.PositiveIntegerField(
+    object_id = models.CharField(
+        max_length=50,
         verbose_name='related object',
         null=True,
     )
     parent_object = generic.GenericForeignKey('content_type', 'object_id')
-    language = models.CharField(max_length=2)
+    language = models.ForeignKey(Language, null=True, default=None)
+    iati_identifier = models.CharField(max_length=50,verbose_name='iati_identifier',null=True)
     content = models.TextField()
+
+
 
 
 class ActivityDateType(models.Model):
@@ -273,15 +289,7 @@ class GeographicExactness(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 
-class Language(models.Model):
-    code = models.CharField(primary_key=True, max_length=2)
-    name = models.CharField(max_length=80)
-    description = models.TextField(default="")
-    codelist_iati_version = models.CharField(max_length=4)
-    codelist_successor = models.CharField(max_length=100, null=True)
 
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
 
 
 class LocationTypeCategory(models.Model):
@@ -689,7 +697,7 @@ class Activity(models.Model):
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
     iati_standard_version = models.ForeignKey(Version)
-    hasConditions = models.BooleanField(default=True)
+    has_conditions = models.BooleanField(default=True)
 
     objects = ActivityQuerySet.as_manager()
 
@@ -935,7 +943,7 @@ class Result(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.title)
 
-class ResultTitle(models):
+class ResultTitle(models.Model):
     result = models.ForeignKey(Result)
 
 class ResultDescription(models.Model):
@@ -968,13 +976,13 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.result, self.year)
 
-class ResultIndicatorTitle(models):
+class ResultIndicatorTitle(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
 class ResultIndicatorDescription(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
-class ResultIndicatorBaseLineComment(models):
+class ResultIndicatorBaseLineComment(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
 
@@ -998,11 +1006,11 @@ class ResultIndicatorPeriod(models.Model):
     def __unicode__(self,):
         return "%s" % (self.result_indicator)
 
-class ResultIndicatorPeriodTargetComment(models):
-    result_indicator = models.ForeignKey(ResultIndicatorPeriod)
+class ResultIndicatorPeriodTargetComment(models.Model):
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
 
-class ResultIndicatorActualComment(models):
-    result_indicator = models.ForeignKey(ResultIndicatorPeriod)
+class ResultIndicatorPeriodActualComment(models.Model):
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
 
 
 class Title(models.Model):
@@ -1292,7 +1300,7 @@ class ActivityDate(models.Model):
     def __unicode__(self):
         return "%s" % (self.type.name)
 
-class LegacyData(models.model):
+class LegacyData(models.Model):
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=20, null=True)
     value = models.CharField(max_length=200, null=True)
