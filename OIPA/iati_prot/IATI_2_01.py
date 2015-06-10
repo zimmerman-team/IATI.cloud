@@ -1,6 +1,7 @@
 from genericXmlParser import XMLParser
 from iati import models
 from geodata.models import Country, Region
+from iati.deleter import Deleter
 
 import dateutil.parser
 
@@ -89,6 +90,7 @@ class Parse(XMLParser):
         if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
             activity.default_lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
         self.default_lang = activity.default_lang
+        activity.hierarchy = element.attrib.get('hierarchy')
         self.set_func_model(activity)
         if 'default-currency' in element.attrib:
             activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
@@ -99,10 +101,26 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
+        print 'deleting '+element.text
+        deleter = Deleter()
+        try:
+            deleter.remove_old_values_for_activity_by_iati_id(element.text)
+
+        except Exception as e:
+            print e
+
+        
         model = self.get_func_parent_model()#model is activity
         model.iati_identifier = element.text
         self.iati_identifier = element.text
-        
+        iati_identifier = element.text
+        print 'saved activity with identifier '+element.text
+        iati_identifier = iati_identifier.strip(' \t\n\r')
+        activity_id = iati_identifier.replace("/", "-")
+        activity_id = activity_id.replace(":", "-")
+        activity_id = activity_id.replace(" ", "")
+        model.id = activity_id
+        model.save()
         return # endpoint return None 
 
     '''atributes:
@@ -114,6 +132,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__reporting_org(self,element):
         model = self.get_func_parent_model()
         organisation = self.add_organisation(element)
+        model.secondary_publisher = element.attrib.get('secondary-reporter')
         #print organisation.name
         model.reporting_organisation = organisation
         self.set_func_model(organisation)
@@ -183,6 +202,7 @@ class Parse(XMLParser):
         activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
         activityParticipatingOrganisation.org = org
         activityParticipatingOrganisation.activity = model
+        activityParticipatingOrganisation.type = self.cached_db_call(models.OrganisationType,element.attrib.get('type'))
         activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
         self.set_func_model(activityParticipatingOrganisation)
         return element
@@ -198,7 +218,6 @@ class Parse(XMLParser):
     '''atributes:
     ref:ABC123-XYZ
     type:A1
-https://docs.djangoproject.com/en/1.8/topics/migrations/
     tag:other-identifier'''
     def iati_activities__iati_activity__other_identifier(self,element):
         model = self.get_func_parent_model()
@@ -245,7 +264,8 @@ https://docs.djangoproject.com/en/1.8/topics/migrations/
     def iati_activities__iati_activity__activity_date(self,element):
         model = self.get_func_parent_model()
         activity_date  = models.ActivityDate()
-        activity_date.iso_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+        if 'iso-date' in element.attrib:
+            activity_date.iso_date = dateutil.parser.parse(element.attrib.get('iso-date'))
         activity_date.type = self.cached_db_call(models.ActivityDateType,element.attrib.get('type'))
         activity_date.activity = model
         activity_date.save()
@@ -457,7 +477,12 @@ https://docs.djangoproject.com/en/1.8/topics/migrations/
         model = self.get_func_parent_model()
         location =  models.Location()
         location.activity = model
-        location.ref = element.attrib.get('ref')
+        if 'ref' in element.attrib:
+            location.ref = element.attrib.get('ref')
+        else:
+            location.ref = 'no ref'
+
+        location.adm_code = 'no admin code'
         self.set_func_model(location)
          
         return element
@@ -534,7 +559,6 @@ https://docs.djangoproject.com/en/1.8/topics/migrations/
         model = self.get_func_parent_model()
         location_activity_description = models.LocationActivityDescription()
         location_activity_description.location  = model
-        location_activity_description.save()
         self.set_func_model(location_activity_description)
 
 
