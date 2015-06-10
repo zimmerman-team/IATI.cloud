@@ -4,6 +4,9 @@ Server requirements
  - MySQL 5.6 and up
  - Redis 2.8.9 and up (lower not tested). Running at the standard port 6379.
  - Python libraries: virtualenv and pip
+ - geodjango prerequisites; binutils libproj-dev gdal-bin libgeos-3.4.2 libgeos-dev
+ - libxml prerequisites; libxml2-dev  libxslt1-dev python2.7-dev
+ - redis prerequisites; redis-server
 
 At Zimmerman & Zimmerman we installed OIPA from a clean OS Debian 7 install. The steps we needed to do to get the requirements installed can be found here.
 
@@ -34,11 +37,6 @@ Install OIPA's used python libraries
     pip install  --upgrade distribute
     pip install -r requirements.txt
 
-    # if lxml install fails, install:
-    # sudo apt-get install libxml2-dev
-    # sudo apt-get install libxslt1-dev
-    # sudo apt-get install python2.7-dev
-
 Create local settings (MySQL settings etc.)
 
     cd OIPA
@@ -50,8 +48,12 @@ Create/synchronize the OIPA database tables
 
     python manage.py syncdb
 
-Run the site via Apache or Nginx
+Run the site via Apache or Nginx, dependable on your set-up
 
-Dependable on your set-up
+Start the task queue with;
+
+    python manage.py supervisor
+
+
 
 
