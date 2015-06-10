@@ -727,6 +727,7 @@ class ActivityParticipatingOrganisation(models.Model):
         related_name="participating_organisations")
     organisation = models.ForeignKey(Organisation, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
+    type = models.ForeignKey(OrganisationType, null=True, default=None)
     name = models.TextField(default="")
     narratives = generic.GenericRelation(Narrative)
 
@@ -827,7 +828,7 @@ class OtherIdentifier(models.Model):
     owner_name = models.CharField(max_length=100, default="")
     identifier = models.CharField(max_length=100)
     narratives = generic.GenericRelation(Narrative)
-    type = models.ForeignKey(OtherIdentifierType)
+    type = models.ForeignKey(OtherIdentifierType,null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.identifier)
@@ -1114,7 +1115,7 @@ class Location(models.Model):
         max_length=200,
         default="")
     # new in v1.04
-    adm_code = models.CharField(max_length=255, default="")
+    adm_code = models.CharField(max_length=255, default="",null=True)
     # new in v1.04
     adm_vocabulary = models.ForeignKey(
         GeographicVocabulary,
@@ -1294,7 +1295,7 @@ class CrsAddLoanStatus(models.Model):
 
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
-    iso_date = models.DateField()
+    iso_date = models.DateField(null=True)
     type = models.ForeignKey(ActivityDateType)
 
     def __unicode__(self):

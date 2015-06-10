@@ -9,7 +9,7 @@ import traceback
 import re
 
 
-class XMLParser():
+class XMLParser(object):
 
     VERSION = '2.01'  #overwrite for older versions
 
@@ -25,10 +25,10 @@ class XMLParser():
 
 
     def testWithExampleFile(self):
-        self.testWithFile("activity-standard-example-annotated.xml")
+        self.testWithFile("activity-standard-example-annotated_105.xml")
 
     def testWithRealFile(self):
-        self.testWithFile("MAEC_IATI_INDONESIA.xml")
+        self.testWithFile("iat-activities-formated.xml")
 
     #do stuff if method is not found but the tag has to be used a saved
     def magicMethod(self,function_name,element):
@@ -67,7 +67,7 @@ class XMLParser():
         if element == None:
             return
         if type(element).__name__ != '_Element':
-            print type(element).__name__ 
+            #print type(element).__name__ 
             return
 
 
@@ -152,7 +152,7 @@ class XMLParser():
         hint = """look at XML document"""
         errorStr = "error in method:"+function_name+" location in document:"+xpath
         errExceptionStr = errorStr+"\n"+str(exception)
-        print 5
+        
         self.errors.append(errExceptionStr)
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
@@ -186,9 +186,14 @@ class XMLParser():
             if key in model_cache:
                 return model_cache[key]
             else:
-                if model.objects.filter(code=key,codelist_iati_version=codelist_iati_version).exists():
-                    model_cache[key] = model.objects.get(code=key,codelist_iati_version=codelist_iati_version)
-                    return model_cache[key]
+                try:
+                    if model.objects.filter(code=key,codelist_iati_version=codelist_iati_version).exists():
+                        model_cache[key] = model.objects.get(code=key,codelist_iati_version=codelist_iati_version)
+                        return model_cache[key]
+                except:
+                    if model.objects.filter(name=key,codelist_iati_version=codelist_iati_version).exists():
+                        model_cache[key] = model.objects.get(name=key,codelist_iati_version=codelist_iati_version)
+                        return model_cache[key]
                 else:
                     if createNew == True:
                         #print 'in create new'
@@ -204,21 +209,26 @@ class XMLParser():
             objects = model.objects.all()[:self.DB_CACHE_LIMIT]
             for obj in objects:
                 self.db_call_cache[model_name][obj.code] = obj
-            print 'call recursively'
+            #print 'call recursively'
             return self.cached_db_call(model,key,keyDB=keyDB,createNew=createNew)
 
     def cached_db_call_no_version(self,model, key,keyDB = 'code',createNew=False):
         model_name = model.__name__
-        print model_name
-        print createNew
+        #print model_name
+        #print createNew
         if model_name in self.db_call_cache:
             model_cache = self.db_call_cache[model_name]
             if key in model_cache:
                 return model_cache[key]
             else:
-                if model.objects.filter(code=key).exists():
-                    model_cache[key] = model.objects.get(code=key)
-                    return model_cache[key]
+                try:
+                    if model.objects.filter(code=key).exists():
+                        model_cache[key] = model.objects.get(code=key)
+                        return model_cache[key]
+                except:
+                    if model.objects.filter(name=key).exists():
+                        model_cache[key] = model.objects.get(name=key)
+                        return model_cache[key]
                 else:
                     if createNew == True:
                         print 'in create new'
@@ -233,7 +243,7 @@ class XMLParser():
             objects = model.objects.all()[:self.DB_CACHE_LIMIT]
             for obj in objects:
                 self.db_call_cache[model_name][obj.code] = obj
-            print 'call recursively'
+            #print 'call recursively'
             return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
 
         
