@@ -40,7 +40,7 @@ Create local settings (MySQL settings etc.)
 
     vim OIPA/local_settings.py
 
-For local settings advice and an update script, feel free to contact us at apollo@zimmermanzimmerman.nl
+For local settings advice and an update script, feel free to contact us via Twitter @zimmzimmerman 
 
 Create/synchronize the OIPA database tables
 
