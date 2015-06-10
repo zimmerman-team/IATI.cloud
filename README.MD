@@ -1,7 +1,7 @@
 OIPA 
 ============
 
-![Build status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=master)https://travis-ci.org/openaid-IATI/OIPA/
+![Build status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=master)
 
 OIPA is developed within the www.openaid.nl and www.openaidsearch.org platform and enables IATI standard compliant datasets to easily parse and interface that data using the OIPA framework that has been developed using a Django interface. It has been implemented for UN-Habitat at http://open.unhabitat.org and UNESCO: http://opendata.unesco.org/.
 
