@@ -1,4 +1,4 @@
 #test script
-import iati_prot.IATI_2_01
-a = iati_prot.IATI_2_01.Parse()
-a.testWithExampleFile()
+import iati_prot.IATI_1_05
+a = iati_prot.IATI_1_05.Parse()
+a.testWithRealFile()
