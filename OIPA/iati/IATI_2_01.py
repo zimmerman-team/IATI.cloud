@@ -67,7 +67,7 @@ class Parse(XMLParser):
         if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
             lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
 
-        print 'language = '+lang
+        #print 'language = '+lang
         narrative.language = self.cached_db_call(models.Language,lang)
         narrative.content = element.text
         narrative.iati_identifier = self.iati_identifier
