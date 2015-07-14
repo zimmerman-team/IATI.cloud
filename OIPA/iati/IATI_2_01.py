@@ -2,6 +2,8 @@ from genericXmlParser import XMLParser
 from iati import models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
+from iati_synchroniser.exception_handler import exception_handler
+
 
 import dateutil.parser
 
@@ -16,6 +18,41 @@ class Parse(XMLParser):
         self.test = 'blabla'
 
    
+
+    def validate_date(self, unvalidated_date):
+        valid_date = None
+        if unvalidated_date:
+            unvalidated_date = unvalidated_date.strip(' \t\n\r')
+        else:
+            return None
+        #check if standard data parser works
+        try:
+            return  dateutil.parser.parse(unvalidated_date)
+        except:
+            pass
+
+        if unvalidated_date:
+            try:
+                unvalidated_date = unvalidated_date.split("Z")[0]
+                unvalidated_date = sub(r'[\t]', '', unvalidated_date)
+                unvalidated_date = unvalidated_date.replace(" ", "")
+                unvalidated_date = unvalidated_date.replace("/", "-")
+                if len(unvalidated_date) == 4:
+                    unvalidated_date = unvalidated_date + "-01-01"
+                try:
+                    validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
+                except ValueError:
+                    validated_date = time.strptime(unvalidated_date, '%d-%m-%Y')
+                valid_date = datetime.fromtimestamp(time.mktime(validated_date))
+
+            except ValueError:
+                # if not any(c.isalpha() for c in unvalidated_date):
+                #     exception_handler(None, "validate_date", 'Invalid date: ' + unvalidated_date)
+                return None
+            except Exception as e:
+                exception_handler(e, "validate date", "validate_date")
+                return None
+        return valid_date
 
     def add_organisation(self, elem):
         try:
@@ -61,6 +98,8 @@ class Parse(XMLParser):
         except Exception as e:
             print e
 
+
+
     def add_narrative(self,element,parent):
         narrative = models.Narrative()
         lang = self.default_lang 
@@ -91,6 +130,7 @@ class Parse(XMLParser):
             activity.default_lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
         self.default_lang = activity.default_lang
         activity.hierarchy = element.attrib.get('hierarchy')
+        activity.xml_source_ref = self.xml_source_ref
         self.set_func_model(activity)
         if 'default-currency' in element.attrib:
             activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
@@ -265,7 +305,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         activity_date  = models.ActivityDate()
         if 'iso-date' in element.attrib:
-            activity_date.iso_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+            activity_date.iso_date = self.validate_date(element.attrib.get('iso-date'))
         activity_date.type = self.cached_db_call(models.ActivityDateType,element.attrib.get('type'))
         activity_date.activity = model
         activity_date.save()
@@ -818,7 +858,7 @@ class Parse(XMLParser):
         if value == '' or value == None:
             value = 0
         model.value = element.text
-        model.value_date = element.attrib.get('value-date')
+        model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          
         return element
@@ -865,7 +905,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__planned_disbursement__value(self,element):
         model = self.get_func_parent_model()
         model.value = element.text
-        model.value_date = element.attrib.get('value-date')
+        model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
         return element
 
@@ -909,7 +949,7 @@ class Parse(XMLParser):
     tag:transaction-date'''
     def iati_activities__iati_activity__transaction__transaction_date(self,element):
         model = self.get_func_parent_model()
-        model.transaction_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+        model.transaction_date = self.validate_date(element.attrib.get('iso-date'))
          
         return element
 
@@ -921,7 +961,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__transaction__value(self,element):
         model = self.get_func_parent_model()
         model.value = element.text
-        model.value_date = element.attrib.get('value-date')
+        model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          
         return element
@@ -1483,7 +1523,7 @@ class Parse(XMLParser):
     tag:commitment-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self,element):
         model = self.get_func_parent_model()
-        model.commitment_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+        model.commitment_date = self.validate_date(element.attrib.get('iso-date'))
         return element
 
     '''atributes:
@@ -1492,7 +1532,7 @@ class Parse(XMLParser):
     tag:repayment-first-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self,element):
         model = self.get_func_parent_model()
-        model.repayment_first_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+        model.repayment_first_date = self.validate_date(element.attrib.get('iso-date'))
 
     '''atributes:
     iso-date:2020-12-31
@@ -1500,7 +1540,7 @@ class Parse(XMLParser):
     tag:repayment-final-date'''
     def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self,element):
         model = self.get_func_parent_model()
-        model.repayment_final_date = dateutil.parser.parse(element.attrib.get('iso-date'))
+        model.repayment_final_date = self.validate_date(element.attrib.get('iso-date'))
         return element
 
     '''atributes:
@@ -1515,7 +1555,7 @@ class Parse(XMLParser):
         crs_loan_status.crs_add = model
         crs_loan_status.year = element.attrib.get('year')
         crs_loan_status.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
-        crs_loan_status.value_date =  dateutil.parser.parse(element.attrib.get('value-date'))
+        crs_loan_status.value_date =  self.validate_date(element.attrib.get('value-date'))
         self.set_func_model(crs_loan_status)
         return element
 
@@ -1562,7 +1602,7 @@ class Parse(XMLParser):
         fss = models.Ffs()
         fss.activity = model
         fss.year = element.attrib.get('phaseout-year')
-        fss.extraction_date = dateutil.parser.parse(element.attrib.get('extraction-date'))
+        fss.extraction_date = self.validate_date(element.attrib.get('extraction-date'))
         self.set_func_model(fss)
         return element
 
@@ -1577,7 +1617,7 @@ class Parse(XMLParser):
         fss_forecast = models.FfsForecast()
         fss_forecast.ffs = model
         fss_forecast.year = element.attrib.get('year')
-        fss_forecast.value_date = dateutil.parser.parse(element.attrib.get('value-date'))
+        fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
         fss_forecast.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
         return element
 
