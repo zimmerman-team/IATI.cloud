@@ -29,9 +29,9 @@ class ParseIATI():
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             #get the hash
-            hash  = self.hashfile(iati_file,hashlib.md5())
-            if hash == last_hash:
-                return
+            #hash  = self.hashfile(iati_file,hashlib.md5())
+            #if hash == last_hash:
+                #return
             if iati_file:
 
                 # delete old activities
@@ -44,9 +44,9 @@ class ParseIATI():
                 # parse the new file
                 self.xml_source_ref = xml_source_ref
                 data = iati_file.read()
-                print data
-                print 'iati data is'
-                root = etree.fromstring(str(data))
+                #print data
+                #print 'iati data is'
+                #root = etree.fromstring(str(data))
                 parser = None
                 print root.xpath('@version')
                 if root.xpath('@version')[0] == '2.01':
