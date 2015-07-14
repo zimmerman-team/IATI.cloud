@@ -46,7 +46,7 @@ class ParseIATI():
                 data = iati_file.read()
                 #print data
                 #print 'iati data is'
-                #root = etree.fromstring(str(data))
+                root = etree.fromstring(str(data))
                 parser = None
                 print root.xpath('@version')
                 if root.xpath('@version')[0] == '2.01':
