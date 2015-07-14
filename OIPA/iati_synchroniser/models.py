@@ -3,6 +3,7 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from iati.parser import Parser
+from iati.iati_parser import ParseIATI
 from iati.deleter import Deleter
 
 
@@ -57,6 +58,7 @@ class IatiXmlSource(models.Model):
     iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
+    last_hash = models.CharField(max_length=32, default="")
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -72,8 +74,8 @@ class IatiXmlSource(models.Model):
 
     def process(self):
         self.is_parsed = True
-        parser = Parser()
-        parser.parse_url(self.source_url, self.ref)
+        parser = ParseIATI()
+        parser.parse_url(self)
         self.date_updated = datetime.datetime.now()
         self.save(process=False)
         from iati_synchroniser.parse_admin import ParseAdmin

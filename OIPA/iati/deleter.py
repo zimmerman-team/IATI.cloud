@@ -42,6 +42,91 @@ class Deleter():
         cur_activity = models.Activity.objects.get(id=activity_id)
         self.remove_values_for_activity(cur_activity)
 
+    def delete_all_activities(self):
+        # hard delete all activities
+       
+        try:
+            models.Narrative.objects.all().delete()
+            models.Title.objects.all().delete()
+
+            models.ActivityParticipatingOrganisation.objects.all().delete()
+            models.ActivityPolicyMarker.objects.all().delete()
+            models.ActivitySector.objects.all().delete()
+            models.ActivityRecipientCountry.objects.all().delete()
+
+            models.CountryBudgetItem.objects.all().delete()
+            models.ActivityRecipientRegion.objects.all().delete()
+            models.OtherIdentifier.objects.all().delete()
+            models.ActivityWebsite.objects.all().delete()
+
+            
+            models.ContactInfoPersonName.objects.all().delete()
+            models.ContactInfoOrganisation.objects.all().delete()
+            models.ContactInfoMailingAddress.objects.all().delete()
+            models.ContactInfoJobTitle.objects.all().delete()
+            models.ContactInfo.objects.all().delete()
+                
+
+
+            
+            models.TransactionDescription.objects.all().delete()
+            models.TransactionProvider.objects.all().delete()
+            models.TransactionSector.objects.all().delete()
+            models.TransactionReciever.objects.all().delete()
+            models.Transaction.objects.all().delete()
+
+            models.PlannedDisbursement.objects.all().delete()
+            models.DocumentLinkTitle.objects.all().delete()
+
+            models.DocumentLink.objects.all().delete()
+
+            models.RelatedActivity.objects.all().delete()
+            models.Title.objects.all().delete()
+            models.Description.objects.all().delete()
+
+            
+            models.LocationName.objects.all().delete()
+            models.LocationDescription.objects.all().delete()
+            models.LocationActivityDescription.objects.all().delete()
+            models.Location.objects.all().delete()
+
+            
+            models.BudgetItemDescription.objects.all().delete()
+            models.Budget.objects.all().delete()
+
+            models.Condition.objects.all().delete()
+
+            models.ActivitySearchData.objects.all().delete()
+
+
+            models.ResultTitle.objects.all().delete()
+            
+
+            models.ResultIndicatorPeriod.objects.all().delete()
+            models.ResultIndicatorTitle.objects.all().delete()
+            models.ResultIndicatorDescription.objects.all().delete()
+            models.ResultIndicatorBaseLineComment.objects.all().delete()
+            
+            
+            models.ResultIndicatorPeriodTargetComment.objects.all().delete()
+            models.ResultIndicatorPeriodActualComment.objects.all().delete()
+            models.ResultIndicatorPeriod.objects.all().delete()
+            models.ResultIndicator.objects.all().delete()
+            models.Result.objects.all().delete()
+                       
+            
+            models.FfsForecast.objects.all().delete()
+            models.Ffs.objects.all().delete()
+
+            
+            models.CrsAddLoanStatus.objects.all().delete()
+            models.CrsAddLoanTerms.objects.all().delete()
+            models.CrsAdd.objects.all().delete()
+
+            models.Activity.objects.all().delete()
+
+        except Exception as e:
+            exception_handler(e, cur_activity.id, "remove_values_for_activity")
 
 
     def remove_values_for_activity(self, cur_activity):
@@ -61,19 +146,19 @@ class Deleter():
             models.ActivityWebsite.objects.filter(activity=cur_activity).delete()
 
             for contact_info in models.ContactInfo.objects.filter(activity=cur_activity):
-                models.ContactInfoPersonName.objects.filter(contact_info=contact_info).delete()
-                models.ContactInfoOrganisation.objects.filter(contact_info=contact_info).delete()
-                models.ContactInfoMailingAddress.objects.filter(contact_info=contact_info).delete()
-                models.ContactInfoJobTitle.objects.filter(contact_info=contact_info).delete()
+                models.ContactInfoPersonName.objects.filter(ContactInfo=contact_info).delete()
+                models.ContactInfoOrganisation.objects.filter(ContactInfo=contact_info).delete()
+                models.ContactInfoMailingAddress.objects.filter(ContactInfo=contact_info).delete()
+                models.ContactInfoJobTitle.objects.filter(ContactInfo=contact_info).delete()
                
                 contact_info.delete()
 
 
             for trans in models.Transaction.objects.filter(activity=cur_activity):
-                models.TransactionDescription.objects.filter(Transaction=trans).delete()
-                models.TransactionProvider.objects.filter(Transaction=trans).delete()
-                models.TransactionSector.objects.filter(Transaction=trans).delete()
-                models.TransactionReciever.objects.filter(Transaction=trans).delete()
+                models.TransactionDescription.objects.filter(transaction=trans).delete()
+                models.TransactionProvider.objects.filter(transaction=trans).delete()
+                models.TransactionSector.objects.filter(transaction=trans).delete()
+                models.TransactionReciever.objects.filter(transaction=trans).delete()
 
             models.Transaction.objects.filter(activity=cur_activity).delete()
             models.PlannedDisbursement.objects.filter(activity=cur_activity).delete()
@@ -122,8 +207,8 @@ class Deleter():
                 f.delete()
 
             for c in models.CrsAdd.objects.filter(activity=cur_activity):
-                models.CrsAddLoanStatus.objects.filter(crs_add=c)
-                models.CrsAddLoanTerms.objects.filter(crs_add=c)
+                models.CrsAddLoanStatus.objects.filter(crs_add=c).delete()
+                models.CrsAddLoanTerms.objects.filter(crs_add=c).delete()
                 c.delete()
 
             cur_activity.delete()
