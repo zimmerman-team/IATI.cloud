@@ -78,14 +78,16 @@ class CsvSerializer(Serializer):
                                 if not org["name"]:
                                     continue
 
-                                if org["role_id"] == "Accountable":
-                                    participating_org_accountable.append(org["name"])
-                                if org["role_id"] == "Extending":
-                                    participating_org_extending.append(org["name"])
-                                if org["role_id"] == "Funding":
-                                    participating_org_funding.append(org["name"])
-                                if org["role_id"] == "Implementing":
-                                    participating_org_implementing.append(org["name"])
+                                if 'role_id' in org:
+
+                                    if org["role_id"] == "Accountable":
+                                        participating_org_accountable.append(org["name"])
+                                    if org["role_id"] == "Extending":
+                                        participating_org_extending.append(org["name"])
+                                    if org["role_id"] == "Funding":
+                                        participating_org_funding.append(org["name"])
+                                    if org["role_id"] == "Implementing":
+                                        participating_org_implementing.append(org["name"])
 
                             column_dict["participating_org_accountable"] = ", ".join(participating_org_accountable)
                             column_dict["participating_org_extending"] = ", ".join(participating_org_extending)
