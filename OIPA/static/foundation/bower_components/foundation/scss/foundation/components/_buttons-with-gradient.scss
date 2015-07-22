@@ -1,0 +1,117 @@
+@import "global";
+@import "compass/utilities/general/hacks";
+@import "compass/css3/images";
+@import "compass/css3/text-shadow";
+@import "compass/css3/box-sizing";
+
+$include-html-button-with-gradient-classes: $include-html-classes !default;
+
+$font-color-dark: #555 !default;
+$font-color-light: #fff !default;
+
+// btn gradient color definition.
+$default-color-start: #f3f3f3 !default;
+$primary-color-start: #3fbcb5 !default;
+
+
+// We use these to control gradient stop color and hover effects.
+$btn-bg-color-stop-factor: -10% !default;
+$btn-bg-color-hover-factor: -5% !default;
+
+// We use these to control gradient and border colors.
+$btn-bg-color-start: $default-color-start !default;
+$btn-bg-color-stop: scale-color($btn-bg-color-start, $lightness:$btn-bg-color-stop-factor) !default;
+$btn-bg-color-start-hover: scale-color($btn-bg-color-start, $lightness:$btn-bg-color-hover-factor) !default;
+$btn-bg-color-stop-hover: scale-color($btn-bg-color-start-hover, $lightness:$btn-bg-color-stop-factor) !default;
+$btn-default-border-color: $btn-bg-color-start-hover !default;
+$btn-default-border-color-hover: scale-color($btn-bg-color-stop-hover, $lightness:$btn-bg-color-hover-factor) !default;
+$btn-default-text-shadow-color: $btn-bg-color-start-hover !default;
+
+$btn-primary-bg-color-start: $primary-color-start;
+$btn-primary-bg-color-stop: scale-color($btn-primary-bg-color-start, $lightness:$btn-bg-color-stop-factor) !default;
+$btn-primary-bg-color-start-hover: scale-color($primary-color-start, $lightness:$btn-bg-color-hover-factor) !default;
+$btn-primary-bg-color-stop-hover: scale-color($btn-primary-bg-color-start-hover, $lightness:$btn-bg-color-stop-factor) !default;
+$btn-primary-border-color: $btn-primary-bg-color-start-hover !default;
+$btn-primary-border-color-hover: scale-color($btn-primary-bg-color-stop-hover, $lightness:$btn-bg-color-hover-factor) !default;
+$btn-primary-text-shadow-color: $btn-primary-bg-color-start-hover !default;
+
+// @MIXIN
+
+// We use this mixin for dynamic generate gradient btns.
+// If you want disable this mixin, please set $color-start to false;
+
+@mixin btn-gradient-style($color-start:$btn-bg-color-start, $color-stop:null, $color-start-hover:null, $color-stop-hover:null, $border-color:null, $border-color-hover:null, $text-shadow-color:null) {
+
+	@if $color-start {
+		@if $color-stop == null {
+			$color-stop: if($color-start == $btn-bg-color-start, $btn-bg-color-stop, scale-color($color-start, $lightness:$btn-bg-color-stop-factor));
+		}
+		@if $color-start-hover == null {
+			$color-start-hover: if($color-start == $btn-bg-color-start, $btn-bg-color-start-hover, scale-color($color-start, $lightness:$btn-bg-color-hover-factor));
+		}
+		@if $color-stop-hover == null {
+			$color-stop-hover: if($color-start == $btn-bg-color-start, $btn-bg-color-stop-hover, scale-color($color-start-hover, $lightness:$btn-bg-color-stop-factor));
+		}
+		@if $border-color == null {
+			$border-color: if($color-start == $btn-bg-color-start, $btn-default-border-color, scale-color($color-start, $lightness:$btn-bg-color-hover-factor));
+		}
+		@if $border-color-hover == null {
+			$border-color-hover: if($color-start == $btn-bg-color-start, $btn-default-border-color-hover, scale-color($color-start-hover, $lightness:$btn-bg-color-hover-factor));
+		}
+		@if $text-shadow-color == null {
+			$text-shadow-color: if($color-start == $btn-bg-color-start, $btn-default-text-shadow-color, scale-color($color-start, $lightness:$btn-bg-color-hover-factor));
+		}
+	}
+
+	$bg-lightness: lightness($color-start);
+    	$bg-hover-lightness: lightness($color-start-hover);
+
+	background-color: $color-start;
+	@include background(linear-gradient($color-start, $color-stop));
+	@include filter-gradient($color-start, $color-stop);
+	@include single-text-shadow($hoff:-1px, $voff:-1px, $blur:0, $color:$text-shadow-color);
+	border-width: 1px;
+	border-style: solid;
+	border-color: $border-color;
+	color: if($bg-lightness > 70%, $font-color-dark, $font-color-light);
+
+	@include single-transition(all);
+	@include box-sizing(border-box);
+
+	&:hover,
+	&:focus {
+		background-color: $color-start-hover;
+		@include background(linear-gradient($color-start-hover, $color-stop-hover));
+		@include filter-gradient($color-start, $color-stop-hover);
+		border-color: $border-color-hover;
+		color: if($bg-hover-lightness > 70%, $font-color-dark, $font-color-light);
+	}
+
+}
+
+@mixin btn-gradient($color-start:$btn-bg-color-start, $color-stop:null, $color-start-hover:null, $color-stop-hover:null, $border-color:null, $border-color-hover:null, $text-shadow-color:null) {
+  @include btn-gradient-style($color-start, $color-stop, $color-start-hover, $color-stop-hover, $border-color, $border-color-hover, $text-shadow-color);
+
+  @if $transition {
+    @include single-transition(all);
+  }
+}
+
+@include exports("gradient-btn") {
+ 	@if $include-html-button-with-gradient-classes {
+ 		.default-gradient-btn {
+ 			@include btn-gradient-style;
+
+ 			@include single-transition(all);	
+ 		}
+ 		.primary-gradient-btn {
+ 			@include btn-gradient-style($color-start:$btn-primary-bg-color-start, $color-stop:$btn-primary-bg-color-stop, $color-start-hover:$btn-primary-bg-color-start-hover, $color-stop-hover:$btn-primary-bg-color-stop-hover, $border-color:$btn-primary-border-color, $border-color-hover:$btn-primary-border-color-hover, $text-shadow-color:$btn-primary-text-shadow-color);
+
+ 			@include single-transition(all);
+ 		}
+ 		.button-test {
+ 			@include btn-gradient-style(#9b59b6);
+ 		}
+ 	}
+ }
+	

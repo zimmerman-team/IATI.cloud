@@ -1,15 +1,196 @@
-{% extends 'rest_framework/base.html' %}
+{% extends "home/home.html" %}
 {% load staticfiles %}
+{% load rest_framework %}
 
+{% block bodyclass %}api{% endblock %}
 
-{% block style %}
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
-    <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "css/oipa.css" %}"/>
+{% block navi %}
+
+	    <nav>
+	    	<div class="row">
+	    		<div class="columns small-12 text-center">
+	    			<div id="logo" class="visible">
+	    				<a href="https://github.com/openaid-IATI/OIPA" target="_blank"></a><img src="{% static "foundation/img/oipa.svg" %}" > on Github
+    				</div>
+			    	<ul class="tabs">
+			    		<li class="tab-title"><a href="/home">Welcome</a></li>
+			    		<li class="tab-title active"><a href="/api">The API</a></li>
+			    		<li class="tab-title"><a href="/about">About us</a></li>
+		    		</ul>
+	    		</div>
+    		</div>
+	    </nav>
+
 {% endblock %}
 
-{% block title %}OIPA API{% endblock %}
+{% block contents %}
+<section class="middle">
+	<div class="row">
+		<div class="columns small-12">
+			{% block breadcrumbs %}
+			<ul class="breadcrumbs">
+				{% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+				{% if forloop.last %}
+				<li class="current"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+				{% else %}
+				<li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+				{% endif %}
+				{% endfor %}
+			</ul>
+			{% endblock %}
+		</div>
+	</div>
+	<div class="row">
+		<div class="columns small-12">
+			<div class="action-buttons right">
+				{% if 'GET' in allowed_methods %}
+				<form class="button-form " id="get-form">
+					{% if api_settings.URL_FORMAT_OVERRIDE %}
+					<button class="button dropdown" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" title="Specify a format for the GET request">GET</button>
+					<ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true">
+						{% for format in available_formats %}
+						<li>
+							<a href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+						</li>
+						{% endfor %}
+					</ul>
+					{% else %}
+					<a class="button js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+					{% endif %}
+				</form>
+				{% endif %}
 
+				{% if options_form %}
+				<form class="button-form" action="{{ request.get_full_path }}" method="POST">
+					{% csrf_token %}
+					<input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+					<button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+				</form>
+				{% endif %}
 
-{% block branding %}<a class="navbar-brand" href="/api">OIPA API v4</a>{% endblock %}
+				{% if delete_form %}
+				<form class="button-form" action="{{ request.get_full_path }}" method="POST">
+					{% csrf_token %}
+					<input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+					<button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
+				</form>
+				{% endif %}
+			</div>
+
+			<div class="content-main">
+				<h1>{{ name }}</h1>
+				{% block description %}
+				{{ description }}
+				{% endblock %}
+
+				<div class="request-info" style="clear: both" >
+					<pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+				</div>
+
+				<div class="response-info">
+					<pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+						{% for key, val in response_headers.items %}<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>
+						{% endfor %}
+					</span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+				</div>
+			</div>
+
+			{% if display_edit_forms %}
+
+			{% if post_form or raw_data_post_form %}
+			<div {% if post_form %}class="tabbable"{% endif %}>
+				{% if post_form %}
+				<ul class="nav nav-tabs form-switcher">
+					<li>
+						<a name='html-tab' href="#post-object-form" data-toggle="tab">HTML form</a>
+					</li>
+					<li>
+						<a name='raw-tab' href="#post-generic-content-form" data-toggle="tab">Raw data</a>
+					</li>
+				</ul>
+				{% endif %}
+
+				<div class="well tab-content">
+					{% if post_form %}
+					<div class="tab-pane" id="post-object-form">
+						{% with form=post_form %}
+						<form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+							<fieldset>
+								{{ post_form }}
+								<div class="form-actions">
+									<button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+								</div>
+							</fieldset>
+						</form>
+						{% endwith %}
+					</div>
+					{% endif %}
+
+					<div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+						{% with form=raw_data_post_form %}
+						<form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+							<fieldset>
+								{% include "rest_framework/raw_data_form.html" %}
+								<div class="form-actions">
+									<button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+								</div>
+							</fieldset>
+						</form>
+						{% endwith %}
+					</div>
+				</div>
+			</div>
+			{% endif %}
+
+			{% if put_form or raw_data_put_form or raw_data_patch_form %}
+			<div {% if put_form %}class="tabbable"{% endif %}>
+				{% if put_form %}
+				<ul class="nav nav-tabs form-switcher">
+					<li>
+						<a name='html-tab' href="#put-object-form" data-toggle="tab">HTML form</a>
+					</li>
+					<li>
+						<a  name='raw-tab' href="#put-generic-content-form" data-toggle="tab">Raw data</a>
+					</li>
+				</ul>
+				{% endif %}
+
+				<div class="well tab-content">
+					{% if put_form %}
+					<div class="tab-pane" id="put-object-form">
+						<form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+							<fieldset>
+								{{ put_form }}
+								<div class="form-actions">
+									<button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					{% endif %}
+
+					<div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form">
+						{% with form=raw_data_put_or_patch_form %}
+						<form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+							<fieldset>
+								{% include "rest_framework/raw_data_form.html" %}
+								<div class="form-actions">
+									{% if raw_data_put_form %}
+									<button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+									{% endif %}
+									{% if raw_data_patch_form %}
+									<button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PATCH" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
+									{% endif %}
+								</div>
+							</fieldset>
+						</form>
+						{% endwith %}
+					</div>
+				</div>
+			</div>
+			{% endif %}
+			{% endif %}
+		</div>
+	</div>
+</section>
+{% endblock %}

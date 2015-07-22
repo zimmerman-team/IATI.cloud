@@ -1,0 +1,46 @@
+{% extends "home/home.html" %}
+{% load staticfiles %}
+
+{% block bodyclass %}about{% endblock %}
+
+{% block navi %}
+
+	    <nav>
+	    	<div class="row">
+	    		<div class="columns small-12 text-center">
+	    			<div id="logo" class="visible">
+	    				<a href="https://github.com/openaid-IATI/OIPA" target="_blank"></a><img src="{% static "foundation/img/oipa.svg" %}" > on Github
+    				</div>
+			    	<ul class="tabs">
+			    		<li class="tab-title"><a href="/home">Welcome</a></li>
+			    		<li class="tab-title"><a href="/api">The API</a></li>
+			    		<li class="tab-title active"><a href="/about">About us</a></li>
+		    		</ul>
+	    		</div>
+    		</div>
+	    </nav>
+
+{% endblock %}
+
+{% block contents %}
+<section class="middle">
+	<div class="row">
+		<div class="columns large-6 small-12">
+            <h2>About</h2>
+            <p>The OIPA framework has been developed by Zimmerman & Zimmerman.</p>
+            <p><a href="http://www.zimmermanzimmerman.nl/" target="new">Zimmerman & Zimmerman</a> is a dutch design and consultancy firm that develops online concepts. Partnering with Akvo, they designed the framework and visual design Akvo open Aid that runs the codebase OIPA. The tools can be used by others to visualise other IATI data sets. Join us to create great apps and tools that make the most of open data! </p>
+        </div>
+        <div class="columns large-6 small-12">
+            <h2>Contact the OIPA team</h2>
+            <p>Zimmerman & Zimmerman </br>
+            Oostelijke Handelskade 12H </br>
+            1019 BM Amsterdam </br>
+            The Netherlands </p>
+            <p>
+            <i class="fa fa-phone"></i>+31 (0)20 331 86 68 </br>
+            <i class="fa fa-envelope"></i><a href="mailto:info@zimmermanzimmerman.nl">info@zimmermanzimmerman.nl</a></br>
+            <i class="fa fa-twitter"></i><a href="https://www.twitter.com/zimmzimmerman" target="_blank">@zimmzimmerman</a></p>
+        </div>
+	</div>
+</section>
+{% endblock %}

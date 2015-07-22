@@ -6,7 +6,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from api.v3.urls import api_v3_docs
-
+from django.views.generic import TemplateView
 
 admin.autodiscover()
 
@@ -17,9 +17,11 @@ urlpatterns = patterns(
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api', include('api.urls')),
+    url(r'^home$', TemplateView.as_view(template_name='home/home.html'),name='home'),
+    url(r'^about$', TemplateView.as_view(template_name='home/about.html'),name='about'),
     url(r'', include('two_factor.urls', 'two_factor')),
     url(r'^$',
-        RedirectView.as_view(url='/api', permanent=True),
+        RedirectView.as_view(url='/home', permanent=True),
         name='index')
 )
 
