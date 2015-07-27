@@ -27,19 +27,21 @@ $(document).ready(function(){
 
 });
 
-//  animaties. ff uit.
-//  $(window).load(function(){
-// 	setTimeout(function () {
-//         $('.letter:eq(0)').addClass('animated fadeIn').show();
-//     }, 0);
-//     setTimeout(function () {
-//         $('.letter:eq(1)').addClass('animated fadeIn').show();
-//     }, 100);
-//     setTimeout(function () {
-//         $('.letter:eq(2)').addClass('animated fadeIn').show();
-//     }, 200);
-//     setTimeout(function () {
-//         $('.letter:eq(3)').addClass('animated fadeIn').show();
-//         $('.blink').hide();
-//     }, 300);
-// });
+// animaties. ff uit.
+ $(window).load(function(){
+    $('.home .blink').addClass('animated');
+    $('.home .haakje').addClass('animated fadeIn');
+	setTimeout(function () {
+        $('.home .letter:eq(0)').addClass('animated fadeIn').show();
+    }, 500);
+    setTimeout(function () {
+        $('.home .letter:eq(1)').addClass('animated fadeIn').show();
+    }, 800);
+    setTimeout(function () {
+        $('.home .letter:eq(2)').addClass('animated fadeIn').show();
+    }, 1100);
+    setTimeout(function () {
+        $('.home .letter:eq(3)').addClass('animated fadeIn').show();
+        $('.blink').hide();
+    }, 1400);
+});

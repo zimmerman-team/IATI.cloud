@@ -1,4 +1,11 @@
 @import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic|Ubuntu+Condensed);
+@font-face {
+  font-family: 'menloregular';
+  src: url("../fonts/menlo-webfont.eot");
+  src: url("../fonts/menlo-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/menlo-webfont.woff") format("woff"), url("../fonts/menlo-webfont.ttf") format("truetype"), url("../fonts/menlo-webfont.svg#menloregular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
 /* line 364, ../bower_components/foundation/scss/foundation/components/_global.scss */
 meta.foundation-version {
   font-family: "/5.5.2/";
@@ -12480,7 +12487,7 @@ body {
 /* line 52, ../scss/app.scss */
 header {
   background: #272822;
-  padding: 1rem 0 0 0;
+  padding: 2rem 0 0 0;
   color: #FFFFFF;
   display: none;
 }
@@ -12498,26 +12505,33 @@ header .buttons a:first-of-type {
 }
 /* line 68, ../scss/app.scss */
 header .haakje {
-  font-size: 15vw;
-  margin: 0 -1rem;
-  animation-duration: .3s;
+  font-size: 11vw;
+  animation-duration: .5s;
+  font-family: "menloregular";
+  letter-spacing: -1.2rem;
 }
-/* line 73, ../scss/app.scss */
+/* line 75, ../scss/app.scss */
+header .haakje:first-of-type {
+  margin-left: -.9rem;
+}
+/* line 79, ../scss/app.scss */
 header .letter {
   font-size: 11vw;
   position: relative;
-  top: -.8vw;
   color: #e92744;
-  font-family: "Ubuntu Condensed";
-  display: none;
+  font-family: "menloregular";
+  letter-spacing: -1.2rem;
 }
-/* line 81, ../scss/app.scss */
+/* line 87, ../scss/app.scss */
 header .blink {
-  font-size: 9vw;
+  display: none;
+  font-family: "menloregular";
+  font-size: 11vw;
   position: relative;
-  top: -1.9vw;
+  top: -1.1vw;
+  letter-spacing: -1.2rem;
 }
-/* line 86, ../scss/app.scss */
+/* line 97, ../scss/app.scss */
 header .zimmer {
   font-size: 1.4vw;
   color: #a6e22a;
@@ -12526,30 +12540,42 @@ header .zimmer {
   bottom: 2.45vw;
   left: 0;
   font-weight: 200;
-  animation-delay: .5s;
+  animation-delay: .7s;
   animation-duration: .3s;
 }
-/* line 97, ../scss/app.scss */
+/* line 108, ../scss/app.scss */
 header .logostatic img {
   margin: 4rem 0;
 }
+/* line 112, ../scss/app.scss */
+header .logo span {
+  line-height: 1.3;
+}
 
-/* line 103, ../scss/app.scss */
+/* line 119, ../scss/app.scss */
+.home .letter {
+  display: none;
+}
+/* line 122, ../scss/app.scss */
+.home .blink {
+  display: inline;
+}
+
+/* line 128, ../scss/app.scss */
 .home header, .about header {
   display: block;
 }
-/* line 107, ../scss/app.scss */
+/* line 132, ../scss/app.scss */
 .home nav #logo, .about nav #logo {
   display: none;
 }
 
-/* line 113, ../scss/app.scss */
+/* line 138, ../scss/app.scss */
 nav {
   margin-bottom: 2rem;
-  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
   background: #a6e22a;
 }
-/* line 117, ../scss/app.scss */
+/* line 142, ../scss/app.scss */
 nav #logo {
   position: absolute;
   left: 0.9375rem;
@@ -12559,12 +12585,12 @@ nav #logo {
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
   color: #FFFFFF;
 }
-/* line 125, ../scss/app.scss */
+/* line 150, ../scss/app.scss */
 nav #logo img {
   width: 4rem;
   margin-right: .5rem;
 }
-/* line 129, ../scss/app.scss */
+/* line 154, ../scss/app.scss */
 nav #logo a {
   display: block;
   width: 100%;
@@ -12575,89 +12601,89 @@ nav #logo a {
   top: 0;
   left: 0;
 }
-/* line 140, ../scss/app.scss */
+/* line 165, ../scss/app.scss */
 nav .tabs {
   border: 0;
 }
-/* line 142, ../scss/app.scss */
+/* line 167, ../scss/app.scss */
 nav .tabs .tab-title {
   display: inline-block;
   margin-bottom: 0;
   float: none;
 }
-/* line 147, ../scss/app.scss */
+/* line 172, ../scss/app.scss */
 nav .tabs .tab-title:hover a {
   background: none;
 }
-/* line 151, ../scss/app.scss */
+/* line 176, ../scss/app.scss */
 nav .tabs .tab-title.active {
   border: none;
 }
-/* line 153, ../scss/app.scss */
+/* line 178, ../scss/app.scss */
 nav .tabs .tab-title.active a {
   color: #222222;
   background: none;
 }
-/* line 158, ../scss/app.scss */
+/* line 183, ../scss/app.scss */
 nav .tabs .tab-title a {
   font-size: 1.1rem;
   color: #FFFFFF;
   background: none;
 }
 
-/* line 167, ../scss/app.scss */
+/* line 192, ../scss/app.scss */
 .middle {
   margin: 0 0 2rem;
 }
 
-/* line 171, ../scss/app.scss */
+/* line 196, ../scss/app.scss */
 .button-form {
   float: left;
 }
-/* line 173, ../scss/app.scss */
+/* line 198, ../scss/app.scss */
 .button-form:first-of-type {
   margin-right: .1rem;
 }
 
-/* line 178, ../scss/app.scss */
+/* line 203, ../scss/app.scss */
 .tabs {
   border-bottom: 1px solid #CCCCCC;
 }
-/* line 180, ../scss/app.scss */
+/* line 205, ../scss/app.scss */
 .tabs .tab-title {
   margin-bottom: -1px !important;
 }
-/* line 183, ../scss/app.scss */
+/* line 208, ../scss/app.scss */
 .tabs .tab-title a:focus {
   outline: none;
 }
-/* line 186, ../scss/app.scss */
+/* line 211, ../scss/app.scss */
 .tabs .tab-title a:hover {
   color: #222222;
 }
-/* line 190, ../scss/app.scss */
+/* line 215, ../scss/app.scss */
 .tabs .tab-title.active {
   border: 1px solid #CCCCCC;
   border-bottom: 1px solid #FFFFFF;
 }
 
-/* line 197, ../scss/app.scss */
+/* line 222, ../scss/app.scss */
 footer {
   padding: 2rem 0;
   background: #272822;
   color: #FFFFFF;
 }
-/* line 201, ../scss/app.scss */
+/* line 226, ../scss/app.scss */
 footer img {
   margin: 1rem 0 2rem 0;
 }
-/* line 204, ../scss/app.scss */
+/* line 229, ../scss/app.scss */
 footer p {
   margin-bottom: 0;
   font-size: .8rem;
 }
 
-/* line 211, ../scss/app.scss */
+/* line 236, ../scss/app.scss */
 .donker {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -12720,7 +12746,7 @@ footer p {
   color: #fff;
 }
 
-/* line 224, ../scss/app.scss */
+/* line 249, ../scss/app.scss */
 .roze {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -12744,23 +12770,7 @@ footer p {
   transition: background-color 300ms ease-out;
   font-size: 1.2rem;
   font-weight: 700;
-  background-color: #e92744;
-  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2U5Mjc0NCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2M5MTQyZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e92744), color-stop(100%, #c9142f));
-  background: -moz-linear-gradient(#e92744, #c9142f);
-  background: -webkit-linear-gradient(#e92744, #c9142f);
-  background: linear-gradient(#e92744, #c9142f);
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE92744', endColorstr='#FFC9142F');
-  text-shadow: -1px -1px 0 #e81b39;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #e81b39;
-  color: #fff;
-  transition: all 300ms ease-out;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+  background: #e92744;
 }
 /* line 158, ../bower_components/foundation/scss/foundation/components/_buttons.scss */
 .roze:hover, .roze:focus {
@@ -12770,21 +12780,8 @@ footer p {
 .roze:hover, .roze:focus {
   color: #FFFFFF;
 }
-/* line 81, ../bower_components/foundation/scss/foundation/components/_buttons-with-gradient.scss */
-.roze:hover, .roze:focus {
-  background-color: #e81b39;
-  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2U4MWIzOSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2QzMTUzMiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e81b39), color-stop(100%, #d31532));
-  background: -moz-linear-gradient(#e81b39, #d31532);
-  background: -webkit-linear-gradient(#e81b39, #d31532);
-  background: linear-gradient(#e81b39, #d31532);
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE92744', endColorstr='#FFD31532');
-  border-color: #df1735;
-  color: #fff;
-}
 
-/* line 237, ../scss/app.scss */
+/* line 263, ../scss/app.scss */
 .groen {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -12848,7 +12845,7 @@ footer p {
   color: #fff;
 }
 
-/* line 250, ../scss/app.scss */
+/* line 276, ../scss/app.scss */
 .fa {
   margin-right: .6rem;
 }

@@ -2,7 +2,13 @@
 // foundation.zurb.com
 // Licensed under MIT Open Source
 @import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic|Ubuntu+Condensed);
-
+@font-face {
+  font-family: 'menloregular';
+  src: url("../fonts/menlo-webfont.eot");
+  src: url("../fonts/menlo-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/menlo-webfont.woff") format("woff"), url("../fonts/menlo-webfont.ttf") format("truetype"), url("../fonts/menlo-webfont.svg#menloregular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
 //
 
 // Table of Contents

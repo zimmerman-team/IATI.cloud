@@ -51,7 +51,7 @@ body {
 }
 header {
 	background:$zwart;
-	padding:1rem 0 0 0;
+	padding:2rem 0 0 0;
 	color:$white;
 	display:none;
 	h1 {
@@ -66,22 +66,33 @@ header {
 		}
 	}
 	.haakje {
-		font-size:15vw;
-		margin:0 -1rem;
-		animation-duration: .3s;
+		//font-size:15vw;
+		font-size:11vw;
+		//margin:0 -1rem;
+		animation-duration: .5s;
+		font-family: "menloregular";
+		letter-spacing: -1.2rem;
+		&:first-of-type {
+			margin-left:-.9rem;
+		}
 	}
 	.letter {
 		font-size:11vw;
 		position: relative;
-		top:-.8vw;
+		//top:-.8vw;
 		color:$roze;
-		font-family: "Ubuntu Condensed";
-		display: none;
+		font-family: "menloregular";
+		letter-spacing: -1.2rem;
 	}
 	.blink {
-		font-size:9vw;
+		display: none;
+		font-family: "menloregular";
+		//font-size:9vw;
+		font-size:11vw;
 		position:relative;
-		top:-1.9vw;
+		//top:-1.9vw;
+		top:-1.1vw;
+		letter-spacing: -1.2rem;
 	}
 	.zimmer {
 		font-size:1.4vw;
@@ -91,11 +102,25 @@ header {
 		bottom:2.45vw;
 		left: 0;
 		font-weight: 200;
-		animation-delay: .5s;
+		animation-delay: .7s;
 		animation-duration: .3s;
 	}
 	.logostatic img {
 		margin:4rem 0;
+	}
+	.logo {
+		span {
+			line-height: 1.3;
+		}
+	}
+}
+
+.home {
+	.letter {
+		display: none;
+	}
+	.blink {
+		display: inline;
 	}
 }
 
@@ -112,7 +137,7 @@ header {
 
 nav {
 	margin-bottom:2rem;
-	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.5);
+	//box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.5);
 	background:$groen;
 	#logo {
 		position: absolute;
@@ -231,7 +256,8 @@ footer {
 	);
 	font-size: 1.2rem;
 	font-weight:700;
-	@include btn-gradient-style($roze,darken($roze,10%));
+	background:$roze;
+	//@include btn-gradient-style($roze,darken($roze,10%));
 }
 
 .groen {
