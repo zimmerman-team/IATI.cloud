@@ -4,6 +4,10 @@ import os
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django.core.urlresolvers import reverse_lazy
 
+BASE_DIR = os.path.dirname(os.path.realpath(__name__))
+
+DEBUG = True
+
 LOGIN_URL = reverse_lazy('two_factor:login')
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
@@ -61,8 +65,13 @@ MEDIA_URL = '/media/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    rel('../static'),
+     os.path.join(BASE_DIR, 'static/'),
 )
+
+# URL for static files
+STATIC_URL = "/static/"
+
+# the place to collect static files to
 
 # List of finder classes that know how to find static files in
 # various locations.

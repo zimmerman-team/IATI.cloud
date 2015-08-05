@@ -1,61 +1,23 @@
 .idea/
 OIPA/.idea/workspace.xml
-
 OIPA/.idea/OIPAv3.iml
-
 OIPA/.idea/OIPAv3.iml
-
 OIPA/.idea/OIPAv3.iml
-
 OIPA/.idea/misc.xml
-
 OIPA/.idea/workspace.xml
-
 OIPA/.idea/workspace.xml
 
 OIPA/OIPA/local_settings.py
-
 OIPA/OIPA/local_settings.pyc
 
 *.pyc
-OIPA/API/v3/resources/advanced_resources.pyc
-
-OIPA/API/v3/resources/model_resources.pyc
-
-OIPA/API/v3/urls.pyc
-
-OIPA/API/v3/views.pyc
-
-OIPA/IATI/models.pyc
-
-OIPA/IATI/parser.pyc
-
-OIPA/OIPA/settings.pyc
-
-OIPA/OIPA/wsgi.pyc
-
-OIPA/geodata/admin_tools.pyc
-
-OIPA/geodata/data_backup/country_data.pyc
-
-OIPA/geodata/data_backup/country_data.pyc
-
-OIPA/indicators/models.pyc
-
-OIPA/indicators/models.pyc
 
 OIPA/indicators/data_backup/wdi_data/WDI_CS_Notes.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_Country.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_Description.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_Data.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_Footnotes.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_ST_Notes.csv
-
 OIPA/indicators/data_backup/wdi_data/WDI_Series.csv
 
 OIPA/media/csv_files/*
@@ -65,25 +27,18 @@ parse.log
 .DS_Store
 
 OIPA/indicator/data_backup/wdi_data/WDI_Country.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_CS_Notes.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_Data.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_Description.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_Footnotes.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_Series.csv
-
 OIPA/indicator/data_backup/wdi_data/WDI_ST_Notes.csv
 
 OIPA/supervisord.log
-
 OIPA/supervisord.pid
 
 OIPA/media/csv_files/table_1_proportion_land_allocated_street_city_core_2013.csv
 
-OIPA/static-root/
+OIPA/static/
 
 .vagrant
