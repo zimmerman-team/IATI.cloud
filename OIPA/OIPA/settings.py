@@ -8,6 +8,21 @@ BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
 DEBUG = True
 
+SECRET_KEY = '__DEV_SECRET_KEY__'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
+        'NAME': 'oipa',
+        'USER': 'oipa',
+        'PASSWORD': 'oipa',
+        'HOST': '127.0.0.1',
+        'OPTIONS': {
+            'init_command': 'SET storage_engine=INNODB;',
+        }
+    },
+}
+
 LOGIN_URL = reverse_lazy('two_factor:login')
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
@@ -140,6 +155,7 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_totp',
     'otp_yubikey',
     'two_factor',
+    'debug_toolbar',
 )
 
 SUIT_CONFIG = {
