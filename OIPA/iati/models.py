@@ -688,7 +688,7 @@ class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
     title = models.CharField(max_length=200, default="")
     description = models.TextField(default="")
-    baseline_year = models.IntegerField(max_length=4)
+    baseline_year = models.IntegerField()
     baseline_value = models.CharField(max_length=100)
     comment = models.TextField(default="")
     measure = models.ForeignKey(
@@ -916,7 +916,7 @@ class Ffs(models.Model):
     activity = models.ForeignKey(Activity)
     extraction_date = models.DateField(null=True, default=None)
     priority = models.BooleanField(default=False)
-    phaseout_year = models.IntegerField(max_length=4, null=True)
+    phaseout_year = models.IntegerField(null=True)
 
     def __unicode__(self,):
         return "%s" % (self.extraction_date)
@@ -924,7 +924,7 @@ class Ffs(models.Model):
 
 class FfsForecast(models.Model):
     ffs = models.ForeignKey(Ffs)
-    year = models.IntegerField(max_length=4, null=True)
+    year = models.IntegerField(null=True)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)

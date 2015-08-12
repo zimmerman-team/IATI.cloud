@@ -43,7 +43,7 @@ class OrganisationList(ListAPIView):
 
     def get_queryset(self):
         queryset = iati.models.Organisation.objects.all()
-        query = self.request.QUERY_PARAMS.get('reporting_organisations', None)
+        query = self.request.query_params.get('reporting_organisations', None)
         if query is not None:
             queryset = queryset.reporting_organisations()
         return queryset

@@ -69,7 +69,7 @@ class ActivityList(ListAPIView):
     filter_class = filters.ActivityFilter
     serializer_class = serializers.ActivitySerializer
     fields = ('url', 'id', 'title', 'total_budget')
-    pagination_serializer_class = AggregationsPaginationSerializer
+    pagination_class = AggregationsPaginationSerializer
 
 
 class ActivityDetail(RetrieveAPIView):

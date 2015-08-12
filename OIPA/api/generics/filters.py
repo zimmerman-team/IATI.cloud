@@ -6,9 +6,9 @@ VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
 class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
-        query = request.QUERY_PARAMS.get('q', None)
+        query = request.query_params.get('q', None)
         if query:
-            query_fields = request.QUERY_PARAMS.get('q_fields')
+            query_fields = request.query_params.get('q_fields')
             if query_fields:
                 query_fields = query_fields.split(',')
             return queryset.search(query, query_fields)
@@ -98,7 +98,7 @@ class BasicFilterBackend(filters.BaseFilterBackend):
         filter_class = filter_class()
         queryset = filter_class.filter_queryset(
             queryset=queryset,
-            params=request.QUERY_PARAMS
+            params=request.query_params
             )
 
         return queryset

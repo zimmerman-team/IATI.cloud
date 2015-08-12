@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from api.generics import utils
-from rest_framework.pagination import PaginationSerializer
-
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from collections import OrderedDict
 
 class DynamicFields(object):
 
@@ -105,14 +106,11 @@ class DynamicFieldsModelSerializer(DynamicFields, serializers.ModelSerializer):
         # Instantiate mixin, superclass
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
 
-
-class NoCountPaginationSerializer(PaginationSerializer):
+# todo: optional remove count or remove this
+class NoCountPaginationSerializer(PageNumberPagination):
     """
     PaginationSerializer that removes the count field when specified in the
     query_params.
     """
     def __init__(self, *args, **kwargs):
         super(NoCountPaginationSerializer, self).__init__(*args, **kwargs)
-        query_params = utils.query_params_from_context(self.context)
-        if 'nocount' in query_params:
-            del self.fields['count']
