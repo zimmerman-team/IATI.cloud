@@ -18,7 +18,8 @@ class RequestedCall(models.Model):
 class CachedCall(models.Model):
     call = models.CharField(max_length=255, primary_key=True)
     last_fetched = models.DateTimeField(null=True, default=None)
-    result = MediumTextField()
+    result = models.TextField()
+    # result = MediumTextField()
 
     def __unicode__(self,):
         return "%s" % (self.call)

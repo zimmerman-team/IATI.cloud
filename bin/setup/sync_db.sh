@@ -1,12 +1,9 @@
 #!/bin/bash
+# todo: peer authentication with oipa user
 
-# Create oipa db
-Q1="CREATE DATABASE IF NOT EXISTS oipa;"
-Q2="GRANT ALL PRIVILEGES ON oipa.* TO oipa@localhost IDENTIFIED BY 'oipa';"
-Q3="FLUSH PRIVILEGES;"
-SQL="${Q1}${Q2}${Q3}"
-
-mysql --user=root --password=oipa --execute="${SQL}"
+sudo -u postgres bash -c "psql -c \"CREATE USER oipa WITH PASSWORD 'oipa';\""
+sudo -u postgres bash -c "psql -c \"ALTER ROLE oipa SUPERUSER;\""
+sudo -u postgres bash -c "psql -c \"CREATE DATABASE oipa;\""
 
 # Run syncdb
 sudo -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py syncdb --noinput

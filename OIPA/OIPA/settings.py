@@ -12,15 +12,25 @@ SECRET_KEY = '__DEV_SECRET_KEY__'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'oipa',
         'USER': 'oipa',
         'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
-        'OPTIONS': {
-            'init_command': 'SET storage_engine=INNODB;',
-        }
     },
+}
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'parser': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    }
 }
 
 LOGIN_URL = reverse_lazy('two_factor:login')
