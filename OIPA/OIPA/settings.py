@@ -153,7 +153,6 @@ INSTALLED_APPS = (
     'geodata',
     'indicator',
     'api',
-    'cache',
     'task_queue',
     'multiupload',
     'djsupervisor',
