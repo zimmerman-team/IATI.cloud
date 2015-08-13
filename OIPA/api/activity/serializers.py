@@ -279,6 +279,25 @@ class DescriptionSerializer(serializers.ModelSerializer):
             'narratives'
         )
 
+class RelatedActivityTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati.models.RelatedActivityType
+        fields = (
+            'code',
+            'name'
+        )
+
+class RelatedActivitySerializer(serializers.ModelSerializer):
+    # url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
+    # activity = ActivitySerializer(source='current_activity')
+    type = RelatedActivityTypeSerializer()
+
+    class Meta:
+        model = iati.models.RelatedActivity
+        fields = (
+            'ref',
+            'type',
+        )
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     class VocabularySerializer(serializers.ModelSerializer):
@@ -363,6 +382,7 @@ class ResultTypeSerializer(serializers.ModelSerializer):
         model = iati.models.ResultType
         fields = (
             'code',
+            'name',
         )
 
 
@@ -384,7 +404,6 @@ class ResultSerializer(serializers.ModelSerializer):
             'result_type',
             'aggregation_status',
         )
-
 
 class GeographicVocabularySerializer(serializers.ModelSerializer):
     class Meta:
@@ -515,6 +534,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     results = ResultSerializer(many=True)
     locations = LocationSerializer(many=True, source='location_set')
 
+    related_activities = RelatedActivitySerializer(many=True, source='related_activity')
+
     class Meta:
         model = iati.models.Activity
         fields = (
@@ -529,6 +550,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'title',
             'descriptions',
             'participating_organisations',
+            'related_activities',
             'activity_status',
             'activity_dates',
             'activity_scope',
@@ -544,10 +566,10 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_tied_status',
             'budgets',
             'capital_spend',
-
             'total_budget',
             'xml_source_ref',
             'document_links',
             'results',
             'locations'
         )
+        

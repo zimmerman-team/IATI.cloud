@@ -5,7 +5,6 @@ from api.generics.filters import BasicFilterBackend
 from api.activity.filters import ActivityFilter
 from api.generics.serializers import NoCountPaginationSerializer
 
-
 class AggregationsSerializer(DynamicFieldsSerializer):
     filter_class = ActivityFilter
 

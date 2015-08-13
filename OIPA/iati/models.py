@@ -424,8 +424,9 @@ class Organisation(models.Model):
 
 class Activity(models.Model):
     hierarchy_choices = (
-        (1, u"Parent"),
-        (2, u"Child"),
+        (1, u"activity"),
+        (2, u"sub-activity"),
+        (3, u"sub-sub-activity"),
     )
 
     id = models.CharField(primary_key=True, max_length=150)
@@ -638,7 +639,7 @@ class PlannedDisbursement(models.Model):
 class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
         Activity,
-        related_name="current_activity")
+        related_name="related_activity")
     type = models.ForeignKey(
         RelatedActivityType,
         max_length=200,

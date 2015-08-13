@@ -1,13 +1,132 @@
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, GenericAPIView
 from iati.models import Activity
 from api.activity import serializers
 from api.activity import filters
 from api.activity.aggregation import AggregationsPaginationSerializer
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
+from rest_framework.filters import DjangoFilterBackend
+
 from api.transaction.serializers import TransactionSerializer
+
+import json
+from rest_framework.response import Response
+from django.db.models import Count, Sum
+from rest_framework import mixins, status
+
+from django.db.models import Q
+
+class ActivityAggregations(GenericAPIView):
+
+    queryset = Activity.objects.all()
+
+    filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
+    filter_class = filters.ActivityFilter
+    serializer_class = serializers.AggregationSerializer
+    # fields = ('url', 'id', 'title', 'total_budget')
+    # pagination_serializer_class = AggregationsPaginationSerializer
+
+    aggregationAnnotates = {
+        "count": Count('id'),
+        "total_budget": Sum('total_budget'),
+        "disbursement": Sum('transaction__value'),
+        "expenditure": Sum('transaction__value'),
+        "commitment": Sum('transaction__value'),
+        "incoming_fund": Sum('transaction__value'),
+    }
+
+    aggregationFilters = {
+        "count": Q(),
+        "total_budget": Q(),
+        "disbursement": Q(transaction__transaction_type='D'),
+        "expenditure": Q(transaction__transaction_type='E'),
+        "commitment": Q(transaction__transaction_type='C'),
+        "incoming_fund": Q(transaction__transaction_type='IF'),
+    }
+
+    aggregationValues = (
+        "recipient_country",
+        "recipient_region",
+        "sector",
+    )
+
+    def aggregate_disbursement(self):
+        queryset = self.filter(transaction__transaction_type='D')
+        sum = queryset.aggregate(
+            disbursement=Sum('transaction__value')
+        ).get('disbursement', 0.00)
+        return sum
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        values = request.query_params.get('values')
+        annotates = request.query_params.get('annotates')
+        # sort = request.query_params.get('sort_by')
+
+        if (values and annotates):
+
+            # parse annotates
+            def fillAnnotateDict(annotates):
+                annotateList = annotates.split(',')
+                annotateDict = {}
+
+                for k,v in self.aggregationAnnotates.iteritems():
+                    if k in annotateList:
+                        annotateDict[k] = v
+
+                return annotateDict
+
+            def fillFilterList(annotates):
+                annotateList = annotates.split(',')
+                filterList = []
+
+                for k,v in self.aggregationFilters.iteritems():
+                    if k in annotateList:
+                        filterList.append(v)
+
+                return filterList
+
+            def fillValueList(values):
+                values = values.split(',')
+                valuesList = []
+
+                for v in values: 
+                    if v in self.aggregationValues:
+                        valuesList.append(v)
+
+                return valuesList
+
+            # values to group on
+            valuesList = fillValueList(values)
+            annotateDict = fillAnnotateDict(annotates)
+            filterList = fillFilterList(annotates)
+
+            print(valuesList)
+            print(annotateDict)
+            print(filterList)
+
+            if (valuesList):
+                # todo: annotate orignal geo object
+                valuesQuerySet = queryset \
+                    .filter(*filterList) \
+                    .values(*valuesList) \
+                    .annotate(**annotateDict)
+
+                return Response(valuesQuerySet)
+            else:
+                return Response('specified value is invalid', status.HTTP_404_NOT_FOUND)
+
+
+            # serializer = self.serializer_class(queryset)
+            # return Response(serializer.data)        
+
+
+            return Response(json.dumps(list(valuesQuerySet)))
+        else:
+            return Response('values and annotates fields must be specified', status.HTTP_404_NOT_FOUND)
 
 
 class ActivityList(ListAPIView):
@@ -65,11 +184,15 @@ class ActivityList(ListAPIView):
 
     """
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = serializers.ActivitySerializer
     fields = ('url', 'id', 'title', 'total_budget')
     pagination_class = AggregationsPaginationSerializer
+
+    # def get_queryset(self):
+    #     pk = self.kwargs.get('pk')
+    #     return Activity.objects.prefetch_related('current_activity')
 
 
 class ActivityDetail(RetrieveAPIView):
