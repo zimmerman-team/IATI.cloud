@@ -729,7 +729,6 @@ class Description(models.Model):
     activity = models.ForeignKey(Activity)
     description = models.TextField(
         default="",
-        db_index=True,
         max_length=40000)
     language = models.ForeignKey(Language, null=True, default=None)
     type = models.ForeignKey(

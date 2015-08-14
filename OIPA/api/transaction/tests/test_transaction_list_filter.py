@@ -21,14 +21,17 @@ class TestTransactionListFiltering(TestCase):
         self.transactions = dict(
             value_100=TransactionFactory(id=1,
                                          value=100,
+                                         xdr_value=100,
                                          activity=activity,
                                          transaction_type=transaction_type),
             value_150=TransactionFactory(id=2,
                                          value=150,
+                                         xdr_value=150,
                                          activity=activity,
                                          transaction_type=transaction_type),
             value_200=TransactionFactory(id=3,
                                          value=200,
+                                         xdr_value=200,
                                          activity=activity,
                                          transaction_type=transaction_type),
         )

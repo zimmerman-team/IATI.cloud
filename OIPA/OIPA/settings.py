@@ -220,6 +220,11 @@ REST_FRAMEWORK = {
     )
 }
 
+API_SETTINGS = {
+    'DEFAULT_CURRENCY': 'EUR',
+    'CURRENCY_PARAM': 'currency'
+}
+
 try:
     from local_settings import *
 except ImportError:
