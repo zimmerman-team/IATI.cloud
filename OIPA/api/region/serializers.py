@@ -28,7 +28,6 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
             'region_vocabulary'
         )
 
-
 class RegionSerializer(DynamicFieldsModelSerializer):
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))

@@ -430,7 +430,7 @@ class Activity(models.Model):
     )
 
     id = models.CharField(primary_key=True, max_length=150)
-    iati_identifier = models.CharField(max_length=150)
+    iati_identifier = models.CharField(db_index=True, max_length=150)
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, default="")
@@ -639,13 +639,18 @@ class PlannedDisbursement(models.Model):
 class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
         Activity,
-        related_name="related_activity")
+        related_name="current_activity")
     type = models.ForeignKey(
         RelatedActivityType,
         max_length=200,
         null=True,
         default=None)
     ref = models.CharField(max_length=200, default="")
+    related_activity = models.ForeignKey(
+        Activity, 
+        related_name="related_activity",
+        null=True, 
+        on_delete=models.SET_NULL)
     text = models.TextField(default="")
 
     def __unicode__(self,):

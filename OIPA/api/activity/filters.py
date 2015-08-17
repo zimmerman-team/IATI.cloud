@@ -37,7 +37,7 @@ class ActivityFilter(FilterSet):
     max_total_budget = NumberFilter(lookup_type='lte', name='total_budget')
 
     hierarchy = ChoiceFilter(choices=Activity.hierarchy_choices, name='hierarchy')
-    related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='related_activity__type__code')
+    related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__type__code')
 
 
 

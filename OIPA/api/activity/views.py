@@ -24,7 +24,7 @@ class ActivityAggregations(GenericAPIView):
 
     filter_backends = (SearchFilter, BasicFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
-    serializer_class = serializers.AggregationSerializer
+    # serializer_class = serializers.AggregationSerializer
     # fields = ('url', 'id', 'title', 'total_budget')
     # pagination_serializer_class = AggregationsPaginationSerializer
 

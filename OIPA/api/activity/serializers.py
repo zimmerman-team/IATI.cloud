@@ -5,7 +5,7 @@ from api.generics.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
-from api.region.serializers import RegionVocabularySerializer
+# from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
 from api.fields import JSONField
 
@@ -288,13 +288,15 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
         )
 
 class RelatedActivitySerializer(serializers.ModelSerializer):
-    # url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
-    # activity = ActivitySerializer(source='current_activity')
-    type = RelatedActivityTypeSerializer()
+    current_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
+    related_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
+    # type = RelatedActivityTypeSerializer()
 
     class Meta:
         model = iati.models.RelatedActivity
         fields = (
+            'current_activity',
+            'related_activity',
             'ref',
             'type',
         )
@@ -325,7 +327,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
-    vocabulary = RegionVocabularySerializer(source='region_vocabulary')
+    # vocabulary = RegionVocabularySerializer(source='region_vocabulary')
     region = RegionSerializer(
         fields=('url', 'code', 'name')
     )
@@ -534,7 +536,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     results = ResultSerializer(many=True)
     locations = LocationSerializer(many=True, source='location_set')
 
-    related_activities = RelatedActivitySerializer(many=True, source='related_activity')
+    related_activities = RelatedActivitySerializer(many=True, source='current_activity')
 
     class Meta:
         model = iati.models.Activity

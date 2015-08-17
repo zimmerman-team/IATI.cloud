@@ -8,7 +8,12 @@ from geodata.updaters import CountryUpdater, CityUpdater, Admin1RegionUpdater, R
 class RegionAdmin(admin.ModelAdmin):
 
     search_fields = ['name']
-    list_display = ['__unicode__','code', 'region_vocabulary', 'parental_region']
+    list_display = [
+        '__unicode__',
+        'code', 
+        # 'region_vocabulary', 
+        'parental_region'
+    ]
 
     def get_urls(self):
         urls = super(RegionAdmin, self).get_urls()

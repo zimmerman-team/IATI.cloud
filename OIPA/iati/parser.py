@@ -1096,14 +1096,25 @@ class Parser():
                             if models.RelatedActivityType.objects.filter(name=type_ref).exists():
                                 type = models.RelatedActivityType.objects.filter(name=type_ref)[0]
 
-                    new_related_activity = models.RelatedActivity(current_activity=activity, type=type, ref=ref, text=text)
+                    try:
+                        related_activity = models.Activity.objects.get(iati_identifier=ref)
+                    except Activity.DoesNotExist, Activity.MultipleObjectsReturned:
+                        related_activity = None
+
+                    # update existing related activitiy foreign keys
+                    try:
+                        ref_activities = models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(related_activity=activity)
+                    except RelatedActivity.DoesNotExist:
+                        pass
+
+
+                    new_related_activity = models.RelatedActivity(current_activity=activity, related_activity=related_activity, type=type, ref=ref, text=text)
                     new_related_activity.save()
 
                 except Exception as e:
                     exception_handler(e, activity.id, "add_related_activities")
         except Exception as e:
             exception_handler(e, activity.id, "add_related_activities")
-
 
     def add_location(self, elem, activity):
 
