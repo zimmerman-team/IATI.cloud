@@ -1,5 +1,5 @@
-from iati.models import Activity
-from django_filters import Filter, FilterSet, NumberFilter, CharFilter, ChoiceFilter
+from iati.models import Activity, Budget, RelatedActivity
+from django_filters import Filter, FilterSet, NumberFilter, CharFilter, ChoiceFilter, DateFilter
 
 class CommaSeparatedCharFilter(CharFilter):
 
@@ -22,7 +22,9 @@ class ActivityFilter(FilterSet):
     )
 
     recipient_regions = CommaSeparatedCharFilter(lookup_type='in', name='recipient_region')
+
     sectors = CommaSeparatedCharFilter(lookup_type='in', name='sector')
+    sector_category = CommaSeparatedCharFilter(lookup_type='in', name='activitysector__sector__category__code')
 
     participating_organisations = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -32,25 +34,36 @@ class ActivityFilter(FilterSet):
         lookup_type='in',
         name='reporting_organisation'
     )
+
+    # hierarchy = ChoiceFilter(choices=Activity.hierarchy_choices, name='hierarchy')
+    hierarchy = CommaSeparatedCharFilter(lookup_type='in', name='hierarchy')
     
+    # Nescessary for removing activities which fail these filters
+    related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__type__code')
+    budget_period_start = DateFilter(lookup_type='gte', name='budget__period_start')
+    budget_period_end = DateFilter(lookup_type='lte', name='budget__period_end')
+
+    # Deprecated
     min_total_budget = NumberFilter(lookup_type='gte', name='total_budget')
     max_total_budget = NumberFilter(lookup_type='lte', name='total_budget')
 
-    hierarchy = ChoiceFilter(choices=Activity.hierarchy_choices, name='hierarchy')
-    related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__type__code')
-
-
-
     class Meta:
         model = Activity
-        names = [
-            'activity_scope',
-            'reporting_organisations',
-            'recipient_countries',
-            'recipient_regions',
-            'sectors',
-            'participating_organisations',
-            'min_total_budget',
-            'max_total_budget',
-            'hierarchy',
-        ]
+
+class BudgetFilter(FilterSet):
+
+    budget_period_start = DateFilter(lookup_type='gte', name='period_start')
+    budget_period_end = DateFilter(lookup_type='lte', name='period_end')
+
+    class Meta:
+        model = Budget
+
+class RelatedActivityFilter(FilterSet):
+
+    related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='type__code')
+
+    class Meta:
+        model = RelatedActivity
+
+
+ 

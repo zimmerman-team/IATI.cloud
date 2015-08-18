@@ -1,13 +1,14 @@
 from rest_framework import serializers
 
 import iati
-from api.generics.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer, FilterableModelSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
 # from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
 from api.fields import JSONField
+from api.activity.filters import ActivityFilter, BudgetFilter, RelatedActivityFilter
 
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
@@ -135,8 +136,7 @@ class TotalBudgetSerializer(serializers.Serializer):
         model = iati.models.Activity
         fields = ('currency', 'value')
 
-
-class BudgetSerializer(serializers.ModelSerializer):
+class BudgetSerializer(FilterableModelSerializer):
     class BudgetTypeSerializer(serializers.ModelSerializer):
         code = serializers.CharField()
 
@@ -166,6 +166,7 @@ class BudgetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = iati.models.Budget
+        filter_class = BudgetFilter
         fields = (
             'type',
             'period_start',
@@ -287,13 +288,14 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
             'name'
         )
 
-class RelatedActivitySerializer(serializers.ModelSerializer):
+class RelatedActivitySerializer(FilterableModelSerializer):
     current_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
     related_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
-    # type = RelatedActivityTypeSerializer()
+    type = RelatedActivityTypeSerializer()
 
     class Meta:
         model = iati.models.RelatedActivity
+        filter_class = RelatedActivityFilter
         fields = (
             'current_activity',
             'related_activity',

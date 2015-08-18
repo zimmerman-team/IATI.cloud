@@ -190,6 +190,9 @@ class ActivityList(ListAPIView):
     fields = ('url', 'id', 'title', 'total_budget')
     pagination_class = AggregationsPaginationSerializer
 
+    # def get_serializer_context(self):
+    #     return {'request': self.request }
+
     # def get_queryset(self):
     #     pk = self.kwargs.get('pk')
     #     return Activity.objects.prefetch_related('current_activity')
