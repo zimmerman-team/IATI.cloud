@@ -39,7 +39,12 @@ class ActivityFilter(FilterSet):
     hierarchy = CommaSeparatedCharFilter(lookup_type='in', name='hierarchy')
     
     # Nescessary for removing activities which fail these filters
+    related_activity_id = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__current_activity__id')
     related_activity_type = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__type__code')
+    related_activity_recipient_countries = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__current_activity__recipient_country')
+    related_activity_recipient_regions = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__current_activity__recipient_region')
+    related_activity_sectors = CommaSeparatedCharFilter(lookup_type='in', name='current_activity__current_activity__sectors')
+
     budget_period_start = DateFilter(lookup_type='gte', name='budget__period_start')
     budget_period_end = DateFilter(lookup_type='lte', name='budget__period_end')
 

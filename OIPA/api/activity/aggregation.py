@@ -4,9 +4,10 @@ from api.generics import utils
 from api.generics.filters import BasicFilterBackend
 from api.activity.filters import ActivityFilter
 from api.generics.serializers import NoCountPaginationSerializer
+from rest_framework.response import Response
+from collections import OrderedDict
 
 class AggregationsSerializer(DynamicFieldsSerializer):
-    filter_class = ActivityFilter
 
     total_budget = serializers.DecimalField(
         source='aggregate_total_budget',
@@ -14,41 +15,67 @@ class AggregationsSerializer(DynamicFieldsSerializer):
         decimal_places=2,
         coerce_to_string=False
     )
+
+    budget = serializers.DecimalField(
+        source='aggregate_budget',
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False
+    )
+
     count = serializers.IntegerField()
+    
     disbursement = serializers.DecimalField(
         source='aggregate_disbursement',
         max_digits=999,
         decimal_places=2,
         coerce_to_string=False
     )
+    
     commitment = serializers.DecimalField(
         source='aggregate_commitment',
         max_digits=999,
         decimal_places=2,
         coerce_to_string=False
     )
+    
     expenditure = serializers.DecimalField(
         source='aggregate_expenditure',
         max_digits=999,
         decimal_places=2,
         coerce_to_string=False
     )
+    
     title = serializers.IntegerField(source='aggregate_title')
-
-    def to_representation(self, queryset):
-        query_params = utils.query_params_from_context(self.context)
-        if query_params:
-            params = utils.get_type_parameters('activity-filter', query_params)
-            filter_class = self.filter_class()
-            queryset = filter_class.filter_queryset(queryset, params)
-
-        return super(AggregationsSerializer, self).to_representation(queryset)
-
 
 class AggregationsPaginationSerializer(NoCountPaginationSerializer):
     """PaginationSerializer with aggregations for a list of activities."""
-    aggregations = AggregationsSerializer(
-        source='paginator.object_list',
-        query_field='aggregations',
-        fields=(),
-    )
+
+    def paginate_queryset(self, queryset, request, view=None):
+        # annotate aggregations here
+        self.aggregations = AggregationsSerializer(queryset, 
+            query_field='aggregations', 
+            fields=(),
+            context={
+                'request': request,
+            },
+        )
+        return super(AggregationsPaginationSerializer, self).paginate_queryset(queryset, request, view)
+    
+    def get_paginated_response(self, data):
+
+        if (self.aggregations.data):
+            return Response(OrderedDict([
+                ('count', self.page.paginator.count),
+                ('next', self.get_next_link()),
+                ('previous', self.get_previous_link()),
+                ('aggregations', self.aggregations.data),
+                ('results', data),
+            ]))
+        else:
+            return Response(OrderedDict([
+                ('count', self.page.paginator.count),
+                ('next', self.get_next_link()),
+                ('previous', self.get_previous_link()),
+                ('results', data),
+            ]))

@@ -88,6 +88,12 @@ class ActivityQuerySet(query.QuerySet):
         ).get('total_budget', 0.00)
         return sum
 
+    def aggregate_budget(self):
+        sum = self.aggregate(
+            budget=Sum('budget__value')
+        ).get('budget', 0.00)
+        return sum
+
     def aggregate_expenditure(self):
         queryset = self.filter(transaction__transaction_type='E')
         sum = queryset.aggregate(
