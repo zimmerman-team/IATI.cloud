@@ -40,27 +40,27 @@ def welcome(request, format=None):
     return Response({
         'endpoints': {
             'cities': reverse(
-                'city-list',
+                'cities:city-list',
                 request=request,
                 format=format),
             'regions': reverse(
-                'region-list',
+                'regions:region-list',
                 request=request,
                 format=format),
             'activities': reverse(
-                'activity-list',
+                'activities:activity-list',
                 request=request,
                 format=format),
             'countries': reverse(
-                'country-list',
+                'countries:country-list',
                 request=request,
                 format=format),
             'sectors': reverse(
-                'sector-list',
+                'sectors:sector-list',
                 request=request,
                 format=format),
             'organisations': reverse(
-                'organisation-list',
+                'organisations:organisation-list',
                 request=request,
                 format=format),
             'transactions': reverse(
