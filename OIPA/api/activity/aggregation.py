@@ -52,7 +52,6 @@ class AggregationsPaginationSerializer(NoCountPaginationSerializer):
     """PaginationSerializer with aggregations for a list of activities."""
 
     def paginate_queryset(self, queryset, request, view=None):
-        # annotate aggregations here
         self.aggregations = AggregationsSerializer(queryset, 
             query_field='aggregations', 
             fields=(),

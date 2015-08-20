@@ -15,7 +15,7 @@ class RegionVocabularySerializer(serializers.ModelSerializer):
 
 
 class BasicRegionSerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='region-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')
     code = serializers.CharField()
     region_vocabulary = RegionVocabularySerializer()
 
@@ -29,20 +29,22 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
         )
 
 class RegionSerializer(DynamicFieldsModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
     aggregations = AggregationsSerializer(source='activity_set', fields=())
     countries = serializers.HyperlinkedIdentityField(
-        view_name='region-countries')
+        view_name='regions:region-countries')
     activities = serializers.HyperlinkedIdentityField(
-        view_name='region-activities')
+        view_name='regions:region-activities')
     location = GeometryField(source='center_longlat')
 
     class Meta:
         model = geodata.models.Region
         fields = (
             'url',
+            'pk',
             'code',
             'name',
             'region_vocabulary',

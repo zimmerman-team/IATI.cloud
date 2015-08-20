@@ -85,41 +85,45 @@ class ActivityScopeSerializer(serializers.ModelSerializer):
 
 class AidTypeSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
+    name = serializers.CharField()
 
     class Meta:
         model = iati.models.AidType
         fields = (
-            'code',
+            'code', 'name'
         )
 
 
 class FlowTypeSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
+    name = serializers.CharField()
 
     class Meta:
         model = iati.models.FlowType
         fields = (
-            'code',
+            'code', 'name'
         )
 
 
 class CollaborationTypeSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
+    name = serializers.CharField()
 
     class Meta:
         model = iati.models.CollaborationType
         fields = (
-            'code',
+            'code', 'name'
         )
 
 
 class ActivityStatusSerializer(serializers.ModelSerializer):
     code = serializers.CharField()
+    name = serializers.CharField()
 
     class Meta:
         model = iati.models.ActivityStatus
         fields = (
-            'code',
+            'code', 'name'
         )
 
 
@@ -199,14 +203,15 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
             'secondary_reporter',
         )
 
+class PolicyMarkerSerializer(serializers.ModelSerializer):
+    code = serializers.CharField()
+
+    class Meta:
+        model = iati.models.PolicyMarker
+        fields = ('code',)
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
-    class PolicyMarkerSerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
 
-        class Meta:
-            model = iati.models.PolicyMarker
-            fields = ('code',)
 
     class PolicySignificanceSerializer(serializers.ModelSerializer):
         code = serializers.CharField()
@@ -289,8 +294,8 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
         )
 
 class RelatedActivitySerializer(FilterableModelSerializer):
-    current_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
-    related_activity = serializers.HyperlinkedRelatedField(view_name='activity-detail', read_only=True)
+    current_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
+    related_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = RelatedActivityTypeSerializer()
 
     class Meta:
@@ -493,7 +498,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='activity-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     activity_status = ActivityStatusSerializer()
     activity_scope = ActivityScopeSerializer(source='scope')
     capital_spend = CapitalSpendSerializer(source='*')
@@ -509,7 +514,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)
     transactions = serializers.HyperlinkedIdentityField(
-        view_name='activity-transactions',
+        view_name='activities:activity-transactions',
     )
 
     policy_markers = ActivityPolicyMarkerSerializer(

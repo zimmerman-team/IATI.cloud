@@ -8,7 +8,7 @@ from api.activity.aggregation import AggregationsSerializer
 
 class CountrySerializer(DynamicFieldsModelSerializer):
     class BasicCitySerializer(serializers.ModelSerializer):
-        url = serializers.HyperlinkedIdentityField(view_name='city-detail')
+        url = serializers.HyperlinkedIdentityField(view_name='cities:city-detail')
 
         class Meta:
             model = geodata.models.City
@@ -18,7 +18,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
                 'name'
             )
 
-    url = serializers.HyperlinkedIdentityField(view_name='country-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='countries:country-detail')
     region = RegionSerializer(fields=('url', 'code', 'name'))
     un_region = RegionSerializer(fields=('url', 'code', 'name'))
     unesco_region = RegionSerializer(fields=('url', 'code', 'name'))
@@ -26,10 +26,10 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     location = JSONField(source='center_longlat.json')
     polygon = JSONField()
     activities = serializers.HyperlinkedIdentityField(
-        view_name='country-activities')
+        view_name='countries:country-activities')
     indicators = serializers.HyperlinkedIdentityField(
-        view_name='country-indicators')
-    cities = serializers.HyperlinkedIdentityField(view_name='country-cities')
+        view_name='countries:country-indicators')
+    cities = serializers.HyperlinkedIdentityField(view_name='countries:country-cities')
     aggregations = AggregationsSerializer(source='activity_set', fields=())
 
     class Meta:
@@ -37,6 +37,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
         fields = (
             'url',
             'code',
+            'pk',
             'numerical_code_un',
             'name',
             'alt_name',

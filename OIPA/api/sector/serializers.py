@@ -13,10 +13,10 @@ class SectorCategorySerializer(serializers.ModelSerializer):
 
 
 class SectorSerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='sector-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='sectors:sector-detail')
     category = SectorCategorySerializer()
     activities = serializers.HyperlinkedIdentityField(
-        view_name='sector-activities')
+        view_name='sectors:sector-activities')
     aggregations = AggregationsSerializer(source='activity_set', fields=())
 
     class Meta:
