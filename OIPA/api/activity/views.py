@@ -30,37 +30,47 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
-from itertools import chain
-
 class ActivityAggregationSerializer(BaseSerializer):
 
     _aggregations = {
         "count": {
             "field": "count",
-            "annotate": { "count": Count('id') }
+            "annotate_name": "count",
+            "annotate": Count('id')
         },
         "budget": {
             "field": "budget",
-            "annotate": { "budget": Sum('budget__value') }
+            "annotate_name": "budget",
+            "annotate": Sum('budget__value')
         },
         "total_budget": {
-            "annotate": { "total_budget": Sum('total_budget') }
+            "field": "total_budget",
+            "annotate_name": 'total_budget',
+            "annotate": Sum('total_budget')
         },
         "disbursement": {
-            "extra_query": Q(transaction__transaction_type='D'),
-            "annotate": { "disbursement": Sum('transaction__value') }
+            "field": "disbursement",
+            "extra_filter": Q(transaction__transaction_type='D'),
+            "annotate_name": 'disbursement',
+            "annotate": Sum('transaction__value'),
         },
         "expenditure": {
-            "extra_query": Q(transaction__transaction_type='E'),
-            "annotate": { "expenditure": Sum('transaction__value') }
+            "field": "expenditure",
+            "extra_filter": Q(transaction__transaction_type='E'),
+            "annotate_name": "expenditure",
+            "annotate": Sum('transaction__value')
         },
         "commitment": {
-            "extra_query": Q(transaction__transaction_type='C'),
-            "annotate": { "commitment": Sum('transaction__value') }
+            "field": "commitment",
+            "extra_filter": Q(transaction__transaction_type='C'),
+            "annotate_name": 'commitment',
+            "annotate": Sum('transaction__value')
         },
         "incoming_fund": {
-            "extra_query": Q(transaction__transaction_type='IF'),
-            "annotate": { "incoming_fund": Sum('transaction__value') }
+            "field": "incoming_fund",
+            "extra_filter": Q(transaction__transaction_type='IF'),
+            "annotate_name": 'incoming_fund',
+            "annotate": Sum('transaction__value')
         },
     }
 
@@ -140,61 +150,72 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
     }
 
-    def apply_order_filters(self, queryset, orderList):
+    _allowed_orderings = [ i['field'] for i in _allowed_groupings.values()]
+
+    def apply_order_filters(self, queryset, orderList, groupList, aggregationList):
         # todo: limit order_by fields
-        return queryset.order_by(*orderList)
 
-    def apply_group_filters(self, queryset, request, groupList):
-        """
-        Applies group_by statements along with nested query enhancements
-        """
+        allowed_orderings = self._allowed_orderings + aggregationList
+        orderings = self._intersection(allowed_orderings, orderList)
 
-        # extra_select = {}
-        # serializers = []
+        print(orderings)
 
-        # queryset = queryset.select_related('recipient_country__country')
-
-        # for grouping in groupList:
-        #     field_name = self._allowed_groupings[grouping]["field"]
-        #     serializer = self._allowed_groupings[grouping]["serializer"]
-        #     foreignQueryset = self._allowed_groupings[grouping]["queryset"]
-        #     subquery = self._allowed_groupings[grouping]["subquery"]
-
-        #     extra_select[grouping] = subquery
-        #     serializers.append(serializer(foreignQueryset, 
-        #         context={
-        #             'request': request,
-        #         },
-        #         many=True,
-        #         query_field="%s_fields" % (field_name),
-        #     ))
-
-        # queryset = queryset.extra(
-        #     select=extra_select
-        # )
-
-        results = queryset.values(*groupList)
-
-        # print(result)
-        # for result in results:
-        #     print(result)
-
-        # for serializer in serializers:
-        #     for d in serializer.data:
-        #         result[field_name] = d
-
-        return results
-
-    def apply_annotations(self, queryset, aggregationList):
-
-        for aggregation in aggregationList:
-            annotation = self._aggregations.get(aggregation, None)
-            if annotation:
-                queryset = queryset.annotate(**annotation["annotate"])
+        if (len(orderings)):
+            return queryset.order_by(*orderings)
+        # else: 
+        #     return queryset.order_by(*self._intersection(allowed_orderings, groupList))
 
         return queryset
 
-    def serialize_foreign_keys(self, queryset, request, groupList):
+    def apply_annotations(self, queryset, groupList, aggregationList):
+
+        first_queryset = queryset
+        first_annotations = dict()
+        first_result = dict()
+        result = dict()
+
+        same_query_aggregations = [ i for i in aggregationList if not self._aggregations[i].get('extra_filter') ]
+        separate_aggregations = [ i for i in aggregationList if self._aggregations[i].get('extra_filter') ]
+
+        for aggregation in same_query_aggregations:
+            a = self._aggregations.get(aggregation, {})
+            first_annotations[a['annotate_name']] = a['annotate']
+     
+        # aggregations that can be performed in the same query (hence require no extra filters)
+        result = first_queryset.values(*groupList).annotate(**first_annotations)
+
+        # aggregations that require extra filters, and hence must be exectued separately
+        for aggregation in separate_aggregations:
+            # field = self._aggregations.get("")
+            a = self._aggregations.get(aggregation, None)
+            extra_filter = a["extra_filter"]
+            field = a["field"]
+
+            annotation = dict([(a['annotate_name'], a['annotate'])])
+            next_result = queryset.filter(extra_filter).values(*groupList).annotate(**annotation)
+            
+            main_group_field = groupList[0]
+
+
+            if len(next_result):
+                # join results in results object (first_result >= new_result)
+                iold = iter(result)
+                inew = iter(next_result)
+
+                n = next(inew)
+                for o in iold: 
+
+                    if (n[main_group_field] == o[main_group_field]):
+                        o[field] = n[field]
+
+                        try:
+                            n = next(inew)
+                        except StopIteration:
+                            break
+
+        return result
+
+    def serialize_foreign_keys(self, valuesQuerySet, request, groupList):
 
         serializers = {}
 
@@ -210,7 +231,7 @@ class ActivityAggregationSerializer(BaseSerializer):
                         'request': request,
                     },
                     many=True,
-                    fields=fields + ('pk',),
+                    fields=fields,
                     query_field="%s_fields" % (field_name),
                 ).data
             else: 
@@ -223,11 +244,13 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             serializers[grouping] = { i.get('code'):i for i in data }
 
-        results = list(queryset)
+        results = valuesQuerySet
 
         for i, result in enumerate(results):
             for k,v in result.iteritems():
                 if k in groupList:
+                    # print(k)
+                    print(serializers.get(k, {}))
                     result[k] = serializers.get(k, {}).get(str(v))
 
         return results
@@ -237,8 +260,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         params = request.query_params
 
         order_by = filter(None, params.get('order_by', "").split(','))
-        group_by = self._union(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
-        aggregations = self._union(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
+        # order_by = self._union(filter(None, params.get('order_by', "").split(',')), self._allowed_groupings.keys())
+        group_by = self._intersection(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
+        aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
 
         if not (len(group_by) and len(aggregations)):
             return Response(
@@ -246,22 +270,20 @@ class ActivityAggregationSerializer(BaseSerializer):
                 status.HTTP_404_NOT_FOUND,
             )
 
-        if len(order_by):
-            queryset = self.apply_order_filters(queryset, order_by) 
 
-        queryset = self.apply_group_filters(queryset, request, group_by)
-        queryset = self.apply_annotations(queryset, aggregations)
-        result = self.serialize_foreign_keys(queryset, request, group_by)
-
-
-        # add foreign key serializations
-
-        # print(list(queryset))
+        # queryset = self.apply_group_filters(queryset, request, group_by)
+        queryset = self.apply_order_filters(queryset, order_by, group_by, aggregations) 
+        result = self.apply_annotations(queryset, group_by, aggregations)
+        result = self.serialize_foreign_keys(result, request, group_by)
 
         return result
 
     def _union(self, list1, list2):
+        return list(set(list1) | set(list2))
+
+    def _intersection(self, list1, list2):
         return list(set(list1) & set(list2))
+
 
 class ActivityAggregations(GenericAPIView):
 
@@ -283,119 +305,6 @@ class ActivityAggregations(GenericAPIView):
             return Response(results.data)
         else:
             return Response('No results', status.HTTP_404_NOT_FOUND)
-
-
-
-# class ActivityAggregations(GenericAPIView):
-
-#     queryset = Activity.objects.all()
-
-#     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
-#     filter_class = filters.ActivityFilter
-#     # serializer_class = activitySerializers.AggregationSerializer
-#     # fields = ('url', 'id', 'title', 'total_budget')
-#     # pagination_serializer_class = AggregationsPaginationSerializer
-
-#     aggregationAnnotates = {
-#         "count": Count('id'),
-#         "total_budget": Sum('total_budget'),
-#         "disbursement": Sum('transaction__value'),
-#         "expenditure": Sum('transaction__value'),
-#         "commitment": Sum('transaction__value'),
-#         "incoming_fund": Sum('transaction__value'),
-#     }
-
-#     aggregationFilters = {
-#         "count": Q(),
-#         "total_budget": Q(),
-#         "disbursement": Q(transaction__transaction_type='D'),
-#         "expenditure": Q(transaction__transaction_type='E'),
-#         "commitment": Q(transaction__transaction_type='C'),
-#         "incoming_fund": Q(transaction__transaction_type='IF'),
-#     }
-
-#     aggregationValues = (
-#         "recipient_country",
-#         "recipient_region",
-#         "sector",
-#     )
-
-#     def aggregate_disbursement(self):
-#         queryset = self.filter(transaction__transaction_type='D')
-#         sum = queryset.aggregate(
-#             disbursement=Sum('transaction__value')
-#         ).get('disbursement', 0.00)
-#         return sum
-
-#     def get(self, request, *args, **kwargs):
-#         queryset = self.filter_queryset(self.get_queryset())
-
-#         values = request.query_params.get('values')
-#         annotates = request.query_params.get('annotates')
-#         # sort = request.query_params.get('sort_by')
-
-#         if (values and annotates):
-
-#             # parse annotates
-#             def fillAnnotateDict(annotates):
-#                 annotateList = annotates.split(',')
-#                 annotateDict = {}
-
-#                 for k,v in self.aggregationAnnotates.iteritems():
-#                     if k in annotateList:
-#                         annotateDict[k] = v
-
-#                 return annotateDict
-
-#             def fillFilterList(annotates):
-#                 annotateList = annotates.split(',')
-#                 filterList = []
-
-#                 for k,v in self.aggregationFilters.iteritems():
-#                     if k in annotateList:
-#                         filterList.append(v)
-
-#                 return filterList
-
-#             def fillValueList(values):
-#                 values = values.split(',')
-#                 valuesList = []
-
-#                 for v in values: 
-#                     if v in self.aggregationValues:
-#                         valuesList.append(v)
-
-#                 return valuesList
-
-#             # values to group on
-#             valuesList = fillValueList(values)
-#             annotateDict = fillAnnotateDict(annotates)
-#             filterList = fillFilterList(annotates)
-
-#             print(valuesList)
-#             print(annotateDict)
-#             print(filterList)
-
-#             if (valuesList):
-#                 # todo: annotate orignal geo object
-#                 valuesQuerySet = queryset \
-#                     .filter(*filterList) \
-#                     .values(*valuesList) \
-#                     .annotate(**annotateDict)
-
-#                 return Response(valuesQuerySet)
-#             else:
-#                 return Response('specified value is invalid', status.HTTP_404_NOT_FOUND)
-
-
-#             # serializer = self.serializer_class(queryset)
-#             # return Response(serializer.data)        
-
-
-#             return Response(json.dumps(list(valuesQuerySet)))
-#         else:
-#             return Response('values and annotates fields must be specified', status.HTTP_404_NOT_FOUND)
-
 
 class ActivityList(ListAPIView):
     """
