@@ -10,6 +10,7 @@ import inspect
 import traceback
 import re
 from iati_synchroniser.exception_handler import exception_handler
+import re
 
 
 class XMLParser(object):
@@ -318,3 +319,17 @@ class XMLParser(object):
                 db_model.save()
                 saved_models.append(db_model.__class__.__name__)
 
+    def guess_number(self,number_string):
+        #first strip non numeric values from begin and end
+        non_decimal = re.compile(r'[^\d.,]+')
+        errormsg = "ValueError: Input must be decimal or integer string"
+        stripped_string = non_decimal.sub('', number_string)
+        #check if there is only 1 comma (central european way)
+        try:
+            if stripped_string.count(',') <= 1:
+                return float(stripped_string.replace(',','.'))
+            else:
+                return float(stripped_string.replace(',',''))
+        except ValueError,error:
+            print "%s\n%s" %(errormsg, error)
+            return None

@@ -10,6 +10,7 @@ import hashlib
 
 
 
+
 class ParseIATI():
 
     def hashfile(self,afile, hasher, blocksize=65536):

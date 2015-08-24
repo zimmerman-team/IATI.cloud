@@ -1,9 +1,9 @@
-from IATI_2_01 import Parse as IATI_205_Parser
+from IATI_2_01 import Parse as IATI_201_Parser
 from iati import models
 from geodata.models import Country, Region
 import dateutil.parser
 
-class Parse(IATI_205_Parser):
+class Parse(IATI_201_Parser):
 
     VERSION = '1.05'#version of iati standard
 
