@@ -32,6 +32,8 @@ class Parse(IATI_201_Parser):
 
 
     def add_narrative_105(self,text,parent):
+        if text == '' or text == None:
+            return
         parent.save()
         narrative = models.Narrative()
         lang = self.default_lang 
