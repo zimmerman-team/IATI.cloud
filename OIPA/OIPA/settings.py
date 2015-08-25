@@ -13,7 +13,7 @@ SECRET_KEY = '__DEV_SECRET_KEY__'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'oipa',
+        'NAME': 'oipa3',
         'USER': 'oipa',
         'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
@@ -217,10 +217,10 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 400,
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
-    )
+    # 'DEFAULT_FILTER_BACKENDS': (
+    #     'rest_framework.filters.DjangoFilterBackend',
+    #     'rest_framework.filters.SearchFilter',
+    # )
 }
 
 try:
