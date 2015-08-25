@@ -54,6 +54,7 @@ class XMLParser(object):
         hintsStr = ''
         errorStr = ''
         send_mail = False
+        print 'before sending mail'
         if len(self.hints) > 0:
             hintsStr = "function that are missing:"
             hintsStr += "\n".join( self.hints )
@@ -102,14 +103,18 @@ class XMLParser(object):
                     #print function_name
                     traceback.print_exc()
                     self.handle_exception(x_path, function_name, exeception,element)
-                    self.parse(e)
+                    #self.parse(e)
             else:
                 if not self.magicMethod(function_name,e):
                     self.handle_function_not_found(x_path, function_name,e)
                 #print function_name
-
-                self.parse(e)
-
+                try:
+                    self.parse(e)
+                except Exception as exeception:
+                    print 'error'
+                    #print function_name
+                    traceback.print_exc()
+                    self.handle_exception(x_path, function_name, exeception,element)
         
 
     def generate_function_name(self, xpath):

@@ -45,7 +45,7 @@ class ParseIATI():
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             #get the hash
-            hash  = self.hashfile(iati_file,hashlib.md5())
+            #hash  = self.hashfile(iati_file,hashlib.md5())
             #if hash == last_hash:
                 #return
             if iati_file:
@@ -58,10 +58,12 @@ class ParseIATI():
                     exception_handler(e, "parse url", "delete by source")
                 print 'activities deleted'
                 # parse the new file
-                self.xml_source_ref = xml_source_ref
+                
+                self.xml_source_ref = source
                 data = iati_file.read()
-                #print data
-                #print 'iati data is'
+                print 'test does it go here?'
+                print data
+                print 'iati data is'
                 root = etree.fromstring(str(data))
                 parser = None
                 print root.xpath('@version')

@@ -172,7 +172,8 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__reporting_org(self,element):
         model = self.get_func_parent_model()
         organisation = self.add_organisation(element)
-        model.secondary_publisher = element.attrib.get('secondary-reporter')
+        if 'secondary-reporter' in element.attrib:
+            model.secondary_publisher = element.attrib.get('secondary-reporter')
         #print organisation.name
         model.reporting_organisation = organisation
         self.set_func_model(organisation)
