@@ -17,6 +17,8 @@ class XMLParser(object):
 
     VERSION = '2.01'  #overwrite for older versions
     xml_source_ref =''
+    iati_source = None
+
     logged_functions = []
     hints = []
     errors = []
@@ -96,8 +98,7 @@ class XMLParser(object):
                     print 'error'
                     #print function_name
                     traceback.print_exc()
-                    return
-                    self.handle_exception(x_path, function_name, exeception)
+                    self.handle_exception(x_path, function_name, exeception,element)
                     self.parse(e)
             else:
                 if not self.magicMethod(function_name,e):
@@ -126,9 +127,11 @@ class XMLParser(object):
             keys += "\t"+key+':'+element.attrib.get(key)+"\n"
 
         hint = """
+
     '''atributes:
 """+keys+"""
-    tag:"""+element.tag+"""'''
+    tag:"""+element.tag+"""
+    found in """+ self.iati_source.source_url+""" at line """+element.sourceline+""" iati_version ="""+self.VERSION+"""'''
     def """ + function_name + """(self,element):
         model = self.get_func_parent_model()
         #store element 
@@ -139,7 +142,7 @@ class XMLParser(object):
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = 'Function ' + function_name + ' not found'
-        log_entry.file_name = 'test'
+        log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
         log_entry.save()
@@ -155,16 +158,16 @@ class XMLParser(object):
         return result
 
 
-    def handle_exception(self, xpath, function_name, exception):
+    def handle_exception(self, xpath, function_name, exception,element):
         hint = """look at XML document"""
-        errorStr = "error in method:"+function_name+" location in document:"+xpath
+        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+element.sourceline+" source is "+self.iati_source.source_url
         errExceptionStr = errorStr+"\n"+str(exception)
         
         self.errors.append(errExceptionStr)
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = errExceptionStr
-        log_entry.file_name = 'test'
+        log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
         log_entry.save()

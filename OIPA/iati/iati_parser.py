@@ -1,5 +1,6 @@
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
+from IATI_1_03 import Parse as IATI_103_Parser
 from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber
@@ -12,6 +13,20 @@ import hashlib
 
 
 class ParseIATI():
+
+    # class wide functions
+    def return_first_exist(self, xpath_find):
+
+        if not xpath_find:
+             xpath_find = None
+        else:
+            try:
+                xpath_find = unicode(xpath_find[0], errors='ignore')
+            except:
+                xpath_find = xpath_find[0]
+
+            xpath_find = xpath_find.encode('utf-8', 'ignore')
+        return xpath_find
 
     def hashfile(self,afile, hasher, blocksize=65536):
         buf = afile.read(blocksize)
@@ -50,12 +65,18 @@ class ParseIATI():
                 root = etree.fromstring(str(data))
                 parser = None
                 print root.xpath('@version')
-                if root.xpath('@version')[0] == '2.01':
+                print self.return_first_exist(root.xpath('@version'))
+                iati_version = root.xpath('@version')[0]
+                if iati_version == '2.01':
                     parser = IATI_201_Parser()
+                elif iati_version == '1.03':
+                    parser = IATI_103_Parser()
+                    parser.VERSION = iati_version
                 else:
                     parser = IATI_105_Parser()
-                    parser.VERSION = root.xpath('@version')[0]
+                    parser.VERSION = iati_version
                 print 'before parsing'
+                parser.iati_source = source
                 parser.load_and_parse(root)
 
                 del iati_file
