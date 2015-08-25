@@ -45,7 +45,7 @@ class ParseIATI():
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             #get the hash
-            #hash  = self.hashfile(iati_file,hashlib.md5())
+            hash  = self.hashfile(iati_file,hashlib.md5())
             #if hash == last_hash:
                 #return
             if iati_file:

@@ -193,7 +193,7 @@ class XMLParser(object):
         model_name = model.__name__
         codelist_iati_version = self.VERSION
         #print model_name
-        print str(key)+' is the key'
+        #print str(key)+' is the key'
         if model_name in self.db_call_cache:
             model_cache = self.db_call_cache[model_name]
             if key in model_cache:

@@ -141,7 +141,7 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
-        print 'deleting '+element.text
+        #print 'deleting '+element.text
         deleter = Deleter()
         try:
             deleter.remove_old_values_for_activity_by_iati_id(element.text)
