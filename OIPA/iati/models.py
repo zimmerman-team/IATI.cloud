@@ -7,8 +7,7 @@ from iati.transaction.models import Transaction
 from iati.transaction.models import TransactionType,TransactionDescription,TransactionProvider,TransactionReciever,TransactionSector
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
-
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 
 class Language(models.Model):
@@ -33,13 +32,10 @@ class Narrative(models.Model):
         verbose_name='related object',
         null=True,
     )
-    parent_object = generic.GenericForeignKey('content_type', 'object_id')
+    parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
     iati_identifier = models.CharField(max_length=50,verbose_name='iati_identifier',null=True)
     content = models.TextField()
-
-
-
 
 class ActivityDateType(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -729,7 +725,7 @@ class ActivityParticipatingOrganisation(models.Model):
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     name = models.TextField(default="")
-    narratives = generic.GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
         return "%s: %s - %s" % (self.activity.id, self.organisation, self.name)
@@ -827,7 +823,7 @@ class OtherIdentifier(models.Model):
     owner_ref = models.CharField(max_length=100, default="")
     owner_name = models.CharField(max_length=100, default="")
     identifier = models.CharField(max_length=100)
-    narratives = generic.GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative)
     type = models.ForeignKey(OtherIdentifierType,null=True)
 
     def __unicode__(self,):
@@ -1018,7 +1014,7 @@ class Title(models.Model):
     activity = models.ForeignKey(Activity)
     title = models.CharField(max_length=255, db_index=True)
     language = models.ForeignKey(Language, null=True, default=None)
-    narratives = generic.GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.title)
