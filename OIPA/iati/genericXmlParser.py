@@ -11,6 +11,8 @@ import traceback
 import re
 from iati_synchroniser.exception_handler import exception_handler
 import re
+from django.contrib.auth.models import User
+
 
 
 class XMLParser(object):
@@ -63,7 +65,8 @@ class XMLParser(object):
 
         if(send_mail):
             print 'sending mail'
-            self.sendErrorMail('daniel@zimmermanzimmerman.nl', hintsStr +"\n"+errorStr)
+            for developer in User.objects.filter(groups__name='developers').all():
+                self.sendErrorMail(developer.email, hintsStr +"\n"+errorStr)
 
     def testWithFile(self,fileName):
         with open(fileName, "r") as myfile:
