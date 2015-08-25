@@ -534,9 +534,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         source='activityrecipientregion_set'
     )
     budgets = BudgetSerializer(many=True, source='budget_set')
-    descriptions = DescriptionSerializer(
-        many=True, read_only=True, source='description_set')
-    title = TitleSerializer(source='*')
+    # descriptions = DescriptionSerializer(
+    #     many=True, read_only=True, source='description_set')
+    # title = TitleSerializer(source='*')
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
@@ -556,8 +556,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'hierarchy',
             'linked_data_uri',
             'reporting_organisation',
-            'title',
-            'descriptions',
+            # 'title',
+            # 'descriptions',
             'participating_organisations',
             'related_activities',
             'activity_status',

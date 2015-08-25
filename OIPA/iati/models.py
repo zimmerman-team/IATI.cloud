@@ -973,6 +973,9 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.result, self.year)
 
+class ResultIndicatorMeasure(models.Model):
+    result_indicator = models.ForeignKey(ResultIndicator)
+
 class ResultIndicatorTitle(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
