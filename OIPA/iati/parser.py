@@ -1113,13 +1113,13 @@ class Parser():
 
                     try:
                         related_activity = models.Activity.objects.get(iati_identifier=ref)
-                    except Activity.DoesNotExist, Activity.MultipleObjectsReturned:
+                    except Exception as e:
                         related_activity = None
 
                     # update existing related activitiy foreign keys
                     try:
                         ref_activities = models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(related_activity=activity)
-                    except RelatedActivity.DoesNotExist:
+                    except Exception as e:
                         pass
 
 

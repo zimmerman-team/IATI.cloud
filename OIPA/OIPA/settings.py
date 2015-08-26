@@ -209,7 +209,6 @@ SUIT_CONFIG = {
 # more details on how to customize your logging configuration.
 
 RQ_SHOW_ADMIN_LINK = True
-RQ_QUEUES = {}
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
@@ -217,10 +216,10 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 400,
-    # 'DEFAULT_FILTER_BACKENDS': (
-    #     'rest_framework.filters.DjangoFilterBackend',
-    #     'rest_framework.filters.SearchFilter',
-    # )
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        # 'rest_framework.filters.SearchFilter',
+    )
 }
 
 try:
