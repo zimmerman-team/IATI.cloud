@@ -139,7 +139,7 @@ class XMLParser(object):
     '''atributes:
 """+keys+"""
     tag:"""+element.tag+"""
-    found in """+ self.iati_source.source_url+""" at line """+element.sourceline+""" iati_version ="""+self.VERSION+"""'''
+    found in """+ self.iati_source.source_url+""" at line """+str(element.sourceline)+""" iati_version ="""+self.VERSION+"""'''
     def """ + function_name + """(self,element):
         model = self.get_func_parent_model()
         #store element 
@@ -168,7 +168,7 @@ class XMLParser(object):
 
     def handle_exception(self, xpath, function_name, exception,element):
         hint = """look at XML document"""
-        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+element.sourceline+" source is "+self.iati_source.source_url
+        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+str(element.sourceline)+" source is "+self.iati_source.source_url
         errExceptionStr = errorStr+"\n"+str(exception)
         
         self.errors.append(errExceptionStr)
