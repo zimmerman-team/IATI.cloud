@@ -61,7 +61,7 @@ class ParseIATI():
                 self.xml_source_ref = source
                 data = iati_file.read()
                 print 'test does it go here?'
-                print data
+                #print data
                 print 'iati data is'
                 root = etree.fromstring(str(data))
                 parser = None
