@@ -847,7 +847,7 @@ class ContactInfo(models.Model):
     email = models.TextField(default="",null=True,blank=True)
     mailing_address = models.TextField(default="",null=True,blank=True)
     website = models.CharField(max_length=255, default="",null=True,blank=True)
-    contact_type = models.ForeignKey(ContactType, null=True, default=None,null=True,blank=True)
+    contact_type = models.ForeignKey(ContactType, null=True, default=None,blank=True)
     job_title = models.CharField(max_length=150, default="",null=True,blank=True)
 
     def __unicode__(self,):
