@@ -856,9 +856,8 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__budget__value(self,element):
         model = self.get_func_parent_model()
         value = element.text
-        if value == '' or value == None:
-            value = 0
-        model.value = element.text
+        value = self.guess_number(value)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          
@@ -905,7 +904,9 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities__iati_activity__planned_disbursement__value(self,element):
         model = self.get_func_parent_model()
-        model.value = element.text
+        value = element.text
+        value = self.guess_number(value)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
         return element
@@ -961,7 +962,8 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities__iati_activity__transaction__value(self,element):
         model = self.get_func_parent_model()
-        model.value = element.text
+        value = self.guess_number(element.text)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          

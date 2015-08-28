@@ -303,7 +303,15 @@ class XMLParser(object):
 
 
 
-
+    def guess_number(self,value):
+        if value == '' or value == None:
+            value = 0
+        if value:
+            value = value.strip(' \t\n\r')
+        if value:
+            value = value.replace(",", ".")
+            value = value.replace(" ", "")
+        return value
 
 
 
