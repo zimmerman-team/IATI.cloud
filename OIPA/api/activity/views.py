@@ -148,6 +148,15 @@ class ActivityAggregationSerializer(BaseSerializer):
             "serializer": TiedStatusSerializer,
             "fields": (), # has default fields
         },
+        "budget_per_year": {
+            "field": "year",
+            "extra": { 
+                'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+            },
+            "queryset": None,
+            "serializer": None,
+            "fields": None,
+        },
     }
 
     _allowed_orderings = [ i['field'] for i in _allowed_groupings.values()]
@@ -156,9 +165,12 @@ class ActivityAggregationSerializer(BaseSerializer):
         # todo: limit order_by fields
 
         allowed_orderings = self._allowed_orderings + aggregationList
+        allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
+
         orderings = self._intersection(allowed_orderings, orderList)
 
-        print(orderings)
+        # exclude null values of grouped field
+        # excludes = { i.replace("-","") + "__isnull": True for i in orderings }
 
         if (len(orderings)):
             return queryset.order_by(*orderings)
@@ -182,7 +194,16 @@ class ActivityAggregationSerializer(BaseSerializer):
             first_annotations[a['annotate_name']] = a['annotate']
      
         # aggregations that can be performed in the same query (hence require no extra filters)
-        result = first_queryset.values(*groupList).annotate(**first_annotations)
+        groupings = { group: self._allowed_groupings[group] for group in groupList }
+        groupFields = [ grouping["field"] for grouping in groupings.values() ]
+        groupExtras = { "select" : grouping["extra"] for grouping in groupings.values() if "extra" in grouping }
+
+        # apply extras
+        # for grouping in groupings:
+        first_queryset = first_queryset.extra(**groupExtras)
+
+        # Apply group_by calls and annotations
+        result = first_queryset.values(*groupFields).annotate(**first_annotations)
 
         # aggregations that require extra filters, and hence must be exectued separately
         for aggregation in separate_aggregations:
