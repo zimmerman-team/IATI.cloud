@@ -150,6 +150,7 @@ class XMLParser(object):
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = 'Function ' + function_name + ' not found'
+        log_entry.error_msg = function_name
         log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
@@ -175,6 +176,7 @@ class XMLParser(object):
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = errExceptionStr
+        log_entry.error_msg = str(exception)
         log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
