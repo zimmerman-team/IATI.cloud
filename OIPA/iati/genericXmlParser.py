@@ -209,7 +209,9 @@ class XMLParser(object):
                 try:
                     if model.objects.filter(code=key,codelist_iati_version=codelist_iati_version).exists():
                         model_cache[key] = model.objects.get(code=key,codelist_iati_version=codelist_iati_version)
-                        return model_cache[key]
+                    elif model.objects.filter(code=key).exists():
+                        model_cache[key] = model.objects.get(code=key)
+                    return model_cache[key]
                 except:
                     if model.objects.filter(name=key,codelist_iati_version=codelist_iati_version).exists():
                         model_cache[key] = model.objects.get(name=key,codelist_iati_version=codelist_iati_version)

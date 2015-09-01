@@ -295,7 +295,7 @@ class Parse(XMLParser):
     tag:activity-status'''
     def iati_activities__iati_activity__activity_status(self,element):
         model = self.get_func_parent_model()
-        model.activity_status = self.cached_db_call(models.ActivityStatus,element.attrib.get('code'))
+        model.activity_status = self.cached_db_call_no_version(models.ActivityStatus,element.attrib.get('code'))
 
         return element
 
@@ -486,7 +486,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__recipient_country(self,element):
         model = self.get_func_parent_model()
         activity_recipient_country =  models.ActivityRecipientCountry()
-        country = self.cached_db_call(Country,element.attrib.get('code'))
+        country = self.cached_db_call_no_version(Country,element.attrib.get('code'))
         activity_recipient_country.country = country
         activity_recipient_country.activity = model
         activity_recipient_country.percentage = element.attrib.get('percentage')
@@ -626,7 +626,7 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__location__administrative(self,element):
         model = self.get_func_parent_model()
         model.adm_code = element.attrib.get('code')
-        model.adm_vocabulary = self.cached_db_call(models.GeographicVocabulary,element.attrib.get('vocabulary'))
+        model.adm_vocabulary = self.cached_db_call_no_version(models.GeographicVocabulary,element.attrib.get('vocabulary'))
          
         return element
 
@@ -772,7 +772,7 @@ class Parse(XMLParser):
     tag:collaboration-type'''
     def iati_activities__iati_activity__collaboration_type(self,element):
         model = self.get_func_parent_model()
-        model.collaboration_type = self.cached_db_call(models.CollaborationType,element.attrib.get('code'))
+        model.collaboration_type = self.cached_db_call_no_version(models.CollaborationType,element.attrib.get('code'))
          
         return element
 
@@ -782,7 +782,7 @@ class Parse(XMLParser):
     tag:default-flow-type'''
     def iati_activities__iati_activity__default_flow_type(self,element):
         model = self.get_func_parent_model()
-        model.default_flow_type = self.cached_db_call(models.FlowType,element.attrib.get('code'))
+        model.default_flow_type = self.cached_db_call_no_version(models.FlowType,element.attrib.get('code'))
          
         return element
 
@@ -792,7 +792,7 @@ class Parse(XMLParser):
     tag:default-finance-type'''
     def iati_activities__iati_activity__default_finance_type(self,element):
         model = self.get_func_parent_model()
-        model.default_finance_type  = self.cached_db_call(models.FinanceType,element.attrib.get('code'))
+        model.default_finance_type  = self.cached_db_call_no_version(models.FinanceType,element.attrib.get('code'))
          
         return element
 
@@ -802,7 +802,7 @@ class Parse(XMLParser):
     tag:default-aid-type'''
     def iati_activities__iati_activity__default_aid_type(self,element):
         model = self.get_func_parent_model()
-        model.default_aid_type  = self.cached_db_call(models.AidType,element.attrib.get('code'))
+        model.default_aid_type  = self.cached_db_call_no_version(models.AidType,element.attrib.get('code'))
          
         return element
 
@@ -812,7 +812,7 @@ class Parse(XMLParser):
     tag:default-tied-status'''
     def iati_activities__iati_activity__default_tied_status(self,element):
         model = self.get_func_parent_model()
-        model.default_tied_status = self.cached_db_call(models.TiedStatus,element.attrib.get('code'))
+        model.default_tied_status = self.cached_db_call_no_version(models.TiedStatus,element.attrib.get('code'))
          
         return element
 
@@ -1079,7 +1079,7 @@ class Parse(XMLParser):
     tag:recipient-country'''
     def iati_activities__iati_activity__transaction__recipient_country(self,element):
         model = self.get_func_parent_model()
-        model.recipient_country = self.cached_db_call(models.Country,element.attrib.get('code'))
+        model.recipient_country = self.cached_db_call_no_version(Country,element.attrib.get('code'))
 
          
         return element
