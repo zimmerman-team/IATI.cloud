@@ -8,6 +8,7 @@ import django.contrib.gis.db.models.fields
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('auth', '__first__'),
     ]
 
     operations = [
@@ -121,6 +122,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=80)),
                 ('center_longlat', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('parental_region', models.ForeignKey(blank=True, to='geodata.Region', null=True)),
+                # ('region_vocabulary', models.ForeignKey(default=1, to='iati.RegionVocabulary')),
             ],
         ),
         migrations.AddField(

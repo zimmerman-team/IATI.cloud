@@ -276,13 +276,13 @@ class Migration(migrations.Migration):
             name='ContactInfo',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('person_name', models.CharField(default=b'', max_length=100)),
-                ('organisation', models.CharField(default=b'', max_length=100)),
-                ('telephone', models.CharField(default=b'', max_length=100)),
-                ('email', models.TextField(default=b'')),
-                ('mailing_address', models.TextField(default=b'')),
-                ('website', models.CharField(default=b'', max_length=255)),
-                ('job_title', models.CharField(default=b'', max_length=150)),
+                ('person_name', models.CharField(default=b'', max_length=100, null=True, blank=True)),
+                ('organisation', models.CharField(default=b'', max_length=100, null=True, blank=True)),
+                ('telephone', models.CharField(default=b'', max_length=100, null=True, blank=True)),
+                ('email', models.TextField(default=b'', null=True, blank=True)),
+                ('mailing_address', models.TextField(default=b'', null=True, blank=True)),
+                ('website', models.CharField(default=b'', max_length=255, null=True, blank=True)),
+                ('job_title', models.CharField(default=b'', max_length=150, null=True, blank=True)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
             ],
         ),
@@ -465,7 +465,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('extraction_date', models.DateField(default=None, null=True)),
                 ('priority', models.BooleanField(default=False)),
-                ('phaseout_year', models.IntegerField(max_length=4, null=True)),
+                ('phaseout_year', models.IntegerField(null=True)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
             ],
         ),
@@ -473,7 +473,7 @@ class Migration(migrations.Migration):
             name='FfsForecast',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('year', models.IntegerField(max_length=4, null=True)),
+                ('year', models.IntegerField(null=True)),
                 ('value_date', models.DateField(default=None, null=True)),
                 ('value', models.DecimalField(max_digits=15, decimal_places=2)),
                 ('currency', models.ForeignKey(to='iati.Currency')),
@@ -494,7 +494,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FinanceType',
             fields=[
-                ('code', models.IntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=220)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -504,7 +504,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FinanceTypeCategory',
             fields=[
-                ('code', models.IntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -514,7 +514,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FlowType',
             fields=[
-                ('code', models.IntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=150)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -708,7 +708,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.CharField(max_length=50, null=True, verbose_name=b'related object')),
                 ('iati_identifier', models.CharField(max_length=50, null=True, verbose_name=b'iati_identifier')),
-                ('content', models.TextField()),
+                ('content', models.TextField(null=True, blank=True)),
                 ('content_type', models.ForeignKey(verbose_name=b'xml Parent', blank=True, to='contenttypes.ContentType', null=True)),
                 ('language', models.ForeignKey(default=None, to='iati.Language', null=True)),
             ],
@@ -769,7 +769,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OtherFlags',
             fields=[
-                ('code', models.IntegerField(max_length=4, serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -823,7 +823,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PolicyMarkerVocabulary',
             fields=[
-                ('code', models.IntegerField(max_length=3, serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -902,7 +902,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(default=b'', max_length=200)),
                 ('description', models.TextField(default=b'')),
-                ('baseline_year', models.IntegerField(max_length=4)),
+                ('baseline_year', models.IntegerField()),
                 ('baseline_value', models.CharField(max_length=100)),
                 ('comment', models.TextField(default=b'')),
                 ('measure', models.ForeignKey(default=None, to='iati.IndicatorMeasure', null=True)),
@@ -993,7 +993,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SectorCategory',
             fields=[
-                ('code', models.IntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
             ],
@@ -1001,7 +1001,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SectorVocabulary',
             fields=[
-                ('code', models.IntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=10, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('url', models.URLField()),
@@ -1266,7 +1266,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contactinfo',
             name='contact_type',
-            field=models.ForeignKey(default=None, to='iati.ContactType', null=True),
+            field=models.ForeignKey(default=None, blank=True, to='iati.ContactType', null=True),
         ),
         migrations.AddField(
             model_name='condition',

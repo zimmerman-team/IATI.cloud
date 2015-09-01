@@ -184,7 +184,7 @@ class FileFormat(models.Model):
 
 
 class FinanceTypeCategory(models.Model):
-    code = models.IntegerField(primary_key=True)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=50)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -195,7 +195,7 @@ class FinanceTypeCategory(models.Model):
 
 
 class FinanceType(models.Model):
-    code = models.IntegerField(primary_key=True)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=220)
     description = models.TextField(default="")
     category = models.ForeignKey(FinanceTypeCategory)
@@ -206,7 +206,7 @@ class FinanceType(models.Model):
 
 
 class FlowType(models.Model):
-    code = models.IntegerField(primary_key=True)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=150)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -346,7 +346,7 @@ class OrganisationType(models.Model):
 
 
 class PolicyMarkerVocabulary(models.Model):
-    code = models.IntegerField(primary_key=True, max_length=3)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -413,7 +413,7 @@ class ResultType(models.Model):
 
 
 class SectorVocabulary(models.Model):
-    code = models.IntegerField(primary_key=True)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     url = models.URLField()
@@ -425,7 +425,7 @@ class SectorVocabulary(models.Model):
 
 
 class SectorCategory(models.Model):
-    code = models.IntegerField(primary_key=True)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
@@ -962,7 +962,7 @@ class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
     title = models.CharField(max_length=200, default="")
     description = models.TextField(default="")
-    baseline_year = models.IntegerField(max_length=4)
+    baseline_year = models.IntegerField()
     baseline_value = models.CharField(max_length=100)
     comment = models.TextField(default="")
     measure = models.ForeignKey(
@@ -1195,7 +1195,7 @@ class Ffs(models.Model):
     activity = models.ForeignKey(Activity)
     extraction_date = models.DateField(null=True, default=None)
     priority = models.BooleanField(default=False)
-    phaseout_year = models.IntegerField(max_length=4, null=True)
+    phaseout_year = models.IntegerField(null=True)
 
     def __unicode__(self,):
         return "%s" % (self.extraction_date)
@@ -1203,7 +1203,7 @@ class Ffs(models.Model):
 
 class FfsForecast(models.Model):
     ffs = models.ForeignKey(Ffs)
-    year = models.IntegerField(max_length=4, null=True)
+    year = models.IntegerField(null=True)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
@@ -1215,7 +1215,7 @@ class FfsForecast(models.Model):
 # Deliberately not named like the codelist CrsAddOtherFlags
 # since this would conflict with the M2M rel CrsAddOtherFlags
 class OtherFlags(models.Model):
-    code = models.IntegerField(primary_key=True, max_length=4)
+    code = models.CharField(max_length=10,  primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
