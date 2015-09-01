@@ -265,14 +265,16 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             serializers[grouping] = { i.get('code'):i for i in data }
 
-        results = valuesQuerySet
 
-        for i, result in enumerate(results):
+        results = list(valuesQuerySet)
+
+        for i, result in enumerate(list(results)):
             for k,v in result.iteritems():
                 if k in groupList:
-                    # print(k)
-                    print(serializers.get(k, {}))
-                    result[k] = serializers.get(k, {}).get(str(v))
+                    if v:
+                        result[k] = serializers.get(k, {}).get(str(v))
+                    else:
+                        del results[i]
 
         return results
 
