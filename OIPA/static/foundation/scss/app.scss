@@ -249,14 +249,14 @@ footer {
 .roze {
 	@include button(
 		$padding: rem-calc(20),
-		$bg: $oil,
+		$bg: $primary-color,
 		$radius: $global-radius,
 		$full-width: false,
 		$disabled: false
 	);
 	font-size: 1.2rem;
 	font-weight:700;
-	background:$roze;
+	//background:$roze;
 	//@include btn-gradient-style($roze,darken($roze,10%));
 }
 

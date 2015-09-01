@@ -12763,18 +12763,17 @@ footer p {
   text-decoration: none;
   display: inline-block;
   padding: 1.25rem 2.5rem 1.3125rem 2.5rem;
-  background-color: #333333;
-  border-color: #292929;
+  background-color: #e92744;
+  border-color: #c5142f;
   color: #FFFFFF;
   border-radius: 3px;
   transition: background-color 300ms ease-out;
   font-size: 1.2rem;
   font-weight: 700;
-  background: #e92744;
 }
 /* line 158, ../bower_components/foundation/scss/foundation/components/_buttons.scss */
 .roze:hover, .roze:focus {
-  background-color: #292929;
+  background-color: #c5142f;
 }
 /* line 164, ../bower_components/foundation/scss/foundation/components/_buttons.scss */
 .roze:hover, .roze:focus {
