@@ -35,7 +35,7 @@ class Narrative(models.Model):
     parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
     iati_identifier = models.CharField(max_length=50,verbose_name='iati_identifier',null=True)
-    content = models.TextField()
+    content = models.TextField(null=True,blank=True)
 
 class ActivityDateType(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -841,14 +841,14 @@ class ActivityWebsite(models.Model):
 #   Class not truly correct, attributes fully open
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
-    person_name = models.CharField(max_length=100, default="")
-    organisation = models.CharField(max_length=100, default="")
-    telephone = models.CharField(max_length=100, default="")
-    email = models.TextField(default="")
-    mailing_address = models.TextField(default="")
-    website = models.CharField(max_length=255, default="")
-    contact_type = models.ForeignKey(ContactType, null=True, default=None)
-    job_title = models.CharField(max_length=150, default="")
+    person_name = models.CharField(max_length=100, default="",null=True,blank=True)
+    organisation = models.CharField(max_length=100, default="",null=True,blank=True)
+    telephone = models.CharField(max_length=100, default="",null=True,blank=True)
+    email = models.TextField(default="",null=True,blank=True)
+    mailing_address = models.TextField(default="",null=True,blank=True)
+    website = models.CharField(max_length=255, default="",null=True,blank=True)
+    contact_type = models.ForeignKey(ContactType, null=True, default=None,blank=True)
+    job_title = models.CharField(max_length=150, default="",null=True,blank=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.person_name)

@@ -107,6 +107,8 @@ class Parse(XMLParser):
             lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
 
         #print 'language = '+lang
+        if(element.text == None or element.text ==''):
+            return
         narrative.language = self.cached_db_call(models.Language,lang)
         narrative.content = element.text
         narrative.iati_identifier = self.iati_identifier
@@ -141,7 +143,7 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
-        print 'deleting '+element.text
+        #print 'deleting '+element.text
         deleter = Deleter()
         try:
             deleter.remove_old_values_for_activity_by_iati_id(element.text)
@@ -172,7 +174,8 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__reporting_org(self,element):
         model = self.get_func_parent_model()
         organisation = self.add_organisation(element)
-        model.secondary_publisher = element.attrib.get('secondary-reporter')
+        if 'secondary-reporter' in element.attrib:
+            model.secondary_publisher = element.attrib.get('secondary-reporter')
         #print organisation.name
         model.reporting_organisation = organisation
         self.set_func_model(organisation)
@@ -855,9 +858,8 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__budget__value(self,element):
         model = self.get_func_parent_model()
         value = element.text
-        if value == '' or value == None:
-            value = 0
-        model.value = element.text
+        value = self.guess_number(value)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          
@@ -904,7 +906,9 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities__iati_activity__planned_disbursement__value(self,element):
         model = self.get_func_parent_model()
-        model.value = element.text
+        value = element.text
+        value = self.guess_number(value)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
         return element
@@ -960,7 +964,8 @@ class Parse(XMLParser):
     tag:value'''
     def iati_activities__iati_activity__transaction__value(self,element):
         model = self.get_func_parent_model()
-        model.value = element.text
+        value = self.guess_number(element.text)
+        model.value = value
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
          

@@ -54,6 +54,7 @@ class XMLParser(object):
         hintsStr = ''
         errorStr = ''
         send_mail = False
+        print 'before sending mail'
         if len(self.hints) > 0:
             hintsStr = "function that are missing:"
             hintsStr += "\n".join( self.hints )
@@ -102,14 +103,18 @@ class XMLParser(object):
                     #print function_name
                     traceback.print_exc()
                     self.handle_exception(x_path, function_name, exeception,element)
-                    self.parse(e)
+                    #self.parse(e)
             else:
                 if not self.magicMethod(function_name,e):
                     self.handle_function_not_found(x_path, function_name,e)
                 #print function_name
-
-                self.parse(e)
-
+                try:
+                    self.parse(e)
+                except Exception as exeception:
+                    print 'error'
+                    #print function_name
+                    traceback.print_exc()
+                    self.handle_exception(x_path, function_name, exeception,element)
         
 
     def generate_function_name(self, xpath):
@@ -134,7 +139,7 @@ class XMLParser(object):
     '''atributes:
 """+keys+"""
     tag:"""+element.tag+"""
-    found in """+ self.iati_source.source_url+""" at line """+element.sourceline+""" iati_version ="""+self.VERSION+"""'''
+    found in """+ self.iati_source.source_url+""" at line """+str(element.sourceline)+""" iati_version ="""+self.VERSION+"""'''
     def """ + function_name + """(self,element):
         model = self.get_func_parent_model()
         #store element 
@@ -145,6 +150,7 @@ class XMLParser(object):
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = 'Function ' + function_name + ' not found'
+        log_entry.error_msg = function_name
         log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
@@ -163,13 +169,14 @@ class XMLParser(object):
 
     def handle_exception(self, xpath, function_name, exception,element):
         hint = """look at XML document"""
-        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+element.sourceline+" source is "+self.iati_source.source_url
+        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+str(element.sourceline)+" source is "+self.iati_source.source_url
         errExceptionStr = errorStr+"\n"+str(exception)
         
         self.errors.append(errExceptionStr)
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = errExceptionStr
+        log_entry.error_msg = str(exception)
         log_entry.file_name = self.iati_source.source_url
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
@@ -193,7 +200,7 @@ class XMLParser(object):
         model_name = model.__name__
         codelist_iati_version = self.VERSION
         #print model_name
-        print str(key)+' is the key'
+        #print str(key)+' is the key'
         if model_name in self.db_call_cache:
             model_cache = self.db_call_cache[model_name]
             if key in model_cache:
@@ -298,7 +305,15 @@ class XMLParser(object):
 
 
 
-
+    def guess_number(self,value):
+        if value == '' or value == None:
+            value = 0
+        if value:
+            value = value.strip(' \t\n\r')
+        if value:
+            value = value.replace(",", ".")
+            value = value.replace(" ", "")
+        return value
 
 
 
