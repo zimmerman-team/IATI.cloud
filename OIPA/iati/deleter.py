@@ -58,7 +58,7 @@ class Deleter():
             models.ActivityRecipientRegion.objects.all().delete()
             models.OtherIdentifier.objects.all().delete()
             models.ActivityWebsite.objects.all().delete()
-
+            models.ActivityDate.objects.all().delete()
             
             models.ContactInfoPersonName.objects.all().delete()
             models.ContactInfoOrganisation.objects.all().delete()
@@ -144,6 +144,8 @@ class Deleter():
             models.ActivityRecipientRegion.objects.filter(activity=cur_activity).delete()
             models.OtherIdentifier.objects.filter(activity=cur_activity).delete()
             models.ActivityWebsite.objects.filter(activity=cur_activity).delete()
+
+            model.ActivityDate.objects.filter(activity=cur_activity).delete()
 
             for contact_info in models.ContactInfo.objects.filter(activity=cur_activity):
                 models.ContactInfoPersonName.objects.filter(ContactInfo=contact_info).delete()

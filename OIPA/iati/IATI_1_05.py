@@ -46,9 +46,9 @@ class Parse(IATI_201_Parser):
 
     def add_organisation(self, elem):
         try:
-            ref = elem.attrib['ref']
+            ref = elem.attrib.get('ref')
             org_ref = ref
-            type_ref = elem.attrib['type']
+            type_ref = elem.attrib.get('type')
             name = elem.text
             for e in elem:
                 name = e.text
@@ -209,7 +209,7 @@ class Parse(IATI_201_Parser):
         activityParticipatingOrganisation.activity = model
         activityParticipatingOrganisation.type = self.cached_db_call(models.OrganisationType,element.attrib.get('type'))
         activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
-
+        activityParticipatingOrganisation.save()
         self.add_narrative_105(element.text,activityParticipatingOrganisation)
         #store element 
         return element
@@ -318,6 +318,7 @@ class Parse(IATI_201_Parser):
         reciever_org = self.add_organisation(element)
         transaction_receiver = models.TransactionReciever()
         transaction_receiver.transaction = model
+        transaction_receiver.organisation = reciever_org
         self.add_narrative_105(element.text,transaction_receiver)
         #store element 
         return element
