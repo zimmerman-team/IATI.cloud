@@ -136,7 +136,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             "serializer": AidTypeSerializer,
             "fields": (), # has default fields
         },
-        "collaboration_type": {
+        "default_finance_type": {
             "field": "default_finance_type",
             "queryset": FinanceType.objects.all(),
             "serializer": FinanceTypeSerializer,
@@ -179,12 +179,26 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return queryset
 
-    def apply_annotations(self, queryset, groupList, aggregationList):
+    def apply_limit_offset_filters(self, queryset, page_size, page):
+
+        if page_size:
+
+            if not page:
+                page = 1
+
+            page_size = int(page_size)
+            page = int(page)
+
+            offset = (page * page_size) - page_size
+            offset_plus_limit = offset + page_size
+            return queryset[offset:offset_plus_limit]
+
+        return queryset
+
+    def apply_annotations(self, queryset, groupList, aggregationList, page_size, page):
 
         first_queryset = queryset
         first_annotations = dict()
-        first_result = dict()
-        result = dict()
 
         same_query_aggregations = [ i for i in aggregationList if not self._aggregations[i].get('extra_filter') ]
         separate_aggregations = [ i for i in aggregationList if self._aggregations[i].get('extra_filter') ]
@@ -202,8 +216,17 @@ class ActivityAggregationSerializer(BaseSerializer):
         # for grouping in groupings:
         first_queryset = first_queryset.extra(**groupExtras)
 
+        # remove nulls (
+        # to do: check why values() uses left outer joins,
+        # this can be a lot slower than inner joins and will prevent the null
+        nullFilters = {}
+        for grouping in groupings.values():
+            nullFilters[grouping["field"] + '__isnull'] = False
+        for aggregation in same_query_aggregations:
+            nullFilters[aggregation + '__isnull'] = False
+
         # Apply group_by calls and annotations
-        result = first_queryset.values(*groupFields).annotate(**first_annotations)
+        result = first_queryset.values(*groupFields).annotate(**first_annotations).filter(**nullFilters)
 
         # aggregations that require extra filters, and hence must be exectued separately
         for aggregation in separate_aggregations:
@@ -283,6 +306,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         params = request.query_params
 
         order_by = filter(None, params.get('order_by', "").split(','))
+        page_size = params.get('page_size', None)
+        page = params.get('page', None)
+
         # order_by = self._union(filter(None, params.get('order_by', "").split(',')), self._allowed_groupings.keys())
         group_by = self._intersection(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
         aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
@@ -295,8 +321,9 @@ class ActivityAggregationSerializer(BaseSerializer):
 
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
-        queryset = self.apply_order_filters(queryset, order_by, group_by, aggregations) 
-        result = self.apply_annotations(queryset, group_by, aggregations)
+        queryset = self.apply_order_filters(queryset, order_by, group_by, aggregations)
+        queryset = self.apply_annotations(queryset, group_by, aggregations, page_size, page)
+        result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.serialize_foreign_keys(result, request, group_by)
 
         return result
@@ -335,21 +362,22 @@ class ActivityList(ListAPIView):
 
     ## Request parameters
 
-    - `recipient_countries` (*optional*): Recipient countries list.
-        Comma separated list of strings.
-    - `recipient_regions` (*optional*): Recipient regions list.
-        Comma separated list of integers.
-    - `sectors` (*optional*): Sectors list. Comma separated list of integers.
-    - `reporting_organisations` (*optional*): Organisation ID's list.
-    - `participating_organisations` (*optional*): Organisation IDs list.
-        Comma separated list of strings.
+    - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
+    - `recipient_region` (*optional*): Comma separated list of region codes.
+    - `sector` (*optional*): Comma separated list of 5-digit sector codes.
+    - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
+    - `reporting_organisation` (*optional*): Comma separated list of organisation id's.
+    - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `min_total_budget` (*optional*): Minimal total budget value.
     - `max_total_budget` (*optional*): Maximal total budget value.
-    - `aggregations` (*optional*): Aggregate available information.
-        See [Available aggregations]() section for details.
-    - `q` (*optional*): Search specific value in activities list.
-        See [Searching]() section for details.
-    - `fields` (*optional*): List of fields to display
+    - `activity_status` (*optional*): Comma separated list of activity statuses.
+
+
+    - `related_activity_id` (*optional*):
+    - `related_activity_type` (*optional*):
+    - `related_activity_recipient_country` (*optional*):
+    - `related_activity_recipient_region` (*optional*):
+    - `related_activity_sector` (*optional*):
 
     ## Available aggregations
 
@@ -546,14 +574,25 @@ class ActivityTransactions(ListAPIView):
 
     ## Request parameters:
 
-    - `id` (*optional*): Transaction identifier
-    - `aid_type` (*optional*): Aid type identifier
-    - `activity__id` (*optional*): Activity id
-    - `transaction_type` (*optional*): Transaction type identifier
-    - `value` (*optional*): Transaction value.
-    - `min_value` (*optional*): Minimal transaction value
-    - `max_value` (*optional*): Maximal transaction value
-    - `fields` (*optional*): List of fields to display
+    - `recipient_country` (*optional*): Recipient countries list.
+        Comma separated list of strings.
+    - `recipient_region` (*optional*): Recipient regions list.
+        Comma separated list of integers.
+    - `sector` (*optional*): Sectors list. Comma separated list of integers.
+    - `sector_category` (*optional*): Sectors list. Comma separated list of integers.
+    - `reporting_organisations` (*optional*): Organisation ID's list.
+    - `participating_organisations` (*optional*): Organisation IDs list.
+        Comma separated list of strings.
+    - `min_total_budget` (*optional*): Minimal total budget value.
+    - `max_total_budget` (*optional*): Maximal total budget value.
+    - `activity_status` (*optional*):
+
+
+    - `related_activity_id` (*optional*):
+    - `related_activity_type` (*optional*):
+    - `related_activity_recipient_country` (*optional*):
+    - `related_activity_recipient_region` (*optional*):
+    - `related_activity_sector` (*optional*):
 
     ## Searching is performed on fields:
 
