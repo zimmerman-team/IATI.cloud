@@ -45,9 +45,14 @@ class ParseIATI():
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             #get the hash
-            #hash  = self.hashfile(iati_file,hashlib.md5())
-            #if hash == last_hash:
+            hash  = self.hashfile(iati_file,hashlib.md5())
+            if hash == last_hash:
+                pass
                 #return
+            else:
+                source.last_hash = hash
+                source.save()
+
             if iati_file:
 
                 # delete old activities

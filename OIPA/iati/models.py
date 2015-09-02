@@ -901,6 +901,9 @@ class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
         Activity,
         related_name="current_activity")
+    related_activity = models.ForeignKey(
+        Activity,
+        related_name="related_activity",null=True)
     type = models.ForeignKey(
         RelatedActivityType,
         max_length=200,
