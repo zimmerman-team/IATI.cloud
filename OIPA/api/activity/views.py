@@ -373,11 +373,11 @@ class ActivityList(ListAPIView):
     - `activity_status` (*optional*): Comma separated list of activity statuses.
 
 
-    - `related_activity_id` (*optional*):
-    - `related_activity_type` (*optional*):
-    - `related_activity_recipient_country` (*optional*):
-    - `related_activity_recipient_region` (*optional*):
-    - `related_activity_sector` (*optional*):
+    - `related_activity_id` (*optional*): Comma separated list of activity ids. Returns a list of all activities mentioning these activity id's.
+    - `related_activity_type` (*optional*): Comma separated list of RelatedActivityType codes.
+    - `related_activity_recipient_country` (*optional*): Comma separated list of iso2 country codes.
+    - `related_activity_recipient_region` (*optional*): Comma separated list of region codes.
+    - `related_activity_sector` (*optional*): Comma separated list of 5-digit sector codes.
 
     ## Available aggregations
 
