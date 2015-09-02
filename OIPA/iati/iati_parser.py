@@ -80,6 +80,7 @@ class ParseIATI():
                     parser.VERSION = iati_version
                 print 'before parsing'
                 parser.iati_identifier = iati_identifier
+                parser.xml_source_ref = self
                 parser.iati_source = source
                 parser.load_and_parse(root)
 

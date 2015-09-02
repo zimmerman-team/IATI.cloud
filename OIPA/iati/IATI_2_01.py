@@ -55,6 +55,7 @@ class Parse(XMLParser):
         return valid_date
 
     def add_organisation(self, elem):
+        print 'in add organisation!!'
         try:
             ref = elem.attrib.get('ref')
             org_ref = ref
@@ -63,13 +64,14 @@ class Parse(XMLParser):
             for e in elem:
                 name = e.text
                 break
-
+            print 'in add organisation '+name
             org_type = None
             if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
                 org_type = self.cached_db_call(models.OrganisationType,type_ref)
 
             if models.Organisation.objects.filter(original_ref=ref).exists():
                 org =  models.Organisation.objects.filter(original_ref=ref)[0]
+                print ref
                 if org.name == name:
                     #organisation found 
 
@@ -133,10 +135,11 @@ class Parse(XMLParser):
         self.default_lang = activity.default_lang
         activity.hierarchy = element.attrib.get('hierarchy')
         activity.xml_source_ref = self.xml_source_ref
-        activity_id = self.iati_identifier.replace("/", "-")
+        activity_id = element.xpath('iati-identifier/text()')[0]
         activity_id = activity_id.replace(":", "-")
         activity_id = activity_id.replace(" ", "")
         activity.id = activity_id
+        print activity_id+'is the activty ID'
         activity.save()
         self.set_func_model(activity)
         if 'default-currency' in element.attrib:

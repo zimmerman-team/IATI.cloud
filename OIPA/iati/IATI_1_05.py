@@ -53,13 +53,13 @@ class Parse(IATI_201_Parser):
             for e in elem:
                 name = e.text
                 break
-
             org_type = None
             if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
                 org_type = self.cached_db_call(models.OrganisationType,type_ref)
 
             if models.Organisation.objects.filter(original_ref=ref).exists():
                 org =  models.Organisation.objects.filter(original_ref=ref)[0]
+                print ref
                 if org.name == name:
                     #organisation found 
 
@@ -83,11 +83,11 @@ class Parse(IATI_201_Parser):
                     'original_ref': org_ref
 
                 })[0]
-            print "return organisation "+str(organisation)
             return organisation
 
         except Exception as e:
             print e
+
 
     '''atributes:
     ref:AA-AAA-123456789
@@ -204,8 +204,9 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__participating_org(self,element):
         model = self.get_func_parent_model()
         org = self.add_organisation(element)
+        print org.code + ' is the organisation code'
         activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
-        activityParticipatingOrganisation.org = org
+        activityParticipatingOrganisation.organisation = org
         activityParticipatingOrganisation.activity = model
         activityParticipatingOrganisation.type = self.cached_db_call(models.OrganisationType,element.attrib.get('type'))
         activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
