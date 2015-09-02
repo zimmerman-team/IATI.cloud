@@ -145,7 +145,7 @@ class Deleter():
             models.OtherIdentifier.objects.filter(activity=cur_activity).delete()
             models.ActivityWebsite.objects.filter(activity=cur_activity).delete()
 
-            model.ActivityDate.objects.filter(activity=cur_activity).delete()
+            models.ActivityDate.objects.filter(activity=cur_activity).delete()
 
             for contact_info in models.ContactInfo.objects.filter(activity=cur_activity):
                 models.ContactInfoPersonName.objects.filter(ContactInfo=contact_info).delete()

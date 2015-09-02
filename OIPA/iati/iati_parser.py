@@ -68,6 +68,8 @@ class ParseIATI():
                 print root.xpath('@version')
                 print self.return_first_exist(root.xpath('@version'))
                 iati_version = root.xpath('@version')[0]
+                iati_identifier = root.xpath('iati-activity/iati-identifier/text()')
+
                 if iati_version == '2.01':
                     parser = IATI_201_Parser()
                 elif iati_version == '1.03':
@@ -77,6 +79,7 @@ class ParseIATI():
                     parser = IATI_105_Parser()
                     parser.VERSION = iati_version
                 print 'before parsing'
+                parser.iati_identifier = iati_identifier
                 parser.iati_source = source
                 parser.load_and_parse(root)
 
