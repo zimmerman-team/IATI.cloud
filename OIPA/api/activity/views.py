@@ -361,7 +361,8 @@ class ActivityList(ListAPIView):
     Returns a list of IATI Activities stored in OIPA.
 
     ## Request parameters
-
+    - `ids` (*optional*): Comma separated list of activity ID's.
+    - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
@@ -371,8 +372,7 @@ class ActivityList(ListAPIView):
     - `min_total_budget` (*optional*): Minimal total budget value.
     - `max_total_budget` (*optional*): Maximal total budget value.
     - `activity_status` (*optional*): Comma separated list of activity statuses.
-
-
+    - `hierarchy` (*optional*): Comma separated list of activity hierarchies.
     - `related_activity_id` (*optional*): Comma separated list of activity ids. Returns a list of all activities mentioning these activity id's.
     - `related_activity_type` (*optional*): Comma separated list of RelatedActivityType codes.
     - `related_activity_recipient_country` (*optional*): Comma separated list of iso2 country codes.
@@ -405,10 +405,11 @@ class ActivityList(ListAPIView):
 
     ## Result details
 
-    Each result item contains short information about activity
-    including URI to activity details.
+    Each item contains summarized information on the activity being shown,
+    including the URI to activity details. To show more information, go to the
+    activity's detail page or select any field using the `fields` parameter on the list. Example;
+    `fields=url,id,title,recipient_countries,any_field`.
 
-    URI is constructed as follows: `/api/activities/{activity_id}`
 
     """
     queryset = Activity.objects.all()
