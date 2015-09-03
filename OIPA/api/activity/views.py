@@ -157,20 +157,26 @@ class ActivityAggregationSerializer(BaseSerializer):
             "serializer": None,
             "fields": None,
         },
+        "budget_per_quarter": {
+            "field": "year,quarter",
+            "extra": {
+                'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                'quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
+            },
+            "queryset": None,
+            "serializer": None,
+            "fields": None,
+        },
     }
 
     _allowed_orderings = [ i['field'] for i in _allowed_groupings.values()]
 
-    def apply_order_filters(self, queryset, orderList, groupList, aggregationList):
-        # todo: limit order_by fields
+    def apply_order_filters(self, queryset, orderList, aggregationList):
 
         allowed_orderings = self._allowed_orderings + aggregationList
         allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
 
         orderings = self._intersection(allowed_orderings, orderList)
-
-        # exclude null values of grouped field
-        # excludes = { i.replace("-","") + "__isnull": True for i in orderings }
 
         if (len(orderings)):
             return queryset.order_by(*orderings)
@@ -209,8 +215,10 @@ class ActivityAggregationSerializer(BaseSerializer):
      
         # aggregations that can be performed in the same query (hence require no extra filters)
         groupings = { group: self._allowed_groupings[group] for group in groupList }
-        groupFields = [ grouping["field"] for grouping in groupings.values() ]
-        groupExtras = { "select" : grouping["extra"] for grouping in groupings.values() if "extra" in grouping }
+        groupFields = []
+        for grouping in groupings.values():
+            groupFields.extend(grouping["field"].split(','))
+        groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
         # apply extras
         # for grouping in groupings:
@@ -221,7 +229,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         # this can be a lot slower than inner joins and will prevent the null
         nullFilters = {}
         for grouping in groupings.values():
-            nullFilters[grouping["field"] + '__isnull'] = False
+            if grouping["fields"]:
+                nullFilters[grouping["field"] + '__isnull'] = False
         for aggregation in same_query_aggregations:
             nullFilters[aggregation + '__isnull'] = False
 
@@ -309,7 +318,6 @@ class ActivityAggregationSerializer(BaseSerializer):
         page_size = params.get('page_size', None)
         page = params.get('page', None)
 
-        # order_by = self._union(filter(None, params.get('order_by', "").split(',')), self._allowed_groupings.keys())
         group_by = self._intersection(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
         aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
 
@@ -321,7 +329,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
-        queryset = self.apply_order_filters(queryset, order_by, group_by, aggregations)
+        queryset = self.apply_order_filters(queryset, order_by, aggregations)
         queryset = self.apply_annotations(queryset, group_by, aggregations, page_size, page)
         result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.serialize_foreign_keys(result, request, group_by)
