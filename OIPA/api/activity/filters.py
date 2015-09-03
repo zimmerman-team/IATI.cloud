@@ -166,7 +166,7 @@ class ActivityFilter(TogetherFilterSet):
 
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='transaction__provider_activity')
+        name='transaction__provider_activity', distinct=True)
 
     class Meta:
         model = Activity
