@@ -687,8 +687,6 @@ class Activity(models.Model):
     default_finance_type = models.ForeignKey(FinanceType, null=True, default=None)
     default_tied_status = models.ForeignKey(TiedStatus, null=True, default=None)
     xml_source_ref = models.CharField(max_length=200, default="")
-    total_budget_currency = models.ForeignKey(Currency, null=True, default=None, related_name="total_budget_currency")
-    total_budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, default=None, db_index=True)
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)

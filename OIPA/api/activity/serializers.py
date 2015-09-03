@@ -126,20 +126,6 @@ class ActivityStatusSerializer(serializers.ModelSerializer):
             'code', 'name'
         )
 
-
-class TotalBudgetSerializer(serializers.Serializer):
-    currency = CurrencySerializer(source='total_budget_currency')
-    value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False,
-        source='total_budget',
-    )
-
-    class Meta:
-        model = iati.models.Activity
-        fields = ('currency', 'value')
-
 class BudgetSerializer(FilterableModelSerializer):
     class BudgetTypeSerializer(serializers.ModelSerializer):
         code = serializers.CharField()
@@ -509,7 +495,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     default_flow_type = FlowTypeSerializer()
     default_tied_status = TiedStatusSerializer()
     activity_dates = ActivityDateSerializer(source='*')
-    total_budget = TotalBudgetSerializer(source='*')
     reporting_organisation = ReportingOrganisationSerializer(source='*')
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)
@@ -575,7 +560,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_tied_status',
             'budgets',
             'capital_spend',
-            'total_budget',
             'xml_source_ref',
             'document_links',
             'results',
