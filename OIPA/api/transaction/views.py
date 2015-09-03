@@ -34,16 +34,16 @@ class TransactionList(ListAPIView):
 
     ## Request parameters
 
-    - `id` (*optional*): Transaction identifier
-    - `aid_type` (*optional*): Aid type identifier
-    - `activity__id` (*optional*): Activity id
-    - `transaction_type` (*optional*): Transaction type identifier
+    - `id` (*optional*): Transaction identifier.
+    - `aid_type` (*optional*): Aid type identifier.
+    - `activity` (*optional*): Comma separated list of activity id's.
+    - `transaction_type` (*optional*): Transaction type identifier.
     - `value` (*optional*): Transaction value.
-    - `min_value` (*optional*): Minimal transaction value
-    - `max_value` (*optional*): Maximal transaction value
+    - `min_value` (*optional*): Minimal transaction value.
+    - `max_value` (*optional*): Maximal transaction value.
     - `q` (*optional*): Search specific value in activities list.
         See [Searching]() section for details.
-    - `fields` (*optional*): List of fields to display
+    - `fields` (*optional*): List of fields to display.
 
     ## Searching
 

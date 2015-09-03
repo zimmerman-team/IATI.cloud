@@ -20,7 +20,6 @@ class TransactionFilter(django_filters.FilterSet):
         fields = [
             'id',
             'aid_type',
-            'activity__id',
             'transaction_type',
             'value',
             'min_value',
