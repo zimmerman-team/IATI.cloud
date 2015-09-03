@@ -1,5 +1,6 @@
 from rest_framework import filters
 from django.db.models.sql.constants import QUERY_TERMS
+from django_filters import CharFilter
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
@@ -102,3 +103,13 @@ class BasicFilterBackend(filters.BaseFilterBackend):
             )
 
         return queryset
+
+
+class CommaSeparatedCharFilter(CharFilter):
+
+    def filter(self, qs, value):
+
+        if value:
+            value = value.split(',')
+
+        return super(CommaSeparatedCharFilter, self).filter(qs, value)

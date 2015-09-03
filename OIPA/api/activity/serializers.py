@@ -407,7 +407,6 @@ class GeographicVocabularySerializer(serializers.ModelSerializer):
             'code',
         )
 
-
 class LocationSerializer(serializers.ModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
         vocabulary = GeographicVocabularySerializer(
@@ -498,6 +497,10 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     reporting_organisation = ReportingOrganisationSerializer(source='*')
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)
+    # transactions = TransactionSerializer(
+    #     many=True,
+    #     source='transaction_set'
+    # )
     transactions = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-transactions',
     )

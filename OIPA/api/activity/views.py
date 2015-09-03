@@ -361,7 +361,7 @@ class ActivityList(ListAPIView):
     Returns a list of IATI Activities stored in OIPA.
 
     ## Request parameters
-    - `ids` (*optional*): Comma separated list of activity ID's.
+    - `ids` (*optional*): Comma separated list of activity id's.
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
@@ -378,6 +378,8 @@ class ActivityList(ListAPIView):
     - `related_activity_recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `related_activity_recipient_region` (*optional*): Comma separated list of region codes.
     - `related_activity_sector` (*optional*): Comma separated list of 5-digit sector codes.
+    - `transaction_provider_activity` (*optional*): Comma separated list of activity id's.
+
 
     ## Available aggregations
 

@@ -1,14 +1,6 @@
 from iati.models import Activity, Budget, RelatedActivity
-from django_filters import Filter, FilterSet, NumberFilter, CharFilter, DateFilter
-
-class CommaSeparatedCharFilter(CharFilter):
-
-    def filter(self, qs, value):
-
-        if value:
-            value = value.split(',')
-
-        return super(CommaSeparatedCharFilter, self).filter(qs, value)
+from django_filters import Filter, FilterSet, NumberFilter, DateFilter
+from api.generics.filters import CommaSeparatedCharFilter
 
 class CommaSeparatedDateRangeFilter(Filter):
 
@@ -154,9 +146,14 @@ class ActivityFilter(TogetherFilterSet):
     min_total_budget = NumberFilter(
         lookup_type='gte',
         name='total_budget')
+
     max_total_budget = NumberFilter(
         lookup_type='lte',
         name='total_budget')
+
+    transaction_provider_activity = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__provider_activity')
 
     class Meta:
         model = Activity

@@ -3,7 +3,7 @@ from iati.models import Transaction
 from iati.models import TransactionType
 
 from api.generics.serializers import DynamicFieldsModelSerializer
-from api.organisation.serializers import OrganisationSerializer
+from api.organisation.serializers import BasicOrganisationSerializer
 from api.activity.serializers import ActivitySerializer
 from api.activity.serializers import AidTypeSerializer
 from api.activity.serializers import CurrencySerializer
@@ -35,8 +35,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     description_type = DescriptionTypeSerializer()
     finance_type = FinanceTypeSerializer()
     flow_type = FlowTypeSerializer()
-    provider_organisation = OrganisationSerializer()
-    receiver_organisation = OrganisationSerializer()
+    provider_organisation = BasicOrganisationSerializer()
+    receiver_organisation = BasicOrganisationSerializer()
     tied_status = TiedStatusSerializer()
     transaction_type = TransactionTypeSerializer(fields=('code', ))
     currency = CurrencySerializer()
@@ -44,7 +44,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Transaction
         fields = (
-            'id',
             'url',
             'activity',
             'aid_type',
@@ -66,3 +65,4 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'currency',
             'ref',
         )
+
