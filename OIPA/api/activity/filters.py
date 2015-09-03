@@ -134,6 +134,11 @@ class ActivityFilter(TogetherFilterSet):
         name='current_activity__related_activity__sector',
         distinct=True)
 
+    related_activity_sector_category = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='current_activity__related_activity__sector__category',
+        distinct=True)
+
     budget_period_start = DateFilter(
         lookup_type='gte',
         name='budget__period_start')
