@@ -85,6 +85,14 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='recipient_region')
 
+    start_actual_lte = DateFilter(
+        lookup_type='lte',
+        name='start_actual')
+
+    start_actual_gte = DateFilter(
+        lookup_type='gte',
+        name='start_actual')
+
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
         name='sector')
