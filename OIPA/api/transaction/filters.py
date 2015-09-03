@@ -12,6 +12,11 @@ class TransactionFilter(django_filters.FilterSet):
         lookup_type='in',
         name='activity')
 
+    activity_related_activity_id = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__current_activity__related_activity__id',
+        distinct=True)
+
     min_value = django_filters.NumberFilter(name='value', lookup_type='gte')
     max_value = django_filters.NumberFilter(name='value', lookup_type='lte')
 
