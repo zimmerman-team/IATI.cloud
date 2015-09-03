@@ -371,6 +371,8 @@ class ActivityList(ListAPIView):
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `min_total_budget` (*optional*): Minimal total budget value.
     - `max_total_budget` (*optional*): Maximal total budget value.
+    - `start_date_actual_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given date.
+    - `start_date_actual_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given date.
     - `activity_status` (*optional*): Comma separated list of activity statuses.
     - `hierarchy` (*optional*): Comma separated list of activity hierarchies.
     - `related_activity_id` (*optional*): Comma separated list of activity ids. Returns a list of all activities mentioning these activity id's.
