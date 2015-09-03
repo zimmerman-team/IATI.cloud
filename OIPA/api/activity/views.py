@@ -378,6 +378,7 @@ class ActivityList(ListAPIView):
     - `related_activity_recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `related_activity_recipient_region` (*optional*): Comma separated list of region codes.
     - `related_activity_sector` (*optional*): Comma separated list of 5-digit sector codes.
+    - `related_activity_sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `transaction_provider_activity` (*optional*): Comma separated list of activity id's.
 
 
