@@ -10,6 +10,7 @@ from api.country.serializers import CountrySerializer
 from api.fields import JSONField
 from api.activity.filters import ActivityFilter, BudgetFilter, RelatedActivityFilter
 
+from django.db.models import Sum
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
     class FileFormatSerializer(serializers.ModelSerializer):
@@ -481,7 +482,6 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
-
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     activity_status = ActivityStatusSerializer()
@@ -533,6 +533,20 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     related_activities = RelatedActivitySerializer(many=True, source='current_activity')
 
+    total_child_budgets = serializers.SerializerMethodField()
+
+    def get_total_child_budgets(self, activity):
+        if activity.hierarchy == 1:
+            return iati.models.Activity.objects.filter(
+                    current_activity__related_activity__id=activity,
+                    # current_activity__type__code=2,
+                ).filter(
+                    hierarchy=2,
+                ).aggregate(
+                    total_budget=Sum('budget__value')
+                ).get('total_budget', 0.00)
+            
+
     class Meta:
         model = iati.models.Activity
         fields = (
@@ -562,6 +576,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_aid_type',
             'default_tied_status',
             'budgets',
+            'total_child_budgets',
             'capital_spend',
             'xml_source_ref',
             'document_links',
