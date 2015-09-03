@@ -28,13 +28,13 @@ class Narrative(models.Model):
         blank=True,
     )
     object_id = models.CharField(
-        max_length=50,
+        max_length=100,
         verbose_name='related object',
         null=True,
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
-    iati_identifier = models.CharField(max_length=50,verbose_name='iati_identifier',null=True)
+    iati_identifier = models.CharField(max_length=100,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
 class ActivityDateType(models.Model):
@@ -605,12 +605,12 @@ class RegionVocabulary(models.Model):
 
 
 class Organisation(models.Model):
-    code = models.CharField(max_length=80,primary_key=True)
-    abbreviation = models.CharField(max_length=80, default="")
+    code = models.CharField(max_length=120,primary_key=True)
+    abbreviation = models.CharField(max_length=120, default="")
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     reported_by_organisation = models.CharField(max_length=100, default="")
     name = models.CharField(max_length=250, default="")
-    original_ref = models.CharField(max_length=80, default="")
+    original_ref = models.CharField(max_length=120, default="")
 
     def __unicode__(self):
         return self.name
@@ -1305,7 +1305,7 @@ class ActivityDate(models.Model):
 
 class LegacyData(models.Model):
     activity = models.ForeignKey(Activity)
-    name = models.CharField(max_length=20, null=True)
+    name = models.CharField(max_length=150, null=True)
     value = models.CharField(max_length=200, null=True)
     iati_equivalent =  models.CharField(max_length=20, null=True)
 
