@@ -13,7 +13,7 @@ SECRET_KEY = '__DEV_SECRET_KEY__'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'oipa3',
+        'NAME': 'oipa',
         'USER': 'oipa',
         'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
