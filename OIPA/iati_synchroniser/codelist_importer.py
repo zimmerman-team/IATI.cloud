@@ -289,12 +289,8 @@ class CodeListImporter():
                     url=url)
 
             elif tag == "GeographicExactness":
-                if url == None:
-                    url = 'http://nourl.org/'
                 db_row = GeographicExactness(
-                    description=description,
-                    category=category,
-                    url=url)
+                    description=description)
 
             elif tag == "GeographicVocabulary":
                 if url == None:
@@ -316,7 +312,6 @@ class CodeListImporter():
                     description=description)
 
             elif tag == "SectorVocabulary":
-                print 'in '+tag
                 if url == None:
                     url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
                 db_row = SectorVocabulary(
@@ -391,14 +386,11 @@ class CodeListImporter():
                         date_updated=date_updated)
                     new_codelist.save()
 
-            else:
-                print name
-
             cur_downloaded_xml = ("http://iatistandard.org/"
                                   + self.looping_through_version.replace('.','') +
                                   "/codelists/downloads/clv1/"
                                   "codelist/" + name + ".xml")
-            print cur_downloaded_xml
+
             cur_file_opener = urllib2.build_opener()
             cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
