@@ -55,7 +55,24 @@ class Parse(XMLParser):
         return valid_date
 
     def add_organisation(self, elem):
-        print 'in add organisation!!'
+        """
+        Add organisation business requirements:
+
+        Organisations coming in via reporting-org, have unique refs, and their names should always me saved with the ref
+
+        Organisations coming in via participating-org have non unique refs and org names, if the ref exists but names
+        don't match create a new Organisation with:
+        Organisation.original_ref = ref, Organisation.ref = something unique,
+
+        additional requirements:
+
+        -Organisation.refs should never contain spaces, line breaks, slashes etc.
+        -Organisation.original_ref should always be the same as the ref in the xml file
+        -A reporting-org's Organisation.ref and Organisation.name should always match the ref and name in the xml file
+
+
+        to do; implement above requirements, the method currently does not match the requirements
+        """
         try:
             ref = elem.attrib.get('ref')
             org_ref = ref
@@ -134,7 +151,7 @@ class Parse(XMLParser):
             activity.default_lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
         self.default_lang = activity.default_lang
         activity.hierarchy = element.attrib.get('hierarchy')
-        activity.xml_source_ref = self.xml_source_ref
+        activity.xml_source_ref = self.iati_source.ref
         activity_id = element.xpath('iati-identifier/text()')[0]
         activity_id = activity_id.replace(":", "-")
         activity_id = activity_id.replace(" ", "")
@@ -1178,9 +1195,12 @@ class Parse(XMLParser):
 
     tag:category'''
     def iati_activities__iati_activity__document_link__category(self,element):
+
         model = self.get_func_parent_model()
-        model.document_category = self.cached_db_call(models.DocumentCategory,element.attrib.get('code'))
+        document_category = self.cached_db_call(models.DocumentCategory, element.attrib.get('code'))
+        model.categories.add(document_category)
         return element
+
 
     '''atributes:
     code:en
