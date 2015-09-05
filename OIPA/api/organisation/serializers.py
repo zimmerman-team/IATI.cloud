@@ -11,7 +11,7 @@ class BasicOrganisationSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = iati.models.Organisation
-        fields = ('url', 'code', 'name')
+        fields = ('url', 'code', 'name', 'original_ref')
 
     url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail')
     name = NameSerializer()
@@ -43,7 +43,6 @@ class OrganisationSerializer(BasicOrganisationSerializer):
             'type',
             'name',
             'original_ref',
-
             'reported_activities',
             'participated_activities',
             'provided_transactions',
