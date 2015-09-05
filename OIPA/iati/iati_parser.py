@@ -62,8 +62,7 @@ class ParseIATI():
                 except Exception as e:
                     exception_handler(e, "parse url", "delete by source")
                 print 'activities deleted'
-                # parse the new file     
-                self.xml_source_ref = source
+                # parse the new file
                 data = iati_file.read()
                 print 'test does it go here?'
                 #print data
@@ -85,7 +84,6 @@ class ParseIATI():
                     parser.VERSION = iati_version
                 print 'before parsing'
                 parser.iati_identifier = iati_identifier
-                parser.xml_source_ref = self
                 parser.iati_source = source
                 parser.load_and_parse(root)
 
