@@ -13,22 +13,25 @@ from api.activity.filters import ActivityFilter, BudgetFilter, RelatedActivityFi
 from django.db.models import Sum
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
+
     class FileFormatSerializer(serializers.ModelSerializer):
         class Meta:
             model = iati.models.FileFormat
             fields = ('code',)
 
     class DocumentCategorySerializer(serializers.ModelSerializer):
-        class Meta:
-            model = iati.models.DocumentCategory
-            fields = ('code',)
+            class Meta:
+                model = iati.models.DocumentCategory
+                fields = ('code','name')
 
     class TitleSerializer(serializers.Serializer):
         def to_representation(self, obj):
             return {'narratives': [{'text': obj.title}, ], }
 
     format = FileFormatSerializer(source='file_format')
-    category = DocumentCategorySerializer(source='document_category')
+
+    category = DocumentCategorySerializer(source='categories', many=True)
+
     title = TitleSerializer(source='*')
 
     class Meta:

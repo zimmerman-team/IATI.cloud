@@ -276,8 +276,6 @@ class GeographicExactness(models.Model):
     code = models.SmallIntegerField(primary_key=True)
     name = models.CharField(max_length=160)
     description = models.TextField(default="")
-    category = models.CharField(max_length=50)
-    url = models.URLField()
     codelist_iati_version = models.CharField(max_length=4)
     codelist_successor = models.CharField(max_length=100, null=True)
 
@@ -918,18 +916,17 @@ class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity)
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(FileFormat, null=True, default=None)
-    document_category = models.ForeignKey(
-        DocumentCategory,
-        null=True,
-        default=None)
+    categories = models.ManyToManyField(
+        DocumentCategory)
     title = models.CharField(max_length=255, default="")
     language = models.ForeignKey(Language, null=True, default=None)
+
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.url)
 
+
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink)
-
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity, related_name="results")
@@ -941,8 +938,10 @@ class Result(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.title)
 
+
 class ResultTitle(models.Model):
     result = models.ForeignKey(Result)
+
 
 class ResultDescription(models.Model):
     result = models.ForeignKey(Result)
@@ -985,10 +984,6 @@ class ResultIndicatorDescription(models.Model):
 
 class ResultIndicatorBaseLineComment(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
-
-
-
-
 
 
 
