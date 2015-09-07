@@ -144,7 +144,6 @@ class ActivityFactory(NoDatabaseFactory):
         model = iati.models.Activity
 
     id = 'IATI-0001'
-    total_budget = 50
     iati_identifier = 'IATI-0001'
 
 
@@ -392,8 +391,6 @@ class GeographicVocabularyFactory(NoDatabaseFactory):
     code = 'A1'
     name = 'Global Admininistrative Unit Layers'
     description = 'description'
-    category = '1'
-    url = 'http://www.fao.org/geonetwork/srv/en/metadata.show?id=12691'
 
 
 class LocationFactory(NoDatabaseFactory):
