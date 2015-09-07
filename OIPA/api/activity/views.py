@@ -201,7 +201,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return queryset
 
-    def apply_annotations(self, queryset, groupList, aggregationList, page_size, page):
+    def apply_annotations(self, queryset, groupList, aggregationList):
 
         first_queryset = queryset
         first_annotations = dict()
@@ -214,7 +214,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             first_annotations[a['annotate_name']] = a['annotate']
      
         # aggregations that can be performed in the same query (hence require no extra filters)
-        groupings = { group: self._allowed_groupings[group] for group in groupList }
+        groupings = {group: self._allowed_groupings[group] for group in groupList}
         groupFields = []
         for grouping in groupings.values():
             groupFields.extend(grouping["field"].split(','))
@@ -322,15 +322,11 @@ class ActivityAggregationSerializer(BaseSerializer):
         aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
 
         if not (len(group_by) and len(aggregations)):
-            return Response(
-                'Provide both group_by and aggregations', 
-                status.HTTP_404_NOT_FOUND,
-            )
-
+            return {'error_message': 'Please provide (valid values for) both mandatory fields; group_by and aggregations'}
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
         queryset = self.apply_order_filters(queryset, order_by, aggregations)
-        queryset = self.apply_annotations(queryset, group_by, aggregations, page_size, page)
+        queryset = self.apply_annotations(queryset, group_by, aggregations)
         result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.serialize_foreign_keys(result, request, group_by)
 
@@ -344,25 +340,69 @@ class ActivityAggregationSerializer(BaseSerializer):
 
 
 class ActivityAggregations(GenericAPIView):
+    """
+    Returns aggregations based on the item grouped by, and the selected aggregation.
+
+    ## Group by options
+
+    API request has to include `group_by` parameter.
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
+
+    - `recipient_country`
+    - `recipient_region`
+    - `sector`
+    - `reporting_organisation`
+    - `participating_organisation`
+    - `activity_status`
+    - `policy_marker`
+    - `collaboration_type`
+    - `default_flow_type`
+    - `default_aid_type`
+    - `default_finance_type`
+    - `default_tied_status`
+    - `budget_per_year`
+    - `budget_per_quarter`
+
+    ## Aggregation options
+
+    API request has to include `aggregations` parameter.
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
+
+    - `count`
+    - `budget`
+    - `disbursement`
+    - `expenditure`
+    - `commitment`
+    - `incoming_fund`
+
+
+    ## Request parameters
+
+    All filters available on the Activity List, can be used on aggregations.
+
+    """
 
     queryset = Activity.objects.all()
 
     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
-    # serializer_class = activitySerializers.AggregationSerializer
-    # fields = ('url', 'id', 'title', 'total_budget')
-    # pagination_serializer_class = AggregationsPaginationSerializer
 
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
-        results = ActivityAggregationSerializer(queryset,
+        results = ActivityAggregationSerializer(
+            queryset,
             context=self.get_serializer_context())
 
-        if (results.data):
+        if results.data:
+            if isinstance(results.data, dict) and results.data.get('error_message'):
+                return Response(results.data.get('error_message'))
             return Response(results.data)
         else:
-            return Response('No results', status.HTTP_404_NOT_FOUND)
+            return Response('No results', status.HTTP_204_NO_CONTENT)
+
 
 class ActivityList(ListAPIView):
     """
