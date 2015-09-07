@@ -3,7 +3,7 @@ from iati import models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
 from iati_synchroniser.exception_handler import exception_handler
-
+import binascii, struct
 
 import dateutil.parser
 
@@ -18,6 +18,9 @@ class Parse(XMLParser):
         self.test = 'blabla'
 
    
+
+    def myhash(self,s):
+        return binascii.b2a_base64(struct.pack('i', hash(s)))
 
     def validate_date(self, unvalidated_date):
         valid_date = None
@@ -54,7 +57,7 @@ class Parse(XMLParser):
                 return None
         return valid_date
 
-    def add_organisation(self, elem):
+    def add_organisation(self, elem,ref_required=True):
         """
         Add organisation business requirements:
 
@@ -75,9 +78,12 @@ class Parse(XMLParser):
         """
         try:
             ref = elem.attrib.get('ref')
+            if ref_required :
+                if ref == None or ref =='':
+                    raise Exception('no ref', 'no ref') 
             org_ref = ref
             type_ref = elem.attrib.get('type')
-            name = None
+            name = elem.text
             for e in elem:
                 name = e.text
                 break
@@ -102,7 +108,7 @@ class Parse(XMLParser):
                         return found_org
                     else:
                         #org not found
-                        ref = ref+'_'+name
+                        ref = ref+'_'+self.myhash(name)
         
             organisation = models.Organisation.objects.get_or_create(
                 code=ref,
@@ -152,6 +158,7 @@ class Parse(XMLParser):
         self.default_lang = activity.default_lang
         activity.hierarchy = element.attrib.get('hierarchy')
         activity.xml_source_ref = self.iati_source.ref
+        activity.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         activity_id = element.xpath('iati-identifier/text()')[0]
         activity_id = activity_id.replace(":", "-")
         activity_id = activity_id.replace(" ", "")

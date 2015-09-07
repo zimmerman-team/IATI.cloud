@@ -12,6 +12,7 @@ import re
 from iati_synchroniser.exception_handler import exception_handler
 import re
 from django.contrib.auth.models import User
+import traceback
 
 
 
@@ -102,7 +103,7 @@ class XMLParser(object):
                     print 'error'
                     #print function_name
                     traceback.print_exc()
-                    self.handle_exception(x_path, function_name, exeception,element)
+                    self.handle_exception(x_path, function_name, exeception,e)
                     #self.parse(e)
             else:
                 if not self.magicMethod(function_name,e):
@@ -170,8 +171,11 @@ class XMLParser(object):
     def handle_exception(self, xpath, function_name, exception,element):
         hint = """look at XML document"""
         errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+str(element.sourceline)+" source is "+self.iati_source.source_url
-        errExceptionStr = errorStr+"\n"+str(exception)
-        
+        errExceptionStr = errorStr+"\n"+str(traceback.format_exc())+"\n"
+        for attr in element.attrib :
+            errExceptionStr = errExceptionStr+" "+attr+" = "+element.attrib.get(attr)+"\n"
+        if element.text != '':
+            errExceptionStr = errExceptionStr+element.text
         self.errors.append(errExceptionStr)
         log_entry = logModels.ParseLog()
         log_entry.error_hint = hint

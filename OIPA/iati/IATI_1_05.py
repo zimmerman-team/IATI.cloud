@@ -44,49 +44,6 @@ class Parse(IATI_201_Parser):
         narrative.save()
 
 
-    def add_organisation(self, elem):
-        try:
-            ref = elem.attrib.get('ref')
-            org_ref = ref
-            type_ref = elem.attrib.get('type')
-            name = elem.text
-            for e in elem:
-                name = e.text
-                break
-            org_type = None
-            if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
-                org_type = self.cached_db_call(models.OrganisationType,type_ref)
-
-            if models.Organisation.objects.filter(original_ref=ref).exists():
-                org =  models.Organisation.objects.filter(original_ref=ref)[0]
-                print ref
-                if org.name == name:
-                    #organisation found 
-
-                    return org
-                else:
-                    #organisation found but with different name
-                    #look for org with different name but same ref
-                    if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
-                        #found! return this org
-                        found_org = models.Organisation.objects.filter(original_ref=ref, name=org.name)[0]
-                        return found_org
-                    else:
-                        #org not found
-                        ref = ref+'_'+name
-        
-            organisation = models.Organisation.objects.get_or_create(
-                code=ref,
-                defaults={
-                    'name': name,
-                    'type': org_type,
-                    'original_ref': org_ref
-
-                })[0]
-            return organisation
-
-        except Exception as e:
-            print e
 
 
     '''atributes:

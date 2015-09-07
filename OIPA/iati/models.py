@@ -28,13 +28,13 @@ class Narrative(models.Model):
         blank=True,
     )
     object_id = models.CharField(
-        max_length=100,
+        max_length=250,
         verbose_name='related object',
         null=True,
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
-    iati_identifier = models.CharField(max_length=100,verbose_name='iati_identifier',null=True)
+    iati_identifier = models.CharField(max_length=250,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
 class ActivityDateType(models.Model):
@@ -603,10 +603,10 @@ class RegionVocabulary(models.Model):
 
 
 class Organisation(models.Model):
-    code = models.CharField(max_length=120,primary_key=True)
+    code = models.CharField(max_length=250,primary_key=True)
     abbreviation = models.CharField(max_length=120, default="")
     type = models.ForeignKey(OrganisationType, null=True, default=None)
-    reported_by_organisation = models.CharField(max_length=100, default="")
+    reported_by_organisation = models.CharField(max_length=150, default="")
     name = models.CharField(max_length=250, default="")
     original_ref = models.CharField(max_length=120, default="")
 
@@ -637,7 +637,7 @@ class Activity(models.Model):
         (2, u"Child"),
     )
     
-    id = models.CharField(max_length=150,primary_key=True)
+    id = models.CharField(max_length=150,primary_key=True,blank=False)
 
     iati_identifier = models.CharField(max_length=150)
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
@@ -1300,5 +1300,5 @@ class LegacyData(models.Model):
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=150, null=True)
     value = models.CharField(max_length=200, null=True)
-    iati_equivalent =  models.CharField(max_length=20, null=True)
+    iati_equivalent =  models.CharField(max_length=150, null=True)
 
