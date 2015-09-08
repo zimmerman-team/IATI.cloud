@@ -1413,7 +1413,7 @@ class Parser():
                     priority = self.return_first_exist(t.xpath('@priority'))
                     phaseout_year = self.return_first_exist(t.xpath('@phaseout-year'))
 
-                    new_ffs = models.Ffs(activity=activity, extraction_date=extraction_date, priority=priority, phaseout_year=phaseout_year)
+                    new_ffs = models.Fss(activity=activity, extraction_date=extraction_date, priority=priority, phaseout_year=phaseout_year)
                     new_ffs.save()
 
                     for fc in elem.xpath('forecast'):
@@ -1427,7 +1427,7 @@ class Parser():
                             if models.Currency.objects.filter(code=currency_ref).exists():
                                 currency = models.Currency.objects.get(code=currency_ref)
 
-                        new_forecast = models.FfsForecast(ffs=new_ffs, year=year, currency=currency, value_date=value_date, value=value)
+                        new_forecast = models.FssForecast(ffs=new_ffs, year=year, currency=currency, value_date=value_date, value=value)
                         new_forecast.save()
 
 

@@ -4,10 +4,14 @@ from activity_manager import ActivityQuerySet
 from organisation_manager import OrganisationQuerySet
 from django.contrib.gis.geos import Point
 from iati.transaction.models import Transaction
-from iati.transaction.models import TransactionType,TransactionDescription,TransactionProvider,TransactionReciever,TransactionSector
-
+from iati.transaction.models import TransactionType
+from iati.transaction.models import TransactionDescription
+from iati.transaction.models import TransactionProvider
+from iati.transaction.models import TransactionReceiver
+from iati.transaction.models import TransactionSector
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
 
 
 class Language(models.Model):
@@ -281,9 +285,6 @@ class GeographicExactness(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
-
-
-
 
 
 class LocationTypeCategory(models.Model):
@@ -657,11 +658,6 @@ class Activity(models.Model):
         null=True,
         default=None)
 
-    start_planned = models.DateField(null=True, blank=True, default=None)
-    end_planned = models.DateField(null=True, blank=True, default=None)
-    start_actual = models.DateField(null=True, blank=True, default=None)
-    end_actual = models.DateField(null=True, blank=True, default=None)
-
     participating_organisation = models.ManyToManyField(
         Organisation,
         through="ActivityParticipatingOrganisation")
@@ -738,7 +734,7 @@ class ActivityPolicyMarker(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s - %s" % (self.activity.id, self.policy_marker,self.policy_significance)
+        return "%s - %s - %s" % (self.activity.id, self.policy_marker, self.policy_significance)
 
 
 class ActivitySector(models.Model):
@@ -777,16 +773,16 @@ class CountryBudgetItem(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     description = models.TextField(default="")
 
+
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.CharField(max_length=50, default="")
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
 
+
 #class for narrative
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
-
-
 
 
 class ActivityRecipientRegion(models.Model):
@@ -837,14 +833,14 @@ class ActivityWebsite(models.Model):
 #   Class not truly correct, attributes fully open
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
-    person_name = models.CharField(max_length=100, default="",null=True,blank=True)
-    organisation = models.CharField(max_length=100, default="",null=True,blank=True)
-    telephone = models.CharField(max_length=100, default="",null=True,blank=True)
-    email = models.TextField(default="",null=True,blank=True)
-    mailing_address = models.TextField(default="",null=True,blank=True)
-    website = models.CharField(max_length=255, default="",null=True,blank=True)
-    contact_type = models.ForeignKey(ContactType, null=True, default=None,blank=True)
-    job_title = models.CharField(max_length=150, default="",null=True,blank=True)
+    person_name = models.CharField(max_length=100, default="", null=True, blank=True)
+    organisation = models.CharField(max_length=100, default="", null=True, blank=True)
+    telephone = models.CharField(max_length=100, default="", null=True, blank=True)
+    email = models.TextField(default="", null=True, blank=True)
+    mailing_address = models.TextField(default="", null=True, blank=True)
+    website = models.CharField(max_length=255, default="", null=True, blank=True)
+    contact_type = models.ForeignKey(ContactType, null=True, default=None, blank=True)
+    job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.person_name)
@@ -853,20 +849,21 @@ class ContactInfo(models.Model):
 class ContactInfoOrganisation(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
 
+
 class ContactInfoDepartment(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
+
 
 class ContactInfoPersonName(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
 
+
 class ContactInfoJobTitle(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
 
+
 class ContactInfoMailingAddress(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
-
-
-
 
 
 # class transaction_description(models.Model):
@@ -880,7 +877,7 @@ class ContactInfoMailingAddress(models.Model):
 
 
 class PlannedDisbursement(models.Model):
-    budget_type  = models.ForeignKey(BudgetType,null=True, default=None)
+    budget_type = models.ForeignKey(BudgetType, null=True, default=None)
     activity = models.ForeignKey(Activity)
     period_start = models.CharField(max_length=100, default="")
     period_end = models.CharField(max_length=100, default="")
@@ -899,7 +896,7 @@ class RelatedActivity(models.Model):
         related_name="current_activity")
     related_activity = models.ForeignKey(
         Activity,
-        related_name="related_activity",null=True)
+        related_name="related_activity", null=True)
     type = models.ForeignKey(
         RelatedActivityType,
         max_length=200,
@@ -927,6 +924,7 @@ class DocumentLink(models.Model):
 
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink)
+
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity, related_name="results")
@@ -973,19 +971,21 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.result, self.year)
 
+
 class ResultIndicatorMeasure(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
+
 
 class ResultIndicatorTitle(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
+
 class ResultIndicatorDescription(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
 
+
 class ResultIndicatorBaseLineComment(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
-
-
 
 
 class ResultIndicatorPeriod(models.Model):
@@ -1000,10 +1000,12 @@ class ResultIndicatorPeriod(models.Model):
     actual = models.CharField(max_length=50, default="")
 
     def __unicode__(self,):
-        return "%s" % (self.result_indicator)
+        return "%s" % self.result_indicator
+
 
 class ResultIndicatorPeriodTargetComment(models.Model):
     result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+
 
 class ResultIndicatorPeriodActualComment(models.Model):
     result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
@@ -1066,11 +1068,6 @@ class OrganisationRegistrationAgency(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.type)
-
-
-
-
-
 
 
 class Location(models.Model):
@@ -1187,7 +1184,7 @@ class LocationDescription(models.Model):
 class LocationActivityDescription(models.Model):
     location = models.ForeignKey(Location)
 
-class Ffs(models.Model):
+class Fss(models.Model):
     activity = models.ForeignKey(Activity)
     extraction_date = models.DateField(null=True, default=None)
     priority = models.BooleanField(default=False)
@@ -1197,15 +1194,15 @@ class Ffs(models.Model):
         return "%s" % (self.extraction_date)
 
 
-class FfsForecast(models.Model):
-    ffs = models.ForeignKey(Ffs)
+class FssForecast(models.Model):
+    fss = models.ForeignKey(Fss)
     year = models.IntegerField(null=True)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField(null=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2)
 
     def __unicode__(self,):
-        return "%s" % (self.year)
+        return "%s" % self.year
 
 
 # Deliberately not named like the codelist CrsAddOtherFlags
@@ -1290,15 +1287,18 @@ class CrsAddLoanStatus(models.Model):
 
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
-    iso_date = models.DateField(null=True)
+    iso_date = models.DateField(null=False, default="1970-01-01")
     type = models.ForeignKey(ActivityDateType)
 
     def __unicode__(self):
-        return "%s" % (self.type.name)
+        return "%s - %s - %s" % (self.activity.id, self.type.name, self.iso_date.strftime('%Y-%m-%d'))
+
 
 class LegacyData(models.Model):
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=150, null=True)
     value = models.CharField(max_length=200, null=True)
-    iati_equivalent =  models.CharField(max_length=150, null=True)
+    iati_equivalent = models.CharField(max_length=150, null=True)
 
+    def __unicode__(self):
+        return "%s" % self.name

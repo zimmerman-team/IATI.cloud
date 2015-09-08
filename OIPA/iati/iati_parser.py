@@ -9,9 +9,6 @@ from iati_synchroniser.exception_handler import exception_handler
 import hashlib
 
 
-
-
-
 class ParseIATI():
 
     # class wide functions

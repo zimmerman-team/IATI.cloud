@@ -170,13 +170,18 @@ class BudgetSerializer(FilterableModelSerializer):
 
 
 class ActivityDateSerializer(serializers.Serializer):
-    def to_representation(self, obj):
-        return {
-            'start_planned': obj.start_planned,
-            'end_planned': obj.end_planned,
-            'start_actual': obj.start_actual,
-            'end_actual': obj.end_actual
-        }
+    class ActivityDateTypeSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = iati.models.ActivityDateType
+            fields = ('code', 'name')
+
+    type = ActivityDateTypeSerializer()
+    iso_date = serializers.DateField()
+
+    class Meta:
+        model = iati.models.ActivityDate
+        fields = ('iso_date', 'type')
 
 
 class ReportingOrganisationSerializer(serializers.ModelSerializer):
@@ -496,7 +501,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     default_finance_type = FinanceTypeSerializer()
     default_flow_type = FlowTypeSerializer()
     default_tied_status = TiedStatusSerializer()
-    activity_dates = ActivityDateSerializer(source='*')
+    activity_dates = ActivityDateSerializer(
+        many=True,
+        source='activitydate_set')
     reporting_organisation = ReportingOrganisationSerializer(source='*')
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True)

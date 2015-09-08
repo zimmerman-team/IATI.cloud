@@ -3,23 +3,23 @@ from iati import models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
 from iati_synchroniser.exception_handler import exception_handler
-import binascii, struct
+import binascii
+import struct
 
 import dateutil.parser
 
 
 class Parse(XMLParser):
-
-    VERSION = '2.01'#version of iati standard
+    #version of IATI standard
+    VERSION = '2.01'
     default_lang = 'en'
     iati_identifier = ''
+    validated_reporters = ['GB-1', 'NL-1', 'all-other-known-reporting-orgs']
 
     def __init__(self, *args, **kwargs):
         self.test = 'blabla'
 
-   
-
-    def myhash(self,s):
+    def myhash(self, s):
         return binascii.b2a_base64(struct.pack('i', hash(s)))
 
     def validate_date(self, unvalidated_date):
@@ -30,7 +30,7 @@ class Parse(XMLParser):
             return None
         #check if standard data parser works
         try:
-            return  dateutil.parser.parse(unvalidated_date)
+            return dateutil.parser.parse(unvalidated_date)
         except:
             pass
 
@@ -57,73 +57,75 @@ class Parse(XMLParser):
                 return None
         return valid_date
 
-    def add_organisation(self, elem,ref_required=True):
+    def add_organisation(self, elem, is_reporting_org=False):
         """
         Add organisation business requirements:
 
         Organisations coming in via reporting-org, have unique refs, and their names should always me saved with the ref
-
         Organisations coming in via participating-org have non unique refs and org names, if the ref exists but names
         don't match create a new Organisation with:
         Organisation.original_ref = ref, Organisation.ref = something unique,
 
         additional requirements:
 
-        -Organisation.refs should never contain spaces, line breaks, slashes etc.
-        -Organisation.original_ref should always be the same as the ref in the xml file
-        -A reporting-org's Organisation.ref and Organisation.name should always match the ref and name in the xml file
+        -2.1 Organisation.refs should never contain spaces, line breaks, slashes etc.
+        -2.2 Organisation.original_ref should always be the same as the ref in the xml file
+        -2.3 A reporting-org's Organisation.ref and Organisation.name should always match the ref and name in the xml file
+        TO DO:
+        -2.4 save all mentions to reporting-orgs under the Organisation.ref = reporting-org ref,
+            also when the reporting-org is not in OIPA yet, this can only be done with a pre-defined look-up list.
 
+        assumptions made:
+        -Reporting organisations are unique
 
-        to do; implement above requirements, the method currently does not match the requirements
         """
-        try:
-            ref = elem.attrib.get('ref')
-            if ref_required :
-                if ref == None or ref =='':
-                    raise Exception('no ref', 'no ref') 
-            org_ref = ref
-            type_ref = elem.attrib.get('type')
-            name = elem.text
-            for e in elem:
-                name = e.text
-                break
-            print 'in add organisation '+name
-            org_type = None
-            if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
-                org_type = self.cached_db_call(models.OrganisationType,type_ref)
+        ref = elem.attrib.get('ref')
+        original_ref = ref
+        # requirement 2.1
+        ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+        type_ref = elem.attrib.get('type')
 
-            if models.Organisation.objects.filter(original_ref=ref).exists():
-                org =  models.Organisation.objects.filter(original_ref=ref)[0]
-                print ref
-                if org.name == name:
-                    #organisation found 
+        name = elem.text
+        for e in elem:
+            name = e.text
+            break
 
-                    return org
-                else:
-                    #organisation found but with different name
-                    #look for org with different name but same ref
-                    if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
-                        #found! return this org
-                        found_org = models.Organisation.objects.filter(original_ref=ref, name=org.name)[0]
-                        return found_org
-                    else:
-                        #org not found
-                        ref = ref+'_'+self.myhash(name)
-        
-            organisation = models.Organisation.objects.get_or_create(
-                code=ref,
-                defaults={
-                    'name': name,
-                    'type': org_type,
-                    'original_ref': org_ref
+        org_type = None
+        if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
+            org_type = self.cached_db_call(models.OrganisationType,type_ref)
 
-                })[0]
-            return organisation
+        # to do; nice this
+        if not is_reporting_org:
+            if ref in self.validated_reporters:
+                if models.Organisation.objects.filter(code=ref).exists():
+                  return models.Organisation.objects.get(code=ref)
 
-        except Exception as e:
-            print e
+        if is_reporting_org:
+            if models.Organisation.objects.filter(code=ref).exists():
+                org = models.Organisation.objects.get(code=ref)
+                # requirement 2.3
+                org.type = org_type
+                org.name = name
+                org.save()
+                return org
+        else:
+            #look for org with same name and same ref
+            if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
+                #found! return this org
+                org = models.Organisation.objects.filter(original_ref=ref, name=name)[0]
+                return org
+            else:
+                #org not found
+                ref = ref+'_'+self.myhash(name)
 
-
+        organisation = models.Organisation.objects.get_or_create(
+            code=ref,
+            defaults={
+                'name': name,
+                'type': org_type,
+                'original_ref': original_ref
+            })[0]
+        return organisation
 
     def add_narrative(self,element,parent):
         narrative = models.Narrative()
@@ -131,8 +133,7 @@ class Parse(XMLParser):
         if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
             lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
 
-        #print 'language = '+lang
-        if(element.text == None or element.text ==''):
+        if element.text is None or element.text == '':
             return
         narrative.language = self.cached_db_call(models.Language,lang)
         narrative.content = element.text
@@ -205,7 +206,7 @@ class Parse(XMLParser):
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
         model = self.get_func_parent_model()
-        organisation = self.add_organisation(element)
+        organisation = self.add_organisation(element, is_reporting_org=True)
         if 'secondary-reporter' in element.attrib:
             model.secondary_publisher = element.attrib.get('secondary-reporter')
         #print organisation.name
@@ -326,7 +327,7 @@ class Parse(XMLParser):
     code:2
 
     tag:activity-status'''
-    def iati_activities__iati_activity__activity_status(self,element):
+    def iati_activities__iati_activity__activity_status(self, element):
         model = self.get_func_parent_model()
         model.activity_status = self.cached_db_call_no_version(models.ActivityStatus,element.attrib.get('code'))
 
@@ -337,12 +338,14 @@ class Parse(XMLParser):
     type:1
 
     tag:activity-date'''
-    def iati_activities__iati_activity__activity_date(self,element):
+    def iati_activities__iati_activity__activity_date(self, element):
         model = self.get_func_parent_model()
-        activity_date  = models.ActivityDate()
+        activity_date = models.ActivityDate()
         if 'iso-date' in element.attrib:
             activity_date.iso_date = self.validate_date(element.attrib.get('iso-date'))
-        activity_date.type = self.cached_db_call(models.ActivityDateType,element.attrib.get('type'))
+        activity_date.type = self.cached_db_call(models.ActivityDateType, element.attrib.get('type'))
+        if activity_date.type.codelist_successor:
+            activity_date.type = self.cached_db_call(models.ActivityDateType, activity_date.type.codelist_successor)
         activity_date.activity = model
         activity_date.save()
         self.set_func_model(activity_date)
@@ -351,7 +354,7 @@ class Parse(XMLParser):
     '''atributes:
 
     tag:narrative'''
-    def iati_activities__iati_activity__activity_date__narrative(self,element):
+    def iati_activities__iati_activity__activity_date__narrative(self, element):
         model = self.get_func_parent_model()
         self.add_narrative(element,model)
 
@@ -361,7 +364,7 @@ class Parse(XMLParser):
     type:1
 
     tag:contact-info'''
-    def iati_activities__iati_activity__contact_info(self,element):
+    def iati_activities__iati_activity__contact_info(self, element):
         model = self.get_func_parent_model()
         contactInfo =  models.ContactInfo()
         contactInfo.activity = model
@@ -374,7 +377,7 @@ class Parse(XMLParser):
     '''atributes:
 
     tag:organisation'''
-    def iati_activities__iati_activity__contact_info__organisation(self,element):
+    def iati_activities__iati_activity__contact_info__organisation(self, element):
         model = self.get_func_parent_model()
         contactInfoOrganisation =  models.ContactInfoOrganisation()
         contactInfoOrganisation.ContactInfo = model;
@@ -1018,7 +1021,7 @@ class Parse(XMLParser):
     '''atributes:
 
     tag:narrative'''
-    def iati_activities__iati_activity__transaction__description__narrative(self,element):
+    def iati_activities__iati_activity__transaction__description__narrative(self, element):
         model = self.get_func_parent_model()
         self.add_narrative(element,model)
          
@@ -1029,29 +1032,25 @@ class Parse(XMLParser):
     ref:BB-BBB-123456789
 
     tag:provider-org'''
-    def iati_activities__iati_activity__transaction__provider_org(self,element):
+    def iati_activities__iati_activity__transaction__provider_org(self, element):
         model = self.get_func_parent_model()
         model.provider_activity = element.attrib.get('provider-activity-id')
-        for e in element :
-            provider_organisation_name = e.text
-            break
 
         provider_org = self.add_organisation(element)
         transaction_provider = models.TransactionProvider()
         transaction_provider.transaction = model
-        #TODO : finish!!!
+        transaction_provider.organisation = provider_org
         self.set_func_model(transaction_provider)
-         
+        model.provider_organisation = transaction_provider
         return element
 
     '''atributes:
 
     tag:narrative'''
-    def iati_activities__iati_activity__transaction__provider_org__narrative(self,element):
+    def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
         model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        self.add_narrative(element, model)
 
-         
         return element
 
     '''atributes:
@@ -1061,18 +1060,15 @@ class Parse(XMLParser):
     tag:receiver-org'''
     def iati_activities__iati_activity__transaction__receiver_org(self,element):
         model = self.get_func_parent_model()
-
         model.receiver_activity = element.attrib.get('receiver-activity-id')
-        for e in element :
-            reciever_organisation_name = e.text
-            break
 
-        reciever_org = self.add_organisation(element)
-        transaction_receiver = models.TransactionReciever()
+        receiver_org = self.add_organisation(element)
+        model.receiver_organisation = receiver_org
+        transaction_receiver = models.TransactionReceiver()
         transaction_receiver.transaction = model
-        #TODO : finish!!!
+        transaction_receiver.organisation = receiver_org
         self.set_func_model(transaction_receiver)
-         
+        model.receiver_organisation = transaction_receiver
         return element
 
     '''atributes:
@@ -1099,11 +1095,10 @@ class Parse(XMLParser):
     tag:sector'''
     def iati_activities__iati_activity__transaction__sector(self,element):
         model = self.get_func_parent_model()
-        sector = models.TransactionSector()
-        sector.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
-        sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
-        sector.transaction = model
-        self.set_func_model(sector)
+        # TO DO; fix this, a sector has a vocabulary, so filter by code + filter
+        model.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
+        # sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
+        self.set_func_model(model)
         return element
 
     '''atributes:
@@ -1112,9 +1107,7 @@ class Parse(XMLParser):
     tag:recipient-country'''
     def iati_activities__iati_activity__transaction__recipient_country(self,element):
         model = self.get_func_parent_model()
-        model.recipient_country = self.cached_db_call_no_version(Country,element.attrib.get('code'))
-
-         
+        model.recipient_country = self.cached_db_call_no_version(Country, element.attrib.get('code'))
         return element
 
     '''atributes:
@@ -1124,8 +1117,10 @@ class Parse(XMLParser):
     tag:recipient-region'''
     def iati_activities__iati_activity__transaction__recipient_region(self,element):
         model = self.get_func_parent_model()
-        model.recipient_region = self.cached_db_call(models.Region,element.attrib.get('code'))
-        model.recipient_region_vocabulary = self.cached_db_call(models.RegionVocabulary,element.attrib.get('vocabulary'))
+
+        # TO DO; fix this, a recipient_region has a vocabulary, so filter by code + filter
+        model.recipient_region = self.cached_db_call(models.Region, element.attrib.get('code'))
+        # model.recipient_region_vocabulary = self.cached_db_call(models.RegionVocabulary,element.attrib.get('vocabulary'))
         return element
 
     '''atributes:
@@ -1227,7 +1222,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         related_activity = models.RelatedActivity()
         related_activity.current_activity = model
-        related_activity.type = self.cached_db_call(models.RelatedActivityType,element.attrib.get('code'))
+        related_activity.type = self.cached_db_call(models.RelatedActivityType, element.attrib.get('type'))
         related_activity.ref = element.attrib.get('ref')
         ref = element.attrib.get('ref')
         try:
@@ -1653,7 +1648,7 @@ class Parse(XMLParser):
     tag:fss'''
     def iati_activities__iati_activity__fss(self,element):
         model = self.get_func_parent_model()
-        fss = models.Ffs()
+        fss = models.Fss()
         fss.activity = model
         fss.year = element.attrib.get('phaseout-year')
         fss.extraction_date = self.validate_date(element.attrib.get('extraction-date'))
@@ -1668,10 +1663,10 @@ class Parse(XMLParser):
     tag:forecast'''
     def iati_activities__iati_activity__fss__forecast(self,element):
         model = self.get_func_parent_model()
-        fss_forecast = models.FfsForecast()
-        fss_forecast.ffs = model
+        fss_forecast = models.FssForecast()
+        fss_forecast.fss = model
         fss_forecast.year = element.attrib.get('year')
         fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
-        fss_forecast.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
+        fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
         return element
 
