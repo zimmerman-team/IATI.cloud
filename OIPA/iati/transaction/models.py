@@ -26,23 +26,26 @@ class Transaction(models.Model):
         default=None)
     finance_type = models.ForeignKey('FinanceType', null=True, default=None)
     flow_type = models.ForeignKey('FlowType', null=True, default=None)
+    provider_activity = models.ForeignKey(
+        'Activity',
+        related_name="transaction_provider_activity",
+        db_constraint=False,
+        null=True)
+    receiver_activity = models.ForeignKey(
+        'Activity',
+        related_name="transaction_receiver_activity",
+        db_constraint=False,
+        null=True)
+
     provider_organisation = models.ForeignKey(
-        'Organisation',
-        related_name="transaction_providing_organisation_old",
-        null=True,
-        default=None)
-    provider_organisation_name = models.CharField(
-        max_length=255,
-        default="")
-    provider_activity = models.CharField(max_length=100, null=True)
+        'TransactionProvider',
+        related_name="transaction_receiver_activity",
+        null=True)
     receiver_organisation = models.ForeignKey(
-        'Organisation',
-        related_name="transaction_receiving_organisation_old",
-        null=True,
-        default=None)
-    receiver_organisation_name = models.CharField(
-        max_length=255,
-        default="")
+        'TransactionReceiver',
+        related_name="transaction_receiver_activity",
+        null=True)
+
     tied_status = models.ForeignKey('TiedStatus', null=True, default=None)
     transaction_date = models.DateField(null=True, default=None)
     transaction_type = models.ForeignKey(
@@ -53,7 +56,7 @@ class Transaction(models.Model):
     value = models.DecimalField(max_digits=15, decimal_places=2)
     currency = models.ForeignKey('Currency', null=True, default=None)
     ref = models.CharField(max_length=255, null=True, default="")
-    recipient_region = models.ForeignKey(Region,null=True)
+    recipient_region = models.ForeignKey(Region, null=True)
     recipient_region_vocabulary = models.ForeignKey('RegionVocabulary', default=1)
     recipient_country = models.ForeignKey(Country, null=True, default=None)
 
@@ -64,8 +67,10 @@ class Transaction(models.Model):
 
     
 class TransactionDescription(models.Model):
-    transaction = models.ForeignKey( Transaction )
+    transaction = models.ForeignKey(Transaction)
 
+
+# TO DO; below 3 models are unnecessary imo -> they're just orgs and sectors
 class TransactionProvider(models.Model):
     transaction = models.ForeignKey(Transaction)
     organisation = models.ForeignKey(
@@ -77,11 +82,11 @@ class TransactionProvider(models.Model):
         max_length=255,
         default="")
 
-class TransactionReciever(models.Model):
+class TransactionReceiver(models.Model):
     transaction = models.ForeignKey(Transaction)
     organisation = models.ForeignKey(
         'Organisation',
-        related_name="transaction_recieving_organisation",
+        related_name="transaction_receiving_organisation",
         null=True,
         default=None)
     name = models.CharField(

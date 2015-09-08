@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from iati.models import Transaction
 from iati.models import TransactionType
+from iati.models import Transaction
+from iati.models import TransactionProvider
+from iati.models import TransactionReceiver
 
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import BasicOrganisationSerializer
@@ -23,6 +26,24 @@ class TransactionTypeSerializer(DynamicFieldsModelSerializer):
         )
 
 
+class TransactionProviderSerializer(serializers.ModelSerializer):
+
+    organisation = BasicOrganisationSerializer()
+
+    class Meta:
+        model = TransactionProvider
+        fields = ('organisation', 'name')
+
+
+class TransactionReceiverSerializer(serializers.ModelSerializer):
+
+    organisation = BasicOrganisationSerializer()
+
+    class Meta:
+        model = TransactionReceiver
+        fields = ('organisation', 'name')
+
+
 class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
@@ -35,8 +56,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     description_type = DescriptionTypeSerializer()
     finance_type = FinanceTypeSerializer()
     flow_type = FlowTypeSerializer()
-    provider_organisation = BasicOrganisationSerializer()
-    receiver_organisation = BasicOrganisationSerializer()
+    provider_organisation = TransactionProviderSerializer()
+    provider_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+    receiver_organisation = TransactionReceiverSerializer()
+    receiver_activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
     tied_status = TiedStatusSerializer()
     transaction_type = TransactionTypeSerializer(fields=('code', ))
     currency = CurrencySerializer()
@@ -53,10 +80,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'finance_type',
             'flow_type',
             'provider_organisation',
-            'provider_organisation_name',
             'provider_activity',
             'receiver_organisation',
-            'receiver_organisation_name',
+            'receiver_activity',
             'tied_status',
             'transaction_date',
             'transaction_type',

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class CodeListImporter():
 
     looping_through_version = ""
-    iati_versions = ["1.04", "1.05", "2.01"]
+    iati_versions = ["2.01", "1.05", "1.04"]
 
     def synchronise_with_codelists(self):
 
@@ -48,8 +48,22 @@ class CodeListImporter():
             url = return_first(elem.xpath('url/text()'))
 
             if tag == "ActivityDateType":
+                codelist_successor = None
+                # if not latest version
+                if self.looping_through_version != self.iati_versions[0]:
+                    if code == 'start-planned':
+                        codelist_successor = 1
+                    if code == 'start-actual':
+                        codelist_successor = 2
+                    if code == 'end-planned':
+                        codelist_successor = 3
+                    if code == 'end-actual':
+                        codelist_successor = 4
+
                 db_row = ActivityDateType(
-                    description=description)
+                    description=description,
+                    codelist_successor=codelist_successor)
+
 
             elif tag == "ActivityStatus":
                 db_row = ActivityStatus(

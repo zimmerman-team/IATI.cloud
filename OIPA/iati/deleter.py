@@ -72,7 +72,7 @@ class Deleter():
             models.TransactionDescription.objects.all().delete()
             models.TransactionProvider.objects.all().delete()
             models.TransactionSector.objects.all().delete()
-            models.TransactionReciever.objects.all().delete()
+            models.TransactionReceiver.objects.all().delete()
             models.Transaction.objects.all().delete()
 
             models.PlannedDisbursement.objects.all().delete()
@@ -115,8 +115,8 @@ class Deleter():
             models.Result.objects.all().delete()
                        
             
-            models.FfsForecast.objects.all().delete()
-            models.Ffs.objects.all().delete()
+            models.FssForecast.objects.all().delete()
+            models.Fss.objects.all().delete()
 
             
             models.CrsAddLoanStatus.objects.all().delete()
@@ -160,7 +160,7 @@ class Deleter():
                 models.TransactionDescription.objects.filter(transaction=trans).delete()
                 models.TransactionProvider.objects.filter(transaction=trans).delete()
                 models.TransactionSector.objects.filter(transaction=trans).delete()
-                models.TransactionReciever.objects.filter(transaction=trans).delete()
+                models.TransactionReceiver.objects.filter(transaction=trans).delete()
 
             models.Transaction.objects.filter(activity=cur_activity).delete()
             models.PlannedDisbursement.objects.filter(activity=cur_activity).delete()
@@ -179,14 +179,16 @@ class Deleter():
                 models.LocationActivityDescription.objects.filter(location=loc).delete()
                 loc.delete()
 
-            for budget_item in models.Budget.objects.filter(activity=cur_activity):
-                models.BudgetItemDescription.objects.filter(budget_item=budget_item).delete()
-                budget_item.delete()
+            models.Budget.objects.filter(activity=cur_activity).delete()
+
+            for country_budget_item in models.CountryBudgetItem.objects.filter(activity=cur_activity):
+                for budget_item in models.BudgetItem.objects.filter(country_budget_item=country_budget_item):
+                    models.BudgetItemDescription.objects.filter(budget_item=budget_item).delete()
+                    budget_item.delete()
 
             models.Condition.objects.filter(activity=cur_activity).delete()
 
             models.ActivitySearchData.objects.filter(activity=cur_activity).delete()
-
 
             for r in models.Result.objects.filter(activity=cur_activity):
                 models.ResultTitle.objects.filter(result=r).delete()
@@ -204,8 +206,8 @@ class Deleter():
                     ri.delete()
                 r.delete()
 
-            for f in models.Ffs.objects.filter(activity=cur_activity):
-                models.FfsForecast.objects.filter(ffs=f).delete()
+            for f in models.Fss.objects.filter(activity=cur_activity):
+                models.FssForecast.objects.filter(fss=f).delete()
                 f.delete()
 
             for c in models.CrsAdd.objects.filter(activity=cur_activity):
