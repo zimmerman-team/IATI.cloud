@@ -38,7 +38,7 @@ class Narrative(models.Model):
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
-    iati_identifier = models.CharField(max_length=250,verbose_name='iati_identifier',null=True)
+    iati_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
 class ActivityDateType(models.Model):

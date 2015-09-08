@@ -23,7 +23,7 @@ class Parse(XMLParser):
 
 
     def h6(self,w):
-        h = hashlib.md5(w)
+        h = hashlib.md5(w.encode('ascii', 'ignore'))
         return h.digest().encode('base64')[:6]
 
 
@@ -91,9 +91,9 @@ class Parse(XMLParser):
         ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
         type_ref = elem.attrib.get('type')
 
-        name = elem.text
+        name = elem.text.strip()
         for e in elem:
-            name = e.text
+            name = e.text.strip()
             break
 
         org_type = None
@@ -101,10 +101,10 @@ class Parse(XMLParser):
             org_type = self.cached_db_call(models.OrganisationType,type_ref)
 
         # to do; nice this
-        if not is_reporting_org:
-            if ref in self.validated_reporters:
-                if models.Organisation.objects.filter(code=ref).exists():
-                  return models.Organisation.objects.get(code=ref)
+        # if not is_reporting_org:
+        #     if ref in self.validated_reporters:
+        #         if models.Organisation.objects.filter(code=ref).exists():
+        #           return models.Organisation.objects.get(code=ref)
 
         if is_reporting_org:
             if models.Organisation.objects.filter(code=ref).exists():
@@ -167,9 +167,11 @@ class Parse(XMLParser):
         activity.xml_source_ref = self.iati_source.ref
         activity.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         activity_id = element.xpath('iati-identifier/text()')[0]
+
         activity_id = activity_id.replace(":", "-")
         activity_id = activity_id.replace(" ", "")
         activity.id = activity_id
+        self.activity_id = activity_id
         print activity_id+'is the activty ID'
         activity.save()
         self.set_func_model(activity)
