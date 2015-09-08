@@ -3,8 +3,7 @@ from iati import models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
 from iati_synchroniser.exception_handler import exception_handler
-import binascii, struct
-
+import hashlib
 import dateutil.parser
 
 
@@ -19,8 +18,10 @@ class Parse(XMLParser):
 
    
 
-    def myhash(self,s):
-        return binascii.b2a_base64(struct.pack('i', hash(s)))
+
+    def h6(self,w):
+        h = hashlib.md5(w)
+        return h.digest().encode('base64')[:6]
 
     def validate_date(self, unvalidated_date):
         valid_date = None
@@ -100,7 +101,7 @@ class Parse(XMLParser):
 
                     return org
                 else:
-                    #organisation found but with different name
+                    #organisation found but with differsent name
                     #look for org with different name but same ref
                     if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
                         #found! return this org
@@ -108,7 +109,7 @@ class Parse(XMLParser):
                         return found_org
                     else:
                         #org not found
-                        ref = ref+'_'+self.myhash(name)
+                        ref = ref+'_'+self.h6(name)
         
             organisation = models.Organisation.objects.get_or_create(
                 code=ref,
