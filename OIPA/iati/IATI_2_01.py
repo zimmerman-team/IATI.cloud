@@ -8,7 +8,10 @@ import hashlib
 import dateutil.parser
 import time
 import datetime
+import re
 
+_slugify_strip_re = re.compile(r'[^\w\s-]')
+_slugify_hyphenate_re = re.compile(r'[-\s]+')
 class Parse(XMLParser):
     #version of IATI standard
     VERSION = '2.01'
@@ -20,11 +23,27 @@ class Parse(XMLParser):
         self.test = 'blabla'
 
    
-
+    
+    def _slugify(self,value):
+        """
+        Normalizes string, converts to lowercase, removes non-alpha characters,
+        and converts spaces to hyphens.
+        
+        From Django's "django/template/defaultfilters.py".
+        """
+        import unicodedata
+        if not isinstance(value, unicode):
+            value = unicode(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+        value = unicode(_slugify_strip_re.sub('', value).strip().lower())
+        return _slugify_hyphenate_re.sub('-', value)
 
     def h6(self,w):
         h = hashlib.md5(w.encode('ascii', 'ignore'))
-        return h.digest().encode('base64')[:6]
+        hash_generated =  h.digest().encode('base64')[:6]
+        return self._slugify(hash_generated)
+
+
 
 
     def validate_date(self, unvalidated_date):
