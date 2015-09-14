@@ -12,6 +12,7 @@ import re
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
+
 class Parse(XMLParser):
     #version of IATI standard
     VERSION = '2.01'
