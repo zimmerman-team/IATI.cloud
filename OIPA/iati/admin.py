@@ -6,6 +6,10 @@ from iati.management.commands.organisation_name_updater import OrganisationNameU
 from django.http import HttpResponse
 from iati.updater import SectorUpdater
 
+# Avoid giant delete confirmation intermediate window
+def delete_selected(self, request, queryset):
+    queryset.delete()
+
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
     list_display = ['code', 'abbreviation', 'name', 'type', 'total_activities']
@@ -31,6 +35,8 @@ class OrganisationAdmin(admin.ModelAdmin):
 class ActivityAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_display = ['__unicode__']
+    actions = (delete_selected,)
+
 
     def get_urls(self):
         urls = super(ActivityAdmin, self).get_urls()

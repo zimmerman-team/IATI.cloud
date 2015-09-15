@@ -4,6 +4,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
 
+class NarrativeSerializer(serializers.Serializer):
+    def to_representation(self, obj):
+
+        return [ 
+        {
+            "content": narrative.content, 
+            "language": narrative.language.name
+        }  for narrative in obj.narratives.all() ]
 
 class FilteredListSerializer(serializers.ListSerializer):
     """

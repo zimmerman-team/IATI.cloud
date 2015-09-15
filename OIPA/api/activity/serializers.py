@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 import iati
-from api.generics.serializers import DynamicFieldsModelSerializer, FilterableModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer, FilterableModelSerializer, NarrativeSerializer
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
@@ -25,14 +25,11 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
                 fields = ('code','name')
 
     class TitleSerializer(serializers.Serializer):
-        def to_representation(self, obj):
-            return {'narratives': [{'text': obj.title}, ], }
+        narratives = NarrativeSerializer(many=True, source="*")
 
     format = FileFormatSerializer(source='file_format')
-
     category = DocumentCategorySerializer(source='categories', many=True)
-
-    title = TitleSerializer(source='*')
+    title = TitleSerializer(source="documentlinktitle_set")
 
     class Meta:
         model = iati.models.DocumentLink
@@ -222,15 +219,17 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
             model = iati.models.Vocabulary
             fields = ('code',)
 
+
+
     vocabulary = VocabularySerializer(serializers.ModelSerializer)
-    code = PolicyMarkerSerializer(source='policy_marker')
+    code = serializers.CharField(source='policy_marker.code')
     significance = PolicySignificanceSerializer(source='policy_significance')
-    narative = serializers.CharField(source='alt_policy_marker')
+    narratives = NarrativeSerializer(source="*")
 
     class Meta:
         model = iati.models.ActivityPolicyMarker
         fields = (
-            'narative',
+            'narratives',
             'vocabulary',
             'significance',
             'code',
@@ -238,14 +237,11 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.Serializer):
-    class NarrativeSerializer(serializers.ModelSerializer):
-        text = serializers.CharField(source='title')
+    narratives = NarrativeSerializer(source="*")
 
-        class Meta:
-            model = iati.models.Title
-            fields = ('text', 'language')
-
-    narratives = NarrativeSerializer(many=True, source='title_set')
+    class Meta:
+        model = iati.models.Title
+        fields = ('narratives',)
 
 
 class DescriptionTypeSerializer(serializers.ModelSerializer):
@@ -257,18 +253,6 @@ class DescriptionTypeSerializer(serializers.ModelSerializer):
 
 
 class DescriptionSerializer(serializers.ModelSerializer):
-    class NarrativeSerializer(serializers.ModelSerializer):
-        text = serializers.CharField(source='description')
-
-        def to_representation(self, obj):
-            return [
-                super(DescriptionSerializer.NarrativeSerializer, self)
-                .to_representation(obj)
-            ]
-
-        class Meta:
-            model = iati.models.Description
-            fields = ('text', 'language')
 
     narratives = NarrativeSerializer(source='*')
     type = DescriptionTypeSerializer()
@@ -389,16 +373,28 @@ class ResultTypeSerializer(serializers.ModelSerializer):
             'name',
         )
 
+class ResultDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(source="*")
 
-class NarrativeSerializer(serializers.Serializer):
-        def to_representation(self, obj):
-            return {'narratives': [{'text': obj}, ], }
+    class Meta:
+        model = iati.models.ResultDescription
+        fields = (
+            'narratives',
+        )
 
+class ResultTitleSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(source="*")
+
+    class Meta:
+        model = iati.models.ResultTitle
+        fields = (
+            'narratives',
+        )
 
 class ResultSerializer(serializers.ModelSerializer):
     result_type = ResultTypeSerializer()
-    title = NarrativeSerializer()
-    description = NarrativeSerializer()
+    title = ResultTitleSerializer(many=True, source="resulttitle_set")
+    description = ResultDescriptionSerializer(many=True, source="resultdescription_set")
 
     class Meta:
         model = iati.models.Result
@@ -415,6 +411,35 @@ class GeographicVocabularySerializer(serializers.ModelSerializer):
         fields = (
             'code',
         )
+
+
+class LocationNameSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(source="*")
+
+    class Meta:
+        model = iati.models.LocationName
+        fields = (
+            'narratives',
+        )
+
+class LocationDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(source="*")
+
+    class Meta:
+        model = iati.models.LocationDescription
+        fields = (
+            'narratives',
+        )
+
+class LocationActivityDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(source="*")
+
+    class Meta:
+        model = iati.models.LocationActivityDescription
+        fields = (
+            'narratives',
+        )
+
 
 class LocationSerializer(serializers.ModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
@@ -466,11 +491,11 @@ class LocationSerializer(serializers.ModelSerializer):
 
     location_reach = GeographicLocationReachSerializer()
     location_id = LocationIdSerializer(source='*')
-    name = NarrativeSerializer()
-    description = NarrativeSerializer()
-    activity_description = NarrativeSerializer()
-    administrative = AdministrativeSerializer(source='*')
-    point = JSONField(source='point.json')
+    name = LocationNameSerializer(many=True, source="locationname_set")
+    description = LocationDescriptionSerializer(many=True, source="locationdescription_set")
+    activity_description = LocationActivityDescriptionSerializer(many=True, source="locationactivitydescription_set")
+    administrative = AdministrativeSerializer(source="*")
+    # point = JSONField(source='point.json')
     exactness = GeographicExactnessSerializer()
     location_class = GeographicLocationClassSerializer()
     feature_designation = LocationTypeSerializer()
@@ -532,13 +557,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         source='activityrecipientregion_set'
     )
     budgets = BudgetSerializer(many=True, source='budget_set')
-    # descriptions = DescriptionSerializer(
-    #     many=True, read_only=True, source='description_set')
-    # title = TitleSerializer(source='*')
+    title = TitleSerializer(many=True, read_only=True, source='title_set')
+    description = DescriptionSerializer(
+        many=True, read_only=True, source='description_set')
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
-    results = ResultSerializer(many=True)
+    results = ResultSerializer(many=True, source="result_set")
     locations = LocationSerializer(many=True, source='location_set')
 
     related_activities = RelatedActivitySerializer(many=True, source='current_activity')
@@ -568,8 +593,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'hierarchy',
             'linked_data_uri',
             'reporting_organisation',
-            # 'title',
-            # 'descriptions',
+            'title',
+            'description',
             'participating_organisations',
             'related_activities',
             'activity_status',

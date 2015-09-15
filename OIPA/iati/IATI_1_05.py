@@ -205,20 +205,20 @@ class Parse(IATI_201_Parser):
         return element
 
 
-    '''atributes:
-    code:111
-    vocabulary:DAC
+    # '''atributes:
+    # code:111
+    # vocabulary:DAC
 
-    tag:sector'''
-    def iati_activities__iati_activity__sector(self,element):
-        model = self.get_func_parent_model()
-        sector = models.Sector()
-        sector.activity = model
-        sector.code = element.attrib.get('code')
-        sector.vocabulary = self.cached_db_call(models.Vocabulary,self.sector_vocabulary_trans.get(element.attrib.get('vocabulary')))
-        sector.save()
+    # tag:sector'''
+    # def iati_activities__iati_activity__sector(self,element):
+    #     model = self.get_func_parent_model()
+    #     sector = models.Sector()
+    #     sector.activity = model
+    #     sector.code = element.attrib.get('code')
+    #     sector.vocabulary = self.cached_db_call(models.Vocabulary,self.sector_vocabulary_trans.get(element.attrib.get('vocabulary')))
+    #     sector.save()
          
-        return element
+    #     return element
 
     '''atributes:
 
@@ -230,7 +230,24 @@ class Parse(IATI_201_Parser):
         self.add_narrative_105(element.text,budget_item_description)
         return element
 
+    '''atributes:
+    vocabulary:1
+    code:2
+    significance:3
 
+    tag:policy-marker'''
+    def iati_activities__iati_activity__policy_marker(self,element):
+        model = self.get_func_parent_model()
+         
+        activity_policy_marker = models.ActivityPolicyMarker()
+        activity_policy_marker.activity = model
+        activity_policy_marker.policy_marker = self.cached_db_call(models.PolicyMarker,element.attrib.get('code'))
+        activity_policy_marker.vocabulary = self.cached_db_call(models.Vocabulary,element.attrib.get('vocabulary'))
+        activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
+        activity_policy_marker.code = element.attrib.get('code')
+        self.add_narrative_105(element.text,activity_policy_marker)
+        activity_policy_marker.save()
+        return element
 
     '''atributes:
 

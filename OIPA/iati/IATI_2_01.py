@@ -23,8 +23,6 @@ class Parse(XMLParser):
     def __init__(self, *args, **kwargs):
         self.test = 'blabla'
 
-   
-    
     def _slugify(self,value):
         """
         Normalizes string, converts to lowercase, removes non-alpha characters,
@@ -754,12 +752,12 @@ class Parse(XMLParser):
     tag:sector'''
     def iati_activities__iati_activity__sector(self,element):
         model = self.get_func_parent_model()
-        sector = models.Sector()
-        sector.activity = model
-        sector.code = element.attrib.get('code')
-        sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
-        sector.percentage =  element.attrib.get('percentage')
-        sector.save()
+        activity_sector = models.ActivitySector()
+        activity_sector.activity = model
+        activity_sector.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
+        activity_sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
+        activity_sector.percentage =  element.attrib.get('percentage')
+        activity_sector.save()
          
         return element
 
@@ -828,6 +826,15 @@ class Parse(XMLParser):
         activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
         activity_policy_marker.code = element.attrib.get('code')
         activity_policy_marker.save()
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities__iati_activity__policy_marker__narrative(self, element):
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
+         
         return element
 
     '''atributes:

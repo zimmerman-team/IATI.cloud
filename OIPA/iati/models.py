@@ -725,7 +725,7 @@ class ActivityParticipatingOrganisation(models.Model):
 
 class ActivityPolicyMarker(models.Model):
     policy_marker = models.ForeignKey(PolicyMarker, null=True, default=None,related_name='policy_marker_related')
-    alt_policy_marker = models.CharField(max_length=200, default="")
+    narratives = GenericRelation(Narrative)
     activity = models.ForeignKey(Activity)
     vocabulary = models.ForeignKey(Vocabulary, null=True, default=None)
     policy_significance = models.ForeignKey(
@@ -740,7 +740,6 @@ class ActivityPolicyMarker(models.Model):
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
     sector = models.ForeignKey(Sector, null=True, default=None)
-    alt_sector_name = models.CharField(max_length=200, default="")
     vocabulary = models.ForeignKey(Vocabulary, null=True, default=None)
     percentage = models.DecimalField(
         max_digits=5,
@@ -915,34 +914,32 @@ class DocumentLink(models.Model):
     file_format = models.ForeignKey(FileFormat, null=True, default=None)
     categories = models.ManyToManyField(
         DocumentCategory)
-    title = models.CharField(max_length=255, default="")
+    # title = models.CharField(max_length=255, default="")
     language = models.ForeignKey(Language, null=True, default=None)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.url)
 
-
+# TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink)
-
+    narratives = GenericRelation(Narrative)
 
 class Result(models.Model):
-    activity = models.ForeignKey(Activity, related_name="results")
+    activity = models.ForeignKey(Activity)
     result_type = models.ForeignKey(ResultType, null=True, default=None)
-    title = models.CharField(max_length=255, default="")
-    description = models.TextField(default="")
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.title)
 
-
 class ResultTitle(models.Model):
     result = models.ForeignKey(Result)
-
+    narratives = GenericRelation(Narrative)
 
 class ResultDescription(models.Model):
     result = models.ForeignKey(Result)
+    narratives = GenericRelation(Narrative)
 
 
 class IndicatorMeasure(models.Model):
@@ -1013,17 +1010,16 @@ class ResultIndicatorPeriodActualComment(models.Model):
 
 class Title(models.Model):
     activity = models.ForeignKey(Activity)
-    title = models.CharField(max_length=255, db_index=True)
-    language = models.ForeignKey(Language, null=True, default=None)
     narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.title)
+        return "Title: %s" % (self.activity.id,)
 
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    description = models.TextField(default="")
+    narratives = GenericRelation(Narrative)
+
     type = models.ForeignKey(
         DescriptionType,
         related_name="description_type",
@@ -1031,7 +1027,7 @@ class Description(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.type)
+        return "Description: %s - %s" % (self.activity.id, self.type)
 
 
 class Budget(models.Model):
@@ -1075,7 +1071,7 @@ class Location(models.Model):
     # new in v1.04
     ref = models.CharField(max_length=200, default="")
     #narrative in 2.05
-    name = models.TextField(max_length=1000, default="")
+    # name = models.TextField(max_length=1000, default="")
     # deprecated as of v1.04
     type = models.ForeignKey(
         LocationType,
@@ -1086,8 +1082,8 @@ class Location(models.Model):
         max_length=200,
         default="")
     #narrative in  2.05
-    description = models.TextField(default="")
-    activity_description = models.TextField(default="")
+    # description = models.TextField(default="")
+    # activity_description = models.TextField(default="")
     description_type = models.ForeignKey(
         DescriptionType,
         null=True,
@@ -1167,22 +1163,25 @@ class Location(models.Model):
     @property
     def point(self):
         if self.point_pos:
-            coo = self.point_pos.strip().split('  ')
-            return Point(float(coo[0]), float(coo[1]))
+            coo = self.point_pos.strip().split(' ')
+            return list( Point(float(coo[0]), float(coo[1])) )
         else:
-            return Point(float(self.latitude), float(self.longitude))
+            return list( Point(float(self.latitude), float(self.longitude)) )
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.name)
+        return "Location: %s" % (self.activity.id,)
 
 class LocationName(models.Model):
     location = models.ForeignKey(Location)
+    narratives = GenericRelation(Narrative)
 
 class LocationDescription(models.Model):
     location = models.ForeignKey(Location)
+    narratives = GenericRelation(Narrative)
 
 class LocationActivityDescription(models.Model):
     location = models.ForeignKey(Location)
+    narratives = GenericRelation(Narrative)
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)

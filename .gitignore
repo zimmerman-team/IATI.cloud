@@ -11,6 +11,7 @@ OIPA/OIPA/local_settings.py
 OIPA/OIPA/local_settings.pyc
 
 *.pyc
+*.swp
 
 OIPA/indicators/data_backup/wdi_data/WDI_CS_Notes.csv
 OIPA/indicators/data_backup/wdi_data/WDI_Country.csv
