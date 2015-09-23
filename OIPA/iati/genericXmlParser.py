@@ -195,7 +195,7 @@ class XMLParser(object):
     def cached_db_call(self,model, key,keyDB = 'code',createNew=False):
         if key == '' or key == None:
             return None
-        opts =   model._meta
+        opts = model._meta
         try:
             opts.get_field('codelist_iati_version')
         except:
@@ -203,8 +203,7 @@ class XMLParser(object):
 
         model_name = model.__name__
         codelist_iati_version = self.VERSION
-        #print model_name
-        #print str(key)+' is the key'
+
         if model_name in self.db_call_cache:
             model_cache = self.db_call_cache[model_name]
             if key in model_cache:
@@ -273,43 +272,42 @@ class XMLParser(object):
             return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
 
         
+    def register_model(self, key, model):
+        self.model_store[key] = model
 
-    def get_func_parent_model(self,class_name = None):
+    def get_model(self, key):
+        self.model_store.get(key, None)
 
-        caller_name =  inspect.stack()[1][3] # get the name of the caller function
-        caller_name_arr = caller_name.split("__")
-        key_string = None
-        model = None
-        for caller_name_part in caller_name_arr[:-1]:
-            #print caller_name_part
-            if key_string == None:
-                key_string = caller_name_part
-                continue
-            else:
-                key_string += '__'+caller_name_part
-                #print key_string
-                if key_string in self.model_store:
-                    model_temp = self.model_store[key_string]
-                    #print model_temp.__class__.__name__
-                    if(class_name == None or class_name == model_temp.__class__.__name__):
-                        model = model_temp
-                
+    def save_model(self, key):
+        self.get_model(key).save()
 
-        return model
+    # def get_func_parent_model(self,class_name = None):
+    #     caller_name =  inspect.stack()[1][3] # get the name of the caller function
+    #     caller_name_arr = caller_name.split("__")
+    #     key_string = None
+    #     model = None
+    #     for caller_name_part in caller_name_arr[:-1]:
+    #         #print caller_name_part
+    #         if key_string == None:
+    #             key_string = caller_name_part
+    #             continue
+    #         else:
+    #             key_string += '__'+caller_name_part
+    #             #print key_string
+    #             if key_string in self.model_store:
+    #                 model_temp = self.model_store[key_string]
+    #                 #print model_temp.__class__.__name__
+    #                 if(class_name == None or class_name == model_temp.__class__.__name__):
+    #                     model = model_temp
+    #     return model
 
-    def set_func_model(self,model):
-        caller_name =  inspect.stack()[1][3]# get the name of the caller function
-        if caller_name in self.model_store:
-            model_temp = self.model_store[caller_name]
-            model_temp.save()
-
-        model.save()
-        self.model_store[caller_name] = model
-
-
-
-
-
+    # def set_func_model(self,model):
+    #     caller_name =  inspect.stack()[1][3]# get the name of the caller function
+    #     if caller_name in self.model_store:
+    #         model_temp = self.model_store[caller_name]
+    #         model_temp.save()
+    #     model.save()
+    #     self.model_store[caller_name] = model
 
     def guess_number(self,value):
         if value == '' or value == None:
@@ -337,7 +335,7 @@ class XMLParser(object):
             return True
         return False
 
-    def save_all_models(self,subTree = ''):
+    def save_all_models(self):
         #make tree
         saved_models = []
         for path_name in self.model_store:

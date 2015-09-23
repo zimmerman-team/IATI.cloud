@@ -6,8 +6,9 @@ from tastypie.resources import ModelResource
 # Data specific
 from api.cache import NoTransformCache
 from iati.models import ContactInfo, Activity, Organisation, AidType, FlowType, Sector, CollaborationType, \
-    TiedStatus, Transaction, ActivityStatus, Currency, OrganisationRole, ActivityScope, \
+    TiedStatus, ActivityStatus, Currency, OrganisationRole, ActivityScope, \
     ActivityParticipatingOrganisation, Location, Result, RelatedActivity
+from iati.transaction.models import Transaction
 from api.v3.resources.helper_resources import TitleResource, DescriptionResource, FinanceTypeResource, \
     ActivityBudgetResource, DocumentResource, WebsiteResource, PolicyMarkerResource, OtherIdentifierResource
 from api.v3.resources.advanced_resources import OnlyCountryResource, OnlyRegionResource

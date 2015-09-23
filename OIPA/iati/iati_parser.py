@@ -32,13 +32,33 @@ class ParseIATI():
             buf = afile.read(blocksize)
         return hasher.hexdigest()
 
-    def parse_url(self, source ):
+    def prepare_parser(self, root, source):
+        """
+            Prepares the parser, given the lxml activity file root
+        """
+
+        iati_version = root.xpath('@version')[0]
+
+        if iati_version == '2.01':
+            parser = IATI_201_Parser()
+        elif iati_version == '1.03':
+            parser = IATI_103_Parser()
+            parser.VERSION = iati_version
+        else:
+            parser = IATI_105_Parser()
+            parser.VERSION = iati_version
+        
+        print 'before parsing'
+        parser.iati_source = source
+
+        return parser
+
+    def parse_url(self, source):
         url = source.source_url
         xml_source_ref = source.ref
         last_hash = source.last_hash
         
         try:
-            #iterate through iati-activity tree
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
             #get the hash
@@ -58,34 +78,15 @@ class ParseIATI():
                     deleter.delete_by_source(xml_source_ref)
                 except Exception as e:
                     exception_handler(e, "parse url", "delete by source")
-                print 'activities deleted'
-                # parse the new file
-                data = iati_file.read()
-                print 'test does it go here?'
-                #print data
-                print 'iati data is'
-                root = etree.fromstring(str(data))
-                parser = None
-                print root.xpath('@version')
-                print self.return_first_exist(root.xpath('@version'))
-                iati_version = root.xpath('@version')[0]
-                iati_identifier = root.xpath('iati-activity/iati-identifier/text()')[0]
 
-                if iati_version == '2.01':
-                    parser = IATI_201_Parser()
-                elif iati_version == '1.03':
-                    parser = IATI_103_Parser()
-                    parser.VERSION = iati_version
-                else:
-                    parser = IATI_105_Parser()
-                    parser.VERSION = iati_version
-                print 'before parsing'
-                parser.iati_identifier = iati_identifier
-                parser.iati_source = source
+                data = iati_file.read()
+                root = etree.fromstring(str(data))
+
+                parser = self.prepare_parser(root, source)
                 parser.load_and_parse(root)
 
-                del iati_file
-                gc.collect()
+                # del iati_file
+                # gc.collect()
 
                 # Throw away query logs when in debug mode to prevent memory from overflowing
                 if settings.DEBUG:

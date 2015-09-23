@@ -9,8 +9,8 @@ import indicator.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geodata', '0002_region_region_vocabulary'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('geodata', '0001_initial'),
     ]
 
     operations = [

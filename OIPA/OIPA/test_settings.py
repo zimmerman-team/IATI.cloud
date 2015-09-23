@@ -8,3 +8,4 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+

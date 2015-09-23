@@ -3,6 +3,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from iati.models import *
+from iati.transaction.models import *
 
 
 class LanguageResource(ModelResource):

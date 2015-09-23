@@ -1,7 +1,6 @@
 import django_filters
-from iati.models import Transaction
+from iati.transaction.models import Transaction
 from api.generics.filters import CommaSeparatedCharFilter
-
 
 class TransactionFilter(django_filters.FilterSet):
     """

@@ -175,24 +175,31 @@ class Parse(XMLParser):
     tag:iati-activity'''
     def iati_activities__iati_activity(self,element):
         
-        self.default_lang = 'en'
+        defaults = {
+            default_lang: 'en',             
+            hierarchy: '1',             
+        }
+
         activity = models.Activity()
-        activity.iati_standard_version_id = self.cached_db_call(models.Version, self.VERSION,createNew = True)
-        if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
-            activity.default_lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
-        self.default_lang = activity.default_lang
-        activity.hierarchy = element.attrib.get('hierarchy')
+        activity.default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
+        activity.hierarchy = element.attrib.get('hierarchy', 1) # default 1: parent
         activity.xml_source_ref = self.iati_source.ref
         activity.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        activity_id = element.xpath('iati-identifier/text()')[0]
+        activity.id = element.xpath('iati-identifier/text()')[0].replace(":", "-").replace(" ", "").replace("/", "-").strip(' \t\n\r')
 
-        activity_id = activity_id.replace(":", "-")
-        activity_id = activity_id.replace(" ", "")
-        activity.id = activity_id
-        self.activity_id = activity_id
-        print activity_id+'is the activty ID'
-        activity.save()
-        self.set_func_model(activity)
+        # foreign keys
+        activity.iati_standard_version_id = self.VERSION
+        # activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
+        # activity.iati_standard_version_id = self.cached_db_call(models.Version, self.VERSION, createNew = True)
+        
+        # for later reference
+        self.default_lang = activity.default_lang
+        self.iati_identifier = activity.id
+
+        # activity.save()
+        # self.set_func_model(activity)
+        self.register_model('Activity', activity)
+
         if 'default-currency' in element.attrib:
             activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
 
@@ -202,27 +209,11 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
-        #print 'deleting '+element.text
-        deleter = Deleter()
-        try:
-            deleter.remove_old_values_for_activity_by_iati_id(element.text)
-
-        except Exception as e:
-            print e
-
-        
-        model = self.get_func_parent_model()#model is activity
+        # model = self.get_func_parent_model() # activity
+        model = self.get_model('Activity')
         model.iati_identifier = element.text
-        self.iati_identifier = element.text
-        iati_identifier = element.text
-        print 'saved activity with identifier '+element.text
-        iati_identifier = iati_identifier.strip(' \t\n\r')
-        activity_id = iati_identifier.replace("/", "-")
-        activity_id = activity_id.replace(":", "-")
-        activity_id = activity_id.replace(" ", "")
-        model.id = activity_id
-        model.save()
-        return # endpoint return None 
+        # model.save()
+        return
 
     '''atributes:
     ref:AA-AAA-123456789
@@ -999,6 +990,7 @@ class Parse(XMLParser):
 
     tag:transaction'''
     def iati_activities__iati_activity__transaction(self,element):
+        # TODO: transaction models changed, parse accordingly
         model = self.get_func_parent_model()
         transaction = models.Transaction()
         transaction.activity = model

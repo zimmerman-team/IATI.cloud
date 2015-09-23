@@ -27,5 +27,6 @@ django-otp-yubikey==0.3.1
 django-two-factor-auth==1.2.0
 django-formtools==1.0
 git+git://github.com/gkuhn1/django-admin-multiupload.git
-
+django-test-without-migrations==0.2
+django-extensions==1.5.6
 

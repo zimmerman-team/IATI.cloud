@@ -167,6 +167,10 @@ INSTALLED_APPS = (
     'two_factor',
     'debug_toolbar',
     'parse_logger',
+    'django_extensions',
+    'iati_vocabulary',
+    'iati_codelists',
+    'test_without_migrations',
 )
 
 SUIT_CONFIG = {
@@ -226,3 +230,10 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# try:
+#     if 'test' in sys.argv:
+#         import test_settings
+# except ImportError:
+#     pass
+

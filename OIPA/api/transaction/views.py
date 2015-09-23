@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
-from iati.models import Transaction
+from iati.transaction.models import Transaction
 
 
 class TransactionDetail(RetrieveAPIView):

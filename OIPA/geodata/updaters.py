@@ -139,7 +139,7 @@ class RegionUpdater():
         import ujson
         import os
         import os.path
-        from iati.models import RegionVocabulary
+        from iati_vocabulary.models import RegionVocabulary
 
         base = os.path.dirname(os.path.abspath(__file__))
         location = base + "/data_backup/un_region_codes.json"
@@ -196,7 +196,7 @@ class RegionUpdater():
         import os
         import ujson
         from geodata.models import Region
-        from iati.models import RegionVocabulary
+        from iati_vocabulary.models import RegionVocabulary
 
         base = os.path.dirname(os.path.abspath(__file__))
 

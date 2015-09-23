@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geodata', '0002_region_region_vocabulary'),
+        ('geodata', '0001_initial'),
     ]
 
     operations = [
