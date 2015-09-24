@@ -35,6 +35,8 @@ class Organisation(models.Model):
     name = models.CharField(max_length=250, default="")
     original_ref = models.CharField(max_length=120, default="")
 
+    is_whitelisted = models.BooleanField(default=False) # for organisation fixture work-around
+
     def __unicode__(self):
         return self.name
 
@@ -43,6 +45,8 @@ class Organisation(models.Model):
 
     objects = OrganisationQuerySet.as_manager()
 
+
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
@@ -50,32 +54,40 @@ class Activity(models.Model):
     )
     
     id = models.CharField(max_length=150,primary_key=True,blank=False)
+    iati_identifier = models.CharField(max_length=150, blank=False)
 
-    iati_identifier = models.CharField(max_length=150)
+    iati_standard_version = models.ForeignKey(Version)
+    xml_source_ref = models.CharField(max_length=200, default="")
+
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     last_updated_datetime = models.CharField(max_length=100, default="")
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, default="")
-    reporting_organisation = models.ForeignKey(
-        Organisation,
-        null=True,
-        default=None,
-        related_name="activity_reporting_organisation")
-
-    secondary_publisher = models.BooleanField(default=False)
     activity_status = models.ForeignKey(
         ActivityStatus,
         null=True,
         default=None)
 
+    # reporting_organisation = models.ForeignKey(
+    #     Organisation,
+    #     null=True,
+    #     default=None,
+    #     related_name="activity_reporting_organisation")
+    reporting_organisation = models.ManyToManyField(
+        Organisation,
+        related_name="reporting_organisations",
+        through="ActivityReportingOrganisation")
     participating_organisation = models.ManyToManyField(
         Organisation,
+        related_name="participating_organisations",
         through="ActivityParticipatingOrganisation")
     policy_marker = models.ManyToManyField(
         PolicyMarker,
         through="ActivityPolicyMarker")
-    sector = models.ManyToManyField(Sector, through="ActivitySector")
+    sector = models.ManyToManyField(
+        Sector,
+        through="ActivitySector")
     recipient_country = models.ManyToManyField(
         Country,
         through="ActivityRecipientCountry")
@@ -91,12 +103,10 @@ class Activity(models.Model):
     default_aid_type = models.ForeignKey(AidType, null=True, default=None)
     default_finance_type = models.ForeignKey(FinanceType, null=True, default=None)
     default_tied_status = models.ForeignKey(TiedStatus, null=True, default=None)
-    xml_source_ref = models.CharField(max_length=200, default="")
-
-    capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
-    iati_standard_version = models.ForeignKey(Version)
-    has_conditions = models.BooleanField(default=True)
+
+    capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
+    has_conditions = models.BooleanField(default=True) # @attached on iati-conditions
 
     objects = ActivityQuerySet.as_manager()
 
@@ -118,14 +128,22 @@ class ActivitySearchData(models.Model):
     search_reporting_organisation_name = models.TextField(max_length=80000)
     search_documentlink_title = models.TextField(max_length=80000)
 
+class ActivityReportingOrganisation(models.Model):
+    activity = models.ForeignKey(
+        Activity,
+        # related_name="reporting_organisations"
+        )
+    organisation = models.ForeignKey(Organisation, null=True, default=None)
+    secondary_reporter = models.BooleanField(default=False)
+
 class ActivityParticipatingOrganisation(models.Model):
     activity = models.ForeignKey(
         Activity,
-        related_name="participating_organisations")
+        # related_name="participating_organisations"
+        )
     organisation = models.ForeignKey(Organisation, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
     type = models.ForeignKey(OrganisationType, null=True, default=None)
-    name = models.TextField(default="")
     narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):

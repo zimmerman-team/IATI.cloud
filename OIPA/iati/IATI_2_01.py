@@ -1,5 +1,7 @@
 from genericXmlParser import XMLParser
+from django.db.models import Model
 from iati import models
+from iati_codelists import models as codelist_models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
 from iati_synchroniser.exception_handler import exception_handler
@@ -15,13 +17,26 @@ _slugify_hyphenate_re = re.compile(r'[-\s]+')
 
 class Parse(XMLParser):
     #version of IATI standard
-    VERSION = '2.01'
     default_lang = 'en'
     iati_identifier = ''
     validated_reporters = ['GB-1', 'NL-1', 'all-other-known-reporting-orgs']
 
     def __init__(self, *args, **kwargs):
+        self.VERSION = codelist_models.Version.objects.get(code='2.01')
         self.test = 'blabla'
+
+    def get_model(self, key):
+        if isinstance(key, Model):
+            return super(Parse, self).get_model(key.__name__) # class name
+
+        return super(Parse, self).get_model(key)
+
+    def register_model(self, key, model=None):
+        if isinstance(key, Model):
+            help(key)
+            return super(Parse, self).register_model(key.__name__, key) # class name
+
+        super(Parse, self).register_model(key, model)
 
     def _slugify(self,value):
         """
@@ -37,13 +52,10 @@ class Parse(XMLParser):
         value = unicode(_slugify_strip_re.sub('', value).strip().lower())
         return _slugify_hyphenate_re.sub('-', value)
 
-    def h6(self,w):
+    def hash8(self,w):
         h = hashlib.md5(w.encode('ascii', 'ignore'))
-        hash_generated =  h.digest().encode('base64')[:6]
+        hash_generated =  h.digest().encode('base64')[:8]
         return self._slugify(hash_generated)
-
-
-
 
     def validate_date(self, unvalidated_date):
         valid_date = None
@@ -80,7 +92,23 @@ class Parse(XMLParser):
                 return None
         return valid_date
 
-    def add_organisation(self, elem, is_reporting_org=False):
+    def _get_main_narrative_child(self, elem):
+        if len(elem):
+            return elem[0].text.strip()
+
+    def _in_whitelist(self, ref):
+        """
+        reporting_org and participating_org @ref attributes can be whitelisted, causing name to be determined by whitelist
+        """
+        return False
+
+    def _save_whitelist(self, ref):
+        """
+        Actually save the whitelisted organisation when first encountered
+        """
+        pass
+
+    def get_or_create_organisation(self, elem, name, is_reporting_org=False):
         """
         Add organisation business requirements:
 
@@ -104,51 +132,44 @@ class Parse(XMLParser):
         """
 
         ref = elem.attrib.get('ref')
+        type_ref = elem.attrib.get('type')
+
+        # requirement 2.2
         original_ref = ref
         # requirement 2.1
         ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
-        type_ref = elem.attrib.get('type')
-
-        name = elem.text.strip()
-        for e in elem:
-            name = e.text.strip()
-            break
 
         org_type = None
         if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
             org_type = self.cached_db_call(models.OrganisationType,type_ref)
 
-        # to do; nice this
-        # if not is_reporting_org:
-        #     if ref in self.validated_reporters:
-        #         if models.Organisation.objects.filter(code=ref).exists():
-        #           return models.Organisation.objects.get(code=ref)
+        # organisation = models.Organisation.objects.filter(original_ref=ref)
+
+        if self._in_whitelist(original_ref):
+
+            if models.Organisation.objects.filter(original_ref=ref).exists():
+                return models.Organisation.objects.filter(original_ref=ref).get()
+            else:
+                return self._save_whitelist_org(ref)
 
         if is_reporting_org:
-            if models.Organisation.objects.filter(code=ref).exists():
-                org = models.Organisation.objects.get(code=ref)
-                # requirement 2.3
-                org.type = org_type
-                org.name = name
-                org.save()
-                return org
+            if models.Organisation.objects.filter(original_ref=ref).exists():
+                return models.Organisation.objects.filter(original_ref=ref).get()
         else:
-            #look for org with same name and same ref
             if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
-                #found! return this org
-                org = models.Organisation.objects.filter(original_ref=ref, name=name)[0]
-                return org
-            else:
-                #org not found
-                ref = ref+'_'+self.h6(name)
+                ref = ref + '-' + self.hash8(name)
 
-        organisation = models.Organisation.objects.get_or_create(
-            code=ref,
-            defaults={
-                'name': name,
-                'type': org_type,
-                'original_ref': original_ref
-            })[0]
+        organisation = models.Organisation()
+        organisation.code = ref
+        organisation.original_ref = original_ref
+        organisation.type = org_type
+        organisation.name = name
+
+        print('registering organisation')
+        print(organisation.__dict__)
+
+        self.register_model('Organisation', organisation)
+
         return organisation
 
     def add_narrative(self,element,parent):
@@ -176,32 +197,41 @@ class Parse(XMLParser):
     def iati_activities__iati_activity(self,element):
         
         defaults = {
-            default_lang: 'en',             
-            hierarchy: '1',             
+            'default_lang': 'en',             
+            'hierarchy': 1,             
         }
 
         activity = models.Activity()
         activity.default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
-        activity.hierarchy = element.attrib.get('hierarchy', 1) # default 1: parent
+        activity.hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
         activity.xml_source_ref = self.iati_source.ref
         activity.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
+        activity.linked_data_uri = element.attrib.get('linked-data-uri')
         activity.id = element.xpath('iati-identifier/text()')[0].replace(":", "-").replace(" ", "").replace("/", "-").strip(' \t\n\r')
+
+        from lxml import etree
+        print(etree.tostring(element, pretty_print=True))
 
         # foreign keys
         activity.iati_standard_version_id = self.VERSION
+
+        if 'default-currency' in element.attrib:
+            activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
+        # get_codelist(codelist_models.Currency, )
+        # activity.default_currency = codelist_models.Currencyget()element.attrib.get('default-currency')
+
         # activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
         # activity.iati_standard_version_id = self.cached_db_call(models.Version, self.VERSION, createNew = True)
+        print(activity.default_currency)
         
         # for later reference
-        self.default_lang = activity.default_lang
         self.iati_identifier = activity.id
+        self.default_lang = activity.default_lang
 
         # activity.save()
         # self.set_func_model(activity)
         self.register_model('Activity', activity)
 
-        if 'default-currency' in element.attrib:
-            activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
 
         return element
 
@@ -210,8 +240,9 @@ class Parse(XMLParser):
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
         # model = self.get_func_parent_model() # activity
-        model = self.get_model('Activity')
-        model.iati_identifier = element.text
+        activity = self.get_model('Activity')
+        activity.iati_identifier = element.text
+        self.register_model('Activity', activity)
         # model.save()
         return
 
@@ -222,14 +253,20 @@ class Parse(XMLParser):
 
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
-        model = self.get_func_parent_model()
-        organisation = self.add_organisation(element, is_reporting_org=True)
-        if 'secondary-reporter' in element.attrib:
-            model.secondary_publisher = element.attrib.get('secondary-reporter')
-        #print organisation.name
+        print(self.model_store)
+        activity = self.get_model('Activity')
 
-        model.reporting_organisation = organisation
-        self.set_func_model(organisation)
+        reported_org_name = self._get_main_narrative_child(element)
+        organisation = self.get_or_create_organisation(element, reported_org_name, is_reporting_org=True)
+
+        print(activity)
+
+        reporting_organisation = models.ActivityReportingOrganisation()
+        reporting_organisation.activity = activity
+        reporting_organisation.organisation = organisation
+        reporting_organisation.secondary_reporter = self.makeBool(element.attrib.get('secondary-reporter'))
+
+        self.register_model('ActivityReportingOrganisation', reporting_organisation)
     
         return element
 
@@ -237,11 +274,10 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__reporting_org__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        model = self.get_model(models.ActivityReportingOrganisation)
+        self.add_narrative(element, model)
 
         return element
-
 
     '''atributes:
 
@@ -292,7 +328,7 @@ class Parse(XMLParser):
     tag:participating-org'''
     def iati_activities__iati_activity__participating_org(self,element):
         model = self.get_func_parent_model()
-        org = self.add_organisation(element)
+        org = self.get_or_create_organisation(element)
         activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
         activityParticipatingOrganisation.organisation = org
         activityParticipatingOrganisation.activity = model
@@ -980,8 +1016,9 @@ class Parse(XMLParser):
 
     tag:capital-spend'''
     def iati_activities__iati_activity__capital_spend(self,element):
-        model = self.get_func_parent_model()
-        model.capital_spend = element.attrib.get('percentage')
+        activity = self.get_model('Activity')
+        activity.capital_spend = element.attrib.get('percentage')
+        self.register_model('Activity', activity)
          
         return element
 
@@ -1063,7 +1100,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         model.provider_activity = element.attrib.get('provider-activity-id')
 
-        provider_org = self.add_organisation(element)
+        provider_org = self.get_or_create_organisation(element)
         transaction_provider = models.TransactionProvider()
         transaction_provider.transaction = model
         transaction_provider.organisation = provider_org
@@ -1089,7 +1126,7 @@ class Parse(XMLParser):
         model = self.get_func_parent_model()
         model.receiver_activity = element.attrib.get('receiver-activity-id')
 
-        receiver_org = self.add_organisation(element)
+        receiver_org = self.get_or_create_organisation(element)
         model.receiver_organisation = receiver_org
         transaction_receiver = models.TransactionReceiver()
         transaction_receiver.transaction = model
@@ -1287,8 +1324,10 @@ class Parse(XMLParser):
 
     tag:conditions'''
     def iati_activities__iati_activity__conditions(self,element):
-        model = self.get_func_parent_model()
-        model.has_conditions = self.makeBool(element.attrib.get('attached'))
+        activity = self.get_model('Activity')
+        activity.has_conditions = self.makeBool(element.attrib.get('attached'))
+        self.register_model('Activity', activity)
+
         return element
 
     '''atributes:

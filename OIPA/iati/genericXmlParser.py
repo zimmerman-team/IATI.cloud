@@ -31,9 +31,6 @@ class XMLParser(object):
 
     DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
 
-
-   
-
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated_105.xml")
 
@@ -271,15 +268,20 @@ class XMLParser(object):
             #print 'call recursively'
             return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
 
-        
+    # register last seen model of this type. Is overwritten on later encounters
     def register_model(self, key, model):
-        self.model_store[key] = model
+        if key in self.model_store:
+            self.model_store[key].append(model)
+        else:
+            self.model_store[key] = [model]
 
-    def get_model(self, key):
-        self.model_store.get(key, None)
+    def get_model(self, key, index=-1):
+        if key in self.model_store:
+            return self.model_store[key][index]
+        return None
 
-    def save_model(self, key):
-        self.get_model(key).save()
+    def save_model(self, key, index=-1):
+        return self.get_model(key, index).save()
 
     # def get_func_parent_model(self,class_name = None):
     #     caller_name =  inspect.stack()[1][3] # get the name of the caller function

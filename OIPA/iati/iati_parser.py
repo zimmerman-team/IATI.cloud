@@ -48,7 +48,6 @@ class ParseIATI():
             parser = IATI_105_Parser()
             parser.VERSION = iati_version
         
-        print 'before parsing'
         parser.iati_source = source
 
         return parser

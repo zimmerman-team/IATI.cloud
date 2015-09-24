@@ -17,7 +17,6 @@ class FileFormatFactory(NoDatabaseFactory):
     code = 'application/json'
     name = ''
 
-
 class DocumentCategoryFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.DocumentCategory
@@ -147,6 +146,14 @@ class ActivityFactory(NoDatabaseFactory):
     iati_identifier = 'IATI-0001'
 
 
+class ActivityFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Activity
+
+    id = 'IATI-0001'
+    iati_identifier = 'IATI-0001'
+
+
 class RegionFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Region
@@ -206,6 +213,13 @@ class OrganisationFactory(NoDatabaseFactory):
     code = 'GB-COH-03580586'
     name = 'PWC'
 
+class OrganisationWhiteListedFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Organisation
+
+    code = 'GB-COH-03580586'
+    name = 'PWC'
+    is_whitelisted = True
 
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:
