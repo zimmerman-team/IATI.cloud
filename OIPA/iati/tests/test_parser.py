@@ -99,8 +99,8 @@ class ParserSetupTestCase(DjangoTestCase):
         assert(isinstance(self.parser_105, Parser_105))
         assert(isinstance(self.parser_201, Parser_201))
 
-        # todo: assert source was handled appropriately
-        # self.assertEqual(self.parser_103.iati_source, self.parser_104.iati_source, self.parser_105.iati_source, self.parser_201.iati_source)
+        # todo: self.assertTrue source was handled appropriately
+        # self.self.assertTrueEqual(self.parser_103.iati_source, self.parser_104.iati_source, self.parser_105.iati_source, self.parser_201.iati_source)
 
     @classmethod
     def tearDownClass(self):
@@ -147,12 +147,12 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_201.get_model('Activity')
         # self.parser_201.save_model('Activity')
 
-        assert(activity.default_currency.code == self.attrs["default-currency"])
-        assert(str(activity.last_updated_datetime) == self.attrs["last-updated-datetime"])
-        assert(activity.linked_data_uri == self.attrs["linked-data-uri"])
-        assert(activity.hierarchy == self.attrs["hierarchy"])
-        assert(activity.default_lang == "en")
-        assert(activity.iati_standard_version.code == "2.01")
+        self.assertTrue(activity.default_currency.code == self.attrs["default-currency"])
+        self.assertTrue(str(activity.last_updated_datetime) == self.attrs["last-updated-datetime"])
+        self.assertTrue(activity.linked_data_uri == self.attrs["linked-data-uri"])
+        self.assertTrue(activity.hierarchy == self.attrs["hierarchy"])
+        self.assertTrue(activity.default_lang == "en")
+        self.assertTrue(activity.iati_standard_version.code == "2.01")
 
     def test_activity_default_201(self):
         """
@@ -171,9 +171,9 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_201.get_model('Activity')
 
         for field, default in self.defaults.iteritems():
-            assert(getattr(activity, field) == default)
-        assert(activity.default_lang == "en")
-        assert(activity.iati_standard_version.code == "2.01")
+            self.assertTrue(getattr(activity, field) == default)
+        self.assertTrue(activity.default_lang == "en")
+        self.assertTrue(activity.iati_standard_version.code == "2.01")
 
     def test_activity_no_last_updated_datetime(self):
         """
@@ -195,9 +195,9 @@ class ActivityTestCase(ParserSetupTestCase):
             activity = self.parser_201.get_model('Activity')
 
             if overwrites:
-                assert(activity.id == new_activity.xpath('iati-identifier/text()')[0])
+                self.assertTrue(activity.id == new_activity.xpath('iati-identifier/text()')[0])
             else:
-                assert(activity.id == old_activity.xpath('iati-identifier/text()')[0] )
+                self.assertTrue(activity.id == old_activity.xpath('iati-identifier/text()')[0] )
 
 
         # case 1 (greater)
@@ -241,7 +241,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity(iati_201)
         activity = self._get_activity(self.iati_identifier)
 
-        assert(activity.linked_data_uri == linked_data_default)
+        self.assertTrue(activity.linked_data_uri == linked_data_default)
 
     def test_iati_identifier(self):
         """
@@ -257,7 +257,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
         activity = self.parser_201.get_model('Activity')
 
-        assert(activity.iati_identifier == iati_identifier.text)
+        self.assertTrue(activity.iati_identifier == iati_identifier.text)
 
         # empty iati-idenifier should throw exception
         iati_identifier.text = ""
@@ -265,7 +265,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
         activity = self.parser_201.get_model('Activity')
 
-        with self.assertRaises(Exception):
+        with self.self.assertTrueRaises(Exception):
             activity.save()
 
     def test_capital_spend(self):
@@ -288,7 +288,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__capital_spend(capital_spend)
         activity = self.parser_201.get_model('Activity')
 
-        assert(activity.capital_spend == percentage)
+        self.assertTrue(activity.capital_spend == percentage)
 
 
     def test_has_conditions_returns_true(self):
@@ -307,7 +307,7 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_201.get_model('Activity')
         activity.save()
 
-        assert(activity.has_conditions == True)
+        self.assertTrue(activity.has_conditions == True)
 
     def test_has_conditions_returns_false(self):
         attached = '0'
@@ -325,9 +325,114 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_201.get_model('Activity')
         activity.save()
 
-        assert(activity.has_conditions == False)
+        self.assertTrue(activity.has_conditions == False)
 
-class Narrative(ParserSetupTestCase):
+class TitleTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.title = E('title', )
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+    def test_title_201(self):
+        self.parser_201.iati_activities__iati_activity__title(self.title)
+        title = self.parser_201.get_model('Title')
+
+        self.assertTrue(title.activity == self.activity)
+
+        self.parser_201.iati_activities__iati_activity__title__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == title)
+
+    def test_title_105(self):
+        self.title.text = "random text"
+        self.parser_105.iati_activities__iati_activity__title(self.title)
+
+        title = self.parser_105.get_model('Title')
+        narrative = self.parser_105.get_model('Narrative')
+
+        self.assertTrue(title.activity == self.activity)
+        self.assertTrue(narrative.parent_object == title)
+
+class DescriptionTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.description = E('description', )
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+    def test_description_201(self):
+        self.parser_201.iati_activities__iati_activity__description(self.description)
+        description = self.parser_201.get_model('Description')
+
+        self.assertTrue(description.activity == self.activity)
+
+        self.parser_201.iati_activities__iati_activity__description__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == description)
+
+    def test_description_105(self):
+        self.description.text = "random text"
+        self.parser_105.iati_activities__iati_activity__description(self.description)
+
+        description = self.parser_105.get_model('Description')
+        narrative = self.parser_105.get_model('Narrative')
+
+        self.assertTrue(description.activity == self.activity)
+        self.assertTrue(narrative.parent_object == description)
+
+class NarrativeTestCase(ParserSetupTestCase):
+    """
+    Added in 2.01
+    """
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        # default narrative model fields
+        self.defaults = {
+            "language": "en",
+        }
+        self.test_text = "this text should match in the tests"
+
+        self.narrative = E('narrative', self.test_text)
+        # This could be any object for testing
+        self.parent_object = build_activity()
+
+    def addForeignKeyDefaultNarrative(self):
+        """
+        Given an arbitrary foreign key, the narrative should be created and be queryable using default assumed values (language)
+        """
+        self.parser_201.add_narrative(self.narrative, self.parent_object)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == self.parent_object)
+        self.assertTrue(narrative.content == self.test_text)
+        self.assertTrue(narrative.language.code == self.defaults["language"])
+
+
+    def addForeignKeyNonDefaultLanguageNarrative(self):
+        """
+        The narrative should change its language parameter based on the xml:lang element 
+        """
+        self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr" # ISO 639-1:2002
+
+        self.parser_201.add_narrative(self.narrative, self.parent_object)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.language.code == "fr")
+
+# Todo: after organization implementation
+class OrganisationTestCase(ParserSetupTestCase):
     pass
 
 class ActivityReportingOrganisation(ParserSetupTestCase):
@@ -337,68 +442,54 @@ class ActivityReportingOrganisation(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_201 = copy_xml_tree(self.iati_201)
-        # sample attributes on iati-activity xml
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
         self.attrs = {
-            "ref": "NL-KVK-51018586",
+            "ref": "GB-COH-03580586",
             "type": '40',
             "secondary-reporter": "0",
         }
 
-        # iati_activity = E("iati-activity", **self.attrs)
-        # self.iati_201.append(iati_activity) 
-        
         self.reporting_org = E('reporting-org', **self.attrs)
-
-        # print(etree.tostring(self.iati_201, pretty_print=True))
 
     def test_organisation_not_parsed_yet(self):
         """
-        Check complete element is parsed correctly, excluding narratives when org isn't parsed (yet)
-        Note this results in an empty name field for the organisation (no narratives on first parse)
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
         activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', activity)
 
         self.parser_201.iati_activities__iati_activity__reporting_org(self.reporting_org)
 
-        # activity = self.parser_201.get_model('Activity')
-        organisation = self.parser_201.get_model('Organisation')
         reporting_organisation = self.parser_201.get_model('ActivityReportingOrganisation')
 
-        assert(organisation.original_ref == self.attrs["ref"])
-        assert(organisation.type.code == int(self.attrs["type"]))
-
-        assert(reporting_organisation.activity == activity)
-        assert(reporting_organisation.organisation.code == organisation.code)
-        assert(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
+        self.assertTrue(reporting_organisation.ref == self.attrs["ref"])
+        self.assertTrue(reporting_organisation.type.code == int(self.attrs["type"]))
+        self.assertTrue(reporting_organisation.activity == activity)
+        self.assertTrue(reporting_organisation.organisation == None)
+        self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
 
     def test_organisation_already_parsed(self):
         """
-        Check complete element is parsed correctly, excluding narratives when org is arlready parsed
-        Note this results in an empty name field for the organisation (no narratives on first parse)
+        Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
         """
         activity = build_activity(version="2.01")
+
         test_organisation = iati_factory.OrganisationFactory.build()
+        test_organisation.save()
 
         self.parser_201.register_model('Activity', activity)
+        self.parser_201.register_model('Organisation', test_organisation)
 
-        self.reporting_org.attrs.
         self.parser_201.iati_activities__iati_activity__reporting_org(self.reporting_org)
 
         # activity = self.parser_201.get_model('Activity')
         organisation = self.parser_201.get_model('Organisation')
         reporting_organisation = self.parser_201.get_model('ActivityReportingOrganisation')
 
-        print(organisation)
-        assert(organisation == None)
+        self.assertTrue(reporting_organisation.activity == activity)
+        self.assertTrue(reporting_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(reporting_organisation.type.code == int(self.attrs["type"]))
+        self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
 
-        assert(reporting_organisation.activity == activity)
-        assert(reporting_organisation.organisation.code == test_organisation.code)
-        assert(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
-
-# Todo: after organization implementation
-class OrganisationTestCase(ParserSetupTestCase):
-    pass
 
 

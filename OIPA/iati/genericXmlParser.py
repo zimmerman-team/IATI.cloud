@@ -14,10 +14,7 @@ import re
 from django.contrib.auth.models import User
 import traceback
 
-
-
 class XMLParser(object):
-
     VERSION = '2.01'  #overwrite for older versions
     xml_source_ref =''
     iati_source = None

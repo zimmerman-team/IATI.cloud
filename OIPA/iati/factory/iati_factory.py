@@ -213,14 +213,6 @@ class OrganisationFactory(NoDatabaseFactory):
     code = 'GB-COH-03580586'
     name = 'PWC'
 
-class OrganisationWhiteListedFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.Organisation
-
-    code = 'GB-COH-03580586'
-    name = 'PWC'
-    is_whitelisted = True
-
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivitySector

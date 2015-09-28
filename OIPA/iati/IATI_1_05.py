@@ -1,5 +1,7 @@
 from IATI_2_01 import Parse as IATI_201_Parser
+
 from iati import models
+from iati_codelists import models as codelist_models
 
 class Parse(IATI_201_Parser):
 
@@ -32,16 +34,20 @@ class Parse(IATI_201_Parser):
     }
 
     def add_narrative_105(self, text, parent):
-        if text == '' or text is None:
-            return
-        parent.save()
+        lang = self.default_lang
+        language = self.get_or_none(codelist_models.Language, code=lang)
+
+        if not language: raise self.RequiredFieldError("language")
+        if not text: raise self.RequiredFieldError("text")
+        if not parent: raise self.RequiredFieldError("parent")
+
         narrative = models.Narrative()
-        lang = self.default_lang 
-        narrative.language = self.cached_db_call(models.Language,lang)
+        narrative.language = language
         narrative.content = text
-        narrative.iati_identifier = self.iati_identifier
+        narrative.iati_identifier = self.iati_identifier # TODO: we need this?
         narrative.parent_object = parent
-        narrative.save()
+
+        self.register_model('Narrative', narrative)
 
     '''atributes:
     ref:AA-AAA-123456789
@@ -81,11 +87,17 @@ class Parse(IATI_201_Parser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self, element):
-        model = self.get_func_parent_model()
+        text = element.text
+        
+        if not text: raise self.RequiredFieldError("text", "text is required")
+
+        activity = self.get_model('Activity')
         title = models.Title()
-        title.activity = model
-        self.add_narrative_105(element.text, title)
-        self.set_func_model(title)
+        title.activity = activity
+
+        self.add_narrative_105(text, title)
+        self.register_model('Title', title)
+
         return element
 
     '''atributes:
@@ -93,16 +105,22 @@ class Parse(IATI_201_Parser):
 
     tag:description'''
     def iati_activities__iati_activity__description(self,element):
-        model = self.get_func_parent_model()
+        text = element.text
+        description_type_code = element.attrib.get('type', 1)
+
+        if not text: raise self.RequiredFieldError("text", "text is required")
+
+        description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
+
+        activity = self.get_model('Activity')
         description = models.Description()
-        description.activity = model
-        desc_type = self.cached_db_call_no_version(models.DescriptionType, element.attrib.get('type'), keyDB='name')
-        description.type = desc_type
+        description.activity = activity
+        description.type = description_type
+
         self.add_narrative_105(element.text, description)
-        self.set_func_model(description)
+        self.register_model('Description', description)
 
         return element
-
 
     '''atributes:
 

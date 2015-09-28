@@ -11,9 +11,13 @@ import dateutil.parser
 import time
 import datetime
 import re
+import unicodedata
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
+
+def _cache_codelists():
+    pass
 
 class Parse(XMLParser):
     #version of IATI standard
@@ -24,6 +28,23 @@ class Parse(XMLParser):
     def __init__(self, *args, **kwargs):
         self.VERSION = codelist_models.Version.objects.get(code='2.01')
         self.test = 'blabla'
+
+    class RequiredFieldError(Exception):
+        def __init__(self, field, msg):
+            """
+            field: the field that is required
+            msg: explanation why
+            """
+            self.field = field
+
+        def __str__(self):
+            return repr(self.field)
+
+    def get_or_none(self, model, *args, **kwargs):
+        try:
+            return model.objects.get(*args, **kwargs)
+        except model.DoesNotExist:
+            return None
 
     def get_model(self, key):
         if isinstance(key, Model):
@@ -45,7 +66,6 @@ class Parse(XMLParser):
         
         From Django's "django/template/defaultfilters.py".
         """
-        import unicodedata
         if not isinstance(value, unicode):
             value = unicode(value)
         value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
@@ -145,19 +165,17 @@ class Parse(XMLParser):
 
         # organisation = models.Organisation.objects.filter(original_ref=ref)
 
-        if self._in_whitelist(original_ref):
-
-            if models.Organisation.objects.filter(original_ref=ref).exists():
-                return models.Organisation.objects.filter(original_ref=ref).get()
-            else:
-                return self._save_whitelist_org(ref)
-
-        if is_reporting_org:
-            if models.Organisation.objects.filter(original_ref=ref).exists():
-                return models.Organisation.objects.filter(original_ref=ref).get()
-        else:
-            if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
-                ref = ref + '-' + self.hash8(name)
+        # if self._in_whitelist(original_ref):
+        #     if models.Organisation.objects.filter(original_ref=ref).exists():
+        #         return models.Organisation.objects.filter(original_ref=ref).get()
+        #     else:
+        #         return self._save_whitelist_org(ref)
+        # if is_reporting_org:
+        #     if models.Organisation.objects.filter(original_ref=ref).exists():
+        #         return models.Organisation.objects.filter(original_ref=ref).get()
+        # else:
+        #     if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
+        #         ref = ref + '-' + self.hash8(name)
 
         organisation = models.Organisation()
         organisation.code = ref
@@ -166,7 +184,6 @@ class Parse(XMLParser):
         organisation.name = name
 
         print('registering organisation')
-        print(organisation.__dict__)
 
         self.register_model('Organisation', organisation)
 
@@ -174,17 +191,23 @@ class Parse(XMLParser):
 
     def add_narrative(self,element,parent):
         narrative = models.Narrative()
-        lang = self.default_lang 
-        if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
-            lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
 
-        if element.text is None or element.text == '':
-            return
-        narrative.language = self.cached_db_call(models.Language,lang)
+        default_lang = self.default_lang # set on activity (if set)
+        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+        text = element.text
+
+        language = self.get_or_none(codelist_models.Language, code=lang)
+
+        if not language: raise self.RequiredFieldError("language")
+        if not text: raise self.RequiredFieldError("text")
+        if not parent: raise self.RequiredFieldError("parent")
+
+        narrative.language = language
         narrative.content = element.text
-        narrative.iati_identifier = self.iati_identifier
+        narrative.iati_identifier = self.iati_identifier # TODO: we need this?
         narrative.parent_object = parent
-        narrative.save()
+
+        self.register_model('Narrative', narrative)
 
     '''atributes:
     {http://www.w3.org/XML/1998/namespace}lang:en
@@ -253,18 +276,26 @@ class Parse(XMLParser):
 
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
-        print(self.model_store)
         activity = self.get_model('Activity')
 
-        reported_org_name = self._get_main_narrative_child(element)
-        organisation = self.get_or_create_organisation(element, reported_org_name, is_reporting_org=True)
+        ref = element.attrib.get('ref')
+        org_type_code = element.attrib.get('type')
+        secondary_reporter = element.attrib.get('secondary-reporter')
 
-        print(activity)
+        if not ref: raise self.RequiredFieldError("ref")
+
+        normalized_ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=org_type_code)
+        organisation = self.get_or_none(models.Organisation, code=ref)
 
         reporting_organisation = models.ActivityReportingOrganisation()
+        reporting_organisation.ref = ref
+        reporting_organisation.normalized_ref = normalized_ref
+        reporting_organisation.type = org_type  
         reporting_organisation.activity = activity
         reporting_organisation.organisation = organisation
-        reporting_organisation.secondary_reporter = self.makeBool(element.attrib.get('secondary-reporter'))
+        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
 
         self.register_model('ActivityReportingOrganisation', reporting_organisation)
     
@@ -283,18 +314,18 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self,element):
-        model = self.get_func_parent_model()
+        activity = self.get_model('Activity')
         title = models.Title()
-        title.activity = model
-        self.set_func_model(title)
+        title.activity = activity
+        self.register_model('Title', title)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__title__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        title = self.get_model('Title')
+        self.add_narrative(element, title)
         
         return element
 
@@ -303,22 +334,26 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__description(self,element):
-        model = self.get_func_parent_model()
+
+        description_type_code = element.attrib.get('type', 1)
+        description_type = self.get_or_none(codelist_models.Language, code=description_type_code)
+
+        activity = self.get_model('Activity')
         description = models.Description()
-        description.activity = model
-        desc_type = self.cached_db_call(models.DescriptionType, element.attrib.get('type'))
-        description.type = desc_type
-        self.set_func_model(description)
+        description.activity = activity
+        description.type = description_type
+
+        self.register_model('Description', description)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__description__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        title = self.get_model('Description')
+        self.add_narrative(element, title)
+        
         return element
-
 
     '''atributes:https://docs.djangoproject.com/en/1.8/topics/migrations/
     ref:BB-BBB-123456789

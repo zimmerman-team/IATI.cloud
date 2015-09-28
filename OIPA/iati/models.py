@@ -27,23 +27,6 @@ class Narrative(models.Model):
     iati_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
-class Organisation(models.Model):
-    code = models.CharField(max_length=250,primary_key=True)
-    abbreviation = models.CharField(max_length=120, default="")
-    type = models.ForeignKey(OrganisationType, null=True, default=None)
-    reported_by_organisation = models.CharField(max_length=150, default="")
-    name = models.CharField(max_length=250, default="")
-    original_ref = models.CharField(max_length=120, default="")
-
-    is_whitelisted = models.BooleanField(default=False) # for organisation fixture work-around
-
-    def __unicode__(self):
-        return self.name
-
-    def total_activities(self):
-        return self.activity_set.count()
-
-    objects = OrganisationQuerySet.as_manager()
 
 
 
@@ -74,14 +57,14 @@ class Activity(models.Model):
     #     null=True,
     #     default=None,
     #     related_name="activity_reporting_organisation")
-    reporting_organisation = models.ManyToManyField(
-        Organisation,
-        related_name="reporting_organisations",
-        through="ActivityReportingOrganisation")
-    participating_organisation = models.ManyToManyField(
-        Organisation,
-        related_name="participating_organisations",
-        through="ActivityParticipatingOrganisation")
+    # reporting_organisation = models.ManyToManyField(
+    #     Organisation,
+    #     related_name="reporting_organisations",
+    #     through="ActivityReportingOrganisation")
+    # participating_organisation = models.ManyToManyField(
+    #     Organisation,
+    #     related_name="participating_organisations",
+    #     through="ActivityParticipatingOrganisation")
     policy_marker = models.ManyToManyField(
         PolicyMarker,
         through="ActivityPolicyMarker")
@@ -128,23 +111,52 @@ class ActivitySearchData(models.Model):
     search_reporting_organisation_name = models.TextField(max_length=80000)
     search_documentlink_title = models.TextField(max_length=80000)
 
+# TODO: move this to a separate django app along with other organisation-related models
+class Organisation(models.Model):
+    code = models.CharField(max_length=250,primary_key=True)
+    abbreviation = models.CharField(max_length=120, default="")
+    type = models.ForeignKey(OrganisationType, null=True, default=None)
+    reported_by_organisation = models.CharField(max_length=150, default="")
+    name = models.CharField(max_length=250, default="")
+    original_ref = models.CharField(max_length=120, default="")
+
+    is_whitelisted = models.BooleanField(default=False) # for organisation fixture work-around
+
+    def __unicode__(self):
+        return self.name
+
+    def total_activities(self):
+        return self.activity_set.count()
+
+    objects = OrganisationQuerySet.as_manager()
+
 class ActivityReportingOrganisation(models.Model):
+    ref = models.CharField(max_length=250, primary_key=True)
+    normalized_ref = models.CharField(max_length=120, default="")
+
+    narratives = GenericRelation(Narrative)
     activity = models.ForeignKey(
         Activity,
-        # related_name="reporting_organisations"
+        related_name="reporting_organisations"
         )
-    organisation = models.ForeignKey(Organisation, null=True, default=None)
+    organisation = models.ForeignKey(Organisation, null=True, default=None) # if in organisation standard
+    type = models.ForeignKey(OrganisationType, null=True, default=None)
+
     secondary_reporter = models.BooleanField(default=False)
 
 class ActivityParticipatingOrganisation(models.Model):
+    ref = models.CharField(max_length=250, primary_key=True)
+    normalized_ref = models.CharField(max_length=120, default="")
+
+    narratives = GenericRelation(Narrative)
     activity = models.ForeignKey(
         Activity,
-        # related_name="participating_organisations"
+        related_name="participating_organisations"
         )
-    organisation = models.ForeignKey(Organisation, null=True, default=None)
-    role = models.ForeignKey(OrganisationRole, null=True, default=None)
+    organisation = models.ForeignKey(Organisation, null=True, default=None) # if in organisation standard
     type = models.ForeignKey(OrganisationType, null=True, default=None)
-    narratives = GenericRelation(Narrative)
+
+    role = models.ForeignKey(OrganisationRole, null=True, default=None)
 
     def __unicode__(self,):
         return "%s: %s - %s" % (self.activity.id, self.organisation, self.name)
