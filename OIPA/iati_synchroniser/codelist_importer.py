@@ -223,7 +223,7 @@ class CodeListImporter():
         downloaded_xml = urllib2.Request(
             "http://iatistandard.org/"
             + version.replace('.','') +
-            "/codelists/downloads/clv1/codelist.xml")
+            "/codelists/downloads/clv2/codelist.xml")
 
         file_opener = urllib2.build_opener()
         xml_file = file_opener.open(downloaded_xml)
