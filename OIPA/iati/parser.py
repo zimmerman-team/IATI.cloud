@@ -326,12 +326,57 @@ class Parser():
                     activity_scope = models.ActivityScope.objects.get(code=activity_scope_ref)
 
             new_activity = models.Activity(id=activity_id, default_currency=default_currency, hierarchy=hierarchy, last_updated_datetime=last_updated_datetime, linked_data_uri=linked_data_uri, reporting_organisation=reporting_organisation, secondary_publisher=secondary_publisher, activity_status=activity_status, collaboration_type=collaboration_type, default_flow_type=default_flow_type, default_aid_type=default_aid_type, default_finance_type=default_finance_type, default_tied_status=default_tied_status, xml_source_ref=self.xml_source_ref, iati_identifier=iati_identifier, iati_standard_version=iati_standard_version, capital_spend=capital_spend, scope=activity_scope)
+
+            self.add_activity_date(elem, new_activity)
+
             new_activity.save()
             return new_activity
 
         except Exception as e:
             exception_handler(e, activity_id, "add_activity")
 
+
+    def add_activity_date(self, elem, activity):
+        try:
+            for t in elem.xpath('activity-date'):
+                try:
+                    type_ref = self.return_first_exist(t.xpath('@type'))
+                    type = None
+                    curdate = self.return_first_exist(t.xpath('@iso-date'))
+                    curdate = self.validate_date(curdate)
+
+                    if not curdate:
+                        curdate = self.return_first_exist(t.xpath('text()'))
+                        curdate = self.validate_date(curdate)
+
+                    if type_ref:
+                        if models.ActivityDateType.objects.filter(code=type_ref).exists():
+                            type = models.ActivityDateType.objects.get(code=type_ref)
+                        else:
+                            type_ref = type_ref.lower()
+                            type_ref = type_ref.replace(' ', '-')
+                            if models.ActivityDateType.objects.filter(code=type_ref).exists():
+                                type = models.ActivityDateType.objects.get(code=type_ref)
+
+                    if not type:
+                        continue
+
+                    if not curdate:
+                        continue
+
+                    if type.code == 'end-actual':
+                        activity.end_actual = curdate
+                    if type.code == 'end-planned':
+                        activity.end_planned = curdate
+                    if type.code == 'start-actual':
+                        activity.start_actual = curdate
+                    if type.code == 'start-planned':
+                        activity.start_planned = curdate
+
+                except Exception as e:
+                    exception_handler(e, activity.id, "add_activity_date")
+        except Exception as e:
+                exception_handler(e, activity.id, "add_activity_date")
 
     #after activity is added
 
@@ -1028,53 +1073,6 @@ class Parser():
                 exception_handler(e, activity.id, "add_policy_markers")
 
 
-    def add_activity_date(self, elem, activity):
-
-        try:
-
-            for t in elem.xpath('activity-date'):
-
-                try:
-                    type_ref = self.return_first_exist(t.xpath('@type'))
-                    type = None
-                    curdate = self.return_first_exist(t.xpath('@iso-date'))
-                    curdate = self.validate_date(curdate)
-
-                    if not curdate:
-                        curdate = self.return_first_exist(t.xpath('text()'))
-                        curdate = self.validate_date(curdate)
-
-                    if type_ref:
-                        if models.ActivityDateType.objects.filter(code=type_ref).exists():
-                            type = models.ActivityDateType.objects.get(code=type_ref)
-                        else:
-                            type_ref = type_ref.lower()
-                            type_ref = type_ref.replace(' ', '-')
-                            if models.ActivityDateType.objects.filter(code=type_ref).exists():
-                                type = models.ActivityDateType.objects.get(code=type_ref)
-
-                    if not type:
-                        continue
-
-                    if not curdate:
-                        continue
-
-                    if type.code == 'end-actual':
-                        activity.end_actual = curdate
-                    if type.code == 'end-planned':
-                        activity.end_planned = curdate
-                    if type.code == 'start-actual':
-                        activity.start_actual = curdate
-                    if type.code == 'start-planned':
-                        activity.start_planned = curdate
-
-                    activity.save()
-
-
-                except Exception as e:
-                    exception_handler(e, activity.id, "add_activity_date")
-        except Exception as e:
-                exception_handler(e, activity.id, "add_activity_date")
 
 
     def add_related_activities(self, elem, activity):
