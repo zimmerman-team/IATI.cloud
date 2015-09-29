@@ -27,9 +27,6 @@ class Narrative(models.Model):
     iati_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
-
-
-
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
@@ -230,12 +227,11 @@ class ActivityRecipientRegion(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.region)
 
-
 class OtherIdentifier(models.Model):
     activity = models.ForeignKey(Activity)
-    owner_ref = models.CharField(max_length=100, default="")
-    owner_name = models.CharField(max_length=100, default="")
     identifier = models.CharField(max_length=100)
+    owner_ref = models.CharField(max_length=100, default="")
+    # owner_name = models.CharField(max_length=100, default="")
     narratives = GenericRelation(Narrative)
     type = models.ForeignKey(OtherIdentifierType,null=True)
 
@@ -253,13 +249,15 @@ class ActivityWebsite(models.Model):
 #   Class not truly correct, attributes fully open
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
-    person_name = models.CharField(max_length=100, default="", null=True, blank=True)
-    organisation = models.CharField(max_length=100, default="", null=True, blank=True)
+    type = models.ForeignKey(ContactType, null=True)
+    person_name = GenericRelation(Narrative)
+    organisation = GenericRelation(Narrative)
+    # person_name = models.CharField(max_length=100, default="", null=True, blank=True)
+    # organisation = models.CharField(max_length=100, default="", null=True, blank=True)
     telephone = models.CharField(max_length=100, default="", null=True, blank=True)
     email = models.TextField(default="", null=True, blank=True)
     mailing_address = models.TextField(default="", null=True, blank=True)
     website = models.CharField(max_length=255, default="", null=True, blank=True)
-    contact_type = models.ForeignKey(ContactType, null=True, default=None, blank=True)
     job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
@@ -279,7 +277,6 @@ class ContactInfoJobTitle(models.Model):
 
 class ContactInfoMailingAddress(models.Model):
     ContactInfo = models.ForeignKey(ContactInfo)
-
 
 # class transaction_description(models.Model):
 #     transaction = models.ForeignKey(transaction)

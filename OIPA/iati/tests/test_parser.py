@@ -316,9 +316,7 @@ class ActivityTestCase(ParserSetupTestCase):
         iati_activity.append(E('conditions', attached=attached))
         conditions = iati_activity.find('conditions')
         
-        activity = iati_factory.ActivityFactory.build(
-            iati_standard_version_id=codelist_models.Version.objects.get(code="2.01")
-        )
+        activity = build_activity(version="2.01")
 
         self.parser_201.register_model('Activity', activity)
         self.parser_201.iati_activities__iati_activity__conditions(conditions)
@@ -326,6 +324,18 @@ class ActivityTestCase(ParserSetupTestCase):
         activity.save()
 
         self.assertTrue(activity.has_conditions == False)
+
+    def test_activity_status(self):
+        code = '1' # Pipeline/identification
+
+        activity_status = E('activity-status', code=code)
+        activity = build_activity(version="2.01")
+
+        self.parser_201.register_model('Activity', activity)
+        self.parser_201.iati_activities__iati_activity__activity_status(activity_status)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.activity_status.code == code)
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
@@ -391,6 +401,71 @@ class DescriptionTestCase(ParserSetupTestCase):
         self.assertTrue(description.activity == self.activity)
         self.assertTrue(narrative.parent_object == description)
 
+class OtherIdentifierTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext support of the other-identifier was removed. A new other-identifier/@ref was added as a replacement.
+    2.01: A new attribute other-identifier/@type was added, to be used with new code list OtherIdentifierType.
+    2.01: The other-identifier/@owner-ref and other-identifier/@owner-name attributes were removed.
+    2.01: The owner-org child element was added.
+    """
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.attrs_201 = {
+            "ref": "Some-ref",
+            "type": "A1",
+        }
+        self.attrs_105 = {
+            "owner-ref": "Some-owner-ref",
+            "owner-name": "Some name",
+        }
+        self.owner_org_xml = {
+            "ref": "Some-owner-ref",
+        }
+
+        self.other_identifier_201 = E('other-identifier', self.attrs_201)
+        self.owner_org = E('owner-org', self.owner_org_xml)
+        self.other_identifier_105 = E('other-identifier', self.attrs_105, "Some-ref")
+        self.narrative = E('narrative', "Some name")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_other_identifier_201(self):
+        """
+        Also tests the owner_org element (same model) along with its narrative
+        """
+        self.parser_201.iati_activities__iati_activity__other_identifier(self.other_identifier_201)
+        other_identifier = self.parser_201.get_model('OtherIdentifier')
+
+        self.assertTrue(other_identifier.activity == self.activity)
+        self.assertTrue(other_identifier.identifier == self.attrs_201['ref'])
+        self.assertTrue(other_identifier.type.code == self.attrs_201['type'])
+
+        self.parser_201.iati_activities__iati_activity__other_identifier__owner_org(self.owner_org)
+        other_identifier = self.parser_201.get_model('OtherIdentifier')
+
+        self.assertTrue(other_identifier.owner_ref == self.owner_org_xml['ref'])
+
+        self.parser_201.iati_activities__iati_activity__other_identifier__owner_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == other_identifier)
+
+    def test_other_identifier_105(self):
+        """
+        If other-identifier is present then either @owner-ref or @owner-name must be present
+        """
+        self.parser_105.iati_activities__iati_activity__other_identifier(self.other_identifier_105)
+        other_identifier = self.parser_105.get_model('OtherIdentifier')
+
+        self.assertTrue(other_identifier.activity == self.activity)
+        self.assertTrue(other_identifier.identifier == "Some-ref")
+        self.assertTrue(other_identifier.owner_ref == self.owner_org_xml['ref'])
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == other_identifier)
+
 class NarrativeTestCase(ParserSetupTestCase):
     """
     Added in 2.01
@@ -435,7 +510,7 @@ class NarrativeTestCase(ParserSetupTestCase):
 class OrganisationTestCase(ParserSetupTestCase):
     pass
 
-class ActivityReportingOrganisation(ParserSetupTestCase):
+class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     """
     2.01: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element.
     1.04: The secondary-publisher was introduced in 1.04.
@@ -451,7 +526,7 @@ class ActivityReportingOrganisation(ParserSetupTestCase):
 
         self.reporting_org = E('reporting-org', **self.attrs)
 
-    def test_organisation_not_parsed_yet(self):
+    def test_reporting_organisation_not_parsed_yet(self):
         """
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
@@ -463,12 +538,12 @@ class ActivityReportingOrganisation(ParserSetupTestCase):
         reporting_organisation = self.parser_201.get_model('ActivityReportingOrganisation')
 
         self.assertTrue(reporting_organisation.ref == self.attrs["ref"])
-        self.assertTrue(reporting_organisation.type.code == int(self.attrs["type"]))
+        self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.activity == activity)
         self.assertTrue(reporting_organisation.organisation == None)
-        self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
+        self.assertTrue(reporting_organisation.secondary_reporter == bool(self.attrs["secondary-reporter"]))
 
-    def test_organisation_already_parsed(self):
+    def test_reporting_organisation_already_parsed(self):
         """
         Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
         """
@@ -488,8 +563,218 @@ class ActivityReportingOrganisation(ParserSetupTestCase):
 
         self.assertTrue(reporting_organisation.activity == activity)
         self.assertTrue(reporting_organisation.organisation.code == test_organisation.code)
-        self.assertTrue(reporting_organisation.type.code == int(self.attrs["type"]))
-        self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
+        self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
+        self.assertTrue(reporting_organisation.secondary_reporter == bool(self.attrs["secondary-reporter"]))
+
+class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element.
+    2.01: The OrganisationRole codelist was changed to numeric codes
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs_201 = {
+            "ref": "GB-COH-03580586",
+            "type": '40',
+            "role": "1",
+        }
+        self.attrs_105 = copy.deepcopy(self.attrs_201)
+        self.attrs_105['role'] = "Funding" 
+
+        self.participating_org_201 = E('participating-org', **self.attrs_201)
+        self.participating_org_105 = E('participating-org', **self.attrs_105)
+
+    def test_participating_organisation_not_parsed_yet_201(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', activity)
+
+        self.parser_201.iati_activities__iati_activity__participating_org(self.participating_org_201)
+        participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
+
+        self.assertTrue(participating_organisation.ref == self.attrs_201["ref"])
+        self.assertTrue(participating_organisation.type.code == self.attrs_201["type"])
+        self.assertTrue(participating_organisation.activity == activity)
+        self.assertTrue(participating_organisation.organisation == None)
+        self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+    def test_participating_organisation_already_parsed_201(self):
+        """
+        Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
+        """
+        activity = build_activity(version="2.01")
+
+        test_organisation = iati_factory.OrganisationFactory.build()
+        test_organisation.save()
+
+        self.parser_201.register_model('Activity', activity)
+        self.parser_201.register_model('Organisation', test_organisation)
+
+        self.parser_201.iati_activities__iati_activity__participating_org(self.participating_org_201)
+
+        # activity = self.parser_201.get_model('Activity')
+        organisation = self.parser_201.get_model('Organisation')
+        participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
+
+        self.assertTrue(participating_organisation.activity == activity)
+        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.type.code == self.attrs_201["type"])
+        self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+    def test_participating_organisation_not_parsed_yet_105(self):
+        """
+        With alternate organisation role codelists
+        """
+        activity = build_activity(version="1.05")
+        self.parser_105.register_model('Activity', activity)
+
+        self.parser_105.iati_activities__iati_activity__participating_org(self.participating_org_105)
+
+        participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
+
+        self.assertTrue(participating_organisation.ref == self.attrs_105["ref"])
+        self.assertTrue(participating_organisation.type.code == self.attrs_105["type"])
+        self.assertTrue(participating_organisation.activity == activity)
+        self.assertTrue(participating_organisation.organisation == None)
+        self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+    def test_participating_organisation_already_parsed_105(self):
+        """
+        Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
+        """
+        activity = build_activity(version="1.05")
+
+        test_organisation = iati_factory.OrganisationFactory.build()
+        test_organisation.save()
+
+        self.parser_105.register_model('Activity', activity)
+        self.parser_105.register_model('Organisation', test_organisation)
+
+        self.parser_105.iati_activities__iati_activity__participating_org(self.participating_org_105)
+
+        # activity = self.parser_105.get_model('Activity')
+        organisation = self.parser_105.get_model('Organisation')
+        participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
+
+        self.assertTrue(participating_organisation.activity == activity)
+        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.type.code == self.attrs_105["type"])
+        self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
 
+class ActivityDateTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element.
+    2.01: The ActivityDateType codelist was changed to numeric codes
+    """
 
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs_201 = {
+            "type": "1", # planned-start
+            "iso-date": datetime.datetime.now().isoformat(' '),
+        }
+        self.attrs_105 = copy.deepcopy(self.attrs_201)
+        self.attrs_105["type"] = "start-planned"
+
+        self.activity_date_201 = E('activity-date', **self.attrs_201)
+        self.activity_date_105 = E('activity-date', 'Some description', **self.attrs_105)
+
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_activity_date_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__activity_date(self.activity_date_201)
+        activity_date = self.parser_201.get_model('ActivityDate')
+
+        self.assertTrue(activity_date.activity == self.activity)
+        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
+        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
+
+        self.parser_201.iati_activities__iati_activity__activity_date__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == activity_date)
+
+    def test_activity_date_105(self):
+        """
+        If other-identifier is present then either @owner-ref or @owner-name must be present
+        """
+        self.parser_105.iati_activities__iati_activity__activity_date(self.activity_date_105)
+        activity_date = self.parser_105.get_model('ActivityDate')
+
+        self.assertTrue(activity_date.activity == self.activity)
+        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
+        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == activity_date)
+
+class ContactInfoTestCase(ParserSetupTestCase):
+    """
+    2.01:  The optional contact-info/department element was added.
+    1.03: Added the optional contact-info/website element.
+    1.03: Added the optional contact-info/@type attribute.
+    1.03: Changed the following subelements of contact-info to allow multiple-language versions explicitly (no change to parsing; purely semantic):
+        * organisation
+        * person-name
+        * job-title
+        * mailing-address
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "type": "1", # General Enquiries
+        }
+        self.attrs_105 = copy.deepcopy(self.attrs_201)
+        self.attrs_105["type"] = "start-planned"
+
+        self.activity_date_201 = E('activity-date', **self.attrs_201)
+        self.activity_date_105 = E('activity-date', 'Some description', **self.attrs_105)
+
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_activity_date_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__activity_date(self.activity_date_201)
+        activity_date = self.parser_201.get_model('ActivityDate')
+
+        self.assertTrue(activity_date.activity == self.activity)
+        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
+        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
+
+        self.parser_201.iati_activities__iati_activity__activity_date__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+
+        self.assertTrue(narrative.parent_object == activity_date)
+
+    def test_activity_date_105(self):
+        """
+        If other-identifier is present then either @owner-ref or @owner-name must be present
+        """
+        self.parser_105.iati_activities__iati_activity__activity_date(self.activity_date_105)
+        activity_date = self.parser_105.get_model('ActivityDate')
+
+        self.assertTrue(activity_date.activity == self.activity)
+        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
+        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == activity_date)

@@ -262,12 +262,10 @@ class Parse(XMLParser):
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
-        # model = self.get_func_parent_model() # activity
         activity = self.get_model('Activity')
         activity.iati_identifier = element.text
         self.register_model('Activity', activity)
-        # model.save()
-        return
+        return element
 
     '''atributes:
     ref:AA-AAA-123456789
@@ -280,7 +278,7 @@ class Parse(XMLParser):
 
         ref = element.attrib.get('ref')
         org_type_code = element.attrib.get('type')
-        secondary_reporter = element.attrib.get('secondary-reporter')
+        secondary_reporter = element.attrib.get('secondary-reporter', False) # TODO: should this be false by default?
 
         if not ref: raise self.RequiredFieldError("ref")
 
@@ -308,6 +306,49 @@ class Parse(XMLParser):
         model = self.get_model(models.ActivityReportingOrganisation)
         self.add_narrative(element, model)
 
+        return element
+
+    '''atributes:https://docs.djangoproject.com/en/1.8/topics/migrations/
+    ref:BB-BBB-123456789
+    role:1
+    type:40
+
+    tag:participating-org'''
+    def iati_activities__iati_activity__participating_org(self,element):
+        activity = self.get_model('Activity')
+
+        ref = element.attrib.get('ref')
+        org_type_code = element.attrib.get('type')
+        role_code = element.attrib.get('role')
+
+        if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
+
+        normalized_ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=org_type_code)
+        role = self.get_or_none(codelist_models.OrganisationRole, code=role_code)
+        organisation = self.get_or_none(models.Organisation, code=ref)
+
+        if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
+
+        participating_organisation = models.ActivityParticipatingOrganisation()
+        participating_organisation.ref = ref
+        participating_organisation.normalized_ref = normalized_ref
+        participating_organisation.type = org_type  
+        participating_organisation.activity = activity
+        participating_organisation.organisation = organisation
+        participating_organisation.role = role
+
+        self.register_model('ActivityParticipatingOrganisation', participating_organisation)
+
+        return element
+
+    '''atributes:
+
+    tag:narrative'''
+    def iati_activities__iati_activity__participating_org__narrative(self,element):
+        model = self.get_func_parent_model()
+        self.add_narrative(element,model)
         return element
 
     '''atributes:
@@ -355,43 +396,24 @@ class Parse(XMLParser):
         
         return element
 
-    '''atributes:https://docs.djangoproject.com/en/1.8/topics/migrations/
-    ref:BB-BBB-123456789
-    role:1
-    type:40
-
-    tag:participating-org'''
-    def iati_activities__iati_activity__participating_org(self,element):
-        model = self.get_func_parent_model()
-        org = self.get_or_create_organisation(element)
-        activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
-        activityParticipatingOrganisation.organisation = org
-        activityParticipatingOrganisation.activity = model
-        activityParticipatingOrganisation.type = self.cached_db_call(models.OrganisationType,element.attrib.get('type'))
-        activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
-        self.set_func_model(activityParticipatingOrganisation)
-        return element
-
-    '''atributes:
-
-    tag:narrative'''
-    def iati_activities__iati_activity__participating_org__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-        return element
-
     '''atributes:
     ref:ABC123-XYZ
     type:A1
     tag:other-identifier'''
     def iati_activities__iati_activity__other_identifier(self,element):
-        model = self.get_func_parent_model()
         identifier = element.attrib.get('ref')
-        type = self.cached_db_call(models.OtherIdentifierType, element.attrib.get('type'))
+        type = self.get_or_none(models.OtherIdentifierType, code=element.attrib.get('type'))
 
-        new_other_identifier = models.OtherIdentifier(activity=model, identifier=identifier,type=type)
-        self.set_func_model(new_other_identifier)
-        new_other_identifier.save()
+        if not identifier: raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+        # TODO: iati docs say type should be required (but can't for backwards compatibility)
+
+        activity = self.get_model('Activity')
+        other_identifier = models.OtherIdentifier()
+        other_identifier.activity = activity
+        other_identifier.identifier=identifier
+        other_identifier.type=type
+
+        self.register_model('OtherIdentifier', other_identifier)
         return element
 
     '''atributes:
@@ -399,16 +421,22 @@ class Parse(XMLParser):
 
     tag:owner-org'''
     def iati_activities__iati_activity__other_identifier__owner_org(self,element):
-        model = self.get_func_parent_model()
-        model.owner_ref = element.attrib.get('ref')
+        ref = element.attrib.get('ref')
+
+        if not ref: raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+
+        other_identifier = self.get_model('OtherIdentifier')
+        other_identifier.owner_ref = ref
+        self.register_model('OtherIdentifier', other_identifier)
+
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__other_identifier__owner_org__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        other_identifier = self.get_model('OtherIdentifier')
+        self.add_narrative(element, other_identifier)
         return element
 
     '''atributes:
@@ -416,8 +444,14 @@ class Parse(XMLParser):
 
     tag:activity-status'''
     def iati_activities__iati_activity__activity_status(self, element):
-        model = self.get_func_parent_model()
-        model.activity_status = self.cached_db_call_no_version(models.ActivityStatus,element.attrib.get('code'))
+
+        code = element.attrib.get('code')
+        activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
+
+        if not code: raise self.RequiredFieldError("Code")
+
+        activity = self.get_model('Activity')
+        activity.activity_status = activity_status
 
         return element
 
@@ -427,25 +461,29 @@ class Parse(XMLParser):
 
     tag:activity-date'''
     def iati_activities__iati_activity__activity_date(self, element):
-        model = self.get_func_parent_model()
+
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+        type_code = self.get_or_none(codelist_models.ActivityDateType, code=element.attrib.get('type'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date")
+        if not type_code: raise self.RequiredFieldError("Type")
+
+        activity = self.get_model('Activity')
+
         activity_date = models.ActivityDate()
-        if 'iso-date' in element.attrib:
-            activity_date.iso_date = self.validate_date(element.attrib.get('iso-date'))
-        activity_date.type = self.cached_db_call(models.ActivityDateType, element.attrib.get('type'))
-        if activity_date.type.codelist_successor:
-            activity_date.type = self.cached_db_call(models.ActivityDateType, activity_date.type.codelist_successor)
-        activity_date.activity = model
-        activity_date.save()
-        self.set_func_model(activity_date)
+        activity_date.iso_date = iso_date
+        activity_date.type = type_code
+        activity_date.activity = activity
+
+        self.register_model('ActivityDate', activity_date)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__activity_date__narrative(self, element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -453,12 +491,13 @@ class Parse(XMLParser):
 
     tag:contact-info'''
     def iati_activities__iati_activity__contact_info(self, element):
-        model = self.get_func_parent_model()
-        contactInfo =  models.ContactInfo()
-        contactInfo.activity = model
-        self.set_func_model(contactInfo)
+        type_code = self.get_or_none(codelist_models.ContactType, code=element.attrib.get('type'))
 
-         
+        activity = self.get_model('Activity')
+        contact_info =  models.ContactInfo()
+        contact_info.activity = activity
+        contact_info.type = type_code
+        self.register_model('ContactInfo', contact_info)
 
         return element
 
@@ -466,7 +505,7 @@ class Parse(XMLParser):
 
     tag:organisation'''
     def iati_activities__iati_activity__contact_info__organisation(self, element):
-        model = self.get_func_parent_model()
+        activity = self.get_model('Activity')
         contactInfoOrganisation =  models.ContactInfoOrganisation()
         contactInfoOrganisation.ContactInfo = model;
         self.set_func_model(contactInfoOrganisation)
@@ -477,9 +516,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__organisation__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -499,9 +537,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__department__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -519,9 +556,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__person_name__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -538,10 +574,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__job_title__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -587,9 +621,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__mailing_address__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -693,9 +726,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__name__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -714,9 +746,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__description__narrative(self,element):
-        model = self.get_func_parent_model()
-         
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -736,9 +767,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__location__activity_description__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -867,9 +897,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -894,9 +923,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__policy_marker__narrative(self, element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1121,9 +1149,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__description__narrative(self, element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-         
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1147,9 +1174,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element, model)
-
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1174,8 +1200,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1287,8 +1313,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__document_link__title__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1381,8 +1407,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__conditions__condition__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1413,8 +1439,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__title__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1431,8 +1457,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__description__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1464,8 +1490,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1482,8 +1508,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:
@@ -1513,11 +1539,9 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-        #store element 
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
-
 
     '''atributes:
 
@@ -1572,11 +1596,9 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-        #store element 
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
-
 
     '''atributes:
     value:11
@@ -1602,9 +1624,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
-        #store element 
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
         return element
 
     '''atributes:

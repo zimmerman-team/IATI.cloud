@@ -7,6 +7,13 @@ class Parse(IATI_201_Parser):
 
     #version of iati standard
     VERSION = '1.05'
+    
+    activity_date_type_mapping = {
+        "start-planned": "1",
+        "start-actual": "2",
+        "end-planned": "3",
+        "end-actual": "4",
+    }
 
     sector_vocabulary_trans = {
         'ADT': 1,
@@ -34,7 +41,9 @@ class Parse(IATI_201_Parser):
     }
 
     def add_narrative_105(self, text, parent):
-        lang = self.default_lang
+        # lang = self.default_lang
+        default_lang = self.default_lang
+        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not language: raise self.RequiredFieldError("language")
@@ -55,14 +64,33 @@ class Parse(IATI_201_Parser):
 
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
-        model = self.get_func_parent_model()
-        organisation = self.add_organisation(element, is_reporting_org=True)
-        model.secondary_publisher = False
-        #print organisation.name
-        model.reporting_organisation = organisation
-        self.set_func_model(organisation)
-        self.add_narrative_105(element.text,organisation)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__reporting_org(element)
+
+        ActivityReportingOrganisation = self.get_model('ActivityReportingOrganisation')
+        self.add_narrative_105(element.text, activityReportingOrganisation)
+
+        return element
+
+    '''atributes:
+    ref:BB-BBB-123456789
+    role:Funding
+    type:40
+
+    tag:participating-org'''
+    def iati_activities__iati_activity__participating_org(self,element):
+
+        role_name = element.attrib.get('role')
+        role = self.get_or_none(codelist_models.OrganisationRole, name=role_name)
+
+        if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
+
+        element.attrib['role'] = role.code
+
+        super(Parse, self).iati_activities__iati_activity__participating_org(element)
+
+        ActivityParticipatingOrganisation = self.get_model('ActivityParticipatingOrganisation')
+        self.add_narrative_105(element.text, activityParticipatingOrganisation)
+
         return element
 
     '''atributes:
@@ -70,17 +98,23 @@ class Parse(IATI_201_Parser):
     owner-name:A1
     tag:other-identifier'''
     def iati_activities__iati_activity__other_identifier(self, element):
-        model = self.get_func_parent_model()
         identifier = element.text
         owner_ref = element.attrib.get('owner-ref')
         owner_name = element.attrib.get('owner-name')
-        new_other_identifier = models.OtherIdentifier(
-            activity=model,
-            identifier=identifier,
-            owner_name=owner_name,
-            owner_ref=owner_ref)
 
-        self.set_func_model(new_other_identifier)
+        if not identifier: raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+        if not (owner_ref or owner_name): raise self.RequiredFieldError("owner_ref", "Either owner_ref or owner_name must be set")
+
+        activity = self.get_model('Activity')
+
+        other_identifier = models.OtherIdentifier()
+        other_identifier.activity = activity
+        other_identifier.identifier=identifier
+        other_identifier.owner_ref=owner_ref
+
+        self.add_narrative_105(owner_name, other_identifier)
+        self.register_model('OtherIdentifier', other_identifier)
+
         return element
 
     '''atributes:
@@ -123,7 +157,37 @@ class Parse(IATI_201_Parser):
         return element
 
     '''atributes:
+    iso-date:2012-04-15
+    type:1
 
+    tag:activity-date'''
+    def iati_activities__iati_activity__activity_date(self, element):
+        # TODO: should iati Rules be checked? http://iatistandard.org/201/activity-standard/iati-activities/iati-activity/activity-date/
+        type_name = element.attrib.get('type')
+        type_code = self.activity_date_type_mapping.get(type_name)
+
+        if not type_code: raise self.RequiredFieldError("type", "activity_date: type is required")
+
+        element.attrib['type'] = type_code
+
+        super(Parse, self).iati_activities__iati_activity__activity_date(element)
+
+        activity_date = self.get_model('ActivityDate')
+        self.add_narrative(element, activity_date)
+
+        return element
+
+    '''atributes:
+    tag:organisation'''
+    def iati_activities__iati_activity__contact_info(self, element):
+        model = self.get_func_parent_model()
+        contactInfoOrganisation = models.ContactInfoOrganisation()
+        contactInfoOrganisation.ContactInfo = model
+        self.add_narrative_105(element.text, contactInfoOrganisation)
+        #store element 
+        return element
+
+    '''atributes:
     tag:organisation'''
     def iati_activities__iati_activity__contact_info__organisation(self, element):
         model = self.get_func_parent_model()
@@ -165,27 +229,6 @@ class Parse(IATI_201_Parser):
         contactInfoMailingAddress = models.ContactInfoMailingAddress()
         contactInfoMailingAddress.ContactInfo = model
         self.add_narrative_105(element.text,contactInfoMailingAddress)
-        #store element 
-        return element
-
-
-    '''atributes:
-    ref:BB-BBB-123456789
-    role:Funding
-    type:40
-
-    tag:participating-org'''
-    def iati_activities__iati_activity__participating_org(self,element):
-        model = self.get_func_parent_model()
-        org = self.add_organisation(element)
-        print org.code + ' is the organisation code'
-        activityParticipatingOrganisation = models.ActivityParticipatingOrganisation()
-        activityParticipatingOrganisation.organisation = org
-        activityParticipatingOrganisation.activity = model
-        activityParticipatingOrganisation.type = self.cached_db_call(models.OrganisationType,element.attrib.get('type'))
-        activityParticipatingOrganisation.role = self.cached_db_call(models.OrganisationRole, element.attrib.get('role'))
-        activityParticipatingOrganisation.save()
-        self.add_narrative_105(element.text,activityParticipatingOrganisation)
         #store element 
         return element
 

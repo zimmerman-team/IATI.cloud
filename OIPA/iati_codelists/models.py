@@ -22,7 +22,7 @@ class ActivityDateType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class ActivityStatus(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=50)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -53,7 +53,7 @@ class AidType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class BudgetType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=20)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -63,7 +63,7 @@ class BudgetType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class CollaborationType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -73,7 +73,7 @@ class CollaborationType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class ConditionType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=40)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -93,7 +93,7 @@ class Currency(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class DescriptionType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=50)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -103,7 +103,7 @@ class DescriptionType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class DisbursementChannel(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.TextField(default="")
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -185,7 +185,7 @@ class GazetteerAgency(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class GeographicalPrecision(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=80)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -195,7 +195,7 @@ class GeographicalPrecision(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class GeographicLocationClass(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -205,7 +205,7 @@ class GeographicLocationClass(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class GeographicLocationReach(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=80)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -215,7 +215,7 @@ class GeographicLocationReach(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class GeographicExactness(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=160)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -267,9 +267,8 @@ class OrganisationRole(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
-
 class OrganisationType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=50)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -290,7 +289,7 @@ class PolicyMarker(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class PolicySignificance(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -300,7 +299,7 @@ class PolicySignificance(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class PublisherType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=50)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -310,7 +309,7 @@ class PublisherType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class RelatedActivityType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=20)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -320,7 +319,7 @@ class RelatedActivityType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class ResultType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=30)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -352,7 +351,7 @@ class Sector(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class TiedStatus(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=40)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -371,7 +370,7 @@ class ValueType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class VerificationStatus(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=20)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -381,7 +380,7 @@ class VerificationStatus(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class ActivityScope(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -392,7 +391,7 @@ class ActivityScope(models.Model):
 
 # deprecated in 201
 class AidTypeFlag(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
@@ -400,7 +399,7 @@ class AidTypeFlag(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class BudgetIdentifierSectorCategory(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=160)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -433,7 +432,7 @@ class BudgetIdentifier(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class ContactType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=40)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -443,7 +442,7 @@ class ContactType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class LoanRepaymentPeriod(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=20)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -453,7 +452,7 @@ class LoanRepaymentPeriod(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class LoanRepaymentType(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=40)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -484,7 +483,7 @@ class OtherIdentifierType(models.Model):
         return self.name
 
 class IndicatorMeasure(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=40)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
