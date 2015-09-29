@@ -686,7 +686,7 @@ class Title(models.Model):
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    description = models.TextField(default="", db_index=True, max_length=40000)
+    description = models.TextField(default="", max_length=40000)
     language = models.ForeignKey(Language, null=True, default=None)
     type = models.ForeignKey(DescriptionType, related_name="description_type", null=True, default=None)
     rsr_description_type_id = models.IntegerField(null=True, default=None) # remove

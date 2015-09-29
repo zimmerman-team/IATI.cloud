@@ -295,12 +295,16 @@ class CodeListImporter():
                 code="XK",
                 defaults={
                     'name': 'Kosovo',
-                    'language': 'en'})
+                    'language': 'en',
+                    'center_longlat': 'POINT(0 0)',
+                    'geom': 'MULTIPOLYGON (((0.0000000000000000 0.0000000000000000, 0.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000, 0.0000000000000000 0.0000000000000000)), ((0.0000000000000000 0.0000000000000000, 0.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000, 0.0000000000000000 0.0000000000000000)))'})
             Country.objects.get_or_create(
                 code="YU",
                 defaults={
                     'name': 'Former Yugoslavia',
-                    'language': 'en'})
+                    'language': 'en',
+                    'center_longlat': 'POINT(0 0)',
+                    'geom': 'MULTIPOLYGON (((0.0000000000000000 0.0000000000000000, 0.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000, 0.0000000000000000 0.0000000000000000)), ((0.0000000000000000 0.0000000000000000, 0.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000, 0.0000000000000000 0.0000000000000000)))'})
 
         def get_codelist_data(elem=None, name=None):
 
@@ -346,5 +350,3 @@ class CodeListImporter():
         context = etree.iterparse(xml_file, tag='codelist')
         fast_iter(context, get_codelist_data)
         add_missing_items()
-
-
