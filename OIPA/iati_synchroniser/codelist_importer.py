@@ -19,7 +19,7 @@ class CodeListImporter():
 
     def __init__(self):
         self.looping_through_version = "2.01"
-        self.iati_versions = ["2.01", "1.05", "1.04"]
+        self.iati_versions = ["2.01"]
 
     def synchronise_with_codelists(self):
         # Do categories first
