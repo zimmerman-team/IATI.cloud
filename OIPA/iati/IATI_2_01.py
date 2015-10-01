@@ -1,7 +1,9 @@
 from genericXmlParser import XMLParser
 from django.db.models import Model
 from iati import models
+from django.contrib.gis.geos import GEOSGeometry, Point
 from iati_codelists import models as codelist_models
+from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
 from iati.deleter import Deleter
 from iati_synchroniser.exception_handler import exception_handler
@@ -40,6 +42,17 @@ class Parse(XMLParser):
         def __str__(self):
             return repr(self.field)
 
+    class ValidationError(Exception):
+        def __init__(self, field, msg):
+            """
+            field: the field that is validated
+            msg: explanation what went wrong
+            """
+            self.field = field
+
+        def __str__(self):
+            return repr(self.field)
+
     def get_or_none(self, model, *args, **kwargs):
         try:
             return model.objects.get(*args, **kwargs)
@@ -51,6 +64,12 @@ class Parse(XMLParser):
             return super(Parse, self).get_model(key.__name__) # class name
 
         return super(Parse, self).get_model(key)
+
+    def pop_model(self, key):
+        if isinstance(key, Model):
+            return super(Parse, self).get_model(key.__name__) # class name
+
+        return super(Parse, self).pop_model(key)
 
     def register_model(self, key, model=None):
         if isinstance(key, Model):
@@ -190,7 +209,6 @@ class Parse(XMLParser):
         return organisation
 
     def add_narrative(self,element,parent):
-        narrative = models.Narrative()
 
         default_lang = self.default_lang # set on activity (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
@@ -198,10 +216,11 @@ class Parse(XMLParser):
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
-        if not language: raise self.RequiredFieldError("language")
-        if not text: raise self.RequiredFieldError("text")
-        if not parent: raise self.RequiredFieldError("parent")
+        if not language: raise self.RequiredFieldError("narrative: must specify default_lang on activities or language on the element itself")
+        if not text: raise self.RequiredFieldError("narrative: must contain text")
+        if not parent: raise self.RequiredFieldError("parent", "Narrative: parent object must be passed")
 
+        narrative = models.Narrative()
         narrative.language = language
         narrative.content = element.text
         narrative.iati_identifier = self.iati_identifier # TODO: we need this?
@@ -505,31 +524,29 @@ class Parse(XMLParser):
 
     tag:organisation'''
     def iati_activities__iati_activity__contact_info__organisation(self, element):
-        activity = self.get_model('Activity')
-        contactInfoOrganisation =  models.ContactInfoOrganisation()
-        contactInfoOrganisation.ContactInfo = model;
-        self.set_func_model(contactInfoOrganisation)
-         
+        contact_info = self.get_model('ContactInfo')
+        contact_info_organisation =  models.ContactInfoOrganisation()
+        contact_info_organisation.contact_info = contact_info;
+        self.register_model('ContactInfoOrganisation', contact_info_organisation)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__organisation__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        contact_info_organisation = self.get_model('ContactInfoOrganisation')
+        self.add_narrative(element, contact_info_organisation)
         return element
 
     '''atributes:
 
     tag:department'''
     def iati_activities__iati_activity__contact_info__department(self,element):
-        model = self.get_func_parent_model()
-        contactInfoDepartment =  models.ContactInfoDepartment()
-        contactInfoDepartment.ContactInfo = model
+        contact_info = self.get_model('ContactInfo')
+        contact_info_department =  models.ContactInfoDepartment()
+        contact_info_department.contact_info = contact_info
 
-        self.set_func_model(contactInfoDepartment)
-
+        self.register_model('ContactInfoDepartment', contact_info_department)
          
         return element
 
@@ -537,18 +554,18 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__department__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        contact_info_department = self.get_model('ContactInfoDepartment')
+        self.add_narrative(element, contact_info_department)
         return element
 
     '''atributes:
 
     tag:person-name'''
     def iati_activities__iati_activity__contact_info__person_name(self,element):
-        model = self.get_func_parent_model()
-        contactInfoPersonName =  models.ContactInfoPersonName()
-        contactInfoPersonName.ContactInfo = model
-        self.set_func_model(contactInfoPersonName)
+        contact_info = self.get_model('ContactInfo')
+        contact_info_person_name =  models.ContactInfoPersonName()
+        contact_info_person_name.contact_info = contact_info
+        self.register_model('ContactInfoPersonName', contact_info_person_name)
          
         return element
 
@@ -556,34 +573,39 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__person_name__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        contact_info_person_name = self.get_model('ContactInfoPersonName')
+        self.add_narrative(element, contact_info_person_name)
         return element
 
     '''atributes:
 
     tag:job-title'''
     def iati_activities__iati_activity__contact_info__job_title(self,element):
-        model = self.get_func_parent_model()
-        contactInfoJobTitle =  models.ContactInfoJobTitle()
-        contactInfoJobTitle.ContactInfo = model
-        self.set_func_model(contactInfoJobTitle)
+        contact_info = self.get_model('ContactInfo')
+        contact_info_job_title = models.ContactInfoJobTitle()
+        contact_info_job_title.contact_info = contact_info
+        self.register_model('ContactInfoJobTitle', contact_info_job_title)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__job_title__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        contact_info_job_title = self.get_model('ContactInfoJobTitle')
+        self.add_narrative(element, contact_info_job_title)
         return element
 
     '''atributes:
 
     tag:telephone'''
     def iati_activities__iati_activity__contact_info__telephone(self,element):
-        model = self.get_func_parent_model()
-        model.telephone = element.text
+        text = element.text
+
+        if not text: raise self.RequiredFieldError("text", "contact_info_telephone: text is required")
+
+        contact_info = self.get_model('ContactInfo')
+        contact_info.telephone = text
+        self.register_model('ContactInfo', contact_info)
          
         return element
 
@@ -591,18 +613,27 @@ class Parse(XMLParser):
 
     tag:email'''
     def iati_activities__iati_activity__contact_info__email(self,element):
-        model = self.get_func_parent_model()
-        model.email = element.text
-         
+        text = element.text
 
+        if not text: raise self.RequiredFieldError("text", "contact_info_email: text is required")
+
+        contact_info = self.get_model('ContactInfo')
+        contact_info.email = text
+        self.register_model('ContactInfo', contact_info)
+         
         return element
 
     '''atributes:
 
     tag:website'''
     def iati_activities__iati_activity__contact_info__website(self,element):
-        model = self.get_func_parent_model()
-        model.website = element.text
+        text = element.text
+
+        if not text: raise self.RequiredFieldError("text", "contact_info_website: text is required")
+
+        contact_info = self.get_model('ContactInfo')
+        contact_info.website = text
+        self.register_model('ContactInfo', contact_info)
          
         return element
 
@@ -610,10 +641,10 @@ class Parse(XMLParser):
 
     tag:mailing-address'''
     def iati_activities__iati_activity__contact_info__mailing_address(self,element):
-        model = self.get_func_parent_model()
-        contactInfoMailingAddress = models.ContactInfoMailingAddress()
-        contactInfoMailingAddress.ContactInfo = model
-        self.set_func_model(contactInfoMailingAddress)
+        contact_info = self.get_model('ContactInfo')
+        contact_info_mailing_address = models.ContactInfoMailingAddress()
+        contact_info_mailing_address.contact_info = contact_info
+        self.register_model('ContactInfoMailingAddress', contact_info_mailing_address)
          
         return element
 
@@ -621,8 +652,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__contact_info__mailing_address__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        contact_info_mailing_address = self.get_model('ContactInfoMailingAddress')
+        self.add_narrative(element, contact_info_mailing_address)
         return element
 
     '''atributes:
@@ -630,8 +661,12 @@ class Parse(XMLParser):
 
     tag:activity-scope'''
     def iati_activities__iati_activity__activity_scope(self,element):
-        model = self.get_func_parent_model()
-        model.scope = self.cached_db_call(models.ActivityScope,element.attrib.get('code'))
+        activity_scope = self.get_or_none(codelist_models.ActivityScope, code=element.attrib.get('code'))
+
+        if not activity_scope: raise self.RequiredFieldError("code", "activity_scope: code is required")
+
+        activity = self.get_model('Activity')
+        activity.scope = activity_scope
          
         return element
 
@@ -641,14 +676,21 @@ class Parse(XMLParser):
 
     tag:recipient-country'''
     def iati_activities__iati_activity__recipient_country(self,element):
-        model = self.get_func_parent_model()
+        print(element.attrib.get('code'))
+
+        country = self.get_or_none(Country, code=element.attrib.get('code'))
+        percentage = element.attrib.get('percentage')
+
+        if not country: raise self.RequiredFieldError("code", "recipient-country: code is required")
+
+        activity = self.get_model('Activity')
         activity_recipient_country =  models.ActivityRecipientCountry()
-        country = self.cached_db_call_no_version(Country,element.attrib.get('code'))
         activity_recipient_country.country = country
-        activity_recipient_country.activity = model
-        activity_recipient_country.percentage = element.attrib.get('percentage')
-        activity_recipient_country.save()
+        activity_recipient_country.activity = activity
+        activity_recipient_country.percentage = percentage
          
+        self.register_model('ActivityRecipientCountry', activity_recipient_country)
+
         return element
 
     '''atributes:
@@ -658,14 +700,20 @@ class Parse(XMLParser):
 
     tag:recipient-region'''
     def iati_activities__iati_activity__recipient_region(self,element):
-        model = self.get_func_parent_model()
+        region = self.get_or_none(Region, code=element.attrib.get('code'))
+        vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        percentage = element.attrib.get('percentage')
+
+        if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "recipient-region: vocabulary is required")
+
+        activity = self.get_model('Activity')
         activity_recipient_region =  models.ActivityRecipientRegion()
-        region = self.cached_db_call(Region,element.attrib.get('code'))
         activity_recipient_region.region = region
-        activity_recipient_region.activity = model
-        activity_recipient_region.percentage = element.attrib.get('percentage')
-        activity_recipient_region.vocabulary = self.cached_db_call(models.RegionVocabulary,element.attrib.get('vocabulary'))
-        activity_recipient_region.save()
+        activity_recipient_region.activity = activity
+        activity_recipient_region.percentage = percentage
+        activity_recipient_region.vocabulary = vocabulary
+        self.register_model('ActivityRecipientRegion', activity_recipient_region)
          
         return element
 
@@ -674,27 +722,31 @@ class Parse(XMLParser):
 
     tag:location'''
     def iati_activities__iati_activity__location(self,element):
-        model = self.get_func_parent_model()
-        location =  models.Location()
-        location.activity = model
-        if 'ref' in element.attrib:
-            location.ref = element.attrib.get('ref')
-        else:
-            location.ref = 'no ref'
+        ref = element.attrib.get('ref')
 
-        location.adm_code = 'no admin code'
-        self.set_func_model(location)
-         
+        activity = self.get_model('Activity')
+        location =  models.Location()
+        location.activity = activity
+        location.ref = ref
+        # location.adm_code = 'no admin code'
+
+        self.register_model('Location', location)
         return element
+         
 
     '''atributes:
     code:1
 
     tag:location-reach'''
     def iati_activities__iati_activity__location__location_reach(self,element):
-        model = self.get_func_parent_model()
-        model.location_reach = self.cached_db_call(models.GeographicLocationReach,element.attrib.get('code'))
+        location_reach = self.get_or_none(codelist_models.GeographicLocationReach, code=element.attrib.get('code'))
+
+        if not location_reach: raise self.RequiredFieldError("code", "location_reach: code is required")
+
+        location = self.get_model('Location')
+        location.location_reach = location_reach
          
+        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -703,72 +755,75 @@ class Parse(XMLParser):
 
     tag:location-id'''
     def iati_activities__iati_activity__location__location_id(self,element):
-        model = self.get_func_parent_model()
-        model.location_id_vocabulary = self.cached_db_call(models.GeographicVocabulary,element.attrib.get('vocabulary'))
-        model.location_id_code = element.attrib.get('code')
-         
+        code = element.attrib.get('code')
+        vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=element.attrib.get('vocabulary'))
+
+        if not code: raise self.RequiredFieldError("code", "location_id: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "location_id: vocabulary is required")
+
+        location = self.get_model('Location')
+        location.location_id_vocabulary = vocabulary
+        location.location_id_code = code
+
+        self.register_model('Location', location)
         return element
 
     '''atributes:
 
     tag:name'''
     def iati_activities__iati_activity__location__name(self,element):
-        model = self.get_func_parent_model()
+
+        location = self.get_model('Location')
         location_name = models.LocationName()
-        location_name.location = model
-        self.set_func_model(location_name)
+        location_name.location = location
 
-         
-
+        self.register_model('LocationName', location_name)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__location__name__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        location_name = self.get_model('LocationName')
+        self.add_narrative(element, location_name)
         return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__location__description(self,element):
-        model = self.get_func_parent_model()
+        location = self.get_model('Location')
         location_description = models.LocationDescription()
-        location_description.location  = model
-        self.set_func_model(location_description)
+        location_description.location = location
 
-         
+        self.register_model('LocationDescription', location_description)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__location__description__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        location_description = self.get_model('LocationDescription')
+        self.add_narrative(element, location_description)
         return element
 
     '''atributes:
 
     tag:activity-description'''
     def iati_activities__iati_activity__location__activity_description(self,element):
-        model = self.get_func_parent_model()
+        location = self.get_model('Location')
         location_activity_description = models.LocationActivityDescription()
-        location_activity_description.location  = model
-        self.set_func_model(location_activity_description)
+        location_activity_description.location = location
 
-
-         
+        self.register_model('LocationActivityDescription', location_activity_description)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__location__activity_description__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        location_activity_description = self.get_model('LocationActivityDescription')
+        self.add_narrative(element, location_activity_description)
         return element
 
     '''atributes:
@@ -778,10 +833,24 @@ class Parse(XMLParser):
 
     tag:administrative'''
     def iati_activities__iati_activity__location__administrative(self,element):
-        model = self.get_func_parent_model()
-        model.adm_code = element.attrib.get('code')
-        model.adm_vocabulary = self.cached_db_call_no_version(models.GeographicVocabulary,element.attrib.get('vocabulary'))
+        # TODO: enforce code is according to specified vocabulary standard?
+        # TODO: default level?
+        code = element.attrib.get('code')
+        vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=element.attrib.get('vocabulary'))
+        level = element.attrib.get('level')
+
+        if not code: raise self.RequiredFieldError("code", "location_administrative: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "location_administrative: vocabulary is required")
+
+        location = self.get_model('Location')
+        location_administrative = models.LocationAdministrative()
+        location_administrative.location = location
+        location_administrative.code = code
+        location_administrative.vocabulary = vocabulary
+        location_administrative.level = level
          
+        self.register_model('LocationAdministrative', location_administrative)
+
         return element
 
     '''atributes:
@@ -789,20 +858,39 @@ class Parse(XMLParser):
 
     tag:point'''
     def iati_activities__iati_activity__location__point(self,element):
-        model = self.get_func_parent_model()
-        model.point_srs_name = element.attrib.get('srsName')
+        srs_name = element.attrib.get('srsName')
 
-         
+        # TODO: make this field required?
+        # if not srs_name: raise self.RequiredFieldError("srsName", "location_point: srsName is required")
+        if not srs_name: srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
+
+        location = self.get_model('Location')
+        location.point_srs_name = srs_name
+
+        self.register_model('Location', location)
         return element
 
     '''atributes:
 
     tag:pos'''
     def iati_activities__iati_activity__location__point__pos(self,element):
-        model = self.get_func_parent_model()
-        model.point_pos = element.text
+        # TODO: validation of lat/long
+        # TODO: Allow for different srid's
+        text = element.text
+
+        if not text: raise self.RequiredFieldError("text", "location_point_pos: text is required")
+
+        try: 
+            latlong = text.strip().split(' ')
+            point = GEOSGeometry(Point(float(latlong[0]), float(latlong[1])), srid=4326)
+        except Exception as e:
+            print(e)
+            raise self.ValidationError("latlong", "either lat or long is not present")
+
+        location = self.get_model('Location')
+        location.point_pos = point
         
-         
+        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -810,8 +898,13 @@ class Parse(XMLParser):
 
     tag:exactness'''
     def iati_activities__iati_activity__location__exactness(self,element):
-        model = self.get_func_parent_model()
-        model.exactness = self.cached_db_call(models.GeographicExactness,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.GeographicExactness, code=element.attrib.get('code'))
+
+        if not code: raise self.RequiredFieldError("code", "location_exactness: code is required")
+
+        location = self.get_model('Location')
+        location.exactness = code
+        self.register_model('Location', location)
          
         return element
 
@@ -820,9 +913,14 @@ class Parse(XMLParser):
 
     tag:location-class'''
     def iati_activities__iati_activity__location__location_class(self,element):
-        model = self.get_func_parent_model()
-        model.location_class = self.cached_db_call(models.GeographicLocationClass,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.GeographicLocationClass, code=element.attrib.get('code'))
+
+        if not code: raise self.RequiredFieldError("code", "location_class: code is required")
+
+        location = self.get_model('Location')
+        location.location_class = code
          
+        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -830,26 +928,37 @@ class Parse(XMLParser):
 
     tag:feature-designation'''
     def iati_activities__iati_activity__location__feature_designation(self,element):
-        model = self.get_func_parent_model()
-        model.feature_designation = self.cached_db_call(models.LocationType,element.attrib.get('code'))
-         
+        code = self.get_or_none(codelist_models.LocationType, code=element.attrib.get('code'))
+
+        if not code: raise self.RequiredFieldError("code", "location_feature_designation: code is required")
+
+        location = self.get_model('Location')
+        location.feature_designation = code
+
+        self.register_model('Location', location)
         return element
-        model.save()
 
     '''atributes:
-    vocabulary:2
-    code:111
-    percentage:50
+    code:489
+    vocabulary:1
+    percentage:25
 
-    tag:sector'''
+    tag:recipient-sector'''
     def iati_activities__iati_activity__sector(self,element):
-        model = self.get_func_parent_model()
-        activity_sector = models.ActivitySector()
-        activity_sector.activity = model
-        activity_sector.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
-        activity_sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
-        activity_sector.percentage =  element.attrib.get('percentage')
-        activity_sector.save()
+        sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
+        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        percentage = element.attrib.get('percentage')
+
+        if not sector: raise self.RequiredFieldError("code", "sector: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "sector: vocabulary is required")
+
+        activity = self.get_model('Activity')
+        activity_sector =  models.ActivitySector()
+        activity_sector.sector = sector
+        activity_sector.activity = activity
+        activity_sector.percentage = percentage
+        activity_sector.vocabulary = vocabulary
+        self.register_model('ActivitySector', activity_sector)
          
         return element
 
@@ -858,13 +967,16 @@ class Parse(XMLParser):
 
     tag:country-budget-items'''
     def iati_activities__iati_activity__country_budget_items(self,element):
-        model = self.get_func_parent_model()
-        country_budget_item = models.CountryBudgetItem()
-        country_budget_item.activity = model
-        country_budget_item.vocabulary = self.cached_db_call(models.BudgetIdentifierVocabulary,element.attrib.get('vocabulary'))
-        self.set_func_model(country_budget_item)
+        vocabulary = self.get_or_none(vocabulary_models.BudgetIdentifierVocabulary) 
 
-        
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "country-budget-items: vocabulary is required")
+
+        activity = self.get_model('Activity')
+        country_budget_item = models.CountryBudgetItem()
+        country_budget_item.activity = activity
+        country_budget_item.vocabulary = vocabulary
+
+        self.register_model('CountryBudgetItem', activity_sector)
         return element
 
     '''atributes:
@@ -873,31 +985,36 @@ class Parse(XMLParser):
 
     tag:budget-item'''
     def iati_activities__iati_activity__country_budget_items__budget_item(self,element):
-        model = self.get_func_parent_model()
+        code = element.attrib.get('code')
+        percentage = element.attrib.get('percentage')
+
+        if not code: raise self.RequiredFieldError("code", "country-budget: code is required")
+
+        country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
-        budget_item.country_budget_item = model
-        budget_item.code = element.attrib.get('code')
-        budget_item.percentage = element.attrib.get('percentage')
-        self.set_func_model(budget_item)
-         
+        budget_item.country_budget_item = country_budget_item
+        budget_item.code = code
+        budget_item.percentage = percentage
+
+        self.register_model('BudgetItem', activity_sector)
         return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self,element):
-        model = self.get_func_parent_model()
+        budget_item = self.get_model('Budgetitem')
         budget_item_description = models.BudgetItemDescription()
-        budget_item_description.budget_item = model
-        self.set_func_model(budget_item_description)
-         
+        budget_item_description.budget_item = budget_item
+
+        self.register_model('BudgetItemDescription', budget_item)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
+        budget_item_description = self.get_model('BudgetItemDescription')
         self.add_narrative(element, activity_date)
         return element
 

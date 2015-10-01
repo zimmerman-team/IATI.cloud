@@ -2,7 +2,8 @@ from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
 from organisation_manager import OrganisationQuerySet
-from django.contrib.gis.geos import Point
+# from django.contrib.gis.geos import Point
+from django.contrib.gis.db.models import PointField
 # from iati.transaction.models import Transaction, TransactionType, TransactionDescription, TransactionProvider, TransactionReceiver, TransactionSector
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -174,7 +175,7 @@ class ActivityPolicyMarker(models.Model):
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
     sector = models.ForeignKey(Sector, null=True, default=None)
-    vocabulary = models.ForeignKey(Vocabulary, null=True, default=None)
+    vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -198,21 +199,17 @@ class ActivityRecipientCountry(models.Model):
 
 class CountryBudgetItem(models.Model):
     activity = models.ForeignKey(Activity)
-    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary, null=True)
-    vocabulary_text = models.CharField(max_length=255, default="")
-    code = models.CharField(max_length=50, default="")
+    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
-    description = models.TextField(default="")
 
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.CharField(max_length=50, default="")
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
 
-
-#class for narrative
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
+    narratives = GenericRelation(Narrative)
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -250,8 +247,8 @@ class ActivityWebsite(models.Model):
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(ContactType, null=True)
-    person_name = GenericRelation(Narrative)
-    organisation = GenericRelation(Narrative)
+    # person_name = GenericRelation(Narrative, related_query_name="person_name")
+    # organisation = GenericRelation(ContactInfoOrganisationNarrative)
     # person_name = models.CharField(max_length=100, default="", null=True, blank=True)
     # organisation = models.CharField(max_length=100, default="", null=True, blank=True)
     telephone = models.CharField(max_length=100, default="", null=True, blank=True)
@@ -261,22 +258,35 @@ class ContactInfo(models.Model):
     job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.person_name)
+        return "ContactInfo: %s" % (self.activity.id)
+
+# class ContactInfoOrganisationNarrative(Narrative):
+#     pass
+# TODO: inherit narratives and link from contactinfo? (API inconsistency?)
 
 class ContactInfoOrganisation(models.Model):
-    ContactInfo = models.ForeignKey(ContactInfo)
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
 
 class ContactInfoDepartment(models.Model):
-    ContactInfo = models.ForeignKey(ContactInfo)
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
 
 class ContactInfoPersonName(models.Model):
-    ContactInfo = models.ForeignKey(ContactInfo)
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
 
 class ContactInfoJobTitle(models.Model):
-    ContactInfo = models.ForeignKey(ContactInfo)
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
 
 class ContactInfoMailingAddress(models.Model):
-    ContactInfo = models.ForeignKey(ContactInfo)
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
+
+class ContactInfoTelephone(models.Model):
+    contact_info = models.ForeignKey(ContactInfo)
+    narratives = GenericRelation(Narrative)
 
 # class transaction_description(models.Model):
 #     transaction = models.ForeignKey(transaction)
@@ -443,108 +453,43 @@ class Condition(models.Model):
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
-    # new in v1.04
+
     ref = models.CharField(max_length=200, default="")
-    #narrative in 2.05
-    # name = models.TextField(max_length=1000, default="")
-    # deprecated as of v1.04
-    type = models.ForeignKey(
-        LocationType,
-        null=True,
-        default=None,
-        related_name="deprecated_location_type")
-    type_description = models.CharField(
-        max_length=200,
-        default="")
-    #narrative in  2.05
-    # description = models.TextField(default="")
-    # activity_description = models.TextField(default="")
-    description_type = models.ForeignKey(
-        DescriptionType,
-        null=True,
-        default=None)
-    # deprecated as of v1.04
-    adm_country_iso = models.ForeignKey(Country, null=True, default=None)
-    # deprecated as of v1.04
-    adm_country_adm1 = models.CharField(
-        max_length=100,
-        default="")
-    # deprecated as of v1.04
-    adm_country_adm2 = models.CharField(
-        max_length=100,
-        default="")
-    # deprecated as of v1.04
-    adm_country_name = models.CharField(
-        max_length=200,
-        default="")
-    # new in v1.04
-    adm_code = models.CharField(max_length=255, default="",null=True)
-    # new in v1.04
-    adm_vocabulary = models.ForeignKey(
-        GeographicVocabulary,
-        null=True,
-        default=None,
-        related_name="administrative_vocabulary")
-    # new in v1.04
-    adm_level = models.IntegerField(null=True, default=None)
-    percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        default=None)
-    # deprecated as of v1.04
-    point_pos = models.CharField(max_length=70, default="")
-    # deprecated as of v1.04
-    longitude = models.CharField(max_length=70, default="")
-    precision = models.ForeignKey(
-        GeographicalPrecision,
-        null=True,
-        default=None)
-    # deprecated as of v1.04
-    gazetteer_entry = models.CharField(max_length=70, default="")
-    # deprecated as of v1.04
-    gazetteer_ref = models.ForeignKey(GazetteerAgency, null=True, default=None)
-    # new in v1.04
     location_reach = models.ForeignKey(
         GeographicLocationReach,
         null=True,
-        default=None)
-    # new in v1.04
+        default=None,
+        related_name="location_reach")
     location_id_vocabulary = models.ForeignKey(
         GeographicVocabulary,
         null=True,
         default=None,
         related_name="location_id_vocabulary")
-    # new in v1.04
     location_id_code = models.CharField(max_length=255, default="")
-    # new in v1.04
-    point_srs_name = models.CharField(max_length=255, default="")
-    # new in v1.04
-    point_pos = models.CharField(max_length=255, default="")
-    # new in v1.04
-    exactness = models.ForeignKey(GeographicExactness, null=True, default=None)
-    # new in v1.04
+    location_class = models.ForeignKey(
+        GeographicLocationClass,
+        null=True,
+        default=None)
     feature_designation = models.ForeignKey(
         LocationType,
         null=True,
         default=None,
         related_name="feature_designation")
-    # new in v1.04
-    location_class = models.ForeignKey(
-        GeographicLocationClass,
-        null=True,
-        default=None)
 
-    @property
-    def point(self):
-        if self.point_pos:
-            coo = self.point_pos.strip().split(' ')
-            return list( Point(float(coo[0]), float(coo[1])) )
-        else:
-            return list( Point(float(self.latitude), float(self.longitude)) )
+    point_srs_name = models.CharField(max_length=255, default="")
+    point_pos = PointField(null=True, blank=True)
+    exactness = models.ForeignKey(GeographicExactness, null=True, default=None)
 
     def __unicode__(self,):
         return "Location: %s" % (self.activity.id,)
+
+class LocationAdministrative(models.Model):
+    location = models.ForeignKey(Location)
+    code = models.CharField(max_length=255)
+    vocabulary = models.ForeignKey(
+        GeographicVocabulary,
+        related_name="administrative_vocabulary")
+    level = models.IntegerField(null=True, default=None)
 
 class LocationName(models.Model):
     location = models.ForeignKey(Location)

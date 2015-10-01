@@ -277,6 +277,11 @@ class XMLParser(object):
             return self.model_store[key][index]
         return None
 
+    def pop_model(self, key):
+        if key in self.model_store:
+            return self.model_store[key].pop()
+        return None
+
     def save_model(self, key, index=-1):
         return self.get_model(key, index).save()
 

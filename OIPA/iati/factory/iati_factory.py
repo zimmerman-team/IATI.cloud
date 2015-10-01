@@ -145,14 +145,11 @@ class ActivityFactory(NoDatabaseFactory):
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
 
-
-class ActivityFactory(NoDatabaseFactory):
+class ContactInfoFactory(NoDatabaseFactory):
     class Meta:
-        model = iati.models.Activity
+        model = iati.models.ContactInfo
 
-    id = 'IATI-0001'
-    iati_identifier = 'IATI-0001'
-
+    activity = SubFactory(ActivityFactory)
 
 class RegionFactory(NoDatabaseFactory):
     class Meta:
@@ -248,6 +245,15 @@ class RecipientCountryFactory(NoDatabaseFactory):
     id = 1
     activity = SubFactory(ActivityFactory)
     country = SubFactory(CountryFactory)
+    percentage = 50
+
+class CountryBudgetItemFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.CountryBudgetItem
+
+    id = 1
+    activity = SubFactory(ActivityFactory)
+    vocabulary = "1"
     percentage = 50
 
 
@@ -404,16 +410,16 @@ class LocationFactory(NoDatabaseFactory):
         model = iati.models.Location
 
     activity = ActivityFactory.build()
-    ref = 'AF-KAN'
-    name = 'Location name'
-    description = 'Location description'
-    activity_description = 'A description that qualifies the activity taking place at the location'
-    adm_code = '1453782'
-    adm_level = 1
-    adm_vocabulary = GeographicVocabularyFactory.build()
-    location_id_vocabulary = GeographicVocabularyFactory.build()
-    location_id_code = '23213'
-    location_reach = GeographicLocationReachFactory.build()
-    point_pos = '31.616944 65.716944'
-    exactness = GeographicExactnessFactory.build()
-    feature_designation = LocationTypeFactory.build()
+    # ref = 'AF-KAN'
+    # name = 'Location name'
+    # description = 'Location description'
+    # activity_description = 'A description that qualifies the activity taking place at the location'
+    # adm_code = '1453782'
+    # adm_level = 1
+    # adm_vocabulary = GeographicVocabularyFactory.build()
+    # location_id_vocabulary = GeographicVocabularyFactory.build()
+    # location_id_code = '23213'
+    # location_reach = GeographicLocationReachFactory.build()
+    # point_pos = '31.616944 65.716944'
+    # exactness = GeographicExactnessFactory.build()
+    # feature_designation = LocationTypeFactory.build()

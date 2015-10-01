@@ -65,7 +65,7 @@ def build_activity(version="2.01"):
 
 class ParserSetupTestCase(DjangoTestCase):
 
-    fixtures = ['test_publisher.json', 'test_codelists.json']
+    fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
 
     def _get_activity(self, iati_identifier):
         return iati_models.Activity.objects.get(id=iati_identifier)
@@ -265,7 +265,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
         activity = self.parser_201.get_model('Activity')
 
-        with self.self.assertTrueRaises(Exception):
+        with self.assertRaises(Exception):
             activity.save()
 
     def test_capital_spend(self):
@@ -336,6 +336,22 @@ class ActivityTestCase(ParserSetupTestCase):
 
         activity = self.parser_201.get_model('Activity')
         self.assertTrue(activity.activity_status.code == code)
+
+    def test_activity_scope(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        1.03: This is a new element, introduced in version 1.03 of the standard
+        """
+        code = '1' # Global
+
+        activity_status = E('activity-scope', code=code)
+        activity = build_activity(version="2.01")
+
+        self.parser_201.register_model('Activity', activity)
+        self.parser_201.iati_activities__iati_activity__activity_scope(activity_status)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.scope.code == code)
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
@@ -738,43 +754,619 @@ class ContactInfoTestCase(ParserSetupTestCase):
         self.attrs = {
             "type": "1", # General Enquiries
         }
-        self.attrs_105 = copy.deepcopy(self.attrs_201)
-        self.attrs_105["type"] = "start-planned"
 
-        self.activity_date_201 = E('activity-date', **self.attrs_201)
-        self.activity_date_105 = E('activity-date', 'Some description', **self.attrs_105)
+        self.contact_info = E('contact-info', **self.attrs)
+        # self.contact_info = E('activity-date', 'Some description', **self.attrs_105)
+        self.narrative = E('narrative', "Some description")
 
+        self.activity = build_activity(version="2.01")
+        self.test_contact_info = iati_factory.ContactInfoFactory.build()
+        self.test_contact_info.save()
+
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_201.register_model('ContactInfo', self.test_contact_info)
+
+    def test_contact_info_201(self):
+        """
+        Only defines the type field
+        """
+        self.parser_201.iati_activities__iati_activity__contact_info(self.contact_info)
+        contact_info = self.parser_201.get_model('ContactInfo')
+
+        self.assertTrue(contact_info.activity == self.activity)
+        self.assertTrue(contact_info.type.code == self.attrs['type'])
+
+    def test_contact_info_organisation_201(self):
+        """
+        Along with narrative
+        """
+        contact_organisation = E('organisation', **self.attrs)
+        self.parser_201.iati_activities__iati_activity__contact_info__organisation(contact_organisation)
+        contact_info_organisation = self.parser_201.get_model('ContactInfoOrganisation')
+
+        self.assertTrue(contact_info_organisation.contact_info == self.test_contact_info)
+
+        self.parser_201.iati_activities__iati_activity__contact_info__organisation__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_organisation)
+
+    def test_contact_info_organisation_105(self):
+        """
+        Along with narrative
+        """
+        contact_organisation = E('organisation', 'some description')
+        self.parser_105.iati_activities__iati_activity__contact_info__organisation(contact_organisation)
+        contact_info_organisation = self.parser_201.get_model('ContactInfoOrganisation')
+
+        self.assertTrue(contact_info_organisation.contact_info == self.test_contact_info)
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_organisation)
+
+    def test_contact_info_department(self):
+        """
+        Along with narrative
+        """
+        contact_department = E('department', **self.attrs)
+        self.parser_201.iati_activities__iati_activity__contact_info__department(contact_department)
+        contact_info_department = self.parser_201.get_model('ContactInfoDepartment')
+
+        self.assertTrue(contact_info_department.contact_info == self.test_contact_info)
+
+        self.parser_201.iati_activities__iati_activity__contact_info__department__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_department)
+
+    def test_contact_info_department_105(self):
+        """
+        Along with narrative
+        """
+        contact_department = E('department', 'some description')
+        self.parser_105.iati_activities__iati_activity__contact_info__department(contact_department)
+        contact_info_department = self.parser_201.get_model('ContactInfoDepartment')
+
+        self.assertTrue(contact_info_department.contact_info == self.test_contact_info)
+        narrative = self.parser_105.get_model('Narrative')
+
+    def test_contact_info_person_name(self):
+        """
+        Along with narrative
+        """
+        contact_person_name = E('person-name', **self.attrs)
+        self.parser_201.iati_activities__iati_activity__contact_info__person_name(contact_person_name)
+        contact_info_person_name = self.parser_201.get_model('ContactInfoPersonName')
+
+        self.assertTrue(contact_info_person_name.contact_info == self.test_contact_info)
+
+        self.parser_201.iati_activities__iati_activity__contact_info__person_name__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_person_name)
+
+    def test_contact_info_person_name_105(self):
+        """
+        Along with narrative
+        """
+        contact_person_name = E('person_name', 'some description')
+        self.parser_105.iati_activities__iati_activity__contact_info__person_name(contact_person_name)
+        contact_info_person_name = self.parser_201.get_model('ContactInfoPersonName')
+
+        self.assertTrue(contact_info_person_name.contact_info == self.test_contact_info)
+        narrative = self.parser_105.get_model('Narrative')
+
+    def test_contact_info_job_title(self):
+        """
+        Along with narrative
+        """
+        contact_job_title = E('job-title', **self.attrs)
+        self.parser_201.iati_activities__iati_activity__contact_info__job_title(contact_job_title)
+        contact_info_job_title = self.parser_201.get_model('ContactInfoJobTitle')
+
+        self.assertTrue(contact_info_job_title.contact_info == self.test_contact_info)
+
+        self.parser_201.iati_activities__iati_activity__contact_info__job_title__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_job_title)
+
+    def test_contact_info_job_title_105(self):
+        """
+        Along with narrative
+        """
+        contact_job_title = E('job_title', 'some description')
+        self.parser_105.iati_activities__iati_activity__contact_info__job_title(contact_job_title)
+        contact_info_job_title = self.parser_201.get_model('ContactInfoJobTitle')
+
+        self.assertTrue(contact_info_job_title.contact_info == self.test_contact_info)
+        narrative = self.parser_105.get_model('Narrative')
+
+    def test_contact_info_telephone(self):
+        contact_telephone = E('telephone', "some telephone")
+        self.parser_201.iati_activities__iati_activity__contact_info__telephone(contact_telephone)
+        contact_info = self.parser_201.get_model('ContactInfo')
+
+        self.assertTrue(contact_info.telephone == "some telephone")
+
+    def test_contact_info_email(self):
+        contact_email = E('email', "some email")
+        self.parser_201.iati_activities__iati_activity__contact_info__email(contact_email)
+        contact_info = self.parser_201.get_model('ContactInfo')
+
+        self.assertTrue(contact_info.email == "some email")
+
+    def test_contact_info_website(self):
+        contact_website = E('website', "some website")
+        self.parser_201.iati_activities__iati_activity__contact_info__website(contact_website)
+        contact_info = self.parser_201.get_model('ContactInfo')
+
+        self.assertTrue(contact_info.website == "some website")
+
+    def test_contact_info_mailing_address(self):
+        """
+        Along with narrative
+        """
+        contact_mailing_address = E('mailing-address', **self.attrs)
+        self.parser_201.iati_activities__iati_activity__contact_info__mailing_address(contact_mailing_address)
+        contact_info_mailing_address = self.parser_201.get_model('ContactInfoMailingAddress')
+
+        self.assertTrue(contact_info_mailing_address.contact_info == self.test_contact_info)
+
+        self.parser_201.iati_activities__iati_activity__contact_info__mailing_address__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_mailing_address)
+
+    def test_contact_info_mailing_address_105(self):
+        """
+        Along with narrative
+        """
+        contact_mailing_address = E('mailing_address', 'some description')
+        self.parser_105.iati_activities__iati_activity__contact_info__mailing_address(contact_mailing_address)
+        contact_info_mailing_address = self.parser_201.get_model('ContactInfoMailingAddress')
+
+        self.assertTrue(contact_info_mailing_address.contact_info == self.test_contact_info)
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == contact_info_mailing_address)
+
+class RecipientCountryTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element, but only in particular use-cases.
+    1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "code": "AF",
+            "percentage": "50.5",
+        }
+
+        self.recipient_country = E('recipient-country', **self.attrs)
         self.narrative = E('narrative', "Some description")
 
         self.activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', self.activity)
 
-    def test_activity_date_201(self):
+    def test_recipient_country_201(self):
         """
         Along with its narrative(s)
         """
-        self.parser_201.iati_activities__iati_activity__activity_date(self.activity_date_201)
-        activity_date = self.parser_201.get_model('ActivityDate')
+        self.parser_201.iati_activities__iati_activity__recipient_country(self.recipient_country)
+        recipient_country = self.parser_201.get_model('ActivityRecipientCountry')
 
-        self.assertTrue(activity_date.activity == self.activity)
-        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
-        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
+        self.assertTrue(recipient_country.activity == self.activity)
+        self.assertTrue(recipient_country.country.code == self.attrs['code'])
+        self.assertTrue(recipient_country.percentage == self.attrs['percentage'])
 
-        self.parser_201.iati_activities__iati_activity__activity_date__narrative(self.narrative)
+        # TODO: needs narrative?
+
+class RecipientRegionTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element, but only in particular use-cases.
+    1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "code": "89", # Europe, regional
+            "vocabulary": "1", # OECD-DAC
+            "percentage": "50.5",
+        }
+
+        self.recipient_region = E('recipient-region', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_recipient_region_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__recipient_region(self.recipient_region)
+        recipient_region = self.parser_201.get_model('ActivityRecipientRegion')
+
+        self.assertTrue(recipient_region.activity == self.activity)
+        self.assertTrue(recipient_region.region.code == self.attrs['code'])
+        self.assertTrue(recipient_region.percentage == self.attrs['percentage'])
+        self.assertTrue(recipient_region.vocabulary.code == self.attrs['vocabulary'])
+
+        # TODO: needs narrative?
+
+    def test_recipient_region_201_defaults(self):
+        """
+        Check default vocabulary is set accordingly
+        """
+        del self.recipient_region.attrib['vocabulary']
+        self.parser_201.iati_activities__iati_activity__recipient_region(self.recipient_region)
+        recipient_region = self.parser_201.get_model('ActivityRecipientRegion')
+
+        self.assertTrue(recipient_region.vocabulary.code == "1")
+
+class ActivityLocationTestCase(ParserSetupTestCase):
+    """
+    2.01: The following child elements were removed: coordinates; gazetteer-entry; location-type.
+    2.01: The @percentage attribute was removed.
+
+    1.04: Note that major changes were made to the subelements of location in version 1.04.
+
+    For more information refer to:
+    * the 1.04 location changes overview guidance
+    * the Activities Schema Changelog (or the individual subemelement pages)
+    1.04: The @ref attribute was introduced to provide a cross reference that a publisher can use to link back to their own internal system.
+    1.04: The @percentage attribute was deemed unworkable and deprecated in 1.04
+    1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
+    """
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs_201 = {
+            "ref": "some-ref", # Europe, regional
+        }
+        self.attrs_105 = copy.deepcopy(self.attrs_201)
+        self.attrs_105['percentage'] = '50.2'
+
+        self.location_201 = E('location', **self.attrs_201)
+        self.location_105 = E('location', "Some description", **self.attrs_105)
+        self.location_103 = E('location', "Some description", **self.attrs_105)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.test_location = iati_factory.LocationFactory.build()
+        # self.test_location.save()
+
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_201.register_model('Location', self.test_location)
+
+    def test_location_201(self):
+        self.parser_201.iati_activities__iati_activity__location(self.location_201)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.activity == self.activity)
+        self.assertTrue(location.ref == self.attrs_201['ref'])
+
+    def test_location_reach_201(self):
+        location_reach = E('location-reach', code="1") # Activity
+        self.parser_201.iati_activities__iati_activity__location__location_reach(location_reach)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.location_reach.code == "1")
+
+    def test_location_id_201(self):
+        location_id = E('location-id', code="test", vocabulary="A1") # Global Administrative Unit layers
+        self.parser_201.iati_activities__iati_activity__location__location_id(location_id)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.location_id_code == "test")
+        self.assertTrue(location.location_id_vocabulary.code == "A1")
+
+    def test_location_name_201(self):
+        """
+        Including narratives
+        """
+        location_name = E('name')
+        self.parser_201.iati_activities__iati_activity__location__name(location_name)
+        location_name = self.parser_201.get_model('LocationName')
+
+        self.assertTrue(location_name.location == self.test_location)
+
+        self.parser_201.iati_activities__iati_activity__location__name__narrative(self.narrative)
         narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == location_name)
 
-        self.assertTrue(narrative.parent_object == activity_date)
+    def test_location_name_105(self):
+        location_name = E('name', "some text")
+        self.parser_105.iati_activities__iati_activity__location__name(location_name)
+        location_name = self.parser_105.get_model('LocationName')
 
-    def test_activity_date_105(self):
-        """
-        If other-identifier is present then either @owner-ref or @owner-name must be present
-        """
-        self.parser_105.iati_activities__iati_activity__activity_date(self.activity_date_105)
-        activity_date = self.parser_105.get_model('ActivityDate')
-
-        self.assertTrue(activity_date.activity == self.activity)
-        self.assertTrue(str(activity_date.iso_date) == self.attrs_201['iso-date'])
-        self.assertTrue(activity_date.type.code == self.attrs_201['type'])
-
+        self.assertTrue(location_name.location == self.test_location)
         narrative = self.parser_105.get_model('Narrative')
-        self.assertTrue(narrative.parent_object == activity_date)
+        self.assertTrue(narrative.parent_object == location_name)
+
+    def test_location_description_201(self):
+        """
+        Including narratives
+        """
+        location_description = E('description')
+        self.parser_201.iati_activities__iati_activity__location__description(location_description)
+        location_description = self.parser_201.get_model('LocationDescription')
+
+        self.assertTrue(location_description.location == self.test_location)
+
+        self.parser_201.iati_activities__iati_activity__location__description__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == location_description)
+
+    def test_location_activity_description_201(self):
+        """
+        Including narratives
+        """
+        activity_description = E('activity-description')
+        self.parser_201.iati_activities__iati_activity__location__activity_description(activity_description)
+        activity_description = self.parser_201.get_model('LocationActivityDescription')
+
+        self.assertTrue(activity_description.location == self.test_location)
+
+        self.parser_201.iati_activities__iati_activity__location__activity_description__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == activity_description)
+
+    def test_location_administrative_201(self):
+        administrative = E('administrative', code="test", vocabulary="A1", level="1") # Global Administrative Unit layers
+        self.parser_201.iati_activities__iati_activity__location__administrative(administrative)
+        location_administrative = self.parser_201.get_model('LocationAdministrative')
+
+        self.assertTrue(location_administrative.code == "test")
+        self.assertTrue(location_administrative.vocabulary.code == "A1")
+        self.assertTrue(location_administrative.level == "1")
+
+    def test_location_administrative_103(self):
+        administrative = E('administrative', country="test", adm1="test", adm2="test") 
+        self.parser_103.iati_activities__iati_activity__location__administrative(administrative)
+
+        # adm2
+        administrative = self.parser_103.pop_model('LocationAdministrative')
+        self.assertTrue(administrative.code == "test")
+        self.assertTrue(administrative.vocabulary.code == "A2")
+        self.assertTrue(administrative.level == "2")
+
+        # adm1
+        administrative = self.parser_103.pop_model('LocationAdministrative')
+        self.assertTrue(administrative.code == "test")
+        self.assertTrue(administrative.vocabulary.code == "A2")
+        self.assertTrue(administrative.level == "1")
+
+        # country
+        administrative = self.parser_103.pop_model('LocationAdministrative')
+        self.assertTrue(administrative.code == "test")
+        self.assertTrue(administrative.vocabulary.code == "A4")
+
+    def test_location_point_201(self):
+        point = E('point', srsName="http://www.opengis.net/def/crs/EPSG/0/4326") # Global Point Unit layers
+        self.parser_201.iati_activities__iati_activity__location__point(point)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.point_srs_name == "http://www.opengis.net/def/crs/EPSG/0/4326")
+
+    def test_location_pos_pos_valid_latlong_201(self):
+        """
+        test with valid latlong
+        """
+        pos = E('pos', '31.616944 65.716944')
+        self.parser_201.iati_activities__iati_activity__location__point__pos(pos)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.point_pos.coords == (31.616944, 65.716944))
+
+    # TODO : test for latlong validation
+    # def test_location_pos_pos_invalid_latlong_201(self):
+    #     pos = E('pos', '91.616944 328392189031283.716944')
+    #     with self.assertRaises(self.parser_201.ValidationError):
+    #         self.parser_201.iati_activities__iati_activity__location__point__pos(pos)
+
+    def test_location_exactness_201(self):
+        exactness = E('exactness', code="1") # Exact
+        self.parser_201.iati_activities__iati_activity__location__exactness(exactness)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.exactness.code == "1")
+
+    def test_location_location_class_201(self):
+        location_class = E('location-class', code="1") # Administrative region
+        self.parser_201.iati_activities__iati_activity__location__location_class(location_class)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.location_class.code == "1")
+
+    def test_location_feature_designation_201(self):
+        feature_designation = E('feature-designation', code="AIRQ") # Abandoned airfield
+        self.parser_201.iati_activities__iati_activity__location__feature_designation(feature_designation)
+        location = self.parser_201.get_model('Location')
+
+        self.assertTrue(location.feature_designation.code == "AIRQ")
+
+    def test_location_coordinates_103(self):
+        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='1') # exact
+        self.parser_103.iati_activities__iati_activity__location__coordinates(coordinates)
+        location = self.parser_103.get_model('Location')
+
+        self.assertTrue(location.point_srs_name == "http://www.opengis.net/def/crs/EPSG/0/4326")
+        self.assertTrue(location.point_pos.coords == (31.616944, 65.716944))
+        self.assertTrue(location.exactness.code == "1")
+
+    def test_location_coordinates_transform_code_103(self):
+        """
+        A precision value greater than 1, should be mapped to 2, see:
+        http://iatistandard.org/201/codelists/GeographicExactness/
+        http://iatistandard.org/201/codelists/GeographicalPrecision/
+        """
+        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='5') # exact
+        self.parser_103.iati_activities__iati_activity__location__coordinates(coordinates)
+        location = self.parser_103.get_model('Location')
+
+        self.assertTrue(location.exactness.code == "2")
+
+    def test_location_gazetteer_103(self):
+        """
+        Map to 201 location-id field
+        """
+        props = {
+            "gazetteer-ref": "1"
+        }
+        gazetteer = E('gazetteer-entry', "some code", **props) # Geonames.org
+        self.parser_103.iati_activities__iati_activity__location__gazetteer_entry(gazetteer)
+        location = self.parser_103.get_model('Location')
+
+        self.assertTrue(location.location_id_code == "some code")
+        self.assertTrue(location.location_id_vocabulary.code == "G1")
+
+    def test_location_gazetteer_deprecated_field_103(self):
+        """
+        Test parsing with gazetteer-ref: 2 throws error
+        """
+        props = {
+            "gazetteer-ref": "2"
+        }
+        gazetteer = E('gazetteer-entry', "some code", **props) # Geonames.org
+
+        with self.assertRaises(Exception):
+            self.parser_103.iati_activities__iati_activity__location__gazetteer_entry(gazetteer)
+
+    def test_location_location_type_103(self):
+        """
+        Maps to 201 feature_designation field
+        """
+        location_type = E('location-type', code="AIRQ") # Abandoned airfield
+        self.parser_103.iati_activities__iati_activity__location__location_type(location_type)
+        location = self.parser_103.get_model('Location')
+
+        self.assertTrue(location.feature_designation.code == "AIRQ")
+
+class SectorTestCase(ParserSetupTestCase):
+    """
+    1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "code": "11110", # Education Policy and administrative management
+            "vocabulary": "1", # OECD-DAC-5
+            "percentage": "50.5",
+        }
+
+        self.sector = E('sector', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+    def test_sector_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__sector(self.sector)
+        sector = self.parser_201.get_model('ActivitySector')
+
+        self.assertTrue(sector.activity == self.activity)
+        self.assertTrue(sector.sector.code == self.attrs['code'])
+        self.assertTrue(sector.percentage == self.attrs['percentage'])
+        self.assertTrue(sector.vocabulary.code == self.attrs['vocabulary'])
+
+        # TODO: needs narrative?
+
+    def test_sector_201_defaults(self):
+        """
+        Check default vocabulary is set accordingly
+        """
+        del self.sector.attrib['vocabulary']
+        self.parser_201.iati_activities__iati_activity__sector(self.sector)
+        sector = self.parser_201.get_model('ActivitySector')
+
+        self.assertTrue(sector.vocabulary.code == "1")
+
+    def test_sector_105(self):
+        """
+        Using the sectorvocabulary mappings
+        """
+        self.sector.attrib['vocabulary'] = 'DAC' # should map to 1
+        self.parser_105.iati_activities__iati_activity__sector(self.sector)
+        sector = self.parser_105.get_model('ActivitySector')
+
+        self.assertTrue(sector.activity == self.activity)
+        self.assertTrue(sector.sector.code == self.attrs['code'])
+        self.assertTrue(sector.percentage == self.attrs['percentage'])
+        self.assertTrue(sector.vocabulary.code == self.attrs['vocabulary'])
+
+class CountryBudgetItemsTestCase(ParserSetupTestCase):
+    """
+    1.03: This is a new element, introduced in version 1.03 of the standard.
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "vocabulary": "1", # IATI
+        }
+
+        self.country_budget_items = E('country_budget_items', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.test_country_budget_items = iati_factory.CountryBudgetItemFactory.build()
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('CountryBudgetItem', self.activity)
+
+    def test_country_budget_items_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__country_budget_items(self.country_budget_items)
+        country_budget_item = self.parser_201.get_model('CountryBudgetItem')
+
+        self.assertTrue(country_budget_item.activity == self.activity)
+        self.assertTrue(country_budget_item.vocabulary.code == self.attrs['vocabulary'])
+
+    def test_budget_item_201(self):
+        """
+        Along with its narrative(s)
+        """
+        budget_item = E('budget-item', code="1.1.1", percentage="50.21") # Executive - executive
+        self.parser_201.iati_activities__iati_activity__country_budget_items__budget_item(budget_item)
+        budget_item = self.parser_201.get_model('CountryBudgetItem')
+
+        self.assertTrue(budget_item.activity == self.activity)
+        self.assertTrue(budget_item.country_budget_item == self.test_country_budget_items)
+        self.assertTrue(budget_item.percentage == self.attrs['percentage'])
+
+    def test_budget_item_description_201(self):
+        """
+        Along with its narrative(s)
+        """
+        budget_item_description = E('description', code="1.1.1", percentage="50.21") # Executive - executive
+        self.parser_201.iati_activities__iati_activity__country_budget_item_descriptions__budget_item_description(budget_item_description)
+        budget_item_description = self.parser_201.get_model('CountryBudgetItemDescription')
+
+        self.assertTrue(budget_item_description.activity == self.activity)
+        self.assertTrue(budget_item_description.country_budget_item_description == self.test_country_budget_item_descriptions)
+        self.assertTrue(budget_item_description.percentage == self.attrs['percentage'])
+
+        self.parser_201.iati_activities__iati_activity__country_budget_item_descriptions(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == country_budget_item_description)
+
+
+    def test_country_budget_items_105(self):
+        self.country_budget_items.attrib['vocabulary'] = 'DAC' # should map to 1
+        self.parser_105.iati_activities__iati_activity__country_budget_items(self.country_budget_items)
+        country_budget_items = self.parser_105.get_model('CountryBudgetItem')
+
+        self.assertTrue(country_budget_items.activity == self.activity)
+        self.assertTrue(country_budget_items.country_budget_items.code == self.attrs['code'])
+        self.assertTrue(country_budget_items.percentage == self.attrs['percentage'])
+        self.assertTrue(country_budget_items.vocabulary.code == self.attrs['vocabulary'])
+

@@ -44,7 +44,7 @@ class Vocabulary(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class BudgetIdentifierVocabulary(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)
@@ -54,7 +54,7 @@ class BudgetIdentifierVocabulary(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class RegionVocabulary(models.Model):
-    code = models.SmallIntegerField(primary_key=True)
+    code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=20)
     description = models.TextField(default="")
     codelist_iati_version = models.CharField(max_length=4)

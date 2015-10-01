@@ -15,16 +15,17 @@ class Parse(IATI_201_Parser):
         "end-actual": "4",
     }
 
-    sector_vocabulary_trans = {
-        'ADT': 1,
-        'COFOG': 2,
-        'DAC': 3,
-        'DAC-3': 4,
-        'ISO': 5,
-        'NACE': 6,
-        'NTEE': 7,
-        'WB': 8,
-        'RO': 99,
+    sector_vocabulary_mapping = {
+        'ADT': "6",
+        'COFOG': "3",
+        'DAC': "1",
+        'DAC-3': "2",
+        'ISO': None, # has no mapping
+        'NACE': "4",
+        'NTEE': "5",
+        'RO': "99",
+        'RO2': "98",
+        'WB': None, # has no mapping
     }
 
     transaction_type_trans = {
@@ -40,23 +41,23 @@ class Parse(IATI_201_Parser):
         'CG': 10
     }
 
-    def add_narrative_105(self, text, parent):
-        # lang = self.default_lang
-        default_lang = self.default_lang
-        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
-        language = self.get_or_none(codelist_models.Language, code=lang)
+    # def add_narrative(self, text, parent):
+    #     # lang = self.default_lang
+    #     default_lang = self.default_lang
+    #     lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+    #     language = self.get_or_none(codelist_models.Language, code=lang)
 
-        if not language: raise self.RequiredFieldError("language")
-        if not text: raise self.RequiredFieldError("text")
-        if not parent: raise self.RequiredFieldError("parent")
+    #     if not language: raise self.RequiredFieldError("language")
+    #     if not text: raise self.RequiredFieldError("text")
+    #     if not parent: raise self.RequiredFieldError("parent")
 
-        narrative = models.Narrative()
-        narrative.language = language
-        narrative.content = text
-        narrative.iati_identifier = self.iati_identifier # TODO: we need this?
-        narrative.parent_object = parent
+    #     narrative = models.Narrative()
+    #     narrative.language = language
+    #     narrative.content = text
+    #     narrative.iati_identifier = self.iati_identifier # TODO: we need this?
+    #     narrative.parent_object = parent
 
-        self.register_model('Narrative', narrative)
+    #     self.register_model('Narrative', narrative)
 
     '''atributes:
     ref:AA-AAA-123456789
@@ -67,7 +68,7 @@ class Parse(IATI_201_Parser):
         super(Parse, self).iati_activities__iati_activity__reporting_org(element)
 
         ActivityReportingOrganisation = self.get_model('ActivityReportingOrganisation')
-        self.add_narrative_105(element.text, activityReportingOrganisation)
+        self.add_narrative(element, activityReportingOrganisation)
 
         return element
 
@@ -89,7 +90,7 @@ class Parse(IATI_201_Parser):
         super(Parse, self).iati_activities__iati_activity__participating_org(element)
 
         ActivityParticipatingOrganisation = self.get_model('ActivityParticipatingOrganisation')
-        self.add_narrative_105(element.text, activityParticipatingOrganisation)
+        self.add_narrative(element, activityParticipatingOrganisation)
 
         return element
 
@@ -112,7 +113,7 @@ class Parse(IATI_201_Parser):
         other_identifier.identifier=identifier
         other_identifier.owner_ref=owner_ref
 
-        self.add_narrative_105(owner_name, other_identifier)
+        self.add_narrative(owner_name, other_identifier)
         self.register_model('OtherIdentifier', other_identifier)
 
         return element
@@ -129,7 +130,7 @@ class Parse(IATI_201_Parser):
         title = models.Title()
         title.activity = activity
 
-        self.add_narrative_105(text, title)
+        self.add_narrative(text, title)
         self.register_model('Title', title)
 
         return element
@@ -151,7 +152,7 @@ class Parse(IATI_201_Parser):
         description.activity = activity
         description.type = description_type
 
-        self.add_narrative_105(element.text, description)
+        self.add_narrative(element, description)
         self.register_model('Description', description)
 
         return element
@@ -179,116 +180,90 @@ class Parse(IATI_201_Parser):
 
     '''atributes:
     tag:organisation'''
-    def iati_activities__iati_activity__contact_info(self, element):
-        model = self.get_func_parent_model()
-        contactInfoOrganisation = models.ContactInfoOrganisation()
-        contactInfoOrganisation.ContactInfo = model
-        self.add_narrative_105(element.text, contactInfoOrganisation)
-        #store element 
-        return element
-
-    '''atributes:
-    tag:organisation'''
     def iati_activities__iati_activity__contact_info__organisation(self, element):
-        model = self.get_func_parent_model()
-        contactInfoOrganisation = models.ContactInfoOrganisation()
-        contactInfoOrganisation.ContactInfo = model
-        self.add_narrative_105(element.text, contactInfoOrganisation)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__contact_info__organisation(element)
+        contact_info_organisation = self.get_model('ContactInfoOrganisation')
+        self.add_narrative(element, contact_info_organisation)
         return element
 
     '''atributes:
 
     tag:person-name'''
     def iati_activities__iati_activity__contact_info__person_name(self, element):
-        model = self.get_func_parent_model()
-        contactInfoPersonName =  models.ContactInfoPersonName()
-        contactInfoPersonName.ContactInfo = model
-        self.add_narrative_105(element.text,contactInfoPersonName)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__contact_info__person_name(element)
+        contact_info_person_name = self.get_model('ContactInfoPersonName')
+        self.add_narrative(element, contact_info_person_name)
         return element
 
     '''atributes:
 
     tag:job-title'''
     def iati_activities__iati_activity__contact_info__job_title(self, element):
-        model = self.get_func_parent_model()
-
-        contact_info_job_title =  models.ContactInfoJobTitle()
-        contact_info_job_title.ContactInfo = model
-        self.add_narrative_105(element.text, contact_info_job_title)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__contact_info__job_title(element)
+        contact_info_job_title = self.get_model('ContactInfoJobTitle')
+        self.add_narrative(element, contact_info_job_title)
         return element
-
 
     '''atributes:
 
     tag:mailing-address'''
     def iati_activities__iati_activity__contact_info__mailing_address(self,element):
-        model = self.get_func_parent_model()
-        contactInfoMailingAddress = models.ContactInfoMailingAddress()
-        contactInfoMailingAddress.ContactInfo = model
-        self.add_narrative_105(element.text,contactInfoMailingAddress)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__contact_info__mailing_address(element)
+        contact_info_mailing_address = self.get_model('ContactInfoMailingAddress')
+        self.add_narrative(element, contact_info_mailing_address)
         return element
-
 
     '''atributes:
 
     tag:name'''
     def iati_activities__iati_activity__location__name(self,element):
-        model = self.get_func_parent_model()
-        location_name = models.LocationName()
-        location_name.location = model
-        self.add_narrative_105(element.text,location_name)
+        super(Parse, self).iati_activities__iati_activity__location__name(element)
+        location_name = self.get_model('LocationName')
+        self.add_narrative(element, location_name)
         return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__location__description(self,element):
-        model = self.get_func_parent_model()
-        location_description = models.LocationDescription()
-        location_description.location  = model
-        self.add_narrative_105(element.text,location_description)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__location__description(element)
+        location_description = self.get_model('LocationDescription')
+        self.add_narrative(element, location_description)
         return element
 
     '''atributes:
 
     tag:activity-description'''
     def iati_activities__iati_activity__location__activity_description(self,element):
-        model = self.get_func_parent_model()
-        location_activity_description = models.LocationActivityDescription()
-        location_activity_description.location  = model
-        self.add_narrative_105(element.text,location_activity_description)
-        #store element 
+        super(Parse, self).iati_activities__iati_activity__location_activity_description(element)
+        location_activity_description = self.get_model('LocationActivityDescription')
+        self.add_narrative(element, location_activity_description)
         return element
 
+    '''atributes:
+    code:111
+    vocabulary:DAC
 
-    # '''atributes:
-    # code:111
-    # vocabulary:DAC
+    tag:sector'''
+    def iati_activities__iati_activity__sector(self,element):
+        code = element.attrib.get('code')
+        vocabulary = self.sector_vocabulary_mapping.get(element.attrib.get('vocabulary'))
 
-    # tag:sector'''
-    # def iati_activities__iati_activity__sector(self,element):
-    #     model = self.get_func_parent_model()
-    #     sector = models.Sector()
-    #     sector.activity = model
-    #     sector.code = element.attrib.get('code')
-    #     sector.vocabulary = self.cached_db_call(models.Vocabulary,self.sector_vocabulary_trans.get(element.attrib.get('vocabulary')))
-    #     sector.save()
-         
-    #     return element
+        if not code: raise self.RequiredFieldError("code", "activity_sector: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "activity_sector: vocabulary is required")
+
+        element.attrib['vocabulary'] = vocabulary
+        super(Parse, self).iati_activities__iati_activity__sector(element)
+
+        return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self,element):
-        model = self.get_func_parent_model()
-        budget_item_description = models.BudgetItemDescription()
-        budget_item_description.budget_item = model
-        self.add_narrative_105(element.text,budget_item_description)
+        super(Parse, self).iati_activities__iati_activity__country_budget_items__budget_item__description(element)
+        budget_item_description = self.get_model('BudgetitemDescription')
+        self.add_narrative(element, budget_item_description)
         return element
 
     '''atributes:
@@ -306,7 +281,7 @@ class Parse(IATI_201_Parser):
         activity_policy_marker.vocabulary = self.cached_db_call(models.Vocabulary,element.attrib.get('vocabulary'))
         activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
         activity_policy_marker.code = element.attrib.get('code')
-        self.add_narrative_105(element.text,activity_policy_marker)
+        self.add_narrative(element,activity_policy_marker)
         activity_policy_marker.save()
         return element
 
@@ -317,7 +292,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         description = models.TransactionDescription()
         description.transaction = model
-        self.add_narrative_105(element.text,description)
+        self.add_narrative(element,description)
         return element
 
 
@@ -333,7 +308,7 @@ class Parse(IATI_201_Parser):
         transaction_provider = models.TransactionProvider()
         transaction_provider.organisation = provider_org
         transaction_provider.transaction = model
-        self.add_narrative_105(element.text, transaction_provider)
+        self.add_narrative(element, transaction_provider)
         #store element
         model.provider_organisation = transaction_provider
         return element
@@ -350,7 +325,7 @@ class Parse(IATI_201_Parser):
         transaction_receiver = models.TransactionReceiver()
         transaction_receiver.transaction = model
         transaction_receiver.organisation = receiver_org
-        self.add_narrative_105(element.text, transaction_receiver)
+        self.add_narrative(element, transaction_receiver)
         #store element
         model.receiver_organisation = transaction_receiver
         return element
@@ -363,7 +338,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         document_link_title = models.DocumentLinkTitle()
         document_link_title.document_link = model
-        self.add_narrative_105(element.text,document_link_title)
+        self.add_narrative(element,document_link_title)
         return element
 
 
@@ -388,7 +363,7 @@ class Parse(IATI_201_Parser):
         condition = models.Condition()
         condition.activity = model
         condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
-        self.add_narrative_105(element.text, condition)
+        self.add_narrative(element, condition)
         return element
 
 
@@ -399,7 +374,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         result_title = models.ResultTitle()
         result_title.result = model
-        self.add_narrative_105(element.text,result_title)
+        self.add_narrative(element,result_title)
         return element
 
     '''atributes:
@@ -409,7 +384,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         result_description = models.ResultDescription()
         result_description.result = model
-        self.add_narrative_105(element.text,result_description)
+        self.add_narrative(element,result_description)
         return element
 
 
@@ -420,7 +395,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         result_indicator_title = models.ResultIndicatorTitle()
         result_indicator_title.result_indicator = model
-        self.add_narrative_105(element.text,result_indicator_title)
+        self.add_narrative(element,result_indicator_title)
         return element
 
     '''atributes:
@@ -430,7 +405,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         result_indicator_description = models.ResultIndicatorDescription()
         result_indicator_description.result_indicator = model
-        self.add_narrative_105(element.text,result_indicator_description)
+        self.add_narrative(element,result_indicator_description)
         #store element 
         return element
 
@@ -442,7 +417,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
         indicator_baseline_comment.result_indicator = model
-        self.add_narrative_105(element.text,indicator_baseline_comment)
+        self.add_narrative(element,indicator_baseline_comment)
         return element
 
 
@@ -453,7 +428,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         period_target_comment = models.ResultIndicatorPeriodTargetComment()
         period_target_comment.result_indicator_period = model
-        self.add_narrative_105(element.text,period_target_comment)
+        self.add_narrative(element,period_target_comment)
         return element
 
 
@@ -464,7 +439,7 @@ class Parse(IATI_201_Parser):
         model = self.get_func_parent_model()
         period_actual_comment = models.ResultIndicatorPeriodActualComment()
         period_actual_comment.result_indicator_period = model
-        self.add_narrative_105(element.text,period_actual_comment)
+        self.add_narrative(element,period_actual_comment)
         return element
 
 
