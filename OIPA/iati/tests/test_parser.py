@@ -138,6 +138,9 @@ class ActivityTestCase(ParserSetupTestCase):
         self.iati_201.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en" # ISO 639-1:2002
         # print(etree.tostring(self.iati_201, pretty_print=True))
 
+        activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', activity)
+
     def test_activity_201(self):
         """
         Check complete element is parsed correctly
@@ -175,56 +178,84 @@ class ActivityTestCase(ParserSetupTestCase):
         self.assertTrue(activity.default_lang == "en")
         self.assertTrue(activity.iati_standard_version.code == "2.01")
 
-    def test_activity_no_last_updated_datetime(self):
+
+    def check_parsed(self, old_activity, new_activity, overwrites=True):
         """
-        case 1: new activity.last_updated_datetime >= old activity.last_updated_datetime => parse new activity
-        case 2: new activity.last_updated_datetime < old activity.last_updated_datetime => Don't parse new activity
-        case 3: new activity.last_updated_datetime is absent and old activity.last_updated_datetime is present => Don't parse
-        case 4: new activity.last_updated_datetime is absent and old activity.last_updated_datetime is absent => Parse
+        helper method for 4 tests below, which determine whether the activity should be parsed or not
+        """
+        self.parser_201.iati_activities__iati_activity(old_activity)
+        self.parser_201.get_model('Activity').save()
+
+        if overwrites: 
+            self.parser_201.iati_activities__iati_activity(new_activity)
+            self.parser_201.get_model('Activity').save()
+        else:
+            with self.assertRaises(Exception):
+                self.parser_201.iati_activities__iati_activity(new_activity)
+                self.parser_201.get_model('Activity').save()
+
+        # activity = self.parser_201.get_model('Activity')
+
+        # if overwrites:
+        #     self.assertTrue(activity.id == new_activity.xpath('iati-identifier/text()')[0])
+        # else:
+        #     print(activity.id)
+        #     print(old_activity.xpath('iati-identifier/text()')[0])
+        #     self.assertTrue(activity.id == old_activity.xpath('iati-identifier/text()')[0] )
+
+    def test_activity_greater_last_updated_time_should_parse(self):
+        """
+        case 1: new activity.last-updated-datetime >= old activity.last-updated-datetime => parse new activity
         """
         old_activity = copy_xml_tree(self.iati_201).find('iati-activity')
         new_activity = copy_xml_tree(self.iati_201).find('iati-activity')
 
-        iati_identifier = new_activity.find('iati-identifier')
-        iati_identifier.text = self.alt_iati_identifier
-
-        def check_parsed(old_activity, new_activity, overwrites=True):
-            self.parser_201.iati_activities__iati_activity(old_activity)
-            self.parser_201.iati_activities__iati_activity(new_activity)
-
-            activity = self.parser_201.get_model('Activity')
-
-            if overwrites:
-                self.assertTrue(activity.id == new_activity.xpath('iati-identifier/text()')[0])
-            else:
-                self.assertTrue(activity.id == old_activity.xpath('iati-identifier/text()')[0] )
-
-
         # case 1 (greater)
-        old_activity.attrib["last_updated_datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
-        new_activity.attrib["last_updated_datetime"] = datetime.datetime.now().isoformat()
-        check_parsed(old_activity, new_activity, True)
+        old_activity.attrib["last-updated-datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
+        new_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
+        self.check_parsed(old_activity, new_activity, True)
 
         # case 1 (equivalence)
         time = datetime.datetime.now().isoformat()
-        old_activity.attrib["last_updated_datetime"] = time
-        new_activity.attrib["last_updated_datetime"] = time
-        check_parsed(old_activity, new_activity, True)
+        old_activity.attrib["last-updated-datetime"] = time
+        new_activity.attrib["last-updated-datetime"] = time
+        self.check_parsed(old_activity, new_activity, True)
+
+    def test_activity_smaller_last_updated_time_should_not_parse(self):
+        """
+        case 2: new activity.last-updated-datetime < old activity.last-updated-datetime => Don't parse new activity
+        """
+        old_activity = copy_xml_tree(self.iati_201).find('iati-activity')
+        new_activity = copy_xml_tree(self.iati_201).find('iati-activity')
 
         # case 2
-        old_activity.attrib["last_updated_datetime"] = datetime.datetime.now().isoformat()
-        new_activity.attrib["last_updated_datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
-        check_parsed(old_activity, new_activity, False)
+        old_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
+        new_activity.attrib["last-updated-datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
+        self.check_parsed(old_activity, new_activity, False)
+
+    def test_activity_last_updated_time_absent_old_activity_present_should_not_parse(self):
+        """
+        case 3: new activity.last-updated-datetime is absent and old activity.last-updated-datetime is present => Don't parse
+        """
+        old_activity = copy_xml_tree(self.iati_201).find('iati-activity')
+        new_activity = copy_xml_tree(self.iati_201).find('iati-activity')
 
         # case 3
-        old_activity.attrib["last_updated_datetime"] = datetime.datetime.now().isoformat()
-        new_activity.attrib["last_updated_datetime"] = None
-        check_parsed(old_activity, new_activity, False)
+        old_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
+        del new_activity.attrib["last-updated-datetime"]
+        self.check_parsed(old_activity, new_activity, False)
+
+    def test_activity_last_updated_time_absent_old_activity_absent_should_parse(self):
+        """
+        case 4: new activity.last-updated-datetime is absent and old activity.last-updated-datetime is absent => Parse
+        """
+        old_activity = copy_xml_tree(self.iati_201).find('iati-activity')
+        new_activity = copy_xml_tree(self.iati_201).find('iati-activity')
 
         # case 4
-        old_activity.attrib["last_updated_datetime"] = None
-        new_activity.attrib["last_updated_datetime"] = None
-        check_parsed(old_activity, new_activity, True)
+        del old_activity.attrib["last-updated-datetime"]
+        del new_activity.attrib["last-updated-datetime"]
+        self.check_parsed(old_activity, new_activity, True)
 
     def test_activity_linked_data_uri_inherited(self):
         """
@@ -238,8 +269,8 @@ class ActivityTestCase(ParserSetupTestCase):
         iati_activity = iati_201.find('iati-activity')
         del iati_activity.attrib['linked-data-uri']
 
-        self.parser_201.iati_activities__iati_activity(iati_201)
-        activity = self._get_activity(self.iati_identifier)
+        self.parser_201.iati_activities__iati_activity(iati_activity)
+        activity = self.parser_201.get_model('Activity')
 
         self.assertTrue(activity.linked_data_uri == linked_data_default)
 
@@ -251,9 +282,6 @@ class ActivityTestCase(ParserSetupTestCase):
         iati_201 = copy_xml_tree(self.iati_201)
         iati_identifier = iati_201.find('iati-activity').find('iati-identifier')
 
-        activity = iati_factory.ActivityFactory.build()
-        
-        self.parser_201.register_model('Activity', activity)
         self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
         activity = self.parser_201.get_model('Activity')
 
@@ -262,11 +290,9 @@ class ActivityTestCase(ParserSetupTestCase):
         # empty iati-idenifier should throw exception
         iati_identifier.text = ""
 
-        self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
-        activity = self.parser_201.get_model('Activity')
-
         with self.assertRaises(Exception):
-            activity.save()
+            self.parser_201.iati_activities__iati_activity__iati_identifier(iati_identifier)
+
 
     def test_capital_spend(self):
         """
@@ -298,9 +324,7 @@ class ActivityTestCase(ParserSetupTestCase):
         iati_activity.append(E('conditions', attached=attached))
         conditions = iati_activity.find('conditions')
         
-        activity = iati_factory.ActivityFactory.build(
-            iati_standard_version_id=codelist_models.Version.objects.get(code="2.01")
-        )
+        activity = build_activity(version="2.01")
 
         self.parser_201.register_model('Activity', activity)
         self.parser_201.iati_activities__iati_activity__conditions(conditions)
@@ -321,6 +345,8 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_201.register_model('Activity', activity)
         self.parser_201.iati_activities__iati_activity__conditions(conditions)
         activity = self.parser_201.get_model('Activity')
+        print(activity)
+        print(activity.last_updated_datetime)
         activity.save()
 
         self.assertTrue(activity.has_conditions == False)
@@ -329,9 +355,6 @@ class ActivityTestCase(ParserSetupTestCase):
         code = '1' # Pipeline/identification
 
         activity_status = E('activity-status', code=code)
-        activity = build_activity(version="2.01")
-
-        self.parser_201.register_model('Activity', activity)
         self.parser_201.iati_activities__iati_activity__activity_status(activity_status)
 
         activity = self.parser_201.get_model('Activity')
@@ -344,14 +367,23 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         code = '1' # Global
 
-        activity_status = E('activity-scope', code=code)
-        activity = build_activity(version="2.01")
-
-        self.parser_201.register_model('Activity', activity)
-        self.parser_201.iati_activities__iati_activity__activity_scope(activity_status)
+        activity_scope = E('activity-scope', code=code)
+        self.parser_201.iati_activities__iati_activity__activity_scope(activity_scope)
 
         activity = self.parser_201.get_model('Activity')
         self.assertTrue(activity.scope.code == code)
+
+    def test_collaboration_type(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        """
+        code = '1' # Global
+
+        collaboration_type = E('collaboration-type', code=code)
+        self.parser_201.iati_activities__iati_activity__collaboration_type(collaboration_type)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.collaboration_type.code == code)
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
@@ -1319,7 +1351,7 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
 
         self.activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', self.activity)
-        self.parser_105.register_model('CountryBudgetItem', self.activity)
+        self.parser_105.register_model('CountryBudgetItem', self.test_country_budget_items)
 
     def test_country_budget_items_201(self):
         """
@@ -1337,36 +1369,95 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         """
         budget_item = E('budget-item', code="1.1.1", percentage="50.21") # Executive - executive
         self.parser_201.iati_activities__iati_activity__country_budget_items__budget_item(budget_item)
-        budget_item = self.parser_201.get_model('CountryBudgetItem')
+        budget_item = self.parser_201.get_model('BudgetItem')
 
-        self.assertTrue(budget_item.activity == self.activity)
+        self.assertTrue(budget_item.code.code == "1.1.1")
         self.assertTrue(budget_item.country_budget_item == self.test_country_budget_items)
-        self.assertTrue(budget_item.percentage == self.attrs['percentage'])
+        self.assertTrue(budget_item.percentage == "50.21")
 
     def test_budget_item_description_201(self):
         """
         Along with its narrative(s)
         """
+        budget_item = iati_factory.BudgetItemFactory.build()
+        self.parser_201.register_model('BudgetItem', budget_item)
+
         budget_item_description = E('description', code="1.1.1", percentage="50.21") # Executive - executive
-        self.parser_201.iati_activities__iati_activity__country_budget_item_descriptions__budget_item_description(budget_item_description)
-        budget_item_description = self.parser_201.get_model('CountryBudgetItemDescription')
+        self.parser_201.iati_activities__iati_activity__country_budget_items__budget_item__description(budget_item_description)
+        budget_item_description = self.parser_201.get_model('BudgetItemDescription')
 
-        self.assertTrue(budget_item_description.activity == self.activity)
-        self.assertTrue(budget_item_description.country_budget_item_description == self.test_country_budget_item_descriptions)
-        self.assertTrue(budget_item_description.percentage == self.attrs['percentage'])
+        self.assertTrue(budget_item_description.budget_item == budget_item)
 
-        self.parser_201.iati_activities__iati_activity__country_budget_item_descriptions(self.narrative)
+        self.parser_201.iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self.narrative)
         narrative = self.parser_201.get_model('Narrative')
-        self.assertTrue(narrative.parent_object == country_budget_item_description)
+        self.assertTrue(narrative.parent_object == budget_item_description)
 
+    def test_budget_item_description_105(self):
+        budget_item = iati_factory.BudgetItemFactory.build()
+        self.parser_105.register_model('BudgetItem', budget_item)
 
-    def test_country_budget_items_105(self):
-        self.country_budget_items.attrib['vocabulary'] = 'DAC' # should map to 1
-        self.parser_105.iati_activities__iati_activity__country_budget_items(self.country_budget_items)
-        country_budget_items = self.parser_105.get_model('CountryBudgetItem')
+        budget_item_description = E('description', "some text", code="1.1.1", percentage="50.21") # Executive - executive
+        self.parser_105.iati_activities__iati_activity__country_budget_items__budget_item__description(budget_item_description)
+        budget_item_description = self.parser_105.get_model('BudgetItemDescription')
 
-        self.assertTrue(country_budget_items.activity == self.activity)
-        self.assertTrue(country_budget_items.country_budget_items.code == self.attrs['code'])
-        self.assertTrue(country_budget_items.percentage == self.attrs['percentage'])
-        self.assertTrue(country_budget_items.vocabulary.code == self.attrs['vocabulary'])
+        self.assertTrue(budget_item_description.budget_item == budget_item)
 
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == budget_item_description)
+
+class PolicyMarkerTestCase(ParserSetupTestCase):
+    """
+    1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "code": "1", # Gender Equality
+            "vocabulary": "1", # OECD-DAC CRS
+            "significance": "1", # Significant objective
+        }
+
+        self.activity_policy_marker = E('policy-marker', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+    def test_activity_policy_marker_201(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_201.iati_activities__iati_activity__policy_marker(self.activity_policy_marker)
+        activity_policy_marker = self.parser_201.get_model('ActivityPolicyMarker')
+
+        self.assertTrue(activity_policy_marker.activity == self.activity)
+        self.assertTrue(activity_policy_marker.code.code == self.attrs['code'])
+        self.assertTrue(activity_policy_marker.significance.code == self.attrs['significance'])
+        self.assertTrue(activity_policy_marker.vocabulary.code == self.attrs['vocabulary'])
+
+        self.parser_201.iati_activities__iati_activity__policy_marker__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == activity_policy_marker)
+
+    def test_activity_policy_marker_105(self):
+        """
+        Should perform the (less than ideal) mapping from 105 Vocabulary to 201 PolicyMarkerVocabulary
+        TODO: custom mappings
+        see http://iatistandard.org/201/activity-standard/iati-activities/iati-activity/policy-marker/narrative/
+        """
+        self.activity_policy_marker.attrib['vocabulary'] = 'DAC'
+        self.activity_policy_marker.text = 'Some description'
+
+        self.parser_105.iati_activities__iati_activity__policy_marker(self.activity_policy_marker)
+        activity_policy_marker = self.parser_105.get_model('ActivityPolicyMarker')
+
+        self.assertTrue(activity_policy_marker.activity == self.activity)
+        self.assertTrue(activity_policy_marker.code.code == self.attrs['code'])
+        self.assertTrue(activity_policy_marker.significance.code == self.attrs['significance'])
+        self.assertTrue(activity_policy_marker.vocabulary.code == self.attrs['vocabulary'])
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == activity_policy_marker)

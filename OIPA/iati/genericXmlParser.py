@@ -41,8 +41,6 @@ class XMLParser(object):
     def load_and_parse(self, root):
         
         self.root = root
-        print root.attrib.get('version')
-        #exit
         self.parse(root)
         self.save_all_models()
 
@@ -179,8 +177,6 @@ class XMLParser(object):
         log_entry.location = xpath
         log_entry.error_time = datetime.datetime.now()
         log_entry.save()
-
-
 
     def sendErrorMail(self,toAddress, errorString):
         send_mail('error mail!', errorString, 'error@oipa.nl',[toAddress], fail_silently=False)

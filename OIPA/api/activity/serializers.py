@@ -212,16 +212,16 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
             model = iati.models.PolicySignificance
             fields = ('code',)
 
-    class VocabularySerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
+    # class VocabularySerializer(serializers.ModelSerializer):
+    #     code = serializers.CharField()
 
-        class Meta:
-            model = iati.models.Vocabulary
-            fields = ('code',)
+    #     class Meta:
+    #         model = iati.models.Vocabulary
+    #         fields = ('code',)
 
 
 
-    vocabulary = VocabularySerializer(serializers.ModelSerializer)
+    # vocabulary = VocabularySerializer(serializers.ModelSerializer)
     code = serializers.CharField(source='policy_marker.code')
     significance = PolicySignificanceSerializer(source='policy_significance')
     narratives = NarrativeSerializer(source="*")
@@ -288,12 +288,12 @@ class RelatedActivitySerializer(FilterableModelSerializer):
         )
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
-    class VocabularySerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
+    # class VocabularySerializer(serializers.ModelSerializer):
+    #     code = serializers.CharField()
 
-        class Meta:
-            model = iati.models.Vocabulary
-            fields = ('code',)
+    #     class Meta:
+    #         model = iati.models.Vocabulary
+    #         fields = ('code',)
 
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
@@ -301,7 +301,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         decimal_places=2,
         coerce_to_string=False
     )
-    vocabulary = VocabularySerializer()
+    # vocabulary = VocabularySerializer()
 
     class Meta:
         model = iati.models.ActivitySector

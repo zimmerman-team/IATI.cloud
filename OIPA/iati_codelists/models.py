@@ -1,5 +1,5 @@
 from django.db import models
-from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, Vocabulary, BudgetIdentifierVocabulary
+from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, BudgetIdentifierVocabulary
 
 class Language(models.Model):
     code = models.CharField(primary_key=True, max_length=2)

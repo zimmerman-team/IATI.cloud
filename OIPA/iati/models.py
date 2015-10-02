@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from iati_codelists.models import *
-from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, Vocabulary, BudgetIdentifierVocabulary
+from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, BudgetIdentifierVocabulary
 
 class Narrative(models.Model):
     content_type = models.ForeignKey(
@@ -42,7 +42,9 @@ class Activity(models.Model):
 
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
-    last_updated_datetime = models.CharField(max_length=100, default="")
+    # last_updated_datetime = models.CharField(max_length=100, default="")
+    # value_date = models.DateField(null=True)
+    last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, default="")
     activity_status = models.ForeignKey(
@@ -87,7 +89,7 @@ class Activity(models.Model):
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
-    has_conditions = models.BooleanField(default=True) # @attached on iati-conditions
+    has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
 
     objects = ActivityQuerySet.as_manager()
 
@@ -160,14 +162,14 @@ class ActivityParticipatingOrganisation(models.Model):
         return "%s: %s - %s" % (self.activity.id, self.organisation, self.name)
 
 class ActivityPolicyMarker(models.Model):
-    policy_marker = models.ForeignKey(PolicyMarker, null=True, default=None,related_name='policy_marker_related')
-    narratives = GenericRelation(Narrative)
     activity = models.ForeignKey(Activity)
-    vocabulary = models.ForeignKey(Vocabulary, null=True, default=None)
-    policy_significance = models.ForeignKey(
+    code = models.ForeignKey(PolicyMarker,related_name='policy_marker_related')
+    vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
+    significance = models.ForeignKey(
         PolicySignificance,
         null=True,
         default=None)
+    narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
         return "%s - %s - %s" % (self.activity.id, self.policy_marker, self.policy_significance)
@@ -204,7 +206,8 @@ class CountryBudgetItem(models.Model):
 
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
-    code = models.CharField(max_length=50, default="")
+    code = models.ForeignKey(BudgetIdentifier)
+    # code = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
 
 class BudgetItemDescription(models.Model):

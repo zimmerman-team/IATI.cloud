@@ -1,4 +1,6 @@
 import iati
+from iati_codelists import models as codelist_models
+from iati_vocabulary import models as vocabulary_models
 import geodata
 from factory import SubFactory
 from factory.django import DjangoModelFactory
@@ -242,10 +244,24 @@ class RecipientCountryFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityRecipientCountry
 
-    id = 1
+    id = "1.1.1"
     activity = SubFactory(ActivityFactory)
     country = SubFactory(CountryFactory)
     percentage = 50
+
+class BudgetIdentifierVocabularyFactory(NoDatabaseFactory):
+    class Meta:
+        model = codelist_models.BudgetIdentifierVocabulary
+
+    code = "1"
+    name = "IATI"
+
+class BudgetIdentifierFactory(NoDatabaseFactory):
+    class Meta:
+        model = codelist_models.BudgetIdentifier
+
+    code = "1"
+    name = "IATI"
 
 class CountryBudgetItemFactory(NoDatabaseFactory):
     class Meta:
@@ -253,9 +269,16 @@ class CountryBudgetItemFactory(NoDatabaseFactory):
 
     id = 1
     activity = SubFactory(ActivityFactory)
-    vocabulary = "1"
-    percentage = 50
+    vocabulary = SubFactory(BudgetIdentifierVocabularyFactory)
+    percentage = 50.2
 
+class BudgetItemFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.BudgetItem
+
+    code = SubFactory(BudgetIdentifierFactory) # Executive - executive
+    country_budget_item = SubFactory(CountryBudgetItemFactory)
+    percentage = 50.2
 
 class PolicyMarkerFactory(NoDatabaseFactory):
     class Meta:
@@ -265,12 +288,12 @@ class PolicyMarkerFactory(NoDatabaseFactory):
     name = 'Gender Equality'
 
 
-class VocabularyFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.Vocabulary
+# class VocabularyFactory(NoDatabaseFactory):
+#     class Meta:
+#         model = iati.models.Vocabulary
 
-    code = 1
-    name = 'OECD DAC CRS'
+#     code = 1
+#     name = 'OECD DAC CRS'
 
 
 class PolicySignificanceFactory(NoDatabaseFactory):
@@ -282,15 +305,15 @@ class PolicySignificanceFactory(NoDatabaseFactory):
     description = 'test description'
 
 
-class ActivityPolicyMarkerFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.ActivityPolicyMarker
+# class ActivityPolicyMarkerFactory(NoDatabaseFactory):
+#     class Meta:
+#         model = iati.models.ActivityPolicyMarker
 
-    policy_marker = PolicyMarkerFactory.build()
-    alt_policy_marker = 'alt_policy_marker'
-    vocabulary = VocabularyFactory.build()
-    policy_significance = PolicySignificanceFactory.build()
-    activity = ActivityFactory.build()
+#     policy_marker = PolicyMarkerFactory.build()
+#     alt_policy_marker = 'alt_policy_marker'
+#     vocabulary = VocabularyFactory.build()
+#     policy_significance = PolicySignificanceFactory.build()
+#     activity = ActivityFactory.build()
 
 
 class RegionVocabularyFactory(NoDatabaseFactory):

@@ -21,14 +21,14 @@ class ActivityPolicyMarkerSerializer(serializers.RelatedField,DynamicFieldsModel
             model = iati.models.PolicySignificance
             fields = ('code',)
 
-    class VocabularySerializer(serializers.ModelSerializer):
-        code = serializers.CharField()
+    # class VocabularySerializer(serializers.ModelSerializer):
+    #     code = serializers.CharField()
 
-        class Meta:
-            model = iati.models.Vocabulary
-            fields = ('code',)
+    #     class Meta:
+    #         model = iati.models.Vocabulary
+    #         fields = ('code',)
 
-    vocabulary = VocabularySerializer(serializers.ModelSerializer)
+    # vocabulary = VocabularySerializer(serializers.ModelSerializer)
     code = PolicyMarkerSerializer(source='policy_marker')
     significance = PolicySignificanceSerializer(source='policy_significance')
     narative = serializers.CharField(source='alt_policy_marker')

@@ -147,6 +147,9 @@ class Parse(XMLParser):
         """
         pass
 
+    def _normalize(self, attr):
+        return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+
     def get_or_create_organisation(self, elem, name, is_reporting_org=False):
         """
         Add organisation business requirements:
@@ -176,7 +179,7 @@ class Parse(XMLParser):
         # requirement 2.2
         original_ref = ref
         # requirement 2.1
-        ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+        ref = self._normalize(ref)
 
         org_type = None
         if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
@@ -201,8 +204,6 @@ class Parse(XMLParser):
         organisation.original_ref = original_ref
         organisation.type = org_type
         organisation.name = name
-
-        print('registering organisation')
 
         self.register_model('Organisation', organisation)
 
@@ -237,52 +238,57 @@ class Parse(XMLParser):
 
     tag:iati-activity'''
     def iati_activities__iati_activity(self,element):
-        
         defaults = {
             'default_lang': 'en',             
             'hierarchy': 1,             
         }
 
+        id = self._normalize(element.xpath('iati-identifier/text()')[0])
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
+        hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
+        last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
+        linked_data_uri = element.attrib.get('linked-data-uri')
+        default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
+
+        if not id: raise self.RequiredFieldError("id", "activity: must contain id")
+        
+        old_activity = self.get_or_none(models.Activity, id=id)
+
+        if old_activity:
+            if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
+                raise self.ValidationError("activity", "duplicate activity: last_updated_time is less than existing activity")
+            if not last_updated_datetime and old_activity.last_updated_datetime:
+                raise self.ValidationError("activity", "duplicate activity: last_updated_time is not present, but is present on duplicate activity")
+
+
         activity = models.Activity()
-        activity.default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
-        activity.hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
+        activity.id = id
+        activity.default_lang = default_lang
+        activity.hierarchy = hierarchy
         activity.xml_source_ref = self.iati_source.ref
-        activity.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        activity.linked_data_uri = element.attrib.get('linked-data-uri')
-        activity.id = element.xpath('iati-identifier/text()')[0].replace(":", "-").replace(" ", "").replace("/", "-").strip(' \t\n\r')
-
-        from lxml import etree
-        print(etree.tostring(element, pretty_print=True))
-
-        # foreign keys
+        if last_updated_datetime:
+            activity.last_updated_datetime = last_updated_datetime
+        activity.linked_data_uri = linked_data_uri
+        activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
 
-        if 'default-currency' in element.attrib:
-            activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
-        # get_codelist(codelist_models.Currency, )
-        # activity.default_currency = codelist_models.Currencyget()element.attrib.get('default-currency')
-
-        # activity.default_currency = self.cached_db_call(models.Currency, element.attrib.get('default-currency'))
-        # activity.iati_standard_version_id = self.cached_db_call(models.Version, self.VERSION, createNew = True)
-        print(activity.default_currency)
-        
         # for later reference
         self.iati_identifier = activity.id
         self.default_lang = activity.default_lang
 
-        # activity.save()
-        # self.set_func_model(activity)
         self.register_model('Activity', activity)
-
-
         return element
 
     '''atributes:
 
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
+        iati_identifier = element.text
+        
+        if not iati_identifier: raise self.RequiredFieldError("text", "iati_identifeir: must contain text")
+
         activity = self.get_model('Activity')
-        activity.iati_identifier = element.text
+        activity.iati_identifier = iati_identifier
         self.register_model('Activity', activity)
         return element
 
@@ -293,19 +299,16 @@ class Parse(XMLParser):
 
     tag:reporting-org'''
     def iati_activities__iati_activity__reporting_org(self,element):
-        activity = self.get_model('Activity')
-
         ref = element.attrib.get('ref')
-        org_type_code = element.attrib.get('type')
+
+        if not ref: raise self.RequiredFieldError("ref", "reporting-org: ref must be specified")
+
+        normalized_ref = self._normalize(ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         secondary_reporter = element.attrib.get('secondary-reporter', False) # TODO: should this be false by default?
+        organisation = self.get_or_none(models.Organisation, code=element.attrib.get('ref'))
 
-        if not ref: raise self.RequiredFieldError("ref")
-
-        normalized_ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
-
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=org_type_code)
-        organisation = self.get_or_none(models.Organisation, code=ref)
-
+        activity = self.get_model('Activity')
         reporting_organisation = models.ActivityReportingOrganisation()
         reporting_organisation.ref = ref
         reporting_organisation.normalized_ref = normalized_ref
@@ -334,22 +337,17 @@ class Parse(XMLParser):
 
     tag:participating-org'''
     def iati_activities__iati_activity__participating_org(self,element):
-        activity = self.get_model('Activity')
-
         ref = element.attrib.get('ref')
-        org_type_code = element.attrib.get('type')
-        role_code = element.attrib.get('role')
+        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
-
-        normalized_ref = ref.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
-
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=org_type_code)
-        role = self.get_or_none(codelist_models.OrganisationRole, code=role_code)
-        organisation = self.get_or_none(models.Organisation, code=ref)
-
+        if not organisation: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
         if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, code=element.attrib.get('ref'))
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+
+        activity = self.get_model('Activity')
         participating_organisation = models.ActivityParticipatingOrganisation()
         participating_organisation.ref = ref
         participating_organisation.normalized_ref = normalized_ref
@@ -676,7 +674,6 @@ class Parse(XMLParser):
 
     tag:recipient-country'''
     def iati_activities__iati_activity__recipient_country(self,element):
-        print(element.attrib.get('code'))
 
         country = self.get_or_none(Country, code=element.attrib.get('code'))
         percentage = element.attrib.get('percentage')
@@ -884,7 +881,6 @@ class Parse(XMLParser):
             latlong = text.strip().split(' ')
             point = GEOSGeometry(Point(float(latlong[0]), float(latlong[1])), srid=4326)
         except Exception as e:
-            print(e)
             raise self.ValidationError("latlong", "either lat or long is not present")
 
         location = self.get_model('Location')
@@ -967,7 +963,7 @@ class Parse(XMLParser):
 
     tag:country-budget-items'''
     def iati_activities__iati_activity__country_budget_items(self,element):
-        vocabulary = self.get_or_none(vocabulary_models.BudgetIdentifierVocabulary) 
+        vocabulary = self.get_or_none(vocabulary_models.BudgetIdentifierVocabulary, code=element.attrib.get('vocabulary')) 
 
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "country-budget-items: vocabulary is required")
 
@@ -976,7 +972,7 @@ class Parse(XMLParser):
         country_budget_item.activity = activity
         country_budget_item.vocabulary = vocabulary
 
-        self.register_model('CountryBudgetItem', activity_sector)
+        self.register_model('CountryBudgetItem', country_budget_item)
         return element
 
     '''atributes:
@@ -985,7 +981,8 @@ class Parse(XMLParser):
 
     tag:budget-item'''
     def iati_activities__iati_activity__country_budget_items__budget_item(self,element):
-        code = element.attrib.get('code')
+        # TODO: Add custom vocabularies
+        code = self.get_or_none(codelist_models.BudgetIdentifier, code=element.attrib.get('code')) 
         percentage = element.attrib.get('percentage')
 
         if not code: raise self.RequiredFieldError("code", "country-budget: code is required")
@@ -996,18 +993,18 @@ class Parse(XMLParser):
         budget_item.code = code
         budget_item.percentage = percentage
 
-        self.register_model('BudgetItem', activity_sector)
+        self.register_model('BudgetItem', budget_item)
         return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self,element):
-        budget_item = self.get_model('Budgetitem')
+        budget_item = self.get_model('BudgetItem')
         budget_item_description = models.BudgetItemDescription()
         budget_item_description.budget_item = budget_item
 
-        self.register_model('BudgetItemDescription', budget_item)
+        self.register_model('BudgetItemDescription', budget_item_description)
         return element
 
     '''atributes:
@@ -1015,7 +1012,7 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self,element):
         budget_item_description = self.get_model('BudgetItemDescription')
-        self.add_narrative(element, activity_date)
+        self.add_narrative(element, budget_item_description)
         return element
 
     '''atributes:
@@ -1025,23 +1022,30 @@ class Parse(XMLParser):
 
     tag:policy-marker'''
     def iati_activities__iati_activity__policy_marker(self,element):
-        model = self.get_func_parent_model()
-         
+        # TODO: custom vocabulary (other than 1)
+        code = self.get_or_none(codelist_models.PolicyMarker, code=element.attrib.get('code')) 
+        vocabulary = self.get_or_none(vocabulary_models.PolicyMarkerVocabulary, code=element.attrib.get('vocabulary')) 
+        significance = self.get_or_none(codelist_models.PolicySignificance, code=element.attrib.get('significance')) 
+
+        if not code: raise self.RequiredFieldError("code", "policy-marker: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
+
+        activity = self.get_model('Activity')
         activity_policy_marker = models.ActivityPolicyMarker()
-        activity_policy_marker.activity = model
-        activity_policy_marker.policy_marker = self.cached_db_call(models.PolicyMarker,element.attrib.get('code'))
-        activity_policy_marker.vocabulary = self.cached_db_call(models.Vocabulary,element.attrib.get('vocabulary'))
-        activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
-        activity_policy_marker.code = element.attrib.get('code')
-        activity_policy_marker.save()
+        activity_policy_marker.activity = activity
+        activity_policy_marker.code = code
+        activity_policy_marker.vocabulary = vocabulary
+        activity_policy_marker.significance = significance
+
+        self.register_model('ActivityPolicyMarker', activity_policy_marker)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__policy_marker__narrative(self, element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        activity_policy_marker = self.get_model('ActivityPolicyMarker')
+        self.add_narrative(element, activity_policy_marker)
         return element
 
     '''atributes:
@@ -1049,8 +1053,13 @@ class Parse(XMLParser):
 
     tag:collaboration-type'''
     def iati_activities__iati_activity__collaboration_type(self,element):
-        model = self.get_func_parent_model()
-        model.collaboration_type = self.cached_db_call_no_version(models.CollaborationType,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.CollaborationType, code=element.attrib.get('code')) 
+
+        if not code: raise self.RequiredFieldError("code", "collaboration-type: code is required")
+
+        activity = self.get_model('Activity')
+        activity.collaboration_type = code
+        self.register_model('Activity', activity)
          
         return element
 
@@ -1059,8 +1068,13 @@ class Parse(XMLParser):
 
     tag:default-flow-type'''
     def iati_activities__iati_activity__default_flow_type(self,element):
-        model = self.get_func_parent_model()
-        model.default_flow_type = self.cached_db_call_no_version(models.FlowType,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.FlowType, code=element.attrib.get('code')) 
+
+        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+
+        activity = self.get_model('Activity')
+        activity.default_flow_type = code
+        self.register_model('Activity', activity)
          
         return element
 
@@ -1069,8 +1083,13 @@ class Parse(XMLParser):
 
     tag:default-finance-type'''
     def iati_activities__iati_activity__default_finance_type(self,element):
-        model = self.get_func_parent_model()
-        model.default_finance_type  = self.cached_db_call_no_version(models.FinanceType,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.FinanceType, code=element.attrib.get('code')) 
+
+        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+
+        activity = self.get_model('Activity')
+        activity.default_finance_type = code
+        self.register_model('Activity', activity)
          
         return element
 
@@ -1079,8 +1098,13 @@ class Parse(XMLParser):
 
     tag:default-aid-type'''
     def iati_activities__iati_activity__default_aid_type(self,element):
-        model = self.get_func_parent_model()
-        model.default_aid_type  = self.cached_db_call_no_version(models.AidType,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.AidType, code=element.attrib.get('code')) 
+
+        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+
+        activity = self.get_model('Activity')
+        activity.default_aid_type = code
+        self.register_model('Activity', activity)
          
         return element
 
@@ -1089,8 +1113,13 @@ class Parse(XMLParser):
 
     tag:default-tied-status'''
     def iati_activities__iati_activity__default_tied_status(self,element):
-        model = self.get_func_parent_model()
-        model.default_tied_status = self.cached_db_call_no_version(models.TiedStatus,element.attrib.get('code'))
+        code = self.get_or_none(codelist_models.TiedStatus, code=element.attrib.get('code')) 
+
+        if not code: raise self.RequiredFieldError("code", "default-tied-status: code is required")
+
+        activity = self.get_model('Activity')
+        activity.default_aid_type = code
+        self.register_model('Activity', activity)
          
         return element
 

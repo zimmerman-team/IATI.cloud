@@ -33,15 +33,15 @@ class SectorVocabulary(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
-class Vocabulary(models.Model):
-    code = models.CharField(primary_key=True, max_length=10)
-    name = models.CharField(max_length=140)
-    description = models.TextField(default="")
-    codelist_iati_version = models.CharField(max_length=4)
-    codelist_successor = models.CharField(max_length=100, null=True)
+# class Vocabulary(models.Model):
+#     code = models.CharField(primary_key=True, max_length=10)
+#     name = models.CharField(max_length=140)
+#     description = models.TextField(default="")
+#     codelist_iati_version = models.CharField(max_length=4)
+#     codelist_successor = models.CharField(max_length=100, null=True)
 
-    def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+#     def __unicode__(self,):
+#         return "%s - %s" % (self.code, self.name)
 
 class BudgetIdentifierVocabulary(models.Model):
     code = models.CharField(primary_key=True, max_length=40)

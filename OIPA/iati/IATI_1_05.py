@@ -15,6 +15,16 @@ class Parse(IATI_201_Parser):
         "end-actual": "4",
     }
 
+    # mapping from Vocabulary 1.05 to SectorVocabulary 2.01
+    # this mapping is very unclear
+    sector_vocabulary_mapping = {
+        'DAC': "1",
+        'DAC-3': "1",
+        'RO': "2",
+        'RO2': "2",
+    }
+
+    # mapping from Vocabulary 1.05 to PolicyMarkerVocabulary 2.01
     sector_vocabulary_mapping = {
         'ADT': "6",
         'COFOG': "3",
@@ -27,6 +37,8 @@ class Parse(IATI_201_Parser):
         'RO2': "98",
         'WB': None, # has no mapping
     }
+
+
 
     transaction_type_trans = {
         'IF': 1,
@@ -262,7 +274,7 @@ class Parse(IATI_201_Parser):
     tag:description'''
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self,element):
         super(Parse, self).iati_activities__iati_activity__country_budget_items__budget_item__description(element)
-        budget_item_description = self.get_model('BudgetitemDescription')
+        budget_item_description = self.get_model('BudgetItemDescription')
         self.add_narrative(element, budget_item_description)
         return element
 
@@ -273,16 +285,15 @@ class Parse(IATI_201_Parser):
 
     tag:policy-marker'''
     def iati_activities__iati_activity__policy_marker(self,element):
-        model = self.get_func_parent_model()
-         
-        activity_policy_marker = models.ActivityPolicyMarker()
-        activity_policy_marker.activity = model
-        activity_policy_marker.policy_marker = self.cached_db_call(models.PolicyMarker,element.attrib.get('code'))
-        activity_policy_marker.vocabulary = self.cached_db_call(models.Vocabulary,element.attrib.get('vocabulary'))
-        activity_policy_marker.policy_significance = self.cached_db_call(models.PolicySignificance,element.attrib.get('significance'))
-        activity_policy_marker.code = element.attrib.get('code')
-        self.add_narrative(element,activity_policy_marker)
-        activity_policy_marker.save()
+        vocabulary = self.sector_vocabulary_mapping.get(element.attrib.get('vocabulary'))
+
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
+
+        element.attrib['vocabulary'] = vocabulary
+        super(Parse, self).iati_activities__iati_activity__policy_marker(element)
+
+        policy_marker = self.get_model('ActivityPolicyMarker')
+        self.add_narrative(element, policy_marker)
         return element
 
     '''atributes:
