@@ -6,11 +6,26 @@ from factory import SubFactory
 from factory.django import DjangoModelFactory
 
 
+
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):
         return 0
 
+class ActivityFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Activity
+
+    id = 'IATI-0001'
+    iati_identifier = 'IATI-0001'
+
+class RelatedActivityFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.RelatedActivity
+
+    related_activity = SubFactory(ActivityFactory)
+    current_activity = SubFactory(ActivityFactory, id="IATI-0002", iati_identifier="IATI-0002")
+    ref = "IATI-0001"
 
 class FileFormatFactory(NoDatabaseFactory):
     class Meta:
@@ -31,8 +46,9 @@ class DocumentLinkFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.DocumentLink
 
+    activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
-    title = 'some title'
+    # title = 'some title'
 
 
 class LanguageFactory(NoDatabaseFactory):
@@ -139,13 +155,6 @@ class DescriptionFactory(NoDatabaseFactory):
     type = DescriptionTypeFactory.build()
     rsr_description_type_id = 1
 
-
-class ActivityFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.Activity
-
-    id = 'IATI-0001'
-    iati_identifier = 'IATI-0001'
 
 class ContactInfoFactory(NoDatabaseFactory):
     class Meta:

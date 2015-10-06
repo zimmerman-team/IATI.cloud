@@ -300,12 +300,11 @@ class Parse(IATI_201_Parser):
 
     tag:description'''
     def iati_activities__iati_activity__transaction__description(self,element):
-        model = self.get_func_parent_model()
-        description = models.TransactionDescription()
-        description.transaction = model
-        self.add_narrative(element,description)
+        super(Parse, self).iati_activities__iati_activity__transaction__description(element)
+    
+        transaction_description = self.get_model('TransactionDescription')
+        self.add_narrative(element, transaction_description)
         return element
-
 
     '''atributes:
     provider-activity-id:BB-BBB-123456789-1234AA
@@ -313,15 +312,10 @@ class Parse(IATI_201_Parser):
 
     tag:provider-org'''
     def iati_activities__iati_activity__transaction__provider_org(self, element):
-        model = self.get_func_parent_model()
-        model.provider_activity_id = element.attrib.get('provider-activity-id')
-        provider_org = self.add_organisation(element)
-        transaction_provider = models.TransactionProvider()
-        transaction_provider.organisation = provider_org
-        transaction_provider.transaction = model
+        super(Parse, self).iati_activities__iati_activity__transaction__provider_org(element)
+    
+        transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
-        #store element
-        model.provider_organisation = transaction_provider
         return element
 
     '''atributes:
@@ -330,28 +324,19 @@ class Parse(IATI_201_Parser):
 
     tag:receiver-org'''
     def iati_activities__iati_activity__transaction__receiver_org(self, element):
-        model = self.get_func_parent_model()
-        model.receiver_activity_id = element.attrib.get('receiver-activity-id')
-        receiver_org = self.add_organisation(element)
-        transaction_receiver = models.TransactionReceiver()
-        transaction_receiver.transaction = model
-        transaction_receiver.organisation = receiver_org
+        super(Parse, self).iati_activities__iati_activity__transaction__receiver_org(element)
+    
+        transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
-        #store element
-        model.receiver_organisation = transaction_receiver
         return element
-
 
     '''atributes:
 
     tag:title'''
     def iati_activities__iati_activity__document_link__title(self, element):
-        model = self.get_func_parent_model()
-        document_link_title = models.DocumentLinkTitle()
-        document_link_title.document_link = model
-        self.add_narrative(element,document_link_title)
+        super(Parse, self).iati_activities__iati_activity__document_link__title(element)
+        self.add_narrative(element, document_link_title)
         return element
-
 
     '''atributes:
 

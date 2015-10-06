@@ -1,7 +1,8 @@
 from genericXmlParser import XMLParser
 from django.db.models import Model
-from iati import models
 from django.contrib.gis.geos import GEOSGeometry, Point
+from iati import models
+from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
@@ -58,6 +59,17 @@ class Parse(XMLParser):
             return model.objects.get(*args, **kwargs)
         except model.DoesNotExist:
             return None
+
+    def _get_currency_or_raise(self, currency):
+        """
+        get default currency if not available for currency-related fields
+        """
+        if not currency:
+            currency = self.get_model('Activity').get('default_currency')
+            if not currency: raise self.RequiredFieldError("currency", "currency: currency is not set and default-currency is not set on activity as well")
+
+        return currency
+
 
     def get_model(self, key):
         if isinstance(key, Model):
@@ -340,11 +352,11 @@ class Parse(XMLParser):
         ref = element.attrib.get('ref')
         role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        if not organisation: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
+        if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
         if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=element.attrib.get('ref'))
+        organisation = self.get_or_none(models.Organisation, code=ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')
@@ -1118,7 +1130,7 @@ class Parse(XMLParser):
         if not code: raise self.RequiredFieldError("code", "default-tied-status: code is required")
 
         activity = self.get_model('Activity')
-        activity.default_aid_type = code
+        activity.default_tied_status = code
         self.register_model('Activity', activity)
          
         return element
@@ -1128,13 +1140,16 @@ class Parse(XMLParser):
 
     tag:budget'''
     def iati_activities__iati_activity__budget(self,element):
-        model = self.get_func_parent_model()
+        budget_type = self.get_or_none(codelist_models.BudgetType, code=element.attrib.get('type')) 
+        activity = self.get_model('Activity')
+
+        # if not budget_type: raise self.RequiredFieldError("type", "budget: type is required")
+
         budget = models.Budget()
-        budget.activity = model
-        budget.type = self.cached_db_call(models.BudgetType,element.attrib.get('type'))
-        budget.value = 0
-        self.set_func_model(budget)
-         
+        budget.activity = activity
+        budget.type = budget_type
+
+        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1142,9 +1157,13 @@ class Parse(XMLParser):
 
     tag:period-start'''
     def iati_activities__iati_activity__budget__period_start(self,element):
-        model = self.get_func_parent_model()
-        model.period_start = element.attrib.get('iso-date')
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "budget-period-start: iso-date is required")
+        budget = self.get_model('Budget')
+        budget.period_start = iso_date
          
+        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1152,9 +1171,13 @@ class Parse(XMLParser):
 
     tag:period-end'''
     def iati_activities__iati_activity__budget__period_end(self,element):
-        model = self.get_func_parent_model()
-        model.period_end = element.attrib.get('iso-date')
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "budget-period-end: iso-date is required")
+        budget = self.get_model('Budget')
+        budget.period_end = iso_date
          
+        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1163,13 +1186,24 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__budget__value(self,element):
-        model = self.get_func_parent_model()
+        # TODO: currency decimal separator determination
+        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
-        value = self.guess_number(value)
-        model.value = value
-        model.value_date = self.validate_date(element.attrib.get('value-date'))
-        model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
+
+        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+
+        if not currency:
+            currency = self.get_model('Activity').get('default_currency')
+            if not currency: raise self.RequiredFieldError("currency", "currency: budget-value: currency is not set and default-currency is not set on activity as well")
+
+        budget = self.get_model('Budget')
+        budget.value_string = value
+        budget.value = self.guess_number(value)
+        budget.value_date = value_date
+        budget.currency = currency
          
+        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1177,12 +1211,16 @@ class Parse(XMLParser):
 
     tag:planned-disbursement'''
     def iati_activities__iati_activity__planned_disbursement(self,element):
-        model = self.get_func_parent_model()
+        budget_type = self.get_or_none(codelist_models.BudgetType, code=element.attrib.get('type')) 
+
+        # if not budget_type: raise self.RequiredFieldError("type", "planned-disbursement: type is required")
+
+        activity = self.get_model('Activity')
         planned_disbursement = models.PlannedDisbursement()
-        planned_disbursement.activity = model
-        planned_disbursement.value = 0
-        planned_disbursement.budget_type  = self.cached_db_call(models.BudgetType,element.attrib.get('type'))
-        self.set_func_model(planned_disbursement)
+        planned_disbursement.activity = activity
+        planned_disbursement.budget_type  = budget_type
+
+        self.register_model('PlannedDisbursement', planned_disbursement)
          
         return element
 
@@ -1191,18 +1229,29 @@ class Parse(XMLParser):
 
     tag:period-start'''
     def iati_activities__iati_activity__planned_disbursement__period_start(self,element):
-        model = self.get_func_parent_model()
-        model.period_start = element.attrib.get('iso-date')
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "planned-disbursement-period-start:  iso-date is required")
+
+        planned_disbursement = self.get_model('PlannedDisbursement')
+        planned_disbursement.period_start = iso_date
+
+        self.register_model('PlannedDisbursement', planned_disbursement)
          
         return element
-
     '''atributes:
     iso-date:2014-12-31
 
     tag:period-end'''
     def iati_activities__iati_activity__planned_disbursement__period_end(self,element):
-        model = self.get_func_parent_model()
-        model.period_end = element.attrib.get('iso-date')
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "planned-disbursement-period-end: iso-date is required")
+
+        planned_disbursement = self.get_model('PlannedDisbursement')
+        planned_disbursement.period_end = iso_date
+
+        self.register_model('PlannedDisbursement', planned_disbursement)
          
         return element
 
@@ -1212,14 +1261,24 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__planned_disbursement__value(self,element):
-        model = self.get_func_parent_model()
         value = element.text
-        value = self.guess_number(value)
-        model.value = value
-        model.value_date = self.validate_date(element.attrib.get('value-date'))
-        model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
-        return element
 
+        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        value_date = self.validate_date(element.attrib.get('value-date'))
+        value = element.text
+
+        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+
+        currency = self._get_currency_or_raise(currency)
+
+        planned_disbursement = self.get_model('PlannedDisbursement')
+        planned_disbursement.value_string = value
+        planned_disbursement.value = self.guess_number(value)
+        planned_disbursement.value_date = value_date
+        planned_disbursement.currency = currency
+         
+        self.register_model('PlannedDisbursement', planned_disbursement)
+        return element
     '''atributes:
     percentage:88.8
 
@@ -1236,14 +1295,14 @@ class Parse(XMLParser):
 
     tag:transaction'''
     def iati_activities__iati_activity__transaction(self,element):
-        # TODO: transaction models changed, parse accordingly
-        model = self.get_func_parent_model()
-        transaction = models.Transaction()
-        transaction.activity = model
-        transaction.ref = element.attrib.get('ref')
-        transaction.value = 0
-        self.set_func_model(transaction)
-         
+        ref = element.attrib.get('ref')
+
+        activity = self.get_model('Activity')
+        transaction = transaction_models.Transaction()
+        transaction.activity = activity
+        transaction.ref = ref
+
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1251,9 +1310,14 @@ class Parse(XMLParser):
 
     tag:transaction-type'''
     def iati_activities__iati_activity__transaction__transaction_type(self,element):
-        model = self.get_func_parent_model()
-        model.transaction_type= self.cached_db_call(models.TransactionType,element.attrib.get('code'))
-         
+        transaction_type = self.get_or_none(transaction_models.TransactionType, code=element.attrib.get('code'))
+
+        if not transaction_type: raise self.RequiredFieldError("code", "transaction-type: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction.transaction_type = transaction_type
+
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1261,9 +1325,14 @@ class Parse(XMLParser):
 
     tag:transaction-date'''
     def iati_activities__iati_activity__transaction__transaction_date(self,element):
-        model = self.get_func_parent_model()
-        model.transaction_date = self.validate_date(element.attrib.get('iso-date'))
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "transaction-date: iso-date is required")
+        
+        transaction = self.get_model('Transaction')
+        transaction.transaction_date = iso_date
          
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1272,31 +1341,40 @@ class Parse(XMLParser):
 
     tag:value'''
     def iati_activities__iati_activity__transaction__value(self,element):
-        model = self.get_func_parent_model()
-        value = self.guess_number(element.text)
-        model.value = value
-        model.value_date = self.validate_date(element.attrib.get('value-date'))
-        model.currency  = self.cached_db_call(models.Currency,element.attrib.get('currency'))
+        currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
+        value_date = self.validate_date(element.attrib.get('value-date'))
+        value = element.text
+
+        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+
+        currency = self._get_currency_or_raise(currency)
+
+        transaction = self.get_model('Transaction')
+        transaction.value_string = value
+        transaction.value = self.guess_number(value)
+        transaction.value_date = value_date
+        transaction.currency = currency
          
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
 
     tag:description'''
     def iati_activities__iati_activity__transaction__description(self,element):
-        model = self.get_func_parent_model()
-        description = models.TransactionDescription()
-        description.transaction = model
-        self.set_func_model(description)
+        transaction = self.get_model('Transaction')
+        description = transaction_models.TransactionDescription()
+        description.transaction = transaction
          
+        self.register_model('TransactionDescription', description)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__description__narrative(self, element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        transaction_description = self.get_model('TransactionDescription')
+        self.add_narrative(element, transaction_description)
         return element
 
     '''atributes:
@@ -1305,23 +1383,42 @@ class Parse(XMLParser):
 
     tag:provider-org'''
     def iati_activities__iati_activity__transaction__provider_org(self, element):
-        model = self.get_func_parent_model()
-        model.provider_activity = element.attrib.get('provider-activity-id')
+        ref = element.attrib.get('ref')
+        provider_activity = element.attrib.get('provider-activity-id')
 
-        provider_org = self.get_or_create_organisation(element)
-        transaction_provider = models.TransactionProvider()
-        transaction_provider.transaction = model
-        transaction_provider.organisation = provider_org
-        self.set_func_model(transaction_provider)
-        model.provider_organisation = transaction_provider
+        if not ref: raise self.RequiredFieldError("ref", "transaction-provider-org: ref must be specified")
+
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, code=ref)
+
+        transaction_provider = transaction_models.TransactionProvider()
+        transaction_provider.ref = ref
+        transaction_provider.normalized_ref = normalized_ref
+        transaction_provider.organisation = organisation
+        transaction_provider.provider_activity_ref = provider_activity
+        transaction_provider.provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity) 
+
+        # update existing  transaction provider-activity foreign keys
+        # TODO: do this at the end of parsing in one pass
+        try:
+            models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
+        except:
+            pass
+
+        transaction = self.pop_model('Transaction')
+        transaction.provider_organisation = transaction_provider
+
+        self.register_model('TransactionProvider', transaction_provider)
+        self.register_model('Transaction', transaction)
         return element
+
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        transaction_provider = self.get_model('TransactionProvider')
+        self.add_narrative(element, transaction_provider)
         return element
 
     '''atributes:
@@ -1330,24 +1427,41 @@ class Parse(XMLParser):
 
     tag:receiver-org'''
     def iati_activities__iati_activity__transaction__receiver_org(self,element):
-        model = self.get_func_parent_model()
-        model.receiver_activity = element.attrib.get('receiver-activity-id')
+        ref = element.attrib.get('ref')
+        receiver_activity = element.attrib.get('receiver-activity-id')
 
-        receiver_org = self.get_or_create_organisation(element)
-        model.receiver_organisation = receiver_org
-        transaction_receiver = models.TransactionReceiver()
-        transaction_receiver.transaction = model
-        transaction_receiver.organisation = receiver_org
-        self.set_func_model(transaction_receiver)
-        model.receiver_organisation = transaction_receiver
+        if not ref: raise self.RequiredFieldError("ref", "transaction-receiver-org: ref must be specified")
+
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, code=ref)
+
+        transaction_receiver = transaction_models.TransactionReceiver()
+        transaction_receiver.ref = ref
+        transaction_receiver.normalized_ref = normalized_ref
+        transaction_receiver.organisation = organisation
+        transaction_receiver.receiver_activity_ref = receiver_activity
+        transaction_receiver.receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity) 
+
+        # update existing  transaction receiver-activity foreign keys
+        # TODO: do this at the end of parsing in one pass
+        try:
+            models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
+        except:
+            pass
+
+        transaction = self.pop_model('Transaction')
+        transaction.receiver_organisation = transaction_receiver
+
+        self.register_model('TransactionReceiver', transaction_receiver)
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        transaction_receiver = self.get_model('TransactionReceiver')
+        self.add_narrative(element, transaction_receiver)
         return element
 
     '''atributes:
@@ -1355,8 +1469,14 @@ class Parse(XMLParser):
 
     tag:disbursement-channel'''
     def iati_activities__iati_activity__transaction__disbursement_channel(self,element):
-        model = self.get_func_parent_model()
-        model.disbursement_channel = self.cached_db_call(models.DisbursementChannel,element.attrib.get('code'))
+        disbursement_channel = self.get_or_none(codelist_models.DisbursementChannel, code=element.attrib.get('code'))
+
+        if not disbursement_channel: raise self.RequiredFieldError("code", "disbursement-channel: code must be specified")
+
+        transaction = self.get_model('Transaction')
+        transaction.disbursement_channel = disbursement_channel
+
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1365,11 +1485,19 @@ class Parse(XMLParser):
 
     tag:sector'''
     def iati_activities__iati_activity__transaction__sector(self,element):
-        model = self.get_func_parent_model()
-        # TO DO; fix this, a sector has a vocabulary, so filter by code + filter
-        model.sector = self.cached_db_call(models.Sector,element.attrib.get('code'))
-        # sector.vocabulary = self.cached_db_call(models.SectorVocabulary,element.attrib.get('vocabulary'))
-        self.set_func_model(model)
+        sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
+        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+
+        if not sector: raise self.RequiredFieldError("code", "transaction-sector: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "transaction-sector: vocabulary is required")
+
+        transaction = self.get_model('Transaction')
+        transaction_sector = transaction_models.TransactionSector()
+        transaction_sector.transaction = transaction
+        transaction_sector.sector = sector
+        transaction_sector.vocabulary = vocabulary
+
+        self.register_model('TransactionSector', transaction_sector)
         return element
 
     '''atributes:
@@ -1377,8 +1505,16 @@ class Parse(XMLParser):
 
     tag:recipient-country'''
     def iati_activities__iati_activity__transaction__recipient_country(self,element):
-        model = self.get_func_parent_model()
-        model.recipient_country = self.cached_db_call_no_version(Country, element.attrib.get('code'))
+        country = self.get_or_none(Country, code=element.attrib.get('code'))
+
+        if not country: raise self.RequiredFieldError("code", "transaction-recipient-country: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction_country = transaction_models.TransactionRecipientCountry()
+        transaction_country.transaction = transaction
+        transaction_country.country = country
+
+        self.register_model('TransactionRecipientCountry', transaction_country)
         return element
 
     '''atributes:
@@ -1387,11 +1523,19 @@ class Parse(XMLParser):
 
     tag:recipient-region'''
     def iati_activities__iati_activity__transaction__recipient_region(self,element):
-        model = self.get_func_parent_model()
+        region = self.get_or_none(Region, code=element.attrib.get('code'))
+        vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
 
-        # TO DO; fix this, a recipient_region has a vocabulary, so filter by code + filter
-        model.recipient_region = self.cached_db_call(models.Region, element.attrib.get('code'))
-        # model.recipient_region_vocabulary = self.cached_db_call(models.RegionVocabulary,element.attrib.get('vocabulary'))
+        if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "recipient-region: vocabulary is required")
+
+        transaction = self.get_model('Transaction')
+        transaction_recipient_region = transaction_models.TransactionRecipientRegion()
+        transaction_recipient_region.transaction = transaction
+        transaction_recipient_region.region = region
+        transaction_recipient_region.vocabulary = vocabulary
+
+        transaction = self.register_model('TransactionRecipientRegion', transaction_recipient_region)
         return element
 
     '''atributes:
@@ -1399,8 +1543,15 @@ class Parse(XMLParser):
 
     tag:flow-type'''
     def iati_activities__iati_activity__transaction__flow_type(self,element):
-        model = self.get_func_parent_model()
-        model.flow_type = self.cached_db_call(models.FlowType,element.attrib.get('code'))
+        flow_type = self.get_or_none(codelist_models.FlowType, code=element.attrib.get('code')) 
+
+        if not flow_type:
+            flow_type = self.get_model('Activity').flow_type
+            if not flow_type: raise self.RequiredFieldError("code", "transaction-flow-type: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction.flow_type = flow_type
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1408,8 +1559,15 @@ class Parse(XMLParser):
 
     tag:finance-type'''
     def iati_activities__iati_activity__transaction__finance_type(self,element):
-        model = self.get_func_parent_model()
-        model.finance_type = self.cached_db_call(models.FinanceType,element.attrib.get('code'))
+        finance_type = self.get_or_none(codelist_models.FinanceType, code=element.attrib.get('code')) 
+
+        if not finance_type:
+            finance_type = self.get_model('Activity').finance_type
+            if not finance_type: raise self.RequiredFieldError("code", "transaction-finance-type: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction.finance_type = finance_type
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1417,8 +1575,15 @@ class Parse(XMLParser):
 
     tag:aid-type'''
     def iati_activities__iati_activity__transaction__aid_type(self,element):
-        model = self.get_func_parent_model()
-        model.aid_type =  self.cached_db_call(models.AidType,element.attrib.get('code'))
+        aid_type = self.get_or_none(codelist_models.AidType, code=element.attrib.get('code')) 
+
+        if not aid_type:
+            aid_type = self.get_model('Activity').aid_type
+            if not aid_type: raise self.RequiredFieldError("code", "transaction-aid-type: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction.aid_type = aid_type
+        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1426,8 +1591,15 @@ class Parse(XMLParser):
 
     tag:tied-status'''
     def iati_activities__iati_activity__transaction__tied_status(self,element):
-        model = self.get_func_parent_model()
-        model.tied_status = self.cached_db_call(models.TiedStatus,element.attrib.get('code'))
+        tied_status = self.get_or_none(codelist_models.TiedStatus, code=element.attrib.get('code')) 
+
+        if not tied_status:
+            tied_status = self.get_model('Activity').tied_status
+            if not tied_status: raise self.RequiredFieldError("code", "transaction-tied-status: code is required")
+
+        transaction = self.get_model('Transaction')
+        transaction.tied_status = tied_status
+        transaction = self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1436,22 +1608,30 @@ class Parse(XMLParser):
 
     tag:document-link'''
     def iati_activities__iati_activity__document_link(self,element):
-        model = self.get_func_parent_model()
+        url = element.attrib.get('url')
+        file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format')) 
+
+        if not url: raise self.RequiredFieldError("url", "document_link: url is required")
+        if not file_format: raise self.RequiredFieldError("format", "document_link: format is required")
+
+        activity = self.get_model('Activity')
         document_link = models.DocumentLink()
-        document_link.activity = model
-        document_link.url = element.attrib.get('url')
-        document_link.file_format = self.cached_db_call(models.FileFormat,element.attrib.get('format'),createNew=True)
-        self.set_func_model(document_link)
+        document_link.activity = activity
+        document_link.url = url
+        document_link.file_format = file_format
+
+        self.register_model('DocumentLink', document_link)
         return element
 
     '''atributes:
 
     tag:title'''
     def iati_activities__iati_activity__document_link__title(self,element):
-        model = self.get_func_parent_model()
+        document_link = self.get_model('DocumentLink')
         document_link_title = models.DocumentLinkTitle()
-        document_link_title.document_link = model
-        self.set_func_model(document_link_title)
+        document_link_title.document_link = document_link
+
+        self.register_model('DocumentLinkTitle', document_link_title)
          
         return element
 
@@ -1459,8 +1639,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__document_link__title__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
+        document_link_title = self.get_model('DocumentLinkTitle')
+        self.add_narrative(element, document_link_title)
         return element
 
     '''atributes:
@@ -1468,20 +1648,33 @@ class Parse(XMLParser):
 
     tag:category'''
     def iati_activities__iati_activity__document_link__category(self,element):
+        category = self.get_or_none(codelist_models.DocumentCategory, code=element.attrib.get('code')) 
 
-        model = self.get_func_parent_model()
-        document_category = self.cached_db_call(models.DocumentCategory, element.attrib.get('code'))
-        model.categories.add(document_category)
+        if not category: raise self.RequiredFieldError("code", "document-link-category: code is required")
+
+        document_link = self.get_model('DocumentLink')
+        document_link_category = models.DocumentLinkCategory()
+        document_link_category.document_link = document_link
+        document_link_category.category = category
+
+        self.register_model('DocumentLinkCategory', document_link_category)
         return element
-
 
     '''atributes:
     code:en
 
     tag:language'''
     def iati_activities__iati_activity__document_link__language(self,element):
-        model = self.get_func_parent_model()
-        model.language = self.cached_db_call(models.Language,element.attrib.get('code'))
+        language = self.get_or_none(codelist_models.Language, code=element.attrib.get('code'))
+
+        if not language: raise self.RequiredFieldError("language", "document-link: code is required")
+
+        document_link = self.get_model('DocumentLink')
+        document_link_language = models.DocumentLinkLanguage()
+        document_link_language.document_link = document_link
+        document_link_language.language = language
+
+        self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
     '''atributes:
@@ -1490,24 +1683,29 @@ class Parse(XMLParser):
 
     tag:related-activity'''
     def iati_activities__iati_activity__related_activity(self,element):
-        model = self.get_func_parent_model()
-        related_activity = models.RelatedActivity()
-        related_activity.current_activity = model
-        related_activity.type = self.cached_db_call(models.RelatedActivityType, element.attrib.get('type'))
-        related_activity.ref = element.attrib.get('ref')
+        related_activity_type = self.get_or_none(codelist_models.RelatedActivityType, code=element.attrib.get('type')) 
         ref = element.attrib.get('ref')
-        try:
-            related_activity_temp = models.Activity.objects.get(iati_identifier=ref)
-        except :
-            related_activity_temp = None
+
+        if not related_activity_type: raise self.RequiredFieldError("type", "related-activity: type is required")
+        if not ref: raise self.RequiredFieldError("ref", "related-activity: ref is required")
+
+
+        activity = self.get_model('Activity')
+        related_activity = models.RelatedActivity()
+        related_activity.current_activity = activity # TODO: remove this field?
+        related_activity.related_activity = self.get_or_none(models.Activity, iati_identifier=ref) 
+        related_activity.ref = ref
+        related_activity.type = related_activity_type
+
 
         # update existing related activitiy foreign keys
+        # TODO: do this at the end of parsing in one pass
         try:
-            ref_activities = models.RelatedActivity.objects.filter(ref=model.iati_identifier).update(related_activity=model)
+            models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(related_activity=activity)
         except:
             pass
-        related_activity.related_activity = related_activity_temp
-        related_activity.save()
+
+        self.register_model('RelatedActivity', related_activity)
         return element
 
     '''atributes:

@@ -131,7 +131,7 @@ class Organisation(models.Model):
     objects = OrganisationQuerySet.as_manager()
 
 class ActivityReportingOrganisation(models.Model):
-    ref = models.CharField(max_length=250, primary_key=True)
+    ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     narratives = GenericRelation(Narrative)
@@ -145,7 +145,7 @@ class ActivityReportingOrganisation(models.Model):
     secondary_reporter = models.BooleanField(default=False)
 
 class ActivityParticipatingOrganisation(models.Model):
-    ref = models.CharField(max_length=250, primary_key=True)
+    ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     narratives = GenericRelation(Narrative)
@@ -217,7 +217,7 @@ class BudgetItemDescription(models.Model):
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
     region = models.ForeignKey(Region)
-    # region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -307,8 +307,9 @@ class PlannedDisbursement(models.Model):
     period_end = models.CharField(max_length=100, default="")
     value_date = models.DateField(null=True)
     value = models.DecimalField(max_digits=15, decimal_places=2)
+    value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency, null=True, default=None)
-    updated = models.DateField(null=True, default=None)
+    # updated = models.DateField(null=True, default=None) deprecated
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.period_start)
@@ -329,22 +330,29 @@ class RelatedActivity(models.Model):
         null=True,
         default=None)
     ref = models.CharField(max_length=200, default="")
-    text = models.TextField(default="")
 
     def __unicode__(self,):
-        return "%s - %s" % (self.current_activity, self.type)
+        return "%s" % (self.ref)
 
 class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity)
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(FileFormat, null=True, default=None)
     categories = models.ManyToManyField(
-        DocumentCategory)
-    # title = models.CharField(max_length=255, default="")
-    language = models.ForeignKey(Language, null=True, default=None)
+        DocumentCategory,
+        through="DocumentLinkCategory")
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.url)
+
+# enables saving before parent object is saved (workaround)
+class DocumentLinkCategory(models.Model):
+    document_link = models.ForeignKey(DocumentLink)
+    category = models.ForeignKey(DocumentCategory)
+
+class DocumentLinkLanguage(models.Model):
+    document_link = models.ForeignKey(DocumentLink)
+    language = models.ForeignKey(Language, null=True, default=None)
 
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
@@ -439,7 +447,8 @@ class Budget(models.Model):
     type = models.ForeignKey(BudgetType, null=True, default=None)
     period_start = models.CharField(max_length=50, default="")
     period_end = models.CharField(max_length=50, default="")
-    value = models.DecimalField(max_digits=15, decimal_places=2)
+    value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, default=None)
     currency = models.ForeignKey(Currency, null=True, default=None)
 

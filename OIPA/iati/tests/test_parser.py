@@ -6,6 +6,7 @@ import copy
 import datetime
 from django.core import management
 from iati.factory import iati_factory
+from iati.transaction import factories as transaction_factory
 
 from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
 from unittest import TestCase
@@ -57,24 +58,34 @@ def copy_xml_tree(tree):
 def print_xml(elem):
     print(etree.tostring(elem, pretty_print=True))
 
-def build_activity(version="2.01"):
+def build_activity(version="2.01", *args, **kwargs):
         activity = iati_factory.ActivityFactory.build(
-            iati_standard_version_id=codelist_models.Version.objects.get(code=version) # TODO: cache this
+            iati_standard_version_id=codelist_models.Version.objects.get(code=version), # TODO: cache this
+            *args,
+            **kwargs
         )
         return activity
 
+def setUpModule():
+    fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
+
+    for fixture in fixtures:
+        management.call_command("loaddata", fixture)
+
+def tearDownModule():
+    management.call_command('flush', interactive=False, verbosity=0)
+
 class ParserSetupTestCase(DjangoTestCase):
 
-    fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
+    # fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
 
     def _get_activity(self, iati_identifier):
         return iati_models.Activity.objects.get(id=iati_identifier)
 
     @classmethod
     def setUpClass(self):
-        # load fixtures
-        for fixture in self.fixtures:
-            management.call_command("loaddata", fixture)
+        # for fixture in self.fixtures:
+        #     management.call_command("loaddata", fixture)
 
         self.iati_identifier = "NL-KVK-51018586-0666"
         self.alt_iati_identifier = "NL-KVK-51018586-0667"
@@ -261,6 +272,8 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         Check linked-data-uri is inherited from iati-activities if set
         """
+        raise NotImplementedError()
+
         linked_data_default ="http://zimmermanzimmerman.org/"
 
         iati_201 = copy_xml_tree(self.iati_201)
@@ -384,6 +397,54 @@ class ActivityTestCase(ParserSetupTestCase):
 
         activity = self.parser_201.get_model('Activity')
         self.assertTrue(activity.collaboration_type.code == code)
+
+    def test_default_flow_type(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        """
+        code = '10' # ODA
+
+        default_flow_type = E('default-flow-type', code=code)
+        self.parser_201.iati_activities__iati_activity__default_flow_type(default_flow_type)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.default_flow_type.code == code)
+
+    def test_default_finance_type(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        """
+        code = '310' # Deposit basis
+
+        default_finance_type = E('default-finance-type', code=code)
+        self.parser_201.iati_activities__iati_activity__default_finance_type(default_finance_type)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.default_finance_type.code == code)
+
+    def test_default_aid_type(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        """
+        code = 'A01' # General Budget Support
+
+        default_aid_type = E('default-aid-type', code=code)
+        self.parser_201.iati_activities__iati_activity__default_aid_type(default_aid_type)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.default_aid_type.code == code)
+
+    def test_default_tied_status(self):
+        """
+        2.01: Freetext is no longer allowed within this element.
+        """
+        code = '4' # Tied
+
+        default_tied_status = E('default-tied-status', code=code)
+        self.parser_201.iati_activities__iati_activity__default_tied_status(default_tied_status)
+
+        activity = self.parser_201.get_model('Activity')
+        self.assertTrue(activity.default_tied_status.code == code)
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
@@ -1461,3 +1522,595 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model('Narrative')
         self.assertTrue(narrative.parent_object == activity_policy_marker)
+
+class BudgetTestCase(ParserSetupTestCase):
+    """
+    No changes
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "type": "1", # Original
+        }
+
+        self.budget = E('budget', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_budget_201(self):
+        """
+        """
+        self.parser_201.iati_activities__iati_activity__budget(self.budget)
+        budget = self.parser_201.get_model('Budget')
+
+        self.assertTrue(budget.activity == self.activity)
+        self.assertTrue(budget.type.code == self.attrs['type'])
+
+    def test_budget_period_start_201(self):
+        """
+        """
+        attrs = {
+            "iso-date": datetime.datetime.now().isoformat(' ')
+        }
+
+        period_start = E('period-start', **attrs) 
+        self.parser_201.iati_activities__iati_activity__budget__period_start(period_start)
+        budget = self.parser_201.get_model('Budget')
+
+        self.assertTrue(str(budget.period_start) == attrs['iso-date'])
+
+    def test_budget_period_end_201(self):
+        """
+        """
+        attrs = {
+            "iso-date": datetime.datetime.now().isoformat(' ')
+        }
+
+        period_end = E('period-end', **attrs) 
+        self.parser_201.iati_activities__iati_activity__budget__period_end(period_end)
+        budget = self.parser_201.get_model('Budget')
+
+        self.assertTrue(str(budget.period_end) == attrs['iso-date'])
+
+    def test_budget_value_201(self):
+        """
+        All attributes available
+        """
+        attrs = {
+            "currency": "EUR",
+            "value-date": datetime.datetime.now().isoformat(' ')
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs) 
+        self.parser_201.iati_activities__iati_activity__budget__value(value)
+        budget = self.parser_201.get_model('Budget')
+        budget.save()
+
+        self.assertTrue(budget.value == 2000.2)
+        self.assertTrue(str(budget.value_date) == attrs['value-date'])
+        self.assertTrue(budget.currency.code == attrs['currency'])
+
+    def test_budget_wrong_value_should_parse_201(self):
+        """
+        When the value field is invalid, only store it as a string for future reference
+        """
+        attrs = {
+            "currency": "EUR",
+            "value-date": datetime.datetime.now().isoformat(' ')
+        }
+        text = "1.000.000.000,2"
+
+        value = E('value', text, **attrs) 
+        self.parser_201.iati_activities__iati_activity__budget__value(value)
+        budget = self.parser_201.get_model('Budget')
+
+        # print(budget.value)
+        self.assertTrue(budget.value == None)
+        self.assertTrue(budget.value_string == text)
+
+class PlannedDisbursementTestCase(ParserSetupTestCase):
+    """
+    2.01: The attribute @last-updated was removed.
+    2.01: The attribute @type was added.
+    1.05: A description was added to this element # ?
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "type": "1", # Original
+        }
+
+        self.planned_disbursement = E('planned-disbursement', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_planned_disbursement_201(self):
+        """
+        """
+        self.parser_201.iati_activities__iati_activity__planned_disbursement(self.planned_disbursement)
+        planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
+
+        self.assertTrue(planned_disbursement.activity == self.activity)
+        self.assertTrue(planned_disbursement.budget_type.code == self.attrs['type'])
+
+    def test_planned_disbursement_period_start_201(self):
+        """
+        """
+        attrs = {
+            "iso-date": datetime.datetime.now().isoformat(' ')
+        }
+
+        period_start = E('period-start', **attrs) 
+        self.parser_201.iati_activities__iati_activity__planned_disbursement__period_start(period_start)
+        planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
+
+        self.assertTrue(str(planned_disbursement.period_start) == attrs['iso-date'])
+
+    def test_planned_disbursement_period_end_201(self):
+        """
+        """
+        attrs = {
+            "iso-date": datetime.datetime.now().isoformat(' ')
+        }
+
+        period_end = E('period-end', **attrs) 
+        self.parser_201.iati_activities__iati_activity__planned_disbursement__period_end(period_end)
+        planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
+
+        self.assertTrue(str(planned_disbursement.period_end) == attrs['iso-date'])
+
+    def test_planned_disbursement_value_201(self):
+        """
+        All attributes available
+        """
+        attrs = {
+            "currency": "EUR",
+            "value-date": datetime.datetime.now().isoformat(' ')
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs) 
+        self.parser_201.iati_activities__iati_activity__planned_disbursement__value(value)
+        planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
+        planned_disbursement.save()
+
+        self.assertTrue(planned_disbursement.value == 2000.2)
+        self.assertTrue(str(planned_disbursement.value_date) == attrs['value-date'])
+        self.assertTrue(planned_disbursement.currency.code == attrs['currency'])
+
+class TransactionTestCase(ParserSetupTestCase):
+    """
+    2.01: The attribute @last-updated was removed.
+    2.01: The attribute @type was added.
+    1.05: A description was added to this element # ?
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "ref": "12345", # Internal reference
+        }
+
+        self.transaction = E('transaction', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+        self.test_transaction = transaction_factory.TransactionFactory.build()
+        self.parser_201.register_model('Transaction', self.test_transaction)
+
+    def test_transaction_201(self):
+        self.parser_201.iati_activities__iati_activity__transaction(self.transaction)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.activity == self.activity)
+        self.assertTrue(transaction.ref == self.attrs['ref'])
+
+    def test_transaction_transaction_type_201(self):
+        transaction_type = E('transaction-type', code="1") # Incoming funds
+        self.parser_201.iati_activities__iati_activity__transaction__transaction_type(transaction_type)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.transaction_type.code == "1")
+
+    def test_transaction_transaction_date_201(self):
+        attrs = {
+            "iso-date": datetime.datetime.now().isoformat(' ')
+        }
+        transaction_date = E('transaction-date', **attrs)
+        self.parser_201.iati_activities__iati_activity__transaction__transaction_date(transaction_date)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(str(transaction.transaction_date) == attrs['iso-date'])
+
+    def test_transaction_value_201(self):
+        """
+        All attributes available
+        """
+        attrs = {
+            "currency": "EUR",
+            "value-date": datetime.datetime.now().isoformat(' ')
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs) 
+        self.parser_201.iati_activities__iati_activity__transaction__value(value)
+        transaction = self.parser_201.get_model('Transaction')
+        transaction.save()
+
+        self.assertTrue(transaction.value == 2000.2)
+        self.assertTrue(str(transaction.value_date) == attrs['value-date'])
+        self.assertTrue(transaction.currency.code == attrs['currency'])
+
+    def test_transaction_description_201(self):
+        description = E('description')
+        self.parser_201.iati_activities__iati_activity__transaction__description(description)
+        transaction_description = self.parser_201.get_model('TransactionDescription')
+
+        self.assertTrue(transaction_description.transaction == self.test_transaction)
+
+        self.parser_201.iati_activities__iati_activity__transaction__description__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == transaction_description)
+
+    def test_transaction_description_105(self):
+        description = E('description', 'some text')
+        self.parser_105.iati_activities__iati_activity__transaction__description(description)
+        transaction_description = self.parser_105.get_model('TransactionDescription')
+
+        self.assertTrue(transaction_description.transaction == self.test_transaction)
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == transaction_description)
+
+    def test_provider_organisation_not_parsed_yet_201(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        attrs = {
+            "ref": "GB-COH-03580586",
+            "provider-activity-id": 'no constraints on this field',
+        }
+
+        provider_org = E('provider-org', **attrs)
+        self.parser_201.iati_activities__iati_activity__transaction__provider_org(provider_org)
+        provider_organisation = self.parser_201.get_model('TransactionProvider')
+
+        self.assertTrue(provider_organisation.ref == attrs['ref'])
+        self.assertTrue(provider_organisation.organisation == None)
+        # self.assertTrue(provider_organisation.provider_activity_id == attrs['provider-activity-id'])
+
+        self.assertTrue(self.test_transaction.provider_organisation == provider_organisation)
+
+        self.parser_201.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == provider_organisation)
+
+    def test_provider_organisation_narrative_105(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        attrs = {
+            "ref": "GB-COH-03580586",
+            "provider-activity-id": 'no constraints on this field',
+        }
+
+        provider_org = E('provider-org', 'some description', **attrs)
+        self.parser_105.iati_activities__iati_activity__transaction__provider_org(provider_org)
+        provider_organisation = self.parser_105.get_model('TransactionProvider')
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == provider_organisation)
+
+    def test_provider_organisation_provider_activity_exists(self):
+        raise NotImplementedError()
+
+    def test_provider_organisation_provider_activity_has_related(self):
+        raise NotImplementedError()
+
+    def test_receiver_organisation_not_parsed_yet_201(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        attrs = {
+            "ref": "GB-COH-03580586",
+            "receiver-activity-id": 'no constraints on this field',
+        }
+
+        receiver_org = E('receiver-org', **attrs)
+        self.parser_201.iati_activities__iati_activity__transaction__receiver_org(receiver_org)
+        receiver_organisation = self.parser_201.get_model('TransactionReceiver')
+
+        self.assertTrue(receiver_organisation.ref == attrs['ref'])
+        self.assertTrue(receiver_organisation.organisation == None)
+        self.assertTrue(receiver_organisation.receiver_activity_id == None)
+
+        self.assertTrue(self.test_transaction.receiver_organisation == receiver_organisation)
+
+        self.parser_201.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == receiver_organisation)
+
+    def test_receiver_organisation_receiver_activity_exists(self):
+        raise NotImplementedError()
+
+    def test_receiver_organisation_receiver_activity_has_related(self):
+        raise NotImplementedError()
+
+    def test_receiver_organisation_narrative_105(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        attrs = {
+            "ref": "GB-COH-03580586",
+            "receiver-activity-id": 'no constraints on this field',
+        }
+
+        receiver_org = E('receiver-org', 'some description', **attrs)
+        self.parser_105.iati_activities__iati_activity__transaction__receiver_org(receiver_org)
+        receiver_organisation = self.parser_105.get_model('TransactionReceiver')
+
+        narrative = self.parser_105.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == receiver_organisation)
+
+    def test_transaction_disbursement_channel_201(self):
+        """
+        """
+
+        disbursement_channel = E('disbursement_channel', code="1") 
+        self.parser_201.iati_activities__iati_activity__transaction__disbursement_channel(disbursement_channel)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.disbursement_channel.code == "1")
+
+    def test_transaction_sector_201(self):
+        """
+        """
+        attrs = {
+            "code": "11110", # Education Policy and administrative management
+            "vocabulary": "1", # OECD-DAC-5
+        }
+
+        sector = E('sector', **attrs) 
+        self.parser_201.iati_activities__iati_activity__transaction__sector(sector)
+        transaction_sector = self.parser_201.get_model('TransactionSector')
+
+        self.assertTrue(transaction_sector.transaction == self.test_transaction)
+        self.assertTrue(transaction_sector.sector.code == attrs['code'])
+        self.assertTrue(transaction_sector.vocabulary.code == attrs['vocabulary'])
+
+    def test_transaction_recipient_country_201(self):
+        """
+        """
+        attrs = {
+            "code": "AF",
+            "percentage": "50.5",
+        }
+
+        recipient_country = E('recipient_country', **attrs) 
+        self.parser_201.iati_activities__iati_activity__transaction__recipient_country(recipient_country)
+        transaction_recipient_country = self.parser_201.get_model('TransactionRecipientCountry')
+
+        self.assertTrue(transaction_recipient_country.transaction == self.test_transaction)
+        self.assertTrue(transaction_recipient_country.country.code == attrs['code'])
+
+    def test_transaction_recipient_region_201(self):
+        """
+
+        """
+        attrs = {
+            "code": "89", # Europe, regional
+            "vocabulary": "1", # OECD-DAC
+            "percentage": "50.5",
+        }
+
+        recipient_region = E('recipient_region', **attrs) 
+        self.parser_201.iati_activities__iati_activity__transaction__recipient_region(recipient_region)
+        transaction_recipient_region = self.parser_201.get_model('TransactionRecipientRegion')
+
+        self.assertTrue(transaction_recipient_region.transaction == self.test_transaction)
+        self.assertTrue(transaction_recipient_region.region.code == attrs['code'])
+        self.assertTrue(transaction_recipient_region.vocabulary.code == attrs['vocabulary'])
+
+    def test_transaction_flow_type_201(self):
+        """
+        """
+
+        flow_type = E('flow-type', code="10") # ODA
+        self.parser_201.iati_activities__iati_activity__transaction__flow_type(flow_type)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.flow_type.code == "10")
+
+    def test_transaction_flow_type_inherits_activity_201(self):
+        """
+        must inherit from the corresponding activity field
+        """
+        raise NotImplementedError()
+
+    def test_transaction_finance_type_activity_201(self):
+        """
+        """
+
+        finance_type = E('finance-type', code="110") # Aid grant excl.
+        self.parser_201.iati_activities__iati_activity__transaction__finance_type(finance_type)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.finance_type.code == "110")
+
+    def test_transaction_finance_type_inherits_activity_201(self):
+        """
+        must inherit from the corresponding activity field
+        """
+        raise NotImplementedError()
+
+    def test_transaction_aid_type_activity_201(self):
+        aid_type = E('aid-type', code="A01") # General budget support
+        self.parser_201.iati_activities__iati_activity__transaction__aid_type(aid_type)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.aid_type.code == "A01")
+
+    def test_transaction_aid_type_inherits_activity_201(self):
+        """
+        must inherit from the corresponding activity field
+        """
+        raise NotImplementedError()
+
+    def test_transaction_tied_status_activity_201(self):
+        """
+        """
+        tied_status = E('tied-status', code="4") # Tied
+        self.parser_201.iati_activities__iati_activity__transaction__tied_status(tied_status)
+        transaction = self.parser_201.get_model('Transaction')
+
+        self.assertTrue(transaction.tied_status.code == "4")
+
+    def test_transaction_tied_status_inherits_activity_201(self):
+        """
+        must inherit from the corresponding activity field
+        """
+        raise NotImplementedError()
+
+
+class DocumentLinkTestCase(ParserSetupTestCase):
+    """
+    1.02: Removed @language attribute from, and introduced an new language child element to, the document-link element.
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "url": "http://zimmermanzimmerman.nl/",
+            "format": "text/html",
+        }
+
+        self.document_link = E('document-link', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+        self.test_document_link = iati_factory.DocumentLinkFactory.build()
+        self.parser_201.register_model('DocumentLink', self.test_document_link)
+
+    def test_document_link_201(self):
+        """
+        """
+        self.parser_201.iati_activities__iati_activity__document_link(self.document_link)
+        document_link = self.parser_201.get_model('DocumentLink')
+
+        self.assertTrue(document_link.activity == self.activity)
+        self.assertTrue(document_link.url == self.attrs['url'])
+        self.assertTrue(document_link.file_format.code == self.attrs['format'])
+
+    def test_document_link_title_201(self):
+        """
+        """
+
+        title = E('title') 
+        self.parser_201.iati_activities__iati_activity__document_link__title(title)
+        document_link_title = self.parser_201.get_model('DocumentLinkTitle')
+
+        self.assertTrue(document_link_title.document_link == self.test_document_link)
+
+        self.parser_201.iati_activities__iati_activity__document_link__title__narrative(self.narrative)
+        narrative = self.parser_201.get_model('Narrative')
+        self.assertTrue(narrative.parent_object == document_link_title)
+
+    def test_document_link_category_201(self):
+        """
+        """
+
+        category = E('category', code="A04") # conditions
+        self.parser_201.iati_activities__iati_activity__document_link__category(category)
+        document_link_category = self.parser_201.get_model('DocumentLinkCategory')
+
+        self.assertTrue(document_link_category.document_link == self.test_document_link)
+        self.assertTrue(document_link_category.category.code == "A04")
+
+    def test_document_link_language_201(self):
+        """
+        """
+
+        language = E('language', code="en") # english
+        self.parser_201.iati_activities__iati_activity__document_link__language(language)
+        document_link_language = self.parser_201.get_model('DocumentLinkLanguage')
+
+        self.assertTrue(document_link_language.document_link == self.test_document_link)
+        self.assertTrue(document_link_language.language.code == "en")
+
+class RelatedActivityTestCase(ParserSetupTestCase):
+    """
+    2.01: Freetext is no longer allowed within this element.
+    """
+
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201) # sample attributes on iati-activity xml
+
+        self.attrs = {
+            "ref": "IATI-0002",
+            "type": "1", # parent
+        }
+
+        self.related_activity = E('related-activity', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+
+    def test_related_activity_no_related_201(self):
+        """
+        related activity does not exist (just save ref)
+        """
+        self.parser_201.iati_activities__iati_activity__related_activity(self.related_activity)
+        related_activity = self.parser_201.get_model('RelatedActivity')
+
+        self.assertTrue(related_activity.current_activity == self.activity)
+        self.assertTrue(related_activity.related_activity == None)
+        self.assertTrue(related_activity.ref == self.attrs['ref'])
+        self.assertTrue(related_activity.type.code == self.attrs['type'])
+
+    def test_related_activity_has_related_201(self):
+        """
+        related activity does exist and should be saved accordingly
+        """
+        test_related_activity = build_activity(version="2.01", iati_identifier="IATI-0002")
+        test_related_activity.save()
+
+        self.parser_201.iati_activities__iati_activity__related_activity(self.related_activity)
+        related_activity = self.parser_201.get_model('RelatedActivity')
+
+        self.assertTrue(related_activity.current_activity == self.activity)
+        self.assertTrue(related_activity.related_activity == test_related_activity)
+        self.assertTrue(related_activity.ref == self.attrs['ref'])
+        self.assertTrue(related_activity.type.code == self.attrs['type'])
+
+    def test_related_activity_update_existing_201(self):
+        """
+        should update existing activities that have related-activity fields pointing to this activity
+        """
+
+        self.activity.save()
+        test_related_activity = iati_factory.RelatedActivityFactory.build(related_activity=None)
+        test_related_activity.save()
+        self.assertTrue(test_related_activity.related_activity == None)
+
+        self.parser_201.iati_activities__iati_activity__related_activity(self.related_activity)
+        related_activity = self.parser_201.get_model('RelatedActivity')
+        test_related_activity.refresh_from_db()
+
+        self.assertTrue(test_related_activity.related_activity == self.activity)
+

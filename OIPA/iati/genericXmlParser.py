@@ -6,6 +6,7 @@ from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber
 import datetime
+from decimal import Decimal
 import inspect
 import traceback
 import re
@@ -309,16 +310,29 @@ class XMLParser(object):
     #     model.save()
     #     self.model_store[caller_name] = model
 
-    def guess_number(self,value):
-        if value == '' or value == None:
-            value = 0
-        if value:
-            value = value.strip(' \t\n\r')
-        if value:
-            value = value.replace(",", ".")
-            value = value.replace(" ", "")
-        return value
+    # def guess_number(self,value):
+    #     # TODO: this is not accurate
+    #     if value:
+    #         value = value.strip(' \t\n\r')
+    #     if value:
+    #         value = value.replace(",", ".")
 
+    #     return Decimal(value)
+
+    def guess_number(self,number_string):
+        #first strip non numeric values from begin and end
+        non_decimal = re.compile(r'[^\d.,]+')
+        errormsg = "ValueError: Input must be decimal or integer string"
+        stripped_string = non_decimal.sub('', number_string)
+        #check if there is only 1 comma (central european way)
+        try:
+            if stripped_string.count(',') <= 1:
+                return float(stripped_string.replace(',','.'))
+            else:
+                return float(stripped_string.replace(',',''))
+        except ValueError,error:
+            print "%s\n%s" %(errormsg, error)
+            return None
 
 
     #helper function check if integer
@@ -344,17 +358,3 @@ class XMLParser(object):
                 db_model.save()
                 saved_models.append(db_model.__class__.__name__)
 
-    def guess_number(self,number_string):
-        #first strip non numeric values from begin and end
-        non_decimal = re.compile(r'[^\d.,]+')
-        errormsg = "ValueError: Input must be decimal or integer string"
-        stripped_string = non_decimal.sub('', number_string)
-        #check if there is only 1 comma (central european way)
-        try:
-            if stripped_string.count(',') <= 1:
-                return float(stripped_string.replace(',','.'))
-            else:
-                return float(stripped_string.replace(',',''))
-        except ValueError,error:
-            print "%s\n%s" %(errormsg, error)
-            return None
