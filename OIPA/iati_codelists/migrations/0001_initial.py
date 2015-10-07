@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityScope',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityStatus',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AidTypeFlag',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
             ],
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BudgetIdentifierSectorCategory',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=160)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BudgetType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=20)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CollaborationType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ConditionType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ContactType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DescriptionType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -162,7 +162,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DisbursementChannel',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.TextField(default=b'')),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -243,7 +243,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GeographicalPrecision',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=80)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -253,7 +253,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GeographicExactness',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=160)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -263,7 +263,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GeographicLocationClass',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -273,7 +273,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GeographicLocationReach',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=80)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -283,7 +283,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IndicatorMeasure',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -303,7 +303,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LoanRepaymentPeriod',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=20)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -313,7 +313,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LoanRepaymentType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -376,7 +376,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OrganisationType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -417,7 +417,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PolicySignificance',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -427,7 +427,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PublisherType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -437,7 +437,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RelatedActivityType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=20)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -447,7 +447,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultType',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=30)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -474,7 +474,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TiedStatus',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),
@@ -502,7 +502,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VerificationStatus',
             fields=[
-                ('code', models.SmallIntegerField(serialize=False, primary_key=True)),
+                ('code', models.CharField(max_length=40, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=20)),
                 ('description', models.TextField(default=b'')),
                 ('codelist_iati_version', models.CharField(max_length=4)),

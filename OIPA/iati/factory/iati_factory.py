@@ -5,8 +5,6 @@ import geodata
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 
-
-
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):

@@ -46,7 +46,7 @@ class Activity(models.Model):
     # value_date = models.DateField(null=True)
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
-    linked_data_uri = models.CharField(max_length=100, default="")
+    linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
     activity_status = models.ForeignKey(
         ActivityStatus,
         null=True,
@@ -159,7 +159,7 @@ class ActivityParticipatingOrganisation(models.Model):
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
 
     def __unicode__(self,):
-        return "%s: %s - %s" % (self.activity.id, self.organisation, self.name)
+        return "%s: %s" % (self.activity.id, self.ref)
 
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
@@ -172,7 +172,7 @@ class ActivityPolicyMarker(models.Model):
     narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
-        return "%s - %s - %s" % (self.activity.id, self.policy_marker, self.policy_significance)
+        return "%s - %s - %s" % (self.activity.id, self.code, self.significance.code)
 
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)

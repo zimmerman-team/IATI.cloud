@@ -39,6 +39,7 @@ class Parse(XMLParser):
             msg: explanation why
             """
             self.field = field
+            self.message = msg
 
         def __str__(self):
             return repr(self.field)
@@ -50,6 +51,7 @@ class Parse(XMLParser):
             msg: explanation what went wrong
             """
             self.field = field
+            self.message = msg
 
         def __str__(self):
             return repr(self.field)
@@ -65,28 +67,27 @@ class Parse(XMLParser):
         get default currency if not available for currency-related fields
         """
         if not currency:
-            currency = self.get_model('Activity').get('default_currency')
+            currency = getattr(self.get_model('Activity'), 'default_currency')
             if not currency: raise self.RequiredFieldError("currency", "currency: currency is not set and default-currency is not set on activity as well")
 
         return currency
 
 
-    def get_model(self, key):
+    def get_model(self, key, index=-1):
         if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__name__) # class name
+            return super(Parse, self).get_model(key.__class__.__name__, **kwargs) # class name
 
         return super(Parse, self).get_model(key)
 
     def pop_model(self, key):
         if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__name__) # class name
+            return super(Parse, self).get_model(key.__class__.__name__) # class name
 
         return super(Parse, self).pop_model(key)
 
     def register_model(self, key, model=None):
         if isinstance(key, Model):
-            help(key)
-            return super(Parse, self).register_model(key.__name__, key) # class name
+            return super(Parse, self).register_model(key.__class__.__name__, key) # class name
 
         super(Parse, self).register_model(key, model)
 
@@ -239,7 +240,9 @@ class Parse(XMLParser):
         narrative.iati_identifier = self.iati_identifier # TODO: we need this?
         narrative.parent_object = parent
 
-        self.register_model('Narrative', narrative)
+        # TODO: handle this differently (also: breaks tests)
+        register_name = parent.__class__.__name__ + "Narrative"
+        self.register_model(register_name, narrative)
 
     '''atributes:
     {http://www.w3.org/XML/1998/namespace}lang:en
@@ -272,6 +275,9 @@ class Parse(XMLParser):
             if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise self.ValidationError("activity", "duplicate activity: last_updated_time is not present, but is present on duplicate activity")
 
+            # TODO: test activity is deleted along with related models
+            # TODO: do this after activity is parsed along with other saves?
+            old_activity.delete()
 
         activity = models.Activity()
         activity.id = id
@@ -301,7 +307,7 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.iati_identifier = iati_identifier
-        self.register_model('Activity', activity)
+        # self.register_model('Activity', activity)
         return element
 
     '''atributes:
@@ -456,7 +462,6 @@ class Parse(XMLParser):
 
         other_identifier = self.get_model('OtherIdentifier')
         other_identifier.owner_ref = ref
-        self.register_model('OtherIdentifier', other_identifier)
 
         return element
 
@@ -615,7 +620,6 @@ class Parse(XMLParser):
 
         contact_info = self.get_model('ContactInfo')
         contact_info.telephone = text
-        self.register_model('ContactInfo', contact_info)
          
         return element
 
@@ -629,7 +633,6 @@ class Parse(XMLParser):
 
         contact_info = self.get_model('ContactInfo')
         contact_info.email = text
-        self.register_model('ContactInfo', contact_info)
          
         return element
 
@@ -643,7 +646,6 @@ class Parse(XMLParser):
 
         contact_info = self.get_model('ContactInfo')
         contact_info.website = text
-        self.register_model('ContactInfo', contact_info)
          
         return element
 
@@ -755,7 +757,6 @@ class Parse(XMLParser):
         location = self.get_model('Location')
         location.location_reach = location_reach
          
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -774,7 +775,6 @@ class Parse(XMLParser):
         location.location_id_vocabulary = vocabulary
         location.location_id_code = code
 
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -876,7 +876,6 @@ class Parse(XMLParser):
         location = self.get_model('Location')
         location.point_srs_name = srs_name
 
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -898,7 +897,6 @@ class Parse(XMLParser):
         location = self.get_model('Location')
         location.point_pos = point
         
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -912,7 +910,6 @@ class Parse(XMLParser):
 
         location = self.get_model('Location')
         location.exactness = code
-        self.register_model('Location', location)
          
         return element
 
@@ -928,7 +925,6 @@ class Parse(XMLParser):
         location = self.get_model('Location')
         location.location_class = code
          
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -943,7 +939,6 @@ class Parse(XMLParser):
         location = self.get_model('Location')
         location.feature_designation = code
 
-        self.register_model('Location', location)
         return element
 
     '''atributes:
@@ -1071,7 +1066,6 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.collaboration_type = code
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1086,7 +1080,6 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.default_flow_type = code
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1101,7 +1094,6 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.default_finance_type = code
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1116,7 +1108,6 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.default_aid_type = code
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1131,7 +1122,6 @@ class Parse(XMLParser):
 
         activity = self.get_model('Activity')
         activity.default_tied_status = code
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1163,7 +1153,6 @@ class Parse(XMLParser):
         budget = self.get_model('Budget')
         budget.period_start = iso_date
          
-        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1177,7 +1166,6 @@ class Parse(XMLParser):
         budget = self.get_model('Budget')
         budget.period_end = iso_date
          
-        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1203,7 +1191,6 @@ class Parse(XMLParser):
         budget.value_date = value_date
         budget.currency = currency
          
-        self.register_model('Budget', budget)
         return element
 
     '''atributes:
@@ -1236,8 +1223,6 @@ class Parse(XMLParser):
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_start = iso_date
 
-        self.register_model('PlannedDisbursement', planned_disbursement)
-         
         return element
     '''atributes:
     iso-date:2014-12-31
@@ -1251,8 +1236,6 @@ class Parse(XMLParser):
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_end = iso_date
 
-        self.register_model('PlannedDisbursement', planned_disbursement)
-         
         return element
 
     '''atributes:
@@ -1277,7 +1260,6 @@ class Parse(XMLParser):
         planned_disbursement.value_date = value_date
         planned_disbursement.currency = currency
          
-        self.register_model('PlannedDisbursement', planned_disbursement)
         return element
     '''atributes:
     percentage:88.8
@@ -1286,7 +1268,6 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__capital_spend(self,element):
         activity = self.get_model('Activity')
         activity.capital_spend = element.attrib.get('percentage')
-        self.register_model('Activity', activity)
          
         return element
 
@@ -1310,14 +1291,13 @@ class Parse(XMLParser):
 
     tag:transaction-type'''
     def iati_activities__iati_activity__transaction__transaction_type(self,element):
-        transaction_type = self.get_or_none(transaction_models.TransactionType, code=element.attrib.get('code'))
+        transaction_type = self.get_or_none(codelist_models.TransactionType, code=element.attrib.get('code'))
 
         if not transaction_type: raise self.RequiredFieldError("code", "transaction-type: code is required")
 
         transaction = self.get_model('Transaction')
         transaction.transaction_type = transaction_type
 
-        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1332,7 +1312,6 @@ class Parse(XMLParser):
         transaction = self.get_model('Transaction')
         transaction.transaction_date = iso_date
          
-        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1355,7 +1334,6 @@ class Parse(XMLParser):
         transaction.value_date = value_date
         transaction.currency = currency
          
-        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1408,7 +1386,7 @@ class Parse(XMLParser):
         transaction = self.pop_model('Transaction')
         transaction.provider_organisation = transaction_provider
 
-        self.register_model('TransactionProvider', transaction_provider)
+        self.register_model('Transaction', transaction_provider)
         self.register_model('Transaction', transaction)
         return element
 
@@ -1452,7 +1430,7 @@ class Parse(XMLParser):
         transaction = self.pop_model('Transaction')
         transaction.receiver_organisation = transaction_receiver
 
-        self.register_model('TransactionReceiver', transaction_receiver)
+        self.register_model('Transaction', transaction_receiver)
         self.register_model('Transaction', transaction)
         return element
 
@@ -1476,7 +1454,6 @@ class Parse(XMLParser):
         transaction = self.get_model('Transaction')
         transaction.disbursement_channel = disbursement_channel
 
-        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1551,7 +1528,6 @@ class Parse(XMLParser):
 
         transaction = self.get_model('Transaction')
         transaction.flow_type = flow_type
-        self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1567,7 +1543,7 @@ class Parse(XMLParser):
 
         transaction = self.get_model('Transaction')
         transaction.finance_type = finance_type
-        self.register_model('Transaction', transaction)
+
         return element
 
     '''atributes:
@@ -1583,7 +1559,7 @@ class Parse(XMLParser):
 
         transaction = self.get_model('Transaction')
         transaction.aid_type = aid_type
-        self.register_model('Transaction', transaction)
+
         return element
 
     '''atributes:
@@ -1599,7 +1575,6 @@ class Parse(XMLParser):
 
         transaction = self.get_model('Transaction')
         transaction.tied_status = tied_status
-        transaction = self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1697,7 +1672,6 @@ class Parse(XMLParser):
         related_activity.ref = ref
         related_activity.type = related_activity_type
 
-
         # update existing related activitiy foreign keys
         # TODO: do this at the end of parsing in one pass
         try:
@@ -1708,431 +1682,430 @@ class Parse(XMLParser):
         self.register_model('RelatedActivity', related_activity)
         return element
 
-    '''atributes:
-    name:Project Status
-    value:7
-    iati-equivalent:activity-status
+    # '''atributes:
+    # name:Project Status
+    # value:7
+    # iati-equivalent:activity-status
 
-    tag:legacy-data'''
-    def iati_activities__iati_activity__legacy_data(self,element):
-        model = self.get_func_parent_model()
-        legacy_data = models.LegacyData()
-        legacy_data.activity = model
-        legacy_data.name = element.attrib.get('name')
-        legacy_data.value = element.attrib.get('value')
-        legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
-        legacy_data.save()
-        return element
+    # tag:legacy-data'''
+    # def iati_activities__iati_activity__legacy_data(self,element):
+    #     model = self.get_func_parent_model()
+    #     legacy_data = models.LegacyData()
+    #     legacy_data.activity = model
+    #     legacy_data.name = element.attrib.get('name')
+    #     legacy_data.value = element.attrib.get('value')
+    #     legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
+    #     legacy_data.save()
+    #     return element
 
-    '''atributes:
-    attached:1
+    # '''atributes:
+    # attached:1
 
-    tag:conditions'''
-    def iati_activities__iati_activity__conditions(self,element):
-        activity = self.get_model('Activity')
-        activity.has_conditions = self.makeBool(element.attrib.get('attached'))
-        self.register_model('Activity', activity)
+    # tag:conditions'''
+    # def iati_activities__iati_activity__conditions(self,element):
+    #     activity = self.get_model('Activity')
+    #     activity.has_conditions = self.makeBool(element.attrib.get('attached'))
 
-        return element
+    #     return element
 
-    '''atributes:
-    type:1
+    # '''atributes:
+    # type:1
 
-    tag:condition'''
-    def iati_activities__iati_activity__conditions__condition(self,element):
-        model = self.get_func_parent_model()
-        condition = models.Condition()
-        condition.activity = model
-        condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
-        self.set_func_model(condition)
-        return element
+    # tag:condition'''
+    # def iati_activities__iati_activity__conditions__condition(self,element):
+    #     model = self.get_func_parent_model()
+    #     condition = models.Condition()
+    #     condition.activity = model
+    #     condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
+    #     self.set_func_model(condition)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__conditions__condition__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__conditions__condition__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
-    type:1
-    aggregation-status:1
+    # '''atributes:
+    # type:1
+    # aggregation-status:1
 
-    tag:result'''
-    def iati_activities__iati_activity__result(self,element):
-        model = self.get_func_parent_model()
-        result = models.Result()
-        result.result_type = self.cached_db_call(models.ResultType,element.attrib.get('type'))
-        result.activity = model
-        result.aggregation_status = self.makeBool(element.attrib.get('aggregation-status'))
-        self.set_func_model(result)
-        return element
+    # tag:result'''
+    # def iati_activities__iati_activity__result(self,element):
+    #     model = self.get_func_parent_model()
+    #     result = models.Result()
+    #     result.result_type = self.cached_db_call(models.ResultType,element.attrib.get('type'))
+    #     result.activity = model
+    #     result.aggregation_status = self.makeBool(element.attrib.get('aggregation-status'))
+    #     self.set_func_model(result)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:title'''
-    def iati_activities__iati_activity__result__title(self,element):
-        model = self.get_func_parent_model()
-        result_title = models.ResultTitle()
-        result_title.result = model
-        self.set_func_model(result_title)
-        return element
+    # tag:title'''
+    # def iati_activities__iati_activity__result__title(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_title = models.ResultTitle()
+    #     result_title.result = model
+    #     self.set_func_model(result_title)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__title__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__title__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:description'''
-    def iati_activities__iati_activity__result__description(self,element):
-        model = self.get_func_parent_model()
-        result_description = models.ResultDescription()
-        result_description.result = model
-        self.set_func_model(result_description)
-        return element
+    # tag:description'''
+    # def iati_activities__iati_activity__result__description(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_description = models.ResultDescription()
+    #     result_description.result = model
+    #     self.set_func_model(result_description)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__description__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__description__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
-    measure:1
-    ascending:1
+    # '''atributes:
+    # measure:1
+    # ascending:1
 
-    tag:indicator'''
-    def iati_activities__iati_activity__result__indicator(self,element):
-        model = self.get_func_parent_model()
-        result_indicator = models.ResultIndicator()
-        result_indicator.result = model
-        result_indicator.baseline_year = 0
-        result_indicator.baseline_value = 0
-        self.set_func_model(result_indicator)
-        return element
+    # tag:indicator'''
+    # def iati_activities__iati_activity__result__indicator(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_indicator = models.ResultIndicator()
+    #     result_indicator.result = model
+    #     result_indicator.baseline_year = 0
+    #     result_indicator.baseline_value = 0
+    #     self.set_func_model(result_indicator)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:title'''
-    def iati_activities__iati_activity__result__indicator__title(self,element):
-        model = self.get_func_parent_model()
-        result_indicator_title = models.ResultIndicatorTitle()
-        result_indicator_title.result_indicator = model
+    # tag:title'''
+    # def iati_activities__iati_activity__result__indicator__title(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_indicator_title = models.ResultIndicatorTitle()
+    #     result_indicator_title.result_indicator = model
         
-        self.set_func_model(result_indicator_title)
-        return element
+    #     self.set_func_model(result_indicator_title)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:description'''
-    def iati_activities__iati_activity__result__indicator__description(self,element):
-        model = self.get_func_parent_model()
-        result_indicator_description = models.ResultIndicatorDescription()
-        result_indicator_description.result_indicator = model
-        self.set_func_model(result_indicator_description)
-        return element
+    # tag:description'''
+    # def iati_activities__iati_activity__result__indicator__description(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_indicator_description = models.ResultIndicatorDescription()
+    #     result_indicator_description.result_indicator = model
+    #     self.set_func_model(result_indicator_description)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
-    year:2012
-    value:10
+    # '''atributes:
+    # year:2012
+    # value:10
 
-    tag:baseline'''
-    def iati_activities__iati_activity__result__indicator__baseline(self,element):
-        model = self.get_func_parent_model()
-        model.baseline_year = element.attrib.get('year')
-        model.baseline_value = element.attrib.get('value')
+    # tag:baseline'''
+    # def iati_activities__iati_activity__result__indicator__baseline(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.baseline_year = element.attrib.get('year')
+    #     model.baseline_value = element.attrib.get('value')
 
-        return element
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
-        model = self.get_func_parent_model()
-        indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
-        indicator_baseline_comment.result_indicator = model
-        self.set_func_model(indicator_baseline_comment)
-        #store element 
-        return element
+    # tag:comment'''
+    # def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
+    #     model = self.get_func_parent_model()
+    #     indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
+    #     indicator_baseline_comment.result_indicator = model
+    #     self.set_func_model(indicator_baseline_comment)
+    #     #store element 
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:period'''
-    def iati_activities__iati_activity__result__indicator__period(self,element):
-        model = self.get_func_parent_model()
-        result_indicator_period = models.ResultIndicatorPeriod()
-        result_indicator_period.result_indicator = model
-        self.set_func_model(result_indicator_period)
-        return element
+    # tag:period'''
+    # def iati_activities__iati_activity__result__indicator__period(self,element):
+    #     model = self.get_func_parent_model()
+    #     result_indicator_period = models.ResultIndicatorPeriod()
+    #     result_indicator_period.result_indicator = model
+    #     self.set_func_model(result_indicator_period)
+    #     return element
 
-    '''atributes:
-    iso-date:2013-01-01
+    # '''atributes:
+    # iso-date:2013-01-01
 
-    tag:period-start'''
-    def iati_activities__iati_activity__result__indicator__period__period_start(self,element):
-        model = self.get_func_parent_model()
-        model.period_start = element.attrib.get('iso-date')
-        return element
+    # tag:period-start'''
+    # def iati_activities__iati_activity__result__indicator__period__period_start(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.period_start = element.attrib.get('iso-date')
+    #     return element
 
-    '''atributes:
-    iso-date:2013-03-31
+    # '''atributes:
+    # iso-date:2013-03-31
 
-    tag:period-end'''
-    def iati_activities__iati_activity__result__indicator__period__period_end(self,element):
-        model = self.get_func_parent_model()
-        model.period_end = element.attrib.get('iso-date')
-        return element
+    # tag:period-end'''
+    # def iati_activities__iati_activity__result__indicator__period__period_end(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.period_end = element.attrib.get('iso-date')
+    #     return element
 
-    '''atributes:
-    value:10
+    # '''atributes:
+    # value:10
 
-    tag:target'''
-    def iati_activities__iati_activity__result__indicator__period__target(self,element):
-        model = self.get_func_parent_model()
-        model.target = element.attrib.get('value')
+    # tag:target'''
+    # def iati_activities__iati_activity__result__indicator__period__target(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.target = element.attrib.get('value')
 
-        return element
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
-        model = self.get_func_parent_model()
-        period_target_comment = models.ResultIndicatorPeriodTargetComment()
-        period_target_comment.result_indicator_period = model
-        self.set_func_model(period_target_comment)
-        #store element 
-        return element
+    # tag:comment'''
+    # def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
+    #     model = self.get_func_parent_model()
+    #     period_target_comment = models.ResultIndicatorPeriodTargetComment()
+    #     period_target_comment.result_indicator_period = model
+    #     self.set_func_model(period_target_comment)
+    #     #store element 
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
-    value:11
+    # '''atributes:
+    # value:11
 
-    tag:actual'''
-    def iati_activities__iati_activity__result__indicator__period__actual(self,element):
-        model = self.get_func_parent_model()
-        model.actual = element.attrib.get('value')
-        return element
+    # tag:actual'''
+    # def iati_activities__iati_activity__result__indicator__period__actual(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.actual = element.attrib.get('value')
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
-        model = self.get_func_parent_model()
-        period_actual_comment = models.ResultIndicatorPeriodActualComment()
-        period_actual_comment.result_indicator_period = model
-        self.set_func_model(period_actual_comment)
-        #store element 
-        return element
+    # tag:comment'''
+    # def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
+    #     model = self.get_func_parent_model()
+    #     period_actual_comment = models.ResultIndicatorPeriodActualComment()
+    #     period_actual_comment.result_indicator_period = model
+    #     self.set_func_model(period_actual_comment)
+    #     #store element 
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:narrative'''
-    def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
-        activity_date = self.get_model('ActivityDate')
-        self.add_narrative(element, activity_date)
-        return element
+    # tag:narrative'''
+    # def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
+    #     activity_date = self.get_model('ActivityDate')
+    #     self.add_narrative(element, activity_date)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:crs-add'''
-    def iati_activities__iati_activity__crs_add(self,element):
-        model = self.get_func_parent_model()
-        crs_add = models.CrsAdd()
-        crs_add.activity = model
-        self.set_func_model(crs_add)
+    # tag:crs-add'''
+    # def iati_activities__iati_activity__crs_add(self,element):
+    #     model = self.get_func_parent_model()
+    #     crs_add = models.CrsAdd()
+    #     crs_add.activity = model
+    #     self.set_func_model(crs_add)
          
-        return element
+    #     return element
 
-    '''atributes:
-    code:1
-    significance:1
+    # '''atributes:
+    # code:1
+    # significance:1
 
-    tag:other-flags'''
-    def iati_activities__iati_activity__crs_add__other_flags(self,element):
-        model = self.get_func_parent_model()
-        crs_other_flags = models.CrsAddOtherFlags()
-        crs_other_flags.crs_add = model
-        crs_other_flags.other_flags =  self.cached_db_call(models.OtherFlags,element.attrib.get('code'))
-        crs_other_flags.significance = element.attrib.get('significance')
-        crs_other_flags.save()
-        return element
+    # tag:other-flags'''
+    # def iati_activities__iati_activity__crs_add__other_flags(self,element):
+    #     model = self.get_func_parent_model()
+    #     crs_other_flags = models.CrsAddOtherFlags()
+    #     crs_other_flags.crs_add = model
+    #     crs_other_flags.other_flags =  self.cached_db_call(models.OtherFlags,element.attrib.get('code'))
+    #     crs_other_flags.significance = element.attrib.get('significance')
+    #     crs_other_flags.save()
+    #     return element
 
-    '''atributes:
-    rate-1:4
-    rate-2:3
+    # '''atributes:
+    # rate-1:4
+    # rate-2:3
 
-    tag:loan-terms'''
-    def iati_activities__iati_activity__crs_add__loan_terms(self,element):
-        model = self.get_func_parent_model()
-        add_loan_terms = models.CrsAddLoanTerms()
-        add_loan_terms.crs_add = model
-        add_loan_terms.rate_1 = element.attrib.get('rate-1')
-        add_loan_terms.rate_2 = element.attrib.get('rate-2')
-        self.set_func_model(add_loan_terms)
-        return element
+    # tag:loan-terms'''
+    # def iati_activities__iati_activity__crs_add__loan_terms(self,element):
+    #     model = self.get_func_parent_model()
+    #     add_loan_terms = models.CrsAddLoanTerms()
+    #     add_loan_terms.crs_add = model
+    #     add_loan_terms.rate_1 = element.attrib.get('rate-1')
+    #     add_loan_terms.rate_2 = element.attrib.get('rate-2')
+    #     self.set_func_model(add_loan_terms)
+    #     return element
 
-    '''atributes:
-    code:1
+    # '''atributes:
+    # code:1
 
-    tag:repayment-type'''
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self,element):
-        model = self.get_func_parent_model()
-        model.repayment_type = self.cached_db_call(models.LoanRepaymentType,element.attrib.get('code'))
+    # tag:repayment-type'''
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.repayment_type = self.cached_db_call(models.LoanRepaymentType,element.attrib.get('code'))
 
          
-        return element
+    #     return element
 
-    '''atributes:
-    code:4
+    # '''atributes:
+    # code:4
 
-    tag:repayment-plan'''
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self,element):
-        model = self.get_func_parent_model()
-        model.repayment_plan = self.cached_db_call(models.LoanRepaymentPeriod,element.attrib.get('code'))
+    # tag:repayment-plan'''
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.repayment_plan = self.cached_db_call(models.LoanRepaymentPeriod,element.attrib.get('code'))
 
-        return element
+    #     return element
 
-    '''atributes:
-    iso-date:2013-09-01
+    # '''atributes:
+    # iso-date:2013-09-01
 
-    tag:commitment-date'''
-    def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self,element):
-        model = self.get_func_parent_model()
-        model.commitment_date = self.validate_date(element.attrib.get('iso-date'))
-        return element
+    # tag:commitment-date'''
+    # def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.commitment_date = self.validate_date(element.attrib.get('iso-date'))
+    #     return element
 
-    '''atributes:
-    iso-date:2014-01-01
+    # '''atributes:
+    # iso-date:2014-01-01
 
-    tag:repayment-first-date'''
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self,element):
-        model = self.get_func_parent_model()
-        model.repayment_first_date = self.validate_date(element.attrib.get('iso-date'))
+    # tag:repayment-first-date'''
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_first_date(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.repayment_first_date = self.validate_date(element.attrib.get('iso-date'))
 
-    '''atributes:
-    iso-date:2020-12-31
+    # '''atributes:
+    # iso-date:2020-12-31
 
-    tag:repayment-final-date'''
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self,element):
-        model = self.get_func_parent_model()
-        model.repayment_final_date = self.validate_date(element.attrib.get('iso-date'))
-        return element
+    # tag:repayment-final-date'''
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_final_date(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.repayment_final_date = self.validate_date(element.attrib.get('iso-date'))
+    #     return element
 
-    '''atributes:
-    year:2014
-    currency:GBP
-    value-date:2013-05-24
+    # '''atributes:
+    # year:2014
+    # currency:GBP
+    # value-date:2013-05-24
 
-    tag:loan-status'''
-    def iati_activities__iati_activity__crs_add__loan_status(self,element):
-        model = self.get_func_parent_model()
-        crs_loan_status = models.CrsAddLoanStatus()
-        crs_loan_status.crs_add = model
-        crs_loan_status.year = element.attrib.get('year')
-        crs_loan_status.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
-        crs_loan_status.value_date =  self.validate_date(element.attrib.get('value-date'))
-        self.set_func_model(crs_loan_status)
-        return element
+    # tag:loan-status'''
+    # def iati_activities__iati_activity__crs_add__loan_status(self,element):
+    #     model = self.get_func_parent_model()
+    #     crs_loan_status = models.CrsAddLoanStatus()
+    #     crs_loan_status.crs_add = model
+    #     crs_loan_status.year = element.attrib.get('year')
+    #     crs_loan_status.currency = self.cached_db_call(models.Currency,element.attrib.get('currency'))
+    #     crs_loan_status.value_date =  self.validate_date(element.attrib.get('value-date'))
+    #     self.set_func_model(crs_loan_status)
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:interest-received'''
-    def iati_activities__iati_activity__crs_add__loan_status__interest_received(self,element):
-        model = self.get_func_parent_model()
-        model.interest_received = element.text
-        return element
+    # tag:interest-received'''
+    # def iati_activities__iati_activity__crs_add__loan_status__interest_received(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.interest_received = element.text
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:principal-outstanding'''
-    def iati_activities__iati_activity__crs_add__loan_status__principal_outstanding(self,element):
-        model = self.get_func_parent_model()
-        model.principal_outstanding = element.text
-        return element
+    # tag:principal-outstanding'''
+    # def iati_activities__iati_activity__crs_add__loan_status__principal_outstanding(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.principal_outstanding = element.text
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:principal-arrears'''
-    def iati_activities__iati_activity__crs_add__loan_status__principal_arrears(self,element):
-        model = self.get_func_parent_model()
-        model.principal_arrears = element.text
-        return element
+    # tag:principal-arrears'''
+    # def iati_activities__iati_activity__crs_add__loan_status__principal_arrears(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.principal_arrears = element.text
+    #     return element
 
-    '''atributes:
+    # '''atributes:
 
-    tag:interest-arrears'''
-    def iati_activities__iati_activity__crs_add__loan_status__interest_arrears(self,element):
-        model = self.get_func_parent_model()
-        model.interest_arrears = element.text
-        return element
+    # tag:interest-arrears'''
+    # def iati_activities__iati_activity__crs_add__loan_status__interest_arrears(self,element):
+    #     model = self.get_func_parent_model()
+    #     model.interest_arrears = element.text
+    #     return element
 
-    '''atributes:
-    extraction-date:2014-05-06
-    priority:1
-    phaseout-year:2016
+    # '''atributes:
+    # extraction-date:2014-05-06
+    # priority:1
+    # phaseout-year:2016
 
-    tag:fss'''
-    def iati_activities__iati_activity__fss(self,element):
-        model = self.get_func_parent_model()
-        fss = models.Fss()
-        fss.activity = model
-        fss.year = element.attrib.get('phaseout-year')
-        fss.extraction_date = self.validate_date(element.attrib.get('extraction-date'))
-        self.set_func_model(fss)
-        return element
+    # tag:fss'''
+    # def iati_activities__iati_activity__fss(self,element):
+    #     model = self.get_func_parent_model()
+    #     fss = models.Fss()
+    #     fss.activity = model
+    #     fss.year = element.attrib.get('phaseout-year')
+    #     fss.extraction_date = self.validate_date(element.attrib.get('extraction-date'))
+    #     self.set_func_model(fss)
+    #     return element
 
-    '''atributes:
-    year:2014
-    value-date:2013-07-03
-    currency:GBP
+    # '''atributes:
+    # year:2014
+    # value-date:2013-07-03
+    # currency:GBP
 
-    tag:forecast'''
-    def iati_activities__iati_activity__fss__forecast(self,element):
-        model = self.get_func_parent_model()
-        fss_forecast = models.FssForecast()
-        fss_forecast.fss = model
-        fss_forecast.year = element.attrib.get('year')
-        fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
-        fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
-        return element
+    # tag:forecast'''
+    # def iati_activities__iati_activity__fss__forecast(self,element):
+    #     model = self.get_func_parent_model()
+    #     fss_forecast = models.FssForecast()
+    #     fss_forecast.fss = model
+    #     fss_forecast.year = element.attrib.get('year')
+    #     fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
+    #     fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
+    #     return element
 

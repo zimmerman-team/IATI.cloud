@@ -1,4 +1,5 @@
 from IATI_2_01 import Parse as IATI_201_Parser
+from lxml.builder import E
 
 from iati import models
 from iati_codelists import models as codelist_models
@@ -38,19 +39,17 @@ class Parse(IATI_201_Parser):
         'WB': None, # has no mapping
     }
 
-
-
-    transaction_type_trans = {
-        'IF': 1,
-        'C': 2,
-        'D': 3,
-        'E': 4,
-        'IR': 5,
-        'LR': 6,
-        'R': 7,
-        'QP': 8,
-        'Q3': 9,
-        'CG': 10
+    transaction_type_mapping = {
+        'IF': '1',
+        'C': '2',
+        'D': '3',
+        'E': '4',
+        'IR': '5',
+        'LR': '6',
+        'R': '7',
+        'QP': '8',
+        'Q3': '9',
+        'CG': '10'
     }
 
     # def add_narrative(self, text, parent):
@@ -79,8 +78,8 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__reporting_org(self,element):
         super(Parse, self).iati_activities__iati_activity__reporting_org(element)
 
-        ActivityReportingOrganisation = self.get_model('ActivityReportingOrganisation')
-        self.add_narrative(element, activityReportingOrganisation)
+        activity_reporting_organisation = self.get_model('ActivityReportingOrganisation')
+        self.add_narrative(element, activity_reporting_organisation)
 
         return element
 
@@ -97,12 +96,13 @@ class Parse(IATI_201_Parser):
 
         if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
-        element.attrib['role'] = role.code
+        if role:
+            element.attrib['role'] = role.code
 
         super(Parse, self).iati_activities__iati_activity__participating_org(element)
 
-        ActivityParticipatingOrganisation = self.get_model('ActivityParticipatingOrganisation')
-        self.add_narrative(element, activityParticipatingOrganisation)
+        participating_organisation = self.get_model('ActivityParticipatingOrganisation')
+        self.add_narrative(element, participating_organisation)
 
         return element
 
@@ -125,7 +125,8 @@ class Parse(IATI_201_Parser):
         other_identifier.identifier=identifier
         other_identifier.owner_ref=owner_ref
 
-        self.add_narrative(owner_name, other_identifier)
+        # TODO: refactor this to not create an lxml element
+        self.add_narrative(E('elem', owner_name), other_identifier)
         self.register_model('OtherIdentifier', other_identifier)
 
         return element
@@ -134,6 +135,7 @@ class Parse(IATI_201_Parser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self, element):
+        # TODO: no need for this, handled in add_narrative
         text = element.text
         
         if not text: raise self.RequiredFieldError("text", "text is required")
@@ -142,7 +144,7 @@ class Parse(IATI_201_Parser):
         title = models.Title()
         title.activity = activity
 
-        self.add_narrative(text, title)
+        self.add_narrative(element, title)
         self.register_model('Title', title)
 
         return element
@@ -181,7 +183,8 @@ class Parse(IATI_201_Parser):
 
         if not type_code: raise self.RequiredFieldError("type", "activity_date: type is required")
 
-        element.attrib['type'] = type_code
+        if type_code:
+            element.attrib['type'] = type_code
 
         super(Parse, self).iati_activities__iati_activity__activity_date(element)
 
@@ -258,13 +261,14 @@ class Parse(IATI_201_Parser):
 
     tag:sector'''
     def iati_activities__iati_activity__sector(self,element):
-        code = element.attrib.get('code')
+        # code = element.attrib.get('code')
         vocabulary = self.sector_vocabulary_mapping.get(element.attrib.get('vocabulary'))
 
-        if not code: raise self.RequiredFieldError("code", "activity_sector: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "activity_sector: vocabulary is required")
+        # if not code: raise self.RequiredFieldError("code", "activity_sector: code is required")
+        # if not vocabulary: raise self.RequiredFieldError("vocabulary", "activity_sector: vocabulary is required")
 
-        element.attrib['vocabulary'] = vocabulary
+        if vocabulary:
+            element.attrib['vocabulary'] = vocabulary
         super(Parse, self).iati_activities__iati_activity__sector(element)
 
         return element
@@ -289,11 +293,24 @@ class Parse(IATI_201_Parser):
 
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
 
-        element.attrib['vocabulary'] = vocabulary
+        if vocabulary:
+            element.attrib['vocabulary'] = vocabulary
         super(Parse, self).iati_activities__iati_activity__policy_marker(element)
 
         policy_marker = self.get_model('ActivityPolicyMarker')
         self.add_narrative(element, policy_marker)
+        return element
+
+    '''atributes:
+
+    tag:description'''
+    def iati_activities__iati_activity__transaction__transaction_type(self,element):
+        code = self.transaction_type_mapping.get(element.attrib.get('code'))
+
+        if code:
+            element.attrib['code'] = code
+
+        super(Parse, self).iati_activities__iati_activity__transaction__transaction_type(element)
         return element
 
     '''atributes:
@@ -314,7 +331,7 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__transaction__provider_org(self, element):
         super(Parse, self).iati_activities__iati_activity__transaction__provider_org(element)
     
-        transaction_provider = self.get_model('TransactionProvider')
+        transaction_provider = self.get_model('Transaction', index=-2)
         self.add_narrative(element, transaction_provider)
         return element
 
@@ -326,7 +343,7 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__transaction__receiver_org(self, element):
         super(Parse, self).iati_activities__iati_activity__transaction__receiver_org(element)
     
-        transaction_receiver = self.get_model('TransactionReceiver')
+        transaction_receiver = self.get_model('Transaction', index=-2)
         self.add_narrative(element, transaction_receiver)
         return element
 
@@ -335,138 +352,140 @@ class Parse(IATI_201_Parser):
     tag:title'''
     def iati_activities__iati_activity__document_link__title(self, element):
         super(Parse, self).iati_activities__iati_activity__document_link__title(element)
+
+        document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
         return element
 
-    '''atributes:
+#     '''atributes:
 
-    tag:activity-website'''
-    def iati_activities__iati_activity__activity_website(self, element):
-        model = self.get_func_parent_model()
-        website = models.ActivityWebsite()
-        website.activity = model
-        website.url = element.text
-        website.save()
-        #store element 
-        return element
+#     tag:activity-website'''
+#     def iati_activities__iati_activity__activity_website(self, element):
+#         model = self.get_func_parent_model()
+#         website = models.ActivityWebsite()
+#         website.activity = model
+#         website.url = element.text
+#         website.save()
+#         #store element 
+#         return element
 
-    '''atributes:
-    type:1
+#     '''atributes:
+#     type:1
 
-    tag:condition'''
-    def iati_activities__iati_activity__conditions__condition(self, element):
-        model = self.get_func_parent_model()
-        condition = models.Condition()
-        condition.activity = model
-        condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
-        self.add_narrative(element, condition)
-        return element
-
-
-    '''atributes:
-
-    tag:title'''
-    def iati_activities__iati_activity__result__title(self,element):
-        model = self.get_func_parent_model()
-        result_title = models.ResultTitle()
-        result_title.result = model
-        self.add_narrative(element,result_title)
-        return element
-
-    '''atributes:
-
-    tag:description'''
-    def iati_activities__iati_activity__result__description(self,element):
-        model = self.get_func_parent_model()
-        result_description = models.ResultDescription()
-        result_description.result = model
-        self.add_narrative(element,result_description)
-        return element
+#     tag:condition'''
+#     def iati_activities__iati_activity__conditions__condition(self, element):
+#         model = self.get_func_parent_model()
+#         condition = models.Condition()
+#         condition.activity = model
+#         condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
+#         self.add_narrative(element, condition)
+#         return element
 
 
-    '''atributes:
+#     '''atributes:
 
-    tag:title'''
-    def iati_activities__iati_activity__result__indicator__title(self,element):
-        model = self.get_func_parent_model()
-        result_indicator_title = models.ResultIndicatorTitle()
-        result_indicator_title.result_indicator = model
-        self.add_narrative(element,result_indicator_title)
-        return element
+#     tag:title'''
+#     def iati_activities__iati_activity__result__title(self,element):
+#         model = self.get_func_parent_model()
+#         result_title = models.ResultTitle()
+#         result_title.result = model
+#         self.add_narrative(element,result_title)
+#         return element
 
-    '''atributes:
+#     '''atributes:
 
-    tag:description'''
-    def iati_activities__iati_activity__result__indicator__description(self,element):
-        model = self.get_func_parent_model()
-        result_indicator_description = models.ResultIndicatorDescription()
-        result_indicator_description.result_indicator = model
-        self.add_narrative(element,result_indicator_description)
-        #store element 
-        return element
-
-
-    '''atributes:
-
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
-        model = self.get_func_parent_model()
-        indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
-        indicator_baseline_comment.result_indicator = model
-        self.add_narrative(element,indicator_baseline_comment)
-        return element
+#     tag:description'''
+#     def iati_activities__iati_activity__result__description(self,element):
+#         model = self.get_func_parent_model()
+#         result_description = models.ResultDescription()
+#         result_description.result = model
+#         self.add_narrative(element,result_description)
+#         return element
 
 
-    '''atributes:
+#     '''atributes:
 
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
-        model = self.get_func_parent_model()
-        period_target_comment = models.ResultIndicatorPeriodTargetComment()
-        period_target_comment.result_indicator_period = model
-        self.add_narrative(element,period_target_comment)
-        return element
+#     tag:title'''
+#     def iati_activities__iati_activity__result__indicator__title(self,element):
+#         model = self.get_func_parent_model()
+#         result_indicator_title = models.ResultIndicatorTitle()
+#         result_indicator_title.result_indicator = model
+#         self.add_narrative(element,result_indicator_title)
+#         return element
 
+#     '''atributes:
 
-    '''atributes:
-
-    tag:comment'''
-    def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
-        model = self.get_func_parent_model()
-        period_actual_comment = models.ResultIndicatorPeriodActualComment()
-        period_actual_comment.result_indicator_period = model
-        self.add_narrative(element,period_actual_comment)
-        return element
-
-
-    '''atributes:
-    code:1
-    significance:1
-
-    tag:aidtype-flag'''
-    def iati_activities__iati_activity__crs_add__aidtype_flag(self,element):
-        model = self.get_func_parent_model()
-        crs_other_flags = models.CrsAddOtherFlags()
-        crs_other_flags.crs_add = model
-        crs_other_flags.other_flags = self.cached_db_call_no_version(models.OtherFlags,element.attrib.get('code'))
-        crs_other_flags.significance = element.attrib.get('significance')
-        crs_other_flags.save()
-        #store element 
-        return element
+#     tag:description'''
+#     def iati_activities__iati_activity__result__indicator__description(self,element):
+#         model = self.get_func_parent_model()
+#         result_indicator_description = models.ResultIndicatorDescription()
+#         result_indicator_description.result_indicator = model
+#         self.add_narrative(element,result_indicator_description)
+#         #store element 
+#         return element
 
 
-    '''atributes:
-    year:2014
-    value-date:2013-07-03
-    currency:GBP
+#     '''atributes:
 
-    tag:forecast'''
-    def iati_activities__iati_activity__fss__forecast(self,element):
-        model = self.get_func_parent_model()
-        fss_forecast = models.FssForecast()
-        fss_forecast.fss = model
-        fss_forecast.year = element.attrib.get('year')
-        fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
-        fss_forecast.currency = self.cached_db_call_no_version(models.Currency,element.attrib.get('currency'))
-        return element
+#     tag:comment'''
+#     def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
+#         model = self.get_func_parent_model()
+#         indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
+#         indicator_baseline_comment.result_indicator = model
+#         self.add_narrative(element,indicator_baseline_comment)
+#         return element
+
+
+#     '''atributes:
+
+#     tag:comment'''
+#     def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
+#         model = self.get_func_parent_model()
+#         period_target_comment = models.ResultIndicatorPeriodTargetComment()
+#         period_target_comment.result_indicator_period = model
+#         self.add_narrative(element,period_target_comment)
+#         return element
+
+
+#     '''atributes:
+
+#     tag:comment'''
+#     def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
+#         model = self.get_func_parent_model()
+#         period_actual_comment = models.ResultIndicatorPeriodActualComment()
+#         period_actual_comment.result_indicator_period = model
+#         self.add_narrative(element,period_actual_comment)
+#         return element
+
+
+#     '''atributes:
+#     code:1
+#     significance:1
+
+#     tag:aidtype-flag'''
+#     def iati_activities__iati_activity__crs_add__aidtype_flag(self,element):
+#         model = self.get_func_parent_model()
+#         crs_other_flags = models.CrsAddOtherFlags()
+#         crs_other_flags.crs_add = model
+#         crs_other_flags.other_flags = self.cached_db_call_no_version(models.OtherFlags,element.attrib.get('code'))
+#         crs_other_flags.significance = element.attrib.get('significance')
+#         crs_other_flags.save()
+#         #store element 
+#         return element
+
+
+#     '''atributes:
+#     year:2014
+#     value-date:2013-07-03
+#     currency:GBP
+
+#     tag:forecast'''
+#     def iati_activities__iati_activity__fss__forecast(self,element):
+#         model = self.get_func_parent_model()
+#         fss_forecast = models.FssForecast()
+#         fss_forecast.fss = model
+#         fss_forecast.year = element.attrib.get('year')
+#         fss_forecast.value_date = self.validate_date(element.attrib.get('value-date'))
+#         fss_forecast.currency = self.cached_db_call_no_version(models.Currency,element.attrib.get('currency'))
+#         return element
 

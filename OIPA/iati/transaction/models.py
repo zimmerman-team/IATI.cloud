@@ -20,7 +20,7 @@ class TransactionProvider(models.Model):
         db_constraint=False,
         null=True,
         default=None)
-    provider_activity_ref = models.CharField(max_length=200, default="")
+    provider_activity_ref = models.CharField(max_length=200, null=True, default="")
 
     narratives = GenericRelation(Narrative)
 
@@ -39,7 +39,7 @@ class TransactionReceiver(models.Model):
         db_constraint=False,
         null=True,
         default=None)
-    receiver_activity_ref = models.CharField(max_length=200, default="")
+    receiver_activity_ref = models.CharField(max_length=200, null=True, default="")
 
     narratives = GenericRelation(Narrative)
 

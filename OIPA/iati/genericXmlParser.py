@@ -6,6 +6,7 @@ from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber
 import datetime
+from collections import OrderedDict
 from decimal import Decimal
 import inspect
 import traceback
@@ -14,6 +15,8 @@ from iati_synchroniser.exception_handler import exception_handler
 import re
 from django.contrib.auth.models import User
 import traceback
+from django.db import IntegrityError
+from django.db.models.fields.related import ForeignKey, OneToOneField
 
 class XMLParser(object):
     VERSION = '2.01'  #overwrite for older versions
@@ -24,8 +27,8 @@ class XMLParser(object):
     hints = []
     errors = []
 
-    db_call_cache = {}
-    model_store = {}
+    # TODO: find a way to simply save in parser functions, and actually commit to db on exit
+    model_store = OrderedDict()
 
     DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
 
@@ -42,8 +45,7 @@ class XMLParser(object):
     def load_and_parse(self, root):
         
         self.root = root
-        self.parse(root)
-        self.save_all_models()
+        self.parse_activities(root)
 
         hintsStr = ''
         errorStr = ''
@@ -68,49 +70,58 @@ class XMLParser(object):
             data = myfile.read().replace('\n', '')
         self.load_and_parse(data)
 
+    def parse_activities(self, root):
+        # TODO: refactor this and the module
+        for e in root.getchildren():
+            print(e)
+            self.model_store = OrderedDict()
+            self.parse(e)
+            self.save_all_models()
+
 
     def parse(self,element):
 
         if element == None:
             return
         if type(element).__name__ != '_Element':
-            #print type(element).__name__ 
             return
+        if element.tag == etree.Comment:
+            return
+        
+        x_path = self.root.getroottree().getpath(element)
+        function_name = self.generate_function_name(x_path)
+        if hasattr(self, function_name) and callable(getattr(self, function_name)):
+            elementMethod = getattr(self, function_name)
+            try:
+                elementMethod(element)
+            except self.RequiredFieldError as e:
+                # print(e.field)
+                # print(e.message)
+                traceback.print_exc()
+                pass
+            except self.ValidationError as e:
+                print(e)
+                pass
+            except Exception as exception:
+                # pass
+                print(exception.message)
+                # traceback.print_exc()
+                # self.handle_exception(x_path, function_name, exeception,e)
+        # else:
+        #     if not self.magicMethod(function_name,e):
+        #         self.handle_function_not_found(x_path, function_name,e)
 
+            # try:
+            #     self.parse(element)
+            # except Exception as exeception:
+            #     traceback.print_exc()
+            #     self.handle_exception(x_path, function_name, exeception,element)
 
         for e in element.getchildren():
+            self.parse(e)
 
-            if e == None or type(e).__name__ != '_Element':
-                
-                continue
-            x_path = self.root.getroottree().getpath(e)
-            function_name = self.generate_function_name(x_path)
-            #print function_name
-            if element.tag == etree.Comment:
-                continue
-            if hasattr(self, function_name) and callable(getattr(self, function_name)):
-                elementMethod = getattr(self, function_name)
-                try:
-                    self.parse(elementMethod(e))
-                except Exception as exeception:
-                    print 'error'
-                    #print function_name
-                    traceback.print_exc()
-                    self.handle_exception(x_path, function_name, exeception,e)
-                    #self.parse(e)
-            else:
-                if not self.magicMethod(function_name,e):
-                    self.handle_function_not_found(x_path, function_name,e)
-                #print function_name
-                try:
-                    self.parse(e)
-                except Exception as exeception:
-                    print 'error'
-                    #print function_name
-                    traceback.print_exc()
-                    self.handle_exception(x_path, function_name, exeception,element)
-        
-
+        # todo: rewrite this
+    
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '__')
         function_name = function_name.replace('-', '_')
@@ -182,86 +193,6 @@ class XMLParser(object):
     def sendErrorMail(self,toAddress, errorString):
         send_mail('error mail!', errorString, 'error@oipa.nl',[toAddress], fail_silently=False)
 
-    # call db to find a key 
-    def cached_db_call(self,model, key,keyDB = 'code',createNew=False):
-        if key == '' or key == None:
-            return None
-        opts = model._meta
-        try:
-            opts.get_field('codelist_iati_version')
-        except:
-            return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
-
-        model_name = model.__name__
-        codelist_iati_version = self.VERSION
-
-        if model_name in self.db_call_cache:
-            model_cache = self.db_call_cache[model_name]
-            if key in model_cache:
-                return model_cache[key]
-            else:
-                try:
-                    if model.objects.filter(code=key,codelist_iati_version=codelist_iati_version).exists():
-                        model_cache[key] = model.objects.get(code=key,codelist_iati_version=codelist_iati_version)
-                    elif model.objects.filter(code=key).exists():
-                        model_cache[key] = model.objects.get(code=key)
-                    return model_cache[key]
-                except:
-                    if model.objects.filter(name=key,codelist_iati_version=codelist_iati_version).exists():
-                        model_cache[key] = model.objects.get(name=key,codelist_iati_version=codelist_iati_version)
-                        return model_cache[key]
-                else:
-                    if createNew == True:
-                        #print 'in create new'
-                        modelInstance = model()
-                        modelInstance.code = key
-                        modelInstance.codelist_iati_version=codelist_iati_version
-                        modelInstance.save()
-                        return modelInstance
-                    
-                    return None
-        else:
-            self.db_call_cache[model_name] = {}
-            objects = model.objects.all()[:self.DB_CACHE_LIMIT]
-            for obj in objects:
-                self.db_call_cache[model_name][obj.code] = obj
-            #print 'call recursively'
-            return self.cached_db_call(model,key,keyDB=keyDB,createNew=createNew)
-
-    def cached_db_call_no_version(self,model, key,keyDB = 'code',createNew=False):
-        model_name = model.__name__
-        #print model_name
-        #print createNew
-        if model_name in self.db_call_cache:
-            model_cache = self.db_call_cache[model_name]
-            if key in model_cache:
-                return model_cache[key]
-            else:
-                try:
-                    if model.objects.filter(code=key).exists():
-                        model_cache[key] = model.objects.get(code=key)
-                        return model_cache[key]
-                except:
-                    if model.objects.filter(name=key).exists():
-                        model_cache[key] = model.objects.get(name=key)
-                        return model_cache[key]
-                else:
-                    if createNew == True:
-                        print 'in create new'
-                        modelInstance = model()
-                        modelInstance.code = key
-                        modelInstance.save()
-                        return modelInstance
-                    
-                    return None
-        else:
-            self.db_call_cache[model_name] = {}
-            objects = model.objects.all()[:self.DB_CACHE_LIMIT]
-            for obj in objects:
-                self.db_call_cache[model_name][obj.code] = obj
-            #print 'call recursively'
-            return self.cached_db_call_no_version(model,key,keyDB=keyDB,createNew=createNew)
-
     # register last seen model of this type. Is overwritten on later encounters
     def register_model(self, key, model):
         if key in self.model_store:
@@ -282,43 +213,6 @@ class XMLParser(object):
     def save_model(self, key, index=-1):
         return self.get_model(key, index).save()
 
-    # def get_func_parent_model(self,class_name = None):
-    #     caller_name =  inspect.stack()[1][3] # get the name of the caller function
-    #     caller_name_arr = caller_name.split("__")
-    #     key_string = None
-    #     model = None
-    #     for caller_name_part in caller_name_arr[:-1]:
-    #         #print caller_name_part
-    #         if key_string == None:
-    #             key_string = caller_name_part
-    #             continue
-    #         else:
-    #             key_string += '__'+caller_name_part
-    #             #print key_string
-    #             if key_string in self.model_store:
-    #                 model_temp = self.model_store[key_string]
-    #                 #print model_temp.__class__.__name__
-    #                 if(class_name == None or class_name == model_temp.__class__.__name__):
-    #                     model = model_temp
-    #     return model
-
-    # def set_func_model(self,model):
-    #     caller_name =  inspect.stack()[1][3]# get the name of the caller function
-    #     if caller_name in self.model_store:
-    #         model_temp = self.model_store[caller_name]
-    #         model_temp.save()
-    #     model.save()
-    #     self.model_store[caller_name] = model
-
-    # def guess_number(self,value):
-    #     # TODO: this is not accurate
-    #     if value:
-    #         value = value.strip(' \t\n\r')
-    #     if value:
-    #         value = value.replace(",", ".")
-
-    #     return Decimal(value)
-
     def guess_number(self,number_string):
         #first strip non numeric values from begin and end
         non_decimal = re.compile(r'[^\d.,]+')
@@ -334,7 +228,6 @@ class XMLParser(object):
             print "%s\n%s" %(errormsg, error)
             return None
 
-
     #helper function check if integer
     def isInt(self, obj):
         try:
@@ -349,12 +242,28 @@ class XMLParser(object):
             return True
         return False
 
+    def update_related(self, model):
+        """
+        Don't ask why...
+        """
+        for field in model._meta.fields:
+            if isinstance(field, (ForeignKey, OneToOneField)):
+                setattr(model, field.name, getattr(model, field.name))
+
     def save_all_models(self):
-        #make tree
-        saved_models = []
-        for path_name in self.model_store:
-            db_model = self.model_store[path_name]
-            if db_model.__class__.__name__ not in saved_models:
-                db_model.save()
-                saved_models.append(db_model.__class__.__name__)
+        # TODO: problem: assigning unsaved model to foreign key results in error because field_id has not been set (see issue )
+        for model_list in self.model_store.items():
+            for model in model_list[1]:
+                try:
+                    self.update_related(model)
+                    model.save()
+                except Exception as e:
+                    print(e)
+
+        # saved_models = []
+        # for path_name in self.model_store:
+        #     db_model = self.model_store[path_name]
+        #     if db_model.__class__.__name__ not in saved_models:
+        #         db_model.save()
+        #         saved_models.append(db_model.__class__.__name__)
 

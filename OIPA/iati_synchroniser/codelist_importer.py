@@ -19,7 +19,7 @@ class CodeListImporter():
 
     def __init__(self):
         self.looping_through_version = "2.01"
-        self.iati_versions = ["2.01"]
+        self.iati_versions = ["2.01",]
 
     def synchronise_with_codelists(self):
         # Do categories first
@@ -133,7 +133,13 @@ class CodeListImporter():
         model = None
         try:
             # to do; change app_label to iati_codelist after codelist app change
-            model = apps.get_model(app_label='iati', model_name=model_name)
+            model = apps.get_model(app_label='iati_codelists', model_name=model_name)
+        except LookupError:
+            pass
+
+        try:
+            # to do; change app_label to iati_codelist after codelist app change
+            model = apps.get_model(app_label='iati_vocabulary', model_name=model_name)
         except LookupError:
             pass
 
@@ -223,7 +229,7 @@ class CodeListImporter():
         downloaded_xml = urllib2.Request(
             "http://iatistandard.org/"
             + version.replace('.','') +
-            "/codelists/downloads/clv2/codelist.xml")
+            "/codelists/downloads/clv1/codelist.xml")
 
         file_opener = urllib2.build_opener()
         xml_file = file_opener.open(downloaded_xml)

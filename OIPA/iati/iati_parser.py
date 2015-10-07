@@ -13,6 +13,9 @@ class ParseIATI():
 
     # class wide functions
     def return_first_exist(self, xpath_find):
+        """
+        Not used
+        """
 
         if not xpath_find:
              xpath_find = None
@@ -26,11 +29,26 @@ class ParseIATI():
         return xpath_find
 
     def hashfile(self,afile, hasher, blocksize=65536):
+        """
+        Not used
+        """
         buf = afile.read(blocksize)
         while len(buf) > 0:
             hasher.update(buf)
             buf = afile.read(blocksize)
         return hasher.hexdigest()
+
+    def get_hash(self):
+        """
+        Not used
+        """
+        hash  = self.hashfile(iati_file,hashlib.md5())
+        if hash == last_hash:
+            pass
+        else:
+            source.last_hash = hash
+        source.save()
+
 
     def prepare_parser(self, root, source):
         """
@@ -53,39 +71,32 @@ class ParseIATI():
         return parser
 
     def parse_url(self, source):
+        """
+        Parses the source with url
+        """
         url = source.source_url
         xml_source_ref = source.ref
-        last_hash = source.last_hash
+        # last_hash = source.last_hash
         
         try:
             file_grabber = FileGrabber()
             iati_file = file_grabber.get_the_file(url)
-            #get the hash
-            #hash  = self.hashfile(iati_file,hashlib.md5())
-            # if hash == last_hash:
-            #     pass
-            #     #return
-            # else:
-            #     source.last_hash = hash
-            #     source.save()
 
             if iati_file:
 
                 # delete old activities
-                try:
-                    deleter = Deleter()
-                    deleter.delete_by_source(xml_source_ref)
-                except Exception as e:
-                    exception_handler(e, "parse url", "delete by source")
+                # TODO: determine this in the parser based on last-updated-datetime
+                # try:
+                #     deleter = Deleter()
+                #     deleter.delete_by_source(xml_source_ref)
+                # except Exception as e:
+                #     exception_handler(e, "parse url", "delete by source")
 
                 data = iati_file.read()
                 root = etree.fromstring(str(data))
 
                 parser = self.prepare_parser(root, source)
                 parser.load_and_parse(root)
-
-                # del iati_file
-                # gc.collect()
 
                 # Throw away query logs when in debug mode to prevent memory from overflowing
                 if settings.DEBUG:
