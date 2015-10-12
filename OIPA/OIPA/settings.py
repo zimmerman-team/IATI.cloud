@@ -231,9 +231,3 @@ try:
 except ImportError:
     pass
 
-# try:
-#     if 'test' in sys.argv:
-#         import test_settings
-# except ImportError:
-#     pass
-

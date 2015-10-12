@@ -282,8 +282,6 @@ class PolicyMarker(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True, default=None)
-    codelist_iati_version = models.CharField(max_length=4)
-    codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)

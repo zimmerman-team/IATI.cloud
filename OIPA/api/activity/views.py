@@ -22,9 +22,9 @@ from django.db.models import Q
 from geodata.models import Country, Region
 from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, CollaborationType, FlowType, AidType, FinanceType, TiedStatus
 
-from api.activity.serializers import ActivitySerializer, ActivityStatusSerializer, \
-                                     ParticipatingOrganisationSerializer, PolicyMarkerSerializer, \
-                                     CollaborationTypeSerializer, FlowTypeSerializer, AidTypeSerializer, FinanceTypeSerializer, TiedStatusSerializer
+from api.activity.serializers import ActivitySerializer, CodelistSerializer, \
+                                     ParticipatingOrganisationSerializer
+                                     
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -109,43 +109,43 @@ class ActivityAggregationSerializer(BaseSerializer):
         "activity_status": {
             "field": "activity_status",
             "queryset": ActivityStatus.objects.all(),
-            "serializer": ActivityStatusSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "policy_marker": {
             "field": "policy_marker",
             "queryset": PolicyMarker.objects.all(),
-            "serializer": PolicyMarkerSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "collaboration_type": {
             "field": "collaboration_type",
             "queryset": CollaborationType.objects.all(),
-            "serializer": CollaborationTypeSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "default_flow_type": {
             "field": "default_flow_type",
             "queryset": FlowType.objects.all(),
-            "serializer": FlowTypeSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "default_aid_type": {
             "field": "default_aid_type",
             "queryset": AidType.objects.all(),
-            "serializer": AidTypeSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "default_finance_type": {
             "field": "default_finance_type",
             "queryset": FinanceType.objects.all(),
-            "serializer": FinanceTypeSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "default_tied_status": {
             "field": "default_tied_status",
             "queryset": TiedStatus.objects.all(),
-            "serializer": TiedStatusSerializer,
+            "serializer": CodelistSerializer,
             "fields": (), # has default fields
         },
         "budget_per_year": {

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from iati.models import Transaction
+from iati.transaction.models import Transaction
 from iati.factory.iati_factory import ActivityFactory
 from iati.transaction.factories import TransactionTypeFactory
 from iati.transaction.factories import TransactionFactory

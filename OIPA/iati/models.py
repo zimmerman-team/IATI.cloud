@@ -1,8 +1,7 @@
 from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
-from organisation_manager import OrganisationQuerySet
-# from django.contrib.gis.geos import Point
+from organisation_manager import OrganisationQuerySet # from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models import PointField
 # from iati.transaction.models import Transaction, TransactionType, TransactionDescription, TransactionProvider, TransactionReceiver, TransactionSector
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +10,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from iati_codelists.models import *
 from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, BudgetIdentifierVocabulary
 
+# TODO: separate this
 class Narrative(models.Model):
     content_type = models.ForeignKey(
         ContentType,
@@ -148,22 +148,23 @@ class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
-    narratives = GenericRelation(Narrative)
     activity = models.ForeignKey(
         Activity,
         related_name="participating_organisations"
         )
     organisation = models.ForeignKey(Organisation, null=True, default=None) # if in organisation standard
-    type = models.ForeignKey(OrganisationType, null=True, default=None)
 
+    type = models.ForeignKey(OrganisationType, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
+
+    narratives = GenericRelation(Narrative)
 
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)
 
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
-    code = models.ForeignKey(PolicyMarker,related_name='policy_marker_related')
+    code = models.ForeignKey(PolicyMarker)
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
     significance = models.ForeignKey(
         PolicySignificance,
@@ -217,7 +218,7 @@ class BudgetItemDescription(models.Model):
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
     region = models.ForeignKey(Region)
-    region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -346,6 +347,7 @@ class DocumentLink(models.Model):
         return "%s - %s" % (self.activity.id, self.url)
 
 # enables saving before parent object is saved (workaround)
+# TODO: eliminate the need for this
 class DocumentLinkCategory(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     category = models.ForeignKey(DocumentCategory)
@@ -361,7 +363,7 @@ class DocumentLinkTitle(models.Model):
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
-    result_type = models.ForeignKey(ResultType, null=True, default=None)
+    type = models.ForeignKey(ResultType, null=True, default=None)
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
@@ -433,7 +435,7 @@ class Description(models.Model):
     activity = models.ForeignKey(Activity)
     narratives = GenericRelation(Narrative)
 
-    type = models.ForeignKey(
+    type = models.ForeignKey( # TODO: set a default or require
         DescriptionType,
         related_name="description_type",
         null=True,
@@ -472,12 +474,15 @@ class Location(models.Model):
         null=True,
         default=None,
         related_name="location_reach")
+
+    # TODO: make location_id a one-to-one field?
     location_id_vocabulary = models.ForeignKey(
         GeographicVocabulary,
         null=True,
         default=None,
         related_name="location_id_vocabulary")
     location_id_code = models.CharField(max_length=255, default="")
+
     location_class = models.ForeignKey(
         GeographicLocationClass,
         null=True,
@@ -495,6 +500,7 @@ class Location(models.Model):
     def __unicode__(self,):
         return "Location: %s" % (self.activity.id,)
 
+# TODO: move to codelist
 class LocationAdministrative(models.Model):
     location = models.ForeignKey(Location)
     code = models.CharField(max_length=255)
@@ -599,7 +605,7 @@ class CrsAddLoanStatus(models.Model):
 
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
-    iso_date = models.DateField(null=False, default="1970-01-01")
+    iso_date = models.DateTimeField()
     type = models.ForeignKey(ActivityDateType)
 
     def __unicode__(self):

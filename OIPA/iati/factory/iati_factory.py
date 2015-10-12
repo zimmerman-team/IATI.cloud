@@ -1,7 +1,11 @@
+# TODO: separate files per logical element (as represented in the API)
+# TODO: also, separate for codelists
 import iati
+import datetime
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 import geodata
+from django.contrib.gis.geos import GEOSGeometry, Point
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 
@@ -10,12 +14,35 @@ class NoDatabaseFactory(DjangoModelFactory):
     def _setup_next_sequence(cls):
         return 0
 
+class VersionFactory(NoDatabaseFactory):
+    class Meta:
+        model = codelist_models.Version
+
+    code = '2.01'
+    name = 'IATI version 2.01'
+
 class ActivityFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
 
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
+    iati_standard_version = VersionFactory.build()
+
+class LanguageFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Language
+
+    code = 'fr'
+    name = 'french'
+
+class NarrativeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Narrative
+
+    parent_object = SubFactory(ActivityFactory) # overwrite this for the required behaviour
+    language = SubFactory(LanguageFactory)
+    content = "Some name or description"
 
 class RelatedActivityFactory(NoDatabaseFactory):
     class Meta:
@@ -32,12 +59,20 @@ class FileFormatFactory(NoDatabaseFactory):
     code = 'application/json'
     name = ''
 
+class DocumentCategoryCategoryFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentCategoryCategory
+
+    code = 'A'
+    name = 'Activity Level'
+
 class DocumentCategoryFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.DocumentCategory
 
     code = 'A04'
     name = 'Conditions'
+    category = SubFactory(DocumentCategoryCategoryFactory)
 
 
 class DocumentLinkFactory(NoDatabaseFactory):
@@ -46,24 +81,23 @@ class DocumentLinkFactory(NoDatabaseFactory):
 
     activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
+    file_format = SubFactory(FileFormatFactory)
     # title = 'some title'
 
-
-class LanguageFactory(NoDatabaseFactory):
+class DocumentLinkTitleFactory(NoDatabaseFactory):
     class Meta:
-        model = iati.models.Language
+        model = iati.models.DocumentLinkTitle
 
-    code = 'fr'
-    name = 'french'
+    document_link = SubFactory(DocumentLinkFactory)
+    # narratives = SubFactory(NarrativeFactory)
 
-
-class DescriptionTypeFactory(NoDatabaseFactory):
+class DocumentLinkCategoryFactory(NoDatabaseFactory):
+    # TODO: eliminate need for this element
     class Meta:
-        model = iati.models.DescriptionType
+        model = iati.models.DocumentLinkCategory
 
-    code = 1
-    name = 'General'
-    description = 'description here'
+    document_link = SubFactory(DocumentLinkFactory)
+    category = SubFactory(DocumentCategoryFactory)
 
 
 class BudgetTypeFactory(NoDatabaseFactory):
@@ -83,6 +117,21 @@ class BudgetFactory(NoDatabaseFactory):
     value = 100
     value_date = '2013-06-28'
 
+
+class ActivityDateTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = codelist_models.ActivityDateType
+
+    code = '1'
+    name = 'Planned start'
+
+class ActivityDateFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityDate
+
+    activity = SubFactory(ActivityFactory)
+    iso_date = datetime.datetime.now()
+    type = SubFactory(ActivityDateTypeFactory)
 
 class CurrencyFactory(NoDatabaseFactory):
     class Meta:
@@ -140,18 +189,23 @@ class TitleFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Title
 
-    title = 'title factory'
-    language = LanguageFactory.build()
+    activity = SubFactory(ActivityFactory)
+    # language = LanguageFactory.build()
 
+class DescriptionTypeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DescriptionType
+
+    code = "1"
+    name = 'General'
+    description = 'description here'
 
 class DescriptionFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Description
 
-    description = 'description factory'
-    language = LanguageFactory.build()
+    activity = SubFactory(ActivityFactory)
     type = DescriptionTypeFactory.build()
-    rsr_description_type_id = 1
 
 
 class ContactInfoFactory(NoDatabaseFactory):
@@ -208,9 +262,35 @@ class OrganisationTypeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.OrganisationType
 
-    code = 10
+    code = '10'
     name = 'Government'
 
+class OrganisationRoleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.OrganisationRole
+
+    code = '1'
+    name = 'Funding'
+
+class ParticipatingOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityParticipatingOrganisation
+
+    activity = SubFactory(ActivityFactory)
+    ref = "some-ref"
+    normalized_ref = "some_ref"
+    type = SubFactory(OrganisationTypeFactory)
+    role = SubFactory(OrganisationRoleFactory)
+
+class ReportingOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityReportingOrganisation
+
+    ref = 'GB-COH-03580586'
+    normalized_ref = 'GB-COH-03580586'
+    activity = SubFactory(ActivityFactory)
+    type = SubFactory(OrganisationTypeFactory)
+    secondary_reporter = False
 
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
@@ -219,33 +299,21 @@ class OrganisationFactory(NoDatabaseFactory):
     code = 'GB-COH-03580586'
     name = 'PWC'
 
+class SectorVocabularyFactory(NoDatabaseFactory):
+    class Meta:
+        model = vocabulary_models.SectorVocabulary
+
+    code = "1"
+    name = "OECD DAC CRS (5 digit)"
+
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivitySector
 
-    id = 1
     sector = SubFactory(SectorFactory)
     activity = SubFactory(ActivityFactory)
+    vocabulary = SubFactory(SectorVocabularyFactory)
     percentage = 100
-
-
-class OrganisationRoleFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.OrganisationRole
-
-    code = 1
-    name = 'funding'
-    description = 'role description'
-
-
-class ParticipatingOrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.ActivityParticipatingOrganisation
-
-    id = 1
-    activity = SubFactory(ActivityFactory)
-    organisation = SubFactory(OrganisationFactory)
-
 
 class RecipientCountryFactory(NoDatabaseFactory):
     class Meta:
@@ -291,37 +359,33 @@ class PolicyMarkerFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.PolicyMarker
 
-    code = 1
+    code = "1"
     name = 'Gender Equality'
 
+class PolicyMarkerVocabularyFactory(NoDatabaseFactory):
+    class Meta:
+        model = vocabulary_models.PolicyMarkerVocabulary
 
-# class VocabularyFactory(NoDatabaseFactory):
-#     class Meta:
-#         model = iati.models.Vocabulary
-
-#     code = 1
-#     name = 'OECD DAC CRS'
-
+    code = "1"
+    name = "OECD DAC CRS"
 
 class PolicySignificanceFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.PolicySignificance
 
-    code = 0
+    code = "0"
     name = 'not targeted'
     description = 'test description'
 
+class ActivityPolicyMarkerFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityPolicyMarker
 
-# class ActivityPolicyMarkerFactory(NoDatabaseFactory):
-#     class Meta:
-#         model = iati.models.ActivityPolicyMarker
-
-#     policy_marker = PolicyMarkerFactory.build()
-#     alt_policy_marker = 'alt_policy_marker'
-#     vocabulary = VocabularyFactory.build()
-#     policy_significance = PolicySignificanceFactory.build()
-#     activity = ActivityFactory.build()
-
+    activity = ActivityFactory.build()
+    code = PolicyMarkerFactory.build()
+    # alt_policy_marker = 'alt_policy_marker' # ?
+    vocabulary = PolicyMarkerVocabularyFactory.build()
+    significance = PolicySignificanceFactory.build()
 
 class RegionVocabularyFactory(NoDatabaseFactory):
     class Meta:
@@ -337,7 +401,7 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
 
     percentage = 100
     region = RegionFactory.build()
-    region_vocabulary = RegionVocabularyFactory.build()
+    vocabulary = RegionVocabularyFactory.build()
     activity = ActivityFactory.build()
 
 
@@ -369,9 +433,8 @@ class ResultTypeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ResultType
 
-    code = 2
+    code = "2"
     name = 'ResultType'
-
 
 class ResultFactory(NoDatabaseFactory):
     class Meta:
@@ -379,10 +442,7 @@ class ResultFactory(NoDatabaseFactory):
 
     activity = ActivityFactory.build()
     result_type = ResultTypeFactory.build()
-    title = 'Title'
-    description = 'Description'
     aggregation_status = False
-
 
 class GeographicLocationClassFactory(NoDatabaseFactory):
     class Meta:
@@ -434,22 +494,27 @@ class GeographicVocabularyFactory(NoDatabaseFactory):
     name = 'Global Admininistrative Unit Layers'
     description = 'description'
 
-
 class LocationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Location
 
     activity = ActivityFactory.build()
-    # ref = 'AF-KAN'
-    # name = 'Location name'
-    # description = 'Location description'
-    # activity_description = 'A description that qualifies the activity taking place at the location'
-    # adm_code = '1453782'
-    # adm_level = 1
-    # adm_vocabulary = GeographicVocabularyFactory.build()
-    # location_id_vocabulary = GeographicVocabularyFactory.build()
-    # location_id_code = '23213'
-    # location_reach = GeographicLocationReachFactory.build()
-    # point_pos = '31.616944 65.716944'
-    # exactness = GeographicExactnessFactory.build()
-    # feature_designation = LocationTypeFactory.build()
+    ref = 'AF-KAN'
+    location_reach = SubFactory(GeographicLocationReachFactory)
+    location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
+    location_id_code = '23213'
+    point_pos = GEOSGeometry(Point(20.22, 45.22), srid=4326)
+    point_srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
+    exactness = SubFactory(GeographicExactnessFactory)
+    location_class = SubFactory(GeographicLocationClassFactory)
+    feature_designation = SubFactory(LocationTypeFactory)
+
+class LocationAdministrativeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationAdministrative
+
+    location = SubFactory(LocationFactory)
+    code = "code"
+    vocabulary = SubFactory(GeographicVocabularyFactory)
+    level = 1
+

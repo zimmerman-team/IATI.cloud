@@ -1,5 +1,5 @@
 """
-    Unit tests for all fields in the parser, for multiple IATI versions.
+    Unit tests and integration tests for parser.
 """
 
 # import copy

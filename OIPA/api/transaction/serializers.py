@@ -6,12 +6,7 @@ from iati_codelists.models import TransactionType
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.organisation.serializers import BasicOrganisationSerializer
 from api.activity.serializers import ActivitySerializer
-from api.activity.serializers import AidTypeSerializer
-from api.activity.serializers import CurrencySerializer
-from api.activity.serializers import DescriptionTypeSerializer
-from api.activity.serializers import FinanceTypeSerializer
-from api.activity.serializers import FlowTypeSerializer
-from api.activity.serializers import TiedStatusSerializer
+from api.activity.serializers import CodelistSerializer
 
 
 class TransactionTypeSerializer(DynamicFieldsModelSerializer):
@@ -31,10 +26,10 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         view_name='transactions:detail',
         lookup_field='pk')
     activity = ActivitySerializer(fields=('id', 'url'))
-    aid_type = AidTypeSerializer
-    description_type = DescriptionTypeSerializer()
-    finance_type = FinanceTypeSerializer()
-    flow_type = FlowTypeSerializer()
+    aid_type = CodelistSerializer
+    description_type = CodelistSerializer()
+    finance_type = CodelistSerializer()
+    flow_type = CodelistSerializer()
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
@@ -43,9 +38,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         view_name='activities:activity-detail')
     provider_organisation = BasicOrganisationSerializer()
     receiver_organisation = BasicOrganisationSerializer()
-    tied_status = TiedStatusSerializer()
+    tied_status = CodelistSerializer()
     transaction_type = TransactionTypeSerializer()
-    currency = CurrencySerializer()
+    currency = CodelistSerializer()
 
     class Meta:
         model = Transaction

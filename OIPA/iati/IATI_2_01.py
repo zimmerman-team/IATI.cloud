@@ -1520,7 +1520,7 @@ class Parse(XMLParser):
 
     tag:flow-type'''
     def iati_activities__iati_activity__transaction__flow_type(self,element):
-        flow_type = self.get_or_none(codelist_models.FlowType, code=element.attrib.get('code')) 
+        flow_type = self.get_or_none(codelist_models.FlowType, code=element.attrib.get('code'))
 
         if not flow_type:
             flow_type = self.get_model('Activity').flow_type
@@ -1535,7 +1535,7 @@ class Parse(XMLParser):
 
     tag:finance-type'''
     def iati_activities__iati_activity__transaction__finance_type(self,element):
-        finance_type = self.get_or_none(codelist_models.FinanceType, code=element.attrib.get('code')) 
+        finance_type = self.get_or_none(codelist_models.FinanceType, code=element.attrib.get('code'))
 
         if not finance_type:
             finance_type = self.get_model('Activity').finance_type
@@ -1551,7 +1551,7 @@ class Parse(XMLParser):
 
     tag:aid-type'''
     def iati_activities__iati_activity__transaction__aid_type(self,element):
-        aid_type = self.get_or_none(codelist_models.AidType, code=element.attrib.get('code')) 
+        aid_type = self.get_or_none(codelist_models.AidType, code=element.attrib.get('code'))
 
         if not aid_type:
             aid_type = self.get_model('Activity').aid_type
@@ -1567,7 +1567,7 @@ class Parse(XMLParser):
 
     tag:tied-status'''
     def iati_activities__iati_activity__transaction__tied_status(self,element):
-        tied_status = self.get_or_none(codelist_models.TiedStatus, code=element.attrib.get('code')) 
+        tied_status = self.get_or_none(codelist_models.TiedStatus, code=element.attrib.get('code'))
 
         if not tied_status:
             tied_status = self.get_model('Activity').tied_status
@@ -1584,7 +1584,7 @@ class Parse(XMLParser):
     tag:document-link'''
     def iati_activities__iati_activity__document_link(self,element):
         url = element.attrib.get('url')
-        file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format')) 
+        file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format'))
 
         if not url: raise self.RequiredFieldError("url", "document_link: url is required")
         if not file_format: raise self.RequiredFieldError("format", "document_link: format is required")

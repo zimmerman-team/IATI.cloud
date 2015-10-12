@@ -1,6 +1,7 @@
 from django.db import models
 
-# Create your models here.
+# TODO: refactor these to use inheritance, they are all similar
+
 class GeographicVocabulary(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=255)
