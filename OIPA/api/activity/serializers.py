@@ -69,7 +69,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
 
     format = CodelistSerializer(source='file_format')
     category = DocumentCategorySerializer(source='categories', many=True)
-    title = NarrativeContainerSerializer(source="documentlinktitle_set")
+    title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
 
     class Meta:
         model = iati.models.DocumentLink
@@ -146,7 +146,6 @@ class ReportingOrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati.models.ActivityReportingOrganisation
         fields = (
-            'organisation',
             'ref',
             'type',
             'secondary_reporter',
@@ -169,13 +168,6 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'role',
             'narratives',
         )
-
-# class PolicyMarkerSerializer(serializers.ModelSerializer):
-#     code = serializers.CharField()
-
-#     class Meta:
-#         model = iati.models.PolicyMarker
-#         fields = ('code',)
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     code = CodelistSerializer()
@@ -265,13 +257,14 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
         decimal_places=2,
         coerce_to_string=False
     )
-    # vocabulary = VocabularySerializer()
+    vocabulary = VocabularySerializer()
 
     class Meta:
         model = iati.models.ActivityRecipientRegion
         fields = (
             'region',
             'percentage',
+            'vocabulary',
         )
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
@@ -333,17 +326,6 @@ class ResultSerializer(serializers.ModelSerializer):
             'aggregation_status',
         )
 
-
-# class LocationNameSerializer(serializers.ModelSerializer):
-#     narratives = NarrativeSerializer(source="*")
-
-#     class Meta:
-#         model = iati.models.LocationName
-#         fields = (
-#             'narratives',
-#         )
-
-
 class LocationSerializer(serializers.ModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
         vocabulary = VocabularySerializer(
@@ -365,16 +347,6 @@ class LocationSerializer(serializers.ModelSerializer):
                 'vocabulary',
                 'level',
             )
-    # class LocationTypeSerializer(serializers.ModelSerializer):
-    #     category = CodelistSerializer()
-
-    #     class Meta:
-    #         model = iati.models.LocationType
-    #         fields = (
-    #             'code',
-    #             'name',
-    #             'category',
-    #         )
 
     location_reach = CodelistSerializer()
     location_id = LocationIdSerializer(source='*')
@@ -405,6 +377,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
+    last_updated_datetime = serializers.DateTimeField(format="%y-%m-%d")
     activity_status = CodelistSerializer()
     activity_scope = CodelistSerializer(source='scope')
     capital_spend = CapitalSpendSerializer(source='*')
@@ -417,9 +390,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_dates = ActivityDateSerializer(
         many=True,
         source='activitydate_set')
-    reporting_organisation = ReportingOrganisationSerializer(source='*')
+    reporting_organisation = ReportingOrganisationSerializer(
+            many=True,
+            source='reporting_organisations')
     participating_organisations = ParticipatingOrganisationSerializer(
-        many=True)
+        many=True,)
+
     # transactions = TransactionSerializer(
     #     many=True,
     #     source='transaction_set'

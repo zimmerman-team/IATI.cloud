@@ -86,6 +86,7 @@ class ParseIATI():
 
                 # delete old activities
                 # TODO: determine this in the parser based on last-updated-datetime
+                # TODO: also, throw away all narratives
                 # try:
                 #     deleter = Deleter()
                 #     deleter.delete_by_source(xml_source_ref)

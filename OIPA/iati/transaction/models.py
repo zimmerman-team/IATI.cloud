@@ -105,7 +105,7 @@ class TransactionRecipientCountry(models.Model):
 class TransactionRecipientRegion(models.Model):
     transaction = models.ForeignKey(Transaction)
     region = models.ForeignKey(Region)
-    region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
 
     def __unicode__(self,):
         return "%s - %s" % (self.transaction.id, self.region)

@@ -126,8 +126,8 @@ class Parse(IATI_201_Parser):
         other_identifier.owner_ref=owner_ref
 
         # TODO: refactor this to not create an lxml element
-        self.add_narrative(E('elem', owner_name), other_identifier)
         self.register_model('OtherIdentifier', other_identifier)
+        self.add_narrative(E('elem', owner_name), other_identifier)
 
         return element
 
@@ -144,8 +144,8 @@ class Parse(IATI_201_Parser):
         title = models.Title()
         title.activity = activity
 
-        self.add_narrative(element, title)
         self.register_model('Title', title)
+        self.add_narrative(element, title)
 
         return element
 
@@ -166,8 +166,8 @@ class Parse(IATI_201_Parser):
         description.activity = activity
         description.type = description_type
 
-        self.add_narrative(element, description)
         self.register_model('Description', description)
+        self.add_narrative(element, description)
 
         return element
 

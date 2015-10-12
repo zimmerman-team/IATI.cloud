@@ -27,7 +27,7 @@ class ActivityFactory(NoDatabaseFactory):
 
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
-    iati_standard_version = VersionFactory.build()
+    iati_standard_version = SubFactory(VersionFactory)
 
 class LanguageFactory(NoDatabaseFactory):
     class Meta:
@@ -391,7 +391,7 @@ class RegionVocabularyFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.RegionVocabulary
 
-    code = 1
+    code = "1"
     name = 'test vocabulary'
 
 
@@ -409,7 +409,7 @@ class ActivityScopeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityScope
 
-    code = 1
+    code = "1"
     name = 'example scope'
 
 
@@ -417,7 +417,7 @@ class FinanceTypeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.FinanceType
 
-    code = 110
+    code = "110"
     name = 'Aid grant excluding debt reorganisation'
 
 
@@ -425,7 +425,7 @@ class TiedStatusFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.TiedStatus
 
-    code = 3
+    code = "3"
     name = 'Partially tied'
 
 
@@ -448,7 +448,7 @@ class GeographicLocationClassFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.GeographicLocationClass
 
-    code = 2
+    code = "2"
     name = 'Populated place'
 
 
@@ -456,7 +456,7 @@ class GeographicLocationReachFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.GeographicLocationReach
 
-    code = 1
+    code = "1"
     name = 'Activity'
 
 
@@ -464,7 +464,7 @@ class GeographicExactnessFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.GeographicExactness
 
-    code = 1
+    code = "1"
     name = 'Exact'
 
 
