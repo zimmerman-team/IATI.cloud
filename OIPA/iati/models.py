@@ -103,7 +103,7 @@ class Activity(models.Model):
     objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
-        return self.id
+        return self.ido
 
     class Meta:
         verbose_name_plural = "activities"

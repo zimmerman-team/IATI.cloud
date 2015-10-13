@@ -54,20 +54,28 @@ class ParseIATI():
         """
             Prepares the parser, given the lxml activity file root
         """
-
         iati_version = root.xpath('@version')[0]
+        if source.type == 1:
 
-        if iati_version == '2.01':
-            parser = IATI_201_Parser()
-        elif iati_version == '1.03':
-            parser = IATI_103_Parser()
-            parser.VERSION = iati_version
-        else:
-            parser = IATI_105_Parser()
-            parser.VERSION = iati_version
-        
+
+            if iati_version == '2.01':
+                parser = IATI_201_Parser()
+            elif iati_version == '1.03':
+                parser = IATI_103_Parser()
+                parser.VERSION = iati_version
+            else:
+                parser = IATI_105_Parser()
+        elif source.type == 2:
+            #organisation file
+            if iati_version == '2.01':
+                parser = Org_2_01_Parser()
+                parser.VERSION = iati_version
+            else:
+                parser = Org_1_05_Parser()
+
+
+
         parser.iati_source = source
-
         return parser
 
     def parse_url(self, source):
