@@ -28,12 +28,21 @@ class Narrative(models.Model):
     iati_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
+class Title(models.Model):
+    # activity = models.ForeignKey(Activity)
+    narratives = GenericRelation(Narrative)
+
+    def __unicode__(self,):
+        return "Title"
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
         (2, u"Child"),
     )
     
+    title = models.OneToOneField(Title, null=True) # todo: remove null=true
+
     id = models.CharField(max_length=150,primary_key=True,blank=False)
     iati_identifier = models.CharField(max_length=150, blank=False)
 
@@ -425,13 +434,6 @@ class ResultIndicatorPeriodTargetComment(models.Model):
 
 class ResultIndicatorPeriodActualComment(models.Model):
     result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
-
-class Title(models.Model):
-    activity = models.ForeignKey(Activity)
-    narratives = GenericRelation(Narrative)
-
-    def __unicode__(self,):
-        return "Title: %s" % (self.activity.id,)
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
