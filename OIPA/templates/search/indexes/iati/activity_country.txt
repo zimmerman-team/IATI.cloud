@@ -1,0 +1,6 @@
+{% for recipient_country in object.recipient_country.all %}
+{{ recipient_country.name }}
+{{ recipient_country.code }}  
+{{ recipient_country.alt_name }}
+
+{% endfor %}

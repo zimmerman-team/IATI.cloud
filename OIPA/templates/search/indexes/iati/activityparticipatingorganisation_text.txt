@@ -1,0 +1,4 @@
+{{ object.organisation.abbreviation }} {{ object.organisation.name }}  {{ object.organisation.code }} {{ object.organisation.original_ref }} 
+
+{% for narrative in object.narratives.all %}{{narrative.content}}  {% endfor %}
+

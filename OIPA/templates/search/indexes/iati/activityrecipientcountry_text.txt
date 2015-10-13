@@ -1,0 +1,3 @@
+{{ object.country.name }}
+{{ object.country.code }}  
+{{ object.country.alt_name }}

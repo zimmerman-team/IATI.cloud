@@ -1,0 +1,5 @@
+{% for document_link in object.documentlinks.all %}
+{{ document_link.url }} {% for title in document_link.documentlinktitles.all %}{% for narrative in title.narratives.all %}{{narrative.content}}  {% endfor %}
+{% endfor %}
+{% endfor %}
+

@@ -1,0 +1,3 @@
+{% for narrative in object.narratives.all %}
+{{narrative.content}} 
+{% endfor %}

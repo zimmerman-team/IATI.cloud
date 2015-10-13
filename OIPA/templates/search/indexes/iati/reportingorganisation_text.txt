@@ -1,0 +1,3 @@
+{{ object.reporting_organisation.abbreviation }} {{ object.reporting_organisation.name }}  {{ object.reporting_organisation.code }} {{ object.reporting_organisation.original_ref }}
+
+

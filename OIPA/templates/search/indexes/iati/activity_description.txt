@@ -1,0 +1,3 @@
+{% for description_text in object.descriptions.all %}
+{% for narrative in description_text.narratives.all %}{{narrative.content}}  {% endfor %}
+{% endfor %}

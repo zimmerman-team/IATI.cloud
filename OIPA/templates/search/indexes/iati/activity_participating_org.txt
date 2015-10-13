@@ -1,0 +1,6 @@
+{% for participating_org in object.participating_organisations.all %}
+{{ participating_org.organisation.abbreviation }} {{ participating_org.organisation.name }}  {{ participating_org.organisation.code }} {{ participating_org.organisation.original_ref }} 
+
+{% for narrative in participating_org.narratives.all %}{{narrative.content}}  {% endfor %}
+{% endfor %}
+

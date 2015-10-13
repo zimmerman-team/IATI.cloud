@@ -44,6 +44,7 @@ class Activity(models.Model):
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
     # last_updated_datetime = models.CharField(max_length=100, default="")
     # value_date = models.DateField(null=True)
+    last_updated = models.DateTimeField(null=True, auto_now=True)
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")

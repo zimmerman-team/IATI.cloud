@@ -1,0 +1,3 @@
+{% for title in object.titles.all %}
+{% for narrative in title.narratives.all %}{{narrative.content}}  {% endfor %}
+{% endfor %}
