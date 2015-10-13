@@ -1385,10 +1385,11 @@ class Parse(XMLParser):
         transaction_provider.provider_activity_ref = provider_activity
         transaction_provider.provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity) 
 
+        activity = self.get_model('Activity')
         # update existing  transaction provider-activity foreign keys
         # TODO: do this at the end of parsing in one pass
         try:
-            models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
+            transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         except:
             pass
 
@@ -1430,10 +1431,11 @@ class Parse(XMLParser):
         transaction_receiver.receiver_activity_ref = receiver_activity
         transaction_receiver.receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity) 
 
+        activity = self.get_model('Activity')
         # update existing  transaction receiver-activity foreign keys
         # TODO: do this at the end of parsing in one pass
         try:
-            models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
+            transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
         except:
             pass
 
@@ -1684,7 +1686,7 @@ class Parse(XMLParser):
         related_activity.type = related_activity_type
 
         # update existing related activitiy foreign keys
-        # TODO: do this at the end of parsing in one pass
+        # TODO: do this at the end of parsing in one pass (post-parse saves)
         try:
             models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(related_activity=activity)
         except:
