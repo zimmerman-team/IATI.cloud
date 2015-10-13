@@ -1,11 +1,18 @@
-import pytest
+# TODO: actually create these tests
 from django.test import RequestFactory
 from django.core.urlresolvers import reverse
 from api.transaction.serializers import TransactionSerializer
 from iati.transaction.factories import TransactionFactory
 
+from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
+from unittest import TestCase
+import datetime
 
-class TestTransactionSerializer:
+from django.test import RequestFactory
+from iati.factory import iati_factory
+from api.activity import serializers
+
+class TransactionSerializerTestCase(DjangoTestCase):
     """
     Test if transaction model is serialized correctly.
     """
@@ -21,7 +28,6 @@ class TestTransactionSerializer:
             context={'request': self.request_dummy},
         )
 
-    @pytest.mark.django_db
     def test_transaction_serializer_has_correct_url(self):
         """
         Test if transactions serialized properly
@@ -29,6 +35,8 @@ class TestTransactionSerializer:
         serializer = self.serialize_test_transaction()
         assert 'url' in serializer.data.keys(), \
             """serialized data should include url"""
+
+        print(serializer.data)
 
         expected_url = "http://testserver{reverse}".format(
             reverse=reverse('transactions:detail',

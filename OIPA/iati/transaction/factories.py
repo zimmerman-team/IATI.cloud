@@ -7,13 +7,24 @@ from iati.factory.iati_factory import ActivityFactory
 
 
 class TransactionTypeFactory(NoDatabaseFactory):
-    code = "tes-type"
-    name = "test transaction type"
+    code = "1"
+    name = "Incoming Funds"
     description = ""
 
     class Meta:
         model = TransactionType
 
+class TransactionProviderFactory(NoDatabaseFactory):
+    ref = "some-ref"
+    normalized_ref = "some_ref"
+    provider_activity = SubFactory(ActivityFactory)
+    provider_activity_ref = "IATI-0001"
+
+class TransactionReceiverFactory(NoDatabaseFactory):
+    ref = "some-ref"
+    normalized_ref = "some_ref"
+    receiver_activity = SubFactory(ActivityFactory)
+    receiver_activity_ref = "IATI-0001"
 
 class TransactionFactory(NoDatabaseFactory):
     id = 1

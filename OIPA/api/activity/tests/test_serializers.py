@@ -3,6 +3,7 @@
 
 from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
 from unittest import TestCase
+import datetime
 
 from django.test import RequestFactory
 from iati.factory import iati_factory
@@ -68,7 +69,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
             the field 'category' should be a DocumentCategorySerializer
             """
 
-        assert type(serializer.fields['title']) is serializers.\
+        assert type(serializer.fields['title'].child) is serializers.\
             NarrativeContainerSerializer,\
             """
             the field 'title' should be a TitleSerializer
@@ -207,7 +208,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
     def test_ActivityDateSerializer(self):
         date_type = iati_factory.ActivityDateFactory.create()
         serializer = serializers.ActivityDateSerializer(date_type)
-        # print(serializer.data)
 
         self.assertTrue('iso_date' in serializer.data)
         self.assertTrue(type(serializer.fields['type']) is serializers.CodelistSerializer)
@@ -264,12 +264,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
         serializer = serializers.CodelistSerializer(policy_marker)
         assert serializer.data['code'] == policy_marker.code,\
             "policy_marker.code should be serialized to a field called 'code'"
-
-    def test_VocabularySerializer(self):
-        vocabulary = iati_factory.VocabularyFactory.build()
-        serializer = serializers.CodelistSerializer(vocabulary)
-        assert serializer.data['code'] == vocabulary.code,\
-            "vocabulary.code should be serialized to a field called 'code'"
 
     def test_PolicySignificanceSerializer(self):
         significance = iati_factory.PolicySignificanceFactory.build()
@@ -334,7 +328,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
             activity_sector,
             context={'request': self.request_dummy},
         )
-        print(serializer.data)
         assert serializer.data['percentage'] == activity_sector.percentage,\
             """
             'activity_sector.percentage' should be serialized to a field
@@ -363,7 +356,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
         serializer = serializers.ActivityRecipientRegionSerializer(recipient_region, 
             context={'request': self.request_dummy}
         )
-        print(serializer.data)
 
         assert serializer.data['percentage'] == recipient_region.percentage,\
             """
@@ -427,6 +419,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
     def test_ActivityScopeSerializer(self):
         activity_scope = iati_factory.ActivityScopeFactory.build()
         serializer = serializers.CodelistSerializer(activity_scope)
+        print(serializer.data)
         assert serializer.data['code'] == activity_scope.code,\
             """
             'activity_scope.code' should be serialized to a field called
@@ -484,7 +477,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
 
         result = iati_factory.ResultFactory.build()
         serializer = serializers.ResultSerializer(result)
-        print(serializer.data)
 
         assert serializer.data['title']['narratives'][0]['text'] == result.title,\
             """
@@ -524,7 +516,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
 
     def test_GeographicLocationReachSerializer(self):
         location_reach = iati_factory.GeographicLocationReachFactory.build()
-        serializer = serializers.LocationSerializer.GeographicLocationReachSerializer(location_reach)
+        serializer = serializers.CodelistSerializer(location_reach)
         assert serializer.data['code'] == location_reach.code,\
             """
             'code' should be serialized in GeographicLocationReachSerializer
@@ -532,8 +524,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
 
     def test_GeographicExactnessSerializer(self):
         exactness = iati_factory.GeographicExactnessFactory.build()
-        serializer = serializers.LocationSerializer.GeographicExactnessSerializer(
-            exactness, context={'request': request_dummy})
+        serializer = serializers.CodelistSerializer(exactness)
 
         assert serializer.data['code'] == exactness.code,\
             """
@@ -585,7 +576,6 @@ class ActivitySerializerTestCase(DjangoTestCase):
 
         location = iati_factory.LocationFactory.build()
         serializer = serializers.LocationSerializer(location)
-        print(serializer.data)
 
         # assert serializer.data['name']['narratives'][0]['text'] == location.name,\
         #     """
@@ -618,16 +608,17 @@ class ActivitySerializerTestCase(DjangoTestCase):
     # @pytest.mark.django_db
     def test_activitySerializer(self):
         request_dummy = RequestFactory().get('/')
+        request_dummy.query_params = dict()
+
         activity = iati_factory.ActivityFactory.build(
-            iati_identifier='IATI-0001',
-            id='IATI-0001',
-            last_updated_datetime='2014-12-03',
+            last_updated_datetime=datetime.datetime.now(),
             hierarchy=1,
             linked_data_uri='www.data.example.org/123',
             xml_source_ref='www.data.example.org/123/1234.xml'
         )
         serializer = serializers.ActivitySerializer(
             activity, context={'request': request_dummy})
+
         assert serializer.data['id'] == activity.id,\
             """
             a serialized activity should contain a field 'id' that contains
@@ -640,7 +631,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
             """
 
         assert serializer.data['last_updated_datetime'] ==\
-            activity.last_updated_datetime,\
+            activity.last_updated_datetime.strftime("%y-%m-%d"),\
             """
             a serialized activity should contain a field 'last_updated_datetime
             that contains the data in activity.last_updated_datetime
@@ -664,6 +655,8 @@ class ActivitySerializerTestCase(DjangoTestCase):
     # @pytest.mark.django_db
     def test_activitySerializer_required_fields(self):
         request_dummy = RequestFactory().get('/')
+        request_dummy.query_params = dict()
+
         activity = iati_factory.ActivityFactory.build()
         serializer = serializers.ActivitySerializer(
             activity, context={'request': request_dummy})
@@ -678,14 +671,16 @@ class ActivitySerializerTestCase(DjangoTestCase):
             'linked_data_uri',
             'reporting_organisation',
             'title',
-            'descriptions',
+            'description',
             'participating_organisations',
+            'related_activities',
             'activity_status',
             'activity_dates',
             'activity_scope',
             'recipient_countries',
             'recipient_regions',
             'sectors',
+            'transactions',
             'policy_markers',
             'collaboration_type',
             'default_flow_type',
@@ -693,10 +688,12 @@ class ActivitySerializerTestCase(DjangoTestCase):
             'default_aid_type',
             'default_tied_status',
             'budgets',
+            'total_child_budgets',
             'capital_spend',
-
-            'total_budget',
             'xml_source_ref',
+            'document_links',
+            'results',
+            'locations'
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:

@@ -282,6 +282,7 @@ class Parse(XMLParser):
         register_name = parent.__class__.__name__ + "Narrative"
         self.register_model(register_name, narrative)
 
+
     '''atributes:
     {http://www.w3.org/XML/1998/namespace}lang:en
     default-currency:USD
@@ -315,7 +316,10 @@ class Parse(XMLParser):
 
             # TODO: test activity is deleted along with related models
             # TODO: do this after activity is parsed along with other saves?
+            print('called delete')
             old_activity.delete()
+            models.Narrative.objects.filter(iati_identifier=id).delete()
+
 
         activity = models.Activity()
         activity.id = id
@@ -420,8 +424,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__participating_org__narrative(self,element):
-        model = self.get_func_parent_model()
-        self.add_narrative(element,model)
+        model = self.get_model('ActivityParticipatingOrganisation')
+        self.add_narrative(element, model)
         return element
 
     '''atributes:

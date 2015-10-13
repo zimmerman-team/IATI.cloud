@@ -254,6 +254,8 @@ class XMLParser(object):
         """
         Don't ask why...
         """
+        if model.__class__.__name__ == "Narrative":
+            model.parent_object = model.parent_object
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
@@ -265,6 +267,8 @@ class XMLParser(object):
                 try:
                     self.update_related(model)
                     model.save()
+                    # if model.__class__.__name__ == "Narrative":
+                    #     print(type(model.parent_object))
                 except Exception as e:
                     print(e)
 
