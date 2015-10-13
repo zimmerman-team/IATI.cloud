@@ -19,6 +19,8 @@ DATABASES = {
     },
 }
 
+ROOT_ORGANISATIONS = ['GB-1',]
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 

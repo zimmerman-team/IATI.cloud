@@ -90,6 +90,7 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
     has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
+    is_searchable = models.BooleanField(default=True) # is object searchable
 
     objects = ActivityQuerySet.as_manager()
 

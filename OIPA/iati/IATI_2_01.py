@@ -1,6 +1,8 @@
 from genericXmlParser import XMLParser
 from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.conf import settings
+
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
@@ -31,6 +33,10 @@ class Parse(XMLParser):
     def __init__(self, *args, **kwargs):
         self.VERSION = codelist_models.Version.objects.get(code='2.01')
         self.test = 'blabla'
+        self.hints = []
+        self.logged_functions = []
+        self.errors = []
+
 
     class RequiredFieldError(Exception):
         def __init__(self, field, msg):
@@ -108,6 +114,38 @@ class Parse(XMLParser):
         h = hashlib.md5(w.encode('ascii', 'ignore'))
         hash_generated =  h.digest().encode('base64')[:8]
         return self._slugify(hash_generated)
+
+    """
+        Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
+
+    """
+    def update_searchable(self):
+
+        activities = models.Activity.objects.filter(reporting_organisation_id__in=settings.ROOT_ORGANISATIONS)
+        for activity in activities:
+            activity.is_searchable = True
+            activity.save()
+            self.set_children_readable(activity.iati_identifier)
+
+
+
+    """
+        sets all the children to searchable
+        recursivly calls itself but keeps a list of already set activities
+    """
+    def set_children_readable(self,iati_identifier):
+        #print 'in set children readable '+iati_identifier
+
+        child_transactions = models.Transaction.objects.filter(provider_activity_id=iati_identifier)
+        for transaction in child_transactions:
+            if not transaction.activity_id in self.searchable_activities:
+
+                activity =  transaction.activity
+                activity.is_searchable = True
+                activity.save()
+                self.searchable_activities.append(activity.iati_identifier)
+                self.set_children_readable(activity.iati_identifier)
+        return
 
     def validate_date(self, unvalidated_date):
         valid_date = None
@@ -1382,6 +1420,28 @@ class Parse(XMLParser):
             models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         except:
             pass
+        # set wether one of the parent is in root organisation if so set searchable
+        if len(settings.ROOT_ORGANISATIONS) > 0:
+            print 'in check searchable'
+            print settings.ROOT_ORGANISATIONS
+            #check if this activty is to be searchable
+            #first check if this is root element
+            if self.current_activity.is_searchable != True and self.current_activity.reporting_organisation.original_ref in settings.ROOT_ORGANISATIONS :
+                self.current_activity.is_searchable = True
+
+            #check if one of parents is searchable (because then current is also searchable)
+            if self.current_activity.is_searchable != True and models.Activity.objects.filter(iati_identifier=element.attrib.get('provider-activity-id')).exists():
+                parent_activity = models.Activity.objects.get(iati_identifier=element.attrib.get('provider-activity-id'))
+                if parent_activity.is_searchable == True:
+                    self.current_activity.is_searchable = True
+
+            if self.current_activity.is_searchable == True and self.current_activity.iati_identifier not in self.searchable_activities:
+                # update all children
+
+                self.set_children_readable(self.current_activity.iati_identifier)
+
+
+            self.searchable_activities.append(self.current_activity.iati_identifier)
 
         transaction = self.pop_model('Transaction')
         transaction.provider_organisation = transaction_provider
