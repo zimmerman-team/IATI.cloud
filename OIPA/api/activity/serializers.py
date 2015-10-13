@@ -40,13 +40,21 @@ class NarrativeSerializer(serializers.ModelSerializer):
             'text',
             'language',
         )
-    # def to_representation(self, obj):
 
-    #     return [ 
-    #     {
-    #         "text": narrative.content, 
-    #         "language": narrative.language.name
-    #     }  for narrative in obj.narratives.all() ]
+    # def __init__(self, *args, **kwargs):
+    #     print(kwargs)
+    #     super(NarrativeSerializer, self).__init__(*args, **kwargs)
+
+    # def to_representation(self, obj):
+    #     print(self.__dict__) 
+        # help(self)
+        # help(obj)
+
+        # return [ 
+        # {
+        #     "text": narrative.content, 
+        #     "language": narrative.language.name
+        # }  for narrative in obj.all() ]
 
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
@@ -192,7 +200,6 @@ class TitleSerializer(serializers.Serializer):
     class Meta:
         model = iati.models.Title
         fields = ('narratives',)
-
 
 class DescriptionSerializer(serializers.ModelSerializer):
 
@@ -421,9 +428,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         source='activityrecipientregion_set'
     )
     budgets = BudgetSerializer(many=True, source='budget_set')
-    title = TitleSerializer(many=True, read_only=True, source='title_set')
+
+    title = TitleSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
+
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')

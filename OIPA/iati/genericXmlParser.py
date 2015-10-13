@@ -104,8 +104,8 @@ class XMLParser(object):
                 pass
             except Exception as exception:
                 # pass
-                print(exception.message)
-                # traceback.print_exc()
+                # print(exception.message)
+                traceback.print_exc()
                 # self.handle_exception(x_path, function_name, exeception,e)
         # else:
         #     if not self.magicMethod(function_name,e):
@@ -262,6 +262,7 @@ class XMLParser(object):
                     # if model.__class__.__name__ == "Narrative":
                     #     print(type(model.parent_object))
                 except Exception as e:
+                    traceback.print_exc()
                     print(e)
 
         # saved_models = []

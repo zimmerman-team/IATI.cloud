@@ -75,9 +75,9 @@ class Parse(XMLParser):
 
     def get_model(self, key, index=-1):
         if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__class__.__name__, **kwargs) # class name
+            return super(Parse, self).get_model(key.__class__.__name__, index) # class name
 
-        return super(Parse, self).get_model(key)
+        return super(Parse, self).get_model(key, index)
 
     def pop_model(self, key):
         if isinstance(key, Model):
@@ -394,17 +394,22 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self,element):
-        activity = self.get_model('Activity')
+        activity = self.pop_model('Activity')
+
+        # title.activity = activity
         title = models.Title()
-        title.activity = activity
-        self.register_model('Title', title)
-        return element
+        activity.title = title
+
+        # order is important (TODO: change datastructure to handle this case more transparant, like insertBefore or something)
+        self.register_model('Activity', title)
+        self.register_model('Activity', activity)
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__title__narrative(self,element):
-        title = self.get_model('Title')
+        # TODO: make this more clear and not depend on order of things
+        title = self.get_model('Activity', index=-2) # this points to Title
         self.add_narrative(element, title)
         
         return element
@@ -1399,7 +1404,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
-        transaction_provider = self.get_model('TransactionProvider')
+        # TODO: make this more transparant in data structure or handling
+        transaction_provider = self.get_model('Transaction', -2)
         self.add_narrative(element, transaction_provider)
         return element
 
@@ -1442,7 +1448,8 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self,element):
-        transaction_receiver = self.get_model('TransactionReceiver')
+        # TODO: make this more transparent by changing data structure
+        transaction_receiver = self.get_model('Transaction', -2)
         self.add_narrative(element, transaction_receiver)
         return element
 

@@ -136,15 +136,8 @@ class Parse(IATI_201_Parser):
     tag:title'''
     def iati_activities__iati_activity__title(self, element):
         # TODO: no need for this, handled in add_narrative
-        text = element.text
-        
-        if not text: raise self.RequiredFieldError("text", "text is required")
-
-        activity = self.get_model('Activity')
-        title = models.Title()
-        title.activity = activity
-
-        self.register_model('Title', title)
+        super(Parse, self).iati_activities__iati_activity__title(element)
+        title = self.get_model('Activity', index=-2)
         self.add_narrative(element, title)
 
         return element
