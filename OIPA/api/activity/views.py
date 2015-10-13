@@ -20,10 +20,13 @@ from rest_framework import mixins, status
 from django.db.models import Q
 
 from geodata.models import Country, Region
-from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, CollaborationType, FlowType, AidType, FinanceType, TiedStatus
+from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, \
+                        CollaborationType, FlowType, AidType, FinanceType, TiedStatus, \
+                        ActivityReportingOrganisation
 
 from api.activity.serializers import ActivitySerializer, CodelistSerializer, \
-                                     ParticipatingOrganisationSerializer
+                                     ParticipatingOrganisationSerializer, \
+                                     ReportingOrganisationSerializer
                                      
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
@@ -95,10 +98,10 @@ class ActivityAggregationSerializer(BaseSerializer):
             "fields": ('url', 'code', 'name'),
         },
         "reporting_organisation": {
-            "field": "reporting_organisation",
-            "queryset": Organisation.objects.all(),
-            "serializer": OrganisationSerializer,
-            "fields": ('url', 'code', 'name'),
+            "field": "reporting_organisations__ref",
+            "queryset": ActivityReportingOrganisation.objects.all(),
+            "serializer": ReportingOrganisationSerializer,
+            "fields": ('ref',),
         },
         "participating_organisation": {
             "field": "participating_organisation",
@@ -278,24 +281,25 @@ class ActivityAggregationSerializer(BaseSerializer):
             fields = self._allowed_groupings[grouping]["fields"]
             foreignQueryset = self._allowed_groupings[grouping]["queryset"]
 
-            if fields:
-                data = serializer(foreignQueryset, 
-                    context={
-                        'request': request,
-                    },
-                    many=True,
-                    fields=fields,
-                    query_field="%s_fields" % (field_name),
-                ).data
-            else: 
-                data = serializer(foreignQueryset, 
-                    context={
-                        'request': request,
-                    },
-                    many=True,
-                ).data
+            if serializer:
+                if fields:
+                    data = serializer(foreignQueryset,
+                        context={
+                            'request': request,
+                        },
+                        many=True,
+                        fields=fields,
+                        query_field="%s_fields" % (field_name),
+                    ).data
+                else:
+                    data = serializer(foreignQueryset,
+                        context={
+                            'request': request,
+                        },
+                        many=True,
+                    ).data
 
-            serializers[grouping] = { i.get('code'):i for i in data }
+                serializers[grouping] = { i.get('code'):i for i in data }
 
 
         results = list(valuesQuerySet)

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import iati
 import iati_codelists
-from api.generics.serializers import DynamicFieldsModelSerializer, FilterableModelSerializer 
+from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer, FilterableModelSerializer
 from api.generics.fields import PointField
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
@@ -19,7 +19,7 @@ class VocabularySerializer(serializers.Serializer):
     code = serializers.CharField()
     name = serializers.CharField()
 
-class CodelistSerializer(serializers.Serializer):
+class CodelistSerializer(DynamicFieldsSerializer):
     code = serializers.CharField()
     name = serializers.CharField()
 
@@ -144,7 +144,7 @@ class ActivityDateSerializer(serializers.Serializer):
         fields = ('iso_date', 'type')
 
 
-class ReportingOrganisationSerializer(serializers.ModelSerializer):
+class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="normalized_ref")
     type = CodelistSerializer()

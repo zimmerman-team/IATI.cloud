@@ -450,8 +450,8 @@ class Description(models.Model):
 class Budget(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(BudgetType, null=True, default=None)
-    period_start = models.CharField(max_length=50, default="")
-    period_end = models.CharField(max_length=50, default="")
+    period_start = models.DateField(blank=True, default=None)
+    period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, default=None)
