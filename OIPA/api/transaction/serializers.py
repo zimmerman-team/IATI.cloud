@@ -13,12 +13,14 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
+    provider_activity_id = serializers.CharField(source="provider_activity_ref")
 
     class Meta:
         model = models.TransactionProvider
         fields = (
             'ref',
             'provider_activity',
+            'provider_activity_id',
             'narratives'
         )
 
@@ -28,12 +30,14 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
+    receiver_activity_id = serializers.CharField(source="receiver_activity_ref")
 
     class Meta:
         model = models.TransactionReceiver
         fields = (
             'ref',
             'receiver_activity',
+            'receiver_activity_id',
             'narratives'
         )
 
