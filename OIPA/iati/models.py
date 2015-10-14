@@ -471,7 +471,7 @@ class Condition(models.Model):
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
 
-    ref = models.CharField(max_length=200, default="")
+    ref = models.CharField(max_length=200, default="", null=True)
     location_reach = models.ForeignKey(
         GeographicLocationReach,
         null=True,
