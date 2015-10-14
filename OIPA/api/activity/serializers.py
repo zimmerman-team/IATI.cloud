@@ -59,24 +59,17 @@ class NarrativeSerializer(serializers.ModelSerializer):
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
+
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
-    # class FileFormatSerializer(serializers.ModelSerializer):
-    #     class Meta:
-    #         model = iati_codelists.models.FileFormat
-    #         fields = ('code', 'name')
-
     class DocumentCategorySerializer(serializers.ModelSerializer):
-        # TODO: change model definition to disable need for nested source
-        code = serializers.CharField(source="category.code")
-        name = serializers.CharField(source="category.name")
 
         class Meta:
-            model = iati.models.DocumentLinkCategory
+            model = iati.models.DocumentCategory
             fields = ('code', 'name')
 
     format = CodelistSerializer(source='file_format')
-    category = DocumentCategorySerializer(source='categories', many=True)
+    categories = DocumentCategorySerializer(many=True)
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
 
     class Meta:
@@ -84,7 +77,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         fields = (
             'url',
             'format',
-            'category',
+            'categories',
             'title'
         )
 
