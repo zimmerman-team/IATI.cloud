@@ -22,6 +22,7 @@ class Narrative(models.Model):
         max_length=250,
         verbose_name='related object',
         null=True,
+        db_index=True
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
     language = models.ForeignKey(Language, null=True, default=None)
