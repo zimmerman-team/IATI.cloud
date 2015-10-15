@@ -8,6 +8,8 @@ from api.activity import filters
 from api.activity.aggregation import AggregationsPaginationSerializer
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
+from api.generics.views import DynamicListView
+
 from rest_framework.filters import DjangoFilterBackend
 
 from api.transaction.serializers import TransactionSerializer
@@ -17,13 +19,12 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum
 from rest_framework import mixins, status
 
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 
 from geodata.models import Country, Region
 from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, CollaborationType, FlowType, AidType, FinanceType, TiedStatus
 
-from api.activity.serializers import ActivitySerializer, CodelistSerializer, \
-                                     ParticipatingOrganisationSerializer
+from api.activity.serializers import ActivitySerializer, CodelistSerializer, ParticipatingOrganisationSerializer
                                      
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
@@ -404,7 +405,7 @@ class ActivityAggregations(GenericAPIView):
             return Response('No results', status.HTTP_204_NO_CONTENT)
 
 
-class ActivityList(ListAPIView):
+class ActivityList(DynamicListView):
     """
     Returns a list of IATI Activities stored in OIPA.
 
@@ -517,6 +518,33 @@ class ActivityDetail(RetrieveAPIView):
     queryset = Activity.objects.all()
     serializer_class = activitySerializers.ActivitySerializer
 
+    def get_queryset(self):
+        # print('called')
+        # obj = super(ActivityDetail, self).get_queryset()
+        # print(obj0
+
+        from iati.models import ActivityParticipatingOrganisation, Narrative
+
+        pk = self.kwargs.get('pk')
+        # print(Narrative.objects.filter(iati_identifier=pk))
+
+        # narratives = Narrative.objects.filter(iati_identifier=pk).select_related('language')
+        # activities = Activity.objects.all().prefetch_related(narrative_prefetch)
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        # narratives = queryset=Narrative.objects.filter(iati_identifier=pk).select_related('language')
+        prefetch = Prefetch('participating_organisations',
+                queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(narrative_prefetch))
+
+        # a = list(Activity.objects.prefetch_related(narrative_prefetch, prefetch).all())
+        # print(a[0])
+        # print(a[1]).narratives.filter(parent_object=)
+        return Activity.objects.prefetch_related(prefetch)
+
+    # def get_queryset(self):
+    #     pk = self.kwargs.get('pk')
+    #     print(pk)
+    #     return Activity.objects.get(pk=pk)
 
 class ActivitySectors(ListAPIView):
     """

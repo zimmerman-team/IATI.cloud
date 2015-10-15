@@ -3,6 +3,8 @@ from geodata.models import Region
 from django.db.models import Sum
 import operator
 
+from django.db.models import Prefetch
+
 
 class ActivityQuerySet(query.QuerySet):
     class Meta:
@@ -83,11 +85,94 @@ class ActivityQuerySet(query.QuerySet):
         else:
             return self.filter(prepared_filter[0])
 
-    def aggregate_total_budget(self):
-        sum = self.aggregate(
-            total_budget=Sum('total_budget')
-        ).get('total_budget', 0.00)
-        return sum
+    # def aggregate_total_budget(self):
+    #     sum = self.aggregate(
+    #         total_budget=Sum('total_budget')
+    #     ).get('total_budget', 0.00)
+    #     return sum
+
+
+    def prefetch_participating_organisations(self):
+        from iati.models import ActivityParticipatingOrganisation, ActivityReportingOrganisation, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('participating_organisations',
+                queryset=ActivityParticipatingOrganisation.objects.all()\
+                        .select_related('type', 'role', 'organisation')\
+                        .prefetch_related(narrative_prefetch)),
+        )
+
+    def prefetch_reporting_organisations(self):
+        from iati.models import ActivityParticipatingOrganisation, ActivityReportingOrganisation, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        print('called prefetch')
+
+        return self.prefetch_related(
+            Prefetch('reporting_organisations',
+                queryset=ActivityReportingOrganisation.objects.all()\
+                        .select_related('type', 'organisation')\
+                        .prefetch_related(narrative_prefetch)),
+        )
+
+    def prefetch_recipient_countries(self):
+        from iati.models import ActivityRecipientCountry, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('activityrecipientcountry_set',
+                queryset=ActivityRecipientCountry.objects.all()\
+                    .select_related('country').defer('country__polygon'))
+        )
+
+    def prefetch_recipient_regions(self):
+        from iati.models import ActivityRecipientRegion, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('activityrecipientregion_set',
+                queryset=ActivityRecipientRegion.objects.all()\
+                    .select_related('region') \
+                    .select_related('vocabulary')
+                    )
+        )
+
+    def prefetch_sectors(self):
+        from iati.models import ActivitySector, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('activitysector_set',
+                queryset=ActivitySector.objects.all()\
+                    .select_related('sector') \
+                    .select_related('vocabulary')
+                    )
+        )
+
+    def prefetch_activity_dates(self):
+        from iati.models import ActivityDate, Narrative
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('activitydate_set',
+                queryset=ActivityDate.objects.all()\
+                    .select_related('type')
+                    )
+        )
+
+    def prefetch_participating_organisations(self):
+        from iati.models import ActivityParticipatingOrganisation, Narrative, Organisation
+        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch('participating_organisations',
+                queryset=ActivityParticipatingOrganisation.objects.all()\
+                    .select_related('type') \
+                    .select_related('role')
+                    # .prefetch_related('organisation')
+                    )
+        )
 
     def aggregate_budget(self):
         sum = self.aggregate(

@@ -163,65 +163,6 @@ class Parse(XMLParser):
     def _normalize(self, attr):
         return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
 
-    def get_or_create_organisation(self, elem, name, is_reporting_org=False):
-        """
-        Add organisation business requirements:
-
-        Organisations coming in via reporting-org, have unique refs, and their names should always me saved with the ref
-        Organisations coming in via participating-org have non unique refs and org names, if the ref exists but names
-        don't match create a new Organisation with:
-        Organisation.original_ref = ref, Organisation.ref = something unique,
-
-        additional requirements:
-
-        -2.1 Organisation.refs should never contain spaces, line breaks, slashes etc.
-        -2.2 Organisation.original_ref should always be the same as the ref in the xml file
-        -2.3 A reporting-org's Organisation.ref and Organisation.name should always match the ref and name in the xml file
-        TO DO:
-        -2.4 save all mentions to reporting-orgs under the Organisation.ref = reporting-org ref,
-            also when the reporting-org is not in OIPA yet, this can only be done with a pre-defined look-up list.
-
-        assumptions made:
-        -Reporting organisations are unique
-
-        """
-
-        ref = elem.attrib.get('ref')
-        type_ref = elem.attrib.get('type')
-
-        # requirement 2.2
-        original_ref = ref
-        # requirement 2.1
-        ref = self._normalize(ref)
-
-        org_type = None
-        if self.isInt(type_ref) and self.cached_db_call(models.OrganisationType,type_ref) != None:
-            org_type = self.cached_db_call(models.OrganisationType,type_ref)
-
-        # organisation = models.Organisation.objects.filter(original_ref=ref)
-
-        # if self._in_whitelist(original_ref):
-        #     if models.Organisation.objects.filter(original_ref=ref).exists():
-        #         return models.Organisation.objects.filter(original_ref=ref).get()
-        #     else:
-        #         return self._save_whitelist_org(ref)
-        # if is_reporting_org:
-        #     if models.Organisation.objects.filter(original_ref=ref).exists():
-        #         return models.Organisation.objects.filter(original_ref=ref).get()
-        # else:
-        #     if models.Organisation.objects.filter(original_ref=ref, name=name).exists():
-        #         ref = ref + '-' + self.hash8(name)
-
-        organisation = models.Organisation()
-        organisation.code = ref
-        organisation.original_ref = original_ref
-        organisation.type = org_type
-        organisation.name = name
-
-        self.register_model('Organisation', organisation)
-
-        return organisation
-
     def add_narrative(self,element,parent):
 
         default_lang = self.default_lang # set on activity (if set)
@@ -237,8 +178,8 @@ class Parse(XMLParser):
         narrative = models.Narrative()
         narrative.language = language
         narrative.content = element.text
-        narrative.iati_identifier = self.iati_identifier # TODO: we need this?
         narrative.parent_object = parent
+        narrative.main_object = self.get_model('Activity')
 
         # TODO: handle this differently (also: breaks tests)
         register_name = parent.__class__.__name__ + "Narrative"
@@ -280,7 +221,7 @@ class Parse(XMLParser):
             # TODO: do this after activity is parsed along with other saves?
             print('called delete')
             old_activity.delete()
-            models.Narrative.objects.filter(iati_identifier=id).delete()
+            old_activity.narratives.all().delete()
 
 
         activity = models.Activity()

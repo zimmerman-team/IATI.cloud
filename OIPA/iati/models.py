@@ -18,14 +18,24 @@ class Narrative(models.Model):
         null=True,
         blank=True,
     )
+
+    # references an actual model which has a corresponding narrative
     object_id = models.CharField(
         max_length=250,
         verbose_name='related object',
         null=True,
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
+
+    # references an activity or organisation
+    main_object_id = models.CharField(
+        max_length=250,
+        verbose_name='related object',
+        null=True,
+    )
+    main_object = GenericForeignKey('content_type', 'main_object_id')
+
     language = models.ForeignKey(Language, null=True, default=None)
-    iati_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
     content = models.TextField(null=True,blank=True)
 
 class Title(models.Model):
@@ -56,24 +66,12 @@ class Activity(models.Model):
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
+
     activity_status = models.ForeignKey(
         ActivityStatus,
         null=True,
         default=None)
 
-    # reporting_organisation = models.ForeignKey(
-    #     Organisation,
-    #     null=True,
-    #     default=None,
-    #     related_name="activity_reporting_organisation")
-    # reporting_organisation = models.ManyToManyField(
-    #     Organisation,
-    #     related_name="reporting_organisations",
-    #     through="ActivityReportingOrganisation")
-    # participating_organisation = models.ManyToManyField(
-    #     Organisation,
-    #     related_name="participating_organisations",
-    #     through="ActivityParticipatingOrganisation")
     policy_marker = models.ManyToManyField(
         PolicyMarker,
         through="ActivityPolicyMarker")
@@ -99,6 +97,12 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
     has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
+
+    narratives = GenericRelation(
+        Narrative,
+        object_id_field='main_object_id',
+        related_query_name='narratives'
+    )
 
     objects = ActivityQuerySet.as_manager()
 

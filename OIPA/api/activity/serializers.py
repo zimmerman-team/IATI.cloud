@@ -397,9 +397,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     activity_dates = ActivityDateSerializer(
         many=True,
         source='activitydate_set')
-    reporting_organisation = ReportingOrganisationSerializer(
-            many=True,
-            source='reporting_organisations')
+    reporting_organisations = ReportingOrganisationSerializer(
+            many=True,)
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True,)
 
@@ -465,7 +464,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_organisation',
+            'reporting_organisations',
             'title',
             'description',
             'participating_organisations',
@@ -491,3 +490,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'results',
             'locations'
         )
+
+        # narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        # participating_organisation_prefetch = Prefetch('participating_organisations',
+        #         queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(narrative_prefetch))
+
+        # # configure required prefetches for these fields (all applied to given queryset)
+        # prefetch_fields = (
+        #     ('participating_organisations', prefetch),
+        # )

@@ -8,13 +8,14 @@ from rest_framework.response import Response
 from collections import OrderedDict
 
 class AggregationsSerializer(DynamicFieldsSerializer):
+    # TODO: rewrite as activity annotations
 
-    total_budget = serializers.DecimalField(
-        source='aggregate_total_budget',
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False
-    )
+    # total_budget = serializers.DecimalField(
+    #     source='aggregate_total_budget',
+    #     max_digits=15,
+    #     decimal_places=2,
+    #     coerce_to_string=False
+    # )
 
     budget = serializers.DecimalField(
         source='aggregate_budget',
@@ -46,7 +47,7 @@ class AggregationsSerializer(DynamicFieldsSerializer):
         coerce_to_string=False
     )
     
-    title = serializers.IntegerField(source='aggregate_title')
+    # title = serializers.IntegerField(source='aggregate_title')
 
 class AggregationsPaginationSerializer(NoCountPaginationSerializer):
     """PaginationSerializer with aggregations for a list of activities."""
@@ -63,18 +64,18 @@ class AggregationsPaginationSerializer(NoCountPaginationSerializer):
     
     def get_paginated_response(self, data):
 
-        if (self.aggregations.data):
-            return Response(OrderedDict([
-                ('count', self.page.paginator.count),
-                ('next', self.get_next_link()),
-                ('previous', self.get_previous_link()),
-                ('aggregations', self.aggregations.data),
-                ('results', data),
-            ]))
-        else:
-            return Response(OrderedDict([
-                ('count', self.page.paginator.count),
-                ('next', self.get_next_link()),
-                ('previous', self.get_previous_link()),
-                ('results', data),
-            ]))
+        # if (self.aggregations.data):
+        #     return Response(OrderedDict([
+        #         ('count', self.page.paginator.count),
+        #         ('next', self.get_next_link()),
+        #         ('previous', self.get_previous_link()),
+        #         ('aggregations', self.aggregations.data),
+        #         ('results', data),
+        #     ]))
+        # else:
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data),
+        ]))

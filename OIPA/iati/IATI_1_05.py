@@ -4,6 +4,8 @@ from lxml.builder import E
 from iati import models
 from iati_codelists import models as codelist_models
 
+# TODO: separate validation logic and model saving login in recursive tree walk
+
 class Parse(IATI_201_Parser):
 
     #version of iati standard
@@ -135,7 +137,6 @@ class Parse(IATI_201_Parser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self, element):
-        # TODO: no need for this, handled in add_narrative
         super(Parse, self).iati_activities__iati_activity__title(element)
         title = self.get_model('Activity', index=-2)
         self.add_narrative(element, title)

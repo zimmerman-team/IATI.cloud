@@ -248,6 +248,7 @@ class XMLParser(object):
         """
         if model.__class__.__name__ == "Narrative":
             model.parent_object = model.parent_object
+            model.main_object = model.main_object
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
