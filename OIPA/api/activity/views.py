@@ -11,6 +11,7 @@ from api.generics.filters import SearchFilter
 from rest_framework.filters import DjangoFilterBackend
 
 from api.transaction.serializers import TransactionSerializer
+from api.transaction.filters import TransactionFilter
 
 import json
 from rest_framework.response import Response
@@ -664,6 +665,8 @@ class ActivityTransactions(ListAPIView):
 
     """
     serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
