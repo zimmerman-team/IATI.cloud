@@ -222,7 +222,6 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
         )
 
 class RelatedActivitySerializer(FilterableModelSerializer):
-    current_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     related_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = RelatedActivityTypeSerializer()
 
@@ -230,7 +229,6 @@ class RelatedActivitySerializer(FilterableModelSerializer):
         model = iati.models.RelatedActivity
         filter_class = RelatedActivityFilter
         fields = (
-            'current_activity',
             'related_activity',
             'ref',
             'type',
@@ -438,15 +436,15 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     results = ResultSerializer(many=True, source="result_set")
     locations = LocationSerializer(many=True, source='location_set')
 
-    related_activities = RelatedActivitySerializer(many=True, source='current_activity')
+    related_activities = RelatedActivitySerializer(many=True, source='relatedactivity_set')
 
     total_child_budgets = serializers.SerializerMethodField()
 
     def get_total_child_budgets(self, activity):
         if activity.hierarchy == 1:
             return iati.models.Activity.objects.filter(
-                    current_activity__related_activity__id=activity,
-                    # current_activity__type__code=2,
+                    related_activity__related_activity__id=activity,
+                    # related_activity__type__code=2,
                 ).filter(
                     hierarchy=2,
                 ).aggregate(

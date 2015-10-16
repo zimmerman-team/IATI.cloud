@@ -95,17 +95,17 @@ class XMLParser(object):
             try:
                 elementMethod(element)
             except self.RequiredFieldError as e:
-                # print(e.field)
+                print(e.field)
                 # print(e.message)
-                traceback.print_exc()
+                # traceback.print_exc()
                 pass
             except self.ValidationError as e:
                 print(e)
                 pass
             except Exception as exception:
                 # pass
-                # print(exception.message)
-                traceback.print_exc()
+                print(exception.message)
+                # traceback.print_exc()
                 # self.handle_exception(x_path, function_name, exeception,e)
         # else:
         #     if not self.magicMethod(function_name,e):
@@ -228,7 +228,6 @@ class XMLParser(object):
             print "%s\n%s" %(errormsg, error)
             return None
 
-    #helper function check if integer
     def isInt(self, obj):
         try:
             int(obj)
@@ -236,7 +235,6 @@ class XMLParser(object):
         except:
             return False
 
-    #helper function return true boolean
     def makeBool(self,text):
         if text == '1':
             return True
@@ -244,11 +242,11 @@ class XMLParser(object):
 
     def update_related(self, model):
         """
-        Don't ask why...
+        Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ == "Narrative":
             model.parent_object = model.parent_object
-            model.main_object = model.main_object
+            model.related_object = model.related_object
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
@@ -263,7 +261,7 @@ class XMLParser(object):
                     # if model.__class__.__name__ == "Narrative":
                     #     print(type(model.parent_object))
                 except Exception as e:
-                    traceback.print_exc()
+                    # traceback.print_exc()
                     print(e)
 
         # saved_models = []

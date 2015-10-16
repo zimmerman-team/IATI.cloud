@@ -12,35 +12,30 @@ from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, Polic
 
 # TODO: separate this
 class Narrative(models.Model):
-    content_type = models.ForeignKey(
-        ContentType,
-        verbose_name='xml Parent',
-        null=True,
-        blank=True,
-    )
-
-    # references an actual model which has a corresponding narrative
-    object_id = models.CharField(
+    # references an actual related model which has a corresponding narrative
+    related_content_type = models.ForeignKey(ContentType, related_name='related_agent')
+    related_object_id = models.CharField(
         max_length=250,
         verbose_name='related object',
-        null=True,
     )
-    parent_object = GenericForeignKey('content_type', 'object_id')
+    related_object = GenericForeignKey('related_content_type', 'related_object_id')
 
     # references an activity or organisation
-    main_object_id = models.CharField(
+    parent_content_type = models.ForeignKey(ContentType, related_name='parent_agent')
+    parent_object_id = models.CharField(
         max_length=250,
-        verbose_name='related object',
-        null=True,
+        verbose_name='Parent related object',
     )
-    main_object = GenericForeignKey('content_type', 'main_object_id')
+    parent_object = GenericForeignKey('parent_content_type', 'parent_object_id')
 
-    language = models.ForeignKey(Language, null=True, default=None)
-    content = models.TextField(null=True,blank=True)
+    language = models.ForeignKey(Language)
+    content = models.TextField()
 
 class Title(models.Model):
     # activity = models.ForeignKey(Activity)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "Title"
@@ -51,7 +46,7 @@ class Activity(models.Model):
         (2, u"Child"),
     )
     
-    title = models.OneToOneField(Title, null=True) # todo: remove null=true
+    title = models.OneToOneField(Title)
 
     id = models.CharField(max_length=150,primary_key=True,blank=False)
     iati_identifier = models.CharField(max_length=150, blank=False)
@@ -60,9 +55,7 @@ class Activity(models.Model):
     xml_source_ref = models.CharField(max_length=200, default="")
 
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
-    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, null=True)
-    # last_updated_datetime = models.CharField(max_length=100, default="")
-    # value_date = models.DateField(null=True)
+    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1)
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
@@ -100,7 +93,8 @@ class Activity(models.Model):
 
     narratives = GenericRelation(
         Narrative,
-        object_id_field='main_object_id',
+        content_type_field='parent_content_type',
+        object_id_field='parent_object_id',
         related_query_name='narratives'
     )
 
@@ -147,7 +141,9 @@ class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
     activity = models.ForeignKey(
         Activity,
         related_name="reporting_organisations"
@@ -170,7 +166,9 @@ class ActivityParticipatingOrganisation(models.Model):
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
 
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)
@@ -183,7 +181,9 @@ class ActivityPolicyMarker(models.Model):
         PolicySignificance,
         null=True,
         default=None)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "%s - %s - %s" % (self.activity.id, self.code, self.significance.code)
@@ -226,7 +226,9 @@ class BudgetItem(models.Model):
 
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -246,7 +248,9 @@ class OtherIdentifier(models.Model):
     identifier = models.CharField(max_length=100)
     owner_ref = models.CharField(max_length=100, default="")
     # owner_name = models.CharField(max_length=100, default="")
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
     type = models.ForeignKey(OtherIdentifierType,null=True)
 
     def __unicode__(self,):
@@ -283,27 +287,39 @@ class ContactInfo(models.Model):
 
 class ContactInfoOrganisation(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ContactInfoDepartment(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ContactInfoPersonName(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ContactInfoJobTitle(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ContactInfoMailingAddress(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ContactInfoTelephone(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 # class transaction_description(models.Model):
 #     transaction = models.ForeignKey(transaction)
@@ -331,7 +347,7 @@ class PlannedDisbursement(models.Model):
 class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
         Activity,
-        related_name="current_activity",
+        # related_name="current_activity",
         on_delete=models.CASCADE)
     related_activity = models.ForeignKey(
         Activity,
@@ -373,7 +389,9 @@ class DocumentLinkLanguage(models.Model):
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
@@ -385,11 +403,15 @@ class Result(models.Model):
 
 class ResultTitle(models.Model):
     result = models.ForeignKey(Result)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ResultDescription(models.Model):
     result = models.ForeignKey(Result)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
@@ -440,7 +462,9 @@ class ResultIndicatorPeriodActualComment(models.Model):
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
     type = models.ForeignKey( # TODO: set a default or require
         DescriptionType,
@@ -518,15 +542,21 @@ class LocationAdministrative(models.Model):
 
 class LocationName(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class LocationDescription(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class LocationActivityDescription(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)

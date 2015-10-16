@@ -8,7 +8,7 @@ from api.activity import filters
 from api.activity.aggregation import AggregationsPaginationSerializer
 from api.generics.filters import BasicFilterBackend
 from api.generics.filters import SearchFilter
-from api.generics.views import DynamicListView
+from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend
 
@@ -474,7 +474,7 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
-    fields = ('url', 'id', 'title', 'total_budget')
+    # fields = ('url', 'id', 'title', 'total_budget')
     pagination_class = AggregationsPaginationSerializer
 
     # def get_serializer_context(self):
@@ -485,7 +485,7 @@ class ActivityList(DynamicListView):
     #     return Activity.objects.prefetch_related('current_activity')
 
 
-class ActivityDetail(RetrieveAPIView):
+class ActivityDetail(DynamicDetailView):
     """
     Returns detailed information about Activity.
 
@@ -518,33 +518,37 @@ class ActivityDetail(RetrieveAPIView):
     queryset = Activity.objects.all()
     serializer_class = activitySerializers.ActivitySerializer
 
-    def get_queryset(self):
-        # print('called')
-        # obj = super(ActivityDetail, self).get_queryset()
-        # print(obj0
+#     def get_queryset(self):
+#         # print('called')
+#         # obj = super(ActivityDetail, self).get_queryset()
+#         # print(obj0
 
-        from iati.models import ActivityParticipatingOrganisation, Narrative
+#         from iati.models import ActivityParticipatingOrganisation, Narrative
 
-        pk = self.kwargs.get('pk')
-        # print(Narrative.objects.filter(iati_identifier=pk))
+#         pk = self.kwargs.get('pk')
+#         # print(Narrative.objects.filter(iati_identifier=pk))
 
-        # narratives = Narrative.objects.filter(iati_identifier=pk).select_related('language')
-        # activities = Activity.objects.all().prefetch_related(narrative_prefetch)
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+#         # narratives = Narrative.objects.filter(iati_identifier=pk).select_related('language')
+#         # activities = Activity.objects.all().prefetch_related(narrative_prefetch)
+#         narrative_qs = Narrative.objects.select_related('language')
+#         narrative_prefetch = Prefetch('narratives', queryset=narrative_qs, to_attr='narrative_test')
 
-        # narratives = queryset=Narrative.objects.filter(iati_identifier=pk).select_related('language')
-        prefetch = Prefetch('participating_organisations',
-                queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(narrative_prefetch))
+#         obj_prefetch = Prefetch('narratives', queryset=narrative_qs)
 
-        # a = list(Activity.objects.prefetch_related(narrative_prefetch, prefetch).all())
-        # print(a[0])
-        # print(a[1]).narratives.filter(parent_object=)
-        return Activity.objects.prefetch_related(prefetch)
+#         # narratives = queryset=Narrative.objects.filter(iati_identifier=pk).select_related('language')
+#         prefetch = Prefetch('participating_organisations',
+#                 queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(obj_prefetch))
 
-    # def get_queryset(self):
-    #     pk = self.kwargs.get('pk')
-    #     print(pk)
-    #     return Activity.objects.get(pk=pk)
+#         # a = list(Activity.objects.prefetch_related(narrative_prefetch).all())
+#         # b = a[0].participating_organisations.all()[0]
+#         # print(b)
+#         # print(a[1]).narratives.filter(parent_object=)
+#         return Activity.objects.all().prefetch_related(narrative_prefetch, prefetch)
+
+#     # def get_queryset(self):
+#     #     pk = self.kwargs.get('pk')
+#     #     print(pk)
+#     #     return Activity.objects.get(pk=pk)
 
 class ActivitySectors(ListAPIView):
     """

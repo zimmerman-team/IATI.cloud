@@ -22,7 +22,9 @@ class TransactionProvider(models.Model):
         default=None)
     provider_activity_ref = models.CharField(max_length=200, null=True, default="")
 
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class TransactionReceiver(models.Model):
     ref = models.CharField(max_length=250)
@@ -41,7 +43,9 @@ class TransactionReceiver(models.Model):
         default=None)
     receiver_activity_ref = models.CharField(max_length=200, null=True, default="")
 
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 class Transaction(models.Model):
     activity = models.ForeignKey(Activity)
@@ -112,6 +116,8 @@ class TransactionRecipientRegion(models.Model):
 
 class TransactionDescription(models.Model):
     transaction = models.ForeignKey(Transaction)
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(Narrative,
+		content_type_field='related_content_type',
+		object_id_field='related_object_id')
 
 
