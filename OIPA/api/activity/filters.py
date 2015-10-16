@@ -96,17 +96,18 @@ class ActivityFilter(TogetherFilterSet):
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
         name='sector')
+
     sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activitysector__sector__category__code')
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisation'
+        name='participating_organisations__ref'
     )
     reporting_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='reporting_organisation'
+        name='reporting_organisations__ref'
     )
 
     xml_source_ref = CommaSeparatedCharFilter(
@@ -160,18 +161,9 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
-    # Deprecated
-    min_total_budget = NumberFilter(
-        lookup_type='gte',
-        name='total_budget')
-
-    max_total_budget = NumberFilter(
-        lookup_type='lte',
-        name='total_budget')
-
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='transaction__provider_activity', distinct=True)
+        name='transaction__provider_organisation__provider_activity_ref', distinct=True)
 
     class Meta:
         model = Activity

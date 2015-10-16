@@ -336,6 +336,7 @@ class RelatedActivity(models.Model):
     related_activity = models.ForeignKey(
         Activity,
         related_name="related_activity", 
+        db_constraint=False,
         null=True,
         on_delete=models.SET_NULL)
     type = models.ForeignKey(
