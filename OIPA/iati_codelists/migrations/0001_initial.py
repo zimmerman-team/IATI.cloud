@@ -409,8 +409,6 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=100, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(default=b'')),
-                ('codelist_iati_version', models.CharField(max_length=4)),
-                ('codelist_successor', models.CharField(max_length=100, null=True)),
                 ('vocabulary', models.ForeignKey(default=None, to='iati_vocabulary.PolicyMarkerVocabulary', null=True)),
             ],
         ),
