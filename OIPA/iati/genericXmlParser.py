@@ -31,7 +31,15 @@ class XMLParser(object):
     # TODO: find a way to simply save in parser functions, and actually commit to db on exit
     model_store = OrderedDict()
 
-    DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less 
+
+
+    DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less
+
+    def __init__(self):
+        self.hints = []
+        self.logged_functions = []
+        self.errors = []
+
 
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated_105.xml")

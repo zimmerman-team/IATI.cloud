@@ -72,6 +72,12 @@ class Parse(IATI_201_Parser):
 
     #     self.register_model('Narrative', narrative)
 
+    def __init__(self, *args, **kwargs):
+        self.VERSION = codelist_models.Version.objects.get(code='1.05')
+        self.hints = []
+        self.logged_functions = []
+        self.errors = []
+        
     '''atributes:
     ref:AA-AAA-123456789
     type:21

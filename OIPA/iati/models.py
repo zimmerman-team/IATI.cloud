@@ -58,6 +58,7 @@ class Activity(models.Model):
 
     default_currency = models.ForeignKey(Currency, null=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1)
+    last_updated_model = models.DateTimeField(null=True, auto_now=True)
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
@@ -92,6 +93,7 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
     has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
+    is_searchable = models.BooleanField(default=True) # is object searchable
 
     narratives = GenericRelation(
         Narrative,

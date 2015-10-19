@@ -1,0 +1,54 @@
+{{ object.iati_identifier }} {{ object.id }}
+{% for rep_org in object.reporting_organisations.all %}
+    {{ rep_org.ref }} 
+    {% for narrative in rep_org.narratives.all %}
+        {{narrative.content}}  
+    {% endfor %}
+{% endfor %}
+
+{% for narrative in object.title.narratives.all %}
+    {{narrative.content}}  
+{% endfor %}
+
+{% for description_text in object.description_set.all %}
+    {% for narrative in description_text.narratives.all %}
+        {{narrative.content}}  
+    {% endfor %}
+{% endfor %}
+
+{% for recipient_region in object.recipient_region.all %}
+{{ recipient_region.name }} {{ recipient_region.code }} 
+{% endfor %}
+
+{% for document_link in object.documentlink_set.all %}
+    {{ document_link.url }} 
+    {% for title in document_link.documentlinktitle_set.all %}
+        {% for narrative in title.narratives.all %}
+            {{narrative.content}}  
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+
+
+{% for recipient_country in object.recipient_country.all %}
+    {{ recipient_country.name }}
+    {{ recipient_country.code }}  
+    {{ recipient_country.alt_name }}
+{% endfor %}
+
+{% for sector in object.sector.all %}
+    {{ sector.code }} {{ sector.name }}  {{ sector.description }} 
+{% endfor %}
+
+{% for participating_org in object.participating_organisations.all %}
+    {{ participating_org.organisation.abbreviation }} 
+    {{ participating_org.organisation.name }}  
+    {{ participating_org.organisation.code }} 
+    {{ participating_org.organisation.original_ref }} 
+
+    {% for narrative in participating_org.narratives.all %}
+        {{narrative.content}}  
+    {% endfor %}
+{% endfor %}
+
+

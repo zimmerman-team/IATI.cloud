@@ -3,6 +3,7 @@ from iati import models
 from geodata.models import Country, Region
 import dateutil.parser
 from lxml.builder import E
+from iati_codelists import models as codelist_models
 
 class Parse(IATI_105_Parser):
 
@@ -15,6 +16,11 @@ class Parse(IATI_105_Parser):
         "3": "G2",
     }
 
+    def __init__(self, *args, **kwargs):
+        self.VERSION = codelist_models.Version.objects.get(code='1.05')
+        self.hints = []
+        self.logged_functions = []
+        self.errors = []
     '''atributes:
 	code:ADM2
 	{http://www.w3.org/XML/1998/namespace}lang:en

@@ -27,7 +27,8 @@ from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, \
                         CollaborationType, FlowType, AidType, FinanceType, TiedStatus, \
                         ActivityReportingOrganisation
 
-from api.activity.serializers import ActivitySerializer, CodelistSerializer, ParticipatingOrganisationSerializer
+from api.activity.serializers import ActivitySerializer, CodelistSerializer
+from api.activity.serializers import ParticipatingOrganisationSerializer, ReportingOrganisationSerializer
                                      
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer

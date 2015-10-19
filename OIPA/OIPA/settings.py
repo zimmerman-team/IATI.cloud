@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
+    'haystack',
     'iati',
     'iati_synchroniser',
     'geodata',
@@ -225,6 +226,18 @@ REST_FRAMEWORK = {
         # 'rest_framework.filters.SearchFilter',
     )
 }
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+ROOT_ORGANISATIONS = []
 
 try:
     from local_settings import *
