@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 import traceback
 from django.db import IntegrityError
 from django.db.models.fields.related import ForeignKey, OneToOneField
+from decimal import Decimal
 
 class XMLParser(object):
     VERSION = '2.01'  #overwrite for older versions
@@ -214,20 +215,15 @@ class XMLParser(object):
         return self.get_model(key, index).save()
 
     def guess_number(self,number_string):
-        #first strip non numeric values from begin and end
-        non_decimal = re.compile(r'[^\d.,]+')
-        errormsg = "ValueError: Input must be decimal or integer string"
-        stripped_string = non_decimal.sub('', number_string)
-        #check if there is only 1 comma (central european way)
-        try:
-            if stripped_string.count(',') <= 1:
-                return float(stripped_string.replace(',','.'))
-            else:
-                return float(stripped_string.replace(',',''))
-        except ValueError,error:
-            print "%s\n%s" %(errormsg, error)
-            return None
+        
+        #first strip non numeric values, except for -.,
+        decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
 
+        try:
+            return Decimal(decimal_string)
+        except ValueError:
+            raise ValueError("ValueError: Input must be decimal or integer string")
+                        
     def isInt(self, obj):
         try:
             int(obj)

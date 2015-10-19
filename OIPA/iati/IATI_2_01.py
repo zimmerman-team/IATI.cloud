@@ -219,7 +219,6 @@ class Parse(XMLParser):
 
             # TODO: test activity is deleted along with related models
             # TODO: do this after activity is parsed along with other saves?
-            print('called delete')
             old_activity.delete()
             old_activity.narratives.all().delete()
 
