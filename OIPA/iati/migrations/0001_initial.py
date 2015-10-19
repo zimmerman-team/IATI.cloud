@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('hierarchy', models.SmallIntegerField(default=1, null=True, choices=[(1, 'Parent'), (2, 'Child')])),
                 ('last_updated_datetime', models.DateTimeField(max_length=100, null=True, blank=True)),
                 ('default_lang', models.CharField(max_length=2)),
-                ('linked_data_uri', models.CharField(default=b'', max_length=100)),
+                ('linked_data_uri', models.CharField(default=b'', max_length=100, null=True, blank=True)),
                 ('capital_spend', models.DecimalField(default=None, null=True, max_digits=5, decimal_places=2)),
                 ('has_conditions', models.BooleanField(default=False)),
                 ('activity_status', models.ForeignKey(default=None, to='iati_codelists.ActivityStatus', null=True)),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             name='ActivityDate',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('iso_date', models.DateField(default=b'1970-01-01')),
+                ('iso_date', models.DateTimeField()),
                 ('activity', models.ForeignKey(to='iati.Activity')),
                 ('type', models.ForeignKey(to='iati_codelists.ActivityDateType')),
             ],
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
-                ('code', models.ForeignKey(related_name='policy_marker_related', to='iati_codelists.PolicyMarker')),
+                ('code', models.ForeignKey(to='iati_codelists.PolicyMarker')),
                 ('significance', models.ForeignKey(default=None, to='iati_codelists.PolicySignificance', null=True)),
                 ('vocabulary', models.ForeignKey(to='iati_vocabulary.PolicyMarkerVocabulary')),
             ],
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
                 ('percentage', models.DecimalField(default=None, null=True, max_digits=5, decimal_places=2)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
                 ('region', models.ForeignKey(to='geodata.Region')),
-                ('region_vocabulary', models.ForeignKey(default=1, to='iati_vocabulary.RegionVocabulary')),
+                ('vocabulary', models.ForeignKey(default=1, to='iati_vocabulary.RegionVocabulary')),
             ],
         ),
         migrations.CreateModel(
@@ -136,8 +136,8 @@ class Migration(migrations.Migration):
             name='Budget',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('period_start', models.CharField(default=b'', max_length=50)),
-                ('period_end', models.CharField(default=b'', max_length=50)),
+                ('period_start', models.DateField(default=None, blank=True)),
+                ('period_end', models.DateField(default=None, blank=True)),
                 ('value', models.DecimalField(null=True, max_digits=15, decimal_places=2)),
                 ('value_string', models.CharField(max_length=50)),
                 ('value_date', models.DateField(default=None, null=True)),
@@ -353,7 +353,7 @@ class Migration(migrations.Migration):
             name='Location',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('ref', models.CharField(default=b'', max_length=200)),
+                ('ref', models.CharField(default=b'', max_length=200, null=True)),
                 ('location_id_code', models.CharField(default=b'', max_length=255)),
                 ('point_srs_name', models.CharField(default=b'', max_length=255)),
                 ('point_pos', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
@@ -400,7 +400,7 @@ class Migration(migrations.Migration):
             name='Narrative',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('object_id', models.CharField(max_length=250, null=True, verbose_name=b'related object')),
+                ('object_id', models.CharField(max_length=250, null=True, verbose_name=b'related object', db_index=True)),
                 ('iati_identifier', models.CharField(max_length=150, null=True, verbose_name=b'iati_identifier')),
                 ('content', models.TextField(null=True, blank=True)),
                 ('content_type', models.ForeignKey(verbose_name=b'xml Parent', blank=True, to='contenttypes.ContentType', null=True)),
@@ -449,7 +449,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('ref', models.CharField(default=b'', max_length=200)),
                 ('current_activity', models.ForeignKey(related_name='current_activity', to='iati.Activity')),
-                ('related_activity', models.ForeignKey(related_name='related_activity', on_delete=django.db.models.deletion.SET_NULL, to='iati.Activity', null=True)),
+                ('related_activity', models.ForeignKey(related_name='related_activity', on_delete=django.db.models.deletion.SET_NULL, db_constraint=False, to='iati.Activity', null=True)),
                 ('type', models.ForeignKey(default=None, to='iati_codelists.RelatedActivityType', max_length=200, null=True)),
             ],
         ),
@@ -459,7 +459,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('aggregation_status', models.BooleanField(default=False)),
                 ('activity', models.ForeignKey(to='iati.Activity')),
-                ('result_type', models.ForeignKey(default=None, to='iati_codelists.ResultType', null=True)),
+                ('type', models.ForeignKey(default=None, to='iati_codelists.ResultType', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -548,7 +548,6 @@ class Migration(migrations.Migration):
             name='Title',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('activity', models.ForeignKey(to='iati.Activity')),
             ],
         ),
         migrations.CreateModel(
@@ -583,7 +582,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('ref', models.CharField(max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('provider_activity_ref', models.CharField(default=b'', max_length=200)),
+                ('provider_activity_ref', models.CharField(default=b'', max_length=200, null=True)),
                 ('organisation', models.ForeignKey(related_name='transaction_providing_organisation', default=None, to='iati.Organisation', null=True)),
                 ('provider_activity', models.ForeignKey(related_name='transaction_provider_activity', db_constraint=False, default=None, to='iati.Activity', null=True)),
             ],
@@ -594,7 +593,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('ref', models.CharField(max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('receiver_activity_ref', models.CharField(default=b'', max_length=200)),
+                ('receiver_activity_ref', models.CharField(default=b'', max_length=200, null=True)),
                 ('organisation', models.ForeignKey(related_name='transaction_receiving_organisation', default=None, to='iati.Organisation', null=True)),
                 ('receiver_activity', models.ForeignKey(related_name='transaction_receiver_activity', db_constraint=False, default=None, to='iati.Activity', null=True)),
             ],
@@ -612,8 +611,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('region', models.ForeignKey(to='geodata.Region')),
-                ('region_vocabulary', models.ForeignKey(default=1, to='iati_vocabulary.RegionVocabulary')),
                 ('transaction', models.ForeignKey(to='iati.Transaction')),
+                ('vocabulary', models.ForeignKey(default=1, to='iati_vocabulary.RegionVocabulary')),
             ],
         ),
         migrations.CreateModel(
@@ -724,5 +723,10 @@ class Migration(migrations.Migration):
             model_name='activity',
             name='sector',
             field=models.ManyToManyField(to='iati_codelists.Sector', through='iati.ActivitySector'),
+        ),
+        migrations.AddField(
+            model_name='activity',
+            name='title',
+            field=models.OneToOneField(null=True, to='iati.Title'),
         ),
     ]
