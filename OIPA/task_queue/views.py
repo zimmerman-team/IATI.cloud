@@ -1,6 +1,6 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from task_queue import tasks
-from api.v3.resources.activity_view_resources import HttpResponse
+from django.http import HttpResponse
 
 
 # PARSE TASKS
