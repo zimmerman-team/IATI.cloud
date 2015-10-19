@@ -17,6 +17,8 @@ class Narrative(models.Model):
     related_object_id = models.CharField(
         max_length=250,
         verbose_name='related object',
+        null=True,
+        db_index=True
     )
     related_object = GenericForeignKey('related_content_type', 'related_object_id')
 
@@ -478,8 +480,8 @@ class Description(models.Model):
 class Budget(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(BudgetType, null=True, default=None)
-    period_start = models.CharField(max_length=50, default="")
-    period_end = models.CharField(max_length=50, default="")
+    period_start = models.DateField(blank=True, default=None)
+    period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, default=None)
@@ -499,7 +501,7 @@ class Condition(models.Model):
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
 
-    ref = models.CharField(max_length=200, default="")
+    ref = models.CharField(max_length=200, default="", null=True)
     location_reach = models.ForeignKey(
         GeographicLocationReach,
         null=True,

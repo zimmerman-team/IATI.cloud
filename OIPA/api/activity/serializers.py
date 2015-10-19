@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import iati
 import iati_codelists
-from api.generics.serializers import DynamicFieldsModelSerializer, FilterableModelSerializer 
+from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer, FilterableModelSerializer
 from api.generics.fields import PointField
 from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
@@ -19,7 +19,7 @@ class VocabularySerializer(serializers.Serializer):
     code = serializers.CharField()
     name = serializers.CharField()
 
-class CodelistSerializer(serializers.Serializer):
+class CodelistSerializer(DynamicFieldsSerializer):
     code = serializers.CharField()
     name = serializers.CharField()
 
@@ -59,24 +59,17 @@ class NarrativeSerializer(serializers.ModelSerializer):
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
+
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
-    # class FileFormatSerializer(serializers.ModelSerializer):
-    #     class Meta:
-    #         model = iati_codelists.models.FileFormat
-    #         fields = ('code', 'name')
-
     class DocumentCategorySerializer(serializers.ModelSerializer):
-        # TODO: change model definition to disable need for nested source
-        code = serializers.CharField(source="category.code")
-        name = serializers.CharField(source="category.name")
 
         class Meta:
-            model = iati.models.DocumentLinkCategory
+            model = iati.models.DocumentCategory
             fields = ('code', 'name')
 
     format = CodelistSerializer(source='file_format')
-    category = DocumentCategorySerializer(source='categories', many=True)
+    categories = DocumentCategorySerializer(many=True)
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
 
     class Meta:
@@ -84,7 +77,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         fields = (
             'url',
             'format',
-            'category',
+            'categories',
             'title'
         )
 
@@ -144,7 +137,7 @@ class ActivityDateSerializer(serializers.Serializer):
         fields = ('iso_date', 'type')
 
 
-class ReportingOrganisationSerializer(serializers.ModelSerializer):
+class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="normalized_ref")
     type = CodelistSerializer()

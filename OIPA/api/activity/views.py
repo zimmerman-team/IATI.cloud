@@ -13,6 +13,7 @@ from api.generics.views import DynamicListView, DynamicDetailView
 from rest_framework.filters import DjangoFilterBackend
 
 from api.transaction.serializers import TransactionSerializer
+from api.transaction.filters import TransactionFilter
 
 import json
 from rest_framework.response import Response
@@ -22,7 +23,9 @@ from rest_framework import mixins, status
 from django.db.models import Q, Prefetch
 
 from geodata.models import Country, Region
-from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, CollaborationType, FlowType, AidType, FinanceType, TiedStatus
+from iati.models import Organisation, Sector, ActivityStatus, PolicyMarker, \
+                        CollaborationType, FlowType, AidType, FinanceType, TiedStatus, \
+                        ActivityReportingOrganisation
 
 from api.activity.serializers import ActivitySerializer, CodelistSerializer, ParticipatingOrganisationSerializer
                                      
@@ -96,10 +99,10 @@ class ActivityAggregationSerializer(BaseSerializer):
             "fields": ('url', 'code', 'name'),
         },
         "reporting_organisation": {
-            "field": "reporting_organisation",
-            "queryset": Organisation.objects.all(),
-            "serializer": OrganisationSerializer,
-            "fields": ('url', 'code', 'name'),
+            "field": "reporting_organisations__ref",
+            "queryset": ActivityReportingOrganisation.objects.all(),
+            "serializer": ReportingOrganisationSerializer,
+            "fields": ('ref',),
         },
         "participating_organisation": {
             "field": "participating_organisation",
@@ -279,24 +282,25 @@ class ActivityAggregationSerializer(BaseSerializer):
             fields = self._allowed_groupings[grouping]["fields"]
             foreignQueryset = self._allowed_groupings[grouping]["queryset"]
 
-            if fields:
-                data = serializer(foreignQueryset, 
-                    context={
-                        'request': request,
-                    },
-                    many=True,
-                    fields=fields,
-                    query_field="%s_fields" % (field_name),
-                ).data
-            else: 
-                data = serializer(foreignQueryset, 
-                    context={
-                        'request': request,
-                    },
-                    many=True,
-                ).data
+            if serializer:
+                if fields:
+                    data = serializer(foreignQueryset,
+                        context={
+                            'request': request,
+                        },
+                        many=True,
+                        fields=fields,
+                        query_field="%s_fields" % (field_name),
+                    ).data
+                else:
+                    data = serializer(foreignQueryset,
+                        context={
+                            'request': request,
+                        },
+                        many=True,
+                    ).data
 
-            serializers[grouping] = { i.get('code'):i for i in data }
+                serializers[grouping] = { i.get('code'):i for i in data }
 
 
         results = list(valuesQuerySet)
@@ -692,6 +696,8 @@ class ActivityTransactions(ListAPIView):
 
     """
     serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
