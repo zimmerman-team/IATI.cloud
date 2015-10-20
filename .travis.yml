@@ -25,3 +25,5 @@ script:
   - coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --settings OIPA.test_settings --nomigrations
 after_success:
   - coveralls
+after_failure:
+  - coveralls
