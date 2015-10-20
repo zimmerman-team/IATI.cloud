@@ -3,7 +3,7 @@ from django.conf.urls import patterns
 from django.http import HttpResponse
 from indicator.admin_tools import IndicatorAdminTools
 from multiupload.admin import MultiUploadAdmin
-from indicator.wbi_parser import WbiParser
+from indicator.wbi_parser import WBI_Parser
 from indicator.csv_upload.upload_indicators_helper import find_country
 from indicator.csv_upload.upload_indicators_helper import find_city
 from indicator.csv_upload.upload_indicators_helper import get_countries
