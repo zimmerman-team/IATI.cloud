@@ -5,7 +5,6 @@ from django.conf.urls import url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.views.generic.base import RedirectView
-from api.v3.urls import api_v3_docs
 from django.views.generic import TemplateView
 
 admin.autodiscover()
