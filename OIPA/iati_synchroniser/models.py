@@ -2,7 +2,6 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from iati.parser import Parser
 from iati.iati_parser import ParseIATI
 from iati.deleter import Deleter
 
