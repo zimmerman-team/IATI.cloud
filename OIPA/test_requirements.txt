@@ -3,3 +3,5 @@ pytest_django
 factory-boy
 python-coveralls
 mock
+django-test-without-migrations==0.2
+django-extensions==1.5.6

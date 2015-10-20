@@ -28,14 +28,14 @@ class Parse(XMLParser):
     #version of IATI standard
     default_lang = 'en'
     iati_identifier = ''
-    validated_reporters = ['GB-1', 'NL-1', 'all-other-known-reporting-orgs']
 
     def __init__(self, *args, **kwargs):
         self.VERSION = codelist_models.Version.objects.get(code='2.01')
         self.hints = []
         self.logged_functions = []
         self.errors = []
-
+        self.validation_errors = []
+        self.required_field_errors = []
 
     class RequiredFieldError(Exception):
         def __init__(self, field, msg):
@@ -45,6 +45,9 @@ class Parse(XMLParser):
             """
             self.field = field
             self.message = msg
+
+            required_field_error = "%s: %s" % (self.field, self.message)
+            self.required_field_errors.append(required_field_error)
 
         def __str__(self):
             return repr(self.field)
@@ -57,6 +60,9 @@ class Parse(XMLParser):
             """
             self.field = field
             self.message = msg
+
+            validation_error = "%s: %s" % (self.field, self.message)
+            self.validation_errors.append(validation_error)
 
         def __str__(self):
             return repr(self.field)
@@ -71,9 +77,10 @@ class Parse(XMLParser):
         """
         get default currency if not available for currency-related fields
         """
+        # TO DO; this does not invalidate the whole element (budget, transaction, planned disbursement) while it should
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
-            if not currency: raise self.RequiredFieldError("currency", "currency: currency is not set and default-currency is not set on activity as well")
+            if not currency: raise self.RequiredFieldError("currency", "value__currency: currency is not set and default-currency is not set on activity as well")
 
         return currency
 
@@ -147,39 +154,19 @@ class Parse(XMLParser):
         return
 
     def validate_date(self, unvalidated_date):
-        valid_date = None
+
         if unvalidated_date:
             unvalidated_date = unvalidated_date.strip(' \t\n\r')
         else:
             return None
+
         #check if standard data parser works
         try:
             return dateutil.parser.parse(unvalidated_date)
         except:
             pass
 
-        if unvalidated_date:
-            try:
-                unvalidated_date = unvalidated_date.split("Z")[0]
-                unvalidated_date = sub(r'[\t]', '', unvalidated_date)
-                unvalidated_date = unvalidated_date.replace(" ", "")
-                unvalidated_date = unvalidated_date.replace("/", "-")
-                if len(unvalidated_date) == 4:
-                    unvalidated_date = unvalidated_date + "-01-01"
-                try:
-                    validated_date = time.strptime(unvalidated_date, '%Y-%m-%d')
-                except ValueError:
-                    validated_date = time.strptime(unvalidated_date, '%d-%m-%Y')
-                valid_date = datetime.fromtimestamp(time.mktime(validated_date))
-
-            except ValueError:
-                # if not any(c.isalpha() for c in unvalidated_date):
-                #     exception_handler(None, "validate_date", 'Invalid date: ' + unvalidated_date)
-                return None
-            except Exception as e:
-                exception_handler(e, "validate date", "validate_date")
-                return None
-        return valid_date
+        raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
 
     def _get_main_narrative_child(self, elem):
         if len(elem):
@@ -1165,18 +1152,17 @@ class Parse(XMLParser):
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
 
-        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+        if not value:
+            raise self.RequiredFieldError("value", "currency: value is required")
 
-        if not currency:
-            currency = self.get_model('Activity').get('default_currency')
-            if not currency: raise self.RequiredFieldError("currency", "currency: budget-value: currency is not set and default-currency is not set on activity as well")
+        currency = self._get_currency_or_raise(currency)
 
         budget = self.get_model('Budget')
         budget.value_string = value
         budget.value = self.guess_number(value)
         budget.value_date = value_date
         budget.currency = currency
-         
+
         return element
 
     '''atributes:
@@ -1239,6 +1225,7 @@ class Parse(XMLParser):
         if not value: raise self.RequiredFieldError("value", "currency: value is required")
 
         currency = self._get_currency_or_raise(currency)
+
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.value_string = value

@@ -21,6 +21,9 @@ class Parse(IATI_105_Parser):
         self.hints = []
         self.logged_functions = []
         self.errors = []
+        self.validation_errors = []
+        self.required_field_errors = []
+    
     '''atributes:
 	code:ADM2
 	{http://www.w3.org/XML/1998/namespace}lang:en

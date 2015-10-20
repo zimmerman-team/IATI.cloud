@@ -77,6 +77,8 @@ class Parse(IATI_201_Parser):
         self.hints = []
         self.logged_functions = []
         self.errors = []
+        self.validation_errors = []
+        self.required_field_errors = []
         
     '''atributes:
     ref:AA-AAA-123456789

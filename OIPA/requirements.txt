@@ -12,7 +12,6 @@ django-suit==0.2.14
 objgraph==1.8.1
 guppy==0.1.10
 ujson==1.33
-simplejson
 redis==2.10.3
 rq==0.4.6
 rq-scheduler==0.5.0
@@ -29,6 +28,4 @@ django-formtools==1.0
 django-haystack==2.4.0
 elasticsearch==1.7.0
 git+git://github.com/gkuhn1/django-admin-multiupload.git
-django-test-without-migrations==0.2
-django-extensions==1.5.6
 

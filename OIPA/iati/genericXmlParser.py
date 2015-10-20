@@ -20,26 +20,27 @@ from django.db.models.fields.related import ForeignKey, OneToOneField
 from decimal import Decimal
 
 class XMLParser(object):
-    VERSION = '2.01'  #overwrite for older versions
-    xml_source_ref =''
+    VERSION = '2.01'
+    xml_source_ref = ''
     iati_source = None
 
     logged_functions = []
     hints = []
     errors = []
+    validation_errors = []
+    required_field_errors = []
 
     # TODO: find a way to simply save in parser functions, and actually commit to db on exit
     model_store = OrderedDict()
 
-
-
-    DB_CACHE_LIMIT = 30 #overwrite in subclass if you want more/less
+    DB_CACHE_LIMIT = 30
 
     def __init__(self):
         self.hints = []
         self.logged_functions = []
         self.errors = []
-
+        self.validation_errors = []
+        self.required_field_errors = []
 
     def testWithExampleFile(self):
         self.testWithFile("activity-standard-example-annotated_105.xml")
@@ -52,12 +53,15 @@ class XMLParser(object):
         return False
 
     def load_and_parse(self, root):
-        
+
         self.root = root
         self.parse_activities(root)
 
         hintsStr = ''
         errorStr = ''
+        validating_error_str = ''
+        required_field_error_str = ''
+
         send_mail = False
         print 'before sending mail'
         if len(self.hints) > 0:
@@ -68,11 +72,19 @@ class XMLParser(object):
             errorStr = hintsStr+"\n\n errors found:\n"
             errorStr += "\n".join( self.errors)
             send_mail = True
+        if len(self.validation_errors) > 0:
+            validating_error_str = required_field_error_str+"\n\n validation errors found:\n"
+            validating_error_str += "\n".join( self.validation_errors)
+            send_mail = True
+        if len(self.required_field_errors) > 0:
+            required_field_error_str = required_field_error_str+"\n\n required field errors found:\n"
+            required_field_error_str += "\n".join( self.required_field_errors)
+            send_mail = True
 
         if(send_mail):
             print 'sending mail'
             for developer in User.objects.filter(groups__name='developers').all():
-                self.sendErrorMail(developer.email, hintsStr +"\n"+errorStr)
+                self.sendErrorMail(developer.email, hintsStr +"\n"+errorStr +"\n"+validating_error_str+"\n"+required_field_error_str)
 
     def testWithFile(self,fileName):
         with open(fileName, "r") as myfile:
@@ -96,7 +108,7 @@ class XMLParser(object):
             return
         if element.tag == etree.Comment:
             return
-        
+
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
         if hasattr(self, function_name) and callable(getattr(self, function_name)):
@@ -130,7 +142,7 @@ class XMLParser(object):
             self.parse(e)
 
         # todo: rewrite this
-    
+
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '__')
         function_name = function_name.replace('-', '_')
@@ -156,7 +168,7 @@ class XMLParser(object):
     found in """+ self.iati_source.source_url+""" at line """+str(element.sourceline)+""" iati_version ="""+self.VERSION+"""'''
     def """ + function_name + """(self,element):
         model = self.get_func_parent_model()
-        #store element 
+        #store element
         return element"""
         #print hint
         self.hints.append(hint)
@@ -172,12 +184,12 @@ class XMLParser(object):
 
     def remove_brackets(self,function_name):
 
-        result = "" 
-        flag = True 
-        for c in function_name: 
-            if c == "[": flag = False 
-            if flag: result += c 
-            if c == "]": flag = True 
+        result = ""
+        flag = True
+        for c in function_name:
+            if c == "[": flag = False
+            if flag: result += c
+            if c == "]": flag = True
         return result
 
 
@@ -223,7 +235,7 @@ class XMLParser(object):
         return self.get_model(key, index).save()
 
     def guess_number(self,number_string):
-        
+
         #first strip non numeric values, except for -.,
         decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
 
@@ -231,7 +243,7 @@ class XMLParser(object):
             return Decimal(decimal_string)
         except ValueError:
             raise ValueError("ValueError: Input must be decimal or integer string")
-                        
+
     def isInt(self, obj):
         try:
             int(obj)
