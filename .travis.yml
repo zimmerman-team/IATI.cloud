@@ -21,7 +21,7 @@ before_script:
 
 script:
   - cd OIPA
-  - python manage.py migrate --settings=OIPA.travis_test_settings
-  - coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --settings=OIPA.travis_test_settings
+  - python manage.py migrate --database=psql --settings=OIPA.test_settings
+  - coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --settings OIPA.test_settings --nomigrations
 after_success:
   - coveralls

@@ -26,4 +26,3 @@ django-formtools==1.0
 django-haystack==2.4.0
 elasticsearch==1.7.0
 git+git://github.com/gkuhn1/django-admin-multiupload.git
-
