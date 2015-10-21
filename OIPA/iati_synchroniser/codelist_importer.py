@@ -188,6 +188,16 @@ class CodeListImporter():
             defaults={
                 'name': 'Former Yugoslavia',
                 'language': 'en'})
+        Country.objects.get_or_create(
+            code="AC",
+            defaults={
+                'name': 'Ascension Island',
+                'language': 'en'})
+        Country.objects.get_or_create(
+            code="TA",
+            defaults={
+                'name': 'Tristan da Cunha',
+                'language': 'en'})
 
     def get_codelist_data(self, elem=None, name=None):
 
