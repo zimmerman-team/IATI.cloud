@@ -325,7 +325,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.serialize_foreign_keys(result, request, group_by)
 
-        return result
+        return {
+            'count':len(result),
+            'results': result
+        }
 
     def _union(self, list1, list2):
         return list(set(list1) | set(list2))
