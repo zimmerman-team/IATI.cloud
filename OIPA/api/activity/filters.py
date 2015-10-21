@@ -68,7 +68,7 @@ class TogetherFilterSet(FilterSet):
 
 class ActivityFilter(TogetherFilterSet):
 
-    ids = CommaSeparatedCharFilter(
+    activity_id = CommaSeparatedCharFilter(
         name='id',
         lookup_type='in')
 
@@ -78,8 +78,7 @@ class ActivityFilter(TogetherFilterSet):
 
     recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='recipient_country'
-    )
+        name='recipient_country')
 
     recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
