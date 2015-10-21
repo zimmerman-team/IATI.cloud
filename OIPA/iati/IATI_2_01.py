@@ -156,11 +156,9 @@ class Parse(XMLParser):
 
         #check if standard data parser works
         try:
-            return dateutil.parser.parse(unvalidated_date)
+            return dateutil.parser.parse(unvalidated_date, ignoretz=True)
         except:
-            pass
-
-        raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
+            raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
 
     def _get_main_narrative_child(self, elem):
         if len(elem):
