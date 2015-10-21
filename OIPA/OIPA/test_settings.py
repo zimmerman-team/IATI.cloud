@@ -7,10 +7,4 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': ':memory:',
     },
-    'psql': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '',
-    },
 }
