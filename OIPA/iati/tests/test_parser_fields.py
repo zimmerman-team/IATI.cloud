@@ -4,16 +4,17 @@
 
 import copy
 import datetime
-from django.core import management
-from iati.factory import iati_factory
-from iati.transaction import factories as transaction_factory
 
-from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
+from decimal import Decimal
 from unittest import TestCase
-
 from lxml import etree
 from lxml.builder import E
 
+from django.core import management
+from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
+
+from iati.factory import iati_factory
+from iati.transaction import factories as transaction_factory
 from iati.iati_parser import ParseIATI
 
 from iati_synchroniser.models import IatiXmlSource, Publisher
@@ -1594,7 +1595,7 @@ class BudgetTestCase(ParserSetupTestCase):
         budget = self.parser_201.get_model('Budget')
         budget.save()
 
-        self.assertTrue(budget.value == 2000.2)
+        self.assertTrue(budget.value == Decimal('2000.2'))
         self.assertTrue(str(budget.value_date) == attrs['value-date'])
         self.assertTrue(budget.currency.code == attrs['currency'])
 
@@ -1612,7 +1613,7 @@ class BudgetTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__budget__value(value)
         budget = self.parser_201.get_model('Budget')
 
-        self.assertTrue(budget.value == None)
+        self.assertTrue(budget.value == Decimal('2000.2'))
         self.assertTrue(budget.value_string == text)
 
 class PlannedDisbursementTestCase(ParserSetupTestCase):
@@ -1685,7 +1686,7 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
         planned_disbursement.save()
 
-        self.assertTrue(planned_disbursement.value == 2000.2)
+        self.assertTrue(planned_disbursement.value == Decimal('2000.2'))
         self.assertTrue(str(planned_disbursement.value_date) == attrs['value-date'])
         self.assertTrue(planned_disbursement.currency.code == attrs['currency'])
 
@@ -1751,6 +1752,7 @@ class TransactionTestCase(ParserSetupTestCase):
             "currency": "EUR",
             "value-date": datetime.datetime.now().isoformat(' ')
         }
+
         text = "2000.2"
 
         value = E('value', text, **attrs) 
@@ -1758,7 +1760,7 @@ class TransactionTestCase(ParserSetupTestCase):
         transaction = self.parser_201.get_model('Transaction')
         transaction.save()
 
-        self.assertTrue(transaction.value == 2000.2)
+        self.assertTrue(transaction.value == Decimal('2000.2'))
         self.assertTrue(str(transaction.value_date) == attrs['value-date'])
         self.assertTrue(transaction.currency.code == attrs['currency'])
 

@@ -46,9 +46,6 @@ class Parse(XMLParser):
             self.field = field
             self.message = msg
 
-            required_field_error = "%s: %s" % (self.field, self.message)
-            self.required_field_errors.append(required_field_error)
-
         def __str__(self):
             return repr(self.field)
 
@@ -60,9 +57,6 @@ class Parse(XMLParser):
             """
             self.field = field
             self.message = msg
-
-            validation_error = "%s: %s" % (self.field, self.message)
-            self.validation_errors.append(validation_error)
 
         def __str__(self):
             return repr(self.field)
