@@ -13,7 +13,7 @@ class DynamicView(GenericAPIView):
         """
         Extract prefetches and default fields from Meta
         """
-        # TODO: move this to a meta class
+        # TODO: move this to a meta class, to evaluate once
 
         serializer_class = self.get_serializer_class() 
         serializer = serializer_class() # need an instance to extract fields
@@ -49,9 +49,7 @@ class DynamicView(GenericAPIView):
         if not fields: fields = self.serializer_fields
 
         source_fields = [ self.field_source_mapping[field] for field in fields if field in self.field_source_mapping ]
-        # print(source_fields)
 
-        # print(self.select_related_fields)
         select_related_fields = list(set(self.select_related_fields) & set(fields))
         print(select_related_fields)
         queryset = queryset.select_related(*select_related_fields)

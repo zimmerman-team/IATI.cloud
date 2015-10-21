@@ -152,7 +152,7 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
-    # fields = ('url', 'id', 'title', 'total_budget')
+    fields = ('url', 'iati_identifier', 'title', 'description', 'transactions', 'reporting_organisations')
     pagination_class = AggregationsPaginationSerializer
 
     # def get_serializer_context(self):

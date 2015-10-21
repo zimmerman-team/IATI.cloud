@@ -54,8 +54,8 @@ class AggregationsPaginationSerializer(NoCountPaginationSerializer):
 
     def paginate_queryset(self, queryset, request, view=None):
         self.aggregations = AggregationsSerializer(queryset, 
-            query_field='aggregations', 
-            fields=(),
+            # query_field='aggregations', 
+            # fields=(),
             context={
                 'request': request,
             },
@@ -65,13 +65,13 @@ class AggregationsPaginationSerializer(NoCountPaginationSerializer):
     def get_paginated_response(self, data):
 
         # if (self.aggregations.data):
-        #     return Response(OrderedDict([
-        #         ('count', self.page.paginator.count),
-        #         ('next', self.get_next_link()),
-        #         ('previous', self.get_previous_link()),
-        #         ('aggregations', self.aggregations.data),
-        #         ('results', data),
-        #     ]))
+        # return Response(OrderedDict([
+        #     ('count', self.page.paginator.count),
+        #     ('next', self.get_next_link()),
+        #     ('previous', self.get_previous_link()),
+        #     ('aggregations', self.aggregations.data),
+        #     ('results', data),
+        # ]))
         # else:
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
