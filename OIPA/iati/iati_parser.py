@@ -12,22 +12,6 @@ import hashlib
 class ParseIATI():
 
     # class wide functions
-    def return_first_exist(self, xpath_find):
-        """
-        Not used
-        """
-
-        if not xpath_find:
-             xpath_find = None
-        else:
-            try:
-                xpath_find = unicode(xpath_find[0], errors='ignore')
-            except:
-                xpath_find = xpath_find[0]
-
-            xpath_find = xpath_find.encode('utf-8', 'ignore')
-        return xpath_find
-
     def hashfile(self,afile, hasher, blocksize=65536):
         """
         Not used

@@ -1,14 +1,18 @@
 from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
-from organisation_manager import OrganisationQuerySet # from django.contrib.gis.geos import Point
+from organisation_manager import OrganisationQuerySet
 from django.contrib.gis.db.models import PointField
-# from iati.transaction.models import Transaction, TransactionType, TransactionDescription, TransactionProvider, TransactionReceiver, TransactionSector
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from iati_codelists.models import *
-from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, BudgetIdentifierVocabulary
+from iati_vocabulary.models import RegionVocabulary
+from iati_vocabulary.models import GeographicVocabulary
+from iati_vocabulary.models import PolicyMarkerVocabulary
+from iati_vocabulary.models import SectorVocabulary
+from iati_vocabulary.models import BudgetIdentifierVocabulary
+
 
 # TODO: separate this
 class Narrative(models.Model):
@@ -33,14 +37,16 @@ class Narrative(models.Model):
     language = models.ForeignKey(Language)
     content = models.TextField()
 
+
 class Title(models.Model):
-    # activity = models.ForeignKey(Activity)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "Title"
+
 
 class Activity(models.Model):
     hierarchy_choices = (
@@ -109,6 +115,29 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = "activities"
+
+
+class ActivityAggregations(models.Model):
+    activity = models.OneToOneField(Activity)
+
+    total_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_budget_currency = models.CharField(max_length=2, default=None)
+
+    total_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_child_budget_currency = models.CharField(max_length=2, default=None)
+
+    total_disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_disbursement_currency = models.CharField(max_length=2, default=None)
+
+    total_incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_incoming_funds_currency = models.CharField(max_length=2, default=None)
+
+    total_commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_commitment_currency = models.CharField(max_length=2, default=None)
+
+    total_expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_expenditure_currency = models.CharField(max_length=2, default=None)
+
 
 class ActivitySearchData(models.Model):
     activity = models.OneToOneField(Activity)

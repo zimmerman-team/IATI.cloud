@@ -103,6 +103,4 @@ class ParseAdmin():
     def get_oipa_activity_amount(self, source_ref):
         return Activity.objects.filter(xml_source_ref=source_ref).count()
 
-    # def set_xml_source_meta(self):
-    #     iati_standard_version = self.return_first_exist(elem.xpath('@version'))
 
