@@ -48,6 +48,26 @@ class Title(models.Model):
         return "Title"
 
 
+class ActivityAggregationData(models.Model):
+    total_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_budget_currency = models.CharField(max_length=3, null=True, default=None)
+
+    total_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_child_budget_currency = models.CharField(max_length=3, null=True, default=None)
+
+    total_disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_disbursement_currency = models.CharField(max_length=3, null=True, default=None)
+
+    total_incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_incoming_funds_currency = models.CharField(max_length=3, null=True, default=None)
+
+    total_commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_commitment_currency = models.CharField(max_length=3, null=True, default=None)
+
+    total_expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_expenditure_currency = models.CharField(max_length=3, null=True, default=None)
+
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
@@ -55,6 +75,7 @@ class Activity(models.Model):
     )
     
     title = models.OneToOneField(Title)
+    activity_aggregations = models.OneToOneField(ActivityAggregationData, null=True)
 
     id = models.CharField(max_length=150,primary_key=True,blank=False)
     iati_identifier = models.CharField(max_length=150, blank=False)
@@ -115,28 +136,6 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = "activities"
-
-
-class ActivityAggregations(models.Model):
-    activity = models.OneToOneField(Activity)
-
-    total_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_budget_currency = models.CharField(max_length=2, default=None)
-
-    total_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_child_budget_currency = models.CharField(max_length=2, default=None)
-
-    total_disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_disbursement_currency = models.CharField(max_length=2, default=None)
-
-    total_incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_incoming_funds_currency = models.CharField(max_length=2, default=None)
-
-    total_commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_commitment_currency = models.CharField(max_length=2, default=None)
-
-    total_expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_expenditure_currency = models.CharField(max_length=2, default=None)
 
 
 class ActivitySearchData(models.Model):
@@ -380,12 +379,10 @@ class PlannedDisbursement(models.Model):
 class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
         Activity,
-        # related_name="current_activity",
         on_delete=models.CASCADE)
-    related_activity = models.ForeignKey(
+    ref_activity = models.ForeignKey(
         Activity,
-        related_name="related_activity", 
-        db_constraint=False,
+        related_name="ref_activity",
         null=True,
         on_delete=models.SET_NULL)
     type = models.ForeignKey(

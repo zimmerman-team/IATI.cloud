@@ -1659,16 +1659,12 @@ class Parse(XMLParser):
         activity = self.get_model('Activity')
         related_activity = models.RelatedActivity()
         related_activity.current_activity = activity # TODO: remove this field?
-        related_activity.related_activity = self.get_or_none(models.Activity, iati_identifier=ref) 
+        related_activity.ref_activity = self.get_or_none(models.Activity, iati_identifier=ref)
         related_activity.ref = ref
         related_activity.type = related_activity_type
 
-        # update existing related activitiy foreign keys
-        # TODO: do this at the end of parsing in one pass (post-parse saves)
-        try:
-            models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(related_activity=activity)
-        except:
-            pass
+        # update existing related activity foreign keys, happens post save
+        
 
         self.register_model('RelatedActivity', related_activity)
         return element
