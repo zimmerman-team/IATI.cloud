@@ -125,31 +125,31 @@ class ActivityFilter(TogetherFilterSet):
 
     related_activity_id = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__related_activity__id', distinct=True)
+        name='relatedactivity__ref_activity__id', distinct=True)
 
     related_activity_type = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__type__code',
+        name='relatedactivity__type__code',
         distinct=True)
 
     related_activity_recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__related_activity__recipient_country',
+        name='relatedactivity__ref_activity__recipient_country',
         distinct=True)
 
     related_activity_recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__related_activity__recipient_region',
+        name='relatedactivity__ref_activity__recipient_region',
         distinct=True)
 
     related_activity_sector = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__related_activity__sector',
+        name='relatedactivity__ref_activity__sector',
         distinct=True)
 
     related_activity_sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__related_activity__sector__category',
+        name='relatedactivity__ref_activity__sector__category',
         distinct=True)
 
     budget_period_start = DateFilter(

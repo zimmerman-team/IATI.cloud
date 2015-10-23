@@ -17,7 +17,6 @@ from iati.models import AidType
 from iati.models import FinanceType
 from iati.models import TiedStatus
 from iati.models import ActivityReportingOrganisation
-from iati.models import ActivitySector
 
 from api.activity.serializers import CodelistSerializer
 from api.activity.serializers import ParticipatingOrganisationSerializer
@@ -69,10 +68,10 @@ class ActivityAggregationSerializer(BaseSerializer):
             "annotate_name": 'incoming_fund',
             "annotate": Sum('transaction__value')
         },
-        "sector_weighted_budget": {
-            "fields": "",
-            "annotate_name": 'total_weighted_budget',
-            "annotate": (Coalesce('percentage', 100) / 100 * (Coalesce(Sum('activity__budget__value'), 0)))
+        "sector_percentage_weighted_budget": {
+            "field": "weighted_budget",
+            "annotate_name": 'sector_percentage_weighted_budget',
+            "annotate": (Coalesce('activitysector__percentage', 100) / 100 * (Coalesce(Sum('budget__value'), 0)))
         }
     }
 
@@ -93,12 +92,6 @@ class ActivityAggregationSerializer(BaseSerializer):
         "sector": {
             "field": "sector",
             "queryset": Sector.objects.all(),
-            "serializer": SectorSerializer,
-            "fields": ('url', 'code', 'name'),
-        },
-        "weighted_sector": {
-            "field": "sector",
-            "queryset": ActivitySector.objects.all(),
             "serializer": SectorSerializer,
             "fields": ('url', 'code', 'name'),
         },
@@ -294,7 +287,6 @@ class ActivityAggregationSerializer(BaseSerializer):
                         },
                         many=True,
                         fields=fields,
-                        query_field="%s_fields" % (field_name),
                     ).data
                 else:
                     data = serializer(foreignQueryset,

@@ -233,14 +233,14 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
         )
 
 class RelatedActivitySerializer(FilterableModelSerializer):
-    related_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
+    ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = RelatedActivityTypeSerializer()
 
     class Meta:
         model = iati.models.RelatedActivity
         filter_class = RelatedActivityFilter
         fields = (
-            'related_activity',
+            'ref_activity',
             'ref',
             'type',
         )
