@@ -136,6 +136,24 @@ class ActivityDateSerializer(serializers.Serializer):
         model = iati.models.ActivityDate
         fields = ('iso_date', 'type')
 
+class ActivityAggregationSerializer(serializers.Serializer):
+
+    class Meta:
+        model = iati.models.ActivityAggregationData
+        fields = (
+            'total_budget_value', 
+            'total_budget_currency', 
+            'total_child_budget_value', 
+            'total_child_budget_currency', 
+            'total_disbursement_value', 
+            'total_disbursement_currency', 
+            'total_incoming_funds_value', 
+            'total_incoming_funds_currency', 
+            'total_commitment_value', 
+            'total_commitment_currency', 
+            'total_expenditure_value', 
+            'total_expenditure_currency'
+        )
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
@@ -431,19 +449,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     related_activities = RelatedActivitySerializer(many=True, source='relatedactivity_set')
 
-    total_child_budgets = serializers.SerializerMethodField()
-
-    def get_total_child_budgets(self, activity):
-        if activity.hierarchy == 1:
-            return iati.models.Activity.objects.filter(
-                    related_activity__related_activity__id=activity,
-                    # related_activity__type__code=2,
-                ).filter(
-                    hierarchy=2,
-                ).aggregate(
-                    total_budget=Sum('budget__value')
-                ).get('total_budget', 0.00)
-            
+    activity_aggregations = ActivityAggregationSerializer()
 
     class Meta:
         model = iati.models.Activity
@@ -474,12 +480,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_aid_type',
             'default_tied_status',
             'budgets',
-            'total_child_budgets',
             'capital_spend',
             'xml_source_ref',
             'document_links',
             'results',
-            'locations'
+            'locations',
+            'activity_aggregations'
         )
 
         # narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))

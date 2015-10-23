@@ -1,10 +1,12 @@
-
-from django.db.models import Count, Sum
+from django.db.models import Count
+from django.db.models import Sum
 from django.db.models import Q
+from django.db.models.functions import Coalesce
 
 from rest_framework.serializers import BaseSerializer
 
-from geodata.models import Country, Region
+from geodata.models import Country
+from geodata.models import Region
 from iati.models import Organisation
 from iati.models import Sector
 from iati.models import ActivityStatus
@@ -15,6 +17,7 @@ from iati.models import AidType
 from iati.models import FinanceType
 from iati.models import TiedStatus
 from iati.models import ActivityReportingOrganisation
+from iati.models import ActivitySector
 
 from api.activity.serializers import CodelistSerializer
 from api.activity.serializers import ParticipatingOrganisationSerializer
@@ -66,6 +69,11 @@ class ActivityAggregationSerializer(BaseSerializer):
             "annotate_name": 'incoming_fund',
             "annotate": Sum('transaction__value')
         },
+        "sector_weighted_budget": {
+            "fields": "",
+            "annotate_name": 'total_weighted_budget',
+            "annotate": (Coalesce('percentage', 100) / 100 * (Coalesce(Sum('activity__budget__value'), 0)))
+        }
     }
 
     _allowed_groupings = {
@@ -85,6 +93,12 @@ class ActivityAggregationSerializer(BaseSerializer):
         "sector": {
             "field": "sector",
             "queryset": Sector.objects.all(),
+            "serializer": SectorSerializer,
+            "fields": ('url', 'code', 'name'),
+        },
+        "weighted_sector": {
+            "field": "sector",
+            "queryset": ActivitySector.objects.all(),
             "serializer": SectorSerializer,
             "fields": ('url', 'code', 'name'),
         },
