@@ -109,6 +109,7 @@ class XMLParser(object):
         self.set_related_activities(activity)
         self.calculate_per_activity_aggregations(activity)
 
+
     def set_related_activities(self, activity):
         RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
 
@@ -193,7 +194,7 @@ class XMLParser(object):
             expenditure_total)
 
         activity_aggregation.save()
-        activity.activity_aggregations=activity_aggregation
+        activity.activity_aggregations = activity_aggregation
         activity.save()
 
         if activity.hierarchy != '1':
@@ -228,26 +229,18 @@ class XMLParser(object):
                 elementMethod(element)
             except self.RequiredFieldError as e:
                 print(e.field)
-                # print(e.message)
+                print(e.message)
                 # traceback.print_exc()
                 pass
             except self.ValidationError as e:
-                print(e)
+                print(e.field)
+                print(e.message)
+                # traceback.print_exc()
                 pass
             except Exception as exception:
                 # pass
                 print(exception.message)
                 # traceback.print_exc()
-                # self.handle_exception(x_path, function_name, exeception,e)
-        # else:
-        #     if not self.magicMethod(function_name,e):
-        #         self.handle_function_not_found(x_path, function_name,e)
-
-            # try:
-            #     self.parse(element)
-            # except Exception as exeception:
-            #     traceback.print_exc()
-            #     self.handle_exception(x_path, function_name, exeception,element)
 
         for e in element.getchildren():
             self.parse(e)
@@ -302,7 +295,6 @@ class XMLParser(object):
             if flag: result += c
             if c == "]": flag = True
         return result
-
 
     def handle_exception(self, xpath, function_name, exception,element):
         hint = """look at XML document"""

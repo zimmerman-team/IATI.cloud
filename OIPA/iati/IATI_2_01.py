@@ -187,8 +187,8 @@ class Parse(XMLParser):
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
-        if not language: raise self.RequiredFieldError("narrative: must specify default_lang on activities or language on the element itself")
-        if not text: raise self.RequiredFieldError("narrative: must contain text")
+        if not language: raise self.RequiredFieldError("language", "Narrative: must specify default_lang on activities or language on the element itself")
+        if not text: raise self.RequiredFieldError("text", "Narrative: must contain text")
         if not parent: raise self.RequiredFieldError("parent", "Narrative: parent object must be passed")
 
         narrative = models.Narrative()
@@ -212,11 +212,13 @@ class Parse(XMLParser):
     tag:iati-activity'''
     def iati_activities__iati_activity(self,element):
         defaults = {
-            'default_lang': 'en',             
-            'hierarchy': 1,             
+            'default_lang': 'en',
+            'hierarchy': 1,
         }
 
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
+        print id
+        
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
         hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -229,11 +231,12 @@ class Parse(XMLParser):
 
         if old_activity:
             if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
-                raise self.ValidationError("activity", "duplicate activity: last_updated_time is less than existing activity")
+                raise self.ValidationError("activity", "newer version of activity exists: last_updated_time is less than existing activity")
             if not last_updated_datetime and old_activity.last_updated_datetime:
-                raise self.ValidationError("activity", "duplicate activity: last_updated_time is not present, but is present on duplicate activity")
-
+                raise self.ValidationError("activity", "duplicate activity: last_updated_time is not present, but is present on 'old' activity")
+    
             # TODO: test activity is deleted along with related models
+            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
             # TODO: do this after activity is parsed along with other saves?
             old_activity.delete()
             old_activity.narratives.all().delete()
@@ -262,8 +265,8 @@ class Parse(XMLParser):
     tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
         iati_identifier = element.text
-        
-        if not iati_identifier: raise self.RequiredFieldError("text", "iati_identifeir: must contain text")
+            
+        if not iati_identifier: raise self.RequiredFieldError("text", "iati_identifier: must contain text")
 
         activity = self.get_model('Activity')
         activity.iati_identifier = iati_identifier
@@ -315,10 +318,12 @@ class Parse(XMLParser):
 
     tag:participating-org'''
     def iati_activities__iati_activity__participating_org(self,element):
-        ref = element.attrib.get('ref')
+        ref = element.attrib.get('ref', '')
         role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
+        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
+        # simply because they don't know the ref.
+        # if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
         if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
         normalized_ref = self._normalize(ref)
@@ -447,7 +452,7 @@ class Parse(XMLParser):
         code = element.attrib.get('code')
         activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
 
-        if not code: raise self.RequiredFieldError("Code")
+        if not code: raise self.RequiredFieldError("Code", "activity status: code is required")
 
         activity = self.get_model('Activity')
         activity.activity_status = activity_status
@@ -464,8 +469,8 @@ class Parse(XMLParser):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
         type_code = self.get_or_none(codelist_models.ActivityDateType, code=element.attrib.get('type'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date")
-        if not type_code: raise self.RequiredFieldError("Type")
+        if not iso_date: raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
+        if not type_code: raise self.RequiredFieldError("Type", "activity date type: type is required")
 
         activity = self.get_model('Activity')
 
@@ -1326,10 +1331,10 @@ class Parse(XMLParser):
 
     tag:provider-org'''
     def iati_activities__iati_activity__transaction__provider_org(self, element):
-        ref = element.attrib.get('ref')
+        ref = element.attrib.get('ref', '')
         provider_activity = element.attrib.get('provider-activity-id')
 
-        if not ref: raise self.RequiredFieldError("ref", "transaction-provider-org: ref must be specified")
+        # if not ref: raise self.RequiredFieldError("ref", "transaction-provider-org: ref must be specified")
 
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)
@@ -1394,10 +1399,10 @@ class Parse(XMLParser):
 
     tag:receiver-org'''
     def iati_activities__iati_activity__transaction__receiver_org(self,element):
-        ref = element.attrib.get('ref')
+        ref = element.attrib.get('ref', '')
         receiver_activity = element.attrib.get('receiver-activity-id')
 
-        if not ref: raise self.RequiredFieldError("ref", "transaction-receiver-org: ref must be specified")
+        # if not ref: raise self.RequiredFieldError("ref", "transaction-receiver-org: ref must be specified")
 
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)

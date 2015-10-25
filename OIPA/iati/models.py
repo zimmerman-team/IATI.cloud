@@ -186,7 +186,7 @@ class ActivityReportingOrganisation(models.Model):
     secondary_reporter = models.BooleanField(default=False)
 
 class ActivityParticipatingOrganisation(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(max_length=250, null=True, default="")
     normalized_ref = models.CharField(max_length=120, default="")
 
     activity = models.ForeignKey(
