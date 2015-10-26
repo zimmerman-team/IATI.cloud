@@ -1365,22 +1365,22 @@ class Parse(XMLParser):
             print settings.ROOT_ORGANISATIONS
             #check if this activty is to be searchable
             #first check if this is root element
-            if self.current_activity.is_searchable != True and self.current_activity.reporting_organisation.original_ref in settings.ROOT_ORGANISATIONS :
-                self.current_activity.is_searchable = True
+            if activity.is_searchable != True and activity.reporting_organisation.original_ref in settings.ROOT_ORGANISATIONS :
+                activity.is_searchable = True
 
             #check if one of parents is searchable (because then current is also searchable)
-            if self.current_activity.is_searchable != True and models.Activity.objects.filter(iati_identifier=element.attrib.get('provider-activity-id')).exists():
+            if activity.is_searchable != True and models.Activity.objects.filter(iati_identifier=element.attrib.get('provider-activity-id')).exists():
                 parent_activity = models.Activity.objects.get(iati_identifier=element.attrib.get('provider-activity-id'))
                 if parent_activity.is_searchable == True:
-                    self.current_activity.is_searchable = True
+                    activity.is_searchable = True
 
-            if self.current_activity.is_searchable == True and self.current_activity.iati_identifier not in self.searchable_activities:
+            if activity.is_searchable == True and activity.iati_identifier not in self.searchable_activities:
                 # update all children
 
-                self.set_children_readable(self.current_activity.iati_identifier)
+                self.set_children_readable(activity.iati_identifier)
 
 
-            self.searchable_activities.append(self.current_activity.iati_identifier)
+            self.searchable_activities.append(activity.iati_identifier)
 
         transaction = self.pop_model('Transaction')
         transaction.provider_organisation = transaction_provider
