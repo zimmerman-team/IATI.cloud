@@ -41,6 +41,15 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'narratives'
         )
 
+class TransactionDescriptionSerializer(serializers.ModelSerializer):
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = models.TransactionDescription
+        fields = (
+            'narratives',
+        )
+
 class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
@@ -50,7 +59,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         lookup_field='pk')
     activity = ActivitySerializer(fields=('id', 'url'))
     aid_type = CodelistSerializer()
-    description_type = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
     provider_organisation = TransactionProviderSerializer()
@@ -58,6 +66,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
+    description = TransactionDescriptionSerializer()
 
     class Meta:
         model = models.Transaction
@@ -66,7 +75,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'activity',
             'aid_type',
             'description',
-            'description_type',
             'disbursement_channel',
             'finance_type',
             'flow_type',

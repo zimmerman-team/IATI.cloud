@@ -1310,10 +1310,16 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__transaction__description(self,element):
-        transaction = self.get_model('Transaction')
         description = transaction_models.TransactionDescription()
-        description.transaction = transaction
-         
+        
+        transaction = self.pop_model('Transaction')
+        transaction.description = description
+
+        self.register_model('Transaction', description)
+        self.register_model('Transaction', transaction)
+
+
+
         self.register_model('TransactionDescription', description)
         return element
 

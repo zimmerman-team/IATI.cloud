@@ -71,7 +71,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         "sector_percentage_weighted_budget": {
             "field": "weighted_budget",
             "annotate_name": 'sector_percentage_weighted_budget',
-            "annotate": (Coalesce('activitysector__percentage', 100) / 100 * (Coalesce(Sum('budget__value'), 0)))
+            "annotate": Sum(Coalesce('activitysector__percentage', 100) / 100 * (Coalesce('activity_aggregations__total_budget_value', 0)))
         }
     }
 
