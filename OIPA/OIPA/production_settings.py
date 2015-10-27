@@ -1,13 +1,13 @@
 # Sample production settings, change as required
 
-import os
+from OIPA.base_settings import *
 
 BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
 DEBUG = False
 
 # for signing keys: https://docs.djangoproject.com/en/1.8/topics/signing/
-SECRET_KEY = '__DEV_SECRET_KEY__'
+SECRET_KEY = '__SECRET_KEY_HERE__'
 
 DATABASES = {
     'default': {
@@ -19,10 +19,20 @@ DATABASES = {
     },
 }
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+
 ROOT_ORGANISATIONS = ['GB-1',]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_URL = '/static/'
 
 RQ_QUEUES = {
     'default': {
@@ -36,3 +46,7 @@ RQ_QUEUES = {
         'DB': 0,
     }
 }
+
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'OIPA.wsgi.application'
+

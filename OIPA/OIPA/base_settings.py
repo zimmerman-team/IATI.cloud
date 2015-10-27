@@ -6,33 +6,6 @@ from django.core.urlresolvers import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
-DEBUG = True
-
-SECRET_KEY = '__DEV_SECRET_KEY__'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'oipa',
-        'USER': 'oipa',
-        'PASSWORD': 'oipa',
-        'HOST': '127.0.0.1',
-    },
-}
-
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-    },
-    'parser': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-    }
-}
-
 LOGIN_URL = reverse_lazy('two_factor:login')
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
@@ -59,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Amsterdam'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -78,12 +51,6 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = False
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/var/www/example.com/static/"
-MEDIA_ROOT = rel('../media')
-
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 MEDIA_URL = '/media/'
@@ -96,8 +63,6 @@ STATICFILES_DIRS = (
 # URL for static files
 STATIC_URL = "/static/"
 
-# the place to collect static files to
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -105,9 +70,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '709)+!x8tujusgf**8v0l%t(u65p3haip^&l17k^t(i_r+csqd'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -129,12 +91,10 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'OIPA.urls'
 
-# Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'OIPA.wsgi.application'
-
 import os
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').replace('\\','/'),)
 
+# TODO: clean this up, separate into test_settings, etc..
 INSTALLED_APPS = (
     'django_rq',
     'django.contrib.auth',
@@ -205,12 +165,6 @@ SUIT_CONFIG = {
     )
 }
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-
 RQ_SHOW_ADMIN_LINK = True
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
@@ -224,21 +178,4 @@ REST_FRAMEWORK = {
         # 'rest_framework.filters.SearchFilter',
     )
 }
-
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-
-ROOT_ORGANISATIONS = []
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
 
