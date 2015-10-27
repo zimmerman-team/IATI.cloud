@@ -71,7 +71,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         "sector_percentage_weighted_budget": {
             "field": "weighted_budget",
             "annotate_name": 'sector_percentage_weighted_budget',
-            "annotate": Sum(Coalesce('activitysector__percentage', 100) / 100 * (Coalesce('activity_aggregations__total_budget_value', 0)))
+            "annotate": Sum(Coalesce('activitysector__percentage', 100) * Coalesce('activity_aggregations__total_budget_value', 0) / 100),
+            "no_null_check": True
         }
     }
 
@@ -234,6 +235,8 @@ class ActivityAggregationSerializer(BaseSerializer):
                 nullFilters[grouping["field"] + '__isnull'] = False
         for aggregation in same_query_aggregations:
             nullFilters[aggregation + '__isnull'] = False
+            if 'no_null_check' in self._aggregations[aggregation]:
+                nullFilters = {}
 
         # Apply group_by calls and annotations
         result = first_queryset.values(*groupFields).annotate(**first_annotations).filter(**nullFilters)
