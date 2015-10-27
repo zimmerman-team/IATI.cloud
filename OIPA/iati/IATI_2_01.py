@@ -303,7 +303,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__reporting_org__narrative(self,element):
-        model = self.get_model(models.ActivityReportingOrganisation)
+        model = self.get_model('ActivityReportingOrganisation')
         self.add_narrative(element, model)
 
         return element
