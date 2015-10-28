@@ -2,6 +2,7 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.db.models import Q
 from django.db.models.functions import Coalesce
+from django.db import connection
 
 from rest_framework.serializers import BaseSerializer
 
@@ -70,9 +71,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
         "sector_percentage_weighted_budget": {
             "field": "weighted_budget",
-            "annotate_name": 'sector_percentage_weighted_budget',
-            "annotate": Sum(Coalesce('activitysector__percentage', 100) * Coalesce('activity_aggregations__total_budget_value', 0) / 100),
-            "no_null_check": True
+            "annotate_name": 'total_budget_per_percentage',
+            "annotate": (Coalesce(Sum('budget__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": True
         }
     }
 
@@ -208,8 +210,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         first_queryset = queryset
         first_annotations = dict()
 
-        same_query_aggregations = [ i for i in aggregationList if not self._aggregations[i].get('extra_filter') ]
-        separate_aggregations = [ i for i in aggregationList if self._aggregations[i].get('extra_filter') ]
+        same_query_aggregations = [i for i in aggregationList if not self._aggregations[i].get('extra_filter')]
+        separate_aggregations = [i for i in aggregationList if self._aggregations[i].get('extra_filter')]
 
         for aggregation in same_query_aggregations:
             a = self._aggregations.get(aggregation, {})
@@ -272,7 +274,35 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return result
 
-    def serialize_foreign_keys(self, valuesQuerySet, request, groupList):
+    def apply_extra_calculations(self, results, aggregations):
+
+        subquery_aggregations = [i for i in aggregations if self._aggregations[i].get('has_subquery')]
+
+        if len(subquery_aggregations):
+
+            sql, params = results.query.sql_with_params()
+            cursor = connection.cursor()
+            cursor.execute(
+                ''.join([
+                    'select sector_id as sector, ',
+                    'sum(total_budget_per_percentage) as weighted_budget ',
+                    'from ({}) as "temptab" ',
+                    'group by "sector_id" ',
+                    'order by "sector_id"']).format(sql),
+                params)
+
+            def dictfetchall(cursor):
+                columns = [col[0] for col in cursor.description]
+                return [
+                    dict(zip(columns, row))
+                    for row in cursor.fetchall()
+                ]
+
+            results = dictfetchall(cursor)
+
+        return list(results)
+
+    def serialize_foreign_keys(self, results, request, groupList):
 
         serializers = {}
 
@@ -300,9 +330,6 @@ class ActivityAggregationSerializer(BaseSerializer):
                     ).data
 
                 serializers[grouping] = { i.get('code'):i for i in data }
-
-
-        results = list(valuesQuerySet)
 
         for i, result in enumerate(list(results)):
             for k,v in result.iteritems():
@@ -332,6 +359,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         queryset = self.apply_order_filters(queryset, order_by, aggregations)
         queryset = self.apply_annotations(queryset, group_by, aggregations)
         result = self.apply_limit_offset_filters(queryset, page_size, page)
+        result = self.apply_extra_calculations(result, aggregations)
         result = self.serialize_foreign_keys(result, request, group_by)
 
         return {
