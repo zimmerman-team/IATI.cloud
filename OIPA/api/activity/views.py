@@ -88,7 +88,7 @@ class ActivityList(DynamicListView):
     Returns a list of IATI Activities stored in OIPA.
 
     ## Request parameters
-    - `ids` (*optional*): Comma separated list of activity id's.
+    - `activity_id` (*optional*): Comma separated list of activity id's.
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
@@ -126,25 +126,31 @@ class ActivityList(DynamicListView):
 
     For more advanced aggregations please use the /activities/aggregations endpoint.
 
-    ## Searching
+    ## Text search
 
-    API request may include `q` parameter. This parameter controls searching
+    API request may include `q` parameter. This parameter controls text search
     and contains expected value.
 
-    By default, searching is performed on fields:
+    By default, searching is performed on:
 
-    - `id`
-    - `title`
-    - `total_budget`
+    - `activity_id` 
+    - `title` narratives
+    - `description` narratives
+    - `country` recipient country code and name
+    - `reporting_org` ref and narratives
+    - `region` recipient region code and name
+    - `sector` sector code and name
+    - `documentlink_title` url and title narratives
+    - `participating_org` ref and narratives
 
-    To search on  subset of these fields the `q_fields' parameter can be used. Example;
+    To search on subset of these fields the `q_fields` parameter can be used. Example;
     `q_fields=activity_id,title,description'
 
     ## Result details
 
     Each item contains summarized information on the activity being shown,
-    including the URI to activity details. To show more information, go to the
-    activity's detail page or select any field using the `fields` parameter on the list. Example;
+    including the URI to activity details, which contain all information. 
+    To show more information in list view the `fields` parameter can be used. Example;
     `fields=activity_id,title,country,any_field`.
 
     """
@@ -187,6 +193,8 @@ class ActivityDetail(DynamicDetailView):
         organizations in this activity
     - `/api/activities/{activity_id}/recipient-countries`:
         List of recipient countries.
+    - `/api/activities/{activity_id}/transactions`:
+        List of transactions.
 
     ## Request parameters
 
