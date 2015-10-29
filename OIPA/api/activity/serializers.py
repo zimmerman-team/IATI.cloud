@@ -137,22 +137,53 @@ class ActivityDateSerializer(serializers.Serializer):
         fields = ('iso_date', 'type')
 
 class ActivityAggregationSerializer(serializers.Serializer):
+    total_budget_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_budget_currency = serializers.CharField()
+    total_child_budget_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_child_budget_currency = serializers.CharField()
+    total_disbursement_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_disbursement_currency = serializers.CharField()
+    total_incoming_funds_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_incoming_funds_currency = serializers.CharField()
+    total_commitment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_commitment_currency = serializers.CharField()
+    total_expenditure_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_expenditure_currency = serializers.CharField()
+
 
     class Meta:
         model = iati.models.ActivityAggregationData
         fields = (
-            'total_budget_value', 
-            'total_budget_currency', 
-            'total_child_budget_value', 
-            'total_child_budget_currency', 
-            'total_disbursement_value', 
-            'total_disbursement_currency', 
-            'total_incoming_funds_value', 
-            'total_incoming_funds_currency', 
-            'total_commitment_value', 
-            'total_commitment_currency', 
-            'total_expenditure_value', 
-            'total_expenditure_currency'
+            'total_budget_value',
+            'total_budget_currency',
+            'total_child_budget_value',
+            'total_child_budget_currency',
+            'total_disbursement_value',
+            'total_disbursement_currency',
+            'total_incoming_funds_value',
+            'total_incoming_funds_currency',
+            'total_commitment_value',
+            'total_commitment_currency',
+            'total_expenditure_value',
+            'total_expenditure_currency',
         )
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):

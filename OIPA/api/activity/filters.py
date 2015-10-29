@@ -160,6 +160,10 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
+    budget_currency = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='budget__currency__code')
+
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
         name='transaction__provider_organisation__provider_activity_ref', distinct=True)

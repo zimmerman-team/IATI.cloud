@@ -120,7 +120,7 @@ class Activity(models.Model):
 
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
     has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
-    is_searchable = models.BooleanField(default=True) # is object searchable
+    is_searchable = models.BooleanField(default=True, db_index=True) # is object searchable
 
     narratives = GenericRelation(
         Narrative,
@@ -186,7 +186,7 @@ class ActivityReportingOrganisation(models.Model):
     secondary_reporter = models.BooleanField(default=False)
 
 class ActivityParticipatingOrganisation(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(max_length=250, null=True, default="")
     normalized_ref = models.CharField(max_length=120, default="")
 
     activity = models.ForeignKey(

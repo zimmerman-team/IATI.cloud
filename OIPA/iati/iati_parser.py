@@ -39,7 +39,10 @@ class ParseIATI():
             Prepares the parser, given the lxml activity file root
         """
 
-        iati_version = root.xpath('@version')[0]
+        iati_version = root.xpath('@version')
+
+        if len(iati_version) > 0:
+            iati_version = iati_version[0]
 
         if iati_version == '2.01':
             parser = IATI_201_Parser()
@@ -48,7 +51,7 @@ class ParseIATI():
             parser.VERSION = iati_version
         else:
             parser = IATI_105_Parser()
-            parser.VERSION = iati_version
+            parser.VERSION = '1.05'
         
         parser.iati_source = source
 

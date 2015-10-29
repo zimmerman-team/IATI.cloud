@@ -47,14 +47,21 @@ class TransactionReceiver(models.Model):
 		content_type_field='related_content_type',
 		object_id_field='related_object_id')
 
+
+class TransactionDescription(models.Model):
+    narratives = GenericRelation(Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+
 class Transaction(models.Model):
     activity = models.ForeignKey(Activity)
     aid_type = models.ForeignKey(AidType, null=True, default=None)
-    description = models.TextField(null=True, default=None)
-    description_type = models.ForeignKey(
-        DescriptionType,
-        null=True,
-        default=None)
+    description = models.OneToOneField(
+        TransactionDescription,
+        related_name="transaction_description",
+        null=True)
+ 
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,
         null=True,
@@ -113,11 +120,4 @@ class TransactionRecipientRegion(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.transaction.id, self.region)
-
-class TransactionDescription(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
-
 
