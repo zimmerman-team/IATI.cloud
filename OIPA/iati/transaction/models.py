@@ -26,6 +26,10 @@ class TransactionProvider(models.Model):
 		content_type_field='related_content_type',
 		object_id_field='related_object_id')
 
+    def __unicode__(self,):
+        return "%s - %s" % (self.ref,
+                            self.provider_activity_ref,)
+
 class TransactionReceiver(models.Model):
     ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
@@ -47,21 +51,14 @@ class TransactionReceiver(models.Model):
 		content_type_field='related_content_type',
 		object_id_field='related_object_id')
 
-
-class TransactionDescription(models.Model):
-    narratives = GenericRelation(Narrative,
-        content_type_field='related_content_type',
-        object_id_field='related_object_id')
-
+    def __unicode__(self,):
+        return "%s - %s" % (self.ref,
+                            self.receiver_activity_ref,)
 
 class Transaction(models.Model):
     activity = models.ForeignKey(Activity)
     aid_type = models.ForeignKey(AidType, null=True, default=None)
-    description = models.OneToOneField(
-        TransactionDescription,
-        related_name="transaction_description",
-        null=True)
- 
+
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,
         null=True,
