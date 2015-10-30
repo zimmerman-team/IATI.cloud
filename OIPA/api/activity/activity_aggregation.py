@@ -17,11 +17,9 @@ from iati.models import FlowType
 from iati.models import AidType
 from iati.models import FinanceType
 from iati.models import TiedStatus
-from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
 from api.activity.serializers import ParticipatingOrganisationSerializer
-from api.activity.serializers import ReportingOrganisationSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
@@ -47,25 +45,25 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
         "disbursement": {
             "field": "disbursement",
-            "extra_filter": Q(transaction__transaction_type='D'),
+            "extra_filter": Q(transaction__transaction_type=3),
             "annotate_name": 'disbursement',
             "annotate": Sum('transaction__value'),
         },
         "expenditure": {
             "field": "expenditure",
-            "extra_filter": Q(transaction__transaction_type='E'),
+            "extra_filter": Q(transaction__transaction_type=4),
             "annotate_name": "expenditure",
             "annotate": Sum('transaction__value')
         },
         "commitment": {
             "field": "commitment",
-            "extra_filter": Q(transaction__transaction_type='C'),
+            "extra_filter": Q(transaction__transaction_type=2),
             "annotate_name": 'commitment',
             "annotate": Sum('transaction__value')
         },
         "incoming_fund": {
             "field": "incoming_fund",
-            "extra_filter": Q(transaction__transaction_type='IF'),
+            "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": Sum('transaction__value')
         },
@@ -74,17 +72,29 @@ class ActivityAggregationSerializer(BaseSerializer):
             "annotate_name": 'total_budget_per_percentage',
             "annotate": (Coalesce(Sum('budget__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
             "no_null_check": True,
-            "has_subquery": True
+            "has_subquery": 'select sector_id as sector, sum(total_budget_per_percentage) as budget from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+        },
+        "location_disbursement": {
+            "field": "weighted_country_value",
+            "annotate_name": 'value_by_country',
+            "annotate": (Coalesce(Sum('location__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": 'select loc_country_id, sum(value_by_country) as total_value, region_id, country_name from ({}) as per_activity group by per_activity.loc_country_id'
         }
     }
 
     _allowed_groupings = {
+        "related_activity": {
+            "field": "relatedactivity__ref_activity__id",
+            "queryset": None,
+            "serializer": None,
+            "fields": (),
+        },
         "recipient_country": {
             "field": "recipient_country",
             "queryset": Country.objects.all(),
             "serializer": CountrySerializer,
             "fields": ('url', 'code', 'name'),
-            # "subquery": "SELECT * FROM geodata_country WHERE geodata_country.code = recipient_country",
         },
         "recipient_region": {
             "field": "recipient_region",
@@ -100,9 +110,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
         "reporting_organisation": {
             "field": "reporting_organisations__ref",
-            "queryset": ActivityReportingOrganisation.objects.all(),
-            "serializer": ReportingOrganisationSerializer,
-            "fields": ('ref',),
+            "queryset": None,
+            "serializer": None,
+            "fields": (),
         },
         "participating_organisation": {
             "field": "participating_organisation",
@@ -159,7 +169,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             },
             "queryset": None,
             "serializer": None,
-            "fields": None,
+            "fields": (),
         },
         "budget_per_quarter": {
             "field": "year,quarter",
@@ -169,7 +179,23 @@ class ActivityAggregationSerializer(BaseSerializer):
             },
             "queryset": None,
             "serializer": None,
-            "fields": None,
+            "fields": (),
+        },
+        "transactions_per_quarter": {
+            "field": "year,quarter",
+            "extra": {
+                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                'quarter': 'EXTRACT(QUARTER FROM "transaction_date")::integer',
+            },
+            "queryset": None,
+            "serializer": None,
+            "fields": (),
+        },
+        "location_country": {
+            "field": "'a.id, l.adm_country_iso_id as loc_country_id, lc.name as country_name, lc.region_id",
+            "queryset": None,
+            "serializer": None,
+            "fields": (),
         },
     }
 
@@ -225,8 +251,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
         # apply extras
-        # for grouping in groupings:
         first_queryset = first_queryset.extra(**groupExtras)
+        queryset = first_queryset.extra(**groupExtras)
 
         # remove nulls (
         # to do: check why values() uses left outer joins,
@@ -243,18 +269,22 @@ class ActivityAggregationSerializer(BaseSerializer):
         # Apply group_by calls and annotations
         result = first_queryset.values(*groupFields).annotate(**first_annotations).filter(**nullFilters)
 
-        # aggregations that require extra filters, and hence must be exectued separately
+        # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
-            # field = self._aggregations.get("")
+
             a = self._aggregations.get(aggregation, None)
             extra_filter = a["extra_filter"]
             field = a["field"]
-
             annotation = dict([(a['annotate_name'], a['annotate'])])
-            next_result = queryset.filter(extra_filter).values(*groupList).annotate(**annotation)
-            
-            main_group_field = groupList[0]
 
+            if len(same_query_aggregations) is 0:
+                result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
+                continue
+
+            next_result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
+
+            print str(next_result.query)
+            main_group_field = groupFields[0]
 
             if len(next_result):
                 # join results in results object (first_result >= new_result)
@@ -276,6 +306,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
     def apply_extra_calculations(self, results, aggregations):
 
+        # check if subquery required
         subquery_aggregations = [i for i in aggregations if self._aggregations[i].get('has_subquery')]
 
         if len(subquery_aggregations):
@@ -283,12 +314,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             sql, params = results.query.sql_with_params()
             cursor = connection.cursor()
             cursor.execute(
-                ''.join([
-                    'select sector_id as sector, ',
-                    'sum(total_budget_per_percentage) as weighted_budget ',
-                    'from ({}) as "temptab" ',
-                    'group by "sector_id" ',
-                    'order by "sector_id"']).format(sql),
+                subquery_aggregations[0]['has_subquery'].format(sql),
                 params)
 
             def dictfetchall(cursor):
@@ -307,32 +333,26 @@ class ActivityAggregationSerializer(BaseSerializer):
         serializers = {}
 
         for grouping in groupList:
-            field_name = self._allowed_groupings[grouping]["field"]
             serializer = self._allowed_groupings[grouping]["serializer"]
             fields = self._allowed_groupings[grouping]["fields"]
             foreignQueryset = self._allowed_groupings[grouping]["queryset"]
 
             if serializer:
-                if fields:
-                    data = serializer(foreignQueryset,
-                        context={
-                            'request': request,
-                        },
-                        many=True,
-                        fields=fields,
-                    ).data
-                else:
-                    data = serializer(foreignQueryset,
-                        context={
-                            'request': request,
-                        },
-                        many=True,
-                    ).data
+                data = serializer(foreignQueryset,
+                    context={
+                        'request': request,
+                    },
+                    many=True,
+                    fields=fields,
+                ).data
 
-                serializers[grouping] = { i.get('code'):i for i in data }
+                serializers[grouping] = {i.get('code'): i for i in data}
+
+            else:
+                serializers[grouping] = {i.get(grouping): i.get(grouping) for i in results}
 
         for i, result in enumerate(list(results)):
-            for k,v in result.iteritems():
+            for k, v in result.iteritems():
                 if k in groupList:
                     if v:
                         result[k] = serializers.get(k, {}).get(str(v))
@@ -352,8 +372,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         group_by = self._intersection(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
         aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
 
-        if not (len(group_by) and len(aggregations)):
-            return {'error_message': 'Please provide (valid values for) both mandatory fields; group_by and aggregations'}
+        if not len(group_by):
+            return {'error_message': "Invalid value for mandatory field 'group_by'"}
+        elif not len(aggregations):
+            return {'error_message': "Invalid value for mandatory field 'aggregations'"}
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
         queryset = self.apply_order_filters(queryset, order_by, aggregations)

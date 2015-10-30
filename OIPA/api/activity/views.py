@@ -25,6 +25,7 @@ class ActivityAggregations(GenericAPIView):
     ## Group by options
 
     API request has to include `group_by` parameter.
+    
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -42,10 +43,12 @@ class ActivityAggregations(GenericAPIView):
     - `default_tied_status`
     - `budget_per_year`
     - `budget_per_quarter`
+    - `transactions_per_quarter`
 
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
+    
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -55,6 +58,7 @@ class ActivityAggregations(GenericAPIView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
+    - `sector_percentage_weighted_budget`
 
 
     ## Request parameters
@@ -77,10 +81,10 @@ class ActivityAggregations(GenericAPIView):
 
         if results.data:
             if isinstance(results.data, dict) and results.data.get('error_message'):
-                return Response(results.data.get('error_message'))
+                return Response({'count': 0, 'error': results.data.get('error_message'), 'results': []})
             return Response(results.data)
         else:
-            return Response('No results', status.HTTP_204_NO_CONTENT)
+            return Response({'count': 0, 'results': []})
 
 
 class ActivityList(DynamicListView):
@@ -110,22 +114,6 @@ class ActivityList(DynamicListView):
     - `related_activity_sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `transaction_provider_activity` (*optional*): Comma separated list of activity id's.
 
-
-    ## Available aggregations
-
-    API request may include `aggregations` parameter.
-    This parameter controls result aggregations and
-    can be one or more (comma separated values) of:
-
-    - `total_budget`: Calculate total budget of activities
-        presented in filtered activities list.
-    - `disbursement`: Calculate total disbursement of activities presented in
-        filtered activities list.
-    - `commitment`: Calculate total commitment of activities presented in
-        filtered activities list.
-
-    For more advanced aggregations please use the /activities/aggregations endpoint.
-
     ## Text search
 
     API request may include `q` parameter. This parameter controls text search
@@ -133,7 +121,7 @@ class ActivityList(DynamicListView):
 
     By default, searching is performed on:
 
-    - `activity_id` 
+    - `activity_id` the IATI identifier
     - `title` narratives
     - `description` narratives
     - `country` recipient country code and name
@@ -146,6 +134,12 @@ class ActivityList(DynamicListView):
     To search on subset of these fields the `q_fields` parameter can be used. Example;
     `q_fields=activity_id,title,description'
 
+    ## Available aggregations
+
+    At the moment there's no direct aggregations on this endpoint.
+
+    Please use the /activities/aggregations endpoint and view the documentation there.
+
     ## Result details
 
     Each item contains summarized information on the activity being shown,
@@ -154,6 +148,25 @@ class ActivityList(DynamicListView):
     `fields=activity_id,title,country,any_field`.
 
     """
+    # note; This is removed from the docs as the aggregations are deactivated atm?
+    # ## Available aggregations
+
+    # API request may include `aggregations` parameter.
+    # This parameter controls result aggregations and
+    # can be one or more (comma separated values) of:
+
+    # - `total_budget`: Calculate total budget of activities
+    #     presented in filtered activities list.
+    # - `disbursement`: Calculate total disbursement of activities presented in
+    #     filtered activities list.
+    # - `commitment`: Calculate total commitment of activities presented in
+    #     filtered activities list.
+
+    # For more advanced aggregations please use the /activities/aggregations endpoint.
+    
+
+
+
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
