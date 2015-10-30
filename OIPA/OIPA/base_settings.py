@@ -179,3 +179,5 @@ REST_FRAMEWORK = {
     )
 }
 
+ROOT_ORGANISATIONS = []
+
