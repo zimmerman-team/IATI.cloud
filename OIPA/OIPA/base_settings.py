@@ -79,6 +79,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,6 +108,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
+    'corsheaders',
     'haystack',
     'iati',
     'iati_synchroniser',
@@ -150,6 +152,7 @@ SUIT_CONFIG = {
             {'label': 'YubiKey validation services', 'model': 'otp_yubikey.validationservice'},
         )},
         {'app': 'iati', 'label': 'IATI', 'icon': 'icon-th'},
+        {'app': 'iati_codelists', 'label': 'IATI codelist', 'icon': 'icon-barcode'},
         {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon': 'icon-refresh'},
         {'app': 'geodata', 'label': 'Geo data', 'icon': 'icon-globe'},
         {'app': 'indicator', 'label': 'Indicators', 'icon': 'icon-signal'},
@@ -178,6 +181,10 @@ REST_FRAMEWORK = {
         # 'rest_framework.filters.SearchFilter',
     )
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_METHODS = ('GET',)
 
 ROOT_ORGANISATIONS = []
 
