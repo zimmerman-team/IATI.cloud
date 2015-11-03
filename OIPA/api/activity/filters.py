@@ -1,6 +1,14 @@
-from iati.models import Activity, Budget, RelatedActivity
+import uuid
+
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.related import ForeignObjectRel
+
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter
+from rest_framework.filters import OrderingFilter
+
 from api.generics.filters import CommaSeparatedCharFilter
+from iati.models import Activity, Budget, RelatedActivity
+
 
 class CommaSeparatedDateRangeFilter(Filter):
 
@@ -10,10 +18,6 @@ class CommaSeparatedDateRangeFilter(Filter):
             return qs
 
         value = value.split(',')
-
-        if len(value) is 2:
-            lte = value[0]
-            gte = value[0]
 
         return super(CommaSeparatedCharFilter, self).filter(qs, value)
 
@@ -36,7 +40,6 @@ class TogetherFilter(Filter):
 
             return qs
 
-import uuid
 
 class TogetherFilterSet(FilterSet):
     def __init__(self, data=None, queryset=None, prefix=None, strict=None):
@@ -55,8 +58,8 @@ class TogetherFilterSet(FilterSet):
         for filterlist in self.together_exclusive:
             if set(filterlist).issubset(data.keys()):
 
-                filter_values = [ data.pop(filteritem)[0] for filteritem in filterlist ]
-                filter_classes = [ self.declared_filters.get(filteritem, None) for filteritem in filterlist ]
+                filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
+                filter_classes = [self.declared_filters.get(filteritem, None) for filteritem in filterlist]
 
                 uid = uuid.uuid4()
 
@@ -84,17 +87,57 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='recipient_region')
 
-    start_date_actual_lte = DateFilter(
+    planned_start_date_lte = DateFilter(
         lookup_type='lte',
-        name='start_actual')
+        name='planned_start')
 
-    start_date_actual_gte = DateFilter(
+    planned_start_date_gte = DateFilter(
         lookup_type='gte',
-        name='start_actual')
+        name='planned_start')
+
+    actual_start_date_lte = DateFilter(
+        lookup_type='lte',
+        name='actual_start')
+
+    actual_start_date_gte = DateFilter(
+        lookup_type='gte',
+        name='actual_start')
+
+    planned_end_date_lte = DateFilter(
+        lookup_type='lte',
+        name='planned_end')
+
+    planned_end_date_gte = DateFilter(
+        lookup_type='gte',
+        name='planned_end')
+
+    actual_end_date_lte = DateFilter(
+        lookup_type='lte',
+        name='actual_end')
+
+    actual_end_date_gte = DateFilter(
+        lookup_type='gte',
+        name='actual_end')
 
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
         name='sector')
+
+    total_budget_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregations__total_budget_value')
+
+    total_budget_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregations__total_budget_value')
+
+    total_child_budget_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregations__total_child_budget_value')
+
+    total_child_budget_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregations__total_child_budget_value')
 
     sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -102,17 +145,15 @@ class ActivityFilter(TogetherFilterSet):
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__ref'
-    )
+        name='participating_organisations__ref')
+
     reporting_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='reporting_organisations__ref'
-    )
+        name='reporting_organisations__ref')
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='xml_source_ref'
-    )
+        name='xml_source_ref')
 
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -166,11 +207,13 @@ class ActivityFilter(TogetherFilterSet):
 
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='transaction__provider_organisation__provider_activity_ref', distinct=True)
+        name='transaction__provider_organisation__provider_activity_ref',
+        distinct=True)
 
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
+
 
 class BudgetFilter(FilterSet):
 
@@ -185,6 +228,7 @@ class BudgetFilter(FilterSet):
     class Meta:
         model = Budget
 
+
 class RelatedActivityFilter(FilterSet):
 
     related_activity_type = CommaSeparatedCharFilter(
@@ -195,4 +239,49 @@ class RelatedActivityFilter(FilterSet):
         model = RelatedActivity
 
 
- 
+class RelatedOrderingFilter(OrderingFilter):
+    """
+    Extends OrderingFilter to support ordering by fields in related models
+    using the Django ORM __ notation
+
+    Also provides support for mapping of fields,
+    in remove_invalid_fields a mapping is maintained
+    to make 'user-friendly' names possible
+    """
+
+    def is_valid_field(self, model, field):
+        """
+        Return true if the field exists within the model (or in the related
+        model specified using the Django ORM __ notation)
+        """
+        components = field.split('__', 1)
+        try:
+            field, parent_model, direct, m2m = model._meta.get_field_by_name(components[0])
+
+            # reverse relation
+            if isinstance(field, ForeignObjectRel):
+                return self.is_valid_field(field.model, components[1])
+
+            # foreign key
+            if field.rel and len(components) == 2:
+                return self.is_valid_field(field.rel.to, components[1])
+            return True
+        except FieldDoesNotExist:
+            return False
+
+    def remove_invalid_fields(self, queryset, ordering, view):
+
+        mapped_fields = {
+            'title': 'title__narratives__content',
+            'total_budget_value': 'activity_aggregations__total_budget_value',
+            'total_child_budget_value': 'activity_aggregations__total_child_budget_value',
+            'total_disbursement_value': 'activity_aggregations__total_disbursement_value',
+            'total_commitment_value': 'activity_aggregations__total_commitment_value',
+        }
+
+        for i, term in enumerate(ordering):
+            if term.lstrip('-') in mapped_fields:
+                ordering[i] = ordering[i].replace(term.lstrip('-'), mapped_fields[term.lstrip('-')])
+
+        return [term for term in ordering
+                if self.is_valid_field(queryset.model, term.lstrip('-'))]

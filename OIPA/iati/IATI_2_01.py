@@ -469,8 +469,10 @@ class Parse(XMLParser):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
         type_code = self.get_or_none(codelist_models.ActivityDateType, code=element.attrib.get('type'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
-        if not type_code: raise self.RequiredFieldError("Type", "activity date type: type is required")
+        if not iso_date:
+            raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
+        if not type_code:
+            raise self.RequiredFieldError("Type", "activity date type: type is required")
 
         activity = self.get_model('Activity')
 
@@ -479,6 +481,17 @@ class Parse(XMLParser):
         activity_date.type = type_code
         activity_date.activity = activity
 
+        # to make ordering possible, activity dates are duplicated onto the Activity model
+        mapping = {
+            '1': 'planned_start',
+            '2': 'actual_start',
+            '3': 'planned_end',
+            '4': 'actual_end'
+        }
+
+        if type_code.code in mapping:
+            setattr(activity, mapping[type_code.code], iso_date)
+
         self.register_model('ActivityDate', activity_date)
         return element
 
@@ -486,6 +499,7 @@ class Parse(XMLParser):
 
     tag:narrative'''
     def iati_activities__iati_activity__activity_date__narrative(self, element):
+        # this is not implemented
         activity_date = self.get_model('ActivityDate')
         self.add_narrative(element, activity_date)
         return element

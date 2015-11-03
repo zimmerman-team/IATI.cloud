@@ -100,10 +100,18 @@ class ActivityList(DynamicListView):
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `reporting_organisation` (*optional*): Comma separated list of organisation id's.
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
-    - `min_total_budget` (*optional*): Minimal total budget value.
-    - `max_total_budget` (*optional*): Maximal total budget value.
-    - `start_date_actual_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given date.
-    - `start_date_actual_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given date.
+    - `total_budget_value_lte` (*optional*): Less then or equal total budget value
+    - `total_budget_value_gte` (*optional*): Greater then or equal total budget value
+    - `total_child_budget_value_lte` (*optional*): Less then or equal total child budget value
+    - `total_child_budget_value_gte` (*optional*): Greater then or equal total child budget value
+    - `planned_start_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+    - `planned_start_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
+    - `actual_start_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+    - `actual_start_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
+    - `planned_end_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+    - `planned_end_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
+    - `actual_end_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+    - `actual_end_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
     - `activity_status` (*optional*): Comma separated list of activity statuses.
     - `hierarchy` (*optional*): Comma separated list of activity hierarchies.
     - `related_activity_id` (*optional*): Comma separated list of activity ids. Returns a list of all activities mentioning these activity id's.
@@ -131,14 +139,35 @@ class ActivityList(DynamicListView):
     - `documentlink_title` url and title narratives
     - `participating_org` ref and narratives
 
-    To search on subset of these fields the `q_fields` parameter can be used. Example;
-    `q_fields=activity_id,title,description'
+    To search on subset of these fields the `q_fields` parameter can be used, like so;
+    `q_fields=activity_id,title,description`
 
-    ## Available aggregations
+
+    ## Ordering
+
+    API request may include `ordering` parameter. This parameter controls the order in which
+    results are returned.
+
+    Results can be ordered by:
+
+    - `title`
+    - `planned_start`
+    - `actual_start`
+    - `planned_end`
+    - `actual_end`
+    - `total_budget_value`
+    - `total_child_budget_value`
+    - `total_commitment_value`
+    - `total_disbursement_value`
+
+    The user may also specify reverse orderings by prefixing the field name with '-', like so: `-title`
+
+
+    ## Aggregations
 
     At the moment there's no direct aggregations on this endpoint.
 
-    Please use the /activities/aggregations endpoint and view the documentation there.
+    The /activities/aggregations endpoint can be used for activity based aggregations.
 
     ## Result details
 
@@ -163,16 +192,20 @@ class ActivityList(DynamicListView):
     #     filtered activities list.
 
     # For more advanced aggregations please use the /activities/aggregations endpoint.
-    
-
-
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
     fields = ('url', 'iati_identifier', 'title', 'description', 'transactions', 'reporting_organisations')
     pagination_class = AggregationsPaginationSerializer
+    ordering_fields = (
+        'title',
+        'total_child_budget',
+        'planned_start',
+        'actual_start',
+        'planned_end',
+        'actual_end')
 
     # def get_serializer_context(self):
     #     return {'request': self.request }

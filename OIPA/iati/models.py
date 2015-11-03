@@ -18,8 +18,7 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
     related_content_type = models.ForeignKey(ContentType, related_name='related_agent')
-    related_object_id = models.CharField(
-        max_length=250,
+    related_object_id = models.IntegerField(
         verbose_name='related object',
         null=True,
         db_index=True
@@ -89,6 +88,11 @@ class Activity(models.Model):
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
+
+    planned_start = models.DateField(null=True, default=None)
+    actual_start = models.DateField(null=True, default=None)
+    planned_end = models.DateField(null=True, default=None)
+    actual_end = models.DateField(null=True, default=None)
 
     activity_status = models.ForeignKey(
         ActivityStatus,
