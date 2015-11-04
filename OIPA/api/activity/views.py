@@ -177,7 +177,7 @@ class ActivityList(DynamicListView):
     `fields=activity_id,title,country,any_field`.
 
     """
-    # note; This is removed from the docs as the aggregations are deactivated atm?
+    # note; This is removed from the docs as the aggregations are deactivated atm
     # ## Available aggregations
 
     # API request may include `aggregations` parameter.
@@ -201,11 +201,14 @@ class ActivityList(DynamicListView):
     pagination_class = AggregationsPaginationSerializer
     ordering_fields = (
         'title',
-        'total_child_budget',
-        'planned_start',
-        'actual_start',
-        'planned_end',
-        'actual_end')
+        'total_budget_value',
+        'total_child_budget_value',
+        'total_disbursement_value',
+        'total_commitment_value',
+        'planned_start_date',
+        'actual_start_date',
+        'planned_end_date',
+        'actual_end_date')
 
     # def get_serializer_context(self):
     #     return {'request': self.request }
