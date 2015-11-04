@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'iati_vocabulary',
     'iati_codelists',
     'test_without_migrations',
+    'nested_inline',
 )
 
 SUIT_CONFIG = {

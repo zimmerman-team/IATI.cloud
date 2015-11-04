@@ -78,6 +78,11 @@ class Parse(XMLParser):
 
         return currency
 
+    def get_model_list(self, key):
+        if key in self.model_store:
+            return self.model_store[key]
+        return None
+
 
     def get_model(self, key, index=-1):
         if isinstance(key, Model):
@@ -241,6 +246,7 @@ class Parse(XMLParser):
             old_activity.delete()
             old_activity.narratives.all().delete()
 
+        # TODO: assert title is in xml, for proper OneToOne relation
 
         activity = models.Activity()
         activity.id = id
@@ -355,22 +361,29 @@ class Parse(XMLParser):
 
     tag:title'''
     def iati_activities__iati_activity__title(self,element):
-        activity = self.pop_model('Activity')
+        title_list = self.get_model_list('Title')
+        if title_list and len(title_list) > 0:
+            raise self.ValidationError("title", "Duplicate titles are not allowed")
 
-        # title.activity = activity
+        # activity = self.pop_model('Activity')
+        activity = self.get_model('Activity')
+
         title = models.Title()
-        activity.title = title
+        title.activity = activity
+
+        # activity.title = title
 
         # order is important (TODO: change datastructure to handle this case more transparant, like insertBefore or something)
-        self.register_model('Activity', title)
-        self.register_model('Activity', activity)
+        self.register_model('Title', title)
+        # self.register_model('Activity', activity)
 
     '''atributes:
 
     tag:narrative'''
     def iati_activities__iati_activity__title__narrative(self,element):
         # TODO: make this more clear and not depend on order of things
-        title = self.get_model('Activity', index=-2) # this points to Title
+        # title = self.get_model('Activity', index=-2) # this points to Title
+        title = self.get_model('Title') # this points to Title
         self.add_narrative(element, title)
         
         return element
@@ -469,10 +482,8 @@ class Parse(XMLParser):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
         type_code = self.get_or_none(codelist_models.ActivityDateType, code=element.attrib.get('type'))
 
-        if not iso_date:
-            raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
-        if not type_code:
-            raise self.RequiredFieldError("Type", "activity date type: type is required")
+        if not iso_date: raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
+        if not type_code: raise self.RequiredFieldError("Type", "activity date type: type is required")
 
         activity = self.get_model('Activity')
 
@@ -1324,17 +1335,13 @@ class Parse(XMLParser):
 
     tag:description'''
     def iati_activities__iati_activity__transaction__description(self,element):
+        transaction = self.get_model('Transaction')
+
         description = transaction_models.TransactionDescription()
-        
-        transaction = self.pop_model('Transaction')
-        transaction.description = description
-
-        self.register_model('Transaction', description)
-        self.register_model('Transaction', transaction)
-
-
+        description.transaction = transaction
 
         self.register_model('TransactionDescription', description)
+
         return element
 
     '''atributes:
@@ -1359,7 +1366,10 @@ class Parse(XMLParser):
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)
 
+        transaction = self.get_model('Transaction')
+
         transaction_provider = transaction_models.TransactionProvider()
+        transaction_provider.transaction = transaction
         transaction_provider.ref = ref
         transaction_provider.normalized_ref = normalized_ref
         transaction_provider.organisation = organisation
@@ -1373,8 +1383,10 @@ class Parse(XMLParser):
             transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         except:
             pass
+
+
         # set wether one of the parent is in root organisation if so set searchable
-        if len(settings.ROOT_ORGANISATIONS) > 0:
+        if hasattr(settings, 'ROOT_ORGANISATIONS') and len(settings.ROOT_ORGANISATIONS) > 0:
             print 'in check searchable'
             print settings.ROOT_ORGANISATIONS
             #check if this activty is to be searchable
@@ -1393,14 +1405,14 @@ class Parse(XMLParser):
 
                 self.set_children_readable(activity.iati_identifier)
 
-
             self.searchable_activities.append(activity.iati_identifier)
 
-        transaction = self.pop_model('Transaction')
-        transaction.provider_organisation = transaction_provider
+        # transaction = self.pop_model('Transaction')
+        # transaction.provider_organisation = transaction_provider
 
-        self.register_model('Transaction', transaction_provider)
-        self.register_model('Transaction', transaction)
+        # self.register_model('Transaction', transaction_provider)
+        self.register_model('TransactionProvider', transaction_provider)
+        # self.register_model('Transaction', transaction)
         return element
 
 
@@ -1409,7 +1421,10 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
         # TODO: make this more transparant in data structure or handling
-        transaction_provider = self.get_model('Transaction', -2)
+        # transaction_provider = self.get_model('Transaction', -2)
+        print('called')
+        print(element.text)
+        transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
         return element
 
@@ -1427,7 +1442,10 @@ class Parse(XMLParser):
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)
 
+        transaction = self.get_model('Transaction')
+
         transaction_receiver = transaction_models.TransactionReceiver()
+        transaction_receiver.transaction = transaction
         transaction_receiver.ref = ref
         transaction_receiver.normalized_ref = normalized_ref
         transaction_receiver.organisation = organisation
@@ -1442,11 +1460,12 @@ class Parse(XMLParser):
         except:
             pass
 
-        transaction = self.pop_model('Transaction')
-        transaction.receiver_organisation = transaction_receiver
+        # transaction = self.pop_model('Transaction')
+        # transaction.receiver_organisation = transaction_receiver
 
-        self.register_model('Transaction', transaction_receiver)
-        self.register_model('Transaction', transaction)
+        # self.register_model('Transaction', transaction_receiver)
+        self.register_model('TransactionReceiver', transaction_receiver)
+        # self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1454,7 +1473,8 @@ class Parse(XMLParser):
     tag:narrative'''
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self,element):
         # TODO: make this more transparent by changing data structure
-        transaction_receiver = self.get_model('Transaction', -2)
+        # transaction_receiver = self.get_model('Transaction', -2)
+        transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
         return element
 

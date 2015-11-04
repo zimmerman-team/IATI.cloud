@@ -458,16 +458,38 @@ class TitleTestCase(ParserSetupTestCase):
         self.parser_201.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+
     def test_title_201(self):
         self.parser_201.iati_activities__iati_activity__title(self.title)
-        title = self.parser_201.get_model('Title')
 
+        title = self.parser_201.get_model('Title')
         self.assertTrue(title.activity == self.activity)
 
         self.parser_201.iati_activities__iati_activity__title__narrative(self.narrative)
         narrative = self.parser_201.get_model('TitleNarrative')
+        self.assertTrue(narrative.related_object == title)
 
-        self.assertTrue(narrative.parent_object == title)
+        # TODO: refactor so this isnt nescessary
+        title = self.parser_201.pop_model('Title')
+        
+    def test_title_duplicate(self):
+        """
+        Duplicates are not allowed
+        """
+        self.parser_201.iati_activities__iati_activity__title(self.title)
+
+        with self.assertRaises(Exception):
+            self.parser_201.iati_activities__iati_activity__title(self.title)
+
+        # TODO: refactor so this isnt nescessary
+        title = self.parser_201.pop_model('Title')
+
+    def test_title_activity_constraint(self):
+        """
+        An activity should not be parseable without a title
+        """
+        # TODO: problem because OneToOne is on Title, which is a workaround for django's poor admin handling of oneToOne relations
+        
 
     def test_title_105(self):
         self.title.text = "random text"
@@ -477,8 +499,11 @@ class TitleTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('TitleNarrative')
 
         self.assertTrue(title.activity == self.activity)
-        self.assertTrue(narrative.parent_object == title)
+        self.assertTrue(narrative.related_object == title)
 
+        # TODO: refactor so this isnt nescessary
+        title = self.parser_201.pop_model('Title')
+        
 class DescriptionTestCase(ParserSetupTestCase):
     def setUp(self):
         self.iati_201 = copy_xml_tree(self.iati_201)
@@ -499,7 +524,7 @@ class DescriptionTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__description__narrative(self.narrative)
         narrative = self.parser_201.get_model('DescriptionNarrative')
 
-        self.assertTrue(narrative.parent_object == description)
+        self.assertTrue(narrative.related_object == description)
 
     def test_description_105(self):
         self.description.text = "random text"
@@ -509,7 +534,7 @@ class DescriptionTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('DescriptionNarrative')
 
         self.assertTrue(description.activity == self.activity)
-        self.assertTrue(narrative.parent_object == description)
+        self.assertTrue(narrative.related_object == description)
 
 class OtherIdentifierTestCase(ParserSetupTestCase):
     """
@@ -560,7 +585,7 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__other_identifier__owner_org__narrative(self.narrative)
         narrative = self.parser_201.get_model('OtherIdentifierNarrative')
 
-        self.assertTrue(narrative.parent_object == other_identifier)
+        self.assertTrue(narrative.related_object == other_identifier)
 
     def test_other_identifier_105(self):
         """
@@ -574,7 +599,7 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
         self.assertTrue(other_identifier.owner_ref == self.owner_org_xml['ref'])
 
         narrative = self.parser_105.get_model('OtherIdentifierNarrative')
-        self.assertTrue(narrative.parent_object == other_identifier)
+        self.assertTrue(narrative.related_object == other_identifier)
 
 class NarrativeTestCase(ParserSetupTestCase):
     """
@@ -591,16 +616,16 @@ class NarrativeTestCase(ParserSetupTestCase):
 
         self.narrative = E('narrative', self.test_text)
         # This could be any object for testing
-        self.parent_object = build_activity()
+        self.related_object = build_activity()
 
     def test_addForeignKeyDefaultNarrative(self):
         """
         Given an arbitrary foreign key, the narrative should be created and be queryable using default assumed values (language)
         """
-        self.parser_201.add_narrative(self.narrative, self.parent_object)
+        self.parser_201.add_narrative(self.narrative, self.related_object)
         narrative = self.parser_201.get_model('ActivityNarrative')
 
-        self.assertTrue(narrative.parent_object == self.parent_object)
+        self.assertTrue(narrative.related_object == self.related_object)
         self.assertTrue(narrative.content == self.test_text)
         self.assertTrue(narrative.language.code == self.defaults["language"])
 
@@ -611,7 +636,7 @@ class NarrativeTestCase(ParserSetupTestCase):
         """
         self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr" # ISO 639-1:2002
 
-        self.parser_201.add_narrative(self.narrative, self.parent_object)
+        self.parser_201.add_narrative(self.narrative, self.related_object)
         narrative = self.parser_201.get_model('ActivityNarrative')
 
         self.assertTrue(narrative.language.code == "fr")
@@ -817,7 +842,7 @@ class ActivityDateTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__activity_date__narrative(self.narrative)
         narrative = self.parser_201.get_model('ActivityDateNarrative')
 
-        self.assertTrue(narrative.parent_object == activity_date)
+        self.assertTrue(narrative.related_object == activity_date)
 
     def test_activity_date_105(self):
         """
@@ -831,7 +856,7 @@ class ActivityDateTestCase(ParserSetupTestCase):
         self.assertTrue(activity_date.type.code == self.attrs_201['type'])
 
         narrative = self.parser_105.get_model('ActivityDateNarrative')
-        self.assertTrue(narrative.parent_object == activity_date)
+        self.assertTrue(narrative.related_object == activity_date)
 
 class ContactInfoTestCase(ParserSetupTestCase):
     """
@@ -885,7 +910,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__contact_info__organisation__narrative(self.narrative)
         narrative = self.parser_201.get_model('ContactInfoOrganisationNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_organisation)
+        self.assertTrue(narrative.related_object == contact_info_organisation)
 
     def test_contact_info_organisation_105(self):
         """
@@ -897,7 +922,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.assertTrue(contact_info_organisation.contact_info == self.test_contact_info)
         narrative = self.parser_105.get_model('ContactInfoOrganisationNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_organisation)
+        self.assertTrue(narrative.related_object == contact_info_organisation)
 
     def test_contact_info_department(self):
         """
@@ -911,7 +936,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__contact_info__department__narrative(self.narrative)
         narrative = self.parser_201.get_model('ContactInfoDepartmentNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_department)
+        self.assertTrue(narrative.related_object == contact_info_department)
 
     def test_contact_info_department_105(self):
         """
@@ -936,7 +961,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__contact_info__person_name__narrative(self.narrative)
         narrative = self.parser_201.get_model('ContactInfoPersonNameNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_person_name)
+        self.assertTrue(narrative.related_object == contact_info_person_name)
 
     def test_contact_info_person_name_105(self):
         """
@@ -961,7 +986,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__contact_info__job_title__narrative(self.narrative)
         narrative = self.parser_201.get_model('ContactInfoJobTitleNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_job_title)
+        self.assertTrue(narrative.related_object == contact_info_job_title)
 
     def test_contact_info_job_title_105(self):
         """
@@ -1007,7 +1032,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__contact_info__mailing_address__narrative(self.narrative)
         narrative = self.parser_201.get_model('ContactInfoMailingAddressNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_mailing_address)
+        self.assertTrue(narrative.related_object == contact_info_mailing_address)
 
     def test_contact_info_mailing_address_105(self):
         """
@@ -1020,7 +1045,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         self.assertTrue(contact_info_mailing_address.contact_info == self.test_contact_info)
 
         narrative = self.parser_105.get_model('ContactInfoMailingAddressNarrative')
-        self.assertTrue(narrative.parent_object == contact_info_mailing_address)
+        self.assertTrue(narrative.related_object == contact_info_mailing_address)
 
 class RecipientCountryTestCase(ParserSetupTestCase):
     """
@@ -1169,7 +1194,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__location__name__narrative(self.narrative)
         narrative = self.parser_201.get_model('LocationNameNarrative')
-        self.assertTrue(narrative.parent_object == location_name)
+        self.assertTrue(narrative.related_object == location_name)
 
     def test_location_name_105(self):
         location_name = E('name', "some text")
@@ -1178,7 +1203,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.assertTrue(location_name.location == self.test_location)
         narrative = self.parser_105.get_model('LocationNameNarrative')
-        self.assertTrue(narrative.parent_object == location_name)
+        self.assertTrue(narrative.related_object == location_name)
 
     def test_location_description_201(self):
         """
@@ -1192,7 +1217,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__location__description__narrative(self.narrative)
         narrative = self.parser_201.get_model('LocationDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == location_description)
+        self.assertTrue(narrative.related_object == location_description)
 
     def test_location_activity_description_201(self):
         """
@@ -1206,7 +1231,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__location__activity_description__narrative(self.narrative)
         narrative = self.parser_201.get_model('LocationActivityDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == activity_description)
+        self.assertTrue(narrative.related_object == activity_description)
 
     def test_location_administrative_201(self):
         administrative = E('administrative', code="test", vocabulary="A1", level="1") # Global Administrative Unit layers
@@ -1455,7 +1480,7 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self.narrative)
         narrative = self.parser_201.get_model('BudgetItemDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == budget_item_description)
+        self.assertTrue(narrative.related_object == budget_item_description)
 
     def test_budget_item_description_105(self):
         budget_item = iati_factory.BudgetItemFactory.build()
@@ -1468,7 +1493,7 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         self.assertTrue(budget_item_description.budget_item == budget_item)
 
         narrative = self.parser_105.get_model('BudgetItemDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == budget_item_description)
+        self.assertTrue(narrative.related_object == budget_item_description)
 
 class PolicyMarkerTestCase(ParserSetupTestCase):
     """
@@ -1505,7 +1530,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__policy_marker__narrative(self.narrative)
         narrative = self.parser_201.get_model('ActivityPolicyMarkerNarrative')
-        self.assertTrue(narrative.parent_object == activity_policy_marker)
+        self.assertTrue(narrative.related_object == activity_policy_marker)
 
     def test_activity_policy_marker_105(self):
         """
@@ -1525,7 +1550,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         self.assertTrue(activity_policy_marker.vocabulary.code == self.attrs['vocabulary'])
 
         narrative = self.parser_105.get_model('ActivityPolicyMarkerNarrative')
-        self.assertTrue(narrative.parent_object == activity_policy_marker)
+        self.assertTrue(narrative.related_object == activity_policy_marker)
 
 class BudgetTestCase(ParserSetupTestCase):
     """
@@ -1773,7 +1798,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__transaction__description__narrative(self.narrative)
         narrative = self.parser_201.get_model('TransactionDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == transaction_description)
+        self.assertTrue(narrative.related_object == transaction_description)
 
     def test_transaction_description_105(self):
         description = E('description', 'some text')
@@ -1783,97 +1808,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_description.transaction == self.test_transaction)
 
         narrative = self.parser_105.get_model('TransactionDescriptionNarrative')
-        self.assertTrue(narrative.parent_object == transaction_description)
-
-    def test_provider_organisation_not_parsed_yet_201(self):
-        """
-        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
-        """
-        attrs = {
-            "ref": "GB-COH-03580586",
-            "provider-activity-id": 'no constraints on this field',
-        }
-
-        provider_org = E('provider-org', **attrs)
-        self.parser_201.iati_activities__iati_activity__transaction__provider_org(provider_org)
-        provider_organisation = self.parser_201.get_model('TransactionProvider')
-
-        self.assertTrue(provider_organisation.ref == attrs['ref'])
-        self.assertTrue(provider_organisation.organisation == None)
-        # self.assertTrue(provider_organisation.provider_activity_id == attrs['provider-activity-id'])
-
-        self.assertTrue(self.test_transaction.provider_organisation == provider_organisation)
-
-        self.parser_201.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
-        narrative = self.parser_201.get_model('TransactionProviderNarrative')
-        self.assertTrue(narrative.parent_object == provider_organisation)
-
-    def test_provider_organisation_narrative_105(self):
-        """
-        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
-        """
-        attrs = {
-            "ref": "GB-COH-03580586",
-            "provider-activity-id": 'no constraints on this field',
-        }
-
-        provider_org = E('provider-org', 'some description', **attrs)
-        self.parser_105.iati_activities__iati_activity__transaction__provider_org(provider_org)
-        provider_organisation = self.parser_105.get_model('TransactionProvider')
-
-        narrative = self.parser_105.get_model('TransactionProviderNarrative')
-        self.assertTrue(narrative.parent_object == provider_organisation)
-
-    def test_provider_organisation_provider_activity_exists(self):
-        raise NotImplementedError()
-
-    def test_provider_organisation_provider_activity_has_related(self):
-        raise NotImplementedError()
-
-    def test_receiver_organisation_not_parsed_yet_201(self):
-        """
-        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
-        """
-        attrs = {
-            "ref": "GB-COH-03580586",
-            "receiver-activity-id": 'no constraints on this field',
-        }
-
-        receiver_org = E('receiver-org', **attrs)
-        self.parser_201.iati_activities__iati_activity__transaction__receiver_org(receiver_org)
-        receiver_organisation = self.parser_201.get_model('TransactionReceiver')
-
-        self.assertTrue(receiver_organisation.ref == attrs['ref'])
-        self.assertTrue(receiver_organisation.organisation == None)
-        self.assertTrue(receiver_organisation.receiver_activity_id == None)
-
-        self.assertTrue(self.test_transaction.receiver_organisation == receiver_organisation)
-
-        self.parser_201.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
-        narrative = self.parser_201.get_model('TransactionReceiverNarrative')
-        self.assertTrue(narrative.parent_object == receiver_organisation)
-
-    def test_receiver_organisation_receiver_activity_exists(self):
-        raise NotImplementedError()
-
-    def test_receiver_organisation_receiver_activity_has_related(self):
-        raise NotImplementedError()
-
-    def test_receiver_organisation_narrative_105(self):
-        """
-        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
-        """
-        attrs = {
-            "ref": "GB-COH-03580586",
-            "receiver-activity-id": 'no constraints on this field',
-        }
-
-        receiver_org = E('receiver-org', 'some description', **attrs)
-        self.parser_105.iati_activities__iati_activity__transaction__receiver_org(receiver_org)
-        receiver_organisation = self.parser_105.get_model('TransactionReceiver')
-
-        narrative = self.parser_105.get_model('TransactionReceiverNarrative')
-        self.assertTrue(narrative.parent_object == receiver_organisation)
+        self.assertTrue(narrative.related_object == transaction_description)
 
     def test_transaction_disbursement_channel_201(self):
         """
@@ -1995,6 +1930,154 @@ class TransactionTestCase(ParserSetupTestCase):
         raise NotImplementedError()
 
 
+class ProviderOrganisationTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.attrs = {
+            "ref": "GB-COH-03580586",
+            "provider-activity-id": 'no constraints on this field',
+        }
+
+        self.provider_org = E('provider-org', **self.attrs)
+
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+        self.test_transaction = transaction_factory.TransactionFactory.build()
+        self.parser_201.register_model('Transaction', self.test_transaction)
+
+    def test_provider_organisation_not_parsed_yet_201(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+
+        self.parser_201.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+        provider_organisation = self.parser_201.get_model('TransactionProvider')
+
+        self.assertTrue(provider_organisation.ref == self.attrs['ref'])
+        self.assertTrue(provider_organisation.organisation == None)
+        self.assertTrue(provider_organisation.transaction == self.test_transaction)
+        # self.assertTrue(provider_organisation.provider_activity_id == self.attrs['provider-activity-id'])
+
+        self.parser_201.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('TransactionProviderNarrative')
+        self.assertTrue(narrative.related_object == provider_organisation)
+
+        # TODO: refactor so this isnt nescessary
+        provider_organisation = self.parser_201.pop_model('TransactionProvider')
+
+    # def test_provider_organisation_duplicate(self):
+    #     """
+    #     Duplicates are not allowed
+    #     """
+    #     self.parser_201.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+
+    #     with self.assertRaises(Exception):
+    #         self.parser_201.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+
+    #     # TODO: refactor so this isnt nescessary
+    #     provider_organisation = self.parser_201.pop_model('TransactionProvider')
+
+    def test_provider_organisation_narrative_105(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        self.provider_org.text = "random text"
+        self.parser_105.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+        provider_organisation = self.parser_105.get_model('TransactionProvider')
+
+        self.test_transaction = transaction_factory.TransactionFactory.build()
+        self.parser_201.register_model('Transaction', self.test_transaction)
+        narrative = self.parser_105.get_model('TransactionProviderNarrative')
+        self.assertTrue(narrative.related_object == provider_organisation)
+
+        # TODO: refactor so this isnt nescessary
+        provider_organisation = self.parser_201.pop_model('TransactionProvider')
+
+    def test_provider_organisation_provider_activity_exists(self):
+        raise NotImplementedError()
+
+    def test_provider_organisation_provider_activity_has_related(self):
+        raise NotImplementedError()
+
+
+class ReceiverOrganisationTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.attrs = {
+            "ref": "GB-COH-03580586",
+            "receiver-activity-id": 'no constraints on this field',
+        }
+
+        self.receiver_org = E('receiver-org', **self.attrs)
+
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+        self.test_transaction = transaction_factory.TransactionFactory.build()
+        self.parser_201.register_model('Transaction', self.test_transaction)
+
+    def test_receiver_organisation_not_parsed_yet_201(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        self.parser_201.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+        receiver_organisation = self.parser_201.get_model('TransactionReceiver')
+
+        self.assertTrue(receiver_organisation.ref == self.attrs['ref'])
+        self.assertTrue(receiver_organisation.organisation == None)
+        self.assertTrue(receiver_organisation.receiver_activity_id == None)
+        self.assertTrue(receiver_organisation.transaction == self.test_transaction)
+
+        # self.assertTrue(self.test_transaction.receiver_organisation == receiver_organisation)
+
+        self.parser_201.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('TransactionReceiverNarrative')
+        self.assertTrue(narrative.related_object == receiver_organisation)
+
+        # TODO: refactor so this isnt nescessary
+        receiver_organisation = self.parser_201.pop_model('TransactionReceiver')
+
+    # def test_receiver_organisation_duplicate(self):
+    #     """
+    #     Duplicates are not allowed
+    #     """
+    #     self.parser_201.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+
+    #     with self.assertRaises(Exception):
+    #         self.parser_201.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+
+    #     # TODO: refactor so this isnt nescessary
+    #     receiver_organisation = self.parser_201.pop_model('TransactionReceiver')
+
+    def test_receiver_organisation_receiver_activity_exists(self):
+        raise NotImplementedError()
+
+    def test_receiver_organisation_receiver_activity_has_related(self):
+        raise NotImplementedError()
+
+    def test_receiver_organisation_narrative_105(self):
+        """
+        Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
+        """
+        self.receiver_org.text = 'random text'
+        self.parser_105.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+        receiver_organisation = self.parser_105.get_model('TransactionReceiver')
+
+        narrative = self.parser_105.get_model('TransactionReceiverNarrative')
+        self.assertTrue(narrative.related_object == receiver_organisation)
+
+        # TODO: refactor so this isnt nescessary
+        receiver_organisation = self.parser_105.pop_model('TransactionReceiver')
+
 class DocumentLinkTestCase(ParserSetupTestCase):
     """
     1.02: Removed @language attribute from, and introduced an new language child element to, the document-link element.
@@ -2039,7 +2122,7 @@ class DocumentLinkTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_activities__iati_activity__document_link__title__narrative(self.narrative)
         narrative = self.parser_201.get_model('DocumentLinkTitleNarrative')
-        self.assertTrue(narrative.parent_object == document_link_title)
+        self.assertTrue(narrative.related_object == document_link_title)
 
     def test_document_link_category_201(self):
         """

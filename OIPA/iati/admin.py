@@ -1,16 +1,29 @@
 from django.contrib import admin
 # from iati.models import Activity, Organisation, Sector, Narrative
+from django import forms
 from iati.models import *
 from iati.transaction.models import *
 from django.conf.urls import patterns
 from iati.management.commands.total_budget_updater import TotalBudgetUpdater
 from iati.management.commands.organisation_name_updater import OrganisationNameUpdater
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.http import HttpResponse
 from iati.updater import SectorUpdater
+
+from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin, NestedInline
 
 # Avoid giant delete confirmation intermediate window
 def delete_selected(self, request, queryset):
     queryset.delete()
+
+class NarrativeInline(GenericTabularInline):
+    model = Narrative
+    ct_field = "related_content_type"
+    ct_fk_field = "related_object_id"
+    exclude = ('parent_content_type', 'parent_object_id')
+    inlines = []
+
+    extra = 0
 
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
@@ -32,6 +45,49 @@ class OrganisationAdmin(admin.ModelAdmin):
         else:
             return False
 
+
+class TransactionDescriptionInline(NestedTabularInline):
+    model = TransactionDescription
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class TransactionProviderInline(NestedTabularInline):
+    model = TransactionProvider
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class TransactionReceiverInline(NestedTabularInline):
+    model = TransactionReceiver
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class TransactionAdmin(NestedModelAdmin):
+    search_fields = ['activity__id']
+    list_display = ['__unicode__']
+    exclude = ('value_string',)
+    actions = (delete_selected,)
+    inlines = [
+        TransactionDescriptionInline,
+        TransactionProviderInline,
+        TransactionReceiverInline,
+    ]
+
+class TransactionInline(NestedTabularInline):
+    exclude = ('value_string',)
+    inlines = [
+        TransactionDescriptionInline,
+        TransactionProviderInline,
+        TransactionReceiverInline,
+    ]
 
 class ActivityDateInline(admin.TabularInline):
     model = ActivityDate
@@ -71,14 +127,6 @@ class BudgetInline(admin.TabularInline):
     exclude = ('value_string',)
     extra = 0
 
-class TitleInline(admin.TabularInline):
-    model = Title
-    extra = 0
-
-class DescriptionInline(admin.TabularInline):
-    model = Description
-    extra = 0
-
 class DocumentLinkInline(admin.TabularInline):
     model = DocumentLink
     extra = 0
@@ -96,8 +144,17 @@ class RelatedActivityInline(admin.TabularInline):
     fk_name='current_activity'
     extra = 0
 
+class DescriptionInline(NestedStackedInline):
+    model = Description
+    extra = 0
+    inlines = [NarrativeInline, ]
 
-class ActivityAdmin(admin.ModelAdmin):
+class TitleInline(NestedStackedInline):
+    model = Title
+    extra = 0
+    inlines = [NarrativeInline, ]
+
+class ActivityAdmin(NestedModelAdmin):
     search_fields = ['id']
     list_display = ['__unicode__']
     actions = (delete_selected,)
@@ -105,38 +162,19 @@ class ActivityAdmin(admin.ModelAdmin):
         ActivityDateInline,
         ActivityReportingOrganisationInline,
         ActivityParticipatingOrganisationInline,
-        TransactionInline,
         ActivityPolicyMarkerInline,
         ActivityRecipientCountryInline,
         ActivitySectorInline,
         ActivityRecipientRegionInline,
         BudgetInline,
-        # TitleInline,
+        TitleInline,
         DescriptionInline,
         DocumentLinkInline,
         ResultInline,
         LocationInline,
         RelatedActivityInline,
+        # TransactionInline,
     ]
-
-class TransactionProviderInline(admin.TabularInline):
-    model = TransactionProvider
-    # extra = 0
-
-class TransactionReceiverInline(admin.TabularInline):
-    model = TransactionReceiver
-    # extra = 0
-
-class TransactionAdmin(admin.ModelAdmin):
-    search_fields = ['activity__id']
-    list_display = ['__unicode__']
-    exclude = ('value_string',)
-    actions = (delete_selected,)
-    # inlines = [
-    #     TransactionProviderInline,
-    #     TransactionReceiverInline,
-    # ]
-
 
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']

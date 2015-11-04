@@ -146,7 +146,7 @@ class Parse(IATI_201_Parser):
     tag:title'''
     def iati_activities__iati_activity__title(self, element):
         super(Parse, self).iati_activities__iati_activity__title(element)
-        title = self.get_model('Activity', index=-2)
+        title = self.get_model('Title')
         self.add_narrative(element, title)
 
         return element
@@ -333,7 +333,8 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__transaction__provider_org(self, element):
         super(Parse, self).iati_activities__iati_activity__transaction__provider_org(element)
     
-        transaction_provider = self.get_model('Transaction', index=-2)
+        # transaction_provider = self.get_model('Transaction', index=-2)
+        transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
         return element
 
@@ -345,7 +346,8 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__transaction__receiver_org(self, element):
         super(Parse, self).iati_activities__iati_activity__transaction__receiver_org(element)
     
-        transaction_receiver = self.get_model('Transaction', index=-2)
+        # transaction_receiver = self.get_model('Transaction', index=-2)
+        transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
         return element
 

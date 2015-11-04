@@ -326,12 +326,14 @@ class XMLParser(object):
 
     def get_model(self, key, index=-1):
         if key in self.model_store:
-            return self.model_store[key][index]
+            if len(self.model_store[key]) > 0: 
+                return self.model_store[key][index]
         return None
 
     def pop_model(self, key):
         if key in self.model_store:
-            return self.model_store[key].pop()
+            if len(self.model_store[key]) > 0: 
+                return self.model_store[key].pop()
         return None
 
     def save_model(self, key, index=-1):

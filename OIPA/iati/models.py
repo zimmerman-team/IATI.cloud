@@ -37,16 +37,6 @@ class Narrative(models.Model):
     content = models.TextField()
 
 
-class Title(models.Model):
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='related_content_type',
-        object_id_field='related_object_id')
-
-    def __unicode__(self,):
-        return "Title"
-
-
 class ActivityAggregationData(models.Model):
     total_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     total_budget_currency = models.CharField(max_length=3, null=True, default=None)
@@ -73,7 +63,7 @@ class Activity(models.Model):
         (2, u"Child"),
     )
     
-    title = models.OneToOneField(Title)
+    # TODO: remove default and null
     activity_aggregations = models.OneToOneField(ActivityAggregationData, null=True)
 
     id = models.CharField(max_length=150,primary_key=True,blank=False)
@@ -140,6 +130,18 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = "activities"
+
+class Title(models.Model):
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+    # related name allows title to be accessed from activity.title
+    activity = models.OneToOneField(Activity, related_name="title")
+
+    def __unicode__(self,):
+        return "Title"
 
 
 class ActivitySearchData(models.Model):
@@ -398,6 +400,9 @@ class RelatedActivity(models.Model):
 
     def __unicode__(self,):
         return "%s" % (self.ref)
+
+    class Meta:
+        verbose_name_plural = "related activities"
 
 class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity)
