@@ -151,10 +151,10 @@ class ActivityList(DynamicListView):
     Results can be ordered by:
 
     - `title`
-    - `planned_start`
-    - `actual_start`
-    - `planned_end`
-    - `actual_end`
+    - `planned_start_date`
+    - `actual_start_date`
+    - `planned_end_date`
+    - `actual_end_date`
     - `total_budget_value`
     - `total_child_budget_value`
     - `total_commitment_value`

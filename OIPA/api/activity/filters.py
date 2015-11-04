@@ -277,6 +277,10 @@ class RelatedOrderingFilter(OrderingFilter):
             'total_child_budget_value': 'activity_aggregations__total_child_budget_value',
             'total_disbursement_value': 'activity_aggregations__total_disbursement_value',
             'total_commitment_value': 'activity_aggregations__total_commitment_value',
+            'planned_start_date': 'planned_start',
+            'actual_start_date': 'actual_start',
+            'planned_end_date': 'planned_end',
+            'actual_end_date': 'actual_end'
         }
 
         for i, term in enumerate(ordering):
