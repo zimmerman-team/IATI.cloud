@@ -307,7 +307,7 @@ class ActivityAggregationSerializer(BaseSerializer):
     def apply_extra_calculations(self, results, aggregations):
 
         # check if subquery required
-        subquery_aggregations = [i for i in aggregations if self._aggregations[i].get('has_subquery')]
+        subquery_aggregations = [self._aggregations[i] for i in aggregations if self._aggregations[i].get('has_subquery')]
 
         if len(subquery_aggregations):
 
