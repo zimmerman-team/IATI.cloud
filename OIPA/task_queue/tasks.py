@@ -87,40 +87,6 @@ def parse_source_by_url(url):
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
 
-
-
-@job
-def parse_all_not_parsed_in_x_days(days):
-    for source in IatiXmlSource.objects.all():
-        curdate = float(datetime.datetime.now().strftime('%s'))
-        last_updated = float(source.date_updated.strftime('%s'))
-
-        update_interval_time = 24 * 60 * 60 * int(days)
-
-        if ((curdate - update_interval_time) > last_updated):
-            queue = django_rq.get_queue("parser")
-            queue.enqueue(parse_source_by_url, args=(source.source_url,), timeout=7200)
-
-@job
-def parse_all_over_parse_interval():
-    for source in IatiXmlSource.objects.all():
-        curdate = float(datetime.datetime.now().strftime('%s'))
-        last_updated = float(source.date_updated.strftime('%s'))
-        update_interval = source.update_interval
-
-        if update_interval == "day":
-            update_interval_time = 24 * 60 * 60
-        if update_interval == "week":
-            update_interval_time = 24 * 60 * 60 * 7
-        if update_interval == "month":
-            update_interval_time = 24 * 60 * 60 * 7 * 4.34
-        if update_interval == "year":
-            update_interval_time = 24 * 60 * 60 * 365
-
-        if ((curdate - update_interval_time) > last_updated):
-            source.save()
-
-
 @job
 def delete_source_by_id(id):
     if IatiXmlSource.objects.filter(id=id).exists():
@@ -187,30 +153,8 @@ def update_all_admin1_region_data():
 
 
 ###############################
-######## INDICATOR TASKS ########
+######## GENERIC TASK  ########
 ###############################
-
-@job
-def update_all_indicator_data():
-    raise Exception("Not implemented yet")
-
-
-###############################
-######## CACHING TASKS ########
-###############################
-
-@job
-def update_existing_api_call_caches():
-    from cache.validator import Validator
-    v = Validator()
-    v.update_cache_calls()
-
-@job
-def cache_long_api_calls():
-    from cache.validator import Validator
-    v = Validator()
-    v.update_response_times_and_add_to_cache()
-
 
 
 def delete_task_from_queue(job_id):

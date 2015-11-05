@@ -205,10 +205,6 @@ def cancel_scheduled_task(request):
     return HttpResponse('Success')
 
 
-
-
-
-
 # Failed tasks
 
 def get_failed_tasks(request):

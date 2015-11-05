@@ -1,25 +1,10 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_urls admin_static admin_list %}
 
-
-{% block extrastyle %}
-{{block.super}}
-<script type="text/javascript" src="/static/js/xml_source_admin.js"></script>
-
-{% endblock %}
-
 {% block breadcrumbs %}
 
 {{block.super}}
-    <div class="module" style="margin: 10px 15px; padding: 20px;">
-
-        <button id="parse-all-set" class="btn-success oipa-admin-button">Parse all sources</button>
-        <button id="parse-all-over-interval-set" class="btn-success oipa-admin-button">Parse all sources over their parse interval</button>
-        <div style="display:inline-block;padding:0 1em;">
-            Parse all not parsed within x days: <input id="parse-days" type="text" style="margin-bottom: 0;width:3em;" name="parse-days" placeholder="days">
-            <button id="parse-all-over-x-days-set" class="btn-success oipa-admin-button">Go</button>
-        </div>
-
-    </div>
-
+<div class="module" style="margin-bottom: 20px;">
+    Note: to add sources from the IATI registry or update all sources at once please use the <a href="/admin/queue/">task queue</a>.
+</div>
 {% endblock %}
