@@ -96,13 +96,7 @@
 
                         <select name="add-task-select-default">
                             <option value="parse_all_existing_sources">Update all existing IATI source</option>
-                            <option value="parse_all_over_parse_interval">Update all existing IATI sources over their parse interval</option>
                             <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
-                            <option value="parse_all_not_parsed_in_x_days">Update sources not parsed in x days (insert days in parameter box)</option>
-                            <option value="update_all_geo_data">Update all geo data</option>
-                            <option value="update_all_indicator_data">Update all indicator data</option>
-                            <option value="cache_long_api_calls">cache long API calls</option>
-                            <option value="update_existing_api_call_caches">update existing API call caches</option>
                             <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
                         </select>
 
@@ -122,19 +116,13 @@
 
 {#                        <a href="#" id="close-add-new-task">Close</a>#}
                     </div>
-
                 </div>
             </div>
-
-
         </div>
     </div>
 
-
     <div class="row-fluid">
         <div class="span11">
-
-
             <div class="django-rq-block">
                 <div class="row-fluid">
                     <div class="span12">
@@ -201,9 +189,6 @@
         </div>
     </div>
 
-
-
-
     <div class="row-fluid">
         <div class="span7">
 
@@ -241,14 +226,7 @@
                         <a id="django-rq-add-scheduled-task-link" href="/admin/task_queue/add_task/">Add new scheduled task</a>
                     </div>
                 </div>
-
-
-
             </div>
-
-
-
-
         </div>
         <div class="span4">
 
@@ -418,19 +396,9 @@
 
                     </div>
                 </div>
-
-
-
-
-
             </div>
         </div>
     </div>
-
-
-
-
-
 </div>
 
 
@@ -1257,17 +1225,9 @@
 
             });
 
-
-
-
-
-
         }
 
         load_listeners();
-
-
-
 
         var auto_refresh = setInterval(function (){
             reload_task_queue_overview_table();
@@ -1280,19 +1240,6 @@
 
     });
 
-
-
-
     </script>
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}
