@@ -1,6 +1,6 @@
 from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
-import iati
+import organisation
 from api.organisation import serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
@@ -39,10 +39,10 @@ class OrganisationList(ListAPIView):
 
     """
     serializer_class = serializers.OrganisationSerializer
-    fields = ('url', 'code', 'name')
+    fields = ('url', 'code','name')
 
     def get_queryset(self):
-        queryset = iati.models.Organisation.objects.all()
+        queryset = organisation.models.Organisation.objects.all()
         query = self.request.query_params.get('reporting_organisations', None)
         if query is not None:
             queryset = queryset.reporting_organisations()
@@ -68,7 +68,7 @@ class OrganisationDetail(RetrieveAPIView):
     - `fields` (*optional*): List of fields to display
 
     """
-    queryset = iati.models.Organisation.objects.all()
+    queryset = organisation.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     get_object = custom_get_object
 
@@ -97,7 +97,7 @@ class ParticipatedActivities(ActivityList):
     """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
-            self, iati.models.Organisation.objects.all())
+            self, organisation.models.Organisation.objects.all())
         return organisation.activity_set.all()
 
 
@@ -125,7 +125,7 @@ class ReportedActivities(ActivityList):
     """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
-            self, iati.models.Organisation.objects.all())
+            self, organisation.models.Organisation.objects.all())
         return organisation.activity_reporting_organisation.all()
 
 
@@ -153,7 +153,7 @@ class ProvidedTransactions(TransactionList):
     """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
-            self, iati.models.Organisation.objects.all())
+            self, organisation.models.Organisation.objects.all())
         return organisation.transaction_providing_organisation.all()
 
 
@@ -181,5 +181,5 @@ class ReceivedTransactions(TransactionList):
     """
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
-            self, iati.models.Organisation.objects.all())
+            self, organisation.models.Organisation.objects.all())
         return organisation.transaction_receiving_organisation.all()

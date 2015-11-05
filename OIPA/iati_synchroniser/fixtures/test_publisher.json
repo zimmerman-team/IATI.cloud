@@ -31,5 +31,26 @@
         },
         "model": "iati_synchroniser.iatixmlsource",
         "pk": 1
+    },
+    {
+        "fields": {
+            "added_manually": true,
+            "date_created": "2015-09-21T08:10:26.170",
+            "date_updated": "2015-09-21T08:10:26.170",
+            "iati_standard_version": "2.01",
+            "is_parsed": false,
+            "last_found_in_registry": "2015-09-21T15:10:24",
+            "last_hash": "9650440360",
+            "oipa_activity_count": 1000,
+            "publisher": 1,
+            "ref": "znz_test_org",
+            "source_url": "http://zimmermanzimmerman.org/organisation",
+            "title": "znz_test",
+            "type": 2,
+            "update_interval": "month",
+            "xml_activity_count": 1000
+        },
+        "model": "iati_synchroniser.iatixmlsource",
+        "pk": 2
     }
 ]

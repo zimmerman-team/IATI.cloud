@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'haystack',
     'iati',
+    'organisation',
     'iati_synchroniser',
     'geodata',
     'indicator',

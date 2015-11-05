@@ -1,6 +1,8 @@
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
 from IATI_1_03 import Parse as IATI_103_Parser
+from organisation.organisation_2_01 import Parse as Org_2_01_Parser
+from organisation.organisation_1_05 import Parse as Org_1_05_Parser
 from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber
@@ -43,15 +45,23 @@ class ParseIATI():
 
         if len(iati_version) > 0:
             iati_version = iati_version[0]
-
-        if iati_version == '2.01':
-            parser = IATI_201_Parser()
-        elif iati_version == '1.03':
-            parser = IATI_103_Parser()
-            parser.VERSION = iati_version
-        else:
-            parser = IATI_105_Parser()
-            parser.VERSION = '1.05'
+        if source.type == 1:
+            if iati_version == '2.01':
+                parser = IATI_201_Parser()
+            elif iati_version == '1.03':
+                parser = IATI_103_Parser()
+                parser.VERSION = iati_version
+            else:
+                parser = IATI_105_Parser()
+                parser.VERSION = '1.05'
+        elif source.type == 2:
+            #organisation file
+            print 'orgfile!'
+            if iati_version == '2.01':
+                parser = Org_2_01_Parser()
+                parser.VERSION = iati_version
+            else:
+                parser = Org_1_05_Parser()
         
         parser.iati_source = source
 

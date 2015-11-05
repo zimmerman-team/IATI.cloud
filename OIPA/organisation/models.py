@@ -50,12 +50,19 @@ class Organisation(models.Model):
     default_lang = models.ForeignKey(Language,null=True)
 
     def __unicode__(self):
-        return self.name
+        return self.code
 
 
 #class for narrative
 class Name(models.Model):
-	organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
+
 
 #reporting organisation (can only be one but needs seperate class for narratives)
 class ReportingOrg(models.Model):
@@ -85,20 +92,35 @@ class BudgetLine(models.Model):
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
-    narratives = GenericRelation(Narrative)
-    
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
+
     def get_absolute_url(self):
-	   return make_abs_url(self.organisation_identifier)
+        return make_abs_url(self.organisation_identifier)
 
 
 class TotalBudget(models.Model):
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation,related_name="total_budget")
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
-    budget_lines = GenericRelation(BudgetLine)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
+    budget_lines = GenericRelation(
+        BudgetLine,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name="budget_lines")
 
 class RecipientOrgBudget(models.Model):
     organisation = models.ForeignKey(Organisation,related_name='donor_org')
@@ -107,17 +129,37 @@ class RecipientOrgBudget(models.Model):
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
-    budget_lines = GenericRelation(BudgetLine)
+    budget_lines = GenericRelation(
+        BudgetLine,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name="budget_lines")
 
 class RecipientCountryBudget(models.Model):
-	organisation = models.ForeignKey(Organisation)
-	country = models.ForeignKey(Country,null=True)
-	period_start = models.DateField(null=True)
-	period_end = models.DateField(null=True)
-	currency = models.ForeignKey(Currency,null=True)
-	value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
-	budget_lines = GenericRelation(BudgetLine)
+    organisation = models.ForeignKey(Organisation,related_name='recipient_country_budget')
+    country = models.ForeignKey(Country,null=True)
+    period_start = models.DateField(null=True)
+    period_end = models.DateField(null=True)
+    currency = models.ForeignKey(Currency,null=True)
+    value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
+    budget_lines = GenericRelation(
+        BudgetLine,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name="budget_lines")
 
 class DocumentLink(models.Model):
     organisation = models.ForeignKey(Organisation,related_name='documentlinks')
@@ -139,7 +181,12 @@ class DocumentLink(models.Model):
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink,related_name='documentlinktitles')
-    narratives = GenericRelation(Narrative)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name='narratives'
+    )
 
 
 
