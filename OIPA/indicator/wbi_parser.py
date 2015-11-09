@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#-*- coding:utf-8 -*-
 import csv
 from indicator.models import IndicatorTopic, IndicatorSource, Indicator, IndicatorData, Country, Region
 import os.path
