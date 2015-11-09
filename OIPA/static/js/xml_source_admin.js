@@ -1,11 +1,13 @@
 $(document).ready(function (){
-    $('#sync-codelists').click(function(){
+   $('.parse-btn').click(function(){
 
-       var btn = $('#sync-codelists');
+       var btn = $(this);
+       var xml_id = $(this).data('xml').replace('xml_', '');
 
        $.ajax({
            type: "GET",
-           url: "/admin/iati_synchroniser/codelist/sync-codelists/",
+           data: ({'xml_id': xml_id}),
+           url: "/admin/iati_synchroniser/iatixmlsource/parse-xml/",
            beforeSend: function() {
                btn.removeClass("btn-success");
                btn.addClass("btn-warning");
