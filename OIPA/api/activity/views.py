@@ -132,11 +132,11 @@ class ActivityList(DynamicListView):
     - `activity_id` the IATI identifier
     - `title` narratives
     - `description` narratives
-    - `country` recipient country code and name
+    - `recipient_country` recipient country code and name
+    - `recipient_region` recipient region code and name
     - `reporting_org` ref and narratives
-    - `region` recipient region code and name
     - `sector` sector code and name
-    - `documentlink_title` url and title narratives
+    - `document_link` url, category and title narratives
     - `participating_org` ref and narratives
 
     To search on subset of these fields the `q_fields` parameter can be used, like so;

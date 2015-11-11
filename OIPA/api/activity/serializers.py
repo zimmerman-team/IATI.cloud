@@ -380,7 +380,7 @@ class LocationSerializer(serializers.ModelSerializer):
         code = serializers.CharField(source='location_id_code')
 
     class PointSerializer(serializers.Serializer):
-        point = PointField(source='point_pos')
+        pos = PointField(source='point_pos')
         srs_name = serializers.CharField(source="point_srs_name")
 
     class AdministrativeSerializer(serializers.ModelSerializer):

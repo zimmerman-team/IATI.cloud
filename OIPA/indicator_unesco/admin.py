@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from multiupload.admin import MultiUploadAdmin
 
-from indicator.upload_indicators_helper import find_country, find_city, get_countries, get_cities, get_value, save_log, save_city_data, save_country_data
+from indicator.csv_upload.indicator_parser import IndicatorParser
 from indicator_unesco.models import UnescoIndicatorData, UnescoIndicator
 from translation_model.models import TranslationModel
 
@@ -51,7 +51,8 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
         country_found = []
         country_not_found = []
         total_items_saved = 0
-        countries = get_countries()
+        indicator_parser = IndicatorParser()
+        countries = indicator_parser.get_country_name_dict()
 
         #getting the title of the file
         title = kwargs.get('title', [''])[0] or uploaded.name
@@ -59,6 +60,7 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
         xmlDoc = uploaded
         xmlDocData = xmlDoc.read()
         xmlDocTree = etree.XML(xmlDocData)
+
 
         for indicator in xmlDocTree.iter('CountryId'):
             indicator_name_en = indicator[1].text.rstrip()
@@ -78,7 +80,7 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
             indicator_from_db = UnescoIndicator.objects.get_or_create(id=indicator_name_en)[0]
 
             #getting country from our database
-            country_from_db = find_country(country_name=indicator_country, countries=countries, iso2=country_iso)
+            country_from_db = indicator_parser.find_country(country_name=indicator_country, countries=countries, iso2=country_iso)
 
             #add country to the log array
             if country_from_db:
@@ -110,7 +112,7 @@ class UnescoIndicatorDataUploadAdmin(MultiUploadAdmin):
             line_counter += 1
 
 
-        log = save_log(file=uploaded,
+        log = indicator_parser.save_log(file=uploaded,
                  uploaded_by_user=request.user,
                  cities_not_found=[],
                  countries_not_found=country_not_found,

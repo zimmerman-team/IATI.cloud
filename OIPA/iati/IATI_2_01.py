@@ -885,7 +885,8 @@ class Parse(XMLParser):
 
         try: 
             latlong = text.strip().split(' ')
-            point = GEOSGeometry(Point(float(latlong[0]), float(latlong[1])), srid=4326)
+            # geos point = long lat, iati point lat long, hence the latlong[1], latlong[0]
+            point = GEOSGeometry(Point(float(latlong[1]), float(latlong[0])), srid=4326)
         except Exception as e:
             raise self.ValidationError("latlong", "either lat or long is not present")
 

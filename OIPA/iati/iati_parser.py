@@ -56,7 +56,6 @@ class ParseIATI():
                 parser.VERSION = '1.05'
         elif source.type == 2:
             #organisation file
-            print 'orgfile!'
             if iati_version == '2.01':
                 parser = Org_2_01_Parser()
                 parser.VERSION = iati_version

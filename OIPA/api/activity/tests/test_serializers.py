@@ -63,10 +63,10 @@ class ActivitySerializerTestCase(DjangoTestCase):
             the field 'format' should be a CodelistSerializer
             """
 
-        assert type(serializer.fields['category'].child) is serializers.\
+        assert type(serializer.fields['categories'].child) is serializers.\
             DocumentLinkSerializer.DocumentCategorySerializer,\
             """
-            the field 'category' should be a DocumentCategorySerializer
+            the field 'categories' should be a DocumentCategorySerializer
             """
 
         assert type(serializer.fields['title'].child) is serializers.\
@@ -151,8 +151,8 @@ class ActivitySerializerTestCase(DjangoTestCase):
 
     def test_BudgetSerializer(self):
         budget = iati_factory.BudgetFactory.build(
-            period_start='2014-12-1',
-            period_end='2014-12-2',
+            period_start='2014-12-01',
+            period_end='2014-12-02',
         )
         serializer = serializers.BudgetSerializer(budget)
         assert 'type' in serializer.data,\
@@ -665,13 +665,13 @@ class ActivitySerializerTestCase(DjangoTestCase):
             'url',
             'id',
             'iati_identifier',
+            'title',
+            'description',
             'last_updated_datetime',
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_organisation',
-            'title',
-            'description',
+            'reporting_organisations',
             'participating_organisations',
             'related_activities',
             'activity_status',
@@ -688,12 +688,12 @@ class ActivitySerializerTestCase(DjangoTestCase):
             'default_aid_type',
             'default_tied_status',
             'budgets',
-            'total_child_budgets',
             'capital_spend',
             'xml_source_ref',
             'document_links',
             'results',
-            'locations'
+            'locations',
+            'activity_aggregations'
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:

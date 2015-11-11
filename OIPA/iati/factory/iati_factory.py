@@ -27,6 +27,7 @@ class ActivityFactory(NoDatabaseFactory):
 
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
+
     iati_standard_version = SubFactory(VersionFactory)
 
 class LanguageFactory(NoDatabaseFactory):
@@ -40,6 +41,7 @@ class NarrativeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Narrative
 
+    related_content_type_id = 0
     parent_object = SubFactory(ActivityFactory) # overwrite this for the required behaviour
     language = SubFactory(LanguageFactory)
     content = "Some name or description"
@@ -112,8 +114,8 @@ class BudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Budget
 
-    period_start = '2011-01-01 00:00:00'
-    period_end = '2011-12-30 00:00:00'
+    period_start = '2011-01-01'
+    period_end = '2011-12-30'
     value = 100
     value_date = '2013-06-28'
 

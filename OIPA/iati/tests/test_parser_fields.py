@@ -1277,8 +1277,8 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         pos = E('pos', '31.616944 65.716944')
         self.parser_201.iati_activities__iati_activity__location__point__pos(pos)
         location = self.parser_201.get_model('Location')
-
-        self.assertTrue(location.point_pos.coords == (31.616944, 65.716944))
+        # Geo point = longlat
+        self.assertTrue(location.point_pos.coords == (65.716944, 31.616944))
 
     # TODO : test for latlong validation
     # def test_location_pos_pos_invalid_latlong_201(self):
@@ -1313,7 +1313,8 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         location = self.parser_103.get_model('Location')
 
         self.assertTrue(location.point_srs_name == "http://www.opengis.net/def/crs/EPSG/0/4326")
-        self.assertTrue(location.point_pos.coords == (31.616944, 65.716944))
+        # Geodjango Location = longlat
+        self.assertTrue(location.point_pos.coords == (65.716944, 31.616944))
         self.assertTrue(location.exactness.code == "1")
 
     def test_location_coordinates_transform_code_103(self):
