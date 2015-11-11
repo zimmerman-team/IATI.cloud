@@ -1,8 +1,0 @@
-{% for document_link in object.documentlink_set.all %}
-    {{ document_link.url }} 
-    {% for title in document_link.documentlinktitle_set.all %}
-        {% for narrative in title.narratives.all %}
-            {{narrative.content}}  
-        {% endfor %}
-    {% endfor %}
-{% endfor %}

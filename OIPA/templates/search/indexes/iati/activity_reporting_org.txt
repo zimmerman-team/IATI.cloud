@@ -1,6 +1,0 @@
-{% for rep_org in object.reporting_organisations.all %}
-    {{ rep_org.ref }} 
-    {% for narrative in rep_org.narratives.all %}
-        {{narrative.content}}  
-    {% endfor %}
-{% endfor %}

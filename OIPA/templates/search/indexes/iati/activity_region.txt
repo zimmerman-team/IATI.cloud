@@ -1,3 +1,0 @@
-{% for recipient_region in object.recipient_region.all %}
-{{ recipient_region.name }} {{ recipient_region.code }} 
-{% endfor %}

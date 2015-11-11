@@ -1,3 +1,0 @@
-{% for sector in object.sector.all %}
-    {{ sector.code }} {{ sector.name }}  {{ sector.description }} 
-{% endfor %}
