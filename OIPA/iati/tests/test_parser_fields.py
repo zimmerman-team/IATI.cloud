@@ -6,18 +6,18 @@ import copy
 import datetime
 
 from decimal import Decimal
-from unittest import TestCase
 from lxml import etree
 from lxml.builder import E
 
 from django.core import management
-from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
+from django.test import TestCase # Runs each test in a transaction and flushes database
+from unittest import skip
 
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 from iati.iati_parser import ParseIATI
 
-from iati_synchroniser.models import IatiXmlSource, Publisher
+from iati_synchroniser.models import IatiXmlSource
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
@@ -76,7 +76,7 @@ def setUpModule():
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
 
-class ParserSetupTestCase(DjangoTestCase):
+class ParserSetupTestCase(TestCase):
 
     # fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
 
@@ -269,6 +269,7 @@ class ActivityTestCase(ParserSetupTestCase):
         del new_activity.attrib["last-updated-datetime"]
         self.check_parsed(old_activity, new_activity, True)
 
+    @skip('NotImplemented')
     def test_activity_linked_data_uri_inherited(self):
         """
         Check linked-data-uri is inherited from iati-activities if set
@@ -330,7 +331,7 @@ class ActivityTestCase(ParserSetupTestCase):
 
         self.assertTrue(activity.capital_spend == percentage)
 
-
+    @skip('NotImplemented')
     def test_has_conditions_returns_true(self):
         raise NotImplementedError()
         # attached = '1'
@@ -348,6 +349,7 @@ class ActivityTestCase(ParserSetupTestCase):
 
         # self.assertTrue(activity.has_conditions == True)
 
+    @skip('NotImplemented')
     def test_has_conditions_returns_false(self):
         raise NotImplementedError()
         # attached = '0'
@@ -701,6 +703,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
 
+    @skip('NotImplemented')
     def test_reporting_organisation_narrative(self):
         raise NotImplementedError()
 
@@ -1880,11 +1883,12 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction.flow_type.code == "10")
 
+    @skip('NotImplemented')
     def test_transaction_flow_type_inherits_activity_201(self):
         """
         must inherit from the corresponding activity field
         """
-        raise NotImplementedError()
+
 
     def test_transaction_finance_type_activity_201(self):
         """
@@ -1896,6 +1900,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction.finance_type.code == "110")
 
+    @skip('NotImplemented')
     def test_transaction_finance_type_inherits_activity_201(self):
         """
         must inherit from the corresponding activity field
@@ -1909,6 +1914,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction.aid_type.code == "A01")
 
+    @skip('NotImplemented')
     def test_transaction_aid_type_inherits_activity_201(self):
         """
         must inherit from the corresponding activity field
@@ -1924,10 +1930,12 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction.tied_status.code == "4")
 
+    @skip('NotImplemented')
     def test_transaction_tied_status_inherits_activity_201(self):
         """
         must inherit from the corresponding activity field
         """
+
         raise NotImplementedError()
 
 
@@ -1999,9 +2007,11 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_201.pop_model('TransactionProvider')
 
+    @skip('NotImplemented')
     def test_provider_organisation_provider_activity_exists(self):
         raise NotImplementedError()
 
+    @skip('NotImplemented')
     def test_provider_organisation_provider_activity_has_related(self):
         raise NotImplementedError()
 
@@ -2059,9 +2069,11 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
     #     # TODO: refactor so this isnt nescessary
     #     receiver_organisation = self.parser_201.pop_model('TransactionReceiver')
 
+    @skip('NotImplemented')
     def test_receiver_organisation_receiver_activity_exists(self):
         raise NotImplementedError()
 
+    @skip('NotImplemented')
     def test_receiver_organisation_receiver_activity_has_related(self):
         raise NotImplementedError()
 

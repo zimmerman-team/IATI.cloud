@@ -6,6 +6,7 @@
 # import datetime
 from django.core import management
 from iati.factory import iati_factory
+from unittest import skip
 # from iati.transaction import factories as transaction_factory
 
 from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
@@ -83,15 +84,18 @@ class GenericParserTestCase(DjangoTestCase):
         with self.assertRaises(Exception):
             activity = self.parser.model_store['Activity'][0]
 
+    @skip('NotImplemented')
     def test_save_model_saves_model(self):
         raise NotImplementedError()
 
+    @skip('NotImplemented')
     def test_generate_function_name(self):
         """
         Test function name gets generated appropriately
         """
         raise NotImplementedError()
-    
+
+    @skip('NotImplemented')
     def test_save_all_models(self):
         """
         Test all models are stored in order of input
@@ -102,6 +106,7 @@ class IatiParserTestCase(DjangoTestCase):
     """
     Unit tests for ParseIati()
     """
+    @skip('NotImplemented')
     def test_prepare_parser(self):
         """
         Test the parser gets prepared accordingly
@@ -115,6 +120,7 @@ class ParserTestCase(DjangoTestCase):
     def setUp(self):
         pass
 
+    @skip('NotImplemented')
     def test_parse_url_parses_test_file(self):
         """
         Test a sample activity file gets parsed accordingly 

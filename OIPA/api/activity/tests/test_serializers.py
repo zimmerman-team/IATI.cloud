@@ -1,15 +1,15 @@
 # import pytest
 # TODO: no need to test codelist fields separately; instead test the whole serializer in once along with the code and vocabulary fields. Or is testing the fields separately preferable?
 
-from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
-from unittest import TestCase
+from django.test import TestCase # Runs each test in a transaction and flushes database
+from unittest import skip
 import datetime
 
 from django.test import RequestFactory
 from iati.factory import iati_factory
 from api.activity import serializers
 
-class CodelistSerializerTestCase(DjangoTestCase):
+class CodelistSerializerTestCase(TestCase):
     def test_codelist_serializer(self):
         version = iati_factory.VersionFactory.build()
         serializer = serializers.CodelistSerializer(version)
@@ -23,7 +23,7 @@ class CodelistSerializerTestCase(DjangoTestCase):
             'codelist.name' should be serialized to a field called 'name'
             """
 
-class NarrativeSerializerTestCase(DjangoTestCase):
+class NarrativeSerializerTestCase(TestCase):
 
     def test_narrative_serializer(self):
         narrative = iati_factory.NarrativeFactory.build()
@@ -40,7 +40,7 @@ class NarrativeSerializerTestCase(DjangoTestCase):
 
 
 # TODO: separate into several test cases
-class ActivitySerializerTestCase(DjangoTestCase):
+class ActivitySerializerTestCase(TestCase):
 
     request_dummy = RequestFactory().get('/')
 
@@ -471,6 +471,7 @@ class ActivitySerializerTestCase(DjangoTestCase):
             'code'
             """
 
+    @skip('NotImplemented')
     def test_ResultSerializer(self):
         # TODO test after implementing in parser
         raise NotImplementedError()
