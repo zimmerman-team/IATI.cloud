@@ -1,25 +1,13 @@
 from lxml import etree
-from parse_logger import models as logModels
-from django.db.models import Q
+from parse_logger import models as log_models
 from django.core.mail import send_mail
-import gc
-from iati.filegrabber import FileGrabber
 import datetime
 from collections import OrderedDict
-from decimal import Decimal
-import inspect
-import traceback
 import re
-from iati_synchroniser.exception_handler import exception_handler
 from django.contrib.auth.models import User
 import traceback
-from django.db import IntegrityError
 from django.db.models.fields.related import ForeignKey, OneToOneField
-from decimal import Decimal
-from iati.models import ActivityAggregationData
-from iati.models import Activity
-from iati.models import RelatedActivity
-from django.db.models import Sum
+from decimal import Decimal, InvalidOperation
 
 class XMLParser(object):
     VERSION = '2.01'
@@ -103,114 +91,8 @@ class XMLParser(object):
             self.post_save()
             
     def post_save(self):
-        activity = self.get_model('Activity')
-        if not activity:
-            return
-        self.set_related_activities(activity)
-        self.calculate_per_activity_aggregations(activity)
+        print "override in children"
 
-
-    def set_related_activities(self, activity):
-        RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
-
-    def calculate_per_activity_aggregation(
-            self,
-            activity_aggregation,
-            currency_field_name,
-            value_field_name,
-            aggregation_object):
-
-        currency = None
-        value = 0
-
-        for agg_item in aggregation_object:
-            currency = agg_item[0]
-            if agg_item[1]:
-                value = value + agg_item[1]
-
-        if len(aggregation_object) > 1:
-            # mixed currencies, set as None
-            currency = None
-
-        setattr(activity_aggregation, currency_field_name, currency)
-        setattr(activity_aggregation, value_field_name, value)
-
-        return activity_aggregation
-
-    def calculate_per_activity_aggregations(self, activity):
-
-        def get_child_budget_total(activity):
-            return Activity.objects.filter(
-                relatedactivity__ref_activity__id=activity,
-            ).filter(
-                hierarchy=2,
-            ).values_list(
-                'budget__currency'
-            ).annotate(
-                total_budget=Sum('budget__value'))
-
-        activity_aggregation = ActivityAggregationData()
-
-        budget_total = activity.budget_set.values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_budget_currency',
-            'total_budget_value',
-            budget_total)
-
-        child_budget_total = get_child_budget_total(activity)
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_child_budget_currency',
-            'total_child_budget_value',
-            child_budget_total)
-
-        incoming_fund_total = activity.transaction_set.filter(transaction_type=1).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_incoming_funds_currency',
-            'total_incoming_funds_value',
-            incoming_fund_total)
-
-        commitment_total = activity.transaction_set.filter(transaction_type=2).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_commitment_currency',
-            'total_commitment_value',
-            commitment_total)
-
-        disbursement_total = activity.transaction_set.filter(transaction_type=3).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_disbursement_currency',
-            'total_disbursement_value',
-            disbursement_total)
-
-        expenditure_total = activity.transaction_set.filter(transaction_type=4).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_expenditure_currency',
-            'total_expenditure_value',
-            expenditure_total)
-
-        activity_aggregation.save()
-        activity.activity_aggregations = activity_aggregation
-        activity.save()
-
-        if activity.hierarchy != '1':
-            # update the parent's child budgets
-            parent_activity = activity.relatedactivity_set.filter(type__code=1)
-            if parent_activity and parent_activity[0].ref_activity:
-                parent_activity = parent_activity[0].ref_activity
-                parent_child_budget_total = get_child_budget_total(parent_activity)
-                parent_activity_aggregations = parent_activity.activity_aggregations
-                parent_activity_aggregations = self.calculate_per_activity_aggregation(
-                    parent_activity_aggregations,
-                    'total_child_budget_currency',
-                    'total_child_budget_value',
-                    parent_child_budget_total)
-
-                parent_activity_aggregations.save()
 
     def parse(self, element):
 
@@ -277,7 +159,7 @@ class XMLParser(object):
         #print hint
         self.hints.append(hint)
 
-        log_entry = logModels.ParseLog()
+        log_entry = log_models.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = 'Function ' + function_name + ' not found'
         log_entry.error_msg = function_name
@@ -305,7 +187,7 @@ class XMLParser(object):
         if element.text != '':
             errExceptionStr = errExceptionStr+element.text
         self.errors.append(errExceptionStr)
-        log_entry = logModels.ParseLog()
+        log_entry = log_models.ParseLog()
         log_entry.error_hint = hint
         log_entry.error_text = errExceptionStr
         log_entry.error_msg = str(exception)
@@ -348,6 +230,8 @@ class XMLParser(object):
             return Decimal(decimal_string)
         except ValueError:
             raise ValueError("ValueError: Input must be decimal or integer string")
+        except InvalidOperation:
+            raise InvalidOperation("InvalidOperation: Input must be decimal or integer string")
 
     def isInt(self, obj):
         try:
