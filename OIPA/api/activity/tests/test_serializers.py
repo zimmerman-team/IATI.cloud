@@ -1,4 +1,3 @@
-# import pytest
 # TODO: no need to test codelist fields separately; instead test the whole serializer in once along with the code and vocabulary fields. Or is testing the fields separately preferable?
 
 from django.test import TestCase # Runs each test in a transaction and flushes database
@@ -85,11 +84,12 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_DocumentCategorySerializer(self):
-        doc_category = iati_factory.DocumentLinkCategoryFactory.build()
-        serializer = serializers.DocumentLinkSerializer.\
-            DocumentCategorySerializer(doc_category)
 
-        assert serializer.data['code'] == doc_category.category.code,\
+        doc_category = iati_factory.DocumentCategoryFactory.build()
+        serializer = serializers.DocumentLinkSerializer\
+            .DocumentCategorySerializer(doc_category)
+
+        assert serializer.data['code'] == doc_category.code,\
             """
             'document_category.code' should be serialized to a field called
             'code'
@@ -97,7 +97,7 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_DocumentTitleSerializer(self):
         title = iati_factory.DocumentLinkTitleFactory.build()
-        narrative = iati_factory.NarrativeFactory.create(parent_object=title, content="title")
+        iati_factory.NarrativeFactory.create(related_object=title, content="title")
         serializer = serializers.NarrativeContainerSerializer(title)
         assert serializer.data['narratives'][0]['text'] == "title",\
             """
@@ -273,7 +273,7 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_TitleSerializer(self):
         title = iati_factory.TitleFactory.build()
-        narrative = iati_factory.NarrativeFactory.create(parent_object=title, content="title")
+        iati_factory.NarrativeFactory.create(related_object=title, content="title")
         serializer = serializers.TitleSerializer(title)
         assert serializer.data['narratives'][0]['text'] == "title",\
             """
@@ -282,7 +282,7 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_DescriptionSerializer(self):
         description = iati_factory.DescriptionFactory.build()
-        narrative = iati_factory.NarrativeFactory.create(parent_object=description, content="description")
+        iati_factory.NarrativeFactory.create(related_object=description, content="description")
         serializer = serializers.DescriptionSerializer(description)
         assert serializer.data['narratives'][0]['text'] == "description",\
             """
@@ -419,7 +419,6 @@ class ActivitySerializerTestCase(TestCase):
     def test_ActivityScopeSerializer(self):
         activity_scope = iati_factory.ActivityScopeFactory.build()
         serializer = serializers.CodelistSerializer(activity_scope)
-        print(serializer.data)
         assert serializer.data['code'] == activity_scope.code,\
             """
             'activity_scope.code' should be serialized to a field called

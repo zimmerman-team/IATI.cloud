@@ -1,8 +1,8 @@
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
 from IATI_1_03 import Parse as IATI_103_Parser
-from organisation.organisation_2_01 import Parse as Org_2_01_Parser
-from organisation.organisation_1_05 import Parse as Org_1_05_Parser
+from iati_organisation.organisation_2_01 import Parse as Org_2_01_Parser
+from iati_organisation.organisation_1_05 import Parse as Org_1_05_Parser
 from deleter import Deleter
 import gc
 from iati.filegrabber import FileGrabber

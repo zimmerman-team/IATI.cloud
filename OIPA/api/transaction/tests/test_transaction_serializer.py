@@ -36,8 +36,6 @@ class TransactionSerializerTestCase(DjangoTestCase):
         assert 'url' in serializer.data.keys(), \
             """serialized data should include url"""
 
-        print(serializer.data)
-
         expected_url = "http://testserver{reverse}".format(
             reverse=reverse('transactions:detail',
             args=(self.transaction.id,)))

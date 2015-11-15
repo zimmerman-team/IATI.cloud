@@ -40,7 +40,7 @@ def tearDownModule():
 # TODO: refactor in test util module
 def build_activity(version="2.01", *args, **kwargs):
     activity = iati_factory.ActivityFactory.build(
-        iati_standard_version_id=codelist_models.Version.objects.get(code=version), # requires Version codelist
+        iati_standard_version=codelist_models.Version.objects.get(code=version), # requires Version codelist
         *args,
         **kwargs
     )

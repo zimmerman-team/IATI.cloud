@@ -41,7 +41,6 @@ class NarrativeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Narrative
 
-    related_content_type_id = 0
     parent_object = SubFactory(ActivityFactory) # overwrite this for the required behaviour
     language = SubFactory(LanguageFactory)
     content = "Some name or description"
@@ -50,7 +49,7 @@ class RelatedActivityFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.RelatedActivity
 
-    related_activity = SubFactory(ActivityFactory)
+    ref_activity = SubFactory(ActivityFactory)
     current_activity = SubFactory(ActivityFactory, id="IATI-0002", iati_identifier="IATI-0002")
     ref = "IATI-0001"
 

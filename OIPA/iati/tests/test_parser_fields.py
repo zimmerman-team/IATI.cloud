@@ -6,6 +6,7 @@ import copy
 import datetime
 
 from decimal import Decimal
+from decimal import InvalidOperation
 from lxml import etree
 from lxml.builder import E
 
@@ -1628,7 +1629,7 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(str(budget.value_date) == attrs['value-date'])
         self.assertTrue(budget.currency.code == attrs['currency'])
 
-    def test_budget_wrong_value_should_parse_201(self):
+    def test_budget_wrong_value_should_not_parse_201(self):
         """
         When the value field is invalid, only store it as a string for future reference
         """
@@ -1638,12 +1639,11 @@ class BudgetTestCase(ParserSetupTestCase):
         }
         text = "1.000.000.000,2"
 
-        value = E('value', text, **attrs) 
-        self.parser_201.iati_activities__iati_activity__budget__value(value)
-        budget = self.parser_201.get_model('Budget')
+        value = E('value', text, **attrs)
 
-        self.assertTrue(budget.value == Decimal('2000.2'))
-        self.assertTrue(budget.value_string == text)
+        with self.assertRaises(InvalidOperation):
+            self.parser_201.iati_activities__iati_activity__budget__value(value)
+
 
 class PlannedDisbursementTestCase(ParserSetupTestCase):
     """
@@ -2186,7 +2186,7 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         related_activity = self.parser_201.get_model('RelatedActivity')
 
         self.assertTrue(related_activity.current_activity == self.activity)
-        self.assertTrue(related_activity.related_activity == None)
+        self.assertTrue(related_activity.ref_activity == None)
         self.assertTrue(related_activity.ref == self.attrs['ref'])
         self.assertTrue(related_activity.type.code == self.attrs['type'])
 
@@ -2201,23 +2201,43 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         related_activity = self.parser_201.get_model('RelatedActivity')
 
         self.assertTrue(related_activity.current_activity == self.activity)
-        self.assertTrue(related_activity.related_activity == test_related_activity)
+        self.assertTrue(related_activity.ref_activity == test_related_activity)
         self.assertTrue(related_activity.ref == self.attrs['ref'])
         self.assertTrue(related_activity.type.code == self.attrs['type'])
 
     def test_related_activity_update_existing_201(self):
         """
         should update existing activities that have related-activity fields pointing to this activity
+        this happens post save through def set_related_activities
         """
 
         self.activity.save()
-        test_related_activity = iati_factory.RelatedActivityFactory.build(related_activity=None)
+        test_related_activity = iati_factory.RelatedActivityFactory.build(ref="IATI-0001", ref_activity=None)
         test_related_activity.save()
-        self.assertTrue(test_related_activity.related_activity == None)
+        self.assertTrue(test_related_activity.ref_activity == None)
 
-        self.parser_201.iati_activities__iati_activity__related_activity(self.related_activity)
-        related_activity = self.parser_201.get_model('RelatedActivity')
+
+        self.parser_201.set_related_activities(self.activity)
         test_related_activity.refresh_from_db()
 
-        self.assertTrue(test_related_activity.related_activity == self.activity)
+        self.assertTrue(test_related_activity.ref_activity == self.activity)
 
+    @skip('NotImplemented')
+    def test_post_save(self):
+        """
+        Check if sets related activities and activity aggregations
+        """
+        self.parser_201.register_model('Activity', None)
+        self.assertFalse(self.parser_201.post_save())
+
+        self.parser_201.register_model('Activity', self.activity)
+
+        # mock set_related_activities and test_calculate_per_activity_aggregations
+        self.parser_201.register_model('Activity', None)
+
+
+    @skip('NotImplemented')
+    def test_calculate_per_activity_aggregations(self):
+        """
+        Check if calculated budget / transaction etc values are correct
+        """
