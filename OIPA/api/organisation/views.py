@@ -1,6 +1,6 @@
 from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
-import organisation
+import iati_organisation
 from api.organisation import serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
@@ -42,7 +42,7 @@ class OrganisationList(ListAPIView):
     fields = ('url', 'code','name')
 
     def get_queryset(self):
-        queryset = organisation.models.Organisation.objects.all()
+        queryset = iati_organisation.models.Organisation.objects.all()
         query = self.request.query_params.get('reporting_organisations', None)
         if query is not None:
             queryset = queryset.reporting_organisations()
@@ -68,7 +68,7 @@ class OrganisationDetail(RetrieveAPIView):
     - `fields` (*optional*): List of fields to display
 
     """
-    queryset = organisation.models.Organisation.objects.all()
+    queryset = iati_organisation.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     get_object = custom_get_object
 

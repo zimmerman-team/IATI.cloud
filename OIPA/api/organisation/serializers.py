@@ -1,4 +1,4 @@
-from organisation import models as org_models
+from iati_organisation import models as org_models
 import iati
 from rest_framework import serializers
 from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer, FilterableModelSerializer
