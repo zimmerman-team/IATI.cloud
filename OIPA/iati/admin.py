@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django import forms
 from iati.models import *
 from iati.transaction.models import *
 from django.conf.urls import patterns
@@ -7,9 +6,8 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.http import HttpResponse
 from iati.updater import SectorUpdater
 
-from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin, NestedInline
+from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
-from django.core.exceptions import (ValidationError,)
 
 # Avoid giant delete confirmation intermediate window
 def delete_selected(self, request, queryset):

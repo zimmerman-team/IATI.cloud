@@ -8,5 +8,3 @@ class Command(BaseCommand):
         parser = ParseAdmin()
         parser.parseSchedule()
 
-
-
