@@ -1,8 +1,5 @@
 from rest_framework import serializers
-from api.generics import utils
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
-from collections import OrderedDict
 
 
 class FilteredListSerializer(serializers.ListSerializer):

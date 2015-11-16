@@ -1,11 +1,9 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.generics import RetrieveAPIView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
 from iati.transaction.models import Transaction
+from api.generics.views import DynamicListView, DynamicDetailView
 
-
-class TransactionDetail(RetrieveAPIView):
+class TransactionDetail(DynamicDetailView):
     """
     Returns detailed information about Transaction.
 
@@ -28,7 +26,7 @@ class TransactionDetail(RetrieveAPIView):
     serializer_class = TransactionSerializer
 
 
-class TransactionList(ListAPIView):
+class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
@@ -62,24 +60,8 @@ class TransactionList(ListAPIView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    fields = (
-        'id',
-        'url',
-        'activity',
-        'aid_type',
-        'description',
-        'finance_type',
-        'provider_organisation_name',
-        'receiver_organisation_name',
-        'transaction_date',
-        'transaction_type',
-        'value_date',
-        'value',
-        'currency',
-    )
-
     search_fields = (
         'description',
-        'provider_organisation_name',
-        'receiver_organisation_name',
+        'provider_organisation',
+        'receiver_organisation',
     )

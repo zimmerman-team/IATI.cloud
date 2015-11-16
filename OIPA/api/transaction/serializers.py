@@ -1,10 +1,8 @@
 from rest_framework import serializers
 
 from iati.transaction import models
-from iati_codelists.models import TransactionType
 
 from api.generics.serializers import DynamicFieldsModelSerializer
-from api.organisation.serializers import BasicOrganisationSerializer
 from api.activity.serializers import ActivitySerializer, CodelistSerializer, NarrativeSerializer
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
@@ -71,6 +69,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = models.Transaction
         fields = (
+            'ref',
             'url',
             'activity',
             'aid_type',
@@ -86,6 +85,5 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'value_date',
             'value',
             'currency',
-            'ref',
         )
 

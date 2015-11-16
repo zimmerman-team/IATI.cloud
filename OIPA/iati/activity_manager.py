@@ -85,15 +85,15 @@ class ActivityQuerySet(query.QuerySet):
         else:
             return self.filter(prepared_filter[0])
 
-    # def aggregate_total_budget(self):
-    #     sum = self.aggregate(
-    #         total_budget=Sum('total_budget')
-    #     ).get('total_budget', 0.00)
-    #     return sum
+    def prefetch_default_aid_type(self):
+        return self.select_related('default_aid_type__category')
+
+    def prefetch_default_finance_type(self):
+        return self.select_related('default_finance_type__category')
 
 
     def prefetch_participating_organisations(self):
-        from iati.models import ActivityParticipatingOrganisation, ActivityReportingOrganisation, Narrative
+        from iati.models import ActivityParticipatingOrganisation, Narrative
         narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
@@ -107,8 +107,6 @@ class ActivityQuerySet(query.QuerySet):
         from iati.models import ActivityParticipatingOrganisation, ActivityReportingOrganisation, Narrative
         narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
-        print('called prefetch')
-
         return self.prefetch_related(
             Prefetch('reporting_organisations',
                 queryset=ActivityReportingOrganisation.objects.all()\
@@ -118,7 +116,6 @@ class ActivityQuerySet(query.QuerySet):
 
     def prefetch_recipient_countries(self):
         from iati.models import ActivityRecipientCountry, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch('activityrecipientcountry_set',
@@ -128,7 +125,6 @@ class ActivityQuerySet(query.QuerySet):
 
     def prefetch_recipient_regions(self):
         from iati.models import ActivityRecipientRegion, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch('activityrecipientregion_set',
@@ -140,7 +136,6 @@ class ActivityQuerySet(query.QuerySet):
 
     def prefetch_sectors(self):
         from iati.models import ActivitySector, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch('activitysector_set',
@@ -151,8 +146,7 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_activity_dates(self):
-        from iati.models import ActivityDate, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        from iati.models import ActivityDate
 
         return self.prefetch_related(
             Prefetch('activitydate_set',
@@ -175,7 +169,6 @@ class ActivityQuerySet(query.QuerySet):
 
     def prefetch_budgets(self):
         from iati.models import Budget, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch('budget_set',
@@ -197,8 +190,7 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_document_links(self):
-        from iati.models import DocumentLink, DocumentLinkCategory, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        from iati.models import DocumentLink, DocumentLinkCategory
 
         # TODO: fix category prefetch, not working
         category_prefetch = Prefetch('documentlinkcategory_set',
@@ -215,7 +207,6 @@ class ActivityQuerySet(query.QuerySet):
 
     def prefetch_results(self):
         from iati.models import Result, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch('result_set',
@@ -241,8 +232,7 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_related_activities(self):
-        from iati.models import RelatedActivity, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        from iati.models import RelatedActivity
 
         return self.prefetch_related(
             Prefetch('relatedactivity_set',
@@ -252,8 +242,7 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_title(self):
-        from iati.models import RelatedActivity, Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        from iati.models import Narrative
 
         return self.prefetch_related(
             Prefetch('title__narratives',
@@ -261,16 +250,6 @@ class ActivityQuerySet(query.QuerySet):
                     .select_related('language')
                     )
         )
-
-    def prefetch_default_aid_type(self):
-        from iati.models import AidType, Narrative
-
-        return self.select_related('default_aid_type__category')
-
-    def prefetch_default_finance_type(self):
-        from iati.models import FinanceType, Narrative
-
-        return self.select_related('default_finance_type__category')
 
     def aggregate_budget(self):
         sum = self.aggregate(

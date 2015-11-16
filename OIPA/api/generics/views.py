@@ -48,10 +48,7 @@ class DynamicView(GenericAPIView):
         fields = self._get_query_fields(*args, **kwargs)
         if not fields: fields = self.serializer_fields
 
-        source_fields = [ self.field_source_mapping[field] for field in fields if field in self.field_source_mapping ]
-
         select_related_fields = list(set(self.select_related_fields) & set(fields))
-        print(select_related_fields)
         queryset = queryset.select_related(*select_related_fields)
 
         for field in fields:
