@@ -87,6 +87,11 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='recipient_region')
 
+    recipient_region_not_in = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='recipient_region',
+        exclude=True)
+
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
         name='planned_start')
