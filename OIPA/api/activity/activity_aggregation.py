@@ -94,13 +94,13 @@ class ActivityAggregationSerializer(BaseSerializer):
             "field": "recipient_country",
             "queryset": Country.objects.all(),
             "serializer": CountrySerializer,
-            "fields": ('url', 'code', 'name'),
+            "fields": ('url', 'code', 'name', 'location'),
         },
         "recipient_region": {
             "field": "recipient_region",
             "queryset": Region.objects.all(),
             "serializer": RegionSerializer,
-            "fields": ('url', 'code', 'name'),
+            "fields": ('url', 'code', 'name', 'location'),
         },
         "sector": {
             "field": "sector",
@@ -176,6 +176,15 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra": {
                 'year': 'EXTRACT(YEAR FROM "period_start")::integer',
                 'quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
+            },
+            "queryset": None,
+            "serializer": None,
+            "fields": (),
+        },
+        "transaction_date_year": {
+            "field": "year",
+            "extra": {
+                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
             },
             "queryset": None,
             "serializer": None,

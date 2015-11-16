@@ -210,6 +210,11 @@ class ActivityFilter(TogetherFilterSet):
         name='transaction__provider_organisation__provider_activity_ref',
         distinct=True)
 
+    transaction_date_year = NumberFilter(
+        lookup_type='year',
+        name='transaction__transaction_date',
+        distinct=True)
+
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
