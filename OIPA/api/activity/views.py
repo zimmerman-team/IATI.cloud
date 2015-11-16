@@ -210,13 +210,6 @@ class ActivityList(DynamicListView):
         'planned_end_date',
         'actual_end_date')
 
-    # def get_serializer_context(self):
-    #     return {'request': self.request }
-
-    # def get_queryset(self):
-    #     pk = self.kwargs.get('pk')
-    #     return Activity.objects.prefetch_related('current_activity')
-
 
 class ActivityDetail(DynamicDetailView):
     """
@@ -253,37 +246,6 @@ class ActivityDetail(DynamicDetailView):
     queryset = Activity.objects.all()
     serializer_class = activitySerializers.ActivitySerializer
 
-#     def get_queryset(self):
-#         # print('called')
-#         # obj = super(ActivityDetail, self).get_queryset()
-#         # print(obj0
-
-#         from iati.models import ActivityParticipatingOrganisation, Narrative
-
-#         pk = self.kwargs.get('pk')
-#         # print(Narrative.objects.filter(iati_identifier=pk))
-
-#         # narratives = Narrative.objects.filter(iati_identifier=pk).select_related('language')
-#         # activities = Activity.objects.all().prefetch_related(narrative_prefetch)
-#         narrative_qs = Narrative.objects.select_related('language')
-#         narrative_prefetch = Prefetch('narratives', queryset=narrative_qs, to_attr='narrative_test')
-
-#         obj_prefetch = Prefetch('narratives', queryset=narrative_qs)
-
-#         # narratives = queryset=Narrative.objects.filter(iati_identifier=pk).select_related('language')
-#         prefetch = Prefetch('participating_organisations',
-#                 queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(obj_prefetch))
-
-#         # a = list(Activity.objects.prefetch_related(narrative_prefetch).all())
-#         # b = a[0].participating_organisations.all()[0]
-#         # print(b)
-#         # print(a[1]).narratives.filter(parent_object=)
-#         return Activity.objects.all().prefetch_related(narrative_prefetch, prefetch)
-
-#     # def get_queryset(self):
-#     #     pk = self.kwargs.get('pk')
-#     #     print(pk)
-#     #     return Activity.objects.get(pk=pk)
 
 class ActivitySectors(ListAPIView):
     """
