@@ -2235,6 +2235,11 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         # mock set_related_activities and test_calculate_per_activity_aggregations
         self.parser_201.register_model('Activity', None)
 
+    @skip('NotImplemented')
+    def set_derived_activity_dates(self):
+        """
+        Check if dates are set correctly
+        """
 
     @skip('NotImplemented')
     def test_calculate_per_activity_aggregations(self):

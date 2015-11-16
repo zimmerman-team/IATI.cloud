@@ -1,18 +1,15 @@
 from rest_framework import serializers
 
 import iati
-import iati_codelists
-from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer, FilterableModelSerializer
+from api.generics.serializers import DynamicFieldsSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import FilterableModelSerializer
 from api.generics.fields import PointField
-from api.organisation.serializers import OrganisationSerializer
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
-# from api.region.serializers import RegionVocabularySerializer
 from api.country.serializers import CountrySerializer
-from api.fields import JSONField
-from api.activity.filters import ActivityFilter, BudgetFilter, RelatedActivityFilter
-
-from django.db.models import Sum
+from api.activity.filters import BudgetFilter
+from api.activity.filters import RelatedActivityFilter
 
 # TODO: serialize vocabulary in codelist serializer
 class VocabularySerializer(serializers.Serializer):
@@ -167,7 +164,11 @@ class ActivityAggregationSerializer(serializers.Serializer):
         decimal_places=2,
         coerce_to_string=False)
     total_expenditure_currency = serializers.CharField()
-
+    total_plus_child_budget_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    total_plus_child_budget_currency = serializers.CharField()
 
     class Meta:
         model = iati.models.ActivityAggregationData
@@ -518,12 +519,3 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'locations',
             'activity_aggregations'
         )
-
-        # narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
-        # participating_organisation_prefetch = Prefetch('participating_organisations',
-        #         queryset=ActivityParticipatingOrganisation.objects.all().select_related('type', 'role', 'organisation').prefetch_related(narrative_prefetch))
-
-        # # configure required prefetches for these fields (all applied to given queryset)
-        # prefetch_fields = (
-        #     ('participating_organisations', prefetch),
-        # )

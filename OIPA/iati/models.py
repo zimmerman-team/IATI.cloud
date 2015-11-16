@@ -44,6 +44,9 @@ class ActivityAggregationData(models.Model):
     total_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     total_child_budget_currency = models.CharField(max_length=3, null=True, default=None)
 
+    total_plus_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    total_plus_child_budget_currency = models.CharField(max_length=3, null=True, default=None)
+
     total_disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     total_disbursement_currency = models.CharField(max_length=3, null=True, default=None)
 
@@ -81,8 +84,10 @@ class Activity(models.Model):
 
     planned_start = models.DateField(null=True, default=None)
     actual_start = models.DateField(null=True, default=None)
+    start_date = models.DateField(null=True, default=None)
     planned_end = models.DateField(null=True, default=None)
     actual_end = models.DateField(null=True, default=None)
+    end_date = models.DateField(null=True, default=None)
 
     activity_status = models.ForeignKey(
         ActivityStatus,
@@ -193,7 +198,7 @@ class ActivityReportingOrganisation(models.Model):
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, default="")
-    normalized_ref = models.CharField(max_length=120, default="")
+    normalized_ref = models.CharField(max_length=120, default="", db_index=True)
 
     activity = models.ForeignKey(
         Activity,

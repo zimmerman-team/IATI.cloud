@@ -44,6 +44,7 @@ class ActivityAggregations(GenericAPIView):
     - `budget_per_year`
     - `budget_per_quarter`
     - `transactions_per_quarter`
+    - `transaction_date_year`
 
     ## Aggregation options
 
@@ -96,6 +97,7 @@ class ActivityList(DynamicListView):
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
+    - `recipient_region_not_in` (*optional*): Comma separated list of region codes the activity should not be in.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `reporting_organisation` (*optional*): Comma separated list of organisation id's.
@@ -121,6 +123,7 @@ class ActivityList(DynamicListView):
     - `related_activity_sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `related_activity_sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `transaction_provider_activity` (*optional*): Comma separated list of activity id's.
+    - `transaction_date_year` (*optional*): Comma separated list of years in which the activity should have transactions.
 
     ## Text search
 
@@ -155,10 +158,13 @@ class ActivityList(DynamicListView):
     - `actual_start_date`
     - `planned_end_date`
     - `actual_end_date`
+    - `start_date`
+    - `end_date`
     - `total_budget_value`
     - `total_child_budget_value`
     - `total_commitment_value`
     - `total_disbursement_value`
+    - `total_plus_child_budget_value`
 
     The user may also specify reverse orderings by prefixing the field name with '-', like so: `-title`
 
@@ -197,18 +203,27 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
-    fields = ('url', 'iati_identifier', 'title', 'description', 'transactions', 'reporting_organisations')
+    fields = (
+        'url', 
+        'iati_identifier', 
+        'title', 
+        'description', 
+        'transactions', 
+        'reporting_organisations')
     pagination_class = AggregationsPaginationSerializer
     ordering_fields = (
         'title',
         'total_budget_value',
         'total_child_budget_value',
+        'total_plus_child_budget_value',
         'total_disbursement_value',
         'total_commitment_value',
         'planned_start_date',
         'actual_start_date',
         'planned_end_date',
-        'actual_end_date')
+        'actual_end_date',
+        'start_date',
+        'end_date')
 
 
 class ActivityDetail(DynamicDetailView):

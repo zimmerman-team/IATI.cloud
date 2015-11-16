@@ -1174,8 +1174,8 @@ class Parse(XMLParser):
         value = element.text
         decimal_value = self.guess_number(value)
 
-        if not decimal_value:
-            raise self.RequiredFieldError("value", "currency: value is required")
+        if decimal_value is None:
+            raise self.RequiredFieldError("value", "budget__value: value is required")
 
         currency = self._get_currency_or_raise(currency)
 
@@ -1243,15 +1243,16 @@ class Parse(XMLParser):
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
+        decimal_value = self.guess_number(value)
 
-        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+        if decimal_value is None: raise self.RequiredFieldError("value", "planned_disbursement__value: value is required")
 
         currency = self._get_currency_or_raise(currency)
 
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.value_string = value
-        planned_disbursement.value = self.guess_number(value)
+        planned_disbursement.value = decimal_value
         planned_disbursement.value_date = value_date
         planned_disbursement.currency = currency
          
@@ -1318,14 +1319,15 @@ class Parse(XMLParser):
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
+        decimal_value = self.guess_number(value)
 
-        if not value: raise self.RequiredFieldError("value", "currency: value is required")
+        if decimal_value is None: raise self.RequiredFieldError("value", "transaction__value: value is required")
 
         currency = self._get_currency_or_raise(currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value
-        transaction.value = self.guess_number(value)
+        transaction.value = decimal_value
         transaction.value_date = value_date
         transaction.currency = currency
          
@@ -1361,8 +1363,6 @@ class Parse(XMLParser):
         ref = element.attrib.get('ref', '')
         provider_activity = element.attrib.get('provider-activity-id')
 
-        # if not ref: raise self.RequiredFieldError("ref", "transaction-provider-org: ref must be specified")
-
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)
 
@@ -1377,13 +1377,7 @@ class Parse(XMLParser):
         transaction_provider.provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity) 
 
         activity = self.get_model('Activity')
-        # update existing  transaction provider-activity foreign keys
-        # TODO: do this at the end of parsing in one pass
-        try:
-            transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
-        except:
-            pass
-
+        # update existing transaction provider-activity foreign keys happens post_save
 
         # set wether one of the parent is in root organisation if so set searchable
         if hasattr(settings, 'ROOT_ORGANISATIONS') and len(settings.ROOT_ORGANISATIONS) > 0:
@@ -1407,12 +1401,7 @@ class Parse(XMLParser):
 
             self.searchable_activities.append(activity.iati_identifier)
 
-        # transaction = self.pop_model('Transaction')
-        # transaction.provider_organisation = transaction_provider
-
-        # self.register_model('Transaction', transaction_provider)
         self.register_model('TransactionProvider', transaction_provider)
-        # self.register_model('Transaction', transaction)
         return element
 
 
@@ -1437,8 +1426,6 @@ class Parse(XMLParser):
         ref = element.attrib.get('ref', '')
         receiver_activity = element.attrib.get('receiver-activity-id')
 
-        # if not ref: raise self.RequiredFieldError("ref", "transaction-receiver-org: ref must be specified")
-
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, code=ref)
 
@@ -1452,20 +1439,9 @@ class Parse(XMLParser):
         transaction_receiver.receiver_activity_ref = receiver_activity
         transaction_receiver.receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity) 
 
-        activity = self.get_model('Activity')
-        # update existing  transaction receiver-activity foreign keys
-        # TODO: do this at the end of parsing in one pass
-        try:
-            transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
-        except:
-            pass
+        # update existing  transaction receiver-activity foreign keys happens post_save
 
-        # transaction = self.pop_model('Transaction')
-        # transaction.receiver_organisation = transaction_receiver
-
-        # self.register_model('Transaction', transaction_receiver)
         self.register_model('TransactionReceiver', transaction_receiver)
-        # self.register_model('Transaction', transaction)
         return element
 
     '''atributes:
@@ -1699,7 +1675,6 @@ class Parse(XMLParser):
 
         if not related_activity_type: raise self.RequiredFieldError("type", "related-activity: type is required")
         if not ref: raise self.RequiredFieldError("ref", "related-activity: ref is required")
-
 
         activity = self.get_model('Activity')
         related_activity = models.RelatedActivity()
@@ -2145,10 +2120,40 @@ class Parse(XMLParser):
         if not activity:
             return False
         self.set_related_activities(activity)
+        self.set_transaction_provider_receiver_activity(activity)
+        self.set_derived_activity_dates(activity)
         self.calculate_per_activity_aggregations(activity)
 
+
+    def set_derived_activity_dates(self, activity):
+        """
+        based on actual and planned activity dates,
+        set start_date and end_date
+        """
+        if activity.actual_start:
+            activity.start_date = activity.actual_start
+        else:
+            activity.start_date = activity.planned_start
+
+        if activity.actual_end:
+            activity.end_date = activity.actual_end
+        else:
+            activity.end_date = activity.planned_end
+        activity.save()
+
     def set_related_activities(self, activity):
+        """
+        update references to this activity
+        """
         models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
+
+    def set_transaction_provider_receiver_activity(self, activity):
+        """
+        update references to this activity
+        """
+        transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
+        transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
+       
 
     def calculate_per_activity_aggregation(
             self,
@@ -2156,6 +2161,9 @@ class Parse(XMLParser):
             currency_field_name,
             value_field_name,
             aggregation_object):
+        """
+
+        """
 
         currency = None
         value = 0
@@ -2174,8 +2182,28 @@ class Parse(XMLParser):
 
         return activity_aggregation
 
-    def calculate_per_activity_aggregations(self, activity):
+    def update_total_plus_child_budget(self, activity_aggregation):
+        """
 
+        """
+        if activity_aggregation.total_budget_value > 0 and activity_aggregation.total_child_budget_value == 0:
+            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_budget_currency
+        elif activity_aggregation.total_budget_value == 0 and activity_aggregation.total_child_budget_value > 0:
+            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_child_budget_currency
+        elif activity_aggregation.total_budget_currency == activity_aggregation.total_plus_child_budget_currency:
+            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_budget_currency
+
+        activity_aggregation.total_plus_child_budget_value = 0
+        if activity_aggregation.total_budget_value:
+            activity_aggregation.total_plus_child_budget_value += activity_aggregation.total_budget_value
+        if activity_aggregation.total_child_budget_value:
+            activity_aggregation.total_plus_child_budget_value += activity_aggregation.total_child_budget_value
+        return activity_aggregation
+
+    def calculate_per_activity_aggregations(self, activity):
+        """
+
+        """
         def get_child_budget_total(activity):
             return models.Activity.objects.filter(
                 relatedactivity__ref_activity__id=activity,
@@ -2230,6 +2258,7 @@ class Parse(XMLParser):
             'total_expenditure_value',
             expenditure_total)
 
+        activity_aggregation = self.update_total_plus_child_budget(activity_aggregation)
         activity_aggregation.save()
         activity.activity_aggregations = activity_aggregation
         activity.save()
@@ -2246,5 +2275,7 @@ class Parse(XMLParser):
                     'total_child_budget_currency',
                     'total_child_budget_value',
                     parent_child_budget_total)
+
+                parent_activity_aggregations = self.update_total_plus_child_budget(parent_activity_aggregations)
 
                 parent_activity_aggregations.save()
