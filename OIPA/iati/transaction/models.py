@@ -68,7 +68,7 @@ class TransactionProvider(models.Model):
         db_constraint=False,
         null=True,
         default=None)
-    provider_activity_ref = models.CharField(max_length=200, null=True, default="")
+    provider_activity_ref = models.CharField(db_index=True, max_length=200, null=True, default="")
 
     transaction = models.OneToOneField(
         Transaction,
@@ -99,7 +99,7 @@ class TransactionReceiver(models.Model):
         db_constraint=False,
         null=True,
         default=None)
-    receiver_activity_ref = models.CharField(max_length=200, null=True, default="")
+    receiver_activity_ref = models.CharField(db_index=True, max_length=200, null=True, default="")
 
     transaction = models.OneToOneField(
         Transaction,

@@ -401,7 +401,7 @@ class RelatedActivity(models.Model):
         max_length=200,
         null=True,
         default=None)
-    ref = models.CharField(max_length=200, default="")
+    ref = models.CharField(db_index=True, max_length=200, default="")
 
     def __unicode__(self,):
         return "%s" % (self.ref)
