@@ -90,7 +90,7 @@ class CodelistImporterTestCase(TestCase):
         importer = CodeListImporter()
         importer.add_missing_items()
 
-        self.assertEqual(2, Country.objects.count())
+        self.assertEqual(4, Country.objects.count())
 
     def test_add_to_model_if_field_exists(self):
 
@@ -142,6 +142,6 @@ class CodelistImporterTestCase(TestCase):
         self.assertEqual(9, importer.get_codelist_data.call_count)
         self.assertEqual(len(importer.iati_versions), importer.loop_through_codelists.call_count)
         importer.get_codelist_data.assert_called_with(name='DocumentCategory-category')
-        importer.loop_through_codelists.assert_called_with('1.04')
+        importer.loop_through_codelists.assert_called_with('2.01')
 
 

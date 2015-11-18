@@ -41,7 +41,7 @@ class NarrativeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Narrative
 
-    parent_object = SubFactory(ActivityFactory) # overwrite this for the required behaviour
+    activity = SubFactory(ActivityFactory) # overwrite this for the required behaviour
     language = SubFactory(LanguageFactory)
     content = "Some name or description"
 
