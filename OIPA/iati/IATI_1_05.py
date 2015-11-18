@@ -54,24 +54,6 @@ class Parse(IATI_201_Parser):
         'CG': '10'
     }
 
-    # def add_narrative(self, text, parent):
-    #     # lang = self.default_lang
-    #     default_lang = self.default_lang
-    #     lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
-    #     language = self.get_or_none(codelist_models.Language, code=lang)
-
-    #     if not language: raise self.RequiredFieldError("language")
-    #     if not text: raise self.RequiredFieldError("text")
-    #     if not parent: raise self.RequiredFieldError("parent")
-
-    #     narrative = models.Narrative()
-    #     narrative.language = language
-    #     narrative.content = text
-    #     narrative.iati_identifier = self.iati_identifier # TODO: we need this?
-    #     narrative.parent_object = parent
-
-    #     self.register_model('Narrative', narrative)
-
     def __init__(self, *args, **kwargs):
         self.VERSION = codelist_models.Version.objects.get(code='1.05')
         self.hints = []

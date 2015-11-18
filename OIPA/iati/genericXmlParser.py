@@ -250,7 +250,6 @@ class XMLParser(object):
         Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ == "Narrative":
-            model.parent_object = model.parent_object
             model.related_object = model.related_object
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):

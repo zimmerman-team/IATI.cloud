@@ -165,7 +165,7 @@ class Parse(XMLParser):
         narrative.language = language
         narrative.content = element.text
         narrative.related_object = parent
-        narrative.parent_object = self.get_model('Activity')
+        narrative.activity = self.get_model('Activity')
 
         # TODO: handle this differently (also: breaks tests)
         register_name = parent.__class__.__name__ + "Narrative"

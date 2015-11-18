@@ -21,20 +21,9 @@ class Narrative(models.Model):
     related_object_id = models.IntegerField(
         verbose_name='related object',
         null=True,
-        db_index=True
-    )
+        db_index=True)
     related_object = GenericForeignKey('related_content_type', 'related_object_id')
-
     activity = models.ForeignKey('Activity')
-
-    #references an activity or organisation
-    # parent_content_type = models.ForeignKey(ContentType, related_name='parent_agent')
-    # parent_object_id = models.CharField(
-    #     max_length=250,
-    #     verbose_name='Parent related object',
-    # )
-    # parent_object = GenericForeignKey('parent_content_type', 'parent_object_id')
-
     language = models.ForeignKey(Language)
     content = models.TextField()
 

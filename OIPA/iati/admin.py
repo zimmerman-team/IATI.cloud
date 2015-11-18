@@ -18,7 +18,7 @@ class NarrativeInline(GenericTabularInline):
     model = Narrative
     ct_field = "related_content_type"
     ct_fk_field = "related_object_id"
-    exclude = ('parent_content_type', 'parent_object_id')
+    exclude = ('activity')
     inlines = []
 
     extra = 0

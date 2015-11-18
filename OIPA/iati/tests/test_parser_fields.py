@@ -154,6 +154,12 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', activity)
 
+    @skip('NotImplemented')
+    def test_add_narrative(self):
+        """
+        Check if the narrative element is parsed correctly 
+        """
+
     def test_activity_201(self):
         """
         Check complete element is parsed correctly
