@@ -25,16 +25,21 @@ class Narrative(models.Model):
     )
     related_object = GenericForeignKey('related_content_type', 'related_object_id')
 
-    # references an activity or organisation
-    parent_content_type = models.ForeignKey(ContentType, related_name='parent_agent')
-    parent_object_id = models.CharField(
-        max_length=250,
-        verbose_name='Parent related object',
-    )
-    parent_object = GenericForeignKey('parent_content_type', 'parent_object_id')
+    activity = models.ForeignKey('Activity')
+
+    #references an activity or organisation
+    # parent_content_type = models.ForeignKey(ContentType, related_name='parent_agent')
+    # parent_object_id = models.CharField(
+    #     max_length=250,
+    #     verbose_name='Parent related object',
+    # )
+    # parent_object = GenericForeignKey('parent_content_type', 'parent_object_id')
 
     language = models.ForeignKey(Language)
     content = models.TextField()
+
+    class Meta:
+        index_together = [('related_content_type', 'related_object_id')]
 
 
 class ActivityAggregationData(models.Model):
@@ -120,13 +125,6 @@ class Activity(models.Model):
     capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
     has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
     is_searchable = models.BooleanField(default=True, db_index=True) # is object searchable
-
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='parent_content_type',
-        object_id_field='parent_object_id',
-        related_query_name='narratives'
-    )
 
     objects = ActivityQuerySet.as_manager()
 

@@ -209,7 +209,7 @@ class Parse(XMLParser):
             # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
             # TODO: do this after activity is parsed along with other saves?
             old_activity.delete()
-            old_activity.narratives.all().delete()
+            
 
         # TODO: assert title is in xml, for proper OneToOne relation
 
