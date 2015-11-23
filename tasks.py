@@ -1,21 +1,26 @@
 import re
-from fabric.api import local
-from fabric.api import run
-from fabric.api import env
+from invoke import run, task, env
 
 
 def get_oipa_port():
     """
     Get OIPA ssh port from `vagrant ssh-config` command
     """
-    result = local('vagrant ssh-config', capture=True)
-    for line in result.split('\n'):
+    result = run('vagrant ssh-config')
+    for line in result.stdout.split('\n'):
         match = re.findall(' Port (?P<port>\d+)', line)
         if len(match):
             return match[0]
     return None
 
+@task
+def test():
+    """
+    Run tests
+    """
+    run('./manage.py test --settings OIPA.test_settings --nomigrations')
 
+@task
 def serve():
     """
     Serve django dev server on localhost:19088
@@ -27,7 +32,4 @@ def serve():
         print("Can not find OIPA instance port. Abort.")
         return
 
-    env.password = 'vagrant'
-    env.use_ssh_config = True
-    env.host_string = "vagrant@127.0.0.1:{port}".format(port=port)
-    run('/home/vagrant/.env/bin/python /vagrant/OIPA/manage.py runserver 0.0.0.0:8080')
+    run('vagrant ssh -c "cd /vagrant/OIPA/ && /home/vagrant/.env/bin/python manage.py runserver 0.0.0.0:8000"')

@@ -24,7 +24,6 @@ urlpatterns = patterns(
         RedirectView.as_view(url='/home', permanent=True),
         name='index')
 )
-
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += patterns('',

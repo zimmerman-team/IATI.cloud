@@ -33,28 +33,25 @@ vagrant up
 Setup includes:
  - OIPA directory mounted into /vagrant on VM
  - all dependencies installed
- - mysql database created (name: `oipa`, user: `oipa`, password: `oipa`)
- - OIPA/local_settings.py file created
+ - PostgresSQL database created (name: `oipa`, user: `oipa`, password: `oipa`)
  - inital superuser created (name: `vagrant`, password: `vagrant`)
-
-As this is not production ready setup, OIPA is not running as a service.
 
 To start:
 
 ```#!bash
 vagrant ssh
 # ...logs you onto VM
-./manage.py runserver 0.0.0.0:8080
+./manage.py runserver
 ```
 
-Or install fabric locally: `sudo pip install fabric`
+Or install pyinvoke locally: `sudo pip install invoke`
 
 and run:
 
 ```#!bash
-fab serve
+invoke serve
 ```
 
-and open your browser at `http://localhost:19088/`.
+and open your browser at `http://localhost:8000/`.
 
 This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.

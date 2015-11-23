@@ -9,9 +9,9 @@ SECRET_KEY = '__DEV_SECRET_KEY__'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'oipa_dev',
-        'USER': '',
-        'PASSWORD': '',
+        'NAME': 'oipa',
+        'USER': 'oipa',
+        'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
     },
 }
@@ -36,6 +36,16 @@ RQ_QUEUES = {
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+     os.path.join(BASE_DIR, 'static/'),
+)
+
+FIXTURE_DIRS = (
+     os.path.join(BASE_DIR, '../fixtures'),
+)
+
 
 try:
     from local_settings import *

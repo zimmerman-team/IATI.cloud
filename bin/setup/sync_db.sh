@@ -6,5 +6,5 @@ sudo -u postgres bash -c "psql -c \"ALTER ROLE oipa SUPERUSER;\""
 sudo -u postgres bash -c "psql -c \"CREATE DATABASE oipa;\""
 
 # Run syncdb
-sudo -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py syncdb --noinput
-sudo -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py loaddata /vagrant/etc/superuser.json
+sudo -H -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py syncdb --noinput
+sudo -H -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py loaddata superuser.json

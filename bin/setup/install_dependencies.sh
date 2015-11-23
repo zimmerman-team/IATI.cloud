@@ -11,6 +11,8 @@ sudo locale-gen nl_NL.UTF-8
 sudo dpkg-reconfigure locales
 
 # postgresql
+sudo apt-get install -y sqlite3 # for tests
+sudo apt-get install -y libsqlite3-dev # for tests
 sudo apt-get install -y postgresql-9.3
 sudo apt-get install -y postgresql-client
 sudo apt-get install -y postgresql-server-dev-9.3
