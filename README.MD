@@ -18,7 +18,7 @@ www.iatistandard.org
 * License:          AGPLv3 (see included [LICENSE](https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD) file for full license)
 * Github Repo:      https://github.com/openaid-IATI/OIPA/
 * Bug Tracker:      https://github.com/openaid-IATI/OIPA/issues
-* FAQ:              UnderConstruction(!)
+* Documentation:    https://github.com/openaid-IATI/OIPA/wiki
 
 
 #### Can I contribute?
