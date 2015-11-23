@@ -5,9 +5,7 @@
 
 OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
 
-IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at:
-
-www.iatistandard.org
+IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at: www.iatistandard.org
 
 
 #### About the project
@@ -23,7 +21,15 @@ www.iatistandard.org
 
 #### Can I contribute?
 --------
+
 Hell yes! We are mainly looking for coders to help on the project. If you are a code  press *Fork* at the top of this github page and get started.
+
+#### Who is making use of OIPA?
+--------
+
+* Dutch Ministry of Foreign Affairs:         http://beta.openaid.nl
+* UNESCO Transparency Portal:                http://opendata.unesco.org/
+* UN-Habitat:                                http://open.unhabitat.org
 
 
 #### How to install the development environment on [Vagrant](https://www.vagrantup.com/)
