@@ -22,7 +22,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 #### Can I contribute?
 --------
 
-Hell yes! We are mainly looking for coders to help on the project. If you are a code  press *Fork* at the top of this github page and get started.
+Yes please! We are mainly looking for coders to help on the project. If you are a coder simply  press *Fork* at the top of this github page and hack away.
 
 #### Who is making use of OIPA?
 --------
@@ -30,6 +30,7 @@ Hell yes! We are mainly looking for coders to help on the project. If you are a 
 * Dutch Ministry of Foreign Affairs:         http://beta.openaid.nl
 * UNESCO Transparency Portal:                http://opendata.unesco.org/
 * UN-Habitat:                                http://open.unhabitat.org
+* DFID Devtracker (jan. 2016)                http://devtracker.dfid.gov.uk/
 
 
 #### How to install the development environment on [Vagrant](https://www.vagrantup.com/)
