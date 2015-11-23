@@ -1,28 +1,33 @@
-OIPA
-============
-
+#### OIPA
+--------
 [![Build Status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=develop)](https://travis-ci.org/openaid-IATI/OIPA)
 [![Coverage Status](https://coveralls.io/repos/openaid-IATI/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/openaid-IATI/OIPA?branch=master)
 
-OIPA is developed within the www.openaid.nl and www.openaidsearch.org platform and enables IATI standard compliant datasets to easily parse and interface that data using the OIPA framework that has been developed using a Django interface. It has been implemented for UN-Habitat at http://open.unhabitat.org and UNESCO: http://opendata.unesco.org.
+OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at:
 
 www.iatistandard.org
 
-OIPA is extended to support a variety of global health indicators published by UN-Habitat, The World Bank and other sources of statistics.
 
-OIPA is licensed under the GNU AGPL license.
+#### About the project
+--------
 
-Check the full documentation and how to use OIPA here: www.oipa.nl
+* Web Site:         http://www.oipa.nl
+* Authors:          [Zimmerman & Zimmerman ](https://www.zimmermanzimmerman.nl/)
+* License:          AGPLv3 (see included [LICENSE](https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD) file for full license)
+* Github Repo:      https://github.com/openaid-IATI/OIPA/
+* Bug Tracker:      https://github.com/openaid-IATI/OIPA/issues
+* FAQ:              UnderConstruction(!)
 
-Codebase maintained by team Zimmerman & Zimmerman in Amsterdam.
 
-============
+#### Can I contribute?
+--------
+Hell yes! We are mainly looking for coders to help on the project. If you are a code  press *Fork* at the top of this github page and get started.
 
-Development on [Vagrant](https://www.vagrantup.com/)
-========
 
+#### How to install the development environment on [Vagrant](https://www.vagrantup.com/)
+--------
 Initial setup scripts and Vagrantfile included,
 in order to setup new instance type following inside repository root directory:
 
