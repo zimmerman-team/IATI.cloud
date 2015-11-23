@@ -38,24 +38,8 @@ class NarrativeSerializer(serializers.ModelSerializer):
             'language',
         )
 
-    # def __init__(self, *args, **kwargs):
-    #     print(kwargs)
-    #     super(NarrativeSerializer, self).__init__(*args, **kwargs)
-
-    # def to_representation(self, obj):
-    #     print(self.__dict__) 
-        # help(self)
-        # help(obj)
-
-        # return [ 
-        # {
-        #     "text": narrative.content, 
-        #     "language": narrative.language.name
-        # }  for narrative in obj.all() ]
-
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
-
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
@@ -245,7 +229,6 @@ class TitleSerializer(serializers.Serializer):
         fields = ('narratives',)
 
 class DescriptionSerializer(serializers.ModelSerializer):
-
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
