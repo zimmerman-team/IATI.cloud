@@ -258,28 +258,28 @@ class ActivityQuerySet(query.QuerySet):
         return sum
 
     def aggregate_expenditure(self):
-        queryset = self.filter(transaction__transaction_type='E')
+        queryset = self.filter(transaction__transaction_type__code='4')
         sum = queryset.aggregate(
             expenditure=Sum('transaction__value')
         ).get('expenditure', 0.00)
         return sum
 
     def aggregate_disbursement(self):
-        queryset = self.filter(transaction__transaction_type='D')
+        queryset = self.filter(transaction__transaction_type__code='3')
         sum = queryset.aggregate(
             disbursement=Sum('transaction__value')
         ).get('disbursement', 0.00)
         return sum
 
     def aggregate_commitment(self):
-        queryset = self.filter(transaction__transaction_type='C')
+        queryset = self.filter(transaction__transaction_type__code='2')
         sum = queryset.aggregate(
             commitment=Sum('transaction__value')
         ).get('commitment', 0.00)
         return sum
 
     def aggregate_incoming_fund(self):
-        queryset = self.filter(transaction__transaction_type='IF')
+        queryset = self.filter(transaction__transaction_type='1')
         sum = queryset.aggregate(
             incoming_fund=Sum('transaction__value')
         ).get('incoming_fund', 0.00)
