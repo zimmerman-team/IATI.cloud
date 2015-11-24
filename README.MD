@@ -31,6 +31,7 @@ Yes please! We are mainly looking for coders to help on the project. If you are 
 * UNESCO Transparency Portal:                http://opendata.unesco.org/
 * UN-Habitat:                                http://open.unhabitat.org
 * DFID Devtracker (jan. 2016)                http://devtracker.dfid.gov.uk/
+* Mohinga AIMS                               http://mohinga.info/en/
 
 
 #### How to install the development environment on [Vagrant](https://www.vagrantup.com/)
