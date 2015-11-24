@@ -1,11 +1,11 @@
 # the upstream component nginx needs to connect to
 upstream django {
-    server unix:/var/tmp/oipa.sock; # for a file socket
+    server unix:/tmp/oipa.sock; # for a file socket
 }
 
 server {
     listen      80;
-    server_name dev.oipa.nl; # substitute FQDN
+    # server_name dev.oipa.nl; # substitute FQDN
     charset     utf-8;
 
     # max upload size
@@ -16,7 +16,7 @@ server {
     }
 
     location /static {
-        alias /home/oipa/OIPA/OIPA/static-root; # amend as required
+        alias /home/oipa/OIPA/OIPA/static; # amend as required
     }
 
     # Send all non-media requests to the Django server.
