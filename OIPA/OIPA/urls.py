@@ -16,7 +16,7 @@ urlpatterns = patterns(
     url(r'^admin/task_queue/', include('task_queue.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api', include('api.urls')),
+    url(r'^api/', include('api.urls')),
     url(r'^home$', TemplateView.as_view(template_name='home/home.html'),name='home'),
     url(r'^about$', TemplateView.as_view(template_name='home/about.html'),name='about'),
     url(r'', include('two_factor.urls', 'two_factor')),
