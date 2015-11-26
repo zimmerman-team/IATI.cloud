@@ -31,7 +31,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         "count": {
             "field": "count",
             "annotate_name": "count",
-            "annotate": Count('id')
+            "annotate": Count('id', distinct=True)
         },
         "budget": {
             "field": "budget",
@@ -394,7 +394,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         result = self.serialize_foreign_keys(result, request, group_by)
 
         return {
-            'count':len(result),
+            'count':len(queryset),
             'results': result
         }
 
