@@ -3,7 +3,6 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from iati.iati_parser import ParseIATI
-from iati.deleter import Deleter
 
 
 class Publisher(models.Model):
@@ -89,9 +88,9 @@ class IatiXmlSource(models.Model):
         if process:
             self.process()
 
-    def delete(self, process=True, *args, **kwargs):
-        deleter = Deleter()
-        deleter.delete_by_source(self.source_url)
+    def delete(self, *args, **kwargs):
+        from iati.models import Activity
+        Activity.objects.filter(xml_source_ref=self.ref).delete()
         super(IatiXmlSource, self).delete()
 
 

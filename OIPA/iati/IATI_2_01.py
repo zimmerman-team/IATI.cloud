@@ -3,7 +3,6 @@ import dateutil.parser
 import re
 import unicodedata
 
-from django.db.models import Model, Sum
 from django.contrib.gis.geos import GEOSGeometry, Point
 
 from genericXmlParser import XMLParser
@@ -120,7 +119,7 @@ class Parse(XMLParser):
     def validate_date(self, unvalidated_date):
 
         if unvalidated_date:
-            unvalidated_date = unvalidated_date.strip(' \t\n\r')
+            unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
         else:
             return None
 
@@ -187,8 +186,6 @@ class Parse(XMLParser):
         }
 
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
-        print id
-        
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
         hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -2064,8 +2061,6 @@ class Parse(XMLParser):
         self.set_related_activities(activity)
         self.set_transaction_provider_receiver_activity(activity)
         self.set_derived_activity_dates(activity)
-        self.calculate_per_activity_aggregations(activity)
-
 
     def set_derived_activity_dates(self, activity):
         """
@@ -2095,129 +2090,3 @@ class Parse(XMLParser):
         """
         transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
-       
-
-    def calculate_per_activity_aggregation(
-            self,
-            activity_aggregation,
-            currency_field_name,
-            value_field_name,
-            aggregation_object):
-        """
-
-        """
-
-        currency = None
-        value = 0
-
-        for agg_item in aggregation_object:
-            currency = agg_item[0]
-            if agg_item[1]:
-                value = value + agg_item[1]
-
-        if len(aggregation_object) > 1:
-            # mixed currencies, set as None
-            currency = None
-
-        setattr(activity_aggregation, currency_field_name, currency)
-        setattr(activity_aggregation, value_field_name, value)
-
-        return activity_aggregation
-
-    def update_total_plus_child_budget(self, activity_aggregation):
-        """
-
-        """
-        if activity_aggregation.total_budget_value > 0 and activity_aggregation.total_child_budget_value == 0:
-            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_budget_currency
-        elif activity_aggregation.total_budget_value == 0 and activity_aggregation.total_child_budget_value > 0:
-            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_child_budget_currency
-        elif activity_aggregation.total_budget_currency == activity_aggregation.total_plus_child_budget_currency:
-            activity_aggregation.total_plus_child_budget_currency = activity_aggregation.total_budget_currency
-
-        activity_aggregation.total_plus_child_budget_value = 0
-        if activity_aggregation.total_budget_value:
-            activity_aggregation.total_plus_child_budget_value += activity_aggregation.total_budget_value
-        if activity_aggregation.total_child_budget_value:
-            activity_aggregation.total_plus_child_budget_value += activity_aggregation.total_child_budget_value
-        return activity_aggregation
-
-    def calculate_per_activity_aggregations(self, activity):
-        """
-
-        """
-        def get_child_budget_total(activity):
-            return models.Activity.objects.filter(
-                relatedactivity__ref_activity__id=activity,
-            ).filter(
-                hierarchy=2,
-            ).values_list(
-                'budget__currency'
-            ).annotate(
-                total_budget=Sum('budget__value'))
-
-        activity_aggregation = models.ActivityAggregationData()
-
-        budget_total = activity.budget_set.values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_budget_currency',
-            'total_budget_value',
-            budget_total)
-
-        child_budget_total = get_child_budget_total(activity)
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_child_budget_currency',
-            'total_child_budget_value',
-            child_budget_total)
-
-        incoming_fund_total = activity.transaction_set.filter(transaction_type=1).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_incoming_funds_currency',
-            'total_incoming_funds_value',
-            incoming_fund_total)
-
-        commitment_total = activity.transaction_set.filter(transaction_type=2).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_commitment_currency',
-            'total_commitment_value',
-            commitment_total)
-
-        disbursement_total = activity.transaction_set.filter(transaction_type=3).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_disbursement_currency',
-            'total_disbursement_value',
-            disbursement_total)
-
-        expenditure_total = activity.transaction_set.filter(transaction_type=4).values_list('currency').annotate(Sum('value'))
-        activity_aggregation = self.calculate_per_activity_aggregation(
-            activity_aggregation,
-            'total_expenditure_currency',
-            'total_expenditure_value',
-            expenditure_total)
-
-        activity_aggregation = self.update_total_plus_child_budget(activity_aggregation)
-        activity_aggregation.save()
-        activity.activity_aggregations = activity_aggregation
-        activity.save()
-
-        if activity.hierarchy != '1':
-            # update the parent's child budgets
-            parent_activity = activity.relatedactivity_set.filter(type__code=1)
-            if parent_activity and parent_activity[0].ref_activity:
-                parent_activity = parent_activity[0].ref_activity
-                parent_child_budget_total = get_child_budget_total(parent_activity)
-                parent_activity_aggregations = parent_activity.activity_aggregations
-                parent_activity_aggregations = self.calculate_per_activity_aggregation(
-                    parent_activity_aggregations,
-                    'total_child_budget_currency',
-                    'total_child_budget_value',
-                    parent_child_budget_total)
-
-                parent_activity_aggregations = self.update_total_plus_child_budget(parent_activity_aggregations)
-
-                parent_activity_aggregations.save()

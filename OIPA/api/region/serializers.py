@@ -33,7 +33,6 @@ class RegionSerializer(DynamicFieldsModelSerializer):
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
-    aggregations = AggregationsSerializer(source='activity_set', fields=())
     countries = serializers.HyperlinkedIdentityField(
         view_name='regions:region-countries')
     activities = serializers.HyperlinkedIdentityField(
@@ -53,5 +52,4 @@ class RegionSerializer(DynamicFieldsModelSerializer):
             'activities',
             'location',
             'child_regions',
-            'aggregations'
         )

@@ -2,7 +2,12 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from iati.models import OrganisationType,Language,Currency,FileFormat,DocumentCategory,Version
+from iati.models import OrganisationType
+from iati.models import Language
+from iati.models import Currency
+from iati.models import FileFormat
+from iati.models import DocumentCategory
+from iati.models import Version
 from geodata.models import Country
 
 
@@ -60,7 +65,7 @@ class Name(models.Model):
     )
 
 
-#reporting organisation (can only be one but needs seperate class for narratives)
+#reporting organisation (can only be one but needs separate class for narratives)
 class ReportingOrg(models.Model):
     organisation = models.ForeignKey(Organisation,related_name='reporting_orgs')
     org_type = models.ForeignKey(OrganisationType, null=True, default=None)
@@ -162,15 +167,16 @@ class RecipientCountryBudget(models.Model):
 
 
 class DocumentLink(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name='documentlinks')
+    organisation = models.ForeignKey(Organisation, related_name='documentlinks')
     url = models.TextField(max_length=500)
-    file_format = models.ForeignKey(FileFormat, null=True, default=None,related_name='file_formats')
+    file_format = models.ForeignKey(FileFormat, null=True, default=None, related_name='file_formats')
     categories = models.ManyToManyField(
         DocumentCategory,related_name='doc_categories')
     # title = models.CharField(max_length=255, default="")
     language = models.ForeignKey(Language, null=True, default=None,related_name='languages')
     recipient_countries = models.ManyToManyField(
-        Country, blank=True,related_name='recipient_countries')
+        Country, blank=True,
+        related_name='recipient_countries')
 
     def __unicode__(self,):
         return "%s - %s" % (self.organisation.code, self.url)
@@ -181,21 +187,11 @@ class DocumentLink(models.Model):
 
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
-    document_link = models.ForeignKey(DocumentLink,related_name='documentlinktitles')
+    document_link = models.ForeignKey(DocumentLink, related_name='documentlinktitles')
     narratives = GenericRelation(
         Narrative,
         content_type_field='content_type',
         object_id_field='object_id',
         related_query_name='narratives'
     )
-
-
-
-
-
-
-
-
-
-
 

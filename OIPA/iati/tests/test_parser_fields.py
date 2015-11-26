@@ -119,6 +119,22 @@ class ParserSetupTestCase(TestCase):
     def tearDownClass(self):
         pass
 
+class GenericMethodsTestCase(ParserSetupTestCase):
+    """
+    test of helper methods available in the parser
+    """
+    def setUp(self):
+        self.iati_201 = copy_xml_tree(self.iati_201)
+
+        self.title = E('title', )
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.01")
+        self.parser_201.register_model('Activity', self.activity)
+        self.parser_105.register_model('Activity', self.activity)
+
+
+
 
 class ActivityTestCase(ParserSetupTestCase):
     """

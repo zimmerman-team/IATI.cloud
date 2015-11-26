@@ -1,17 +1,7 @@
 from haystack import indexes
 from models import Activity
 
-"""
-  -activity id
-    -title
-    -description
-    -participating organisation name
-    -reporting organisation name
-    -country name
-    -region name
-    -sector name
-    -documentlink title
-"""
+
 class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.MultiValueField(document=True)
     activity_id = indexes.CharField(model_attr='iati_identifier', default='')
@@ -33,21 +23,21 @@ class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
         return self.get_model().objects.all()
 
     def get_updated_field(self):
-    	return 'last_updated_model'
+        return 'last_updated_model'
 
     def prepare(self, obj):
         self.prepared_data = super(ActivityIndex, self).prepare(obj)
         
         texts = []
-        texts.append(self.prepared_data['activity_id']);
-        texts.extend(self.prepare_title(obj));
-        texts.extend(self.prepare_description(obj));
-        texts.extend(self.prepare_recipient_country(obj));
-        texts.extend(self.prepare_recipient_region(obj));
-        texts.extend(self.prepare_sector(obj));
-        texts.extend(self.prepare_document_link(obj));
-        texts.extend(self.prepare_participating_org(obj));
-        self.prepared_data['text'] = texts;
+        texts.append(self.prepared_data['activity_id'])
+        texts.extend(self.prepare_title(obj))
+        texts.extend(self.prepare_description(obj))
+        texts.extend(self.prepare_recipient_country(obj))
+        texts.extend(self.prepare_recipient_region(obj))
+        texts.extend(self.prepare_sector(obj))
+        texts.extend(self.prepare_document_link(obj))
+        texts.extend(self.prepare_participating_org(obj))
+        self.prepared_data['text'] = texts
 
         return self.prepared_data
 
@@ -108,5 +98,4 @@ class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
             for narrative in participating_org.narratives.all():
                     text.append(narrative.content)
         return text
-        
-        
+

@@ -1,11 +1,7 @@
 from django.contrib import admin
 from iati.models import *
 from iati.transaction.models import *
-from django.conf.urls import patterns
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.http import HttpResponse
-from iati.updater import SectorUpdater
-
 from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
 
 
@@ -196,22 +192,6 @@ class ActivityAdmin(NestedModelAdmin):
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_display = ['code', 'name', 'description', 'category']
-
-    def get_urls(self):
-        urls = super(SectorAdmin, self).get_urls()
-
-        my_urls = patterns('',
-            (r'^update-unesco-sectors', self.admin_site.admin_view(self.update_unesco_sectors)),
-        )
-        return my_urls + urls
-
-    def update_unesco_sectors(self, request):
-        sector_updater = SectorUpdater()
-        success = sector_updater.update_unesco_sectors()
-        if success:
-            return HttpResponse('Success')
-        else:
-            return False
 
 
 admin.site.register(Activity, ActivityAdmin)
