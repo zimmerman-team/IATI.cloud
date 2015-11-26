@@ -1,7 +1,6 @@
 from django.db import models
 from geodata.models import Country, Region
 from activity_manager import ActivityQuerySet
-from organisation_manager import OrganisationQuerySet
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -12,6 +11,7 @@ from iati_vocabulary.models import GeographicVocabulary
 from iati_vocabulary.models import PolicyMarkerVocabulary
 from iati_vocabulary.models import SectorVocabulary
 from iati_vocabulary.models import BudgetIdentifierVocabulary
+from iati_organisation.models import Organisation
 
 
 # TODO: separate this
@@ -31,37 +31,11 @@ class Narrative(models.Model):
         index_together = [('related_content_type', 'related_object_id')]
 
 
-class ActivityAggregationData(models.Model):
-    total_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_budget_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_child_budget_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_plus_child_budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_plus_child_budget_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_disbursement_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_incoming_funds_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_commitment_currency = models.CharField(max_length=3, null=True, default=None)
-
-    total_expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    total_expenditure_currency = models.CharField(max_length=3, null=True, default=None)
-
-
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
         (2, u"Child"),
     )
-    
-    # TODO: remove default and null
-    activity_aggregations = models.OneToOneField(ActivityAggregationData, null=True)
 
     id = models.CharField(max_length=150,primary_key=True,blank=False)
     iati_identifier = models.CharField(max_length=150, blank=False)
@@ -111,9 +85,18 @@ class Activity(models.Model):
     default_tied_status = models.ForeignKey(TiedStatus, null=True, default=None)
     scope = models.ForeignKey(ActivityScope, null=True, default=None)
 
-    capital_spend = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None) # @percentage on capital-spend
-    has_conditions = models.BooleanField(default=False) # @attached on iati-conditions
-    is_searchable = models.BooleanField(default=True, db_index=True) # is object searchable
+    # @percentage on capital-spend
+    capital_spend = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        default=None)
+    # @attached on iati-conditions
+    has_conditions = models.BooleanField(default=False)
+
+    # added data
+    is_searchable = models.BooleanField(default=True, db_index=True)
+
 
     objects = ActivityQuerySet.as_manager()
 
@@ -122,6 +105,38 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = "activities"
+
+
+class AbstractActivityAggregation(models.Model):
+    budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    budget_currency = models.CharField(max_length=3, null=True, default=None)
+    disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    disbursement_currency = models.CharField(max_length=3, null=True, default=None)
+    incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    incoming_funds_currency = models.CharField(max_length=3, null=True, default=None)
+    commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    commitment_currency = models.CharField(max_length=3, null=True, default=None)
+    expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    expenditure_currency = models.CharField(max_length=3, null=True, default=None)
+
+    class Meta:
+        abstract = True
+
+
+class ActivityAggregation(AbstractActivityAggregation):
+
+    activity = models.OneToOneField(Activity, related_name="activity_aggregation", default=None)
+
+
+class ChildAggregation(AbstractActivityAggregation):
+
+    activity = models.OneToOneField(Activity, related_name="child_aggregation", default=None)
+
+
+class ActivityPlusChildAggregation(AbstractActivityAggregation):
+
+    activity = models.OneToOneField(Activity, related_name="activity_plus_child_aggregation", default=None)
+
 
 class Title(models.Model):
     narratives = GenericRelation(
@@ -148,40 +163,23 @@ class ActivitySearchData(models.Model):
     search_reporting_organisation_name = models.TextField(max_length=80000)
     search_documentlink_title = models.TextField(max_length=80000)
 
-# TODO: move this to a separate django app along with other organisation-related models
-class Organisation(models.Model):
-    code = models.CharField(max_length=250,primary_key=True)
-    abbreviation = models.CharField(max_length=120, default="")
-    type = models.ForeignKey(OrganisationType, null=True, default=None)
-    reported_by_organisation = models.CharField(max_length=150, default="")
-    name = models.CharField(max_length=250, default="")
-    original_ref = models.CharField(max_length=120, default="")
-
-    is_whitelisted = models.BooleanField(default=False) # for organisation fixture work-around
-
-    def __unicode__(self):
-        return self.name
-
-    def total_activities(self):
-        return self.activity_set.count()
-
-    objects = OrganisationQuerySet.as_manager()
 
 class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
     activity = models.ForeignKey(
         Activity,
-        related_name="reporting_organisations"
-        )
+        related_name="reporting_organisations")
     organisation = models.ForeignKey(Organisation, null=True, default=None) # if in organisation standard
     type = models.ForeignKey(OrganisationType, null=True, default=None)
 
     secondary_reporter = models.BooleanField(default=False)
+
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, default="")
@@ -189,19 +187,20 @@ class ActivityParticipatingOrganisation(models.Model):
 
     activity = models.ForeignKey(
         Activity,
-        related_name="participating_organisations"
-        )
+        related_name="participating_organisations")
     organisation = models.ForeignKey(Organisation, null=True, default=None) # if in organisation standard
 
     type = models.ForeignKey(OrganisationType, null=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, default=None)
 
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)
+
 
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
@@ -211,12 +210,14 @@ class ActivityPolicyMarker(models.Model):
         PolicySignificance,
         null=True,
         default=None)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     def __unicode__(self,):
         return "%s - %s - %s" % (self.activity.id, self.code, self.significance.code)
+
 
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
@@ -256,9 +257,10 @@ class BudgetItem(models.Model):
 
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -278,9 +280,10 @@ class OtherIdentifier(models.Model):
     identifier = models.CharField(max_length=100)
     owner_ref = models.CharField(max_length=100, default="")
     # owner_name = models.CharField(max_length=100, default="")
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
     type = models.ForeignKey(OtherIdentifierType,null=True)
 
     def __unicode__(self,):
@@ -317,39 +320,45 @@ class ContactInfo(models.Model):
 
 class ContactInfoOrganisation(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ContactInfoDepartment(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ContactInfoPersonName(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ContactInfoJobTitle(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ContactInfoMailingAddress(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ContactInfoTelephone(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 # class transaction_description(models.Model):
 #     transaction = models.ForeignKey(transaction)
@@ -407,11 +416,13 @@ class DocumentLink(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.url)
 
+
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
 class DocumentLinkCategory(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     category = models.ForeignKey(DocumentCategory)
+
 
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
@@ -420,9 +431,10 @@ class DocumentLinkLanguage(models.Model):
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
@@ -434,15 +446,17 @@ class Result(models.Model):
 
 class ResultTitle(models.Model):
     result = models.ForeignKey(Result)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ResultDescription(models.Model):
     result = models.ForeignKey(Result)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
@@ -493,9 +507,10 @@ class ResultIndicatorPeriodActualComment(models.Model):
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
     type = models.ForeignKey( # TODO: set a default or require
         DescriptionType,
@@ -573,21 +588,24 @@ class LocationAdministrative(models.Model):
 
 class LocationName(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class LocationDescription(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class LocationActivityDescription(models.Model):
     location = models.ForeignKey(Location)
-    narratives = GenericRelation(Narrative,
-		content_type_field='related_content_type',
-		object_id_field='related_object_id')
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)

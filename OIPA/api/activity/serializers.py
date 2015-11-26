@@ -41,13 +41,15 @@ class NarrativeSerializer(serializers.ModelSerializer):
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
-class DocumentLinkSerializer(serializers.ModelSerializer):
 
-    class DocumentCategorySerializer(serializers.ModelSerializer):
+class DocumentCategorySerializer(serializers.ModelSerializer):
 
         class Meta:
             model = iati.models.DocumentCategory
             fields = ('code', 'name')
+
+
+class DocumentLinkSerializer(serializers.ModelSerializer):
 
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
@@ -108,6 +110,7 @@ class BudgetSerializer(FilterableModelSerializer):
             'value',
         )
 
+
 class ActivityDateSerializer(serializers.Serializer):
 
     type = CodelistSerializer()
@@ -117,59 +120,34 @@ class ActivityDateSerializer(serializers.Serializer):
         model = iati.models.ActivityDate
         fields = ('iso_date', 'type')
 
-class ActivityAggregationSerializer(serializers.Serializer):
-    total_budget_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_budget_currency = serializers.CharField()
-    total_child_budget_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_child_budget_currency = serializers.CharField()
-    total_disbursement_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_disbursement_currency = serializers.CharField()
-    total_incoming_funds_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_incoming_funds_currency = serializers.CharField()
-    total_commitment_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_commitment_currency = serializers.CharField()
-    total_expenditure_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_expenditure_currency = serializers.CharField()
-    total_plus_child_budget_value = serializers.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        coerce_to_string=False)
-    total_plus_child_budget_currency = serializers.CharField()
 
-    class Meta:
-        model = iati.models.ActivityAggregationData
-        fields = (
-            'total_budget_value',
-            'total_budget_currency',
-            'total_child_budget_value',
-            'total_child_budget_currency',
-            'total_disbursement_value',
-            'total_disbursement_currency',
-            'total_incoming_funds_value',
-            'total_incoming_funds_currency',
-            'total_commitment_value',
-            'total_commitment_currency',
-            'total_expenditure_value',
-            'total_expenditure_currency',
-        )
+class ActivityAggregationSerializer(DynamicFieldsSerializer):
+    budget_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    budget_currency = serializers.CharField()
+    disbursement_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    disbursement_currency = serializers.CharField()
+    incoming_funds_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    incoming_funds_currency = serializers.CharField()
+    commitment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    commitment_currency = serializers.CharField()
+    expenditure_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    expenditure_currency = serializers.CharField()
+
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
@@ -464,7 +442,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     related_activities = RelatedActivitySerializer(many=True, source='relatedactivity_set')
 
-    activity_aggregations = ActivityAggregationSerializer()
+    activity_aggregation = ActivityAggregationSerializer()
+    child_aggregation = ActivityAggregationSerializer()
+    activity_plus_child_aggregation = ActivityAggregationSerializer()
 
     class Meta:
         model = iati.models.Activity
@@ -500,5 +480,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'document_links',
             'results',
             'locations',
-            'activity_aggregations'
+            'activity_aggregation',
+            'child_aggregation',
+            'activity_plus_child_aggregation'
         )
+
+
+class CodelistSerializer(DynamicFieldsSerializer):
+    code = serializers.CharField()
+    name = serializers.CharField()

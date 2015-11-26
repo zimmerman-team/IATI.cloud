@@ -14,7 +14,7 @@ from iati_codelists.models import TiedStatus
 from iati_codelists.models import Currency
 from iati_codelists.models import Sector
 from iati_codelists.models import TransactionType
-from iati.models import Organisation
+from iati_organisation.models import Organisation
 from iati.models import Activity
 from iati.models import Narrative
 
@@ -60,12 +60,13 @@ class TransactionProvider(models.Model):
     organisation = models.ForeignKey(
         Organisation,
         related_name="transaction_providing_organisation",
+        on_delete=models.SET_NULL,
         null=True,
         default=None)
     provider_activity = models.ForeignKey(
         Activity,
         related_name="transaction_provider_activity",
-        db_constraint=False,
+        on_delete=models.SET_NULL,
         null=True,
         default=None)
     provider_activity_ref = models.CharField(db_index=True, max_length=200, null=True, default="")
@@ -89,14 +90,15 @@ class TransactionReceiver(models.Model):
     normalized_ref = models.CharField(max_length=120, default="")
 
     organisation = models.ForeignKey(
-        'Organisation',
+        Organisation,
         related_name="transaction_receiving_organisation",
+        on_delete=models.SET_NULL,
         null=True,
         default=None)
     receiver_activity = models.ForeignKey(
         Activity,
         related_name="transaction_receiver_activity",
-        db_constraint=False,
+        on_delete=models.SET_NULL,
         null=True,
         default=None)
     receiver_activity_ref = models.CharField(db_index=True, max_length=200, null=True, default="")
