@@ -13,6 +13,7 @@ from iati.models import Sector
 from iati.models import ActivityStatus
 from iati.models import PolicyMarker
 from iati.models import CollaborationType
+from iati.models import DocumentCategory
 from iati.models import FlowType
 from iati.models import AidType
 from iati.models import FinanceType
@@ -120,6 +121,12 @@ class ActivityAggregationSerializer(BaseSerializer):
             "fields": (("participating_organisations__normalized_ref", "ref") , ("participating_organisations__primary_name", "name"),),
             "queryset": ActivityParticipatingOrganisation.objects.all(),
             "serializer": None,
+            "serializer_fields": (), # has default serializer_fields
+        },
+        "document_link_category": {
+            "fields": (('documentlink__categories__code', 'document_link_category'),),
+            "queryset": DocumentCategory.objects.all(),
+            "serializer": CodelistSerializer,
             "serializer_fields": (), # has default serializer_fields
         },
         "activity_status": {
@@ -249,7 +256,6 @@ class ActivityAggregationSerializer(BaseSerializer):
 
     def apply_annotations(self, queryset, groupList, aggregationList):
 
-        first_queryset = queryset
         before_annotations = dict() # before values()
         after_annotations = dict() # after values()
 
@@ -278,6 +284,9 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
+        queryset = queryset.annotate(**before_annotations)
+        first_queryset = queryset
+
         # apply extras
         first_queryset = first_queryset.extra(**groupExtras)
         queryset = first_queryset.extra(**groupExtras)
@@ -295,7 +304,7 @@ class ActivityAggregationSerializer(BaseSerializer):
                 nullFilters = {}
 
         # Apply group_by calls and annotations
-        result = first_queryset.annotate(**before_annotations).values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
+        result = first_queryset.values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
 
         # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
@@ -411,7 +420,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         result = self.serialize_foreign_keys(result, request, group_by)
 
         return {
-            'count':len(queryset),
+            'count':len(result),
             'results': result
         }
 
