@@ -88,12 +88,15 @@ class Parse(IATI_201_Parser):
 
         if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
-        if role:
-            element.attrib['role'] = role.code
+        element.attrib['role'] = role.code
 
         super(Parse, self).iati_activities__iati_activity__participating_org(element)
 
         participating_organisation = self.get_model('ActivityParticipatingOrganisation')
+        # TODO: workaround for IATI ref uniqueness limitation, add as participating_organisation.primary_name - 2015-11-26
+        if (element.text):
+            participating_organisation.primary_name = element.text
+
         self.add_narrative(element, participating_organisation)
 
         return element

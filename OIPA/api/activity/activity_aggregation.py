@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.db.models import Sum
-from django.db.models import Q
+from django.db.models import Q, F
 from django.db.models.functions import Coalesce
 from django.db import connection
 
@@ -17,6 +17,8 @@ from iati.models import FlowType
 from iati.models import AidType
 from iati.models import FinanceType
 from iati.models import TiedStatus
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
 from api.activity.serializers import ParticipatingOrganisationSerializer
@@ -85,130 +87,134 @@ class ActivityAggregationSerializer(BaseSerializer):
 
     _allowed_groupings = {
         "related_activity": {
-            "field": "relatedactivity__ref_activity__id",
+            "fields": "relatedactivity__ref_activity__id",
             "queryset": None,
             "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
         "recipient_country": {
-            "field": "recipient_country",
+            "fields": "recipient_country",
             "queryset": Country.objects.all(),
             "serializer": CountrySerializer,
-            "fields": ('url', 'code', 'name', 'location'),
+            "serializer_fields": ('url', 'code', 'name', 'location'),
         },
         "recipient_region": {
-            "field": "recipient_region",
+            "fields": "recipient_region",
             "queryset": Region.objects.all(),
             "serializer": RegionSerializer,
-            "fields": ('url', 'code', 'name', 'location'),
+            "serializer_fields": ('url', 'code', 'name', 'location'),
         },
         "sector": {
-            "field": "sector",
+            "fields": "sector",
             "queryset": Sector.objects.all(),
             "serializer": SectorSerializer,
-            "fields": ('url', 'code', 'name'),
+            "serializer_fields": ('url', 'code', 'name'),
         },
         "reporting_organisation": {
-            "field": "reporting_organisations__ref",
-            "queryset": None,
+            "fields": (("reporting_organisations__normalized_ref", "ref"),),
+            "queryset": ActivityReportingOrganisation.objects.all(),
             "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
         "participating_organisation": {
-            "field": "participating_organisation",
-            "queryset": Organisation.objects.all(),
-            "serializer": ParticipatingOrganisationSerializer,
-            "fields": ('url', 'code', 'name'),
+            "fields": (("participating_organisations__normalized_ref", "ref") , ("participating_organisations__primary_name", "name"),),
+            "queryset": ActivityParticipatingOrganisation.objects.all(),
+            "serializer": None,
+            "serializer_fields": (), # has default serializer_fields
         },
         "activity_status": {
-            "field": "activity_status",
+            "fields": "activity_status",
             "queryset": ActivityStatus.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "policy_marker": {
-            "field": "policy_marker",
+            "fields": "policy_marker",
             "queryset": PolicyMarker.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "collaboration_type": {
-            "field": "collaboration_type",
+            "fields": "collaboration_type",
             "queryset": CollaborationType.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "default_flow_type": {
-            "field": "default_flow_type",
+            "fields": "default_flow_type",
             "queryset": FlowType.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "default_aid_type": {
-            "field": "default_aid_type",
+            "fields": "default_aid_type",
             "queryset": AidType.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "default_finance_type": {
-            "field": "default_finance_type",
+            "fields": "default_finance_type",
             "queryset": FinanceType.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "default_tied_status": {
-            "field": "default_tied_status",
+            "fields": "default_tied_status",
             "queryset": TiedStatus.objects.all(),
             "serializer": CodelistSerializer,
-            "fields": (), # has default fields
+            "serializer_fields": (), # has default serializer_fields
         },
         "budget_per_year": {
-            "field": "year",
+            "fields": "year",
             "extra": { 
                 'year': 'EXTRACT(YEAR FROM "period_start")::integer',
             },
             "queryset": None,
             "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
         "budget_per_quarter": {
-            "field": "year,quarter",
+            "fields": ("year","quarter"),
             "extra": {
                 'year': 'EXTRACT(YEAR FROM "period_start")::integer',
                 'quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
             },
             "queryset": None,
             "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
         "transaction_date_year": {
-            "field": "year",
+            "fields": "year",
             "extra": {
                 'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
             },
             "queryset": None,
             "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
         "transactions_per_quarter": {
-            "field": "year,quarter",
+            "fields": ("year", "quarter"),
             "extra": {
                 'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
                 'quarter': 'EXTRACT(QUARTER FROM "transaction_date")::integer',
             },
             "queryset": None,
             "serializer": None,
-            "fields": (),
-        },
-        "location_country": {
-            "field": "'a.id, l.adm_country_iso_id as loc_country_id, lc.name as country_name, lc.region_id",
-            "queryset": None,
-            "serializer": None,
-            "fields": (),
+            "serializer_fields": (),
         },
     }
 
-    _allowed_orderings = [ i['field'] for i in _allowed_groupings.values()]
+    _allowed_orderings = [ i['fields'] for i in _allowed_groupings.values()]
+    _allowed_orderings = []
+    for grouping in _allowed_groupings.values():
+        if type(grouping['fields']) is str:
+            _allowed_orderings.append(grouping['fields'])
+        else: 
+            for field in grouping['fields']: # assume it is a tuple
+                if type(field) is str:
+                    _allowed_orderings.append(field)
+                else:
+                    _allowed_orderings.append(field[1]) # renamed
 
     def apply_order_filters(self, queryset, orderList, aggregationList):
 
@@ -216,9 +222,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
 
         orderings = self._intersection(allowed_orderings, orderList)
+        ordered_orderings = [order for order in orderList if order in allowed_orderings]
 
         if (len(orderings)):
-            return queryset.order_by(*orderings)
+            return queryset.order_by(*ordered_orderings)
         # else: 
         #     return queryset.order_by(*self._intersection(allowed_orderings, groupList))
 
@@ -243,20 +250,32 @@ class ActivityAggregationSerializer(BaseSerializer):
     def apply_annotations(self, queryset, groupList, aggregationList):
 
         first_queryset = queryset
-        first_annotations = dict()
+        before_annotations = dict() # before values()
+        after_annotations = dict() # after values()
 
         same_query_aggregations = [i for i in aggregationList if not self._aggregations[i].get('extra_filter')]
         separate_aggregations = [i for i in aggregationList if self._aggregations[i].get('extra_filter')]
 
         for aggregation in same_query_aggregations:
             a = self._aggregations.get(aggregation, {})
-            first_annotations[a['annotate_name']] = a['annotate']
+            after_annotations[a['annotate_name']] = a['annotate']
      
         # aggregations that can be performed in the same query (hence require no extra filters)
         groupings = {group: self._allowed_groupings[group] for group in groupList}
         groupFields = []
+
         for grouping in groupings.values():
-            groupFields.extend(grouping["field"].split(','))
+            fields = grouping['fields']
+            if type(fields) is str:
+                groupFields.append(fields)
+            else: # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
+                for field in fields:
+                    if type(field) is str:
+                        groupFields.append(field)
+                    else: # is a tuple like (actual, renamed)
+                        groupFields.append(field[1]) # append the renamed to values(), must annotate actual->rename
+                        before_annotations[field[1]] = F(field[0]) # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
+
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
         # apply extras
@@ -268,7 +287,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         # this can be a lot slower than inner joins and will prevent the null
         nullFilters = {}
         for grouping in groupings.values():
-            if grouping["fields"]:
+            if grouping["serializer_fields"]:
                 nullFilters[grouping["field"] + '__isnull'] = False
         for aggregation in same_query_aggregations:
             nullFilters[aggregation + '__isnull'] = False
@@ -276,7 +295,7 @@ class ActivityAggregationSerializer(BaseSerializer):
                 nullFilters = {}
 
         # Apply group_by calls and annotations
-        result = first_queryset.values(*groupFields).annotate(**first_annotations).filter(**nullFilters)
+        result = first_queryset.annotate(**before_annotations).values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
 
         # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
@@ -292,7 +311,6 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             next_result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
 
-            print str(next_result.query)
             main_group_field = groupFields[0]
 
             if len(next_result):
@@ -343,7 +361,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         for grouping in groupList:
             serializer = self._allowed_groupings[grouping]["serializer"]
-            fields = self._allowed_groupings[grouping]["fields"]
+            serializer_fields = self._allowed_groupings[grouping]["serializer_fields"]
             foreignQueryset = self._allowed_groupings[grouping]["queryset"]
 
             if serializer:
@@ -352,11 +370,10 @@ class ActivityAggregationSerializer(BaseSerializer):
                         'request': request,
                     },
                     many=True,
-                    fields=fields,
+                    fields=serializer_fields,
                 ).data
 
                 serializers[grouping] = {i.get('code'): i for i in data}
-
             else:
                 serializers[grouping] = {i.get(grouping): i.get(grouping) for i in results}
 

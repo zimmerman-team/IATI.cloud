@@ -80,7 +80,6 @@ class Parse(XMLParser):
             return self.model_store[key]
         return None
 
-
     def get_model(self, key, index=-1):
         if isinstance(key, Model):
             return super(Parse, self).get_model(key.__class__.__name__, index) # class name
@@ -187,6 +186,7 @@ class Parse(XMLParser):
         }
 
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
+        
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
         hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -318,6 +318,13 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__participating_org__narrative(self,element):
         model = self.get_model('ActivityParticipatingOrganisation')
         self.add_narrative(element, model)
+
+        # TODO: workaround for IATI ref uniqueness limitation, add as participating_organisation.primary_name - 2015-11-26
+        narrative_list = self.get_model_list('ActivityParticipatingOrganisationNarrative')
+        if narrative_list and len(narrative_list) is 1:
+            model.primary_name = element.text
+            text = element.text
+
         return element
 
     '''atributes:
@@ -1351,8 +1358,6 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
         # TODO: make this more transparant in data structure or handling
         # transaction_provider = self.get_model('Transaction', -2)
-        print('called')
-        print(element.text)
         transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
         return element

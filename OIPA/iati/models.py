@@ -23,7 +23,9 @@ class Narrative(models.Model):
         null=True,
         db_index=True)
     related_object = GenericForeignKey('related_content_type', 'related_object_id')
+
     activity = models.ForeignKey('Activity')
+
     language = models.ForeignKey(Language)
     content = models.TextField()
 
@@ -197,10 +199,12 @@ class ActivityParticipatingOrganisation(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+    
+    # TODO: Workaround for IATI ref limitation - 2015-11-26
+    primary_name = models.CharField(max_length=120)
 
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)
-
 
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
