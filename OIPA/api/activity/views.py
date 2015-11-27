@@ -160,11 +160,9 @@ class ActivityList(DynamicListView):
     - `actual_end_date`
     - `start_date`
     - `end_date`
-    - `total_budget_value`
-    - `total_child_budget_value`
-    - `total_commitment_value`
-    - `total_disbursement_value`
-    - `total_plus_child_budget_value`
+    - `activity_budget_value`
+    - `activity_plus_child_budget_value`
+
 
     The user may also specify reverse orderings by prefixing the field name with '-', like so: `-title`
 
@@ -213,17 +211,14 @@ class ActivityList(DynamicListView):
     pagination_class = AggregationsPaginationSerializer
     ordering_fields = (
         'title',
-        'total_budget_value',
-        'total_child_budget_value',
-        'total_plus_child_budget_value',
-        'total_disbursement_value',
-        'total_commitment_value',
         'planned_start_date',
         'actual_start_date',
         'planned_end_date',
         'actual_end_date',
         'start_date',
-        'end_date')
+        'end_date',
+        'activity_budget_value',
+        'activity_plus_child_budget_value',)
 
 
 class ActivityDetail(DynamicDetailView):
