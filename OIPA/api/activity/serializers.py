@@ -485,7 +485,3 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'activity_plus_child_aggregation'
         )
 
-
-class CodelistSerializer(DynamicFieldsSerializer):
-    code = serializers.CharField()
-    name = serializers.CharField()

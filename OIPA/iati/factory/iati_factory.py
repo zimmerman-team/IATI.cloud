@@ -1,6 +1,7 @@
 # TODO: separate files per logical element (as represented in the API)
 # TODO: also, separate for codelists
 import iati
+import iati_organisation
 import datetime
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
@@ -295,10 +296,10 @@ class ReportingOrganisationFactory(NoDatabaseFactory):
 
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
-        model = iati.models.Organisation
+        model = iati_organisation.models.Organisation
 
     code = 'GB-COH-03580586'
-    name = 'PWC'
+    iati_version = SubFactory(VersionFactory)
 
 class SectorVocabularyFactory(NoDatabaseFactory):
     class Meta:

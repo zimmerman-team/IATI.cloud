@@ -63,7 +63,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
         assert type(serializer.fields['categories'].child) is serializers.\
-            DocumentLinkSerializer.DocumentCategorySerializer,\
+            DocumentCategorySerializer,\
             """
             the field 'categories' should be a DocumentCategorySerializer
             """
@@ -86,8 +86,7 @@ class ActivitySerializerTestCase(TestCase):
     def test_DocumentCategorySerializer(self):
 
         doc_category = iati_factory.DocumentCategoryFactory.build()
-        serializer = serializers.DocumentLinkSerializer\
-            .DocumentCategorySerializer(doc_category)
+        serializer = serializers.DocumentCategorySerializer(doc_category)
 
         assert serializer.data['code'] == doc_category.code,\
             """
@@ -693,7 +692,9 @@ class ActivitySerializerTestCase(TestCase):
             'document_links',
             'results',
             'locations',
-            'activity_aggregations'
+            'activity_aggregation',
+            'child_aggregation',
+            'activity_plus_child_aggregation'
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:
