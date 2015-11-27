@@ -6,32 +6,10 @@ from iati_organisation.organisation_1_05 import Parse as Org_1_05_Parser
 from iati.filegrabber import FileGrabber
 from lxml import etree
 from iati_synchroniser.exception_handler import exception_handler
-import hashlib
+from django.conf import settings
 
 
 class ParseIATI():
-
-    # class wide functions
-    def hashfile(self,afile, hasher, blocksize=65536):
-        """
-        Not used
-        """
-        buf = afile.read(blocksize)
-        while len(buf) > 0:
-            hasher.update(buf)
-            buf = afile.read(blocksize)
-        return hasher.hexdigest()
-
-    def get_hash(self):
-        """
-        Not used
-        """
-        hash  = self.hashfile(iati_file,hashlib.md5())
-        if hash == last_hash:
-            pass
-        else:
-            source.last_hash = hash
-        source.save()
 
 
     def prepare_parser(self, root, source):

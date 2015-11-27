@@ -3,6 +3,7 @@ import dateutil.parser
 import re
 import unicodedata
 
+from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
 
 from genericXmlParser import XMLParser
