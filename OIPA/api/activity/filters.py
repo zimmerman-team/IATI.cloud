@@ -2,6 +2,7 @@ import uuid
 
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
+from django.db.models.fields.related import OneToOneRel
 
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter
 from rest_framework.filters import OrderingFilter
@@ -268,6 +269,9 @@ class RelatedOrderingFilter(OrderingFilter):
         try:
             field, parent_model, direct, m2m = model._meta.get_field_by_name(components[0])
 
+            if isinstance(field, OneToOneRel):
+                return self.is_valid_field(field.related_model, components[1])
+
             # reverse relation
             if isinstance(field, ForeignObjectRel):
                 return self.is_valid_field(field.model, components[1])
@@ -283,11 +287,8 @@ class RelatedOrderingFilter(OrderingFilter):
 
         mapped_fields = {
             'title': 'title__narratives__content',
-            'total_budget_value': 'activity_aggregations__total_budget_value',
-            'total_child_budget_value': 'activity_aggregations__total_child_budget_value',
-            'total_plus_child_budget_value': 'activity_aggregations__total_plus_child_budget_value',
-            'total_disbursement_value': 'activity_aggregations__total_disbursement_value',
-            'total_commitment_value': 'activity_aggregations__total_commitment_value',
+            'activity_budget_value': 'activity_aggregation__budget_value',
+            'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',
             'planned_start_date': 'planned_start',
             'actual_start_date': 'actual_start',
             'planned_end_date': 'planned_end',
