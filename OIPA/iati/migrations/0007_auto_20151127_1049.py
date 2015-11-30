@@ -7,10 +7,10 @@ from django.apps import apps
 
 from django.contrib.contenttypes.models import ContentType
 
-APOContentType = ContentType.objects.get(model='activityparticipatingorganisation')
-
 @transaction.atomic
 def get_name_from_narrative(apps, schema_editor):
+    APOContentType = ContentType.objects.get(model='activityparticipatingorganisation')
+
     APO = apps.get_model('iati', 'ActivityParticipatingOrganisation')
     Narrative = apps.get_model('iati', 'Narrative')
     for item in APO.objects.all():
