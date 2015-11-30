@@ -269,17 +269,21 @@ class ActivityAggregationSerializer(BaseSerializer):
         # aggregations that can be performed in the same query (hence require no extra filters)
         groupings = {group: self._allowed_groupings[group] for group in groupList}
         groupFields = []
+        nullFilters = {}
 
         for grouping in groupings.values():
             fields = grouping['fields']
             if type(fields) is str:
                 groupFields.append(fields)
+                if grouping['serializer_fields']: nullFilters[fields + '__isnull'] = False
             else: # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
                 for field in fields:
                     if type(field) is str:
                         groupFields.append(field)
+                        if grouping['serializer_fields']: nullFilters[field + '__isnull'] = False
                     else: # is a tuple like (actual, renamed)
                         groupFields.append(field[1]) # append the renamed to values(), must annotate actual->rename
+                        if grouping['serializer_fields']: nullFilters[field[1] + '__isnull'] = False
                         before_annotations[field[1]] = F(field[0]) # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
 
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
@@ -290,19 +294,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         # apply extras
         first_queryset = first_queryset.extra(**groupExtras)
         queryset = first_queryset.extra(**groupExtras)
-
+        
         # remove nulls (
         # to do: check why values() uses left outer joins,
         # this can be a lot slower than inner joins and will prevent the null
-        nullFilters = {}
-        for grouping in groupings.values():
-            if grouping["serializer_fields"]:
-                nullFilters[grouping["field"] + '__isnull'] = False
-        for aggregation in same_query_aggregations:
-            nullFilters[aggregation + '__isnull'] = False
-            if 'no_null_check' in self._aggregations[aggregation]:
-                nullFilters = {}
-
         # Apply group_by calls and annotations
         result = first_queryset.values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
 
