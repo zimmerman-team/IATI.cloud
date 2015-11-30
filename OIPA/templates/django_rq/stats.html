@@ -16,9 +16,7 @@
     </div>
 {% endblock %}
 
-
 {% block content %}
-
 
 <div id="page-django-rq-tasks">
 
@@ -66,7 +64,7 @@
                         <button id="add-worker-for-parser-queue" class="btn-info oipa-admin-button" style="margin-right: 10px;">Stop worker for parser queue</button>
 
                         <button id="add-second-worker-for-parser-queue" class="btn-info oipa-admin-button">Start second worker for parser queue</button>
-
+                        
                     </div>
                 </div>
 
@@ -99,6 +97,7 @@
                             <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
                             <option value="get_new_organisations_from_iati_api">Add new organisations from IATI registry</option>
                             <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
+                            <option value="calculate_activity_aggregations">Calculate activity aggregations</option>
                         </select>
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -240,13 +239,10 @@
                 </div>
 
                 <div class="row-fluid django-rq-buttons">
-
                     <div class="span12">
-
                         <label for="new-schedule-jobname">Job name:</label>
                         <input name="new-schedule-jobname" placeholder="">
                     </div>
-
                 </div>
 
                 <div class="row-fluid django-rq-buttons" style="margin-top:14px;">
@@ -254,15 +250,11 @@
                         <label for="new-schedule-task">Task to be performed:</label>
                         <select name="new-schedule-task">
                             <option value="Choose task">Choose task</option>
-                            <option value="parse_all_existing_sources">Parse all existing sources</option>
-                            <option value="parse_all_over_parse_interval">Parse all existing sources over their parse interval</option>
-                            <option value="parse_all_not_parsed_in_x_days">Parse all sources not parsed in the last x days</option>
-                            <option value="get_new_sources_from_iati_api">Add new sources from IATI registry API</option>
-                            <option value="update_iati_codelists">Update IATI codelists from IATI registry API</option>
-                            <option value="update_all_geo_data">Update all geo data</option>
-                            <option value="update_all_indicator_data">Update all indicator data</option>
-                            <option value="cache_long_api_calls">Cache long API calls</option>
-                            <option value="update_existing_api_call_caches">Update existing API cache calls</option>
+                            <option value="parse_all_existing_sources">Update all existing IATI source</option>
+                            <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
+                            <option value="get_new_organisations_from_iati_api">Add new organisations from IATI registry</option>
+                            <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
+                            <option value="calculate_activity_aggregations">Calculate activity aggregations</option>
                         </select>
                     </div>
                 </div>
@@ -286,37 +278,19 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="row-fluid django-rq-buttons" style="margin-top:20px;">
-
                     <div class="span12">
-
                         <button id="new-schedule-submit" class="btn-info oipa-admin-button">Add</button>
                     </div>
-
                 </div>
-
-
                 <div class="row-fluid">
-
                     <div class="span12">
-
                         <a href="#" id="close-schedule-new-task">Close</a>
                     </div>
-
                 </div>
-
-
             </div>
-
-
-
         </div>
     </div>
-
-
-
-
 
     <div class="row-fluid">
         <div class="span11">
@@ -353,15 +327,9 @@
                     </div>
                 </div>
 
-
-
-
-
             </div>
         </div>
     </div>
-
-
 
     <div class="row-fluid">
         <div class="span11">

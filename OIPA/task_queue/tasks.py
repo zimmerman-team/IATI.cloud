@@ -76,6 +76,11 @@ def parse_source_by_url(url):
         xml_source.process()
 
 @job
+def calculate_activity_aggregations():
+    from django.core import management
+    management.call_command('set_activity_aggregation_data', verbosity=0, interactive=False)
+
+@job
 def delete_source_by_id(id):
     if IatiXmlSource.objects.filter(id=id).exists():
         xml_source = IatiXmlSource.objects.get(id=id)
