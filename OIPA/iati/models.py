@@ -201,7 +201,7 @@ class ActivityParticipatingOrganisation(models.Model):
         object_id_field='related_object_id')
     
     # TODO: Workaround for IATI ref limitation - 2015-11-26
-    primary_name = models.CharField(max_length=120)
+    primary_name = models.TextField()
 
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)

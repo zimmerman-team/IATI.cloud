@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activityparticipatingorganisation',
             name='primary_name',
-            field=models.CharField(default='test', max_length=120),
+            field=models.TextField(default='test'),
             preserve_default=False,
         ),
         migrations.RunPython(get_name_from_narrative),
