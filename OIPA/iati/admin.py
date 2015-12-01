@@ -27,12 +27,14 @@ class ExtraNestedInline(NestedInline):
 
         return inline_instances
 
+# TODO: remove django-grappelli-inline dependency by moving these templates to local repo - 2015-12-01
 class NestedStackedInline(ExtraNestedInline):
-    template = 'admin/edit_inline/stacked-nested.html'
+    template = 'admin/edit_inline/stacked.html'
+    # template = 'admin/edit_inline/stacked-nested.html'
     
 class NestedTabularInline(ExtraNestedInline):
-    template = 'admin/edit_inline/tabular-nested.html'
-
+    template = 'admin/edit_inline/tabular.html'
+    # template = 'admin/edit_inline/tabular-nested.html'
 
 class NarrativeForm(forms.ModelForm):
     class Meta:
@@ -120,33 +122,33 @@ class TransactionInline(NestedTabularInline):
     ]
 
 
-class ActivityDateInline(admin.TabularInline):
+class ActivityDateInline(NestedTabularInline):
     model = ActivityDate
     extra = 0
 
 
-class ActivityReportingOrganisationInline(admin.TabularInline):
+class ActivityReportingOrganisationInline(NestedTabularInline):
     model = ActivityReportingOrganisation
     extra = 0
 
 
-class ActivityParticipatingOrganisationInline(admin.TabularInline):
+class ActivityParticipatingOrganisationInline(NestedTabularInline):
     model = ActivityParticipatingOrganisation
     extra = 0
 
 
-class TransactionInline(admin.TabularInline):
+class TransactionInline(NestedTabularInline):
     model = Transaction
     extra = 0
     exclude = ('value_string',)
 
 
-class ActivityPolicyMarkerInline(admin.TabularInline):
+class ActivityPolicyMarkerInline(NestedTabularInline):
     model = ActivityPolicyMarker
     extra = 0
 
 
-class ActivityRecipientCountryInline(admin.TabularInline):
+class ActivityRecipientCountryInline(NestedTabularInline):
     model = ActivityRecipientCountry
     extra = 0
 
@@ -157,7 +159,7 @@ class ActivityRecipientCountryInline(admin.TabularInline):
     }
 
 
-class ActivitySectorInline(admin.TabularInline):
+class ActivitySectorInline(NestedTabularInline):
     model = ActivitySector
     extra = 0
 
@@ -167,12 +169,12 @@ class ActivitySectorInline(admin.TabularInline):
         'fk': ['sector'],
     }
 
-class ActivityRecipientRegionInline(admin.TabularInline):
+class ActivityRecipientRegionInline(NestedTabularInline):
     model = ActivityRecipientRegion
     extra = 0
 
 
-class BudgetInline(admin.TabularInline):
+class BudgetInline(NestedTabularInline):
     model = Budget
     exclude = ('value_string',)
     extra = 0
@@ -184,7 +186,7 @@ class BudgetInline(admin.TabularInline):
     # }
 
 
-class CategoriesInline(admin.TabularInline):
+class CategoriesInline(NestedTabularInline):
     model = DocumentLinkCategory
     # extra = 0
 
@@ -195,17 +197,17 @@ class DocumentLinkInline(NestedStackedInline):
     extra = 0
 
 
-class ResultInline(admin.TabularInline):
+class ResultInline(NestedTabularInline):
     model = Result
     extra = 0
 
 
-class LocationInline(admin.TabularInline):
+class LocationInline(NestedTabularInline):
     model = Location
     extra = 0
 
 
-class RelatedActivityInline(admin.TabularInline):
+class RelatedActivityInline(NestedTabularInline):
     model = RelatedActivity
     fk_name='current_activity'
     extra = 0
@@ -221,7 +223,6 @@ class DescriptionInline(NestedStackedInline):
     model = Description
     extra = 0
     inlines = [NarrativeInline, ]
-
 
 class TitleInline(NestedStackedInline):
     model = Title

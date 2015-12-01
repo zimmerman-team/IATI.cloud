@@ -36,6 +36,7 @@ RQ_QUEUES = {
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_served/')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
