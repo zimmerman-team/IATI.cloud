@@ -1,7 +1,5 @@
-from django.core.management.base import BaseCommand
 from django.db.models import Sum
 from django.core.exceptions import ObjectDoesNotExist
-
 
 from iati.models import Activity
 from iati.models import ActivityAggregation
@@ -9,21 +7,23 @@ from iati.models import ChildAggregation
 from iati.models import ActivityPlusChildAggregation
 from iati.transaction.models import Transaction
 
-class Command(BaseCommand):
-    option_list = BaseCommand.option_list
 
-    """
-        Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
-    """
+class ActivityAggregationCalculation():
 
-    def handle(self, *args, **options):
-
+    def parse_all_activity_aggregations(self):
         for activity in Activity.objects.all():
-            self.calculate_activity_aggregations(activity)
-            self.calculate_child_aggregations(activity)
-            self.calculate_activity_plus_child_aggregations(activity)
-            self.update_parents_child_budgets(activity)
-            activity.save()
+            self.parse_activity_aggregations(activity)
+
+    def parse_activity_aggregations_by_source(self, source_ref):
+        for activity in Activity.objects.filter(xml_source_ref=source_ref):
+            self.parse_activity_aggregations(activity)
+
+    def parse_activity_aggregations(self, activity):
+        self.calculate_activity_aggregations(activity)
+        self.calculate_child_aggregations(activity)
+        self.calculate_activity_plus_child_aggregations(activity)
+        self.update_parents_child_budgets(activity)
+        activity.save()
 
     def update_parents_child_budgets(self, activity):
 

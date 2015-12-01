@@ -1,5 +1,5 @@
-# tasks.py
 from iati_synchroniser.models import IatiXmlSource
+from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
 import django_rq
 import datetime
@@ -77,8 +77,14 @@ def parse_source_by_url(url):
 
 @job
 def calculate_activity_aggregations():
-    from django.core import management
-    management.call_command('set_activity_aggregation_data', verbosity=0, interactive=False)
+    for source in IatiXmlSource.objects.all():
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(calculate_activity_aggregations_per_source, args=(source.ref,), timeout=7200)
+
+@job
+def calculate_activity_aggregations_per_source(source_ref):
+    aac = ActivityAggregationCalculation()
+    aac.parse_activity_aggregations_by_source(source_ref)
 
 @job
 def delete_source_by_id(id):
