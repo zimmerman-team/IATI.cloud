@@ -27,6 +27,7 @@ from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 
+from collections import defaultdict
 
 class ActivityAggregationSerializer(BaseSerializer):
 
@@ -309,7 +310,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             field = a["field"]
             annotation = dict([(a['annotate_name'], a['annotate'])])
 
-            if len(same_query_aggregations) is 0:
+            if len(same_query_aggregations) is 0: # one query
                 result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
                 continue
 
@@ -317,21 +318,12 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             main_group_field = groupFields[0]
 
-            if len(next_result):
-                # join results in results object (first_result >= new_result)
-                iold = iter(result)
-                inew = iter(next_result)
+            d = defaultdict(dict)
+            for l in (result, next_result):
+                for elem in l:
+                    d[elem[main_group_field]].update(elem)
 
-                n = next(inew)
-                for o in iold: 
-
-                    if (n[main_group_field] == o[main_group_field]):
-                        o[field] = n[field]
-
-                        try:
-                            n = next(inew)
-                        except StopIteration:
-                            break
+            result = d.values()
 
         return result
 
