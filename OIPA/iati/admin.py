@@ -1,24 +1,71 @@
 from django.contrib import admin
 from iati.models import *
+from django import forms
 from iati.transaction.models import *
 from django.contrib.contenttypes.admin import GenericTabularInline
-from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin
-
+from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin, NestedInline
+from django.utils.functional import curry
 
 # Avoid giant delete confirmation intermediate window
 def delete_selected(self, request, queryset):
     queryset.delete()
 
+class ExtraNestedModelAdmin(NestedModelAdmin):
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = super(ExtraNestedModelAdmin, self).get_inline_instances(request, obj)
+        for inline_instance in inline_instances:
+            inline_instance.parent_instance = obj
+
+        return inline_instances
+
+class ExtraNestedInline(NestedInline):
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = super(ExtraNestedInline, self).get_inline_instances(request, obj)
+        for inline_instance in inline_instances:
+            inline_instance.parent_instance = self.parent_instance
+            inline_instance.direct_parent = obj
+
+        return inline_instances
+
+class NestedStackedInline(ExtraNestedInline):
+    template = 'admin/edit_inline/stacked-nested.html'
+    
+class NestedTabularInline(ExtraNestedInline):
+    template = 'admin/edit_inline/tabular-nested.html'
+
+
+class NarrativeForm(forms.ModelForm):
+    class Meta:
+        model = Narrative
+        fields = '__all__'
 
 class NarrativeInline(GenericTabularInline):
+    raw_id_fields = ('activity',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['activity'],
+    }
+
     model = Narrative
     ct_field = "related_content_type"
     ct_fk_field = "related_object_id"
-    exclude = ('activity')
     inlines = []
+    form=NarrativeForm
 
-    extra = 0
+    extra = 3
+    # max_num = 0
+    # exclude = ('activity',)
 
+    # def get_max_num(self, request, obj=None, **kwargs):
+    #     count = len(self.direct_parent.narratives) if self.direct_parent else 0
+    #     return self.extra
+
+    def get_formset(self, request, instance, *args, **kwargs):
+        initial = [{'activity': self.parent_instance} for i in range(self.extra)]
+        formset =  super(NarrativeInline, self).get_formset(request, instance, *args, **kwargs)
+        formset.__init__ = curry(formset.__init__, initial=initial)
+        a = formset()
+        return formset
 
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
@@ -114,6 +161,11 @@ class ActivitySectorInline(admin.TabularInline):
     model = ActivitySector
     extra = 0
 
+    raw_id_fields = ('sector',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['sector'],
+    }
 
 class ActivityRecipientRegionInline(admin.TabularInline):
     model = ActivityRecipientRegion
@@ -125,8 +177,20 @@ class BudgetInline(admin.TabularInline):
     exclude = ('value_string',)
     extra = 0
 
+    # raw_id_fields = ('currency',)
 
-class DocumentLinkInline(admin.TabularInline):
+    # autocomplete_lookup_fields = {
+    #     'fk': ['currency'],
+    # }
+
+
+class CategoriesInline(admin.TabularInline):
+    model = DocumentLinkCategory
+    # extra = 0
+
+class DocumentLinkInline(NestedStackedInline):
+    inlines = [CategoriesInline, ]
+
     model = DocumentLink
     extra = 0
 
@@ -164,8 +228,19 @@ class TitleInline(NestedStackedInline):
     extra = 0
     inlines = [NarrativeInline, ]
 
+    def save_formset(self, request, form, formset, change):
+        """
+        Given an inline formset save it to the database.
+        """
+        instances = formset.save()
 
-class ActivityAdmin(NestedModelAdmin):
+        for form in formset.forms:
+            if hasattr(form, 'nested_formsets') and form not in formset.deleted_forms:
+                for nested_formset in form.nested_formsets:
+                    self.save_formset(request, form, nested_formset, change)
+
+
+class ActivityAdmin(ExtraNestedModelAdmin):
     search_fields = ['id']
     exclude = ('activity_aggregations',)
     list_display = ['__unicode__']
@@ -188,6 +263,11 @@ class ActivityAdmin(NestedModelAdmin):
         TransactionInline,
     ]
 
+    # raw_id_fields = ('default_currency',)
+
+    # autocomplete_lookup_fields = {
+    #     'fk': ['default_currency'],
+    # }
 
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']
