@@ -386,7 +386,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
-    last_updated_datetime = serializers.DateTimeField(format="%y-%m-%d")
+    last_updated_datetime = serializers.DateTimeField()
     activity_status = CodelistSerializer()
     activity_scope = CodelistSerializer(source='scope')
     capital_spend = CapitalSpendSerializer(source='*')
