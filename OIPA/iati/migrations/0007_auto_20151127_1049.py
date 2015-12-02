@@ -2,16 +2,21 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations, transaction
-
 from django.apps import apps
 
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.management import update_contenttypes
 
 @transaction.atomic
 def get_name_from_narrative(apps, schema_editor):
-    APOContentType = ContentType.objects.get(model='activityparticipatingorganisation')
+    update_contenttypes(apps.get_app_config('iati'), interactive=False) # make sure all content types exist
 
-    APO = apps.get_model('iati', 'ActivityParticipatingOrganisation')
+    try: # don't run on first migration
+        APOContentType = ContentType.objects.get(model='activityparticipatingorganisation')
+        APO = apps.get_model('iati', 'ActivityParticipatingOrganisation')
+    except:
+        return
+
     Narrative = apps.get_model('iati', 'Narrative')
     for item in APO.objects.all():
         narrative = Narrative.objects.filter(related_content_type_id=APOContentType.id, related_object_id=item.id)
