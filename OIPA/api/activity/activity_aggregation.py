@@ -28,6 +28,7 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 
 from collections import defaultdict
+from operator import itemgetter
 
 class ActivityAggregationSerializer(BaseSerializer):
 
@@ -264,15 +265,15 @@ class ActivityAggregationSerializer(BaseSerializer):
             fields = grouping['fields']
             if type(fields) is str:
                 groupFields.append(fields)
-                nullFilters[fields + '__isnull'] = False
+                if not grouping.get('extra'): nullFilters[fields + '__isnull'] = False
             else: # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
                 for field in fields:
                     if type(field) is str:
                         groupFields.append(field)
-                        nullFilters[field + '__isnull'] = False
+                        if not grouping.get('extra'): nullFilters[field + '__isnull'] = False
                     else: # is a tuple like (actual, renamed)
                         groupFields.append(field[1]) # append the renamed to values(), must annotate actual->rename
-                        nullFilters[field[1] + '__isnull'] = False
+                        if not grouping.get('extra'): nullFilters[field[1] + '__isnull'] = False
                         before_annotations[field[1]] = F(field[0]) # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
 
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
@@ -331,7 +332,6 @@ class ActivityAggregationSerializer(BaseSerializer):
                     descending = True
                     order = order[1:]
 
-                from operator import itemgetter
                 result = sorted(result_list, key=itemgetter(order))
 
                 if descending:
