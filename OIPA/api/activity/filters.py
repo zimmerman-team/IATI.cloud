@@ -4,7 +4,7 @@ from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
 
-from django_filters import Filter, FilterSet, NumberFilter, DateFilter
+from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
 from rest_framework.filters import OrderingFilter
 
 from api.generics.filters import CommaSeparatedCharFilter
@@ -224,6 +224,93 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='year',
         name='transaction__transaction_date',
         distinct=True)
+
+
+    activity_aggregation_budget_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregation__budget_value')
+
+    activity_aggregation_budget_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregation__budget_value')
+
+    activity_aggregation_disbursement_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregation__disbursement_value')
+
+    activity_aggregation_disbursement_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregation__disbursement_value')
+
+    activity_aggregation_incoming_fund_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregation__incoming_funds_value')
+
+    activity_aggregation_incoming_fund_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregation__incoming_funds_value')
+
+    activity_aggregation_expenditure_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregation__expenditure_value')
+
+    activity_aggregation_expenditure_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregation__expenditure_value')
+
+    activity_aggregation_commitment_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_aggregation__commitment_value')
+
+    activity_aggregation_commitment_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_aggregation__commitment_value')
+
+
+
+    activity_plus_child_aggregation_budget_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_plus_child_aggregation__budget_value')
+
+    activity_plus_child_aggregation_budget_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_plus_child_aggregation__budget_value')
+
+    activity_plus_child_aggregation_disbursement_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_plus_child_aggregation__disbursement_value')
+
+    activity_plus_child_aggregation_disbursement_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_plus_child_aggregation__disbursement_value')
+
+    activity_plus_child_aggregation_incoming_fund_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_plus_child_aggregation__incoming_funds_value')
+
+    activity_plus_child_aggregation_incoming_fund_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_plus_child_aggregation__incoming_funds_value')
+
+    activity_plus_child_aggregation_expenditure_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_plus_child_aggregation__expenditure_value')
+
+    activity_plus_child_aggregation_expenditure_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_plus_child_aggregation__expenditure_value')
+
+    activity_plus_child_aggregation_commitment_value_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity_plus_child_aggregation__commitment_value')
+
+    activity_plus_child_aggregation_commitment_value_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity_plus_child_aggregation__commitment_value')
+
+    end_date_isnull = BooleanFilter(name='end_date__isnull')
+    start_date_isnull = BooleanFilter(name='start_date__isnull')
+
 
     class Meta:
         model = Activity

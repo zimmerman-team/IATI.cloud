@@ -66,6 +66,38 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": Sum('transaction__value')
+        }, # NOTE / TO DO; it makes more sense to do percentage weighted calculations by default. It's hard to implement though (parameters differs per group by)
+        "sector_percentage_weighted_incoming_fund": {
+            "field": "incoming_fund",
+            "extra_filter": Q(transaction__transaction_type=1),
+            "annotate_name": 'incoming_fund',
+            "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": 'select sector_id as sector, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+        },
+        "recipient_country_percentage_weighted_incoming_fund": {
+            "field": "incoming_fund",
+            "extra_filter": Q(transaction__transaction_type=1),
+            "annotate_name": 'incoming_fund',
+            "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": 'select country_id as recipient_country, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "country_id" order by "country_id"'
+        },
+        "sector_percentage_weighted_disbursement": {
+            "field": "disbursement",
+            "extra_filter": Q(transaction__transaction_type=3),
+            "annotate_name": 'disbursement',
+            "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": 'select sector_id as sector, sum(disbursement) as disbursement from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+        },
+        "recipient_country_percentage_weighted_disbursement": {
+            "field": "disbursement",
+            "extra_filter": Q(transaction__transaction_type=3),
+            "annotate_name": 'disbursement',
+            "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
+            "no_null_check": True,
+            "has_subquery": 'select country_id as recipient_country, sum(disbursement) as disbursement from ({}) as "temptab" group by "country_id" order by "country_id"'
         },
         "sector_percentage_weighted_budget": {
             "field": "weighted_budget",
@@ -419,10 +451,10 @@ class ActivityAggregationSerializer(BaseSerializer):
         result = self.apply_extra_calculations(result, aggregations)
         result = self.serialize_foreign_keys(result, request, group_by)
 
-        if isinstance(queryset, list):
-            count = len(queryset)
-        else:
+        if page_size:
             count = queryset.count()
+        else:
+            count = len(result)
 
         return {
             'count': count,
