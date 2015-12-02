@@ -125,25 +125,29 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='actual_end')
 
+
+    end_date_lte = DateFilter(
+        lookup_type='lte',
+        name='end_date')
+
+    end_date_gte = DateFilter(
+        lookup_type='gte',
+        name='end_date')
+
+    start_date_lte = DateFilter(
+        lookup_type='lte',
+        name='start_date')
+
+    start_date_gte = DateFilter(
+        lookup_type='gte',
+        name='start_date')
+
+    end_date_isnull = BooleanFilter(name='end_date__isnull')
+    start_date_isnull = BooleanFilter(name='start_date__isnull')
+
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
         name='sector')
-
-    total_budget_value_lte = NumberFilter(
-        lookup_type='lte',
-        name='activity_aggregations__total_budget_value')
-
-    total_budget_value_gte = NumberFilter(
-        lookup_type='gte',
-        name='activity_aggregations__total_budget_value')
-
-    total_child_budget_value_lte = NumberFilter(
-        lookup_type='lte',
-        name='activity_aggregations__total_child_budget_value')
-
-    total_child_budget_value_gte = NumberFilter(
-        lookup_type='gte',
-        name='activity_aggregations__total_child_budget_value')
 
     sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -307,9 +311,6 @@ class ActivityFilter(TogetherFilterSet):
     activity_plus_child_aggregation_commitment_value_gte = NumberFilter(
         lookup_type='gte',
         name='activity_plus_child_aggregation__commitment_value')
-
-    end_date_isnull = BooleanFilter(name='end_date__isnull')
-    start_date_isnull = BooleanFilter(name='start_date__isnull')
 
 
     class Meta:
