@@ -42,11 +42,6 @@ class ActivityAggregationSerializer(BaseSerializer):
             "annotate_name": "budget",
             "annotate": Sum('budget__value')
         },
-        "total_budget": {
-            "field": "total_budget",
-            "annotate_name": 'total_budget',
-            "annotate": Sum('total_budget')
-        },
         "disbursement": {
             "field": "disbursement",
             "extra_filter": Q(transaction__transaction_type=3),
@@ -89,7 +84,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
     _allowed_groupings = {
         "related_activity": {
-            "fields": "relatedactivity__ref_activity__id",
+            "fields": (("relatedactivity__ref_activity__id", 'activity_id'),),
             "queryset": None,
             "serializer": None,
             "serializer_fields": (),
@@ -212,7 +207,6 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
     }
 
-    _allowed_orderings = [ i['fields'] for i in _allowed_groupings.values()]
     _allowed_orderings = []
     for grouping in _allowed_groupings.values():
         if type(grouping['fields']) is str:
@@ -224,20 +218,14 @@ class ActivityAggregationSerializer(BaseSerializer):
                 else:
                     _allowed_orderings.append(field[1]) # renamed
 
-    def apply_order_filters(self, queryset, orderList, aggregationList):
+    def get_order_filters(self, orderList, aggregationList):
 
         allowed_orderings = self._allowed_orderings + aggregationList
         allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
 
-        orderings = self._intersection(allowed_orderings, orderList)
         ordered_orderings = [order for order in orderList if order in allowed_orderings]
 
-        if (len(orderings)):
-            return queryset.order_by(*ordered_orderings)
-        # else: 
-        #     return queryset.order_by(*self._intersection(allowed_orderings, groupList))
-
-        return queryset
+        return ordered_orderings
 
     def apply_limit_offset_filters(self, queryset, page_size, page):
 
@@ -255,7 +243,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return queryset
 
-    def apply_annotations(self, queryset, groupList, aggregationList):
+    def apply_annotations(self, queryset, groupList, aggregationList, orderings):
 
         before_annotations = dict() # before values()
         after_annotations = dict() # after values()
@@ -276,31 +264,28 @@ class ActivityAggregationSerializer(BaseSerializer):
             fields = grouping['fields']
             if type(fields) is str:
                 groupFields.append(fields)
-                if grouping['serializer_fields']: nullFilters[fields + '__isnull'] = False
+                nullFilters[fields + '__isnull'] = False
             else: # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
                 for field in fields:
                     if type(field) is str:
                         groupFields.append(field)
-                        if grouping['serializer_fields']: nullFilters[field + '__isnull'] = False
+                        nullFilters[field + '__isnull'] = False
                     else: # is a tuple like (actual, renamed)
                         groupFields.append(field[1]) # append the renamed to values(), must annotate actual->rename
-                        if grouping['serializer_fields']: nullFilters[field[1] + '__isnull'] = False
+                        nullFilters[field[1] + '__isnull'] = False
                         before_annotations[field[1]] = F(field[0]) # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
 
         groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
-        queryset = queryset.annotate(**before_annotations)
-        first_queryset = queryset
-
         # apply extras
-        first_queryset = first_queryset.extra(**groupExtras)
-        queryset = first_queryset.extra(**groupExtras)
-        
-        # remove nulls (
-        # to do: check why values() uses left outer joins,
-        # this can be a lot slower than inner joins and will prevent the null
+        queryset = queryset.annotate(**before_annotations).extra(**groupExtras)
+
+        # if 1 query, order in postgres
+        if len(orderings) and (len(same_query_aggregations) + len(separate_aggregations)) == 1:
+            queryset = queryset.order_by(*orderings)
+
         # Apply group_by calls and annotations
-        result = first_queryset.values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
+        result = queryset.values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
 
         # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
@@ -310,20 +295,48 @@ class ActivityAggregationSerializer(BaseSerializer):
             field = a["field"]
             annotation = dict([(a['annotate_name'], a['annotate'])])
 
-            if len(same_query_aggregations) is 0: # one query
-                result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
+            # one query
+            if len(same_query_aggregations) is 0:
+                result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation).filter(**nullFilters)
                 continue
 
-            next_result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation)
+            next_result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation).filter(**nullFilters)
 
             main_group_field = groupFields[0]
+           
+            # make dict of next result
+            d = {}
+            for nr in iter(next_result):
+                d[nr[main_group_field]] = nr[field]
 
-            d = defaultdict(dict)
-            for l in (result, next_result):
-                for elem in l:
-                    d[elem[main_group_field]].update(elem)
+            # join on existing result, set 0 on non existing
+            for r in iter(result):
+                if r[main_group_field] in d:
+                    r[field] = d[r[main_group_field]]
+                else:
+                    r[field] = 0
 
-            result = d.values()
+            # to do; current functionality assumes the initial result contains all items
+            # not sure if that's a valid assumption.
+
+        # python order functionality
+        if len(orderings):
+            # if 1 query, ordering is already done above using queryset.order
+            if not queryset.ordered:
+                # can only order by 1 key atm
+                order = orderings[0]
+                result_list = list(result)
+                descending = False
+                if order[0] == '-':
+                    descending = True
+                    order = order[1:]
+
+                from operator import itemgetter
+                result = sorted(result_list, key=itemgetter(order))
+
+                if descending:
+                    result = result.reverse()
+
 
         return result
 
@@ -400,14 +413,19 @@ class ActivityAggregationSerializer(BaseSerializer):
             return {'error_message': "Invalid value for mandatory field 'aggregations'"}
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
-        queryset = self.apply_order_filters(queryset, order_by, aggregations)
-        queryset = self.apply_annotations(queryset, group_by, aggregations)
+        orderings = self.get_order_filters(order_by, aggregations)
+        queryset = self.apply_annotations(queryset, group_by, aggregations, orderings)
         result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.apply_extra_calculations(result, aggregations)
         result = self.serialize_foreign_keys(result, request, group_by)
 
+        if isinstance(queryset, list):
+            count = len(queryset)
+        else:
+            count = queryset.count()
+
         return {
-            'count':len(result),
+            'count': count,
             'results': result
         }
 
