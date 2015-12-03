@@ -452,7 +452,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         result = self.serialize_foreign_keys(result, request, group_by)
 
         if page_size:
-            count = queryset.count()
+            count = len(queryset)
         else:
             count = len(result)
 
