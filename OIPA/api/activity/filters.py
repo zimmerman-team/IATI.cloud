@@ -157,6 +157,10 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='participating_organisations__ref')
 
+    participating_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='participating_organisations__primary_name')
+
     participating_organisation_role = CommaSeparatedCharFilter(
         lookup_type='in',
         name='participating_organisations__role__code')
