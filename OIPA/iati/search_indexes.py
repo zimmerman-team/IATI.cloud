@@ -1,6 +1,6 @@
 from haystack import indexes
 from models import Activity
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.MultiValueField(document=True)
@@ -42,7 +42,10 @@ class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
         return self.prepared_data
 
     def prepare_title(self, obj):
-        return [narrative.content for narrative in obj.title.narratives.all()]
+	try:
+		return [narrative.content for narrative in obj.title.narratives.all()]
+	except ObjectDoesNotExist:
+		return []
 
     def prepare_description(self, obj):
         text = []
