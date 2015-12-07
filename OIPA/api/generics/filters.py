@@ -2,6 +2,7 @@ from rest_framework import filters
 from django.db.models.sql.constants import QUERY_TERMS
 from django_filters import CharFilter
 from haystack.query import SearchQuerySet
+from haystack.inputs import Exact
 import gc
 
 
@@ -10,8 +11,14 @@ VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
 class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
+
         query = request.query_params.get('q', None)
+        exact = request.query_params.get('exact', None)
+
         if query:
+            # always match text exactly
+            if exact: query = Exact(query)
+
             search_queryset = SearchQuerySet()
             query_fields = request.query_params.get('q_fields')
             if query_fields:
@@ -21,10 +28,11 @@ class SearchFilter(filters.BaseFilterBackend):
                     search_queryset = search_queryset.filter_or(**filter_dict)
             else:
                 search_queryset = search_queryset.filter_or(text=query)
-            gc.disable()
-            activity_ids = search_queryset.values_list('pk',flat=True)[:3000000]
-            gc.enable()
+
+            activity_ids = search_queryset.values_list('pk',flat=True)
+
             return queryset.filter(pk__in=activity_ids).filter(is_searchable=True)
+
         return queryset
 
 class FilterField(object):
