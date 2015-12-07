@@ -629,12 +629,8 @@ class ActivitySerializerTestCase(TestCase):
             contains the data in activity.iati_identifier
             """
 
-        assert serializer.data['last_updated_datetime'] ==\
-            activity.last_updated_datetime.strftime("%y-%m-%d"),\
-            """
-            a serialized activity should contain a field 'last_updated_datetime
-            that contains the data in activity.last_updated_datetime
-            """
+        self.assertEqual(serializer.data['last_updated_datetime'], activity.last_updated_datetime.isoformat())
+
         assert serializer.data['hierarchy'] == activity.hierarchy,\
             """
             a serialized activity should contain a field 'hierarchy' that
