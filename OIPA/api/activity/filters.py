@@ -96,7 +96,7 @@ class ActivityFilter(TogetherFilterSet):
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__ref')
+        name='participating_organisations__normalized_ref')
 
     participating_organisation_name = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -106,9 +106,13 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='participating_organisations__role__code')
 
-    reporting_organisation = CommaSeparatedCharMultipleFilter(
+    reporting_organisation = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='reporting_organisations__normalized_ref')
+
+    reporting_organisation_startswith = CommaSeparatedCharMultipleFilter(
         lookup_type='startswith',
-        name='reporting_organisations__ref')
+        name='reporting_organisations__normalized_ref')
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',

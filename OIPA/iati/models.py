@@ -167,8 +167,8 @@ class ActivitySearchData(models.Model):
 
 
 class ActivityReportingOrganisation(models.Model):
-    ref = models.CharField(max_length=250)
-    normalized_ref = models.CharField(max_length=120, default="")
+    ref = models.CharField(max_length=250, db_index=True)
+    normalized_ref = models.CharField(max_length=120, db_index=True, default="")
 
     narratives = GenericRelation(
         Narrative,
