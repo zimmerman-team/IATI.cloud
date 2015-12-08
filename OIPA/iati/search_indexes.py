@@ -37,6 +37,7 @@ class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
         texts.extend(self.prepare_sector(obj))
         texts.extend(self.prepare_document_link(obj))
         texts.extend(self.prepare_participating_org(obj))
+        texts.extend(self.prepare_reporting_org(obj))
         self.prepared_data['text'] = texts
 
         return self.prepared_data

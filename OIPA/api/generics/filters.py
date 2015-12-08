@@ -33,7 +33,7 @@ class SearchFilter(filters.BaseFilterBackend):
             else:
                 search_queryset = search_queryset.filter_or(text=query)
 
-            activity_ids = search_queryset.values_list('pk',flat=True)
+            activity_ids = search_queryset.values_list('pk',flat=True)[0:400000]
 
             return queryset.filter(pk__in=activity_ids).filter(is_searchable=True)
 
