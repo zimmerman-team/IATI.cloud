@@ -114,6 +114,7 @@ class BudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Budget
 
+    activity = SubFactory(ActivityFactory)
     period_start = '2011-01-01'
     period_end = '2011-12-30'
     value = 100
@@ -317,11 +318,10 @@ class ActivitySectorFactory(NoDatabaseFactory):
     vocabulary = SubFactory(SectorVocabularyFactory)
     percentage = 100
 
-class RecipientCountryFactory(NoDatabaseFactory):
+class ActivityRecipientCountryFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityRecipientCountry
 
-    id = "1.1.1"
     activity = SubFactory(ActivityFactory)
     country = SubFactory(CountryFactory)
     percentage = 50

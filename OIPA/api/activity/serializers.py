@@ -8,7 +8,7 @@ from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
-from api.activity.filters import BudgetFilter
+# from api.activity.filters import BudgetFilter
 from api.activity.filters import RelatedActivityFilter
 
 # TODO: serialize vocabulary in codelist serializer
@@ -102,7 +102,7 @@ class BudgetSerializer(FilterableModelSerializer):
 
     class Meta:
         model = iati.models.Budget
-        filter_class = BudgetFilter
+        # filter_class = BudgetFilter
         fields = (
             'type',
             'period_start',

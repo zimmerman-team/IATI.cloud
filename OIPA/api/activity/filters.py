@@ -262,18 +262,18 @@ class ActivityFilter(TogetherFilterSet):
         together_exclusive = [('budget_period_start', 'budget_period_end')]
 
 
-class BudgetFilter(FilterSet):
-
-    budget_period_start = DateFilter(
-        lookup_type='gte',
-        name='period_start')
-
-    budget_period_end = DateFilter(
-        lookup_type='lte',
-        name='period_end')
-
-    class Meta:
-        model = Budget
+# class BudgetFilter(FilterSet):
+#
+#     budget_period_start = DateFilter(
+#         lookup_type='gte',
+#         name='period_start')
+#
+#     budget_period_end = DateFilter(
+#         lookup_type='lte',
+#         name='period_end')
+#
+#     class Meta:
+#         model = Budget
 
 
 class RelatedActivityFilter(FilterSet):

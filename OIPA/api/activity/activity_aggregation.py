@@ -72,7 +72,6 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select sector_id as sector, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "sector_id" order by "sector_id"'
         },
         "recipient_country_percentage_weighted_incoming_fund": {
@@ -80,7 +79,6 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select country_id as recipient_country, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "country_id" order by "country_id"'
         },
         "sector_percentage_weighted_disbursement": {
@@ -88,7 +86,6 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=3),
             "annotate_name": 'disbursement',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select sector_id as sector, sum(disbursement) as disbursement from ({}) as "temptab" group by "sector_id" order by "sector_id"'
         },
         "recipient_country_percentage_weighted_disbursement": {
@@ -96,21 +93,18 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=3),
             "annotate_name": 'disbursement',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select country_id as recipient_country, sum(disbursement) as disbursement from ({}) as "temptab" group by "country_id" order by "country_id"'
         },
         "sector_percentage_weighted_budget": {
-            "field": "weighted_budget",
+            "field": "budget",
             "annotate_name": 'total_budget_per_percentage',
             "annotate": (Coalesce(Sum('budget__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select sector_id as sector, sum(total_budget_per_percentage) as budget from ({}) as "temptab" group by "sector_id" order by "sector_id"'
         },
         "location_disbursement": {
             "field": "weighted_country_value",
             "annotate_name": 'value_by_country',
             "annotate": (Coalesce(Sum('location__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "no_null_check": True,
             "has_subquery": 'select loc_country_id, sum(value_by_country) as total_value, region_id, country_name from ({}) as per_activity group by per_activity.loc_country_id'
         }
     }
@@ -240,20 +234,22 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
     }
 
-    _allowed_orderings = []
-    for grouping in _allowed_groupings.values():
-        if type(grouping['fields']) is str:
-            _allowed_orderings.append(grouping['fields'])
-        else: 
-            for field in grouping['fields']: # assume it is a tuple
-                if type(field) is str:
-                    _allowed_orderings.append(field)
-                else:
-                    _allowed_orderings.append(field[1]) # renamed
+    def get_order_filters(self, orderList):
 
-    def get_order_filters(self, orderList, aggregationList):
+        allowed_orderings = []
+        for grouping in self._allowed_groupings.values():
+            if type(grouping['fields']) is str:
+                allowed_orderings.append(grouping['fields'])
+            else:
+                for field in grouping['fields']: # assume it is a tuple
+                    if type(field) is str:
+                        allowed_orderings.append(field)
+                    else:
+                        allowed_orderings.append(field[1]) # renamed
+        for aggregation in self._aggregations.values():
+            if type(aggregation['field']) is str:
+                allowed_orderings.append(aggregation['field'])
 
-        allowed_orderings = self._allowed_orderings + aggregationList
         allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
 
         ordered_orderings = [order for order in orderList if order in allowed_orderings]
@@ -276,7 +272,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return queryset
 
-    def apply_annotations(self, queryset, groupList, aggregationList, orderings):
+    def apply_annotations(self, queryset, groupList, aggregationList):
 
         before_annotations = dict() # before values()
         after_annotations = dict() # after values()
@@ -313,12 +309,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         # apply extras
         queryset = queryset.annotate(**before_annotations).extra(**groupExtras)
 
-        # if 1 query, order in postgres
-        if len(orderings) and (len(same_query_aggregations) + len(separate_aggregations)) == 1:
-            queryset = queryset.order_by(*orderings)
-
         # Apply group_by calls and annotations
-        result = queryset.values(*groupFields).annotate(**after_annotations).filter(**nullFilters)
+        result = queryset.filter(**nullFilters).values(*groupFields).annotate(**after_annotations)
 
         # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
@@ -330,10 +322,10 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             # one query
             if len(same_query_aggregations) is 0:
-                result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation).filter(**nullFilters)
+                result = queryset.filter(extra_filter).filter(**nullFilters).values(*groupFields).annotate(**annotation)
                 continue
 
-            next_result = queryset.filter(extra_filter).values(*groupFields).annotate(**annotation).filter(**nullFilters)
+            next_result = queryset.filter(extra_filter).filter(**nullFilters).values(*groupFields).annotate(**annotation)
 
             main_group_field = groupFields[0]
            
@@ -351,24 +343,6 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             # to do; current functionality assumes the initial result contains all items
             # not sure if that's a valid assumption.
-
-        # python order functionality
-        if len(orderings):
-            # if 1 query, ordering is already done above using queryset.order
-            if not queryset.ordered:
-                # can only order by 1 key atm
-                order = orderings[0]
-                result_list = list(result)
-                descending = False
-                if order[0] == '-':
-                    descending = True
-                    order = order[1:]
-
-                result = sorted(result_list, key=itemgetter(order))
-
-                if descending:
-                    result = result.reverse()
-
 
         return result
 
@@ -394,16 +368,32 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             results = dictfetchall(cursor)
 
-        return list(results)
+        return results
 
     def serialize_foreign_keys(self, results, request, groupList):
 
         serializers = {}
+        groupfieldList = []
 
         for grouping in groupList:
             serializer = self._allowed_groupings[grouping]["serializer"]
             serializer_fields = self._allowed_groupings[grouping]["serializer_fields"]
             foreignQueryset = self._allowed_groupings[grouping]["queryset"]
+
+            fields = self._allowed_groupings[grouping]["fields"]
+
+            thisGroupingFieldList = []
+
+            if type(fields) is str:
+                thisGroupingFieldList.append(fields)
+            else:
+                for field in fields:
+                    if type(field) is str:
+                        thisGroupingFieldList.append(field)
+                    else:
+                        thisGroupingFieldList.append(field[1])
+
+            groupfieldList.extend(thisGroupingFieldList)
 
             if serializer:
                 data = serializer(foreignQueryset,
@@ -414,19 +404,39 @@ class ActivityAggregationSerializer(BaseSerializer):
                     fields=serializer_fields,
                 ).data
 
-                serializers[grouping] = {i.get('code'): i for i in data}
+                serializers[grouping] = {str(i.get('code')): i for i in data}
             else:
-                serializers[grouping] = {i.get(grouping): i.get(grouping) for i in results}
+
+                for field in thisGroupingFieldList:
+                    serializers[field] = {str(i.get(field)): i.get(field) for i in results}
 
         for i, result in enumerate(list(results)):
             for k, v in result.iteritems():
-                if k in groupList:
+                if k in groupfieldList:
                     if v:
                         result[k] = serializers.get(k, {}).get(str(v))
                     else:
                         del results[i]
 
         return results
+
+    def apply_ordering(self, result, orderings):
+        # python order functionality
+        if len(orderings):
+            # can only order by 1 key atm
+            order = orderings[0]
+            result_list = list(result)
+            descending = False
+            if order[0] == '-':
+                descending = True
+                order = order[1:]
+
+            result = sorted(result_list, key=itemgetter(order))
+
+            if descending:
+                result = list(reversed(result))
+
+        return result
 
     def to_representation(self, queryset):
         request = self.context.get('request') 
@@ -445,10 +455,11 @@ class ActivityAggregationSerializer(BaseSerializer):
             return {'error_message': "Invalid value for mandatory field 'aggregations'"}
 
         # queryset = self.apply_group_filters(queryset, request, group_by)
-        orderings = self.get_order_filters(order_by, aggregations)
-        queryset = self.apply_annotations(queryset, group_by, aggregations, orderings)
+        orderings = self.get_order_filters(order_by)
+        queryset = self.apply_annotations(queryset, group_by, aggregations)
         result = self.apply_limit_offset_filters(queryset, page_size, page)
         result = self.apply_extra_calculations(result, aggregations)
+        result = self.apply_ordering(result, orderings)
         result = self.serialize_foreign_keys(result, request, group_by)
 
         if page_size:

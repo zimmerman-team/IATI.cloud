@@ -393,7 +393,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_RecipientCountrySerializer(self):
-        recipient_country = iati_factory.RecipientCountryFactory.build(
+        recipient_country = iati_factory.ActivityRecipientCountryFactory.build(
             percentage=80
         )
         serializer = serializers.RecipientCountrySerializer(
