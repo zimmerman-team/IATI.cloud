@@ -256,7 +256,7 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return ordered_orderings
 
-    def apply_limit_offset_filters(self, queryset, page_size, page):
+    def apply_limit_offset_filters(self, results, page_size, page):
 
         if page_size:
 
@@ -268,9 +268,9 @@ class ActivityAggregationSerializer(BaseSerializer):
 
             offset = (page * page_size) - page_size
             offset_plus_limit = offset + page_size
-            return queryset[offset:offset_plus_limit]
+            return results[offset:offset_plus_limit]
 
-        return queryset
+        return results
 
     def apply_annotations(self, queryset, groupList, aggregationList):
 
@@ -457,9 +457,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         # queryset = self.apply_group_filters(queryset, request, group_by)
         orderings = self.get_order_filters(order_by)
         queryset = self.apply_annotations(queryset, group_by, aggregations)
-        result = self.apply_limit_offset_filters(queryset, page_size, page)
-        result = self.apply_extra_calculations(result, aggregations)
+        result = self.apply_extra_calculations(queryset, aggregations)
         result = self.apply_ordering(result, orderings)
+        result = self.apply_limit_offset_filters(result, page_size, page)
         result = self.serialize_foreign_keys(result, request, group_by)
 
         if page_size:
