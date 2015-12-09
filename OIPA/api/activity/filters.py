@@ -7,67 +7,8 @@ from django.db.models.fields.related import OneToOneRel
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
 from rest_framework.filters import OrderingFilter
 
-from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedCharFilter, CommaSeparatedCharMultipleFilter, TogetherFilterSet
 from iati.models import Activity, Budget, RelatedActivity
-
-
-class CommaSeparatedDateRangeFilter(Filter):
-
-    def filter(self, qs, value):
-
-        if value in ([], (), {}, None, ''):
-            return qs
-
-        value = value.split(',')
-
-        return super(CommaSeparatedCharFilter, self).filter(qs, value)
-
-
-class TogetherFilter(Filter):
-    """
-    Used with TogetherFilterSet, always gets called regardless of GET args
-    """
-    
-    def __init__(self, filters=None, values=None, **kwargs):
-        self.filter_classes = filters
-        self.values = values
-
-        super(TogetherFilter, self).__init__(**kwargs)
-
-    def filter(self, qs, values):
-        if self.filter_classes:
-            filters = { "%s__%s" % (c[0].name, c[0].lookup_type) : c[1] for c in zip(self.filter_classes, values)}
-            qs = qs.filter(**filters).distinct()
-
-            return qs
-
-
-class TogetherFilterSet(FilterSet):
-    def __init__(self, data=None, queryset=None, prefix=None, strict=None):
-        """
-        Adds a together_exclusive meta option that selects fields that have to 
-        be called in the same django filter() call when both present
-        """
-
-        meta = getattr(self, 'Meta', None)
-
-        # fields that must be filtered in the same filter call
-        self.together_exclusive = getattr(meta, 'together_exclusive', None)
-
-        data = data.copy()
-
-        for filterlist in self.together_exclusive:
-            if set(filterlist).issubset(data.keys()):
-
-                filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
-                filter_classes = [self.declared_filters.get(filteritem, None) for filteritem in filterlist]
-
-                uid = uuid.uuid4()
-
-                self.base_filters[uid] = TogetherFilter(filters=filter_classes)
-                data.appendlist(uid, filter_values)
-
-        super(FilterSet, self).__init__(data, queryset, prefix, strict)
 
 
 class ActivityFilter(TogetherFilterSet):
@@ -155,7 +96,11 @@ class ActivityFilter(TogetherFilterSet):
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__ref')
+        name='participating_organisations__normalized_ref')
+
+    participating_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='participating_organisations__primary_name')
 
     participating_organisation_role = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -163,7 +108,11 @@ class ActivityFilter(TogetherFilterSet):
 
     reporting_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='reporting_organisations__ref')
+        name='reporting_organisations__normalized_ref')
+
+    reporting_organisation_startswith = CommaSeparatedCharMultipleFilter(
+        lookup_type='startswith',
+        name='reporting_organisations__normalized_ref')
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -312,24 +261,23 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='activity_plus_child_aggregation__commitment_value')
 
-
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
 
 
-class BudgetFilter(FilterSet):
-
-    budget_period_start = DateFilter(
-        lookup_type='gte',
-        name='period_start')
-
-    budget_period_end = DateFilter(
-        lookup_type='lte',
-        name='period_end')
-
-    class Meta:
-        model = Budget
+# class BudgetFilter(FilterSet):
+#
+#     budget_period_start = DateFilter(
+#         lookup_type='gte',
+#         name='period_start')
+#
+#     budget_period_end = DateFilter(
+#         lookup_type='lte',
+#         name='period_end')
+#
+#     class Meta:
+#         model = Budget
 
 
 class RelatedActivityFilter(FilterSet):

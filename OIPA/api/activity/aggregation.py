@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics import utils
-from api.generics.filters import BasicFilterBackend
 from api.activity.filters import ActivityFilter
 from api.generics.serializers import NoCountPaginationSerializer
 from rest_framework.response import Response

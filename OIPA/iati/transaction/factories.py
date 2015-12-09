@@ -27,10 +27,11 @@ class TransactionReceiverFactory(NoDatabaseFactory):
     receiver_activity_ref = "IATI-0001"
 
 class TransactionFactory(NoDatabaseFactory):
-    id = 1
+
     activity = SubFactory(ActivityFactory)
     transaction_date = date.today()
     transaction_type = SubFactory(TransactionTypeFactory, code=1)
+    value = 200
 
     class Meta:
         model = Transaction
