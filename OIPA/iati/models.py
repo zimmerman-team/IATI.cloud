@@ -452,17 +452,17 @@ class Result(models.Model):
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.title)
+        return "Result: %s" % (self.activity.id)
 
 class ResultTitle(models.Model):
-    result = models.ForeignKey(Result)
+    result = models.OneToOneField(Result)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
 class ResultDescription(models.Model):
-    result = models.ForeignKey(Result)
+    result = models.OneToOneField(Result)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -470,40 +470,44 @@ class ResultDescription(models.Model):
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
-    title = models.CharField(max_length=200, default="")
-    description = models.TextField(default="")
-    baseline_year = models.IntegerField()
-    baseline_value = models.CharField(max_length=100)
-    comment = models.TextField(default="")
+    baseline_year = models.IntegerField(null=True, blank=True, default=None)
+    baseline_value = models.CharField(null=True, blank=True, default=None, max_length=100)
     measure = models.ForeignKey(
         IndicatorMeasure,
         null=True,
         blank=True,
         default=None)
+    ascending = models.BooleanField(default=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.result, self.year)
-
-class ResultIndicatorMeasure(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+        return "%s - %s" % (self.result, self.baseline_year)
 
 class ResultIndicatorTitle(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+    result_indicator = models.OneToOneField(ResultIndicator)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ResultIndicatorDescription(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+    result_indicator = models.OneToOneField(ResultIndicator)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
-class ResultIndicatorBaseLineComment(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+class ResultIndicatorBaselineComment(models.Model):
+    result_indicator = models.OneToOneField(ResultIndicator)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
-    period_start = models.CharField(max_length=50, default="")
-    period_end = models.CharField(max_length=50, default="")
-    planned_disbursement_period_start = models.CharField(
-        max_length=50, default="")
-    planned_disbursement_period_end = models.CharField(
-        max_length=50, default="")
+    period_start = models.DateField(null=True, blank=True)
+    period_end = models.DateField(null=True, blank=True)
+
     target = models.CharField(max_length=50, default="")
     actual = models.CharField(max_length=50, default="")
 
@@ -511,10 +515,18 @@ class ResultIndicatorPeriod(models.Model):
         return "%s" % self.result_indicator
 
 class ResultIndicatorPeriodTargetComment(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class ResultIndicatorPeriodActualComment(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
 
 class Description(models.Model):
     activity = models.ForeignKey(Activity)

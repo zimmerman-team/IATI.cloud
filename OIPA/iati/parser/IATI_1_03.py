@@ -7,7 +7,7 @@ from iati_codelists import models as codelist_models
 
 class Parse(IATI_105_Parser):
 
-    VERSION = '1.05' # version of iati standard
+    VERSION = '1.03' # version of iati standard
 
     # maps to geographic vocabulary
     gazetteer_agency_mapping = {
@@ -17,13 +17,8 @@ class Parse(IATI_105_Parser):
     }
 
     def __init__(self, *args, **kwargs):
-        self.VERSION = codelist_models.Version.objects.get(code='1.05')
-        self.hints = []
-        self.logged_functions = []
-        self.errors = []
-        self.validation_errors = []
-        self.required_field_errors = []
-    
+        super(Parse, self).__init__(*args, **kwargs)
+
     '''atributes:
 	code:ADM2
 	{http://www.w3.org/XML/1998/namespace}lang:en

@@ -2,6 +2,7 @@ import hashlib
 import dateutil.parser
 import re
 import unicodedata
+from decimal import Decimal, InvalidOperation
 
 from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -16,23 +17,13 @@ from geodata.models import Country, Region
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
 
-
-def _cache_codelists():
-    pass
-
-
 class Parse(XMLParser):
-    #version of IATI standard
+
+    VERSION = '2.01' 
     default_lang = 'en'
-    iati_identifier = ''
 
     def __init__(self, *args, **kwargs):
-        self.VERSION = codelist_models.Version.objects.get(code='2.01')
-        self.hints = []
-        self.logged_functions = []
-        self.errors = []
-        self.validation_errors = []
-        self.required_field_errors = []
+        super(Parse, self).__init__(*args, **kwargs)
 
     class RequiredFieldError(Exception):
         def __init__(self, field, msg):
@@ -75,6 +66,7 @@ class Parse(XMLParser):
 
         return currency
 
+    # TODO: separate these functions in their own datastructure - 2015-12-02
     def get_model_list(self, key):
         if key in self.model_store:
             return self.model_store[key]
@@ -98,11 +90,33 @@ class Parse(XMLParser):
 
         super(Parse, self).register_model(key, model)
 
+    def makeBool(self, text):
+        if text == '1':
+            return True
+        return False
+
+    def guess_number(self,number_string):
+        #first strip non numeric values, except for -.,
+        decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
+
+        try:
+            return Decimal(decimal_string)
+        except ValueError:
+            raise ValueError("ValueError: Input must be decimal or integer string")
+        except InvalidOperation:
+            raise InvalidOperation("InvalidOperation: Input must be decimal or integer string")
+
+    def isInt(self, obj):
+        try:
+            int(obj)
+            return True
+        except:
+            return False
+
     def _slugify(self,value):
         """
         Normalizes string, converts to lowercase, removes non-alpha characters,
         and converts spaces to hyphens.
-        
         From Django's "django/template/defaultfilters.py".
         """
         if not isinstance(value, unicode):
@@ -156,9 +170,12 @@ class Parse(XMLParser):
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
-        if not language: raise self.RequiredFieldError("language", "Narrative: must specify default_lang on activities or language on the element itself")
-        if not text: raise self.RequiredFieldError("text", "Narrative: must contain text")
         if not parent: raise self.RequiredFieldError("parent", "Narrative: parent object must be passed")
+
+        register_name = parent.__class__.__name__ + "Narrative"
+
+        if not language: raise self.RequiredFieldError("language", "{}: must specify default_lang on activities or language on the element itself".format(register_name))
+        if not text: raise self.RequiredFieldError("text", "{}: must contain text".format(register_name))
 
         narrative = models.Narrative()
         narrative.language = language
@@ -167,7 +184,6 @@ class Parse(XMLParser):
         narrative.activity = self.get_model('Activity')
 
         # TODO: handle this differently (also: breaks tests)
-        register_name = parent.__class__.__name__ + "Narrative"
         self.register_model(register_name, narrative)
 
 
@@ -223,7 +239,6 @@ class Parse(XMLParser):
         activity.iati_standard_version_id = self.VERSION
 
         # for later reference
-        self.iati_identifier = activity.id
         self.default_lang = activity.default_lang
 
         self.register_model('Activity', activity)
@@ -1684,217 +1699,267 @@ class Parse(XMLParser):
     # aggregation-status:1
 
     # tag:result'''
-    # def iati_activities__iati_activity__result(self,element):
-    #     model = self.get_func_parent_model()
-    #     result = models.Result()
-    #     result.result_type = self.cached_db_call(models.ResultType,element.attrib.get('type'))
-    #     result.activity = model
-    #     result.aggregation_status = self.makeBool(element.attrib.get('aggregation-status'))
-    #     self.set_func_model(result)
-    #     return element
+    def iati_activities__iati_activity__result(self,element):
+        result_type = self.get_or_none(codelist_models.ResultType, code=element.attrib.get('type')) 
+        aggregation_status = element.attrib.get('aggregation-status')
+
+        if not result_type: raise self.RequiredFieldError("result_type", "result: result_type is required")
+
+        activity = self.get_model('Activity')
+        result = models.Result()
+        result.activity = activity
+        result.type = result_type
+        result.aggregation_status = self.makeBool(aggregation_status)
+
+        self.register_model('Result', result)
+        return element
 
     # '''atributes:
 
     # tag:title'''
-    # def iati_activities__iati_activity__result__title(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_title = models.ResultTitle()
-    #     result_title.result = model
-    #     self.set_func_model(result_title)
-    #     return element
+    def iati_activities__iati_activity__result__title(self,element):
+        result = self.get_model('Result')
+        result_title = models.ResultTitle()
+        result_title.result = result
 
-    # '''atributes:
+        self.register_model('ResultTitle', result_title)
+        return element
 
-    # tag:narrative'''
-    # def iati_activities__iati_activity__result__title__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__title__narrative(self,element):
+        title = self.get_model('ResultTitle') # this points to Title
+        self.add_narrative(element, title)
+
+        return element
 
     # '''atributes:
 
     # tag:description'''
-    # def iati_activities__iati_activity__result__description(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_description = models.ResultDescription()
-    #     result_description.result = model
-    #     self.set_func_model(result_description)
-    #     return element
+    def iati_activities__iati_activity__result__description(self,element):
+        result = self.get_model('Result')
+        result_description = models.ResultDescription()
+        result_description.result = result
+
+        self.register_model('ResultDescription', result_description)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__description__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__description__narrative(self,element):
+        description = self.get_model('ResultDescription') # this points to Description
+        self.add_narrative(element, description)
+
+        return element
 
     # '''atributes:
     # measure:1
     # ascending:1
 
     # tag:indicator'''
-    # def iati_activities__iati_activity__result__indicator(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_indicator = models.ResultIndicator()
-    #     result_indicator.result = model
-    #     result_indicator.baseline_year = 0
-    #     result_indicator.baseline_value = 0
-    #     self.set_func_model(result_indicator)
-    #     return element
+    def iati_activities__iati_activity__result__indicator(self,element):
+        measure = self.get_or_none(codelist_models.IndicatorMeasure, code=element.attrib.get('measure')) 
+        ascending = element.attrib.get('ascending', '1')
+
+        if not measure: raise self.RequiredFieldError("measure", "result_indicator: measure is required")
+
+        result = self.get_model('Result')
+        result_indicator = models.ResultIndicator()
+        result_indicator.result = result
+        result_indicator.measure = measure
+        result_indicator.ascending = self.makeBool(ascending)
+
+        self.register_model('ResultIndicator', result_indicator)
+        return element
 
     # '''atributes:
 
     # tag:title'''
-    # def iati_activities__iati_activity__result__indicator__title(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_indicator_title = models.ResultIndicatorTitle()
-    #     result_indicator_title.result_indicator = model
-        
-    #     self.set_func_model(result_indicator_title)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__title(self,element):
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_title = models.ResultIndicatorTitle()
+        result_indicator_title.result_indicator = result_indicator
+
+        self.register_model('ResultIndicatorTitle', result_indicator_title)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__title__narrative(self,element):
+        title = self.get_model('ResultIndicatorTitle') # this points to Title
+        self.add_narrative(element, title)
+
+        return element
 
     # '''atributes:
 
     # tag:description'''
-    # def iati_activities__iati_activity__result__indicator__description(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_indicator_description = models.ResultIndicatorDescription()
-    #     result_indicator_description.result_indicator = model
-    #     self.set_func_model(result_indicator_description)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__description(self,element):
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_description = models.ResultIndicatorDescription()
+        result_indicator_description.result_indicator = result_indicator
+
+        self.register_model('ResultIndicatorDescription', result_indicator_description)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__description__narrative(self,element):
+        description = self.get_model('ResultIndicatorDescription')
+        self.add_narrative(element, description)
+
+        return element
 
     # '''atributes:
     # year:2012
     # value:10
 
     # tag:baseline'''
-    # def iati_activities__iati_activity__result__indicator__baseline(self,element):
-    #     model = self.get_func_parent_model()
-    #     model.baseline_year = element.attrib.get('year')
-    #     model.baseline_value = element.attrib.get('value')
+    def iati_activities__iati_activity__result__indicator__baseline(self,element):
+        year = element.attrib.get('year')
+        value = element.attrib.get('value')
 
-    #     return element
+        if not year: raise self.RequiredFieldError("year", "result_indicator_baseline: year is required")
+        if not value: raise self.RequiredFieldError("value", "result_indicator_baseline: value is required")
+
+        result_indicator = self.pop_model('ResultIndicator')
+        result_indicator.baseline_year = int(year)
+        result_indicator.baseline_value = value
+
+        self.register_model('ResultIndicator', result_indicator)
+        return element
 
     # '''atributes:
 
     # tag:comment'''
-    # def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
-    #     model = self.get_func_parent_model()
-    #     indicator_baseline_comment = models.ResultIndicatorBaseLineComment()
-    #     indicator_baseline_comment.result_indicator = model
-    #     self.set_func_model(indicator_baseline_comment)
-    #     #store element 
-    #     return element
+    def iati_activities__iati_activity__result__indicator__baseline__comment(self,element):
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_baseline_comment = models.ResultIndicatorBaselineComment()
+        result_indicator_baseline_comment.result_indicator = result_indicator
+
+        self.register_model('ResultIndicatorBaselineComment', result_indicator_baseline_comment)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self,element):
+        baseline_comment = self.get_model('ResultIndicatorBaselineComment')
+        self.add_narrative(element, baseline_comment)
+
+        return element
 
     # '''atributes:
 
     # tag:period'''
-    # def iati_activities__iati_activity__result__indicator__period(self,element):
-    #     model = self.get_func_parent_model()
-    #     result_indicator_period = models.ResultIndicatorPeriod()
-    #     result_indicator_period.result_indicator = model
-    #     self.set_func_model(result_indicator_period)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period(self,element):
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_period = models.ResultIndicatorPeriod()
+        result_indicator_period.result_indicator = result_indicator
+
+        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        return element
 
     # '''atributes:
     # iso-date:2013-01-01
 
     # tag:period-start'''
-    # def iati_activities__iati_activity__result__indicator__period__period_start(self,element):
-    #     model = self.get_func_parent_model()
-    #     model.period_start = element.attrib.get('iso-date')
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__period_start(self,element):
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "result_indicator_period_period_start: iso-date is required")
+
+        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period.period_start = iso_date
+
+        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        return element
 
     # '''atributes:
     # iso-date:2013-03-31
 
     # tag:period-end'''
-    # def iati_activities__iati_activity__result__indicator__period__period_end(self,element):
-    #     model = self.get_func_parent_model()
-    #     model.period_end = element.attrib.get('iso-date')
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__period_end(self,element):
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "result_indicator_period_period_end: iso-date is required")
+
+        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period.period_end = iso_date
+
+        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        return element
 
     # '''atributes:
     # value:10
 
     # tag:target'''
-    # def iati_activities__iati_activity__result__indicator__period__target(self,element):
-    #     model = self.get_func_parent_model()
-    #     model.target = element.attrib.get('value')
+    def iati_activities__iati_activity__result__indicator__period__target(self,element):
+        value = element.attrib.get('value')
 
-    #     return element
+        if not value: raise self.RequiredFieldError("value", "result_indicator_period_target: value is required")
+
+        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period.target = value
+
+        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        return element
 
     # '''atributes:
 
     # tag:comment'''
-    # def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
-    #     model = self.get_func_parent_model()
-    #     period_target_comment = models.ResultIndicatorPeriodTargetComment()
-    #     period_target_comment.result_indicator_period = model
-    #     self.set_func_model(period_target_comment)
-    #     #store element 
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__target__comment(self,element):
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_target_comment = models.ResultIndicatorPeriodTargetComment()
+        result_indicator_period_target_comment.result_indicator_period = result_indicator_period
+
+        self.register_model('ResultIndicatorPeriodTargetComment', result_indicator_period_target_comment)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self,element):
+        period_target_comment = self.get_model('ResultIndicatorPeriodTargetComment')
+        self.add_narrative(element, period_target_comment)
+
+        return element
 
     # '''atributes:
     # value:11
 
     # tag:actual'''
-    # def iati_activities__iati_activity__result__indicator__period__actual(self,element):
-    #     model = self.get_func_parent_model()
-    #     model.actual = element.attrib.get('value')
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__actual(self,element):
+        value = element.attrib.get('value')
+
+        if not value: raise self.RequiredFieldError("value", "result_indicator_period_actual: value is required")
+
+        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period.actual = value
+
+        self.register_model('ResultIndicatorPeriod', result_indicator_period)
+        return element
 
     # '''atributes:
 
     # tag:comment'''
-    # def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
-    #     model = self.get_func_parent_model()
-    #     period_actual_comment = models.ResultIndicatorPeriodActualComment()
-    #     period_actual_comment.result_indicator_period = model
-    #     self.set_func_model(period_actual_comment)
-    #     #store element 
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__actual__comment(self,element):
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_actual_comment = models.ResultIndicatorPeriodActualComment()
+        result_indicator_period_actual_comment.result_indicator_period = result_indicator_period
+
+        self.register_model('ResultIndicatorPeriodActualComment', result_indicator_period_actual_comment)
+        return element
 
     # '''atributes:
 
     # tag:narrative'''
-    # def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
-    #     activity_date = self.get_model('ActivityDate')
-    #     self.add_narrative(element, activity_date)
-    #     return element
+    def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self,element):
+        period_actual_comment = self.get_model('ResultIndicatorPeriodActualComment')
+        self.add_narrative(element, period_actual_comment)
+
+        return element
 
     # '''atributes:
 

@@ -26,19 +26,19 @@ header#grp-header{
     border-radius: 4px;
 }
 
-.parse-btn.btn-warning, .oipa-admin-button.btn-warning{
+.parse-btn.btn-warning, .parse-activity-btn.btn-warning .oipa-admin-button.btn-warning{
     background-color: #5bc0de;
 }
 
-.parse-btn.btn-info, .oipa-admin-button.btn-info{
+.parse-btn.btn-info, .parse-activity-btn.btn-info .oipa-admin-button.btn-info{
     background-color: #5cb85c;
 }
 
-.parse-btn.btn-danger, .oipa-admin-button.btn-danger{
+.parse-btn.btn-danger, .parse-activity-btn.btn-danger, .oipa-admin-button.btn-danger{
     background-color: #d9534f;
 }
 
-.parse-btn, .sync-btn{
+.parse-btn, .parse-activity-btn, .sync-btn{
     padding: 2px 6px;
     border-radius: 4px;
     background-color: #999;
@@ -50,11 +50,10 @@ header#grp-header{
 
 }
 
-a.parse-btn:hover, a.sync-btn:hover{
+a.parse-btn:hover, .parse-activity-btn:hover a.sync-btn:hover{
     text-decoration: none;
     color: #fff;
     background-color: #666;
-
 }
 
 .django-rq-buttons a{

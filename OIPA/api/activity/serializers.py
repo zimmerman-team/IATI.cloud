@@ -319,20 +319,62 @@ class ResultTitleSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
+class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
+    value = serializers.CharField(source='target')
+    comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
+
+class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
+    value = serializers.CharField(source='actual')
+    comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
+
+class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
+    target = ResultIndicatorPeriodTargetSerializer(source="*")
+    actual = ResultIndicatorPeriodActualSerializer(source="*")
+
+    class Meta:
+        model = iati.models.ResultIndicatorPeriod
+        fields = (
+            'period_start',
+            'period_end',
+            'target',
+            'actual',
+        )
+
+class ResultIndicatorBaselineSerializer(serializers.Serializer):
+    year = serializers.CharField(source='baseline_year')
+    value = serializers.CharField(source='baseline_value')
+    comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
+
+class ResultIndicatorSerializer(serializers.ModelSerializer):
+    title = NarrativeContainerSerializer(source="resultindicatortitle")
+    description = NarrativeContainerSerializer(source="resultindicatordescription")
+    baseline = ResultIndicatorBaselineSerializer(source="*")
+    period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True)
+
+    class Meta:
+        model = iati.models.ResultIndicator
+        fields = (
+            'title',
+            'description',
+            'baseline',
+            'period',
+        )
+
 class ResultSerializer(serializers.ModelSerializer):
 
     type = CodelistSerializer() 
-    title = NarrativeContainerSerializer(source="resulttitle_set")
-    description = NarrativeContainerSerializer(source="resultdescription_set")
-    # todo: add resultIndicator
+    title = NarrativeContainerSerializer(source="resulttitle")
+    description = NarrativeContainerSerializer(source="resultdescription")
+    indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True)
 
     class Meta:
         model = iati.models.Result
         fields = (
             'title',
             'description',
-            'result_type',
+            'type',
             'aggregation_status',
+            'indicator',
         )
 
 class LocationSerializer(serializers.ModelSerializer):

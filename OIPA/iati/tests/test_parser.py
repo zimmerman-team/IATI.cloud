@@ -15,17 +15,15 @@ from django.test import TestCase as DjangoTestCase # Runs each test in a transac
 # from lxml import etree
 # from lxml.builder import E
 
-# from iati.iati_parser import ParseIATI
-
 # from iati_synchroniser.models import IatiXmlSource, Publisher
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
-# from iati.IATI_1_03 import Parse as Parser_103
-# from iati.IATI_1_05 import Parse as Parser_105
-from iati.IATI_2_01 import Parse as Parser_201
+# from iati.parser.IATI_1_03 import Parse as Parser_103
+# from iati.parser.IATI_1_05 import Parse as Parser_105
+from iati.parser.IATI_2_01 import Parse as Parser_201
 
-from iati.genericXmlParser import XMLParser as GenericParser
+from iati.parser.genericXmlParser import XMLParser as GenericParser
 
 # TODO: use factories instead of these fixtures
 def setUpModule():
@@ -52,7 +50,7 @@ class GenericParserTestCase(DjangoTestCase):
     """
 
     def setUp(self):
-        self.parser = GenericParser()
+        self.parser = GenericParser(None)
 
     def test_register_model_stores_model(self):
         activity = build_activity()
@@ -61,7 +59,7 @@ class GenericParserTestCase(DjangoTestCase):
 
     def test_register_model_stores_model_by_name(self):
         # TODO: put this all under genericparser
-        parser = Parser_201()
+        parser = Parser_201(None)
         
         activity = build_activity()
         parser.register_model(activity)

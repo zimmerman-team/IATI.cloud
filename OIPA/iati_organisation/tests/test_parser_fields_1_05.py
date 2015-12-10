@@ -12,7 +12,7 @@ from unittest import TestCase
 from lxml import etree
 from lxml.builder import E
 
-from iati.iati_parser import ParseIATI
+from iati.parser.iati_parser import ParseIATI
 
 from iati_synchroniser.models import IatiXmlSource, Publisher
 import iati.models as iati_models
@@ -20,9 +20,9 @@ import iati_codelists.models as codelist_models
 import iati_organisation.models as org_models
 from geodata.models import Country
 
-from iati.IATI_1_03 import Parse as Parser_103
-from iati.IATI_1_05 import Parse as Parser_105
-from iati.IATI_2_01 import Parse as Parser_201
+from iati.parser.IATI_1_03 import Parse as Parser_103
+from iati.parser.IATI_1_05 import Parse as Parser_105
+from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati_organisation.organisation_2_01 import Parse as OrgParse_201
 from iati_organisation.organisation_1_05 import Parse as OrgPArse_105
 
@@ -93,11 +93,10 @@ class ParserSetupTestCase(DjangoTestCase):
 
         dummy_source = IatiXmlSource.objects.get(id=2)
 
-        parseIati = ParseIATI()
-        self.parser_103 = parseIati.prepare_parser(self.iati_103, dummy_source)
-        self.parser_104 = parseIati.prepare_parser(self.iati_104, dummy_source)
-        self.parser_105 = parseIati.prepare_parser(self.iati_105, dummy_source)
-        self.parser_201 = parseIati.prepare_parser(self.iati_201, dummy_source)
+        self.parser_103 = ParseIATI(dummy_source, self.iati_103).get_parser()
+        self.parser_104 = ParseIATI(dummy_source, self.iati_104).get_parser()
+        self.parser_105 = ParseIATI(dummy_source, self.iati_105).get_parser()
+        self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
 
         assert(isinstance(self.parser_103, OrgPArse_105))
         assert(isinstance(self.parser_104, OrgPArse_105))

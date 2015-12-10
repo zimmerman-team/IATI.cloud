@@ -443,8 +443,31 @@ class ResultFactory(NoDatabaseFactory):
         model = iati.models.Result
 
     activity = ActivityFactory.build()
-    result_type = ResultTypeFactory.build()
+    type = ResultTypeFactory.build()
     aggregation_status = False
+
+class ResultIndicatorFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicator
+
+    result = ResultFactory.build()
+
+class ResultIndicatorPeriodFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriod
+
+    result_indicator = ResultIndicatorFactory.build()
+
+class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetComment
+
+    result_period = ResultIndicatorPeriodFactory.build()
+
+class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualComment
+
+    result_period = ResultIndicatorPeriodFactory.build()
 
 class GeographicLocationClassFactory(NoDatabaseFactory):
     class Meta:

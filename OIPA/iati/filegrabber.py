@@ -43,18 +43,18 @@ class FileGrabber():
         except urllib2.HTTPError, e:
             logger.info('HTTPError (url=' + url + ') = ' + str(e.code))
             if try_number < 6:
-                self.get_the_file(url, try_number + 1)
+                return self.get_the_file(url, try_number + 1)
             else:
                 return None
         except urllib2.URLError, e:
             logger.info('URLError (url=' + url + ') = ' + str(e.reason))
             if try_number < 6:
-                self.get_the_file(url, try_number + 1)
+                return self.get_the_file(url, try_number + 1)
         except httplib.HTTPException, e:
             logger.info('HTTPException reading url ' + url)
             if try_number < 6:
-                self.get_the_file(url, try_number + 1)
+                return self.get_the_file(url, try_number + 1)
         except Exception as e:
             logger.info('%s (%s)' % (e.message, type(e)) + " in get_the_file: " + url)
             if try_number < 6:
-                self.get_the_file(url, try_number + 1)
+                return self.get_the_file(url, try_number + 1)

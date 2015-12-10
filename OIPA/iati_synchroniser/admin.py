@@ -3,6 +3,7 @@ from django.contrib import admin
 from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.html import format_html
 from iati_synchroniser.parse_admin import ParseAdmin
 
 
@@ -31,12 +32,19 @@ class IATIXMLSourceInline(admin.TabularInline):
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
     search_fields = ['ref', 'title']
-    list_display = ['ref', 'publisher', 'title', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count', 'is_parsed']
+    list_display = ['ref', 'publisher', 'title', 'show_source_url',  'date_created', 'update_interval', 'get_parse_status', 'get_parse_activity', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count', 'is_parsed']
+
+
+    def show_source_url(self, obj):
+        return format_html('<a href="{url}">{url}</a>', url=obj.source_url)
+    show_source_url.allow_tags = True
+    show_source_url.short_description = "Source URL"
 
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
         extra_urls = patterns('',
             (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
+            (r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', self.admin_site.admin_view(self.parse_activity_view)),
             (r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
             (r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
             (r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
@@ -47,6 +55,13 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
         obj.process()
+        return HttpResponse('Success')
+
+    def parse_activity_view(self, request, activity_id):
+        xml_id = request.GET.get('xml_id')
+
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj.process_activity(activity_id)
         return HttpResponse('Success')
 
     def parse_all(self, request):

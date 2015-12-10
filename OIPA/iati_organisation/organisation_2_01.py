@@ -1,6 +1,6 @@
 import re
 
-from iati.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
 from iati_codelists import models as codelist_models
 
 from models import (
@@ -25,9 +25,9 @@ class Parse(IATI_201_Parser):
     default_lang = 'en'
     organisation_identifier = ''
 
-    def __init__(self):
-        super(IATI_201_Parser, self).__init__()
-        self.VERSION = codelist_models.Version.objects.get(code='2.01')
+    # TODO: remove this inheritance - 2015-12-10
+    def __init__(self, *args, **kwargs):
+        super(IATI_201_Parser, self).__init__(*args, **kwargs)
 
     def add_narrative(self, element, parent):
         default_lang = self.default_lang  # set on activity (if set)

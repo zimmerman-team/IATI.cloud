@@ -2,7 +2,8 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from iati.iati_parser import ParseIATI
+from iati.parser.iati_parser import ParseIATI
+# from iati_synchroniser.parse_admin import ParseAdmin
 
 
 class Publisher(models.Model):
@@ -36,7 +37,7 @@ class IatiXmlSource(models.Model):
         ),
         default=1)
     publisher = models.ForeignKey(Publisher)
-    source_url = models.CharField(
+    source_url = models.URLField(
         max_length=255,
         unique=True)
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -70,21 +71,36 @@ class IatiXmlSource(models.Model):
     get_parse_status.allow_tags = True
     get_parse_status.short_description = _(u"Parse status")
 
+    def get_parse_activity(self):
+        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'></input><a data-xml='xml_%i' class='parse-activity-btn'>Parse Activity</a>") % self.id
+    get_parse_activity.allow_tags = True
+    get_parse_activity.short_description = _(u"Parse Activity")
+
+
     def process(self):
+        parser = ParseIATI(self)
+        parser.parse_all()
+
         self.is_parsed = True
-        parser = ParseIATI()
-        parser.parse_url(self)
         self.date_updated = datetime.datetime.now()
+
         self.save(process=False)
-        from iati_synchroniser.parse_admin import ParseAdmin
-        activity_counter = ParseAdmin()
+
+        # activity_counter = ParseAdmin()
         # self.xml_activity_count = activity_counter.get_xml_activity_amount(self.source_url)
         # self.oipa_activity_count = activity_counter.get_oipa_activity_amount(self.ref)
-        self.save(process=False)
+
+    def process_activity(self, activity_id):
+        """
+        process a single activity
+        """
+        parser = ParseIATI(self)
+        parser.parse_activity(activity_id)
 
     def save(self, process=False , added_manually=True, *args, **kwargs):
         self.added_manually = added_manually
         super(IatiXmlSource, self).save()
+
         if process:
             self.process()
 
