@@ -1,28 +1,41 @@
-OIPA
-============
-
-[![Build Status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=develop)](https://travis-ci.org/openaid-IATI/OIPA)
+#### OIPA
+--------
+[![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg?branch=develop)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/openaid-IATI/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/openaid-IATI/OIPA?branch=develop)
 
-OIPA is developed within the www.openaid.nl and www.openaidsearch.org platform and enables IATI standard compliant datasets to easily parse and interface that data using the OIPA framework that has been developed using a Django interface. It has been implemented for UN-Habitat at http://open.unhabitat.org and UNESCO: http://opendata.unesco.org.
+OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
 
-IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at:
+IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at: www.iatistandard.org
 
-www.iatistandard.org
 
-OIPA is extended to support a variety of global health indicators published by UN-Habitat, The World Bank and other sources of statistics.
+#### About the project
+--------
 
-OIPA is licensed under the GNU AGPL license.
+* Web Site:         http://www.oipa.nl
+* Authors:          [Zimmerman & Zimmerman ](https://www.zimmermanzimmerman.nl/)
+* License:          AGPLv3 (see included [LICENSE](https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD) file for full license)
+* Github Repo:      https://github.com/openaid-IATI/OIPA/
+* Bug Tracker:      https://github.com/openaid-IATI/OIPA/issues
+* Documentation:    https://github.com/openaid-IATI/OIPA/wiki
 
-Check the full documentation and how to use OIPA here: www.oipa.nl
 
-Codebase maintained by team Zimmerman & Zimmerman in Amsterdam.
+#### Can I contribute?
+--------
 
-============
+Yes please! We are mainly looking for coders to help on the project. If you are a coder simply  press *Fork* at the top of this github page and hack away.
 
-Development on [Vagrant](https://www.vagrantup.com/)
-========
+#### Who is making use of OIPA?
+--------
 
+* Dutch Ministry of Foreign Affairs:         http://beta.openaid.nl
+* UNESCO Transparency Portal:                http://opendata.unesco.org/
+* UN-Habitat:                                http://open.unhabitat.org
+* DFID Devtracker (jan. 2016)                http://devtracker.dfid.gov.uk/
+* Mohinga AIMS                               http://mohinga.info/en/
+
+
+#### How to install the development environment on [Vagrant](https://www.vagrantup.com/)
+--------
 Initial setup scripts and Vagrantfile included,
 in order to setup new instance type following inside repository root directory:
 
