@@ -457,9 +457,14 @@ class ActivityAggregationSerializer(BaseSerializer):
         # queryset = self.apply_group_filters(queryset, request, group_by)
         orderings = self.get_order_filters(order_by)
         queryset = self.apply_annotations(queryset, group_by, aggregations)
+
+        # After this, a valuesQuerySet
         result = self.apply_extra_calculations(queryset, aggregations)
         result = self.apply_ordering(result, orderings)
         result = self.apply_limit_offset_filters(result, page_size, page)
+
+        # after this, an array
+        result = [a for a in result]
         result = self.serialize_foreign_keys(result, request, group_by)
 
         if page_size:
