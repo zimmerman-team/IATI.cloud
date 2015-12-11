@@ -1,6 +1,6 @@
 #### OIPA
 --------
-[![Build Status](https://travis-ci.org/openaid-IATI/OIPA.svg?branch=develop)](https://travis-ci.org/openaid-IATI/OIPA)
+[![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/openaid-IATI/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/openaid-IATI/OIPA?branch=master)
 
 OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
