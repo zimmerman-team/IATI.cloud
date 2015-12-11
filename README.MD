@@ -27,7 +27,7 @@ Yes please! We are mainly looking for coders to help on the project. If you are 
 #### Who is making use of OIPA?
 --------
 
-* Dutch Ministry of Foreign Affairs:         http://beta.openaid.nl
+* Dutch Ministry of Foreign Affairs:         http://www.openaid.nl
 * UNESCO Transparency Portal:                http://opendata.unesco.org/
 * UN-Habitat:                                http://open.unhabitat.org
 * DFID Devtracker (jan. 2016)                http://devtracker.dfid.gov.uk/
