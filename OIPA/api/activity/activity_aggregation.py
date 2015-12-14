@@ -408,13 +408,13 @@ class ActivityAggregationSerializer(BaseSerializer):
             else:
 
                 for field in thisGroupingFieldList:
-                    serializers[field] = {str(i.get(field)): i.get(field) for i in results}
+                    serializers[field] = {i.get(field).encode('utf-8'): i.get(field) for i in results}
 
         for i, result in enumerate(list(results)):
             for k, v in result.iteritems():
                 if k in groupfieldList:
-                    if v:
-                        result[k] = serializers.get(k, {}).get(str(v))
+                    if v is not None:
+                        result[k] = serializers.get(k, {}).get(v.encode('utf-8'))
                     else:
                         del results[i]
 
