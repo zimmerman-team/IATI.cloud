@@ -161,6 +161,9 @@ class ActivityList(DynamicListView):
     - `start_date`
     - `end_date`
     - `activity_budget_value`
+    - `activity_incoming_funds_value`
+    - `activity_disbursement_value`
+    - `activity_expenditure_value`
     - `activity_plus_child_budget_value`
 
 
@@ -218,6 +221,9 @@ class ActivityList(DynamicListView):
         'start_date',
         'end_date',
         'activity_budget_value',
+        'activity_incoming_funds_value',
+        'activity_disbursement_value',
+        'activity_expenditure_value',
         'activity_plus_child_budget_value',)
 
 

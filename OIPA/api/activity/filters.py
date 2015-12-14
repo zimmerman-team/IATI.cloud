@@ -328,6 +328,9 @@ class RelatedOrderingFilter(OrderingFilter):
         mapped_fields = {
             'title': 'title__narratives__content',
             'activity_budget_value': 'activity_aggregation__budget_value',
+            'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',
+            'activity_disbursement_value': 'activity_aggregation__disbursement_value',
+            'activity_expenditure_value': 'activity_aggregation__expenditure_value',
             'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',
             'planned_start_date': 'planned_start',
             'actual_start_date': 'actual_start',
