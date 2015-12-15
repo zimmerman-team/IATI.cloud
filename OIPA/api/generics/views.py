@@ -23,7 +23,7 @@ class DynamicView(GenericAPIView):
             "serializer class must be an instance of DynamicFieldsModelSerializer "
             "instead got %s") % (serializer_class.__name__,)
 
-        self.serializer_fields= serializer.fields.keys()
+        self.serializer_fields = serializer.fields.keys()
 
         self.select_related_fields = [ field.name for field in model._meta.fields \
                 if isinstance(field, (ForeignKey, OneToOneField)) ]

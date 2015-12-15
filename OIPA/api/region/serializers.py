@@ -3,8 +3,6 @@ import geodata
 import iati.models
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.fields import GeometryField
-from api.activity.aggregation import AggregationsSerializer
-
 
 class RegionVocabularySerializer(serializers.ModelSerializer):
     code = serializers.CharField()

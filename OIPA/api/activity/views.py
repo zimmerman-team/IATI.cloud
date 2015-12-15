@@ -4,10 +4,10 @@ from rest_framework.generics import GenericAPIView
 from iati.models import Activity
 from api.activity import serializers as activitySerializers
 from api.activity import filters
-from api.activity.aggregation import AggregationsPaginationSerializer
 from api.activity.activity_aggregation import ActivityAggregationSerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
+from api.generics.serializers import NoCountPaginationSerializer
 
 from rest_framework.filters import DjangoFilterBackend
 
@@ -16,7 +16,6 @@ from api.transaction.filters import TransactionFilter
 
 from rest_framework.response import Response
 from rest_framework import mixins, status
-
 
 class ActivityAggregations(GenericAPIView):
     """
@@ -204,14 +203,17 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
+    pagination_class = NoCountPaginationSerializer
+
     fields = (
         'url', 
         'iati_identifier', 
         'title', 
         'description', 
         'transactions', 
-        'reporting_organisations')
-    pagination_class = AggregationsPaginationSerializer
+        'reporting_organisations',
+    )
+
     ordering_fields = (
         'title',
         'planned_start_date',
@@ -224,7 +226,8 @@ class ActivityList(DynamicListView):
         'activity_incoming_funds_value',
         'activity_disbursement_value',
         'activity_expenditure_value',
-        'activity_plus_child_budget_value',)
+        'activity_plus_child_budget_value',
+    )
 
     def get_queryset(self):
         qs = super(ActivityList, self).get_queryset()

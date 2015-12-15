@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.fields import JSONField
-from api.activity.aggregation import AggregationsSerializer
 from api.activity.serializers import *
 import iati
 
@@ -50,7 +49,6 @@ class ActivityPolicyMarkerSerializer(serializers.RelatedField,DynamicFieldsModel
 class PolicyMarkerSerializer(DynamicFieldsModelSerializer):
     
     #activity_policy_marker_related = serializers.StringRelatedField(many=True)
-    #aggregations = AggregationsSerializer(source='activity_policy_marker_related', fields=())
     policy_marker_related = ActivityPolicyMarkerSerializer( read_only=`True`,many=True)
     
     class Meta:

@@ -3,8 +3,6 @@ import geodata
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.region.serializers import RegionSerializer
 from api.fields import JSONField
-from api.activity.aggregation import AggregationsSerializer
-
 
 class CountrySerializer(DynamicFieldsModelSerializer):
     class BasicCitySerializer(serializers.ModelSerializer):
@@ -30,7 +28,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     indicators = serializers.HyperlinkedIdentityField(
         view_name='countries:country-indicators')
     cities = serializers.HyperlinkedIdentityField(view_name='countries:country-cities')
-    aggregations = AggregationsSerializer(source='activity_set', fields=())
 
     class Meta:
         model = geodata.models.Country
@@ -55,7 +52,6 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'indicators',
             # 'adm1region_set',
             'cities',
-            'aggregations',
             'location',
             'polygon',
         )
