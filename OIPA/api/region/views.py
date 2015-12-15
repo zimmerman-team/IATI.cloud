@@ -6,8 +6,9 @@ from rest_framework.generics import RetrieveAPIView
 from api.country.serializers import CountrySerializer
 from api.activity.views import ActivityList
 
+from api.generics.views import DynamicListView, DynamicDetailView
 
-class RegionList(ListAPIView):
+class RegionList(DynamicListView):
     """
     Returns a list of IATI Regions stored in OIPA.
 

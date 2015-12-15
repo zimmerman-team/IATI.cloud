@@ -3,29 +3,6 @@ from api.transaction.filters import TransactionFilter
 from iati.transaction.models import Transaction
 from api.generics.views import DynamicListView, DynamicDetailView
 
-class TransactionDetail(DynamicDetailView):
-    """
-    Returns detailed information about Transaction.
-
-    ## URI Format
-
-    ```
-    /api/transactions/{transaction_id}
-    ```
-
-    ### URI Parameters
-
-    - `transaction_id`: Numerical ID of desired Transaction
-
-    ## Request parameters
-
-    - `fields` (*optional*): List of fields to display
-
-    """
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
-
-
 class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
@@ -60,8 +37,42 @@ class TransactionList(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
+    fields = (
+        'url',
+        'activity',
+        'provider_organisation',
+        'receiver_organisation',
+        'currency',
+        'transaction_type',
+        'value_date',
+        'value',
+    )
+
     search_fields = (
         'description',
         'provider_organisation',
         'receiver_organisation',
     )
+
+class TransactionDetail(DynamicDetailView):
+    """
+    Returns detailed information about Transaction.
+
+    ## URI Format
+
+    ```
+    /api/transactions/{transaction_id}
+    ```
+
+    ### URI Parameters
+
+    - `transaction_id`: Numerical ID of desired Transaction
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+

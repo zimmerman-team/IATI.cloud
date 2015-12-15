@@ -5,8 +5,9 @@ from api.activity.views import ActivityList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 
+from api.generics.views import DynamicListView, DynamicDetailView
 
-class SectorList(ListAPIView):
+class SectorList(DynamicListView):
     """
     Returns a list of IATI Sectors stored in OIPA.
 

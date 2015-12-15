@@ -9,8 +9,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from api.country.filters import CountryFilter
 
+from api.generics.views import DynamicListView, DynamicDetailView
 
-class CountryList(ListAPIView):
+class CountryList(DynamicListView):
     """
     Returns a list of IATI Countries stored in OIPA.
 
@@ -47,7 +48,8 @@ class CountryList(ListAPIView):
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     filter_class = CountryFilter
-    fields = ('url', 'code', 'name')
+
+    fields = ('url', 'code', 'name',)
 
 
 class CountryDetail(RetrieveAPIView):
