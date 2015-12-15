@@ -214,6 +214,8 @@ class ActivityList(DynamicListView):
         'reporting_organisations',
     )
 
+    always_ordering = 'id'
+
     ordering_fields = (
         'title',
         'planned_start_date',

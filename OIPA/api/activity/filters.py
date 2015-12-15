@@ -291,6 +291,16 @@ class RelatedOrderingFilter(OrderingFilter):
     to make 'user-friendly' names possible
     """
 
+    def get_ordering(self, request, queryset, view):
+        ordering = super(RelatedOrderingFilter, self).get_ordering(request, queryset, view)
+
+        always_ordering = getattr(view, 'always_ordering', None)
+
+        if ordering and always_ordering:
+            ordering = [always_ordering] + ordering
+
+        return ordering
+
     def is_valid_field(self, model, field):
         """
         Return true if the field exists within the model (or in the related
