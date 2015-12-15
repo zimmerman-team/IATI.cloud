@@ -19,20 +19,20 @@ class ActivityFilter(TogetherFilterSet):
 
     activity_scope = CommaSeparatedCharFilter(
         name='scope__code',
-        lookup_type='in')
+        lookup_type='in',)
 
     recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='recipient_country')
+        name='recipient_country',)
 
     recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='recipient_region')
+        name='recipient_region',)
 
     recipient_region_not_in = CommaSeparatedCharFilter(
         lookup_type='in',
         name='recipient_region',
-        exclude=True)
+        exclude=True,)
 
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
@@ -88,23 +88,23 @@ class ActivityFilter(TogetherFilterSet):
 
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='sector')
+        name='sector',)
 
     sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='activitysector__sector__category__code')
+        name='activitysector__sector__category__code',)
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__normalized_ref')
+        name='participating_organisations__normalized_ref',)
 
     participating_organisation_name = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__primary_name')
+        name='participating_organisations__primary_name',)
 
     participating_organisation_role = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__role__code')
+        name='participating_organisations__role__code',)
 
     reporting_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -116,49 +116,42 @@ class ActivityFilter(TogetherFilterSet):
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='xml_source_ref')
+        name='xml_source_ref',)
 
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='activity_status',
-        distinct=True)
+        name='activity_status',)
 
     hierarchy = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='hierarchy')
+        name='hierarchy',)
 
     related_activity_id = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='relatedactivity__ref_activity__id', distinct=True)
+        lookup_type='in', name='relatedactivity__ref_activity__id', )
 
     related_activity_type = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__type__code',
-        distinct=True)
+        name='relatedactivity__type__code',)
 
     related_activity_recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__recipient_country',
-        distinct=True)
+        name='relatedactivity__ref_activity__recipient_country',)
 
     related_activity_recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__recipient_region',
-        distinct=True)
+        name='relatedactivity__ref_activity__recipient_region',)
 
     related_activity_sector = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__sector',
-        distinct=True)
+        name='relatedactivity__ref_activity__sector',)
 
     related_activity_sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__sector__category',
-        distinct=True)
+        name='relatedactivity__ref_activity__sector__category',)
 
     budget_period_start = DateFilter(
         lookup_type='gte',
-        name='budget__period_start')
+        name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_type='lte',
@@ -170,13 +163,11 @@ class ActivityFilter(TogetherFilterSet):
 
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='transaction__provider_organisation__provider_activity_ref',
-        distinct=True)
+        name='transaction__provider_organisation__provider_activity_ref',)
 
     transaction_date_year = NumberFilter(
         lookup_type='year',
-        name='transaction__transaction_date',
-        distinct=True)
+        name='transaction__transaction_date',)
 
 
     activity_aggregation_budget_value_lte = NumberFilter(

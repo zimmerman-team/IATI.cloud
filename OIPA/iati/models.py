@@ -102,13 +102,13 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
-
     objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
         return self.id
 
     class Meta:
+        ordering = ['id']
         verbose_name_plural = "activities"
 
 

@@ -175,6 +175,11 @@ class ActivityQuerySet(query.QuerySet):
                 .select_related('language'))
         )
 
+    # TODO: this makes counting a lot slower than it has to be for a lot of queries
+    def count(self):
+        self = self.order_by().only('id')
+        return super(ActivityQuerySet, self).count()
+
     def aggregate_budget(self):
         sum = self.aggregate(
             budget=Sum('budget__value')
