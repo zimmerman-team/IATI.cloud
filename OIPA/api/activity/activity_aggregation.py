@@ -439,6 +439,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         return result
 
     def to_representation(self, queryset):
+        # remove default orderings
+        queryset = queryset.order_by()
+
         request = self.context.get('request') 
         params = request.query_params
 
