@@ -52,12 +52,12 @@ class Activity(models.Model):
     default_lang = models.CharField(max_length=2)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
-    planned_start = models.DateField(null=True, blank=True, default=None)
-    actual_start = models.DateField(null=True, blank=True, default=None)
-    start_date = models.DateField(null=True, blank=True, default=None)
-    planned_end = models.DateField(null=True, blank=True, default=None)
-    actual_end = models.DateField(null=True, blank=True, default=None)
-    end_date = models.DateField(null=True, blank=True, default=None)
+    planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
+    actual_start = models.DateField(null=True, blank=True, default=None, db_index=True)
+    start_date = models.DateField(null=True, blank=True, default=None, db_index=True)
+    planned_end = models.DateField(null=True, blank=True, default=None, db_index=True)
+    actual_end = models.DateField(null=True, blank=True, default=None, db_index=True)
+    end_date = models.DateField(null=True, blank=True, default=None, db_index=True)
 
     activity_status = models.ForeignKey(
         ActivityStatus,
@@ -102,6 +102,13 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
+    planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
+    actual_start = models.DateField(null=True, blank=True, default=None, db_index=True)
+    start_date = models.DateField(null=True, blank=True, default=None, db_index=True)
+    planned_end = models.DateField(null=True, blank=True, default=None, db_index=True)
+    actual_end = models.DateField(null=True, blank=True, default=None, db_index=True)
+    end_date = models.DateField(null=True, blank=True, default=None, db_index=True)
+
     objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
@@ -111,22 +118,92 @@ class Activity(models.Model):
         ordering = ['id']
         verbose_name_plural = "activities"
 
+        index_together = [
+            ["planned_start", "id"],
+            ["actual_start", "id"],
+            ["start_date", "id"],
+            ["planned_end", "id"],
+            ["actual_end", "id"],
+            ["end_date", "id"],
+        ]
 
 class AbstractActivityAggregation(models.Model):
-    budget_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    budget_currency = models.CharField(max_length=3, null=True, default=None, blank=True)
-    disbursement_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    disbursement_currency = models.CharField(max_length=3, null=True, default=None, blank=True)
-    incoming_funds_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    incoming_funds_currency = models.CharField(max_length=3, null=True, default=None, blank=True)
-    commitment_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    commitment_currency = models.CharField(max_length=3, null=True, default=None, blank=True)
-    expenditure_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    expenditure_currency = models.CharField(max_length=3, null=True, default=None, blank=True)
+    budget_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    budget_currency = models.CharField(
+        max_length=3,
+        null=True, 
+        default=None, 
+        blank=True,
+    )
+    disbursement_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True, 
+        db_index=True,
+    )
+    disbursement_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    incoming_funds_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_funds_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    commitment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    commitment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    expenditure_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    expenditure_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
 
+        index_together = [
+            ["budget_value", "activity"],
+            ["disbursement_value", "activity"],
+            ["incoming_funds_value", "activity"],
+            ["commitment_value", "activity"],
+            ["expenditure_value", "activity"],
+        ]
 
 class ActivityAggregation(AbstractActivityAggregation):
     activity = models.OneToOneField(Activity, related_name="activity_aggregation", default=None)
@@ -164,7 +241,6 @@ class ActivitySearchData(models.Model):
     search_participating_organisation_name = models.TextField(max_length=80000)
     search_reporting_organisation_name = models.TextField(max_length=80000)
     search_documentlink_title = models.TextField(max_length=80000)
-
 
 class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250, db_index=True)

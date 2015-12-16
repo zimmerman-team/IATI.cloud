@@ -297,9 +297,20 @@ class RelatedOrderingFilter(OrderingFilter):
         always_ordering = getattr(view, 'always_ordering', None)
 
         if ordering and always_ordering:
-            ordering = [always_ordering] + ordering
+            ordering = ordering + [always_ordering] 
+            queryset.distinct(always_ordering)
 
         return ordering
+
+    def filter_queryset(self, request, queryset, view):
+
+        ordering = self.get_ordering(request, queryset, view)
+
+        if ordering: 
+            ordering = [order.replace("-", "") for order in ordering]
+            queryset = queryset.distinct(*ordering)
+
+        return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
 
     def is_valid_field(self, model, field):
         """
