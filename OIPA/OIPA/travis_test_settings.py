@@ -9,8 +9,8 @@ DATABASES = {
     },
     'psql': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'oipa99',
-        'USER': 'oipa',
-        'PASSWORD': 'oipa',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '',
     },
 }
