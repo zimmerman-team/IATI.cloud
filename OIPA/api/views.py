@@ -11,10 +11,9 @@ from django.db import OperationalError
 @api_view(('GET',))
 def welcome(request, format=None):
     """
-    # REST API
+    ## REST API
 
-    The REST API provides programmatic access to read and write IATI data.
-    Fetch IATI Activity, Transaction or other IATI data.
+    The REST API provides programmatic access to read (and soon also write) IATI data.
     The REST API responses are available in JSON.
 
     ## Available endpoints
@@ -33,11 +32,10 @@ def welcome(request, format=None):
 
     * Cities: [`/api/cities`](/api/cities)
 
-    # Legacy API
+    ## Legacy API
 
-    Legacy API (v3) is still accesseble but will be depricated soon.
-
-    [`/api/v3/docs/`](/api/v3/docs/)
+    The OIPA Tastypie API (v3) is deprecated and removed from the latest releases of OIPA. 
+    It can still be found in release 1.0 on Github. 
 
     """
     return Response({
