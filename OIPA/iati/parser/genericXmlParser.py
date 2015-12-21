@@ -35,8 +35,15 @@ class XMLParser(object):
             self.model_store = OrderedDict()
             self.parse(e)
             self.save_all_models()
-            self.post_save()
+            self.post_save_activity()
+        self.post_save_file(self.iati_source)
             
+    def post_save_activity(self):
+        print "override in children"
+
+    def post_save_file(self, iati_source):
+        print "override in children"
+
     def parse(self, element):
         if element == None:
             return
