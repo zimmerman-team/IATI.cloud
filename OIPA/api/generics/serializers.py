@@ -64,12 +64,3 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-
-# todo: optional remove count or remove this
-class NoCountPaginationSerializer(PageNumberPagination):
-    """
-    PaginationSerializer that removes the count field when specified in the
-    query_params.
-    """
-    def __init__(self, *args, **kwargs):
-        super(NoCountPaginationSerializer, self).__init__(*args, **kwargs)

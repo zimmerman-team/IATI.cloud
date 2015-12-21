@@ -102,23 +102,23 @@ class TogetherFilterSet(FilterSet):
         be called in the same django filter() call when both present
         """
 
-        meta = getattr(self, 'Meta', None)
+        # meta = getattr(self, 'Meta', None)
 
-        # fields that must be filtered in the same filter call
-        self.together_exclusive = getattr(meta, 'together_exclusive', None)
+        # # fields that must be filtered in the same filter call
+        # self.together_exclusive = getattr(meta, 'together_exclusive', None)
 
-        data = data.copy()
+        # data = data.copy()
 
-        for filterlist in self.together_exclusive:
-            if set(filterlist).issubset(data.keys()):
+        # for filterlist in self.together_exclusive:
+        #     if set(filterlist).issubset(data.keys()):
 
-                filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
-                filter_classes = [self.declared_filters.get(filteritem, None) for filteritem in filterlist]
+        #         filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
+        #         filter_classes = [self.declared_filters.get(filteritem, None) for filteritem in filterlist]
 
-                uid = uuid.uuid4()
+        #         uid = uuid.uuid4()
 
-                self.base_filters[uid] = TogetherFilter(filters=filter_classes)
-                data.appendlist(uid, filter_values)
+        #         self.base_filters[uid] = TogetherFilter(filters=filter_classes)
+        #         data.appendlist(uid, filter_values)
 
         super(FilterSet, self).__init__(data, queryset, prefix, strict)
 

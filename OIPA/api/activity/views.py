@@ -7,7 +7,6 @@ from api.activity import filters
 from api.activity.activity_aggregation import ActivityAggregationSerializer
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
-from api.generics.serializers import NoCountPaginationSerializer
 
 from rest_framework.filters import DjangoFilterBackend
 
@@ -203,7 +202,6 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
-    pagination_class = NoCountPaginationSerializer
 
     fields = (
         'url', 
@@ -268,6 +266,7 @@ class ActivityDetail(DynamicDetailView):
 
     """
     queryset = Activity.objects.all()
+    filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
 
