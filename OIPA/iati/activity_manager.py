@@ -132,13 +132,72 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_results(self):
-        from iati.models import Result
+        from iati.models import Result, Narrative, ResultIndicatorPeriod, ResultIndicator
+
+        title_prefetch = Prefetch(
+            'resulttitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        description_prefetch = Prefetch(
+            'resultdescription__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_title_prefetch = Prefetch(
+            'resultindicatortitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_description_prefetch = Prefetch(
+            'resultindicatordescription__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        period_target_comment_prefetch = Prefetch(
+            'resultindicatorperiodtargetcomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        period_actual_comment_prefetch = Prefetch(
+            'resultindicatorperiodactualcomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_period_prefetch = Prefetch(
+            'resultindicatorperiod_set',
+            queryset=ResultIndicatorPeriod.objects.all()
+                .select_related('result_indicator')
+                .prefetch_related(period_target_comment_prefetch, period_actual_comment_prefetch)
+        )
+
+        indicator_baseline_comment_prefetch = Prefetch(
+            'resultindicatorbaselinecomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_prefetch = Prefetch(
+            'resultindicator_set',
+            queryset=ResultIndicator.objects.all()
+                .select_related('measure')
+                .prefetch_related(
+                    indicator_title_prefetch, 
+                    indicator_description_prefetch,
+                    indicator_period_prefetch,
+                    indicator_baseline_comment_prefetch
+                )
+        )
 
         return self.prefetch_related(
             Prefetch(
                 'result_set',
                 queryset=Result.objects.all()
-                .select_related('type'))
+                .select_related('type', 'resulttitle', 'resultdescription')
+                .prefetch_related(
+                    title_prefetch,
+                    description_prefetch,
+                    indicator_prefetch
+                ))
         )
 
     def prefetch_locations(self):
