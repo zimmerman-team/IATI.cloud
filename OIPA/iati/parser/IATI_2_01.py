@@ -1559,7 +1559,6 @@ class Parse(XMLParser):
         file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format'))
 
         if not url: raise self.RequiredFieldError("url", "document_link: url is required")
-        if not file_format: raise self.RequiredFieldError("format", "document_link: format is required")
 
         activity = self.get_model('Activity')
         document_link = models.DocumentLink()
