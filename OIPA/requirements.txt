@@ -1,9 +1,12 @@
+# admin-multiupload==0.1
 git+git://github.com/gkuhn1/django-admin-multiupload.git
 argh==0.26.1
+Babel==2.1.1
 click==6.2
 contexttimer==0.3.1
+coverage==3.7.1
 defusedxml==0.4.1
-Django==1.9
+Django==1.8.7
 django-cors-headers==1.1.0
 django-debug-toolbar==1.4
 django-extensions==1.6.1
@@ -14,15 +17,19 @@ django-haystack==2.4.1
 django-nested-inline==0.3.5
 django-otp==0.3.3
 django-otp-yubikey==0.3.2
+django-phonenumber-field==1.0.0
 django-rq==0.9.0
 django-suit==0.2.15
 django-supervisor==0.3.4
-django-test-without-migrations==0.3
+django-test-without-migrations==0.4
 # django-two-factor-auth==1.2.2
 git+https://github.com/Bouke/django-two-factor-auth
-# djangorestframework==3.3.1
+# djangorestframework==3.3.2
 git+https://github.com/tomchristie/django-rest-framework@0fb1ebcfcf98a9284baf3b5b840c36aeccefa6c7
 elasticsearch==2.1.0
+factory-boy==2.6.0
+fake-factory==0.5.3
+funcsigs==0.4
 grappelli-nested-inlines==0.6.0
 guppy==0.1.10
 invoke==0.11.1
@@ -30,20 +37,37 @@ lxml==3.5.0
 Markdown==2.6.5
 mechanize==0.2.5
 meld3==1.0.2
+mock==1.3.0
 objgraph==2.0.1
 pathtools==0.1.2
+pbr==1.8.1
+phonenumbers==7.2.2
 psycopg2==2.6.1
+py==1.4.31
 pycrypto==2.6.1
+pysqlite==2.8.1
+pytest==2.8.5
+pytest-django==2.9.1
+python-coveralls==2.5.0
 python-dateutil==2.4.2
+pytz==2015.7
 PyYAML==3.11
 qrcode==5.1
 redis==2.10.5
+requests==2.9.0
 rq==0.5.6
 rq-scheduler==0.5.1
+sh==1.11
 six==1.10.0
 sqlparse==0.1.18
 supervisor==3.2.0
 ujson==1.34
-urllib3==1.12
+urllib3==1.13.1
 watchdog==0.8.3
 YubiOTP==0.2.1
+
+
+
+
+
+

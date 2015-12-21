@@ -8,21 +8,34 @@ BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
 LOGIN_URL = reverse_lazy('two_factor:login')
 
-TEMPLATE_CONTEXT_PROCESSORS = TCP + [
-        'django.core.context_processors.request',
-        ]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': (os.path.join(os.path.dirname(__file__), '..', 'templates').replace('\\','/'),),
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 
 def rel(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
 sys.path.insert(0, rel('..','lib'))
 
-ADMINFILES_UPLOAD_TO = 'csv_files'
-
-XS_SHARING_ALLOWED_ORIGINS = '*'
-XS_SHARING_ALLOWED_METHODS = ['GET', 'OPTIONS']
-XS_SHARING_ALLOWED_HEADERS = ['Content-Type', '*']
-XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -73,13 +86,6 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,8 +100,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'OIPA.urls'
 
-import os
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').replace('\\','/'),)
 
 # TODO: clean this up, separate into test_settings, etc..
 INSTALLED_APPS = (
@@ -139,40 +143,6 @@ INSTALLED_APPS = (
     'nested_inline',
 )
 
-SUIT_CONFIG = {
-    'ADMIN_NAME': 'OIPA',
-    'MENU': (
-        # Keep original label and models
-        'sites',
-        # Rename app and set icon
-        {'label': 'Authorization', 'icon':'icon-lock', 'models': (
-            'auth.user',
-            'auth.group',
-            {'label': 'Two Factor Authentication settings', 'url': '/account/two_factor/'},
-            {'label': 'OTP Static devices', 'model': 'otp_static.staticdevice'},
-            {'label': 'OTP TOTP devices', 'model': 'otp_totp.totpdevice'},
-            {'label': 'Two factor phone devices', 'model': 'two_factor.phonedevice'},
-            {'label': 'Local YubiKey devices', 'model': 'otp_yubikey.yubikeydevice'},
-            {'label': 'Remote YubiKey devices', 'model': 'otp_yubikey.remoteyubikeydevice'},
-            {'label': 'YubiKey validation services', 'model': 'otp_yubikey.validationservice'},
-        )},
-        {'app': 'iati', 'label': 'IATI', 'icon': 'icon-th'},
-        {'app': 'iati_codelists', 'label': 'IATI codelist', 'icon': 'icon-barcode'},
-        {'app': 'iati_synchroniser', 'label': 'IATI management', 'icon': 'icon-refresh'},
-        {'app': 'geodata', 'label': 'Geo data', 'icon': 'icon-globe'},
-        {'app': 'indicator', 'label': 'Indicators', 'icon': 'icon-signal'},
-        {'app': 'indicator_unesco', 'label': 'Unesco Indicators', 'icon': 'icon-signal'},
-        {'app': 'cache', 'label': 'API call cache', 'icon': 'icon-hdd'},
-        {'label': 'Task queue', 'url': '/admin/queue/', 'icon': 'icon-tasks', 'models': [
-            {'label': 'Task overview', 'url': '/admin/queue/'},
-            {'label': 'Default queue', 'url': '/admin/queue/queues/0/'},
-            {'label': 'Parse queue', 'url': '/admin/queue/queues/1/'},
-            {'label': 'Failed tasks', 'url': '/admin/queue/queues/2/'},
-        ]},
-        {'app': 'parse_logger', 'label': 'Parse Log', 'icon': 'icon-hdd'},
-    )
-}
-
 RQ_SHOW_ADMIN_LINK = True
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
@@ -189,6 +159,7 @@ REST_FRAMEWORK = {
 }
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
+ADMINFILES_UPLOAD_TO = 'csv_files'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
