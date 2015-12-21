@@ -12,6 +12,7 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
+from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
@@ -2060,7 +2061,7 @@ class Parse(XMLParser):
     #     fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
     #     return element
 
-    def post_save(self):
+    def post_save_activity(self):
         activity = self.get_model('Activity')
         if not activity:
             return False
@@ -2096,3 +2097,11 @@ class Parse(XMLParser):
         """
         transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
+
+    def post_save_file(self, xml_source):
+        self.set_activity_aggregations(xml_source.ref)
+
+    def set_activity_aggregations(self, xml_source__ref):
+        aac = ActivityAggregationCalculation()
+        aac.parse_activity_aggregations_by_source(xml_source__ref)
+
