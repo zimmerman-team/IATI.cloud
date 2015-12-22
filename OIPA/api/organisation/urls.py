@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from api.organisation import views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.OrganisationList.as_view(), name='organisation-list'),
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/$',
@@ -30,5 +29,4 @@ urlpatterns = patterns(
         views.ReceivedTransactions.as_view(),
         name='organisation-received-transactions'
     ),
-
-)
+]

@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from api.country import views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.CountryList.as_view(), name='country-list'),
     url(
         r'^(?P<pk>[A-Za-z]+)/$',
@@ -25,4 +24,4 @@ urlpatterns = patterns(
         views.CountryCities.as_view(),
         name='country-cities'
     ),
-)
+]

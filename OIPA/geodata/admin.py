@@ -1,4 +1,4 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
 from django.contrib import admin
 from geodata.models import *
 from django.http import HttpResponse
@@ -18,11 +18,11 @@ class RegionAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(RegionAdmin, self).get_urls()
 
-        my_urls = patterns('',
-            (r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions)),
-            (r'^import-unesco-regions/$', self.admin_site.admin_view(self.import_unesco_regions)),
-            (r'^update-region-center/$', self.admin_site.admin_view(self.update_region_center))
-        )
+        my_urls = [
+            url(r'^import-un-regions/$', self.admin_site.admin_view(self.import_un_regions)),
+            url(r'^import-unesco-regions/$', self.admin_site.admin_view(self.import_unesco_regions)),
+            url(r'^update-region-center/$', self.admin_site.admin_view(self.update_region_center))
+        ]
         return my_urls + urls
 
     def import_un_regions(self, request):
@@ -48,13 +48,13 @@ class CountryAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(CountryAdmin, self).get_urls()
 
-        my_urls = patterns('',
-            (r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
-            (r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
-            (r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
-            (r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers)),
-            (r'^update-alt-names/$', self.admin_site.admin_view(self.update_alt_names))
-        )
+        my_urls = [
+            url(r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
+            url(r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
+            url(r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
+            url(r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers)),
+            url(r'^update-alt-names/$', self.admin_site.admin_view(self.update_alt_names))
+        ]
         return my_urls + urls
 
     def update_polygon(self, request):
@@ -91,9 +91,9 @@ class CityAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(CityAdmin, self).get_urls()
 
-        my_urls = patterns('',
-            (r'^update-cities/$', self.admin_site.admin_view(self.update_cities))
-        )
+        my_urls = [
+            url(r'^update-cities/$', self.admin_site.admin_view(self.update_cities))
+        ]
         return my_urls + urls
 
     def update_cities(self, request):
@@ -109,9 +109,9 @@ class Adm1RegionAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(Adm1RegionAdmin, self).get_urls()
 
-        my_urls = patterns('',
-            (r'^update-adm1-regions/$', self.admin_site.admin_view(self.update_adm1_regions))
-        )
+        my_urls = [
+            url(r'^update-adm1-regions/$', self.admin_site.admin_view(self.update_adm1_regions))
+        ]
         return my_urls + urls
 
     def update_adm1_regions(self, request):

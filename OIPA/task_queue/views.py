@@ -4,7 +4,6 @@ from django.http import HttpResponse
 
 
 # PARSE TASKS
-
 @staff_member_required
 def add_task(request):
     import django_rq
@@ -19,10 +18,7 @@ def add_task(request):
         queue.enqueue(getattr(tasks, task), timeout=7200)
     return HttpResponse('Success')
 
-
-
 # TASK QUEUE MANAGEMENT
-
 @staff_member_required
 def start_worker_with_supervisor(request):
     from django.core.management import call_command
@@ -34,7 +30,6 @@ def start_worker_with_supervisor(request):
     call_command('supervisor', *list)
 
     return HttpResponse('Success')
-
 
 @staff_member_required
 def get_workers(request):
@@ -60,8 +55,6 @@ def get_workers(request):
         workerdata.append(worker_dict)
     data = json.dumps(workerdata)
     return HttpResponse(data, content_type='application/json')
-
-
 
 @staff_member_required
 def delete_task_from_queue(request):
@@ -89,20 +82,7 @@ def get_current_job(request):
     data = json.dumps(job)
     return HttpResponse(data, content_type='application/json')
 
-@staff_member_required
-def test(request):
-    from rq import get_current_job
-    job = get_current_job()
-    import json
-    return json.dumps(job)
-
-
-
-
-
-
 # Schedule management
-
 @staff_member_required
 def start_scheduler(request):
     from rq_scheduler.scripts import rqscheduler
@@ -141,7 +121,6 @@ def add_scheduled_task(request):
             repeat=None                      # Repeat this number of times (None means repeat forever)
         )
     return HttpResponse('Success')
-
 
 @staff_member_required
 def get_queue(request):
@@ -204,9 +183,7 @@ def cancel_scheduled_task(request):
     scheduler.cancel(job_id)
     return HttpResponse('Success')
 
-
 # Failed tasks
-
 def get_failed_tasks(request):
     import django_rq
     import json
@@ -222,8 +199,6 @@ def get_failed_tasks(request):
     data = json.dumps(jobdata)
     return HttpResponse(data, content_type='application/json')
 
-
-
 @staff_member_required
 def reschedule_all_failed(request):
 
@@ -237,4 +212,3 @@ def reschedule_all_failed(request):
         requeue_job(job.id, connection=queue.connection)
 
     return HttpResponse('Success')
-

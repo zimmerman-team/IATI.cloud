@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import api.activity.views
 import api.sector.views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$',
         api.activity.views.ActivityList.as_view(),
         name='activity-list'),
@@ -29,4 +28,4 @@ urlpatterns = patterns(
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/',
         api.activity.views.ActivityTransactions.as_view(),
         name='activity-transactions'),
-)
+]

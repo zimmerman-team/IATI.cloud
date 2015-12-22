@@ -1,4 +1,4 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
 from django.contrib import admin
 from models import *
 from django.http import HttpResponse
@@ -12,9 +12,9 @@ class CodeListAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(CodeListAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^sync-codelists/$', self.admin_site.admin_view(self.sync_view))
-        )
+        extra_urls = [
+            url(r'^sync-codelists/$', self.admin_site.admin_view(self.sync_view))
+        ]
         return extra_urls + urls
 
     def sync_view(self, request):
@@ -42,13 +42,13 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
-            (r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', self.admin_site.admin_view(self.parse_activity_view)),
-            (r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
-            (r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
-            (r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
-        )
+        extra_urls = [
+            url(r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
+            url(r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', self.admin_site.admin_view(self.parse_activity_view)),
+            url(r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
+            url(r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
+            url(r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
+        ]
         return extra_urls + urls
 
     def parse_view(self, request):
@@ -94,10 +94,10 @@ class PublisherAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(PublisherAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view)),
-            (r'^count-publisher-activities/', self.admin_site.admin_view(self.count_publisher_activities))
-        )
+        extra_urls = [
+            url(r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view)),
+            url(r'^count-publisher-activities/', self.admin_site.admin_view(self.count_publisher_activities))
+        ]
         return extra_urls + urls
 
 
