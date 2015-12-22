@@ -133,6 +133,10 @@ class DocumentCategory(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+    class Meta:
+        verbose_name = "Document category"
+        verbose_name_plural = "Document categories"
+
 class FileFormat(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)

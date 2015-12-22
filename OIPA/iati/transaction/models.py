@@ -44,7 +44,6 @@ class Transaction(models.Model):
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
     ref = models.CharField(max_length=255, null=True, blank=True, default="")
     recipient_region = models.ForeignKey(Region, null=True, blank=True)
-    recipient_region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
     recipient_country = models.ForeignKey(Country, null=True, blank=True, default=None)
 
     objects = TransactionQuerySet.as_manager()

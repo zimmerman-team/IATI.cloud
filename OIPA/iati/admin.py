@@ -1,14 +1,13 @@
 from django.contrib import admin
-from iati.models import *
 from django import forms
-from iati.transaction.models import *
 from django.contrib.contenttypes.admin import GenericTabularInline
-from nested_inline.admin import NestedStackedInline, NestedTabularInline, NestedModelAdmin, NestedInline
 from django.utils.functional import curry
 
-# Avoid giant delete confirmation intermediate window
-def delete_selected(self, request, queryset):
-    queryset.delete()
+from nested_inline.admin import NestedModelAdmin, NestedInline
+
+from iati.models import *
+from iati.transaction.models import *
+
 
 class ExtraNestedModelAdmin(NestedModelAdmin):
     def get_inline_instances(self, request, obj=None):
@@ -17,6 +16,7 @@ class ExtraNestedModelAdmin(NestedModelAdmin):
             inline_instance.parent_instance = obj
 
         return inline_instances
+
 
 class ExtraNestedInline(NestedInline):
     def get_inline_instances(self, request, obj=None):
@@ -27,47 +27,42 @@ class ExtraNestedInline(NestedInline):
 
         return inline_instances
 
+
 # TODO: remove django-grappelli-inline dependency by moving these templates to local repo - 2015-12-01
 class NestedStackedInline(ExtraNestedInline):
     template = 'admin/edit_inline/stacked.html'
     # template = 'admin/edit_inline/stacked-nested.html'
-    
+
+
 class NestedTabularInline(ExtraNestedInline):
     template = 'admin/edit_inline/tabular.html'
     # template = 'admin/edit_inline/tabular-nested.html'
 
-class NarrativeForm(forms.ModelForm):
-    class Meta:
-        model = Narrative
-        fields = '__all__'
+
+# class NarrativeForm(forms.ModelForm):
+#     class Meta:
+#         model = Narrative
+#         fields = ('language', 'content')
+
 
 class NarrativeInline(GenericTabularInline):
-    raw_id_fields = ('activity',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['activity'],
-    }
 
     model = Narrative
     ct_field = "related_content_type"
     ct_fk_field = "related_object_id"
     inlines = []
-    form=NarrativeForm
+    fields = ('language', 'content')
+    # form = NarrativeForm
+
 
     extra = 3
-    # max_num = 0
-    # exclude = ('activity',)
 
-    # def get_max_num(self, request, obj=None, **kwargs):
-    #     count = len(self.direct_parent.narratives) if self.direct_parent else 0
-    #     return self.extra
-
-    def get_formset(self, request, instance, *args, **kwargs):
+    def get_formset(self, request, obj=None, **kwargs):
         initial = [{'activity': self.parent_instance} for i in range(self.extra)]
-        formset =  super(NarrativeInline, self).get_formset(request, instance, *args, **kwargs)
+        formset = super(NarrativeInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
-        a = formset()
         return formset
+
 
 class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ['code', 'name']
@@ -89,6 +84,12 @@ class TransactionProviderInline(NestedTabularInline):
         NarrativeInline,
     ]
 
+    raw_id_fields = ('provider_activity',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['provider_activity'],
+    }
+
     extra = 0
 
 
@@ -98,28 +99,13 @@ class TransactionReceiverInline(NestedTabularInline):
         NarrativeInline,
     ]
 
+    raw_id_fields = ('receiver_activity',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['receiver_activity'],
+    }
+
     extra = 0
-
-
-class TransactionAdmin(NestedModelAdmin):
-    search_fields = ['activity__id']
-    list_display = ['__unicode__']
-    exclude = ('value_string',)
-    actions = (delete_selected,)
-    inlines = [
-        TransactionDescriptionInline,
-        TransactionProviderInline,
-        TransactionReceiverInline,
-    ]
-
-
-class TransactionInline(NestedTabularInline):
-    exclude = ('value_string',)
-    inlines = [
-        TransactionDescriptionInline,
-        TransactionProviderInline,
-        TransactionReceiverInline,
-    ]
 
 
 class ActivityDateInline(NestedTabularInline):
@@ -139,8 +125,11 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
 
 class TransactionInline(NestedTabularInline):
     model = Transaction
-    extra = 0
-    exclude = ('value_string',)
+    # inlines = [
+    #     TransactionDescriptionInline,
+    #     TransactionProviderInline,
+    #     TransactionReceiverInline,
+    # ]
 
 
 class ActivityPolicyMarkerInline(NestedTabularInline):
@@ -169,6 +158,7 @@ class ActivitySectorInline(NestedTabularInline):
         'fk': ['sector'],
     }
 
+
 class ActivityRecipientRegionInline(NestedTabularInline):
     model = ActivityRecipientRegion
     extra = 0
@@ -189,6 +179,7 @@ class BudgetInline(NestedTabularInline):
 class CategoriesInline(NestedTabularInline):
     model = DocumentLinkCategory
     # extra = 0
+
 
 class DocumentLinkInline(NestedStackedInline):
     inlines = [CategoriesInline, ]
@@ -224,6 +215,7 @@ class DescriptionInline(NestedStackedInline):
     extra = 0
     inlines = [NarrativeInline, ]
 
+
 class TitleInline(NestedStackedInline):
     model = Title
     extra = 0
@@ -233,7 +225,7 @@ class TitleInline(NestedStackedInline):
         """
         Given an inline formset save it to the database.
         """
-        instances = formset.save()
+        formset.save()
 
         for form in formset.forms:
             if hasattr(form, 'nested_formsets') and form not in formset.deleted_forms:
@@ -243,9 +235,16 @@ class TitleInline(NestedStackedInline):
 
 class ActivityAdmin(ExtraNestedModelAdmin):
     search_fields = ['id']
-    exclude = ('activity_aggregations',)
+    exclude = (
+        'activity_aggregations',
+        'planned_start', 
+        'actual_start',
+        'start_date',
+        'planned_end',
+        'actual_end',
+        'end_date',
+        'is_searchable')
     list_display = ['__unicode__']
-    actions = (delete_selected,)
     inlines = [
         ActivityDateInline,
         ActivityReportingOrganisationInline,
@@ -263,6 +262,12 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         RelatedActivityInline,
         TransactionInline,
     ]
+
+    raw_id_fields = ('default_currency',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['default_currency'],
+    }
 
     def get_inline_instances(self, request, obj=None):
         if obj is None:
@@ -286,22 +291,56 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             description.save()
 
 
-    # raw_id_fields = ('default_currency',)
-
-    # autocomplete_lookup_fields = {
-    #     'fk': ['default_currency'],
-    # }
-
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_display = ['code', 'name', 'description', 'category']
 
 
+class TransactionAdmin(ExtraNestedModelAdmin):
+    search_fields = ['activity__id']
+    readonly_fields = ['activity']
+    list_display = ['__unicode__']
+    exclude = ('value_string',)
+    inlines = [
+        TransactionDescriptionInline,
+        TransactionProviderInline,
+        TransactionReceiverInline,
+    ]
+
+    raw_id_fields = ('activity', 'recipient_country')
+
+    autocomplete_lookup_fields = {
+        'fk': ['activity', 'recipient_country'],
+
+    }
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+        obj = obj.activity
+        inline_instances = super(TransactionAdmin, self).get_inline_instances(request, obj)
+
+        return inline_instances
+
+    def save_model(self, request, obj, form, change):
+
+        super(TransactionAdmin, self).save_model(request, obj, form, change)
+
+        if not change:
+            description = TransactionDescription()
+            description.transaction = obj
+            description.save()
+
+            transaction_provider = TransactionProvider()
+            transaction_provider.transaction = obj
+            transaction_provider.save()
+
+            transaction_receiver = TransactionReceiver()
+            transaction_receiver.transaction = obj
+            transaction_receiver.save()
+
+
 admin.site.register(Activity, ActivityAdmin)
-admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Sector, SectorAdmin)
+admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Narrative)
-
-
-
-

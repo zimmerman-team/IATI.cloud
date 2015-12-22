@@ -258,6 +258,9 @@ class ActivityReportingOrganisation(models.Model):
 
     secondary_reporter = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name = 'Reporting organisation'
+        verbose_name_plural = 'Reporting organisations'
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
@@ -282,6 +285,10 @@ class ActivityParticipatingOrganisation(models.Model):
     def __unicode__(self,):
         return "%s: %s" % (self.activity.id, self.ref)
 
+    class Meta:
+        verbose_name = 'Participating organisation'
+        verbose_name_plural = 'Participating organisations'
+
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
     code = models.ForeignKey(PolicyMarker)
@@ -299,6 +306,10 @@ class ActivityPolicyMarker(models.Model):
     def __unicode__(self,):
         return "%s - %s - %s" % (self.activity.id, self.code, self.significance.code)
 
+    class Meta:
+        verbose_name = 'Policy marker'
+        verbose_name_plural = 'Policy markers'
+
 
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
@@ -314,6 +325,11 @@ class ActivitySector(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.sector)
 
+    class Meta:
+        verbose_name = 'Sector'
+        verbose_name_plural = 'Sectors'
+
+
 class ActivityRecipientCountry(models.Model):
     activity = models.ForeignKey(Activity)
     country = models.ForeignKey(Country)
@@ -326,6 +342,10 @@ class ActivityRecipientCountry(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.country)
+
+    class Meta:
+        verbose_name = 'Recipient country'
+        verbose_name_plural = 'Recipient countries'
 
 class CountryBudgetItem(models.Model):
     activity = models.ForeignKey(Activity)
@@ -358,6 +378,10 @@ class ActivityRecipientRegion(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.region)
+
+    class Meta:
+        verbose_name = 'Recipient region'
+        verbose_name_plural = 'Recipient regions'
 
 class OtherIdentifier(models.Model):
     activity = models.ForeignKey(Activity)
