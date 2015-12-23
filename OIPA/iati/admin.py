@@ -159,18 +159,18 @@ class TransactionInline(NestedTabularInline):
         'currency',
         'value_date',
         'transaction_date',
-        'read_transaction_provider',
-        'read_transaction_receiver',
+        'transaction_provider',
+        'transaction_receiver',
         'edit_transaction',)
-    readonly_fields = ('edit_transaction', 'read_transaction_provider', 'read_transaction_receiver')
+    readonly_fields = ('edit_transaction', 'transaction_provider', 'transaction_receiver')
 
-    def read_transaction_provider(self, obj):
+    def transaction_provider(self, obj):
         try:
             return obj.receiver_organisation.narratives.all()[0].content
         except Exception as e:
             return 'no provider name'
 
-    def read_transaction_receiver(self, obj):
+    def transaction_receiver(self, obj):
         try:
             return obj.provider_organisation.narratives.all()[0].content
         except Exception as e:
@@ -184,7 +184,7 @@ class TransactionInline(NestedTabularInline):
                 str(obj.id))
         else:
             return format_html(
-                'Please save the activity to edit details')
+                'Please save the activity to edit receiver/provider details')
 
     extra = 0
 
@@ -266,7 +266,7 @@ class ResultInline(NestedTabularInline):
                  str(obj.id))
         else:
             return format_html(
-                'Please save the activity to edit result details')
+                'Please save the activity to edit result details and to add indicator periods')
 
 
 class LocationInline(NestedTabularInline):
