@@ -264,7 +264,7 @@ class ActivityReportingOrganisation(models.Model):
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
-    normalized_ref = models.CharField(max_length=120, default="", db_index=True)
+    normalized_ref = models.CharField(max_length=120, null=True, default=None, db_index=True)
 
     activity = models.ForeignKey(
         Activity,
@@ -825,7 +825,7 @@ class CrsAddLoanStatus(models.Model):
 
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
-    iso_date = models.DateTimeField()
+    iso_date = models.DateField()
     type = models.ForeignKey(ActivityDateType)
 
     def __unicode__(self):

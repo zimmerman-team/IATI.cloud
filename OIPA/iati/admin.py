@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.functional import curry
 
@@ -8,6 +9,7 @@ from nested_inline.admin import NestedModelAdmin, NestedInline
 from iati.models import *
 from iati.transaction.models import *
 
+from django.utils.html import format_html
 
 class ExtraNestedModelAdmin(NestedModelAdmin):
     def get_inline_instances(self, request, obj=None):
@@ -55,7 +57,7 @@ class NarrativeInline(GenericTabularInline):
     # form = NarrativeForm
 
 
-    extra = 3
+    extra = 2
 
     def get_formset(self, request, obj=None, **kwargs):
         initial = [{'activity': self.parent_instance} for i in range(self.extra)]
@@ -83,6 +85,7 @@ class TransactionProviderInline(NestedTabularInline):
     inlines = [
         NarrativeInline,
     ]
+    exclude = ('normalized_ref', 'organisation', 'provider_activity_ref')
 
     raw_id_fields = ('provider_activity',)
 
@@ -92,12 +95,19 @@ class TransactionProviderInline(NestedTabularInline):
 
     extra = 0
 
+    def save_model(self, request, obj, form, change):
+        obj.normalized_ref = obj.ref
+        if obj.provider_activity:
+            obj.provider_activity_ref = obj.provider_activity.id
+        return super(TransactionProviderInline, self).save_model(request, obj, form, change)
+
 
 class TransactionReceiverInline(NestedTabularInline):
     model = TransactionReceiver
     inlines = [
         NarrativeInline,
     ]
+    exclude = ('normalized_ref', 'organisation', 'receiver_activity_ref')
 
     raw_id_fields = ('receiver_activity',)
 
@@ -106,6 +116,12 @@ class TransactionReceiverInline(NestedTabularInline):
     }
 
     extra = 0
+
+    def save_model(self, request, obj, form, change):
+        obj.normalized_ref = obj.ref
+        if obj.receiver_activity:
+            obj.receiver_activity_ref = obj.receiver_activity.id
+        return super(TransactionReceiverInline, self).save_model(request, obj, form, change)
 
 
 class ActivityDateInline(NestedTabularInline):
@@ -120,16 +136,39 @@ class ActivityReportingOrganisationInline(NestedTabularInline):
 
 class ActivityParticipatingOrganisationInline(NestedTabularInline):
     model = ActivityParticipatingOrganisation
-    extra = 0
+    inlines = [
+        NarrativeInline,
+    ]
+    extra = 1
+
+
+# class TransactionInlineFormSet(BaseInlineFormSet):
+#     def save_new(self, form, commit=True):
+#
+#         return form.save(commit=commit)
+#
+#     def save_existing(self, form, instance, commit=True):
+#         return super(TransactionInlineFormSet, self).save_existing(form, instance, commit=commit)
 
 
 class TransactionInline(NestedTabularInline):
     model = Transaction
-    # inlines = [
-    #     TransactionDescriptionInline,
-    #     TransactionProviderInline,
-    #     TransactionReceiverInline,
-    # ]
+
+    fields = ('edit_transaction',)
+    readonly_fields = ('edit_transaction',)
+    # formset = TransactionInlineFormSet
+
+    def edit_transaction(self, obj):
+
+        if obj.id:
+            return format_html(
+                '<a href="/admin/iati/transaction/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+                str(obj.id))
+        else:
+            return format_html(
+                'Please save the activity to edit this transaction')
+
+    extra = 0
 
 
 class ActivityPolicyMarkerInline(NestedTabularInline):
@@ -169,16 +208,9 @@ class BudgetInline(NestedTabularInline):
     exclude = ('value_string',)
     extra = 0
 
-    # raw_id_fields = ('currency',)
-
-    # autocomplete_lookup_fields = {
-    #     'fk': ['currency'],
-    # }
-
 
 class CategoriesInline(NestedTabularInline):
     model = DocumentLinkCategory
-    # extra = 0
 
 
 class DocumentLinkInline(NestedStackedInline):
@@ -191,6 +223,14 @@ class DocumentLinkInline(NestedStackedInline):
 class ResultInline(NestedTabularInline):
     model = Result
     extra = 0
+
+    fields = ('edit_result',)
+    readonly_fields = ('edit_result',)
+
+    def edit_result(self, obj):
+         return format_html(
+             '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+             str(obj.id))
 
 
 class LocationInline(NestedTabularInline):
@@ -212,7 +252,7 @@ class RelatedActivityInline(NestedTabularInline):
 
 class DescriptionInline(NestedStackedInline):
     model = Description
-    extra = 0
+    extra = 1
     inlines = [NarrativeInline, ]
 
 
@@ -262,23 +302,16 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         RelatedActivityInline,
         TransactionInline,
     ]
-
-    raw_id_fields = ('default_currency',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['default_currency'],
-    }
-
-    def get_inline_instances(self, request, obj=None):
-        if obj is None:
-            return []
-
-        inline_instances = super(ActivityAdmin, self).get_inline_instances(request, obj)
-
-        return inline_instances
+    #
+    # def get_inline_instances(self, request, obj=None):
+    #     if obj is None:
+    #         return []
+    #
+    #     inline_instances = super(ActivityAdmin, self).get_inline_instances(request, obj)
+    #
+    #     return inline_instances
 
     def save_model(self, request, obj, form, change):
-
         super(ActivityAdmin, self).save_model(request, obj, form, change)
 
         if not change:
@@ -294,6 +327,7 @@ class ActivityAdmin(ExtraNestedModelAdmin):
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']
     list_display = ['code', 'name', 'description', 'category']
+
 
 
 class TransactionAdmin(ExtraNestedModelAdmin):
@@ -314,13 +348,28 @@ class TransactionAdmin(ExtraNestedModelAdmin):
 
     }
 
-    def get_inline_instances(self, request, obj=None):
-        if obj is None:
-            return []
-        obj = obj.activity
-        inline_instances = super(TransactionAdmin, self).get_inline_instances(request, obj)
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(TransactionAdmin, self).get_object(request, object_id)
 
-        return inline_instances
+        if not getattr(obj, 'description', None):
+            description = TransactionDescription()
+            description.transaction = obj
+            description.save()
+            obj.description = description
+
+        if not getattr(obj, 'receiver_organisation', None):
+            transaction_receiver = TransactionReceiver()
+            transaction_receiver.transaction = obj
+            transaction_receiver.save()
+            obj.receiver_organisation = transaction_receiver
+
+        if not getattr(obj, 'provider_organisation', None):
+            transaction_provider = TransactionProvider()
+            transaction_provider.transaction = obj
+            transaction_provider.save()
+            obj.provider_organisation = transaction_provider
+
+        return obj
 
     def save_model(self, request, obj, form, change):
 
@@ -340,7 +389,37 @@ class TransactionAdmin(ExtraNestedModelAdmin):
             transaction_receiver.save()
 
 
+
+class ResultIndicatorInline(NestedTabularInline):
+    model = ResultIndicator
+    inlines = [
+        # TO DO:
+        # ResultIndicatorTitleInline,
+        # ResultIndicatorDescriptionInline,
+        # ResultIndicatorBaselineInline,
+        # ResultIndicatorPeriodInline,
+    ]
+
+    extra = 0
+
+class ResultAdmin(ExtraNestedModelAdmin):
+    search_fields = ['activity__id']
+    readonly_fields = ['activity']
+    list_display = ['__unicode__']
+    inlines = [
+        ResultIndicatorInline,
+    ]
+
+    raw_id_fields = ('activity',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['activity'],
+
+    }
+
+
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Sector, SectorAdmin)
 admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(Result, ResultAdmin)
 admin.site.register(Narrative)
