@@ -148,31 +148,43 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
     extra = 1
 
 
-# class TransactionInlineFormSet(BaseInlineFormSet):
-#     def save_new(self, form, commit=True):
-#
-#         return form.save(commit=commit)
-#
-#     def save_existing(self, form, instance, commit=True):
-#         return super(TransactionInlineFormSet, self).save_existing(form, instance, commit=commit)
 
 
 class TransactionInline(NestedTabularInline):
     model = Transaction
 
-    fields = ('edit_transaction',)
-    readonly_fields = ('edit_transaction',)
-    # formset = TransactionInlineFormSet
+    fields = (
+        'transaction_type',
+        'value',
+        'currency',
+        'value_date',
+        'transaction_date',
+        'read_transaction_provider',
+        'read_transaction_receiver',
+        'edit_transaction',)
+    readonly_fields = ('edit_transaction', 'read_transaction_provider', 'read_transaction_receiver')
+
+    def read_transaction_provider(self, obj):
+        try:
+            return obj.receiver_organisation.narratives.all()[0].content
+        except Exception as e:
+            return 'no provider name'
+
+    def read_transaction_receiver(self, obj):
+        try:
+            return obj.provider_organisation.narratives.all()[0].content
+        except Exception as e:
+            return 'no receiver name'
 
     def edit_transaction(self, obj):
 
         if obj.id:
             return format_html(
-                '<a href="/admin/iati/transaction/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+                '<a href="/admin/iati/transaction/{}/" onclick="return showAddAnotherPopup(this);">Edit details</a>',
                 str(obj.id))
         else:
             return format_html(
-                'Please save the activity to edit this transaction')
+                'Please save the activity to edit details')
 
     extra = 0
 
@@ -230,13 +242,31 @@ class ResultInline(NestedTabularInline):
     model = Result
     extra = 0
 
-    fields = ('edit_result',)
-    readonly_fields = ('edit_result',)
+    fields = ('read_title', 'type', 'aggregation_status', 'read_description', 'edit_result',)
+    readonly_fields = ('read_title', 'read_description', 'edit_result',)
+
+    def read_title(self, obj):
+        try:
+            return obj.title.narratives.all()[0].content
+        except Exception as e:
+            return 'no title given'
+
+
+    def read_description(self, obj):
+        try:
+            return obj.title.narratives.all()[0].content
+        except Exception as e:
+            return 'no title given'
 
     def edit_result(self, obj):
-         return format_html(
-             '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
-             str(obj.id))
+
+        if obj.id:
+            return format_html(
+                 '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+                 str(obj.id))
+        else:
+            return format_html(
+                'Please save the activity to edit result details')
 
 
 class LocationInline(NestedTabularInline):
@@ -396,14 +426,60 @@ class TransactionAdmin(ExtraNestedModelAdmin):
 
 
 
+
+
+class ResultIndicatorTitleInline(NestedTabularInline):
+    model = ResultIndicatorTitle
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class ResultIndicatorDescriptionInline(NestedTabularInline):
+    model = ResultIndicatorDescription
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class ResultIndicatorBaselineCommentInline(NestedTabularInline):
+    model = ResultIndicatorBaselineComment
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class ResultIndicatorPeriodInline(NestedTabularInline):
+    model = ResultIndicatorPeriod
+
+    extra = 0
+
 class ResultIndicatorInline(NestedTabularInline):
     model = ResultIndicator
     inlines = [
-        # TO DO:
-        # ResultIndicatorTitleInline,
-        # ResultIndicatorDescriptionInline,
-        # ResultIndicatorBaselineInline,
-        # ResultIndicatorPeriodInline,
+        ResultIndicatorTitleInline,
+        ResultIndicatorDescriptionInline,
+        ResultIndicatorBaselineCommentInline,
+        ResultIndicatorPeriodInline,
+    ]
+
+    extra = 0
+
+class ResultTitleInline(NestedTabularInline):
+    model = ResultTitle
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 0
+
+class ResultDescriptionInline(NestedTabularInline):
+    model = ResultDescription
+    inlines = [
+        NarrativeInline,
     ]
 
     extra = 0
@@ -413,6 +489,8 @@ class ResultAdmin(ExtraNestedModelAdmin):
     readonly_fields = ['activity']
     list_display = ['__unicode__']
     inlines = [
+        ResultTitleInline,
+        ResultDescriptionInline,
         ResultIndicatorInline,
     ]
 
@@ -422,6 +500,36 @@ class ResultAdmin(ExtraNestedModelAdmin):
         'fk': ['activity'],
 
     }
+
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(ResultAdmin, self).get_object(request, object_id)
+
+        if not getattr(obj, 'description', None):
+            description = ResultDescription()
+            description.result = obj
+            description.save()
+            obj.description = description
+
+        if not getattr(obj, 'title', None):
+            title = ResultTitle()
+            title.result = obj
+            title.save()
+            obj.title = title
+
+        return obj
+
+    def save_model(self, request, obj, form, change):
+
+        super(ResultAdmin, self).save_model(request, obj, form, change)
+
+        if not change:
+            title = ResultTitle()
+            title.result = obj
+            title.save()
+
+            description = ResultDescription()
+            description.result = obj
+            description.save()
 
 
 admin.site.register(Activity, ActivityAdmin)
