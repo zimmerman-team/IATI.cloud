@@ -338,14 +338,14 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         RelatedActivityInline,
         TransactionInline,
     ]
-    #
-    # def get_inline_instances(self, request, obj=None):
-    #     if obj is None:
-    #         return []
-    #
-    #     inline_instances = super(ActivityAdmin, self).get_inline_instances(request, obj)
-    #
-    #     return inline_instances
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+
+        inline_instances = super(ActivityAdmin, self).get_inline_instances(request, obj)
+
+        return inline_instances
 
     def save_model(self, request, obj, form, change):
         super(ActivityAdmin, self).save_model(request, obj, form, change)
