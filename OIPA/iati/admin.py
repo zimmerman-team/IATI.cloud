@@ -53,14 +53,20 @@ class NarrativeInline(GenericTabularInline):
     ct_field = "related_content_type"
     ct_fk_field = "related_object_id"
     inlines = []
-    fields = ('language', 'content')
+    fields = ('activity', 'language', 'content')
+    raw_id_fields = ('activity',)
     # form = NarrativeForm
 
 
     extra = 2
 
     def get_formset(self, request, obj=None, **kwargs):
-        initial = [{'activity': self.parent_instance} for i in range(self.extra)]
+        activity = self.parent_instance
+        
+        if isinstance(self.parent_instance, Transaction):
+            activity = self.parent_instance.activity
+
+        initial = [{'activity': activity} for i in range(self.extra)]
         formset = super(NarrativeInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         return formset
