@@ -66,6 +66,9 @@ class NarrativeInline(GenericTabularInline):
         if isinstance(self.parent_instance, Transaction):
             activity = self.parent_instance.activity
 
+        if isinstance(self.parent_instance, Result):
+            activity = self.parent_instance.activity
+
         initial = [{'activity': activity} for i in range(self.extra)]
         formset = super(NarrativeInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
@@ -504,17 +507,17 @@ class ResultAdmin(ExtraNestedModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(ResultAdmin, self).get_object(request, object_id)
 
-        if not getattr(obj, 'description', None):
+        if not getattr(obj, 'resultdescription', None):
             description = ResultDescription()
             description.result = obj
             description.save()
-            obj.description = description
+            obj.resultdescription = description
 
-        if not getattr(obj, 'title', None):
+        if not getattr(obj, 'resulttitle', None):
             title = ResultTitle()
             title.result = obj
             title.save()
-            obj.title = title
+            obj.resulttitle = title
 
         return obj
 
