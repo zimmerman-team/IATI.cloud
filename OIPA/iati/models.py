@@ -257,7 +257,7 @@ class ActivityReportingOrganisation(models.Model):
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
-    normalized_ref = models.CharField(max_length=120, null=True, default=None, db_index=True)
+    normalized_ref = models.CharField(blank=True, max_length=120, null=True, default=None, db_index=True)
 
     activity = models.ForeignKey(
         Activity,
