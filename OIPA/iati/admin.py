@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django import forms
-from django.forms.models import BaseInlineFormSet
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.functional import curry
 
@@ -10,6 +9,20 @@ from iati.models import *
 from iati.transaction.models import *
 
 from django.utils.html import format_html
+
+from django.contrib.gis.forms import OpenLayersWidget
+from django.contrib.gis.db.models import PointField
+
+class OpenLayersHttpsWidget(OpenLayersWidget):
+
+    class Media:
+        extend = False
+
+        js = (
+            'js/openlayers/OpenLayers.js',
+            'gis/js/OLMapWidget.js',
+        )
+
 
 class ExtraNestedModelAdmin(NestedModelAdmin):
     def get_inline_instances(self, request, obj=None):
@@ -275,6 +288,10 @@ class ResultInline(NestedTabularInline):
 class LocationInline(NestedTabularInline):
     model = Location
     extra = 0
+
+    formfield_overrides = {
+        PointField: {'widget': OpenLayersHttpsWidget},
+    }
 
 
 class RelatedActivityInline(NestedTabularInline):

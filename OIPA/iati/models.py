@@ -102,13 +102,6 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
-    planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
-    actual_start = models.DateField(null=True, blank=True, default=None, db_index=True)
-    start_date = models.DateField(null=True, blank=True, default=None, db_index=True)
-    planned_end = models.DateField(null=True, blank=True, default=None, db_index=True)
-    actual_end = models.DateField(null=True, blank=True, default=None, db_index=True)
-    end_date = models.DateField(null=True, blank=True, default=None, db_index=True)
-
     objects = ActivityQuerySet.as_manager()
 
     def __unicode__(self):
@@ -684,7 +677,7 @@ class Location(models.Model):
         blank=True,
         default=None,
         related_name="location_id_vocabulary")
-    location_id_code = models.CharField(max_length=255, default="")
+    location_id_code = models.CharField(blank=True, max_length=255, default="")
 
     location_class = models.ForeignKey(
         GeographicLocationClass,
@@ -698,7 +691,7 @@ class Location(models.Model):
         default=None,
         related_name="feature_designation")
 
-    point_srs_name = models.CharField(max_length=255, default="")
+    point_srs_name = models.CharField(blank=True, max_length=255, default="")
     point_pos = PointField(null=True, blank=True)
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
 
