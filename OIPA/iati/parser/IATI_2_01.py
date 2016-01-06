@@ -161,7 +161,7 @@ class Parse(XMLParser):
         pass
 
     def _normalize(self, attr):
-        return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "")
+        return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "").replace("'", "")
 
     def add_narrative(self,element,parent):
 

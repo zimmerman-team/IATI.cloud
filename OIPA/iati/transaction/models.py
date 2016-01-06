@@ -55,7 +55,7 @@ class Transaction(models.Model):
 
 
 class TransactionProvider(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(blank=True, default="", max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     organisation = models.ForeignKey(
@@ -89,7 +89,7 @@ class TransactionProvider(models.Model):
 
 
 class TransactionReceiver(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(blank=True, default="", max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     organisation = models.ForeignKey(

@@ -1,17 +1,16 @@
 from django.contrib import admin
-from django import forms
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.utils.functional import curry
 
+from django.contrib.gis.forms import OpenLayersWidget
+
+from django.utils.functional import curry
+from django.utils.html import format_html
 from nested_inline.admin import NestedModelAdmin, NestedInline
 
 from iati.models import *
 from iati.transaction.models import *
+from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 
-from django.utils.html import format_html
-
-from django.contrib.gis.forms import OpenLayersWidget
-from django.contrib.gis.db.models import PointField
 
 class OpenLayersHttpsWidget(OpenLayersWidget):
 
@@ -69,7 +68,6 @@ class NarrativeInline(GenericTabularInline):
     fields = ('activity', 'language', 'content')
     raw_id_fields = ('activity',)
     # form = NarrativeForm
-
 
     extra = 2
 
@@ -161,9 +159,11 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
     inlines = [
         NarrativeInline,
     ]
+    exclude = ('normalized_ref',)
+
     extra = 1
 
-
+    # TODO save normalized_ref based on ref
 
 
 class TransactionInline(NestedTabularInline):
@@ -379,6 +379,41 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             description.activity = obj
             description.save()
 
+    def save_formset(self, request, form, formset, change):
+        super(ActivityAdmin, self).save_formset(request, form, formset, change)
+
+        # set derived activity dates (used for sorting)
+        if (formset.model == ActivityDate):
+
+            activity = form.instance
+            for ad in activity.activitydate_set.all():
+                if ad.type.code == '1':
+                    activity.planned_start = ad.iso_date
+                if ad.type.code == '2':
+                    activity.actual_start = ad.iso_date
+                if ad.type.code == '3':
+                    activity.planned_end = ad.iso_date
+                if ad.type.code == '4':
+                    activity.actual_end = ad.iso_date
+
+            if activity.actual_start:
+                activity.start_date = activity.actual_start
+            else:
+                activity.start_date = activity.planned_start
+
+            if activity.actual_end:
+                activity.end_date = activity.actual_end
+            else:
+                activity.end_date = activity.planned_end
+            activity.save()
+
+
+
+        # update aggregations after save of last inline form
+        if(formset.model == Transaction):
+            aggregationCalculator = ActivityAggregationCalculation()
+            aggregationCalculator.parse_activity_aggregations(form.instance)
+
 
 class SectorAdmin(admin.ModelAdmin):
     search_fields = ['id']
@@ -445,7 +480,13 @@ class TransactionAdmin(ExtraNestedModelAdmin):
             transaction_receiver.save()
 
 
+    def save_formset(self, request, form, formset, change):
+        super(TransactionAdmin, self).save_formset(request, form, formset, change)
 
+        # update aggregations after save of last inline form
+        if(formset.model == TransactionReceiver):
+            aggregationCalculator = ActivityAggregationCalculation()
+            aggregationCalculator.parse_activity_aggregations(form.instance.activity)
 
 
 class ResultIndicatorTitleInline(NestedTabularInline):
