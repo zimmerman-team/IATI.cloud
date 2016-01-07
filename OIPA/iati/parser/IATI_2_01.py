@@ -1165,6 +1165,9 @@ class Parse(XMLParser):
         if decimal_value is None:
             raise self.RequiredFieldError("value", "budget__value: value is required")
 
+        if value_date is None:
+            raise self.RequiredFieldError("value_date", "budget__value_date: value_date is required")
+
         currency = self._get_currency_or_raise(currency)
 
         budget = self.get_model('Budget')
@@ -1233,7 +1236,11 @@ class Parse(XMLParser):
         value = element.text
         decimal_value = self.guess_number(value)
 
-        if decimal_value is None: raise self.RequiredFieldError("value", "planned_disbursement__value: value is required")
+        if decimal_value is None:
+            raise self.RequiredFieldError("value", "planned_disbursement__value: value is required")
+
+        if value_date is None:
+            raise self.RequiredFieldError("value_date", "planned_disbursement__value_date: value_date is required")
 
         currency = self._get_currency_or_raise(currency)
 
@@ -1309,7 +1316,11 @@ class Parse(XMLParser):
         value = element.text
         decimal_value = self.guess_number(value)
 
-        if decimal_value is None: raise self.RequiredFieldError("value", "transaction__value: value is required")
+        if decimal_value is None:
+            raise self.RequiredFieldError("value", "transaction__value: value is required")
+
+        if value_date is None:
+            raise self.RequiredFieldError("value_date", "transaction__value_date: value_date is required")
 
         currency = self._get_currency_or_raise(currency)
 

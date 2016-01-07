@@ -1713,6 +1713,20 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(str(budget.value_date) == attrs['value-date'])
         self.assertTrue(budget.currency.code == attrs['currency'])
 
+    def test_budget_no_value_date_should_not_parse_201(self):
+        """
+        When the value-date is not set, the budget should not be parsed
+        """
+        attrs = {
+            "currency": "EUR",
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs)
+
+        with self.assertRaises(Exception):
+            self.parser_201.iati_activities__iati_activity__budget__value(value)
+
     def test_budget_wrong_value_should_not_parse_201(self):
         """
         When the value field is invalid, only store it as a string for future reference
@@ -1804,6 +1818,21 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         self.assertTrue(str(planned_disbursement.value_date) == attrs['value-date'])
         self.assertTrue(planned_disbursement.currency.code == attrs['currency'])
 
+    def test_planned_disbursement_no_value_date_should_not_parse_201(self):
+        """
+        When the value-date is not set, the budget should not be parsed
+        """
+        attrs = {
+            "currency": "EUR",
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs)
+
+        with self.assertRaises(Exception):
+            self.parser_201.iati_activities__iati_activity__planned_disbursement__value(value)
+
+
 class TransactionTestCase(ParserSetupTestCase):
     """
     2.01: The attribute @last-updated was removed.
@@ -1879,6 +1908,20 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction.value == Decimal('2000.2'))
         self.assertTrue(str(transaction.value_date) == attrs['value-date'])
         self.assertTrue(transaction.currency.code == attrs['currency'])
+
+    def test_transaction_no_value_date_should_not_parse_201(self):
+        """
+        When the value-date is not set, the transaction should not be parsed
+        """
+        attrs = {
+            "currency": "EUR",
+        }
+        text = "2000.2"
+
+        value = E('value', text, **attrs)
+
+        with self.assertRaises(Exception):
+            self.parser_201.iati_activities__iati_activity__transaction__value(value)
 
     def test_transaction_description_201(self):
         description = E('description')

@@ -2,28 +2,15 @@
     Unit tests and integration tests for parser.
 """
 
-# import copy
-# import datetime
 from django.core import management
 from iati.factory import iati_factory
 from unittest import skip
-# from iati.transaction import factories as transaction_factory
-
 from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
-# from unittest import TestCase
 
-# from lxml import etree
-# from lxml.builder import E
-
-# from iati_synchroniser.models import IatiXmlSource, Publisher
-import iati.models as iati_models
 import iati_codelists.models as codelist_models
-
-# from iati.parser.IATI_1_03 import Parse as Parser_103
-# from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_01 import Parse as Parser_201
-
 from iati.parser.genericXmlParser import XMLParser as GenericParser
+
 
 # TODO: use factories instead of these fixtures
 def setUpModule():
@@ -32,8 +19,10 @@ def setUpModule():
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
 
+
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
+
 
 # TODO: refactor in test util module
 def build_activity(version="2.01", *args, **kwargs):
@@ -43,6 +32,7 @@ def build_activity(version="2.01", *args, **kwargs):
         **kwargs
     )
     return activity
+
 
 class GenericParserTestCase(DjangoTestCase):
     """
