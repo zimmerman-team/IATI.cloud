@@ -25,15 +25,19 @@ class CodeListAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-class IATIXMLSourceInline(admin.TabularInline):
-    model = IatiXmlSource
-    extra = 0
-
-
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    search_fields = ['ref', 'title']
-    list_display = ['ref', 'publisher', 'title', 'show_source_url',  'date_created', 'update_interval', 'get_parse_status', 'get_parse_activity', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count', 'is_parsed']
-
+    search_fields = ['ref', 'title', 'publisher']
+    list_display = [
+        'ref', 
+        'publisher', 
+        'title', 
+        'show_source_url',  
+        'date_created', 
+        'get_parse_status', 
+        'get_parse_activity', 
+        'date_updated', 
+        'last_found_in_registry', 
+        'is_parsed']
 
     def show_source_url(self, obj):
         return format_html('<a href="{url}">{url}</a>', url=obj.source_url)
@@ -43,11 +47,15 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
         extra_urls = [
-            url(r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
-            url(r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', self.admin_site.admin_view(self.parse_activity_view)),
-            url(r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
-            url(r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
-            url(r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
+            url(
+                r'^parse-xml/$', 
+                self.admin_site.admin_view(self.parse_view)),
+            url(
+                r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', 
+                self.admin_site.admin_view(self.parse_activity_view)),
+            url(
+                r'^parse-sources/$',
+                self.admin_site.admin_view(self.parse_sources)),
         ]
         return extra_urls + urls
 
@@ -64,27 +72,24 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         obj.process_activity(activity_id)
         return HttpResponse('Success')
 
-    def parse_all(self, request):
-        parser = ParseAdmin()
-        parser.parseAll()
+    def parse_sources(self, request):
+        from iati_synchroniser.dataset_syncer import DatasetSyncer
+        syncer = DatasetSyncer()
+        syncer.synchronize_with_iati_api()
         return HttpResponse('Success')
 
-    def parse_all_over_interval(self, request):
-        parser = ParseAdmin()
-        parser.parseSchedule()
-        return HttpResponse('Success')
-
-    def parse_all_over_x_days(self, request):
-        days = request.GET.get('days')
-        parser = ParseAdmin()
-        parser.parseXDays(days)
-        return HttpResponse('Success')
+class IATIXMLSourceInline(admin.TabularInline):
+    model = IatiXmlSource
+    extra = 0
 
 
 class PublisherAdmin(admin.ModelAdmin):
     inlines = [IATIXMLSourceInline]
 
-    list_display = ('org_id', 'org_abbreviate', 'org_name', 'XML_total_activity_count', 'OIPA_total_activity_count')
+    list_display = (
+        'org_id', 
+        'org_abbreviate', 
+        'org_name')
 
     class Media:
         js = (
@@ -95,8 +100,9 @@ class PublisherAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(PublisherAdmin, self).get_urls()
         extra_urls = [
-            url(r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view)),
-            url(r'^count-publisher-activities/', self.admin_site.admin_view(self.count_publisher_activities))
+            url(
+                r'^parse-publisher/$', 
+                self.admin_site.admin_view(self.parse_view)),
         ]
         return extra_urls + urls
 
@@ -106,13 +112,6 @@ class PublisherAdmin(admin.ModelAdmin):
         for obj in IatiXmlSource.objects.filter(publisher__id=publisher_id):
             obj.process()
         return HttpResponse('Success')
-
-    def count_publisher_activities(self, request):
-
-        pu = ParseAdmin()
-        pu.update_publisher_activity_count()
-        return HttpResponse('Success')
-
 
 
 admin.site.register(Codelist,CodeListAdmin)

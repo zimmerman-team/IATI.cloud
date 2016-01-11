@@ -1,184 +1,173 @@
 import json
 import models
-import httplib
 import urllib2
 import datetime
-from iati.models import OrganisationIdentifier
-from iati_synchroniser.exception_handler import exception_handler
+
+from django.db.models import Count
 
 
 IATI_URL = 'http://www.iatiregistry.org/api/search/dataset?{options}'
 
 
 class DatasetSyncer():
-    # TODO: Clean unnecessary exception catchers.
+
     def __init__(self):
         """
         Prefetch data, to minify amount of DB queries
         """
-        self.source_urls = list(models.IatiXmlSource.objects.values('source_url'))
-        self.publisher_ids = list(models.Publisher.objects.values('org_id'))
-        self.organisation_identifiers = OrganisationIdentifier \
-            .objects.values('code')
+        source_url_tuples = models.IatiXmlSource.objects.values_list('source_url')
+        self.source_urls = [url[0] for url in source_url_tuples]
 
-    def synchronize_with_iati_api(self, data_type):
+        publisher_id_tuples = models.Publisher.objects.values_list('org_id')
+        self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
+
+        self.source_count = 10000
+
+    def synchronize_with_iati_api(self):
         """
         Start looping through the datasets
         """
         url_options = [
-            'extras_filetype=activity',
             'all_fields=1',
             'limit=200',
         ]
 
-        if data_type == 2:
-            url_options[0] = 'extras_filetype=organisation'
-
-        for i in range(0, 10000, 200):
-            options = '&'.join(url_options + ['offset={}'.format(i)])
+        offset = 0
+        while self.source_count >= offset:
+            options = '&'.join(url_options + ['offset={}'.format(offset)])
             page_url = IATI_URL.format(options=options)
-            self.synchronize_with_iati_api_by_page(page_url, data_type)
+            self.synchronize_with_iati_api_by_page(page_url)
+            offset += 200
 
-    def synchronize_with_iati_api_by_page(self, url, data_type, try_number=0):
+    def synchronize_with_iati_api_by_page(self, url):
         """
         Loop through the datasets by page
         """
-        # TODO: Clean this function
-        try:
-            req = urllib2.Request(url)
-            opener = urllib2.build_opener()
-            f = opener.open(req)
-            json_objects = json.load(f)
+        req = urllib2.Request(url)
+        opener = urllib2.build_opener()
+        f = opener.open(req)
+        json_objects = json.load(f)
 
-            if json_objects is not None:
-                # For each dataset object
-                for line in json_objects['results']:
-                    try:
-                        self.parse_json_line(line, data_type)
-                    except Exception as e:
-                        exception_handler(
-                            e,
-                            'synchronize_with_iati_api_by_page',
-                            "Unexpected error")
+        self.source_count = json_objects['count']
 
-        except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException), e:
-            exception_handler(e, "HTTP error", url)
+        for line in json_objects['results']:
+            self.parse_json_line(line)
 
-            if try_number < 4:
-                self.synchronize_with_iati_api_by_page(
-                    url,
-                    data_type,
-                    try_number + 1)
-            else:
-                return None
+    def remove_publisher_duplicates(self, org_id):
+        """
+        Previous versions of the dataset syncer code caused duplicate publishers.
+        This definition removes them to provide backward compatibility.
+        This definition can be removed after half a year (text added on 13-01-16)
+        """
 
-    def update_publisher(self, iati_id, abbreviation, name):
+        # check if multiple publishers under same ref
+        publisher_count = models.Publisher.objects.filter(org_id=org_id).count()
+        if publisher_count > 1:
+            # set all iati sources to first found publisher with the org_id
+            duplicate_publishers = models.Publisher.objects.filter(org_id=org_id)
+            models.IatiXmlSource.objects.filter(publisher__org_id=org_id).update(publisher=duplicate_publishers[0])
 
-        if iati_id in self.publisher_ids and iati_id != 'Unknown':
-            current_publisher = models.Publisher \
-                .objects.get(org_id=iati_id)
-        else:
-            if iati_id in self.organisation_identifiers:
-                current_publisher_meta = OrganisationIdentifier \
-                    .objects.get(code=iati_id)
-                abbreviation = current_publisher_meta.abbreviation
+            # remove other org_id's
+            models.Publisher.objects.filter(
+                org_id=org_id
+            ).annotate(
+                source_count=Count("iatixmlsource")
+            ).filter(
+                source_count=0
+            ).delete()
 
-            current_publisher = self.add_publisher_to_db(
-                iati_id, abbreviation, name)
+    def get_or_create_publisher(self, org_id, abbreviation, name):
 
-            self.publisher_ids.append(iati_id)
+        if org_id in self.publisher_ids:
+            return models.Publisher.objects.get(org_id=org_id)
+
+        current_publisher = models.Publisher(
+        org_id=org_id,
+        org_abbreviate=abbreviation,
+        org_name=name)
+        current_publisher.save()
+        self.publisher_ids.append(org_id)
 
         return current_publisher
 
-    def add_publisher_to_db(self,
-                            org_id,
-                            org_abbreviate_value,
-                            org_name_value):
-        new_publisher = models.Publisher(
-            org_id=org_id,
-            org_abbreviate=org_abbreviate_value,
-            org_name=org_name_value,
-            default_interval='MONTHLY')
-        new_publisher.save()
-        return new_publisher
+    def add_iati_xml_source_to_db(
+            self,
+            url,
+            title,
+            name,
+            current_publisher,
+            cur_type,
+            iati_version):
 
-    def add_iati_xml_source_to_db(self,
-                                  url,
-                                  title,
-                                  name,
-                                  current_publisher,
-                                  cur_type):
+        if cur_type == 'organisation':
+            cur_type = 2
+        else:
+            cur_type = 1
+
         new_source = models.IatiXmlSource(
             ref=name,
             title=title,
             publisher=current_publisher,
             source_url=url,
-            type=cur_type)
+            type=cur_type,
+            iati_standard_version=iati_version)
         new_source.save(process=False, added_manually=False)
+
         return new_source
 
-    def parse_json_line(self, line, data_type):
+    def parse_json_line(self, line):
         """
         Parse line from IATI response
         """
-        try:
-            publisher_iati_id = line['extras']['publisher_iati_id']
-        except KeyError:
-            publisher_iati_id = None
 
-        publisher_abbreviation = ''
-        publisher_name = 'Unknown'
-        try:
-            source_url = str(line['res_url'][0]).replace(' ', '%20')
-        except IndexError:
-            source_url = ''
+        data_dict = json.loads(line.get('data_dict', ''))
+        res_url = line.get('res_url')
+        publisher_iati_id = line['extras'].get('publisher_iati_id', None)
+
+        if not res_url or not publisher_iati_id:
+            # no url / id given, dont save
+            return False
+
+        source_url = str(res_url[0]).replace(' ', '%20')
         source_name = line.get('name', '')
         source_title = line.get('title', '')
+        filetype = line['extras'].get('filetype')
+        iati_version = line['extras'].get('iati_version', '')
 
-        try:
-            data_dict = json.loads(line.get('data_dict', ''))
-            publisher_name = data_dict['organization']['title']
-        except (ValueError, KeyError):
-            pass
-        except Exception as e:
-            msg = ("Unexpected error in synchronize_with_iati_api_by_page "
-                   "organisation match:")
-            exception_handler(e, 'synchronize_with_iati_api_by_page', msg)
+        self.remove_publisher_duplicates(publisher_iati_id)
 
         if source_url not in self.source_urls:
 
-            if publisher_iati_id:
-                current_publisher = self.update_publisher(
-                    publisher_iati_id,
-                    publisher_abbreviation,
-                    publisher_name)
+            # get publisher info
+            if data_dict.get('organization') is None:
+                publisher_abbreviation = ''
+                publisher_name = 'Unnamed (on registry)'
             else:
-                current_publisher = self.add_publisher_to_db(
-                    'Unknown',
-                    publisher_abbreviation,
-                    publisher_name)
+                publisher_abbreviation = data_dict['organization'].get('name', '')
+                publisher_name = data_dict['organization'].get('title', 'Unnamed (on registry)')
 
+
+            # add or get publisher and save source
+            current_publisher = self.get_or_create_publisher(
+                publisher_iati_id,
+                publisher_abbreviation,
+                publisher_name)
+
+            # add iati source
             self.add_iati_xml_source_to_db(
                 source_url,
                 source_title,
                 source_name,
                 current_publisher,
-                data_type)
+                filetype,
+                iati_version)
 
             self.source_urls.append(source_url)
 
         else:
-            msg = "Updated publisher and last found in registry on: "
-            exception_handler(None, msg, source_url)
-
+            # update iati source last found
             source = models.IatiXmlSource.objects.get(source_url=source_url)
+            source.iati_standard_version = iati_version
             source.last_found_in_registry = datetime.datetime.now()
-
-            if source.publisher.org_id != publisher_iati_id:
-                new_publisher = self.update_publisher(
-                    publisher_iati_id,
-                    publisher_abbreviation,
-                    publisher_name)
-                source.publisher = new_publisher
             source.save(process=False, added_manually=False)
 

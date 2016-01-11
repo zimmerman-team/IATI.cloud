@@ -4,6 +4,6 @@ from api.transaction.views import TransactionDetail
 
 
 urlpatterns = [
-    url(r'^$', TransactionList.as_view(), name='list'),
-    url(r'^(?P<pk>\d+)/$', TransactionDetail.as_view(), name='detail'),
+    url(r'^$', TransactionList.as_view(), name='transaction-list'),
+    url(r'^(?P<pk>\d+)/$', TransactionDetail.as_view(), name='transaction-detail'),
 ]

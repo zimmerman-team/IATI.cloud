@@ -53,7 +53,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     Transaction serializer class
     """
     url = serializers.HyperlinkedIdentityField(
-        view_name='transactions:detail',
+        view_name='transactions:transaction-detail',
         lookup_field='pk')
     activity = ActivitySerializer(fields=('id', 'url'))
     aid_type = CodelistSerializer()

@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 
 
-class TestRegionEndpoints():
+class TestCountryEndpoints():
 
     def test_countries_endpoint(self):
         url = reverse('countries:country-list')

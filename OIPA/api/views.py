@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -31,6 +29,10 @@ def welcome(request, format=None):
     * Countries: [`/api/countries`](/api/countries)
 
     * Cities: [`/api/cities`](/api/cities)
+
+    * Publishers: [`/api/publishers`](/api/publishers)
+
+    * Datasets: [`/api/datasets`](/api/datasets)
 
     ## Legacy API
 
@@ -65,7 +67,15 @@ def welcome(request, format=None):
                 request=request,
                 format=format),
             'transactions': reverse(
-                'transactions:list',
+                'transactions:transaction-list',
+                request=request,
+                format=format),
+            'publishers': reverse(
+                'publishers:publisher-list',
+                request=request,
+                format=format),
+            'datasets': reverse(
+                'datasets:dataset-list',
                 request=request,
                 format=format),
         }
@@ -77,7 +87,6 @@ def health_check(request, format=None):
     """
     Performs an API health check
     """
-    print('called')
     okay = True
 
     conn = connections['default']
