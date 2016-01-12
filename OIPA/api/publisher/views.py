@@ -31,7 +31,9 @@ class PublisherList(DynamicListView):
         'url',
         'org_id',
         'org_abbreviate',
-        'org_name')
+        'org_name',
+        'activities',
+        'activity_count')
 
 
 class PublisherDetail(RetrieveAPIView):
