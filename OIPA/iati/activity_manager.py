@@ -276,7 +276,6 @@ class ActivityManager(SearchManagerMixIn, models.Manager):
     """Activity manager with search capabilities"""
     
     def get_queryset(self):
-        print('called get_queryset')
         return ActivityQuerySet(self.model, using=self._db).select_related('activitysearch')
         
         
