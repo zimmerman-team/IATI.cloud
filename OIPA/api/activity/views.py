@@ -5,7 +5,7 @@ from iati.models import Activity
 from api.activity import serializers as activitySerializers
 from api.activity import filters
 from api.activity.activity_aggregation import ActivityAggregationSerializer
-from api.generics.filters import SearchFilter
+from api.activity.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend

@@ -49,7 +49,9 @@ class DynamicView(GenericAPIView):
         if not fields: fields = self.serializer_fields
 
         select_related_fields = list(set(self.select_related_fields) & set(fields))
-        queryset = queryset.select_related(*select_related_fields)
+
+        if select_related_fields:
+            queryset = queryset.select_related(*select_related_fields)
 
         for field in fields:
             if hasattr(queryset, 'prefetch_%s' % field):

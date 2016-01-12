@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'iati_codelists',
     'test_without_migrations',
     'nested_inline',
+    'djorm_pgfulltext',
 )
 
 RQ_SHOW_ADMIN_LINK = True

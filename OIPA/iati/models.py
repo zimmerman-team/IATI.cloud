@@ -1,6 +1,6 @@
 from django.db import models
 from geodata.models import Country, Region
-from activity_manager import ActivityQuerySet
+from activity_manager import ActivityQuerySet, ActivityManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -32,6 +32,21 @@ class Narrative(models.Model):
     class Meta:
         index_together = [('related_content_type', 'related_object_id')]
 
+# from iati.fields import TSVectorField
+from djorm_pgfulltext.fields import VectorField
+
+class ActivitySearch(models.Model):
+    activity = models.OneToOneField('Activity')
+    text = VectorField()
+    title = VectorField()
+    description = VectorField()
+    reporting_org = VectorField()
+    participating_org = VectorField()
+    recipient_country = VectorField()
+    recipient_region = VectorField()
+    sector = VectorField()
+    document_link = VectorField()
+    last_reindexed = models.DateTimeField()
 
 class Activity(models.Model):
     hierarchy_choices = (
@@ -102,7 +117,13 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
-    objects = ActivityQuerySet.as_manager()
+    objects = ActivityManager(
+        ft_model = ActivitySearch, # model that contains the ft indexes
+        fields = ('title', 'description'), # fields on the model 
+        config = 'pg_catalog.simple', # default dictionary to use
+        search_field = 'text', # text field for all search fields,
+        auto_update_search_field = False, # TODO: make this compatible with M2M - 2016-01-11
+    )
 
     def __unicode__(self):
         return self.id

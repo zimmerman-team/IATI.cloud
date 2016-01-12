@@ -1,43 +1,12 @@
 import uuid
 import gc
 
-from rest_framework import filters
-from haystack.query import SearchQuerySet
-from haystack.inputs import Exact
-
 from django.db.models.sql.constants import QUERY_TERMS
 from django.db.models import Q
 from django_filters import CharFilter
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
-
-
-class SearchFilter(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-
-        query = request.query_params.get('q', None)
-        exact = request.query_params.get('exact', None)
-
-        if query:
-            # always match text exactly
-            if exact: query = Exact(query)
-
-            search_queryset = SearchQuerySet()
-            query_fields = request.query_params.get('q_fields')
-            if query_fields:
-                query_fields = query_fields.split(',')
-                for query_field in query_fields:
-                    filter_dict = {query_field:query}
-                    search_queryset = search_queryset.filter_or(**filter_dict)
-            else:
-                search_queryset = search_queryset.filter_or(text=query)
-
-            activity_ids = search_queryset.values_list('pk',flat=True)[0:100000]
-
-            return queryset.filter(pk__in=activity_ids).filter(is_searchable=True)
-
-        return queryset
 
 class CommaSeparatedCharFilter(CharFilter):
 
