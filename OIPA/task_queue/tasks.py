@@ -58,10 +58,19 @@ def parse_all_existing_sources():
         queue = django_rq.get_queue("parser")
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 
+
+@job
+def parse_all_sources_by_publisher_ref(org_ref):
+    for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
+
+
 @job
 def get_new_sources_from_iati_api():
     from django.core import management
     management.call_command('get_new_sources_from_iati_registry', verbosity=0, interactive=False)
+
 
 @job
 def get_new_organisations_from_iati_api():
@@ -69,11 +78,13 @@ def get_new_organisations_from_iati_api():
     ds = DatasetSyncer()
     ds.synchronize_with_iati_api(2)
 
+
 @job
 def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
+
 
 @job
 def calculate_activity_aggregations():
@@ -81,16 +92,19 @@ def calculate_activity_aggregations():
         queue = django_rq.get_queue("parser")
         queue.enqueue(calculate_activity_aggregations_per_source, args=(source.ref,), timeout=7200)
 
+
 @job
 def calculate_activity_aggregations_per_source(source_ref):
     aac = ActivityAggregationCalculation()
     aac.parse_activity_aggregations_by_source(source_ref)
+
 
 @job
 def delete_source_by_id(id):
     if IatiXmlSource.objects.filter(id=id).exists():
         xml_source = IatiXmlSource.objects.get(id=id)
         xml_source.delete()
+
 
 @job
 def delete_sources_not_found_in_registry_in_x_days(days):
@@ -112,7 +126,6 @@ def delete_sources_not_found_in_registry_in_x_days(days):
                 # Old source, delete
                 queue = django_rq.get_queue("parser")
                 queue.enqueue(delete_source_by_id, args=(source.id,), timeout=7200)
-
 
 
 ###############################
