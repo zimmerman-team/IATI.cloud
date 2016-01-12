@@ -1,8 +1,11 @@
+from __future__ import division
 
 from iati.models import Activity, ActivitySearch
 from datetime import datetime
+from functools import partial
 
 from django.core.exceptions import ObjectDoesNotExist
+from common.util import setInterval, print_progress
 
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
@@ -82,12 +85,20 @@ def reindex_activity(activity):
 
 
 def reindex_all_activities():
-    ActivitySearch.objects.all().delete()
+
+    progress = {
+        'offset': 0,
+        'count': Activity.objects.all().count()
+    }
+
+    setInterval(partial(print_progress, progress), 10)
+        
     for activity in Activity.objects.all().iterator():
         reindex_activity(activity)
+        progress['offset'] += 1
+
 
 def reindex_activity_by_source(source_ref):
-    ActivitySearch.objects.all().delete()
     activities = Activity.objects.all().filter(xml_source_ref=source_ref)
     for activity in activities:
         reindex_activity(activity)
