@@ -1,10 +1,11 @@
+from django.test import TestCase
 import pytest
 from django.test import RequestFactory
 from api.organisation import serializers
 from iati.factory import iati_factory
 
 
-class TestCountrySerializers:
+class TestCountrySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
     @pytest.mark.django_db

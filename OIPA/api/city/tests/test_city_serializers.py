@@ -1,10 +1,11 @@
+from django.test import TestCase
 from django.contrib.gis.geos import Point
 from django.test import RequestFactory
 from geodata.factory import geodata_factory
 from api.city import serializers
 
 
-class TestCitySerializers:
+class TestCitySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
     def test_CitySerializer(self):

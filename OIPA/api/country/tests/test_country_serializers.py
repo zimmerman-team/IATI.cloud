@@ -2,9 +2,9 @@ from django.contrib.gis.geos import Point
 from django.test import RequestFactory
 from geodata.factory import geodata_factory
 from api.country import serializers
+from django.test import TestCase
 
-
-class TestCountrySerializers:
+class TestCountrySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
     def test_CountrySerializer(self):

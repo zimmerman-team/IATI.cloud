@@ -1,4 +1,4 @@
-__author__ = 'robin'
+from django.test import TestCase
 import pytest
 from api.api_tools import comma_separated_parameter_to_list
 

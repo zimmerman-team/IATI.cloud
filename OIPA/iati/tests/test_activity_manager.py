@@ -1,7 +1,5 @@
 from unittest import skip
 from django.test import TestCase
-from iati.activity_manager import ActivityQuerySet
-from iati import models
 
 
 class ActivityManagerTestCase(TestCase):

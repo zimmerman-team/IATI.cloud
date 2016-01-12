@@ -1,3 +1,4 @@
+from django.test import TestCase
 from rest_framework.views import APIView
 from api.generics.serializers import DynamicFieldsSerializer
 from django.test import RequestFactory
@@ -21,7 +22,7 @@ class SimpleView(APIView):
     )
 
 
-class TestDynamicFields:
+class TestDynamicFields(TestCase):
     data = {'id': '10A',
             'name': 'NAME-10A',
             'description': 'DESC-10A',

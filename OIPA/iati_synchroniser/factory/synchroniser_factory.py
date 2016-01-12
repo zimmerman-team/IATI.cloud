@@ -2,7 +2,7 @@ from factory.django import DjangoModelFactory
 from factory import SubFactory
 from iati_synchroniser.models import IatiXmlSource
 from iati_synchroniser.models import Publisher
-
+from datetime import datetime
 
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
@@ -28,9 +28,9 @@ class DatasetFactory(NoDatabaseFactory):
     type = 1
     publisher = SubFactory(PublisherFactory)
     source_url = 'http://nourl.com/NL-1.xml'
-    date_created = '2016-01-01'
-    date_updated = '2016-01-02'
-    last_found_in_registry = '2016-01-03'
+    date_created = datetime(2016, 1, 1)
+    date_updated = datetime(2016, 1, 2)
+    last_found_in_registry = datetime(2016, 1, 3)
     iati_standard_version = '2.02'
     is_parsed = True
     added_manually = False
