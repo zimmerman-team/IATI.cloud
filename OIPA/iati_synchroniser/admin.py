@@ -26,7 +26,7 @@ class CodeListAdmin(admin.ModelAdmin):
 
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    search_fields = ['ref', 'title', 'publisher']
+    search_fields = ['ref', 'title', 'publisher__org_name']
     list_display = [
         'ref', 
         'publisher', 
