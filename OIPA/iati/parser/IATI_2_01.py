@@ -2144,6 +2144,9 @@ class Parse(XMLParser):
         self.set_transaction_provider_receiver_activity(activity)
         self.set_derived_activity_dates(activity)
 
+    def post_save_file(self, xml_source):
+        self.set_activity_aggregations(xml_source.ref)
+
     def set_derived_activity_dates(self, activity):
         """
         based on actual and planned activity dates,
@@ -2172,9 +2175,6 @@ class Parse(XMLParser):
         """
         transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
         transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
-
-    def post_save_file(self, xml_source):
-        self.set_activity_aggregations(xml_source.ref)
 
     def set_activity_aggregations(self, xml_source__ref):
         aac = ActivityAggregationCalculation()

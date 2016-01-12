@@ -10,6 +10,29 @@ from rest_framework.filters import OrderingFilter
 from api.generics.filters import CommaSeparatedCharFilter, CommaSeparatedCharMultipleFilter, TogetherFilterSet
 from iati.models import Activity, Budget, RelatedActivity
 
+from rest_framework import filters
+
+class SearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        query = request.query_params.get('q', None)
+        # exact = request.query_params.get('exact', None)
+
+        if query:
+
+            query_fields = request.query_params.get('q_fields')
+
+            if query_fields:
+
+                query_fields = query_fields.split(',')
+
+                if isinstance(query_fields, list):
+                    return queryset.search(query, query_fields)
+
+            else:
+                return queryset.search(query)
+
+        return queryset
 
 class ActivityFilter(TogetherFilterSet):
 
