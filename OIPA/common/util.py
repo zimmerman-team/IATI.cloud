@@ -1,4 +1,6 @@
+from __future__ import division
 import psycopg2
+
 
 from django.db import connection
 from django.utils.text import force_text
@@ -9,7 +11,7 @@ def print_progress(progress):
     print("Progress: {offset}/{count}: {perc}%".format(
         offset=progress['offset'],
         count=progress['count'],
-        perc=round(progress['offset'] / progress['count'], 2),
+        perc=round(round(progress['offset'] / progress['count'], 4) * 100, 2),
     ))
 
 
