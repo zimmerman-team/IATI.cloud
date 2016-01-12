@@ -7,11 +7,12 @@ from django.db import migrations, models
 import django.db.models.deletion
 import iati.fields
 
+from djorm_pgfulltext.fields import VectorField
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iati', '0013_auto_20151223_1622'),
+        ('iati', '0014_auto_20160108_1224'),
     ]
 
     def create_search_indexes(apps, schema_editor):
@@ -24,7 +25,10 @@ class Migration(migrations.Migration):
 
     def drop_search_indexes(apps, schema_editor):
         def drop_search_index(column_name):
-            schema_editor.execute("DROP INDEX {table_name}_{column_name}_simple_tsv ;".format(table_name='iati_activitysearch'))
+            schema_editor.execute("DROP INDEX {table_name}_{column_name}_simple_tsv ;".format(
+                table_name='iati_activitysearch',
+                column_name=column_name,
+            ))
 
         for column in ['title', 'description', 'reporting_org', 'recipient_country', 'recipient_region',
                 'sector', 'document_link', 'participating_org']:
@@ -35,15 +39,15 @@ class Migration(migrations.Migration):
             name='ActivitySearch',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', iati.fields.TSVectorField()),
-                ('title', iati.fields.TSVectorField()),
-                ('description', iati.fields.TSVectorField()),
-                ('reporting_org', iati.fields.TSVectorField()),
-                ('recipient_country', iati.fields.TSVectorField()),
-                ('recipient_region', iati.fields.TSVectorField()),
-                ('sector', iati.fields.TSVectorField()),
-                ('document_link', iati.fields.TSVectorField()),
-                ('participating_org', iati.fields.TSVectorField()),
+                ('text', VectorField()),
+                ('title', VectorField()),
+                ('description', VectorField()),
+                ('reporting_org', VectorField()),
+                ('recipient_country', VectorField()),
+                ('recipient_region', VectorField()),
+                ('sector', VectorField()),
+                ('document_link', VectorField()),
+                ('participating_org', VectorField()),
                 ('last_reindexed', models.DateTimeField()),
                 ('activity', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity')),
             ],
