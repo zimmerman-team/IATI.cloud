@@ -426,6 +426,7 @@ class ActivityAggregationSerializer(BaseSerializer):
                         result[k] = serializers.get(k, {}).get(v.encode('utf-8'))
                     else:
                         del results[i]
+                        break
 
         return results
 
