@@ -9,36 +9,9 @@ from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 class ActivityQuerySet(SearchQuerySet):
 
-    # def search(self, query, dictionary='simple', raw=False, fields=None):
-    #     """Search using Postgres full text search
-
-    #     :query: query string
-    #     :returns: queryset
-
-    #     """
-    #     if not query: return self
-
-    #     qs = self
-        
-    #     function = "to_tsquery" if raw else "plainto_tsquery"
-    #     ts_query = "{func}('{dictionary}', {query})".format({
-    #         func: function,
-    #         dictionary: dictionary,
-    #         query: adapt(query) 
-    #     })
-
-    #     where = "({search_vector}) @@ {ts_query}".format({
-    #         search_vector: ,
-    #         ts_query: ts_query
-    #     })
-
-    #     qs = qs.extra(where=ts_query)
-
     # TODO: this makes counting a lot slower than it has to be for a lot of queries
     def count(self):
-        # self = self.order_by().only('id')
-        # return self.queryset.select_related('activitysearch').annotate(count=Count('id', distinct=True)).count()
-        self = self.values('id', 'activitysearch').distinct('id')
+        self = self.order_by().only('id')
         return super(ActivityQuerySet, self).count()
 
     def prefetch_default_aid_type(self):
@@ -276,6 +249,6 @@ class ActivityManager(SearchManagerMixIn, models.Manager):
     """Activity manager with search capabilities"""
     
     def get_queryset(self):
-        return ActivityQuerySet(self.model, using=self._db).select_related('activitysearch')
+        return ActivityQuerySet(self.model, using=self._db)
         
         

@@ -3,6 +3,7 @@ import uuid
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
+from django.db.models import Q
 
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
 from rest_framework.filters import OrderingFilter
@@ -11,12 +12,12 @@ from api.generics.filters import CommaSeparatedCharFilter, CommaSeparatedCharMul
 from iati.models import Activity, Budget, RelatedActivity
 
 from rest_framework import filters
+from common.util import combine_filters
 
 class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
 
         query = request.query_params.get('q', None)
-        # exact = request.query_params.get('exact', None)
 
         if query:
 
@@ -27,10 +28,11 @@ class SearchFilter(filters.BaseFilterBackend):
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    return queryset.search(query, query_fields)
+                    filters = combine_filters([Q(**{'activitysearch__{}__ft'.format(field): query}) for field in query_fields])
+                    return queryset.filter(filters)
 
             else:
-                return queryset.search(query)
+                return queryset.filter(activitysearch__text__ft=query)
 
         return queryset
 

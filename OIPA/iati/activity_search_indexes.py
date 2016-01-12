@@ -1,5 +1,3 @@
-from __future__ import division
-
 from iati.models import Activity, ActivitySearch
 from datetime import datetime
 from functools import partial
