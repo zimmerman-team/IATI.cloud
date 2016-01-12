@@ -974,8 +974,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__contact_info(self.contact_info)
         contact_info = self.parser_201.get_model('ContactInfo')
 
-        self.assertTrue(contact_info.activity == self.activity)
-        self.assertTrue(contact_info.type.code == self.attrs['type'])
+        self.assertEqual(contact_info.activity, self.activity, 'contact info activity should match')
+        self.assertEqual(contact_info.type.code, self.attrs['type'], 'contact info type code should match')
 
     def test_contact_info_organisation_201(self):
         """
@@ -1023,7 +1023,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         """
         contact_department = E('department', 'some description')
         self.parser_105.iati_activities__iati_activity__contact_info__department(contact_department)
-        contact_info_department = self.parser_201.get_model('ContactInfoDepartment')
+        contact_info_department = self.parser_105.get_model('ContactInfoDepartment')
 
         self.assertTrue(contact_info_department.contact_info == self.test_contact_info)
         narrative = self.parser_105.get_model('ContactInfoDepartmentNarrative')
@@ -1048,7 +1048,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         """
         contact_person_name = E('person_name', 'some description')
         self.parser_105.iati_activities__iati_activity__contact_info__person_name(contact_person_name)
-        contact_info_person_name = self.parser_201.get_model('ContactInfoPersonName')
+        contact_info_person_name = self.parser_105.get_model('ContactInfoPersonName')
 
         self.assertTrue(contact_info_person_name.contact_info == self.test_contact_info)
         narrative = self.parser_105.get_model('ContactInfoPersonNameNarrative')
@@ -1073,7 +1073,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         """
         contact_job_title = E('job_title', 'some description')
         self.parser_105.iati_activities__iati_activity__contact_info__job_title(contact_job_title)
-        contact_info_job_title = self.parser_201.get_model('ContactInfoJobTitle')
+        contact_info_job_title = self.parser_105.get_model('ContactInfoJobTitle')
 
         self.assertTrue(contact_info_job_title.contact_info == self.test_contact_info)
         narrative = self.parser_105.get_model('ContactInfoJobTitleNarrative')

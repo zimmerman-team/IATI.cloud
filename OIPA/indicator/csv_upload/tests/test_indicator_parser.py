@@ -91,7 +91,7 @@ class TestUploadIndicatorHelperTestCase(TestCase):
 
     def test_save_log(self):
         uploadLogEntry = indicator_factory.CsvUploadLogFactory.build(
-            id=1,
+            id=2,
             upload=None,
             title=None,
             slug=None,
@@ -118,6 +118,7 @@ class TestUploadIndicatorHelperTestCase(TestCase):
 
         # cant mock the uuid of course
         uploadLogEntry.slug = log.slug
+        uploadLogEntry.upload = log.upload
 
         self.assertEqual(uploadLogEntry, log)
 
