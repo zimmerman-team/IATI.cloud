@@ -201,7 +201,7 @@ class ActivityList(DynamicListView):
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
-    serializer_class = activitySerializers.ActivityXMLSerializer
+    serializer_class = activitySerializers.ActivitySerializer
 
     fields = (
         'url', 
@@ -267,8 +267,7 @@ class ActivityDetail(DynamicDetailView):
     """
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
-    # serializer_class = activitySerializers.ActivitySerializer
-    serializer_class = activitySerializers.ActivityXMLSerializer
+    serializer_class = activitySerializers.ActivitySerializer
 
 
 class ActivitySectors(ListAPIView):
