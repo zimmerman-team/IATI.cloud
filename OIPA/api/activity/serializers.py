@@ -435,7 +435,9 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
-class ActivitySerializer(DynamicFieldsModelSerializer):
+class ActivitySerializer(XMLPropertiesMixin, DynamicFieldsModelSerializer):
+    xml_attributes = ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy',)
+
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     last_updated_datetime = serializers.DateTimeField()
     activity_status = CodelistSerializer()
