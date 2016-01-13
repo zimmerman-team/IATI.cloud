@@ -57,14 +57,16 @@ class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
 
-class DocumentCategorySerializer(serializers.ModelSerializer):
+class DocumentCategorySerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('code',)}
 
-        class Meta:
-            model = iati.models.DocumentCategory
-            fields = ('code', 'name')
+    class Meta:
+        model = iati.models.DocumentCategory
+        fields = ('code', 'name')
 
 
-class DocumentLinkSerializer(serializers.ModelSerializer):
+class DocumentLinkSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('url', 'format',)}
 
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
@@ -95,7 +97,8 @@ class CapitalSpendSerializer(XMLMetaMixin, serializers.ModelSerializer):
         fields = ('percentage',)
 
 
-class BudgetSerializer(FilterableModelSerializer):
+class BudgetSerializer(XMLMetaMixin, FilterableModelSerializer):
+    xml_meta = {'attributes': ('type',)}
 
     class ValueSerializer(serializers.Serializer):
         currency = CodelistSerializer()
@@ -240,7 +243,9 @@ class DescriptionSerializer(serializers.ModelSerializer):
             'narratives'
         )
 
-class RelatedActivityTypeSerializer(serializers.ModelSerializer):
+class RelatedActivityTypeSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('only', 'code')}
+
     class Meta:
         model = iati.models.RelatedActivityType
         fields = (
@@ -248,7 +253,9 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
             'name'
         )
 
-class RelatedActivitySerializer(FilterableModelSerializer):
+class RelatedActivitySerializer(XMLMetaMixin, FilterableModelSerializer):
+    xml_meta = {'attributes': ('ref_activity', 'type')}
+    
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = RelatedActivityTypeSerializer()
 
@@ -321,7 +328,9 @@ class RecipientCountrySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
         )
 
 
-class ResultTypeSerializer(serializers.ModelSerializer):
+class ResultTypeSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'only': 'code'}
+
     class Meta:
         model = iati.models.ResultType
         fields = (
@@ -347,11 +356,15 @@ class ResultTitleSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
+class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('value',)}
+
     value = serializers.CharField(source='target')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
 
-class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
+class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('value',)}
+
     value = serializers.CharField(source='actual')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
 
@@ -368,7 +381,9 @@ class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
             'actual',
         )
 
-class ResultIndicatorBaselineSerializer(serializers.Serializer):
+class ResultIndicatorBaselineSerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('year', 'value',)}
+
     year = serializers.CharField(source='baseline_year')
     value = serializers.CharField(source='baseline_value')
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
@@ -388,7 +403,8 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'period',
         )
 
-class ResultSerializer(serializers.ModelSerializer):
+class ResultSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('type', 'aggregation_status',)}
 
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
