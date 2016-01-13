@@ -358,15 +358,20 @@ class ResultTitleSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
+
 class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, serializers.Serializer):
     xml_meta = {'attributes': ('value',)}
 
+    # TO DO 2.02 : location = 
+    # TO DO 2.02 : dimension = 
     value = serializers.CharField(source='target')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
 
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, serializers.Serializer):
     xml_meta = {'attributes': ('value',)}
 
+    # TO DO 2.02 : location = 
+    # TO DO 2.02 : dimension = 
     value = serializers.CharField(source='actual')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
 
@@ -393,8 +398,10 @@ class ResultIndicatorBaselineSerializer(XMLMetaMixin, serializers.Serializer):
 class ResultIndicatorSerializer(serializers.ModelSerializer):
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(source="resultindicatordescription")
+    #  TO DO 2.02 reference = ? 
     baseline = ResultIndicatorBaselineSerializer(source="*")
     period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True)
+    measure = CodelistSerializer(source='indicatormeasure')
 
     class Meta:
         model = iati.models.ResultIndicator
@@ -403,6 +410,8 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'description',
             'baseline',
             'period',
+            'measure',
+            'ascending'
         )
 
 class ResultSerializer(XMLMetaMixin, serializers.ModelSerializer):
@@ -418,9 +427,9 @@ class ResultSerializer(XMLMetaMixin, serializers.ModelSerializer):
         fields = (
             'title',
             'description',
+            'indicator',
             'type',
             'aggregation_status',
-            'indicator',
         )
 
 class LocationSerializer(XMLMetaMixin, serializers.ModelSerializer):
@@ -456,14 +465,14 @@ class LocationSerializer(XMLMetaMixin, serializers.ModelSerializer):
     location_reach = CodelistSerializer()
     location_id = LocationIdSerializer(source='*')
     name = NarrativeContainerSerializer(many=True, source="locationname_set")
-    location_class = CodelistSerializer()
     description = NarrativeContainerSerializer(many=True, source="locationdescription_set")
     activity_description = NarrativeContainerSerializer(many=True, source="locationactivitydescription_set")
-    feature_designation = CodelistCategorySerializer()
     administrative = AdministrativeSerializer(many=True, source="locationadministrative_set")
-    exactness = CodelistSerializer()
     point = PointSerializer(source="*")
-
+    exactness = CodelistSerializer()
+    location_class = CodelistSerializer()
+    feature_designation = CodelistCategorySerializer()
+    
     class Meta:
         model = iati.models.Location
         fields = (
@@ -484,65 +493,100 @@ class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
     xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy',)}
 
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
-    last_updated_datetime = serializers.DateTimeField()
-    activity_status = CodelistSerializer()
-    activity_scope = CodelistSerializer(source='scope')
-    capital_spend = CapitalSpendSerializer(source='*')
-    collaboration_type = CodelistSerializer()
-    default_aid_type = CodelistSerializer()
-    default_currency = CodelistSerializer()
-    default_finance_type = CodelistSerializer()
-    default_flow_type = CodelistSerializer()
-    default_tied_status = CodelistSerializer()
-    activity_date = ActivityDateSerializer(
-        many=True,
-        source='activitydate_set')
-    reporting_organisation = ReportingOrganisationSerializer(
-            many=True,
-            source='reporting_organisations')
-    participating_organisation = ParticipatingOrganisationSerializer(
-        many=True,
-        source='participating_organisations')
-
-    # transactions = TransactionSerializer(
-    #     many=True,
-    #     source='transaction_set'
-    # )
-
-    transaction = serializers.HyperlinkedIdentityField(
-        view_name='activities:activity-transactions',
-    )
-
-    policy_marker = ActivityPolicyMarkerSerializer(
-        many=True,
-        source='activitypolicymarker_set'
-    )
-    recipient_country = RecipientCountrySerializer(
-        many=True,
-        source='activityrecipientcountry_set'
-    )
-    sector = ActivitySectorSerializer(
-        many=True,
-        source='activitysector_set'
-    )
-    recipient_region = ActivityRecipientRegionSerializer(
-        many=True,
-        source='activityrecipientregion_set'
-    )
-    budget = BudgetSerializer(many=True, source='budget_set')
-
+    iati_identifier = serializers.CharField()
+    reporting_org = ReportingOrganisationSerializer(
+        source='reporting_organisations',
+        many=True,)
     title = TitleSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
+    participating_org = ParticipatingOrganisationSerializer(
+        source='participating_organisations',
+        many=True,)
 
+    # TO DO ; add other-identifier serializer
+    # other_identifier = serializers.OtherIdentifierSerializer(many=True,source="?")
+
+    activity_status = CodelistSerializer()
+    activity_date = ActivityDateSerializer(
+        many=True,
+        source='activitydate_set')
+
+    # TO DO ; add contact-info serializer
+    # note; contact info has a sequence we should use in the ContactInfoSerializer!
+    # contact_info = serializers.ContactInfoSerializer(many=True,source="?")
+
+    activity_scope = CodelistSerializer(source='scope')
+    recipient_country = RecipientCountrySerializer(
+        many=True,
+        source='activityrecipientcountry_set')
+    recipient_region = ActivityRecipientRegionSerializer(
+        many=True,
+        source='activityrecipientregion_set')
+    location = LocationSerializer(many=True, source='location_set')
+    sector = ActivitySectorSerializer(
+        many=True,
+        source='activitysector_set')
+
+    # TO DO ; add country-budget-items serializer
+    # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
+
+    # TO DO ; add humanitarian-scope serializer
+    # humanitarian_scope = serializers.HumanitarianScopeSerializer(many=True,source="?")
+
+    policy_marker = ActivityPolicyMarkerSerializer(
+        many=True,
+        source='activitypolicymarker_set')
+    collaboration_type = CodelistSerializer()
+    default_flow_type = CodelistSerializer()
+    default_finance_type = CodelistSerializer()
+    default_aid_type = CodelistSerializer()
+    default_tied_status = CodelistSerializer()
+
+    budget = BudgetSerializer(many=True, source='budget_set')
+
+    # TO DO ; add planned-disbursement serializer
+    # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
+    # planned_disbursement = serializers.PlannedDisbursementSerializer(many=True,source="?")
+
+    capital_spend = CapitalSpendSerializer(source='*')
+    transaction = serializers.HyperlinkedIdentityField(
+        view_name='activities:activity-transactions',)
+    # TO DO ; hook up with the serializer instead of HyperlinkedIdentityField
+    # to be able to serialize it in XML
+    # 
+    # transaction = TransactionSerializer(
+    #     many=True,
+    #     source='transaction_set')
     document_link = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
+    related_activity = RelatedActivitySerializer(
+        many=True, 
+        source='relatedactivity_set')
+
+    # TO DO ; add legacy-data serializer? note: we dont parse legacy data atm.
+    # legacy_data = LegacyDataSerializer(many=True, source="?")
+
+    # TO DO ; add conditions serializer
+    # conditions = serializers.ConditionsSerializer(many=True,source="?")
+
     result = ResultSerializer(many=True, source="result_set")
-    location = LocationSerializer(many=True, source='location_set')
+    
+    # TO DO ; add crs-add serializer
+    # note; crs-add has a sequence in CrsAddSerializer
+    # crs_add = serializers.CrsAddSerializer(many=True, source="?")
 
-    related_activity = RelatedActivitySerializer(many=True, source='relatedactivity_set')
+    # TO DO ; add fss serializer
+    # fss = serializers.FssSerializer(many=True, source="?") 
+    
+    # activity attributes
+    last_updated_datetime = serializers.DateTimeField()
+    xml_lang = serializers.CharField(source='default_lang')
+    default_currency = CodelistSerializer()
+    # TO DO 2.02; humanitarian = serializers.BooleanField()
 
+    # other added data
     activity_aggregation = ActivityAggregationSerializer()
     child_aggregation = ActivityAggregationSerializer()
     activity_plus_child_aggregation = ActivityAggregationSerializer()
@@ -553,36 +597,46 @@ class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
             'url',
             'id',
             'iati_identifier',
+            'reporting_org',
             'title',
             'description',
-            'last_updated_datetime',
-            'default_currency',
-            'hierarchy',
-            'linked_data_uri',
-            'reporting_organisation',
-            'participating_organisation',
-            'related_activity',
+            'participating_org',
+            # 'other_identifier',
             'activity_status',
             'activity_date',
+            # 'contact_info',
             'activity_scope',
             'recipient_country',
             'recipient_region',
+            'location',
             'sector',
-            'transaction',
+            # 'country_budget_items',
+            # 'humanitarian_scope',
             'policy_marker',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
+            # 'planned_disbursement',
             'budget',
             'capital_spend',
-            'xml_source_ref',
+            'transaction',
             'document_link',
+            'related_activity',
+            # 'legacy_data',
+            # 'conditions',
             'result',
-            'location',
+            # 'crs_add',
+            # 'fss',
+            'last_updated_datetime',
+            'xml_lang',
+            'default_currency',
+            # 'humanitarian',
+            'hierarchy',
+            'linked_data_uri',
             'activity_aggregation',
             'child_aggregation',
-            'activity_plus_child_aggregation'
-        )
+            'activity_plus_child_aggregation',
+            'xml_source_ref')
 
