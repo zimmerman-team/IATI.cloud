@@ -147,17 +147,17 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'default-currency':'EUR',
-		'last-updated-datetime':'2014-09-10T07:15:37Z',
-		'{http://www.w3.org/XML/1998/namespace}lang':'en',
+            'default-currency':'EUR',
+        'last-updated-datetime':'2014-09-10T07:15:37Z',
+        '{http://www.w3.org/XML/1998/namespace}lang':'en',
 
     tag:iati-organisation
     '''
     def test_iati_organisations__iati_organisation(self):
         attribs = {
-        		'default-currency':'EUR',
-		'last-updated-datetime':'2014-09-10T07:15:37Z',
-		'{http://www.w3.org/XML/1998/namespace}lang':'en',
+                'default-currency':'EUR',
+        'last-updated-datetime':'2014-09-10T07:15:37Z',
+        '{http://www.w3.org/XML/1998/namespace}lang':'en',
 
         }
         element = E('iati-organisation',E('iati-identifier','AA-AAA-123456789',{}),attribs)
@@ -175,12 +175,6 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
         #assert
-
-
-
-
-
-
 
 
     '''attributes:

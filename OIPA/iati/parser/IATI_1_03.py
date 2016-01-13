@@ -20,8 +20,8 @@ class Parse(IATI_105_Parser):
         super(Parse, self).__init__(*args, **kwargs)
 
     '''atributes:
-	code:ADM2
-	{http://www.w3.org/XML/1998/namespace}lang:en
+    code:ADM2
+    {http://www.w3.org/XML/1998/namespace}lang:en
 
     tag:location-type'''
     def iati_activities__iati_activity__location__administrative(self,element):
@@ -44,9 +44,9 @@ class Parse(IATI_105_Parser):
         return element
 
     '''atributes:
-	latitude:36.79256
-	longitude:68.84385
-	precision:3
+    latitude:36.79256
+    longitude:68.84385
+    precision:3
 
     tag:coordinates'''
     def iati_activities__iati_activity__location__coordinates(self,element):
@@ -70,7 +70,7 @@ class Parse(IATI_105_Parser):
         return element
 
     '''atributes:
-	gazetteer-ref:GEO
+    gazetteer-ref:GEO
 
     tag:gazetteer-entry'''
     def iati_activities__iati_activity__location__gazetteer_entry(self,element):
@@ -86,7 +86,7 @@ class Parse(IATI_105_Parser):
         return element 
 
     '''atributes:
-	gazetteer-ref:GEO
+    gazetteer-ref:GEO
 
     tag:gazetteer-entry'''
     def iati_activities__iati_activity__location__location_type(self,element):

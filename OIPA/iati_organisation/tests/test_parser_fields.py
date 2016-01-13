@@ -147,17 +147,17 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'default-currency':'EUR',
-		'last-updated-datetime':'2014-09-10T07:15:37Z',
-		'{http://www.w3.org/XML/1998/namespace}lang':'en',
+            'default-currency':'EUR',
+        'last-updated-datetime':'2014-09-10T07:15:37Z',
+        '{http://www.w3.org/XML/1998/namespace}lang':'en',
 
     tag:iati-organisation
     '''
     def test_iati_organisations__iati_organisation(self):
         attribs = {
-        		'default-currency':'EUR',
-		'last-updated-datetime':'2014-09-10T07:15:37Z',
-		'{http://www.w3.org/XML/1998/namespace}lang':'en',
+                'default-currency':'EUR',
+        'last-updated-datetime':'2014-09-10T07:15:37Z',
+        '{http://www.w3.org/XML/1998/namespace}lang':'en',
 
         }
         element = E('iati-organisation',E('organisation-identifier','AA-AAA-123456789',{}),attribs)
@@ -217,18 +217,18 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'ref':'AA-AAA-123456789',
-		'type':'40',
-		'secondary-reporter':'0',
+            'ref':'AA-AAA-123456789',
+        'type':'40',
+        'secondary-reporter':'0',
 
     tag:reporting-org
     '''
     def test_iati_organisations__iati_organisation__reporting_org(self):
         self.test_iati_organisations__iati_organisation()
         attribs = {
-        		'ref':'AA-AAA-123456789',
-		'type':'40',
-		'secondary-reporter':'0',
+                'ref':'AA-AAA-123456789',
+        'type':'40',
+        'secondary-reporter':'0',
 
         }
         element = E('reporting-org',attribs)
@@ -283,14 +283,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-01-01',
+            'iso-date':'2014-01-01',
 
     tag:period-start
     '''
     def test_iati_organisations__iati_organisation__total_budget__period_start(self):
         self.test_iati_organisations__iati_organisation__total_budget()
         attribs = {
-        		'iso-date':'2014-01-01',
+                'iso-date':'2014-01-01',
 
         }
         element = E('period-start',attribs)
@@ -304,14 +304,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-12-31',
+            'iso-date':'2014-12-31',
 
     tag:period-end
     '''
     def test_iati_organisations__iati_organisation__total_budget__period_end(self):
         self.test_iati_organisations__iati_organisation__total_budget()
         attribs = {
-        		'iso-date':'2014-12-31',
+                'iso-date':'2014-12-31',
 
         }
         element = E('period-end',attribs)
@@ -325,16 +325,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__total_budget__value(self):
         self.test_iati_organisations__iati_organisation__total_budget()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','123',attribs)
@@ -351,7 +351,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'ref':'1234',
+            'ref':'1234',
 
     tag:budget-line
     '''
@@ -359,7 +359,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.test_iati_organisations__iati_organisation__total_budget()
 
         attribs = {
-        		'ref':'1234',
+                'ref':'1234',
 
         }
         element = E('budget-line',attribs)
@@ -382,16 +382,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__total_budget__budget_line__value(self):
         self.test_iati_organisations__iati_organisation__total_budget__budget_line()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','1234',attribs)
@@ -425,14 +425,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'ref':'AA-ABC-1234567',
+            'ref':'AA-ABC-1234567',
 
     tag:recipient-org
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget()
         attribs = {
-        		'ref':'AA-ABC-1234567',
+                'ref':'AA-ABC-1234567',
 
         }
         element = E('recipient-org',attribs)
@@ -467,14 +467,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-01-01',
+            'iso-date':'2014-01-01',
 
     tag:period-start
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__period_start(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget()
         attribs = {
-        		'iso-date':'2014-01-01',
+                'iso-date':'2014-01-01',
 
         }
         element = E('period-start',attribs)
@@ -489,14 +489,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-12-31',
+            'iso-date':'2014-12-31',
 
     tag:period-end
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__period_end(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget()
         attribs = {
-        		'iso-date':'2014-12-31',
+                'iso-date':'2014-12-31',
 
         }
         element = E('period-end',attribs)
@@ -510,16 +510,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__value(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','1234',attribs)
@@ -535,14 +535,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'ref':'1234',
+            'ref':'1234',
 
     tag:budget-line
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget()
         attribs = {
-        		'ref':'1234',
+                'ref':'1234',
 
         }
         element = E('budget-line',attribs)
@@ -558,16 +558,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(self):
         self.test_iati_organisations__iati_organisation__recipient_org_budget__budget_line()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','1234',attribs)
@@ -620,14 +620,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'code':'AF',
+            'code':'AF',
 
     tag:recipient-country
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__recipient_country(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget()
         attribs = {
-        		'code':'AF',
+                'code':'AF',
 
         }
         element = E('recipient-country',attribs)
@@ -642,14 +642,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-01-01',
+            'iso-date':'2014-01-01',
 
     tag:period-start
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__period_start(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget()
         attribs = {
-        		'iso-date':'2014-01-01',
+                'iso-date':'2014-01-01',
 
         }
         element = E('period-start',attribs)
@@ -664,14 +664,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'iso-date':'2014-12-31',
+            'iso-date':'2014-12-31',
 
     tag:period-end
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__period_end(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget()
         attribs = {
-        		'iso-date':'2014-12-31',
+                'iso-date':'2014-12-31',
 
         }
         element = E('period-end',attribs)
@@ -685,16 +685,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__value(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','1234',attribs)
@@ -708,14 +708,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'ref':'1234',
+            'ref':'1234',
 
     tag:budget-line
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget()
         attribs = {
-        		'ref':'1234',
+                'ref':'1234',
 
         }
         element = E('budget-line',attribs)
@@ -729,16 +729,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'currency':'USD',
-		'value-date':'2014-01-01',
+            'currency':'USD',
+        'value-date':'2014-01-01',
 
     tag:value
     '''
     def test_iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(self):
         self.test_iati_organisations__iati_organisation__recipient_country_budget__budget_line()
         attribs = {
-        		'currency':'USD',
-		'value-date':'2014-01-01',
+                'currency':'USD',
+        'value-date':'2014-01-01',
 
         }
         element = E('value','1234',attribs)
@@ -771,16 +771,16 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'format':'application/vnd.oasis.opendocument.text',
-		'url':'http:www.example.org/docs/report_en.odt',
+            'format':'application/vnd.oasis.opendocument.text',
+        'url':'http:www.example.org/docs/report_en.odt',
 
     tag:document-link
     '''
     def test_iati_organisations__iati_organisation__document_link(self):
         self.test_iati_organisations__iati_organisation()
         attribs = {
-        		'format':'application/vnd.oasis.opendocument.text',
-		'url':'http:www.example.org/docs/report_en.odt',
+                'format':'application/vnd.oasis.opendocument.text',
+        'url':'http:www.example.org/docs/report_en.odt',
 
         }
         element = E('document-link',attribs)
@@ -824,14 +824,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'code':'B01',
+            'code':'B01',
 
     tag:category
     '''
     def test_iati_organisations__iati_organisation__document_link__category(self):
         self.test_iati_organisations__iati_organisation__document_link()
         attribs = {
-        		'code':'B01',
+                'code':'B01',
 
         }
         element = E('category',attribs)
@@ -844,14 +844,14 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'code':'en',
+            'code':'en',
 
     tag:language
     '''
     def test_iati_organisations__iati_organisation__document_link__language(self):
         self.test_iati_organisations__iati_organisation__document_link()
         attribs = {
-        		'code':'en',
+                'code':'en',
 
         }
         element = E('language',attribs)
@@ -867,7 +867,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
 
     '''attributes:
-    		'code':'AF',
+            'code':'AF',
 
     tag:recipient-country
     '''
@@ -876,7 +876,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         model = self.test_parser.get_model('DocumentLink')
         model.save()
         attribs = {
-        		'code':'AF',
+                'code':'AF',
 
         }
         element = E('recipient-country',attribs)
