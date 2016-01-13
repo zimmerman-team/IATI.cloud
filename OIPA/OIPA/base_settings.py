@@ -151,12 +151,18 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination',
     'PAGE_SIZE': 10,
-    # 'PAGINATE_BY': 10,
-    # 'PAGINATE_BY_PARAM': 'page_size',
-    # 'MAX_PAGINATE_BY': 400,
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
-    )
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework_xml.renderers.XMLRenderer'
+    ),
+
 }
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'

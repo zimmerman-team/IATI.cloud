@@ -426,6 +426,7 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
+
 class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     last_updated_datetime = serializers.DateTimeField()
@@ -438,51 +439,51 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     default_finance_type = CodelistSerializer()
     default_flow_type = CodelistSerializer()
     default_tied_status = CodelistSerializer()
-    activity_dates = ActivityDateSerializer(
+    activity_date = ActivityDateSerializer(
         many=True,
         source='activitydate_set')
-    reporting_organisations = ReportingOrganisationSerializer(
+    reporting_organisation = ReportingOrganisationSerializer(
             many=True,)
-    participating_organisations = ParticipatingOrganisationSerializer(
+    participating_organisation = ParticipatingOrganisationSerializer(
         many=True,)
 
     # transactions = TransactionSerializer(
     #     many=True,
     #     source='transaction_set'
     # )
-    transactions = serializers.HyperlinkedIdentityField(
+    transaction = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-transactions',
     )
 
-    policy_markers = ActivityPolicyMarkerSerializer(
+    policy_marker = ActivityPolicyMarkerSerializer(
         many=True,
         source='activitypolicymarker_set'
     )
-    recipient_countries = RecipientCountrySerializer(
+    recipient_country = RecipientCountrySerializer(
         many=True,
         source='activityrecipientcountry_set'
     )
-    sectors = ActivitySectorSerializer(
+    sector = ActivitySectorSerializer(
         many=True,
         source='activitysector_set'
     )
-    recipient_regions = ActivityRecipientRegionSerializer(
+    recipient_region = ActivityRecipientRegionSerializer(
         many=True,
         source='activityrecipientregion_set'
     )
-    budgets = BudgetSerializer(many=True, source='budget_set')
+    budget = BudgetSerializer(many=True, source='budget_set')
 
     title = TitleSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
 
-    document_links = DocumentLinkSerializer(
+    document_link = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
-    results = ResultSerializer(many=True, source="result_set")
-    locations = LocationSerializer(many=True, source='location_set')
+    result = ResultSerializer(many=True, source="result_set")
+    location = LocationSerializer(many=True, source='location_set')
 
-    related_activities = RelatedActivitySerializer(many=True, source='relatedactivity_set')
+    related_activity = RelatedActivitySerializer(many=True, source='relatedactivity_set')
 
     activity_aggregation = ActivityAggregationSerializer()
     child_aggregation = ActivityAggregationSerializer()
@@ -500,30 +501,108 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_organisations',
-            'participating_organisations',
-            'related_activities',
+            'reporting_organisation',
+            'participating_organisation',
+            'related_activity',
             'activity_status',
-            'activity_dates',
+            'activity_date',
             'activity_scope',
-            'recipient_countries',
-            'recipient_regions',
-            'sectors',
-            'transactions',
-            'policy_markers',
+            'recipient_country',
+            'recipient_region',
+            'sector',
+            'transaction',
+            'policy_marker',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            'budgets',
+            'budget',
             'capital_spend',
             'xml_source_ref',
-            'document_links',
-            'results',
-            'locations',
+            'document_link',
+            'result',
+            'location',
             'activity_aggregation',
             'child_aggregation',
             'activity_plus_child_aggregation'
         )
+
+# class XMLSerializerMetaClass(serializers.SerializerMetaclass):
+
+#     """initialize for field transformations"""
+
+#     def __init__(self):
+#         """TODO: to be defined1. """
+
+#         super(serializers.SerializerMetaclass, self).__init__(*args, **kwargs)
+
+#         print(self)
+
+from lxml import etree
+from lxml.builder import E
+
+class XMLSerializerMixin():
+    # def _form_dict(self, arg1):
+    #     """Form a field mapping
+
+    #     :arg1: TODO
+    #     :returns: dict mapping field_name to xml_name
+
+    #     """
+    #     pass
+
+    # def __init__(self, *args, **kwargs):
+    #     pass
+
+    def to_representation(self, instance, parent=None):
+        if parent is None:
+            parent = etree.Element('iati-activity')
+
+        # set as attribute on parent
+        # if (hasattr(self, 'parent_attribute')):
+        #     return field.get_attribute(getattr(self, 'parent_attribute'))
+
+        fields = self._readable_fields
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except Exception as e:
+                continue
+
+            # is an attribute
+            # if field.field_name in self.attributes:
+            #     if isinstance(field, XMLSerializerMixin):
+            #         parent.set(field.field_name, str(field.to_representation(attribute, parent)))
+            #     else:
+            #         parent.set(field.field_name, str(field.to_representation(attribute)))
+
+            # else:
+            print(field)
+            print(field.__class__.__bases__)
+            print(isinstance(field, XMLSerializerMixin))
+            if isinstance(field, XMLSerializerMixin):
+                print(field)
+                parent.append(E(field.field_name, field.to_representation(attribute, parent)))
+            else:
+                # print(field)
+                parent.append(E(field.field_name, str(field.to_representation(attribute))))
+
+        return parent
+
+class DescriptionXMLSerializer(XMLSerializerMixin, DescriptionSerializer):
+    # root_name = 'iati-activity'
+
+    # parent_attributes = ()
+    attributes = ('type')
+
+class ActivityXMLSerializer(XMLSerializerMixin, ActivitySerializer):
+    root_name = 'iati-activity'
+
+    # parent_attributes = ()
+    attributes = ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy',)
+
+    description = DescriptionXMLSerializer(
+        many=True, read_only=True, source='description_set')
+
 
