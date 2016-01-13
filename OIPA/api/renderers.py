@@ -48,6 +48,7 @@
 # """
 # Provides XML rendering support.
 # """
+
 from __future__ import unicode_literals
 
 from django.utils import six
@@ -55,6 +56,8 @@ from django.utils.xmlutils import SimplerXMLGenerator
 from django.utils.six.moves import StringIO
 from django.utils.encoding import smart_text
 from rest_framework.renderers import BaseRenderer
+from lxml import etree
+from lxml.builder import E
 
 
 class XMLRenderer(BaseRenderer):
@@ -66,7 +69,7 @@ class XMLRenderer(BaseRenderer):
     format = 'xml'
     charset = 'utf-8'
     item_tag_name = 'list-item'
-    root_tag_name = 'root'
+    root_tag_name = 'iati-activities'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -75,43 +78,49 @@ class XMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        stream = StringIO()
-        
-        xml = SimplerXMLGenerator(stream, self.charset)
-        xml.startDocument()
-        xml.startElement(self.root_tag_name, {})
-
+        xml = E(self.root_tag_name)
         self._to_xml(xml, data)
 
-        xml.endElement(self.root_tag_name)
-        xml.endDocument()
-        return stream.getvalue()
+        return etree.tostring(xml)
 
-    def _to_xml(self, xml, data):
+    def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
             for item in data:
-                xml.startElement(self.item_tag_name, {})
-                self._to_xml(xml, item)
-                xml.endElement(self.item_tag_name)
+                self._to_xml(etree.SubElement(xml, parent_name), item)
 
         elif isinstance(data, dict):
             attributes = []
-            if hasattr(data, 'xml_attributes'):
-                attributes = getattr(data, 'xml_attributes')
 
-            for attr in attributes:
-                xml.set(attr, data[attr])
+            if hasattr(data, 'xml_meta'):
+                attributes = list(set(data.xml_meta.get('attributes', list())) & set(data.keys()))
+
+                for attr in attributes:
+                    if hasattr(data[attr], 'xml_meta'):
+                        only = data[attr].xml_meta.get('only', None)
+                    else:
+                        only = None
+
+                    if only:
+                        xml.set(attr, str(data[attr][only]))
+                    else:
+                        xml.set(attr, str(data[attr]))
+
 
             for key, value in six.iteritems(data):
                 if key in attributes: continue
 
-                xml.startElement(key, {})
-                self._to_xml(xml, value)
-                xml.endElement(key)
+                if isinstance(value, list):
+                    self._to_xml(xml, value, parent_name=key)
+                else:
+                    self._to_xml(etree.SubElement(xml, key), value)
 
         elif data is None:
             # Don't output any value
             pass
 
         else:
-            xml.characters(smart_text(data))
+            xml.text = str(data)
+            pass
+
+            # print(data)
+            # xml.characters(smart_text(data))

@@ -203,14 +203,14 @@ class ActivityList(DynamicListView):
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
-    fields = (
-        'url', 
-        'iati_identifier', 
-        'title', 
-        'description', 
-        'transactions', 
-        'reporting_organisations',
-    )
+    # fields = (
+    #     'url', 
+    #     'iati_identifier', 
+    #     'title', 
+    #     'description', 
+    #     'transactions', 
+    #     'reporting_organisations',
+    # )
 
     always_ordering = 'id'
 

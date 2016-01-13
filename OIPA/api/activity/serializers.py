@@ -478,14 +478,17 @@ class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
         many=True,
         source='activitydate_set')
     reporting_organisation = ReportingOrganisationSerializer(
-            many=True,)
+            many=True,
+            source='reporting_organisations')
     participating_organisation = ParticipatingOrganisationSerializer(
-        many=True,)
+        many=True,
+        source='participating_organisations')
 
     # transactions = TransactionSerializer(
     #     many=True,
     #     source='transaction_set'
     # )
+
     transaction = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-transactions',
     )
