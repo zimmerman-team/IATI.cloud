@@ -537,3 +537,4 @@ class ActivitySerializer(XMLPropertiesMixin, DynamicFieldsModelSerializer):
             'child_aggregation',
             'activity_plus_child_aggregation'
         )
+
