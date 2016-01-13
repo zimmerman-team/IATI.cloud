@@ -68,8 +68,8 @@ class XMLRenderer(BaseRenderer):
     media_type = 'application/xml'
     format = 'xml'
     charset = 'utf-8'
-    item_tag_name = 'list-item'
     root_tag_name = 'iati-activities'
+    item_tag_name = 'iati-activity'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -79,7 +79,11 @@ class XMLRenderer(BaseRenderer):
             return ''
 
         xml = E(self.root_tag_name)
-        self._to_xml(xml, data)
+
+        if 'results' in data: # list of items
+            self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
+        else: # one item
+            self._to_xml(xml, data)
 
         return etree.tostring(xml)
 
@@ -95,12 +99,14 @@ class XMLRenderer(BaseRenderer):
                 attributes = list(set(data.xml_meta.get('attributes', list())) & set(data.keys()))
 
                 for attr in attributes:
+
                     if hasattr(data[attr], 'xml_meta'):
                         only = data[attr].xml_meta.get('only', None)
                     else:
                         only = None
 
                     if only:
+                        # print('setting... ' + attr + ' ' + data[attr][only] )
                         xml.set(attr, str(data[attr][only]))
                     else:
                         xml.set(attr, str(data[attr]))
@@ -109,7 +115,9 @@ class XMLRenderer(BaseRenderer):
             for key, value in six.iteritems(data):
                 if key in attributes: continue
 
-                if isinstance(value, list):
+                if key == 'text':
+                    self._to_xml(xml, value)
+                elif isinstance(value, list):
                     self._to_xml(xml, value, parent_name=key)
                 else:
                     self._to_xml(etree.SubElement(xml, key), value)

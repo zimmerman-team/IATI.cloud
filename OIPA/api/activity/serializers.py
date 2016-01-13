@@ -40,7 +40,9 @@ class CodelistVocabularySerializer(CodelistSerializer):
     vocabulary = VocabularySerializer()
 
 # TODO: separate this
-class NarrativeSerializer(serializers.ModelSerializer):
+class NarrativeSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('language',)}
+
     text = serializers.CharField(source="content")
     language = CodelistSerializer()
 
