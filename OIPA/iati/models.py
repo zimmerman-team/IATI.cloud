@@ -13,6 +13,7 @@ from iati_vocabulary.models import SectorVocabulary
 from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_organisation.models import Organisation
 
+from djorm_pgfulltext.fields import VectorField
 
 # TODO: separate this
 class Narrative(models.Model):
@@ -31,9 +32,6 @@ class Narrative(models.Model):
 
     class Meta:
         index_together = [('related_content_type', 'related_object_id')]
-
-# from iati.fields import TSVectorField
-from djorm_pgfulltext.fields import VectorField
 
 class ActivitySearch(models.Model):
     activity = models.OneToOneField('Activity')

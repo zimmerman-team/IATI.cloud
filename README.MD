@@ -56,7 +56,7 @@ To start:
 ```#!bash
 vagrant ssh
 # ...logs you onto VM
-./manage.py runserver
+./manage.py runserver 0.0.0.0:8000
 ```
 
 Or install pyinvoke locally: `sudo pip install invoke`
