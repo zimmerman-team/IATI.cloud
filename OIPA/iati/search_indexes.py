@@ -43,10 +43,10 @@ class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
         return self.prepared_data
 
     def prepare_title(self, obj):
-	try:
-		return [narrative.content for narrative in obj.title.narratives.all()]
-	except ObjectDoesNotExist:
-		return []
+        try:
+            return [narrative.content for narrative in obj.title.narratives.all()]
+        except ObjectDoesNotExist:
+            return []
 
     def prepare_description(self, obj):
         text = []

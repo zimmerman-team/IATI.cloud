@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from django.db.models import Count
 from django.db.models import Sum
 from django.db.models import Q, F
@@ -8,7 +10,6 @@ from rest_framework.serializers import BaseSerializer
 
 from geodata.models import Country
 from geodata.models import Region
-from iati.models import Organisation
 from iati.models import Sector
 from iati.models import ActivityStatus
 from iati.models import PolicyMarker
@@ -22,13 +23,12 @@ from iati.models import ActivityParticipatingOrganisation
 from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
-from api.activity.serializers import ParticipatingOrganisationSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 
-from collections import defaultdict
-from operator import itemgetter
+
+
 
 class ActivityAggregationSerializer(BaseSerializer):
 
@@ -66,46 +66,75 @@ class ActivityAggregationSerializer(BaseSerializer):
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": Sum('transaction__value')
-        }, # NOTE / TO DO; it makes more sense to do percentage weighted calculations by default. It's hard to implement though (parameters differs per group by)
+        },
         "sector_percentage_weighted_incoming_fund": {
             "field": "incoming_fund",
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "has_subquery": 'select sector_id as sector, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+            "has_subquery": ''.join([
+                'select sector_id as sector, ',
+                'sum(incoming_fund) as incoming_fund from ({}) as "temptab" ',
+                'group by "sector_id" ',
+                'order by "sector_id"'])
         },
         "recipient_country_percentage_weighted_incoming_fund": {
             "field": "incoming_fund",
             "extra_filter": Q(transaction__transaction_type=1),
             "annotate_name": 'incoming_fund',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
-            "has_subquery": 'select country_id as recipient_country, sum(incoming_fund) as incoming_fund from ({}) as "temptab" group by "country_id" order by "country_id"'
+            "has_subquery": ''.join([
+                'select country_id as recipient_country, ',
+                'sum(incoming_fund) as incoming_fund ',
+                'from ({}) as "temptab" ',
+                'group by "country_id" ',
+                'order by "country_id"'])
         },
         "sector_percentage_weighted_disbursement": {
             "field": "disbursement",
             "extra_filter": Q(transaction__transaction_type=3),
             "annotate_name": 'disbursement',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "has_subquery": 'select sector_id as sector, sum(disbursement) as disbursement from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+            "has_subquery": ''.join([
+                'select sector_id as sector, ',
+                'sum(disbursement) as disbursement ',
+                'from ({}) as "temptab" ',
+                'group by "sector_id" ',
+                'order by "sector_id"'])
         },
         "recipient_country_percentage_weighted_disbursement": {
             "field": "disbursement",
             "extra_filter": Q(transaction__transaction_type=3),
             "annotate_name": 'disbursement',
             "annotate": (Coalesce(Sum('transaction__value'), 0) * Coalesce('activityrecipientcountry__percentage', 100) / 100),
-            "has_subquery": 'select country_id as recipient_country, sum(disbursement) as disbursement from ({}) as "temptab" group by "country_id" order by "country_id"'
+            "has_subquery": ''.join([
+                'select country_id as recipient_country, ',
+                'sum(disbursement) as disbursement ',
+                'from ({}) as "temptab" ',
+                'group by "country_id" ',
+                'order by "country_id"'])
         },
         "sector_percentage_weighted_budget": {
             "field": "budget",
             "annotate_name": 'total_budget_per_percentage',
             "annotate": (Coalesce(Sum('budget__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "has_subquery": 'select sector_id as sector, sum(total_budget_per_percentage) as budget from ({}) as "temptab" group by "sector_id" order by "sector_id"'
+            "has_subquery": ''.join([
+                'select sector_id as sector, ',
+                'sum(total_budget_per_percentage) as budget ',
+                'from ({}) as "temptab" ',
+                'group by "sector_id" ',
+                'order by "sector_id"'])
         },
         "location_disbursement": {
             "field": "weighted_country_value",
             "annotate_name": 'value_by_country',
             "annotate": (Coalesce(Sum('location__value'), 0) * Coalesce('activitysector__percentage', 100) / 100),
-            "has_subquery": 'select loc_country_id, sum(value_by_country) as total_value, region_id, country_name from ({}) as per_activity group by per_activity.loc_country_id'
+            "has_subquery": ''.join([
+                'select loc_country_id, ',
+                'sum(value_by_country) as total_value, ',
+                'region_id, country_name ',
+                'from ({}) as per_activity ',
+                'group by per_activity.loc_country_id'])
         }
     }
 
@@ -118,85 +147,86 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
         "recipient_country": {
             "fields": "recipient_country",
-            "queryset": Country.objects.all(),
+            "queryset": Country,
             "serializer": CountrySerializer,
             "serializer_fields": ('url', 'code', 'name', 'location'),
         },
         "recipient_region": {
             "fields": "recipient_region",
-            "queryset": Region.objects.all(),
+            "queryset": Region,
             "serializer": RegionSerializer,
             "serializer_fields": ('url', 'code', 'name', 'location'),
         },
         "sector": {
             "fields": "sector",
-            "queryset": Sector.objects.all(),
+            "queryset": Sector,
             "serializer": SectorSerializer,
             "serializer_fields": ('url', 'code', 'name'),
         },
         "reporting_organisation": {
             "fields": (("reporting_organisations__normalized_ref", "ref"),),
-            "queryset": ActivityReportingOrganisation.objects.all(),
+            "queryset": ActivityReportingOrganisation,
             "serializer": None,
             "serializer_fields": (),
         },
         "participating_organisation": {
-            "fields": (("participating_organisations__normalized_ref", "ref") , ("participating_organisations__primary_name", "name"),),
-            "queryset": ActivityParticipatingOrganisation.objects.all(),
+            "fields": (("participating_organisations__normalized_ref", "ref"),
+                       ("participating_organisations__primary_name", "name"),),
+            "queryset": ActivityParticipatingOrganisation,
             "serializer": None,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "document_link_category": {
             "fields": (('documentlink__categories__code', 'document_link_category'),),
-            "queryset": DocumentCategory.objects.all(),
+            "queryset": DocumentCategory,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "activity_status": {
             "fields": "activity_status",
-            "queryset": ActivityStatus.objects.all(),
+            "queryset": ActivityStatus,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "policy_marker": {
             "fields": "policy_marker",
-            "queryset": PolicyMarker.objects.all(),
+            "queryset": PolicyMarker,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "collaboration_type": {
             "fields": "collaboration_type",
-            "queryset": CollaborationType.objects.all(),
+            "queryset": CollaborationType,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "default_flow_type": {
             "fields": "default_flow_type",
-            "queryset": FlowType.objects.all(),
+            "queryset": FlowType,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "default_aid_type": {
             "fields": "default_aid_type",
-            "queryset": AidType.objects.all(),
+            "queryset": AidType,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "default_finance_type": {
             "fields": "default_finance_type",
-            "queryset": FinanceType.objects.all(),
+            "queryset": FinanceType,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "default_tied_status": {
             "fields": "default_tied_status",
-            "queryset": TiedStatus.objects.all(),
+            "queryset": TiedStatus,
             "serializer": CodelistSerializer,
-            "serializer_fields": (), # has default serializer_fields
+            "serializer_fields": (),
         },
         "budget_per_year": {
             "fields": "year",
-            "extra": { 
+            "extra": {
                 'year': 'EXTRACT(YEAR FROM "period_start")::integer',
             },
             "queryset": None,
@@ -204,7 +234,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             "serializer_fields": (),
         },
         "budget_per_quarter": {
-            "fields": ("year","quarter"),
+            "fields": ("year", "quarter"),
             "extra": {
                 'year': 'EXTRACT(YEAR FROM "period_start")::integer',
                 'quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
@@ -234,25 +264,25 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
     }
 
-    def get_order_filters(self, orderList):
+    def get_order_filters(self, order_list):
 
         allowed_orderings = []
         for grouping in self._allowed_groupings.values():
-            if type(grouping['fields']) is str:
+            if isinstance(grouping['fields'], str):
                 allowed_orderings.append(grouping['fields'])
             else:
                 for field in grouping['fields']: # assume it is a tuple
-                    if type(field) is str:
+                    if isinstance(field, str):
                         allowed_orderings.append(field)
                     else:
                         allowed_orderings.append(field[1]) # renamed
         for aggregation in self._aggregations.values():
-            if type(aggregation['field']) is str:
+            if isinstance(aggregation['field'], str):
                 allowed_orderings.append(aggregation['field'])
 
         allowed_orderings = allowed_orderings + ['-' + o for o in allowed_orderings]
 
-        ordered_orderings = [order for order in orderList if order in allowed_orderings]
+        ordered_orderings = [order for order in order_list if order in allowed_orderings]
 
         return ordered_orderings
 
@@ -272,74 +302,83 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return results
 
-    def apply_annotations(self, queryset, groupList, aggregationList):
+    def apply_annotations(self, queryset, group_list, aggregation_list):
 
-        before_annotations = dict() # before values()
-        after_annotations = dict() # after values()
+        # before values()
+        before_annotations = dict()
+        # after values()
+        after_annotations = dict()
 
-        same_query_aggregations = [i for i in aggregationList if not self._aggregations[i].get('extra_filter')]
-        separate_aggregations = [i for i in aggregationList if self._aggregations[i].get('extra_filter')]
+        same_query_aggregations = [i for i in aggregation_list if not self._aggregations[i].get('extra_filter')]
+        separate_aggregations = [i for i in aggregation_list if self._aggregations[i].get('extra_filter')]
 
         for aggregation in same_query_aggregations:
-            a = self._aggregations.get(aggregation, {})
-            after_annotations[a['annotate_name']] = a['annotate']
-     
+            aggregation_meta = self._aggregations.get(aggregation, {})
+            after_annotations[aggregation_meta['annotate_name']] = aggregation_meta['annotate']
+
         # aggregations that can be performed in the same query (hence require no extra filters)
-        groupings = {group: self._allowed_groupings[group] for group in groupList}
-        groupFields = []
-        nullFilters = {}
+        groupings = {group: self._allowed_groupings[group] for group in group_list}
+        group_fields = []
+        null_filters = {}
 
         for grouping in groupings.values():
             fields = grouping['fields']
-            if type(fields) is str:
-                groupFields.append(fields)
-                if not grouping.get('extra'): nullFilters[fields + '__isnull'] = False
-            else: # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
+            if isinstance(fields, str):
+                group_fields.append(fields)
+                if not grouping.get('extra'):
+                    null_filters[fields + '__isnull'] = False
+            # is a tuple like ((actual, renamed), (actual, renamed), actual, actual) for example
+            else:
                 for field in fields:
-                    if type(field) is str:
-                        groupFields.append(field)
-                        if not grouping.get('extra'): nullFilters[field + '__isnull'] = False
-                    else: # is a tuple like (actual, renamed)
-                        groupFields.append(field[1]) # append the renamed to values(), must annotate actual->rename
-                        if not grouping.get('extra'): nullFilters[field[1] + '__isnull'] = False
-                        before_annotations[field[1]] = F(field[0]) # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
+                    if isinstance(field, str):
+                        group_fields.append(field)
+                        if not grouping.get('extra'):
+                            null_filters[field + '__isnull'] = False
+                    # is a tuple like (actual, renamed)
+                    else:
+                        # append the renamed to values(), must annotate actual->rename
+                        group_fields.append(field[1])
+                        if not grouping.get('extra'):
+                            null_filters[field[1] + '__isnull'] = False
+                        # use F, see https://docs.djangoproject.com/en/1.7/ref/models/queries/#django.db.models.F
+                        before_annotations[field[1]] = F(field[0])
 
-        groupExtras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
+        group_extras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
 
         # apply extras
-        queryset = queryset.annotate(**before_annotations).extra(**groupExtras)
+        queryset = queryset.annotate(**before_annotations).extra(**group_extras)
 
         # Apply group_by calls and annotations
-        result = queryset.filter(**nullFilters).values(*groupFields).annotate(**after_annotations)
+        result = queryset.filter(**null_filters).values(*group_fields).annotate(**after_annotations)
 
         # aggregations that require extra filters, and hence must be executed separately
         for aggregation in separate_aggregations:
 
-            a = self._aggregations.get(aggregation, None)
-            extra_filter = a["extra_filter"]
-            field = a["field"]
-            annotation = dict([(a['annotate_name'], a['annotate'])])
+            aggregation_meta = self._aggregations.get(aggregation, None)
+            extra_filter = aggregation_meta["extra_filter"]
+            field = aggregation_meta["field"]
+            annotation = dict([(aggregation_meta['annotate_name'], aggregation_meta['annotate'])])
 
             # one query
             if len(same_query_aggregations) is 0:
-                result = queryset.filter(extra_filter).filter(**nullFilters).values(*groupFields).annotate(**annotation)
+                result = queryset.filter(extra_filter).filter(**null_filters).values(*group_fields).annotate(**annotation)
                 continue
 
-            next_result = queryset.filter(extra_filter).filter(**nullFilters).values(*groupFields).annotate(**annotation)
+            next_result = queryset.filter(extra_filter).filter(**null_filters).values(*group_fields).annotate(**annotation)
 
-            main_group_field = groupFields[0]
-           
+            main_group_field = group_fields[0]
+
             # make dict of next result
-            d = {}
-            for nr in iter(next_result):
-                d[nr[main_group_field]] = nr[field]
+            result_dict = {}
+            for next_item in iter(next_result):
+                result_dict[next_item[main_group_field]] = next_item[field]
 
             # join on existing result, set 0 on non existing
-            for r in iter(result):
-                if r[main_group_field] in d:
-                    r[field] = d[r[main_group_field]]
+            for item in iter(result):
+                if item[main_group_field] in result_dict:
+                    item[field] = result_dict[item[main_group_field]]
                 else:
-                    r[field] = 0
+                    item[field] = 0
 
             # to do; current functionality assumes the initial result contains all items
             # not sure if that's a valid assumption.
@@ -370,60 +409,60 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return results
 
-    def serialize_foreign_keys(self, results, request, groupList):
+    def serialize_foreign_keys(self, results, request, group_list):
 
         serializers = {}
-        groupfieldList = []
+        groupfield_list = []
 
-        for grouping in groupList:
+        for grouping in group_list:
             serializer = self._allowed_groupings[grouping]["serializer"]
             serializer_fields = self._allowed_groupings[grouping]["serializer_fields"]
-            foreignQueryset = self._allowed_groupings[grouping]["queryset"]
+            foreign_queryset = self._allowed_groupings[grouping]["queryset"]
 
             fields = self._allowed_groupings[grouping]["fields"]
 
-            thisGroupingFieldList = []
+            this_grouping_field_list = []
 
-            if type(fields) is str:
-                thisGroupingFieldList.append(fields)
+            if isinstance(fields, str):
+                this_grouping_field_list.append(fields)
             else:
                 for field in fields:
-                    if type(field) is str:
-                        thisGroupingFieldList.append(field)
+                    if isinstance(field, str):
+                        this_grouping_field_list.append(field)
                     else:
-                        thisGroupingFieldList.append(field[1])
+                        this_grouping_field_list.append(field[1])
 
-            groupfieldList.extend(thisGroupingFieldList)
+            groupfield_list.extend(this_grouping_field_list)
 
             if serializer:
-                data = serializer(foreignQueryset,
+                data = serializer(
+                    foreign_queryset.objects.all(),
                     context={
                         'request': request,
                     },
                     many=True,
-                    fields=serializer_fields,
-                ).data
+                    fields=serializer_fields).data
 
                 serializers[grouping] = {str(i.get('code')): i for i in data}
             else:
 
-                for field in thisGroupingFieldList:
+                for field in this_grouping_field_list:
                     serializers[field] = {}
                     for i in results:
-                        v = i.get(field)
-                        if type(v) == unicode:
-                            v = v.encode('utf-8')
+                        value = i.get(field)
+                        if isinstance(value, unicode):
+                            value = value.encode('utf-8')
                         else:
-                            v = str(v)
-                        serializers[field][v] = v
+                            value = str(value)
+                        serializers[field][value] = value
 
         for i, result in enumerate(list(results)):
-            for k, v in result.iteritems():
-                if k in groupfieldList:
-                    if v is not None:
-                        if type(v) != unicode:
-                            v = str(v)
-                        result[k] = serializers.get(k, {}).get(v.encode('utf-8'))
+            for key, value in result.iteritems():
+                if key in groupfield_list:
+                    if value is not None:
+                        if not isinstance(value, unicode):
+                            value = str(value)
+                        result[key] = serializers.get(key, {}).get(value.encode('utf-8'))
                     else:
                         del results[i]
                         break
@@ -452,15 +491,23 @@ class ActivityAggregationSerializer(BaseSerializer):
         # remove default orderings
         queryset = queryset.order_by()
 
-        request = self.context.get('request') 
+        request = self.context.get('request')
         params = request.query_params
 
         order_by = filter(None, params.get('order_by', "").split(','))
         page_size = params.get('page_size', None)
         page = params.get('page', None)
 
-        group_by = self._intersection(filter(None, params.get('group_by', "").split(',')), self._allowed_groupings.keys())
-        aggregations = self._intersection(filter(None,params.get('aggregations', "").split(',')), self._aggregations.keys())
+        group_by = self._intersection(
+            filter(
+                None,
+                params.get('group_by', "").split(',')),
+            self._allowed_groupings.keys())
+
+        aggregations = self._intersection(
+            filter(None,
+                   params.get('aggregations', "").split(',')),
+            self._aggregations.keys())
 
         if not len(group_by):
             return {'error_message': "Invalid value for mandatory field 'group_by'"}
