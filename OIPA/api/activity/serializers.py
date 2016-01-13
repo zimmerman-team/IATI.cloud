@@ -232,7 +232,9 @@ class TitleSerializer(serializers.Serializer):
         model = iati.models.Title
         fields = ('narratives',)
 
-class DescriptionSerializer(serializers.ModelSerializer):
+class DescriptionSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('type',)}
+
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
