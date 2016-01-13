@@ -12,20 +12,24 @@ from api.country.serializers import CountrySerializer
 from api.activity.filters import RelatedActivityFilter
 
 
-class XMLPropertiesMixin(object):
+class XMLMetaMixin(object):
     def to_representation(self, *args, **kwargs):
-        representation = super(XMLPropertiesMixin, self).to_representation(*args, **kwargs)
-        if hasattr(self, 'xml_attributes'):
-            representation.xml_attributes = self.xml_attributes
+        representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
+        if hasattr(self, 'xml_meta'):
+            representation.xml_meta = self.xml_meta
         return representation
 
 
 # TODO: serialize vocabulary in codelist serializer
-class VocabularySerializer(serializers.Serializer):
+class VocabularySerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'only': 'code'}
+
     code = serializers.CharField()
     name = serializers.CharField()
 
-class CodelistSerializer(DynamicFieldsSerializer):
+class CodelistSerializer(XMLMetaMixin, DynamicFieldsSerializer):
+    xml_meta = {'only': 'code'}
+
     code = serializers.CharField()
     name = serializers.CharField()
 
@@ -74,7 +78,9 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         )
 
 
-class CapitalSpendSerializer(serializers.ModelSerializer):
+class CapitalSpendSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('percentage',)}
+
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -120,7 +126,8 @@ class BudgetSerializer(FilterableModelSerializer):
         )
 
 
-class ActivityDateSerializer(serializers.Serializer):
+class ActivityDateSerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('type', 'iso_date')}
 
     type = CodelistSerializer()
     iso_date = serializers.DateTimeField()
@@ -158,7 +165,9 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
     expenditure_currency = serializers.CharField()
 
 
-class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
+class ReportingOrganisationSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+    xml_meta = {'attributes': ('ref', 'type',)}
+
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="normalized_ref")
     type = CodelistSerializer()
@@ -174,7 +183,8 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'narratives',
         )
 
-class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
+class ParticipatingOrganisationSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('ref', 'type', 'role',)}
 
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
@@ -191,7 +201,9 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+class ActivityPolicyMarkerSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
+
     code = CodelistSerializer()
     vocabulary = VocabularySerializer()
     significance = CodelistSerializer()
@@ -247,7 +259,8 @@ class RelatedActivitySerializer(FilterableModelSerializer):
             'type',
         )
 
-class ActivitySectorSerializer(serializers.ModelSerializer):
+class ActivitySectorSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('percentage', 'vocabulary')}
 
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
@@ -266,7 +279,9 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         )
 
 
-class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
+class ActivityRecipientRegionSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+    xml_meta = {'attributes': ('code', 'percentage', 'vocabulary')}
+
     region = RegionSerializer(
         fields=('url', 'code', 'name')
     )
@@ -285,7 +300,9 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'vocabulary',
         )
 
-class RecipientCountrySerializer(DynamicFieldsModelSerializer):
+class RecipientCountrySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+    xml_meta = {'attributes': ('percentage',)}
+
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -386,17 +403,25 @@ class ResultSerializer(serializers.ModelSerializer):
             'indicator',
         )
 
-class LocationSerializer(serializers.ModelSerializer):
-    class LocationIdSerializer(serializers.Serializer):
+class LocationSerializer(XMLMetaMixin, serializers.ModelSerializer):
+    xml_meta = {'attributes': ('ref',)}
+
+    class LocationIdSerializer(XMLMetaMixin, serializers.Serializer):
+        xml_meta = {'attributes': ('code', 'vocabulary',)}
+
         vocabulary = VocabularySerializer(
             source='location_id_vocabulary')
         code = serializers.CharField(source='location_id_code')
 
-    class PointSerializer(serializers.Serializer):
+    class PointSerializer(XMLMetaMixin, serializers.Serializer):
+        xml_meta = {'attributes': ('srs_name',)}
+
         pos = PointField(source='point_pos')
         srs_name = serializers.CharField(source="point_srs_name")
 
-    class AdministrativeSerializer(serializers.ModelSerializer):
+    class AdministrativeSerializer(XMLMetaMixin, serializers.ModelSerializer):
+        xml_meta = {'attributes': ('code', 'vocabulary', 'level')}
+
         code = serializers.CharField()
         vocabulary = VocabularySerializer()
 
@@ -435,8 +460,8 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
-class ActivitySerializer(XMLPropertiesMixin, DynamicFieldsModelSerializer):
-    xml_attributes = ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy',)
+class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+    xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy',)}
 
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     last_updated_datetime = serializers.DateTimeField()
