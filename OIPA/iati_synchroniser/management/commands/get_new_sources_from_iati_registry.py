@@ -7,5 +7,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         ds = DatasetSyncer()
-        ds.synchronize_with_iati_api(1)
+        ds.synchronize_with_iati_api()
 

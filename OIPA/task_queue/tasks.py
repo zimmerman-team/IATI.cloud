@@ -73,13 +73,6 @@ def get_new_sources_from_iati_api():
 
 
 @job
-def get_new_organisations_from_iati_api():
-    from iati_synchroniser.dataset_syncer import DatasetSyncer
-    ds = DatasetSyncer()
-    ds.synchronize_with_iati_api(2)
-
-
-@job
 def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
