@@ -1,6 +1,6 @@
 from django.contrib.gis.geos import Point
 import factory
-import geodata
+from geodata import models
 
 
 class NoDatabaseFactory(factory.django.DjangoModelFactory):
@@ -11,7 +11,7 @@ class NoDatabaseFactory(factory.django.DjangoModelFactory):
 
 class CityFactory(NoDatabaseFactory):
     class Meta:
-        model = geodata.models.City
+        model = models.City
 
     geoname_id = 1000
     name = 'dummy_city'
@@ -20,7 +20,7 @@ class CityFactory(NoDatabaseFactory):
 
 class CountryFactory(NoDatabaseFactory):
     class Meta:
-        model = geodata.models.Country
+        model = models.Country
 
     code = 'OO'
     name = 'dummy_country'

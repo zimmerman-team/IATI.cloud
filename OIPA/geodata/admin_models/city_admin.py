@@ -20,22 +20,27 @@ class CityAdmin(admin.ModelAdmin):
         urls = super(CityAdmin, self).get_urls()
 
         my_urls = [
-                url(r'^updatecities/$', self.admin_site.admin_view(self.update_cities))
+            url(r'^update-cities/$', self.admin_site.admin_view(self.update_cities))
         ]
         return my_urls + urls
 
-    def update_cities(self, request):
+    def get_cities_json_data(self):
         base = os.path.dirname(os.path.abspath(__file__))
         location = base + "/../data_backup/cities.json"
-
         json_data = open(location)
         city_locations = ujson.load(json_data)
+        json_data.close()
+        return city_locations
 
-        for c in city_locations['features']:
+    def update_cities(self, request):
+
+        city_locations = self.get_cities_json_data()
+
+        for c in city_locations.get('features'):
             try:
                 geoid = int(c['properties']['GEONAMEID'])
                 if City.objects.filter(geoname_id=geoid).exists():
-                        continue
+                    continue
 
                 name = c['properties']['NAME']
                 the_country = None
@@ -72,8 +77,4 @@ class CityAdmin(admin.ModelAdmin):
                 print "error in update_cities ", sys.exc_info()[0]
                 print e.message
 
-            except Exception as e:
-                print "error in update_cities"
-
-        json_data.close()
         return HttpResponse('Success')
