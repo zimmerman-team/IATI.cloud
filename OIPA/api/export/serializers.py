@@ -564,6 +564,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
 
     value = ValueSerializer(source='*')
     transaction_date = TransactionDateSerializer(source='*')
+    disbursement_channel = CodelistSerializer()
 
     class Meta(transaction_serializers.TransactionSerializer.Meta):
         fields = (
