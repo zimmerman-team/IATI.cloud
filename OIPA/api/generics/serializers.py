@@ -1,12 +1,40 @@
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 
+from collections import OrderedDict
+
 class XMLMetaMixin(object):
     def to_representation(self, *args, **kwargs):
         representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
         if hasattr(self, 'xml_meta'):
             representation.xml_meta = self.xml_meta
         return representation
+
+class SkipNullMixin(object):
+
+    """Don't render null fields"""
+
+    def to_representation(self, instance):
+        """
+        Object instance -> Dict of primitive datatypes.
+        """
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            if attribute is None:
+                # We skip `to_representation` for `None` values so that
+                # fields do not have to explicitly deal with that case.
+                continue
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
 
 
 class FilteredListSerializer(serializers.ListSerializer):

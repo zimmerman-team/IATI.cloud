@@ -1,6 +1,7 @@
 from api.activity.serializers import ActivitySerializer
+from api.generics.serializers import SkipNullMixin
 
-class ActivityXMLSerializer(ActivitySerializer):
+class ActivityXMLSerializer(SkipNullMixin, ActivitySerializer):
     class Meta(ActivitySerializer.Meta):
         fields = (
             'iati_identifier',

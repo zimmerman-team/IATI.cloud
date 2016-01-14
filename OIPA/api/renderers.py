@@ -109,9 +109,11 @@ class XMLRenderer(BaseRenderer):
                     renamed_attr = renamed_attr.replace('_', '-')
 
                     if only:
-                        xml.set(renamed_attr, unicode(data[attr][only]))
+                        value = data[attr][only]
+                        if value: xml.set(renamed_attr, unicode(value))
                     else:
-                        xml.set(renamed_attr, unicode(data[attr]))
+                        value = data[attr]
+                        if value: xml.set(renamed_attr, unicode(value))
 
 
             for key, value in six.iteritems(data):
