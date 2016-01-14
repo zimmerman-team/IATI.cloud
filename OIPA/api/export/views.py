@@ -2,7 +2,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import GenericAPIView
 from iati.models import Activity
-from api.activity import serializers as activity_serializers
+from api.export import serializers as export_serializers
 from api.activity import filters
 from api.activity.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
@@ -18,12 +18,6 @@ from api.renderers import XMLRenderer
 from rest_framework.response import Response
 from rest_framework import mixins, status
 
-print(difference(
-    get_serializer_fields(activity_serializers.ActivitySerializer),
-    ['url', 'activity_aggregation', 'child_aggregation', 'activity_plus_child_aggregation']
-    )
-)
-
 class IATIActivityList(ListAPIView):
 
     """IATI representation for activities"""
@@ -31,7 +25,7 @@ class IATIActivityList(ListAPIView):
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
-    serializer_class = activity_serializers.ActivityXMLSerializer
+    serializer_class = export_serializers.ActivityXMLSerializer
 
     renderer_classes = (XMLRenderer, )
 
