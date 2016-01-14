@@ -13,7 +13,7 @@ class DynamicView(GenericAPIView):
         """
         Extract prefetches and default fields from Meta
         """
-        # TODO: move this to a meta class, to evaluate once
+        # TODO: move this to a meta class, to evaluate once when defining the class
 
         serializer_class = self.get_serializer_class() 
         serializer = serializer_class() # need an instance to extract fields
@@ -65,6 +65,7 @@ class DynamicView(GenericAPIView):
         Apply 'fields' to dynamic fields serializer
         """
         fields = self._get_query_fields()
+        kwargs['context'] = self.get_serializer_context()
         return super(DynamicView, self).get_serializer(fields=fields, *args, **kwargs)
 
 class DynamicListView(DynamicView, ListAPIView):

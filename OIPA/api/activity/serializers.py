@@ -589,7 +589,7 @@ class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
         model = iati.models.Activity
         fields = (
             'url',
-            'id',
+            # 'id',
             'iati_identifier',
             'reporting_org',
             'title',

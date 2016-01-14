@@ -1,3 +1,6 @@
+def get_serializer_fields(serializer):
+    return serializer().get_fields().keys()
+
 def parameter_from_type_query_param(query_param):
     """Returns type name from query_param string."""
     is_type = False

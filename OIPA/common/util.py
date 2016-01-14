@@ -23,6 +23,9 @@ def setInterval(func, sec):
     t.start()
     return t
 
+def difference(list1, list2):
+    set(list2)
+    return [a for a in list1 if a not in list2]
 
 def combine_filters(filters):
     ### combine Q objects ###
