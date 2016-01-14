@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 import iati
+from api.generics.serializers import XMLMetaMixin
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.serializers import FilterableModelSerializer
@@ -11,13 +12,6 @@ from api.country.serializers import CountrySerializer
 # from api.activity.filters import BudgetFilter
 from api.activity.filters import RelatedActivityFilter
 
-
-class XMLMetaMixin(object):
-    def to_representation(self, *args, **kwargs):
-        representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
-        if hasattr(self, 'xml_meta'):
-            representation.xml_meta = self.xml_meta
-        return representation
 
 
 # TODO: serialize vocabulary in codelist serializer
@@ -312,7 +306,7 @@ class ActivityRecipientRegionSerializer(XMLMetaMixin, DynamicFieldsModelSerializ
         )
 
 class RecipientCountrySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
-    xml_meta = {'attributes': ('percentage',)}
+    xml_meta = {'attributes': ('percentage', 'country'), 'rename': {'country': 'code'}}
 
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(

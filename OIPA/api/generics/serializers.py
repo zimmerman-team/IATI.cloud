@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 
+class XMLMetaMixin(object):
+    def to_representation(self, *args, **kwargs):
+        representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
+        if hasattr(self, 'xml_meta'):
+            representation.xml_meta = self.xml_meta
+        return representation
+
 
 class FilteredListSerializer(serializers.ListSerializer):
     """
