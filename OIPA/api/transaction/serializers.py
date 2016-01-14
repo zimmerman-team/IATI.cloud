@@ -2,13 +2,11 @@ from rest_framework import serializers
 
 from iati.transaction import models
 
-from api.generics.serializers import XMLMetaMixin, DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
 from api.activity.serializers import ActivitySerializer, CodelistSerializer, NarrativeSerializer
 
 
-class TransactionProviderSerializer(XMLMetaMixin, serializers.ModelSerializer):
-    xml_meta = {'attributes': ('ref', 'provider_activity_id',)}
-
+class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
     narratives = NarrativeSerializer(many=True)
     provider_activity = serializers.HyperlinkedRelatedField(
@@ -26,9 +24,7 @@ class TransactionProviderSerializer(XMLMetaMixin, serializers.ModelSerializer):
         )
 
 
-class TransactionReceiverSerializer(XMLMetaMixin, serializers.ModelSerializer):
-    xml_meta = {'attributes': ('ref', 'receiver_activity_id',)}
-
+class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
     narratives = NarrativeSerializer(many=True)
     receiver_activity = serializers.HyperlinkedRelatedField(
@@ -56,12 +52,10 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
         )
 
 
-class TransactionSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
     """
-    xml_meta = {'attributes': ('ref', 'type',)}
-
     url = serializers.HyperlinkedIdentityField(
         view_name='transactions:transaction-detail',
         lookup_field='pk')
