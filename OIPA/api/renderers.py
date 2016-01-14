@@ -67,7 +67,7 @@ class XMLRenderer(BaseRenderer):
 
     media_type = 'application/xml'
     format = 'xml'
-    charset = 'utf-8'
+    charset = 'UTF-8'
     root_tag_name = 'iati-activities'
     item_tag_name = 'iati-activity'
 
@@ -78,14 +78,14 @@ class XMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        xml = E(self.root_tag_name)
-
         if 'results' in data: # list of items
+            xml = E(self.root_tag_name)
             self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
         else: # one item
+            xml = E(self.item_tag_name)
             self._to_xml(xml, data)
 
-        return etree.tostring(xml)
+        return etree.tostring(xml, encoding=self.charset)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
@@ -106,7 +106,6 @@ class XMLRenderer(BaseRenderer):
                         only = None
 
                     if only:
-                        # print('setting... ' + attr + ' ' + data[attr][only] )
                         xml.set(attr, str(data[attr][only]))
                     else:
                         xml.set(attr, str(data[attr]))
@@ -123,12 +122,9 @@ class XMLRenderer(BaseRenderer):
                     self._to_xml(etree.SubElement(xml, key), value)
 
         elif data is None:
-            # Don't output any value
             pass
 
         else:
-            xml.text = str(data)
+            xml.text = unicode(data)
             pass
 
-            # print(data)
-            # xml.characters(smart_text(data))
