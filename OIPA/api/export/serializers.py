@@ -123,7 +123,7 @@ class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
             )
 
     value = ValueSerializer(source='*')
-    type = CodelistSerializer()
+    type = serializers.CharField(source='type.code')
 
     class Meta(activity_serializers.BudgetSerializer.Meta):
         fields = (
@@ -137,7 +137,7 @@ class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
 class ActivityDateSerializer(XMLMetaMixin, activity_serializers.ActivityDateSerializer):
     xml_meta = {'attributes': ('type', 'iso_date')}
 
-    type = CodelistSerializer()
+    type = serializers.CharField(source='type.code')
     iso_date = serializers.DateTimeField()
 
     class Meta(activity_serializers.ActivityDateSerializer.Meta):
@@ -177,7 +177,7 @@ class ReportingOrganisationSerializer(XMLMetaMixin, activity_serializers.Reporti
 
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="normalized_ref")
-    type = CodelistSerializer()
+    type = serializers.CharField(source='type.code')
     secondary_reporter = serializers.BooleanField()
     narratives = NarrativeSerializer(many=True)
 
@@ -194,8 +194,8 @@ class ParticipatingOrganisationSerializer(XMLMetaMixin, activity_serializers.Par
 
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
-    type = CodelistSerializer()
-    role = CodelistSerializer()
+    type = serializers.CharField(source='type.code')
+    role = serializers.CharField(source='role.code')
     narratives = NarrativeSerializer(many=True)
 
     class Meta(activity_serializers.ParticipatingOrganisationSerializer.Meta):
@@ -233,7 +233,8 @@ class TitleSerializer(serializers.Serializer):
 class DescriptionSerializer(XMLMetaMixin, activity_serializers.DescriptionSerializer):
     xml_meta = {'attributes': ('type',)}
 
-    type = CodelistSerializer()
+    type = serializers.CharField(source='type.code')
+    type = serializers.CharField(source='type.code')
     narratives = NarrativeSerializer(many=True)
 
     class Meta(activity_serializers.DescriptionSerializer.Meta):
@@ -401,7 +402,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
 class ResultSerializer(XMLMetaMixin, activity_serializers.ResultSerializer):
     xml_meta = {'attributes': ('type', 'aggregation_status',)}
 
-    type = CodelistSerializer() 
+    type = serializers.CharField(source='type.code')
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
     indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True)
@@ -551,13 +552,13 @@ class TransactionSerializer(XMLMetaMixin, transaction_serializers.TransactionSer
         view_name='transactions:transaction-detail',
         lookup_field='pk')
 
-    transaction_type = CodelistSerializer()
+    transaction_type = serializers.CharField(source='transaction_type.code')
     description = TransactionDescriptionSerializer()
     provider_org = TransactionProviderSerializer(source='provider_organisation')
     receiver_org = TransactionReceiverSerializer(source='receiver_organisation')
-    flow_type = CodelistSerializer()
-    finance_type = CodelistSerializer()
-    aid_type = CodelistSerializer()
+    flow_type = serializers.CharField(source='flow_type.code')
+    finance_type = serializers.CharField(source='finance_type.code')
+    aid_type = serializers.CharField(source='aid_type.code')
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
@@ -642,10 +643,10 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     policy_marker = ActivityPolicyMarkerSerializer(
         many=True,
         source='activitypolicymarker_set')
-    collaboration_type = CodelistSerializer()
-    default_flow_type = CodelistSerializer()
-    default_finance_type = CodelistSerializer()
-    default_aid_type = CodelistSerializer()
+    collaboration_type = serializers.CharField(source='collaboration_type.code')
+    default_flow_type = serializers.CharField(source='default_flow_type.code')
+    default_finance_type = serializers.CharField(source='default_finance_type.code')
+    default_aid_type = serializers.CharField(source='default_aid_type.code')
     default_tied_status = CodelistSerializer()
 
     budget = BudgetSerializer(many=True, source='budget_set')
