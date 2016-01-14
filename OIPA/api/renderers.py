@@ -105,10 +105,12 @@ class XMLRenderer(BaseRenderer):
                     else:
                         only = None
 
+                    renamed_attr = data.xml_meta.get('rename', {}).get(attr, attr)
+
                     if only:
-                        xml.set(attr, unicode(data[attr][only]))
+                        xml.set(renamed_attr, unicode(data[attr][only]))
                     else:
-                        xml.set(attr, unicode(data[attr]))
+                        xml.set(renamed_attr, unicode(data[attr]))
 
 
             for key, value in six.iteritems(data):
