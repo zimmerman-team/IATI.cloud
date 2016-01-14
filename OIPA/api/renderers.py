@@ -106,9 +106,9 @@ class XMLRenderer(BaseRenderer):
                         only = None
 
                     if only:
-                        xml.set(attr, str(data[attr][only]))
+                        xml.set(attr, unicode(data[attr][only]))
                     else:
-                        xml.set(attr, str(data[attr]))
+                        xml.set(attr, unicode(data[attr]))
 
 
             for key, value in six.iteritems(data):
