@@ -634,3 +634,52 @@ class ActivitySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
             'activity_plus_child_aggregation',
             'xml_source_ref')
 
+class ActivityXMLSerializer(ActivitySerializer):
+    class Meta(ActivitySerializer.Meta):
+        fields = (
+            'iati_identifier',
+            'reporting_org',
+            'title',
+            'description',
+            'participating_org',
+            # 'other_identifier',
+            'activity_status',
+            'activity_date',
+            # 'contact_info',
+            'activity_scope',
+            'recipient_country',
+            'recipient_region',
+            'location',
+            'sector',
+            # 'country_budget_items',
+            # 'humanitarian_scope',
+            'policy_marker',
+            'collaboration_type',
+            'default_flow_type',
+            'default_finance_type',
+            'default_aid_type',
+            'default_tied_status',
+            # 'planned_disbursement',
+            'budget',
+            'capital_spend',
+            'transaction',
+            'document_link',
+            'related_activity',
+            # 'legacy_data',
+            # 'conditions',
+            'result',
+            # 'crs_add',
+            # 'fss',
+            'last_updated_datetime',
+            'xml_lang',
+            'default_currency',
+            # 'humanitarian',
+            'hierarchy',
+            'linked_data_uri',
+            'xml_source_ref',
+        )
+
+
+
+
+

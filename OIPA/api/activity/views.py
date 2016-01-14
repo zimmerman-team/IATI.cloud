@@ -14,6 +14,7 @@ from rest_framework.filters import DjangoFilterBackend
 
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
+from api.renderers import XMLRenderer
 
 from rest_framework.response import Response
 from rest_framework import mixins, status
@@ -214,11 +215,6 @@ class ActivityList(DynamicListView):
         'reporting_organisations',
     )
 
-    xml_fields = difference(
-        get_serializer_fields(serializer_class),
-        ['url', 'activity_aggregation', 'child_aggregation', 'activity_plus_child_aggregation']
-    )
-
     always_ordering = 'id'
 
     ordering_fields = (
@@ -236,25 +232,10 @@ class ActivityList(DynamicListView):
         'activity_plus_child_budget_value',
     )
 
-    def get_serializer(self, *args, **kwargs):
-        """
-        For XML, use a different set of fields
-        """
-        fields = self._get_query_fields()
-        kwargs['context'] = self.get_serializer_context()
-
-        request = kwargs['context']['request']
-
-        if request.GET.get('format') == 'xml':
-            fields = self.xml_fields
-        else:
-            fields = self._get_query_fields()
-
-        return self.serializer_class(fields=fields, *args, **kwargs)
-
     def get_queryset(self):
         qs = super(ActivityList, self).get_queryset()
         return qs.distinct('id')
+
 
 class ActivityDetail(DynamicDetailView):
     """
