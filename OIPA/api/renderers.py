@@ -90,7 +90,7 @@ class XMLRenderer(BaseRenderer):
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
             for item in data:
-                self._to_xml(etree.SubElement(xml, parent_name), item)
+                self._to_xml(etree.SubElement(xml, parent_name.replace('_', '-')), item)
 
         elif isinstance(data, dict):
             attributes = []
@@ -106,6 +106,7 @@ class XMLRenderer(BaseRenderer):
                         only = None
 
                     renamed_attr = data.xml_meta.get('rename', {}).get(attr, attr)
+                    renamed_attr = renamed_attr.replace('_', '-')
 
                     if only:
                         xml.set(renamed_attr, unicode(data[attr][only]))
@@ -121,7 +122,7 @@ class XMLRenderer(BaseRenderer):
                 elif isinstance(value, list):
                     self._to_xml(xml, value, parent_name=key)
                 else:
-                    self._to_xml(etree.SubElement(xml, key), value)
+                    self._to_xml(etree.SubElement(xml, key.replace('_', '-')), value)
 
         elif data is None:
             pass
