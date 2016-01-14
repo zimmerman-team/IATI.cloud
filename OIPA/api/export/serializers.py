@@ -521,7 +521,7 @@ class TransactionDescriptionSerializer(XMLMetaMixin, transaction_serializers.Tra
     narratives = NarrativeSerializer(many=True)
 
 
-class TransactionSerializer(XMLMetaMixin, transaction_serializers.TransactionSerializer):
+class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
     class ValueSerializer(XMLMetaMixin, serializers.Serializer):
         xml_meta = {'attributes': ('currency', 'value_date',)}
 
@@ -552,13 +552,13 @@ class TransactionSerializer(XMLMetaMixin, transaction_serializers.TransactionSer
         view_name='transactions:transaction-detail',
         lookup_field='pk')
 
-    transaction_type = serializers.CharField(source='transaction_type.code')
+    transaction_type = CodelistSerializer()
     description = TransactionDescriptionSerializer()
     provider_org = TransactionProviderSerializer(source='provider_organisation')
     receiver_org = TransactionReceiverSerializer(source='receiver_organisation')
-    flow_type = serializers.CharField(source='flow_type.code')
-    finance_type = serializers.CharField(source='finance_type.code')
-    aid_type = serializers.CharField(source='aid_type.code')
+    flow_type = CodelistSerializer()
+    finance_type = CodelistSerializer()
+    aid_type = CodelistSerializer()
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
@@ -643,10 +643,10 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     policy_marker = ActivityPolicyMarkerSerializer(
         many=True,
         source='activitypolicymarker_set')
-    collaboration_type = serializers.CharField(source='collaboration_type.code')
-    default_flow_type = serializers.CharField(source='default_flow_type.code')
-    default_finance_type = serializers.CharField(source='default_finance_type.code')
-    default_aid_type = serializers.CharField(source='default_aid_type.code')
+    collaboration_type = CodelistSerializer()
+    default_flow_type = CodelistSerializer()
+    default_finance_type = CodelistSerializer()
+    default_aid_type = CodelistSerializer()
     default_tied_status = CodelistSerializer()
 
     budget = BudgetSerializer(many=True, source='budget_set')
