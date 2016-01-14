@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import geodata
 import iati.models
-from api.generics.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import XMLMetaMixin, DynamicFieldsModelSerializer
 from api.fields import GeometryField
 
 class RegionVocabularySerializer(serializers.ModelSerializer):
@@ -26,7 +26,9 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
             'region_vocabulary'
         )
 
-class RegionSerializer(DynamicFieldsModelSerializer):
+class RegionSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
+    xml_meta = {'only': 'code'}
+
     url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))

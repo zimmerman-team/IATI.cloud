@@ -265,7 +265,7 @@ class RelatedActivitySerializer(XMLMetaMixin, FilterableModelSerializer):
         )
 
 class ActivitySectorSerializer(XMLMetaMixin, serializers.ModelSerializer):
-    xml_meta = {'attributes': ('percentage', 'vocabulary')}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'sector',), 'rename': {'sector': 'code'}}
 
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
@@ -285,7 +285,7 @@ class ActivitySectorSerializer(XMLMetaMixin, serializers.ModelSerializer):
 
 
 class ActivityRecipientRegionSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
-    xml_meta = {'attributes': ('code', 'percentage', 'vocabulary')}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'region',), 'rename': {'region': 'code'}}
 
     region = RegionSerializer(
         fields=('url', 'code', 'name')
@@ -395,7 +395,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
     #  TO DO 2.02 reference = ? 
     baseline = ResultIndicatorBaselineSerializer(source="*")
     period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True)
-    measure = CodelistSerializer(source='indicatormeasure')
+    measure = CodelistSerializer()
 
     class Meta:
         model = iati.models.ResultIndicator
