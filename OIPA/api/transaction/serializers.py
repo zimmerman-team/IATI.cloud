@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from iati.transaction import models
 
-from api.generics.serializers import DynamicFieldsModelSerializer
-from api.activity.serializers import XMLMetaMixin, ActivitySerializer, CodelistSerializer, NarrativeSerializer
+from api.generics.serializers import XMLMetaMixin, DynamicFieldsModelSerializer
+from api.activity.serializers import ActivitySerializer, CodelistSerializer, NarrativeSerializer
 
 
 class TransactionProviderSerializer(XMLMetaMixin, serializers.ModelSerializer):
