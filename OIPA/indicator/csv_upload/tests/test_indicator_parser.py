@@ -119,6 +119,7 @@ class TestUploadIndicatorHelperTestCase(TestCase):
         # cant mock the uuid of course
         uploadLogEntry.slug = log.slug
         uploadLogEntry.upload = log.upload
+        uploadLogEntry.id = log.id
 
         self.assertEqual(uploadLogEntry, log)
 

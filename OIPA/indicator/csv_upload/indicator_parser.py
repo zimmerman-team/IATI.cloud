@@ -146,7 +146,7 @@ class IndicatorParser:
                     country_id = city.country_id.lower()
                     if not country_id in city_name_dict:
                         city_name_dict[country_id] = dict()
-                    if key in city:
+                    if getattr(city, key):
                         city_name_dict[country_id][getattr(city, key).lower()] = city.id
             return city_name_dict
 
