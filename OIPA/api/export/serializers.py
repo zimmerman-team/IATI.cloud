@@ -49,7 +49,7 @@ class DocumentCategorySerializer(XMLMetaMixin, activity_serializers.DocumentCate
 class DocumentLinkSerializer(XMLMetaMixin, activity_serializers.DocumentLinkSerializer):
     xml_meta = {'attributes': ('url', 'format',)}
 
-    format = CodelistSerializer(source='file_format')
+    format = serializers.CharField(source='file_format.code')
     category = DocumentCategorySerializer(many=True, source='categories')
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
 
@@ -64,9 +64,6 @@ class DocumentLinkSerializer(XMLMetaMixin, activity_serializers.DocumentLinkSeri
 
 class CapitalSpendSerializer(XMLMetaMixin, activity_serializers.CapitalSpendSerializer):
     xml_meta = {'attributes': ('percentage',)}
-
-    class Meta(activity_serializers.CapitalSpendSerializer.Meta):
-        fields = ('percentage',)
 
 
 class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
@@ -146,7 +143,7 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, activity_serializers.Activity
 
     code = serializers.CharField(source='code.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
-    significance = CodelistSerializer()
+    significance = serializers.CharField(source='significance.code')
     narrative = NarrativeSerializer(many=True, source='narratives')
 
     class Meta(activity_serializers.ActivityPolicyMarkerSerializer.Meta):
@@ -438,7 +435,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     result = ResultSerializer(many=True, source="result_set")
     
-    default_currency = CodelistSerializer()
+    default_currency = serializers.CharField(source='default_currency.code')
 
     class Meta(activity_serializers.ActivitySerializer.Meta):
         fields = (

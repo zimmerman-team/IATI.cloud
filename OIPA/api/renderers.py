@@ -70,6 +70,7 @@ class XMLRenderer(BaseRenderer):
     charset = 'UTF-8'
     root_tag_name = 'iati-activities'
     item_tag_name = 'iati-activity'
+    version = '2.01'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -80,6 +81,7 @@ class XMLRenderer(BaseRenderer):
 
         if 'results' in data: # list of items
             xml = E(self.root_tag_name)
+            xml.set('version', self.version)
             self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
         else: # one item
             xml = E(self.item_tag_name)
@@ -103,8 +105,8 @@ class XMLRenderer(BaseRenderer):
                     renamed_attr = attr.replace('xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
 
                     value = data[attr]
-                    if value:
-                        xml.set(renamed_attr, unicode(value))
+                    if value is not None:
+                        xml.set(renamed_attr, six.text_type(value).lower() if type(value) == bool else six.text_type(value))
 
 
             for key, value in six.iteritems(data):
@@ -121,6 +123,6 @@ class XMLRenderer(BaseRenderer):
             pass
 
         else:
-            xml.text = unicode(data)
+            xml.text = six.text_type(data)
             pass
 
