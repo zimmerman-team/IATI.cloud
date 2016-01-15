@@ -90,7 +90,7 @@ class XMLRenderer(BaseRenderer):
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
             for item in data:
-                self._to_xml(etree.SubElement(xml, parent_name.replace('_', '-').replace('narratives', 'narrative')), item)
+                self._to_xml(etree.SubElement(xml, parent_name.replace('_', '-')), item)
 
         elif isinstance(data, dict):
             attributes = []

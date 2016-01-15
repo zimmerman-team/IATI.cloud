@@ -1,12 +1,10 @@
 from rest_framework import serializers
 import geodata
-from api.generics.serializers import XMLMetaMixin, DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
 from api.region.serializers import RegionSerializer
 from api.fields import JSONField
 
-class CountrySerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
-    xml_meta = {'only': 'code'}
-
+class CountrySerializer(DynamicFieldsModelSerializer):
     class BasicCitySerializer(serializers.ModelSerializer):
         url = serializers.HyperlinkedIdentityField(view_name='cities:city-detail')
 

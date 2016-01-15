@@ -1,6 +1,6 @@
 from rest_framework import serializers
 import iati
-from api.generics.serializers import XMLMetaMixin, DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer
 
 
 class SectorCategorySerializer(serializers.ModelSerializer):
@@ -11,9 +11,7 @@ class SectorCategorySerializer(serializers.ModelSerializer):
         )
 
 
-class SectorSerializer(XMLMetaMixin, DynamicFieldsModelSerializer):
-    xml_meta = {'only': 'code'}
-
+class SectorSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='sectors:sector-detail')
     category = SectorCategorySerializer()
     activities = serializers.HyperlinkedIdentityField(

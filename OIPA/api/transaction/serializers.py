@@ -5,7 +5,6 @@ from iati.transaction import models
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.activity.serializers import ActivitySerializer, CodelistSerializer, NarrativeSerializer
 
-
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
     narratives = NarrativeSerializer(many=True)
@@ -22,7 +21,6 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             'provider_activity_id',
             'narratives'
         )
-
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
@@ -41,7 +39,6 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'narratives'
         )
 
-
 class TransactionDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
@@ -51,7 +48,6 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-
 class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
@@ -60,38 +56,34 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         view_name='transactions:transaction-detail',
         lookup_field='pk')
     activity = ActivitySerializer(fields=('id', 'url'))
-
-    transaction_type = CodelistSerializer()
-    description = TransactionDescriptionSerializer()
-    provider_org = TransactionProviderSerializer(source='provider_organisation')
-    receiver_org = TransactionReceiverSerializer(source='receiver_organisation')
-    flow_type = CodelistSerializer()
-    finance_type = CodelistSerializer()
     aid_type = CodelistSerializer()
+    finance_type = CodelistSerializer()
+    flow_type = CodelistSerializer()
+    provider_organisation = TransactionProviderSerializer()
+    receiver_organisation = TransactionReceiverSerializer()
     tied_status = CodelistSerializer()
+    transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
+    description = TransactionDescriptionSerializer()
 
     class Meta:
         model = models.Transaction
         fields = (
+            'ref',
             'url',
             'activity',
-            'ref',
-            'currency',
-            'transaction_type',
-            'transaction_date',
-            'value',
-            'value_date',
-            'description',
-            'provider_org',
-            'receiver_org',
-            'disbursement_channel',
-            # 'sector',
-            # 'recipient_country',
-            # 'recipient_region',
-            'flow_type',
-            'finance_type',
             'aid_type',
+            'description',
+            'disbursement_channel',
+            'finance_type',
+            'flow_type',
+            'provider_organisation',
+            'receiver_organisation',
             'tied_status',
+            'transaction_date',
+            'transaction_type',
+            'value_date',
+            'value',
+            'currency',
         )
 
