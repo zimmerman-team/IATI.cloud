@@ -91,7 +91,7 @@ class CapitalSpendSerializer(XMLMetaMixin, activity_serializers.CapitalSpendSeri
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
-        source='capital_spend',
+        source='*',
         coerce_to_string=False
     )
 
@@ -638,7 +638,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
     # planned_disbursement = serializers.PlannedDisbursementSerializer(many=True,source="?")
 
-    capital_spend = CapitalSpendSerializer(source='*')
+    capital_spend = CapitalSpendSerializer()
     transaction = TransactionSerializer(many=True, source='transaction_set')
     # TO DO ; hook up with the serializer instead of HyperlinkedIdentityField
     # to be able to serialize it in XML
