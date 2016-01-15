@@ -1,4 +1,3 @@
-import sys
 import ujson
 import os
 import os.path
@@ -39,129 +38,91 @@ class CountryAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
-    def update_polygon(self, request):
-
+    def get_json_data(self, location_from_here):
         base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/country_data.json"
-
+        location = base + location_from_here
         json_data = open(location)
-        admin_countries = ujson.load(json_data)
+        data = ujson.load(json_data)
+        json_data.close()
+        return data
 
-        for k in admin_countries['features']:
-            try:
-                country_iso2 = k['properties']['iso2']
-                if Country.objects.filter(code=country_iso2).exists():
-                        the_country = Country.objects.get(code=country_iso2)
-                else:
-                    continue
+    def update_polygon(self, request):
+        admin_countries = self.get_json_data("/../data_backup/country_data.json")
 
-                geometry = k['geometry']
-                geometry = ujson.dumps(geometry)
-                the_country.polygon = geometry
+        for k in admin_countries.get('features'):
+            country_iso2 = k.get('properties').get('iso2')
+            if not country_iso2:
+                continue
+            the_country = Country.objects.get(code=country_iso2)
+            the_country.polygon = ujson.dumps(k.get('geometry'))
+            the_country.save()
 
-                the_country.save()
-
-            except ValueError, e:
-                print "Value error update_polygon_set" + e.message
-            except TypeError, e:
-                print "Type error update_polygon_set" + e.message
-            except Exception as e:
-                print "Error in update_polygon_set", sys.exc_info()
         return HttpResponse('Success')
 
     def update_country_center(self, request):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/country_center.json"
+        country_centers = self.get_json_data("/../data_backup/country_center.json")
 
-        json_data = open(location)
-        country_centers = ujson.load(json_data)
         for c in country_centers:
             if Country.objects.filter(code=c).exists():
                 current_country = Country.objects.get(code=c)
 
-                point_loc_str = 'POINT(' + str(country_centers[c]["longitude"]) + ' ' + str(country_centers[c]["latitude"]) + ')'
+                point_loc_str = ''.join([
+                    'POINT(',
+                    str(country_centers[c]["longitude"]),
+                    ' ',
+                    str(country_centers[c]["latitude"]),
+                    ')'])
                 longlat = fromstr(point_loc_str, srid=4326)
                 current_country.center_longlat = longlat
                 current_country.save()
 
-        json_data.close()
         return HttpResponse('Success')
 
     def update_regions(self, request):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/country_regions.json"
-
-        json_data = open(location)
-        country_regions = ujson.load(json_data)
+        country_regions = self.get_json_data("/../data_backup/country_regions.json")
 
         for cr in country_regions:
-            try:
-                country_iso2 = cr['iso2']
-                region_dac_code = cr['dac_region_code']
+            country_iso2 = cr['iso2']
+            region_dac_code = cr['dac_region_code']
 
-                if Country.objects.filter(code=country_iso2).exists():
-                            the_country = Country.objects.get(code=country_iso2)
-                else:
-                    continue
+            if Country.objects.filter(code=country_iso2).exists():
+                the_country = Country.objects.get(code=country_iso2)
 
-                if Region.objects.filter(code=region_dac_code).exists():
-                            the_region = Region.objects.get(code=region_dac_code)
-                else:
-                    continue
+            if Region.objects.filter(code=region_dac_code).exists():
+                the_region = Region.objects.get(code=region_dac_code)
 
-                if the_country.region == None:
-                    the_country.region = the_region
-                    the_country.save()
+            if the_country.region is None and the_country is not None and the_region is not None:
+                the_country.region = the_region
+                the_country.save()
 
-            except:
-                print "error in update_country_regions"
-        json_data.close()
         return HttpResponse('Success')
 
     def update_country_identifiers(self, request):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/un_numerical_country_codes.json"
+        un_numerical_country_codes = self.get_json_data("/../data_backup/un_numerical_country_codes.json")
 
-        json_data = open(location)
-        un_numerical_country_codes = ujson.load(json_data)
+        for c in un_numerical_country_codes.get('codemappings').get('territorycodes'):
+            iso2 = c.get('type')
 
-        for c in un_numerical_country_codes['codemappings']['territorycodes']:
-            try:
-                iso2 = c['type']
+            if Country.objects.filter(code=iso2).exists():
+                the_country = Country.objects.get(code=iso2)
 
+                the_country.numerical_code_un = c.get('numeric')
+                the_country.alpha3 = c.get('alpha3')
+                the_country.iso3 = c.get('alpha3')
+                the_country.fips10 = c.get('fips10')
 
-                if Country.objects.filter(code=iso2).exists():
-                    the_country = Country.objects.get(code=iso2)
-
-                    if 'numeric' in c:
-                        the_country.numerical_code_un = c['numeric']
-                    if 'alpha3' in c:
-                        the_country.alpha3 = c['alpha3']
-                        the_country.iso3 = c['alpha3']
-                    if 'fips10' in c:
-                        the_country.fips10 = c['fips10']
-
-                    the_country.save()
-
-            except Exception as e:
-               print e.args
-
-        json_data.close()
+                the_country.save()
 
         return HttpResponse('Success')
 
     def update_alt_names(self, request):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/urbnnrs_alt_country_name.json"
+        alt_names = self.get_json_data("/../data_backup/urbnnrs_alt_country_name.json")
 
-        json_data = open(location)
-        alt_names = ujson.load(json_data)
         for c in alt_names:
             if Country.objects.filter(code=c).exists():
                 current_country = Country.objects.get(code=c)
-                current_country.alt_name = alt_names[c]["alt_name"]
+                current_country.alt_name = alt_names.get(c).get('alt_name')
                 current_country.save()
 
-        json_data.close()
         return HttpResponse('Success')
 

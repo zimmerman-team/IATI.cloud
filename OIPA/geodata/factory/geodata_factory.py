@@ -25,3 +25,13 @@ class CountryFactory(NoDatabaseFactory):
     code = 'OO'
     name = 'dummy_country'
     center_longlat = Point(1, 3)
+
+
+class RegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = models.Region
+
+    code = '689'
+    name = 'South & Central Asia, regional'
+    center_longlat = Point(2,4)
+
