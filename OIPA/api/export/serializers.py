@@ -25,6 +25,11 @@ from api.activity.filters import RelatedActivityFilter
 
 
 
+class IsoDateSerializer(XMLMetaMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('iso_date',)}
+
+    iso_date = serializers.CharField(source='*')
+
 
 
 
@@ -106,10 +111,13 @@ class CapitalSpendSerializer(XMLMetaMixin, activity_serializers.CapitalSpendSeri
 class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
     xml_meta = {'attributes': ('type',)}
 
-    class ValueSerializer(serializers.Serializer):
-        currency = CodelistSerializer()
-        date = serializers.CharField(source='value_date')
-        value = serializers.DecimalField(
+    class ValueSerializer(XMLMetaMixin, serializers.Serializer):
+        xml_meta = {'attributes': ('currency', 'value_date')}
+
+        currency = serializers.CharField(source='currency.code')
+        value_date = serializers.CharField()
+        text = serializers.DecimalField(
+            source='value',
             max_digits=15,
             decimal_places=2,
             coerce_to_string=False,
@@ -117,13 +125,16 @@ class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
 
         class Meta(activity_serializers.BudgetSerializer.ValueSerializer.Meta):
             fields = (
-                'value',
-                'date',
+                'text',
+                'value_date',
                 'currency',
             )
 
     value = ValueSerializer(source='*')
     type = serializers.CharField(source='type.code')
+
+    period_start = IsoDateSerializer()
+    period_end = IsoDateSerializer()
 
     class Meta(activity_serializers.BudgetSerializer.Meta):
         fields = (
@@ -209,7 +220,7 @@ class ParticipatingOrganisationSerializer(XMLMetaMixin, activity_serializers.Par
 class ActivityPolicyMarkerSerializer(XMLMetaMixin, activity_serializers.ActivityPolicyMarkerSerializer):
     xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
 
-    code = CodelistSerializer()
+    code = serializers.CharField(source='code.code')
     vocabulary = VocabularySerializer()
     significance = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
@@ -243,23 +254,15 @@ class DescriptionSerializer(XMLMetaMixin, activity_serializers.DescriptionSerial
             'narratives'
         )
 
-class RelatedActivityTypeSerializer(XMLMetaMixin, activity_serializers.RelatedActivityTypeSerializer):
-    xml_meta = {'attributes': ('only', 'code')}
-
-    class Meta(activity_serializers.RelatedActivityTypeSerializer.Meta):
-        fields = (
-            'code',
-        )
-
 class RelatedActivitySerializer(XMLMetaMixin, activity_serializers.RelatedActivitySerializer):
-    xml_meta = {'attributes': ('ref_activity', 'type')}
+    xml_meta = {'attributes': ('ref', 'type')}
     
-    ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
-    type = RelatedActivityTypeSerializer()
+    ref = serializers.CharField(source='ref_activity')
+    type = serializers.CharField(source='type.code')
 
     class Meta(activity_serializers.RelatedActivitySerializer.Meta):
         fields = (
-            'ref_activity',
+            'ref',
             'ref',
             'type',
         )
@@ -365,6 +368,9 @@ class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, activity_serializers.R
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
+
+    period_start = IsoDateSerializer()
+    period_end = IsoDateSerializer()
 
     class Meta(activity_serializers.ResultIndicatorPeriodSerializer.Meta):
         fields = (
@@ -541,11 +547,6 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
                 'currency',
             )
 
-    class TransactionDateSerializer(XMLMetaMixin, serializers.Serializer):
-        xml_meta = {'attributes': ('iso_date',)}
-
-        iso_date = serializers.CharField(source='transaction_date')
-
     xml_meta = {'attributes': ('ref', 'type',)}
 
     url = serializers.HyperlinkedIdentityField(
@@ -563,7 +564,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     currency = CodelistSerializer()
 
     value = ValueSerializer(source='*')
-    transaction_date = TransactionDateSerializer(source='*')
+    transaction_date = IsoDateSerializer()
     disbursement_channel = CodelistSerializer()
 
     class Meta(transaction_serializers.TransactionSerializer.Meta):
