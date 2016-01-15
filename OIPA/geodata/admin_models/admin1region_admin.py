@@ -94,8 +94,7 @@ class Adm1RegionAdmin(admin.ModelAdmin):
                 'gns_level',
                 'gns_lang',
                 'gns_adm1',
-                'gns_region',
-                'iso_3166_2']
+                'gns_region',]
 
             for field in field_list:
                 if p.get(field):
