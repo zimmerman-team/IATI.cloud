@@ -100,19 +100,11 @@ class XMLRenderer(BaseRenderer):
 
                 for attr in attributes:
 
-                    if hasattr(data[attr], 'xml_meta'):
-                        only = data[attr].xml_meta.get('only', None)
-                    else:
-                        only = None
-
                     renamed_attr = attr.replace('xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
 
-                    if only:
-                        value = data[attr][only]
-                        if value: xml.set(renamed_attr, unicode(value))
-                    else:
-                        value = data[attr]
-                        if value: xml.set(renamed_attr, unicode(value))
+                    value = data[attr]
+                    if value:
+                        xml.set(renamed_attr, unicode(value))
 
 
             for key, value in six.iteritems(data):

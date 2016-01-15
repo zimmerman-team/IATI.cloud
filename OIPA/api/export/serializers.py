@@ -38,10 +38,6 @@ class IsoDateSerializer(XMLMetaMixin, serializers.Serializer):
 
 
 
-
-class VocabularySerializer(XMLMetaMixin, activity_serializers.VocabularySerializer):
-    xml_meta = {'only': 'code'}
-
 class CodelistSerializer(XMLMetaMixin, DynamicFieldsSerializer):
     """
     Define this from scratch to have only code field.
@@ -52,9 +48,6 @@ class CodelistSerializer(XMLMetaMixin, DynamicFieldsSerializer):
 
 class CodelistCategorySerializer(CodelistSerializer):
     category = CodelistSerializer()
-
-class CodelistVocabularySerializer(CodelistSerializer):
-    vocabulary = VocabularySerializer()
 
 # TODO: separate this
 class NarrativeSerializer(XMLMetaMixin, activity_serializers.NarrativeSerializer):
@@ -219,7 +212,7 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, activity_serializers.Activity
     xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
 
     code = serializers.CharField(source='code.code')
-    vocabulary = VocabularySerializer()
+    vocabulary = serializers.CharField(source='vocabulary.code')
     significance = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
@@ -274,7 +267,7 @@ class ActivitySectorSerializer(XMLMetaMixin, activity_serializers.ActivitySector
         decimal_places=2,
         coerce_to_string=False
     )
-    vocabulary = VocabularySerializer()
+    vocabulary = serializers.CharField(source='vocabulary.code')
 
     class Meta(activity_serializers.ActivitySectorSerializer.Meta):
         fields = (
@@ -293,7 +286,7 @@ class ActivityRecipientRegionSerializer(XMLMetaMixin, activity_serializers.Activ
         decimal_places=2,
         coerce_to_string=False
     )
-    vocabulary = VocabularySerializer()
+    vocabulary = serializers.CharField(source='vocabulary.code')
 
     class Meta(activity_serializers.ActivityRecipientRegionSerializer.Meta):
         fields = (
@@ -311,7 +304,7 @@ class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCou
         decimal_places=2,
         coerce_to_string=False
     )
-    # vocabulary = VocabularySerializer()
+    # vocabulary = serializers.CharField(source='vocabulary.code')
 
     class Meta(activity_serializers.RecipientCountrySerializer.Meta):
         fields = (
@@ -319,14 +312,6 @@ class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCou
             'percentage',
         )
 
-
-class ResultTypeSerializer(XMLMetaMixin, activity_serializers.ResultTypeSerializer):
-    xml_meta = {'only': 'code'}
-
-    class Meta(activity_serializers.ResultTypeSerializer.Meta):
-        fields = (
-            'code',
-        )
 
 class ResultDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(source="*")
@@ -424,8 +409,8 @@ class LocationSerializer(XMLMetaMixin, activity_serializers.LocationSerializer):
     class LocationIdSerializer(XMLMetaMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary',)}
 
-        vocabulary = VocabularySerializer(
-            source='location_id_vocabulary')
+        vocabulary = serializers.CharField(
+            source='location_id_vocabulary.code')
         code = serializers.CharField(source='location_id_code')
 
     class PointSerializer(XMLMetaMixin, activity_serializers.LocationSerializer.PointSerializer):
@@ -438,7 +423,7 @@ class LocationSerializer(XMLMetaMixin, activity_serializers.LocationSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary', 'level')}
 
         code = serializers.CharField()
-        vocabulary = VocabularySerializer()
+        vocabulary = serializers.CharField(source='vocabulary.code')
 
         class Meta(activity_serializers.LocationSerializer.AdministrativeSerializer.Meta):
             fields = (
