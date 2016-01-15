@@ -35,3 +35,12 @@ class RegionFactory(NoDatabaseFactory):
     name = 'South & Central Asia, regional'
     center_longlat = Point(2,4)
 
+
+class Adm1RegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = models.Adm1Region
+
+    adm1_code = 'ABW-5150'
+    name = "State in Aruba"
+
+

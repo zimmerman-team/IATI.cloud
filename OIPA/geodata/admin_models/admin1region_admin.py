@@ -22,12 +22,16 @@ class Adm1RegionAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
-    def update_adm1_regions(self, request):
+    def get_json_data(self, location_from_here):
         base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/admin_1_regions.json"
-
+        location = base + location_from_here
         json_data = open(location)
-        adm1_regions = ujson.load(json_data)
+        data = ujson.load(json_data)
+        json_data.close()
+        return data
+
+    def update_adm1_regions(self, request):
+        adm1_regions = self.get_json_data("/../data_backup/admin_1_regions.json")
 
         for r in adm1_regions['features']:
 
@@ -119,7 +123,6 @@ class Adm1RegionAdmin(admin.ModelAdmin):
 
             the_adm1_region.save()
 
-        json_data.close()
         return HttpResponse('Success')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

@@ -96,12 +96,12 @@ class CountryAdminTestCase(TestCase):
         country_admin = CountryAdmin(self.country, self.site)
         data = {
             "codemappings":{
-                "territorycodes":[
-                    {
-                        "type":"AF",
-                        "numeric":4,
-                        "alpha3":"AFG"
-                    },
+                "territorycodes": [
+                {
+                    "type": "AF",
+                    "numeric": 4,
+                    "alpha3": "AFG"
+                },
         ]}}
 
         country_admin.get_json_data = MagicMock(return_value=data)
