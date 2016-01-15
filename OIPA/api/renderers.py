@@ -105,8 +105,7 @@ class XMLRenderer(BaseRenderer):
                     else:
                         only = None
 
-                    renamed_attr = data.xml_meta.get('rename', {}).get(attr, attr)
-                    renamed_attr = renamed_attr.replace('xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
+                    renamed_attr = attr.replace('xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
 
                     if only:
                         value = data[attr][only]

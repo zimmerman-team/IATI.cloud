@@ -9,8 +9,6 @@ import api.transaction.serializers as transaction_serializers
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.serializers import FilterableModelSerializer
 from api.generics.fields import PointField
-from api.sector.serializers import SectorSerializer
-from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 # from api.activity.filters import BudgetFilter
 from api.activity.filters import RelatedActivityFilter
@@ -268,9 +266,9 @@ class RelatedActivitySerializer(XMLMetaMixin, activity_serializers.RelatedActivi
         )
 
 class ActivitySectorSerializer(XMLMetaMixin, activity_serializers.ActivitySectorSerializer):
-    xml_meta = {'attributes': ('percentage', 'vocabulary', 'sector',), 'rename': {'sector': 'code'}}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
 
-    sector = SectorSerializer(fields=('url', 'code'))
+    code = serializers.CharField(source='sector.code')
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -280,18 +278,16 @@ class ActivitySectorSerializer(XMLMetaMixin, activity_serializers.ActivitySector
 
     class Meta(activity_serializers.ActivitySectorSerializer.Meta):
         fields = (
-            'sector',
+            'code',
             'percentage',
             'vocabulary',
         )
 
 
 class ActivityRecipientRegionSerializer(XMLMetaMixin, activity_serializers.ActivityRecipientRegionSerializer):
-    xml_meta = {'attributes': ('percentage', 'vocabulary', 'region',), 'rename': {'region': 'code'}}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
 
-    region = RegionSerializer(
-        fields=('url', 'code')
-    )
+    code = serializers.CharField(source='region.code')
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -301,15 +297,15 @@ class ActivityRecipientRegionSerializer(XMLMetaMixin, activity_serializers.Activ
 
     class Meta(activity_serializers.ActivityRecipientRegionSerializer.Meta):
         fields = (
-            'region',
+            'code',
             'percentage',
             'vocabulary',
         )
 
 class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCountrySerializer):
-    xml_meta = {'attributes': ('percentage', 'country'), 'rename': {'country': 'code'}}
+    xml_meta = {'attributes': ('percentage', 'code')}
 
-    country = CountrySerializer(fields=('url', 'code'))
+    code = serializers.CharField(source='country.code')
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -319,7 +315,7 @@ class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCou
 
     class Meta(activity_serializers.RecipientCountrySerializer.Meta):
         fields = (
-            'country',
+            'code',
             'percentage',
         )
 
