@@ -110,7 +110,8 @@ class DatasetSyncer():
             publisher=current_publisher,
             source_url=url,
             type=cur_type,
-            iati_standard_version=iati_version)
+            iati_standard_version=iati_version,
+            last_found_in_registry=datetime.datetime.now())
         new_source.save(process=False, added_manually=False)
 
         return new_source
