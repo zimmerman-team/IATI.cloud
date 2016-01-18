@@ -43,6 +43,7 @@ class DynamicView(GenericAPIView):
         """
         Prefetches based on 'fields' GET arg
         """
+
         queryset = super(DynamicView, self).get_queryset()
 
         fields = self._get_query_fields(*args, **kwargs)
@@ -54,6 +55,8 @@ class DynamicView(GenericAPIView):
             queryset = queryset.select_related(*select_related_fields)
 
         for field in fields:
+            # TODO: this gets called multiple times - 2016-01-15
+            # TODO: Hook this up in the view - 2016-01-15
             if hasattr(queryset, 'prefetch_%s' % field):
                 queryset = getattr(queryset, 'prefetch_%s' % field)()
 
@@ -77,4 +80,3 @@ class DynamicDetailView(DynamicView, RetrieveAPIView):
     """
     List view with dynamic properties
     """
-

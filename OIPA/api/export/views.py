@@ -5,7 +5,7 @@ from iati.models import Activity
 from api.export import serializers as export_serializers
 from api.activity import filters
 from api.activity.filters import SearchFilter
-from api.generics.views import DynamicListView, DynamicDetailView
+from api.generics.views import DynamicListView
 from api.generics.utils import get_serializer_fields
 from common.util import difference
 
@@ -50,7 +50,8 @@ class IATIActivityList(ListAPIView):
     )
 
     def get_queryset(self):
-        qs = super(IATIActivityList, self).get_queryset()
-        return qs.distinct('id')
+        return super(IATIActivityList, self).get_queryset() \
+            .prefetch_all() \
+            .distinct('id')
 
 

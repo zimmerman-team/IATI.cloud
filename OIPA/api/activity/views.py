@@ -210,7 +210,7 @@ class ActivityList(DynamicListView):
         'url', 
         'iati_identifier', 
         'title', 
-        'description', 
+        'descriptions', 
         'transactions', 
         'reporting_organisations',
     )

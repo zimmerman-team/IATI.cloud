@@ -14,6 +14,26 @@ class ActivityQuerySet(SearchQuerySet):
         self = self.order_by().only('id')
         return super(ActivityQuerySet, self).count()
 
+    # TODO: fix import conflicts - 2016-01-18
+    def prefetch_all(self):
+
+        return self.prefetch_default_aid_type() \
+            .prefetch_default_finance_type() \
+            .prefetch_participating_organisations() \
+            .prefetch_reporting_organisations() \
+            .prefetch_recipient_countries() \
+            .prefetch_recipient_regions() \
+            .prefetch_sectors() \
+            .prefetch_activity_dates() \
+            .prefetch_policy_markers() \
+            .prefetch_budgets() \
+            .prefetch_title() \
+            .prefetch_descriptions() \
+            .prefetch_document_links() \
+            .prefetch_results() \
+            .prefetch_locations() \
+            .prefetch_aggregations()
+
     def prefetch_default_aid_type(self):
         return self.select_related('default_aid_type__category')
 
@@ -109,7 +129,18 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('type', 'currency'))
         )
 
-    def prefetch_description(self):
+
+    def prefetch_title(self):
+        from iati.models import Narrative
+
+        return self.prefetch_related(
+            Prefetch(
+                'title__narratives',
+                queryset=Narrative.objects.all()
+                .select_related('language'))
+        )
+
+    def prefetch_descriptions(self):
         from iati.models import Description, Narrative
         narrative_prefetch = Prefetch(
             'narratives',
@@ -233,14 +264,13 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('type'))
         )
 
-    def prefetch_title(self):
-        from iati.models import Narrative
+    def prefetch_aggregations(self):
+        from iati.models import ActivityAggregation, ChildAggregation, ActivityPlusChildAggregation
 
         return self.prefetch_related(
-            Prefetch(
-                'title__narratives',
-                queryset=Narrative.objects.all()
-                .select_related('language'))
+                'activity_aggregation',
+                'child_aggregation',
+                'activity_plus_child_aggregation',
         )
 
 
