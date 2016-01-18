@@ -15,8 +15,7 @@ from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
 from api.renderers import XMLRenderer
 
-from rest_framework.response import Response
-from rest_framework import mixins, status
+from api.pagination import IatiXMLPagination
 
 class IATIActivityList(ListAPIView):
 
@@ -26,6 +25,7 @@ class IATIActivityList(ListAPIView):
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = export_serializers.ActivityXMLSerializer
+    pagination_class = IatiXMLPagination
 
     renderer_classes = (XMLRenderer, )
 
