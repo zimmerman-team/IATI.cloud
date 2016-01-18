@@ -15,6 +15,7 @@ from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 
+
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
 
@@ -63,7 +64,10 @@ class Parse(XMLParser):
         # TO DO; this does not invalidate the whole element (budget, transaction, planned disbursement) while it should
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
-            if not currency: raise self.RequiredFieldError("currency", "value__currency: currency is not set and default-currency is not set on activity as well")
+            if not currency:
+                raise self.RequiredFieldError(
+                    "currency",
+                    "value__currency: currency is not set and default-currency is not set on activity as well")
 
         return currency
 
@@ -150,7 +154,8 @@ class Parse(XMLParser):
 
     def _in_whitelist(self, ref):
         """
-        reporting_org and participating_org @ref attributes can be whitelisted, causing name to be determined by whitelist
+        reporting_org and participating_org @ref attributes can be whitelisted,
+        causing name to be determined by whitelist
         """
         return False
 
@@ -175,7 +180,9 @@ class Parse(XMLParser):
 
         register_name = parent.__class__.__name__ + "Narrative"
 
-        if not language: raise self.RequiredFieldError("language", "{}: must specify default_lang on activities or language on the element itself".format(register_name))
+        if not language: raise self.RequiredFieldError(
+            "language",
+            "{}: must specify default_lang on activities or language on the element itself".format(register_name))
         if not text: raise self.RequiredFieldError("text", "{}: must contain text".format(register_name))
 
         narrative = models.Narrative()
@@ -245,10 +252,13 @@ class Parse(XMLParser):
         self.register_model('Activity', activity)
         return element
 
-    '''atributes:
 
-    tag:iati-identifier'''
     def iati_activities__iati_activity__iati_identifier(self,element):
+        """
+        atributes:
+
+        tag:iati-identifier
+        """
         iati_identifier = element.text
             
         if not iati_identifier: raise self.RequiredFieldError("text", "iati_identifier: must contain text")
@@ -1484,6 +1494,7 @@ class Parse(XMLParser):
 
     tag:recipient-region'''
     def iati_activities__iati_activity__transaction__recipient_region(self,element):
+
         region = self.get_or_none(Region, code=element.attrib.get('code'))
         vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
 
@@ -2137,6 +2148,7 @@ class Parse(XMLParser):
     #     return element
 
     def post_save_activity(self):
+        """Perform all actions that need to happen after a single activity's been parsed."""
         activity = self.get_model('Activity')
         if not activity:
             return False
@@ -2144,13 +2156,14 @@ class Parse(XMLParser):
         self.set_transaction_provider_receiver_activity(activity)
         self.set_derived_activity_dates(activity)
 
-    def post_save_file(self, xml_source):
-        self.set_activity_aggregations(xml_source.ref)
 
     def set_derived_activity_dates(self, activity):
-        """
-        based on actual and planned activity dates,
-        set start_date and end_date
+        """Set derived activity dates
+
+        actual start dates are preferred.
+        In case they don't exist, use planned dates.
+
+        This is used for ordering by start/end date.
         """
         if activity.actual_start:
             activity.start_date = activity.actual_start
@@ -2164,19 +2177,42 @@ class Parse(XMLParser):
         activity.save()
 
     def set_related_activities(self, activity):
-        """
-        update references to this activity
-        """
+        """ update related-activity references to this activity """
         models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
 
     def set_transaction_provider_receiver_activity(self, activity):
+        """ update transaction-provider, transaction-receiver references to this activity """
+        transaction_models.TransactionProvider.objects.filter(
+            provider_activity_ref=activity.iati_identifier
+        ).update(provider_activity=activity)
+
+        transaction_models.TransactionReceiver.objects.filter(
+            receiver_activity_ref=activity.iati_identifier
+        ).update(receiver_activity=activity)
+
+    def post_save_file(self, xml_source):
+        """Perform all actions that need to happen after a single IATI source's been parsed.
+
+        Keyword arguments:
+        xml_source -- the IatiXmlSource object of the current source
         """
-        update references to this activity
-        """
-        transaction_models.TransactionProvider.objects.filter(provider_activity_ref=activity.iati_identifier).update(provider_activity=activity)
-        transaction_models.TransactionReceiver.objects.filter(receiver_activity_ref=activity.iati_identifier).update(receiver_activity=activity)
+        self.delete_removed_activities(xml_source.ref)
+        self.set_activity_aggregations(xml_source.ref)
 
     def set_activity_aggregations(self, xml_source__ref):
         aac = ActivityAggregationCalculation()
         aac.parse_activity_aggregations_by_source(xml_source__ref)
 
+    def delete_removed_activities(self, xml_source_ref):
+        """ Delete activities that were not found in the XML source any longer
+
+        Keyword arguments:
+        xml_source_ref -- the IatiXmlSource object PK (ref) of the current source
+
+        Used variables:
+        activity.last_updated_model -- the datetime at which this activity was last saved
+        self.parse_start_datetime -- the datetime at which parsing this source started
+        """
+        models.Activity.objects.filter(
+            xml_source_ref=xml_source_ref,
+            last_updated_model__lt=self.parse_start_datetime).delete()

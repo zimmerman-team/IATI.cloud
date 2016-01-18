@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from decimal import Decimal, InvalidOperation
 
+
 class XMLParser(object):
 
     VERSION = '2.01' # default version
@@ -20,6 +21,8 @@ class XMLParser(object):
         self.validation_errors = []
         self.required_field_errors = []
         self.iati_source = None
+        self.parse_start_datetime = datetime.datetime.now()
+
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()
@@ -30,6 +33,9 @@ class XMLParser(object):
         self.parse_activities(root)
 
     def parse_activities(self, root):
+        """
+
+        """
         # TODO: refactor this and the module
         for e in root.getchildren():
             self.model_store = OrderedDict()
