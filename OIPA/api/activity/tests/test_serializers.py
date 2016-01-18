@@ -454,6 +454,7 @@ class ActivitySerializerTestCase(TestCase):
     def test_CapitalSpendSerializer(self):
         activity = iati_factory.ActivityFactory.build(capital_spend=80)
         serializer = serializers.CapitalSpendSerializer(activity)
+        
         assert serializer.data['percentage'] == activity.capital_spend,\
             """
             'activity.capital_spend' should be serialized to a field called
@@ -661,36 +662,34 @@ class ActivitySerializerTestCase(TestCase):
             'id',
             'iati_identifier',
             'title',
-            'description',
+            'descriptions',
             'last_updated_datetime',
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_org',
-            'participating_org',
-            'related_activity',
+            'reporting_organisations',
+            'participating_organisations',
+            'related_activities',
             'activity_status',
-            'activity_date',
+            'activity_dates',
             'activity_scope',
-            'recipient_country',
-            'recipient_region',
-            'sector',
-            'transaction',
-            'policy_marker',
+            'recipient_countries',
+            'recipient_regions',
+            'sectors',
+            'transactions',
+            'policy_markers',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            'budget',
+            'budgets',
             'capital_spend',
             'xml_source_ref',
-            'document_link',
-            'result',
-            'location',
-            'activity_aggregation',
-            'child_aggregation',
-            'activity_plus_child_aggregation'
+            'document_links',
+            'results',
+            'locations',
+            'aggregations',
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:

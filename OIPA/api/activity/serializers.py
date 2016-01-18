@@ -69,7 +69,7 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
-        source='*',
+        source='capital_spend',
         coerce_to_string=False
     )
 
@@ -535,7 +535,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         model = iati.models.Activity
         fields = (
             'url',
-            # 'id',
+            'id',
             'iati_identifier',
             'reporting_organisations',
             'title',
