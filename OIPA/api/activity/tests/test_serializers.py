@@ -6,6 +6,7 @@ import datetime
 
 from django.test import RequestFactory
 from iati.factory import iati_factory
+from iati_codelists.factory import codelist_factory
 from api.activity import serializers
 
 class CodelistSerializerTestCase(TestCase):
@@ -416,7 +417,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_ActivityScopeSerializer(self):
-        activity_scope = iati_factory.ActivityScopeFactory.build()
+        activity_scope = codelist_factory.ActivityScopeFactory.build()
         serializer = serializers.CodelistSerializer(activity_scope)
         assert serializer.data['code'] == activity_scope.code,\
             """

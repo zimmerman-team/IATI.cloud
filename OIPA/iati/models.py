@@ -262,9 +262,11 @@ class ActivityReportingOrganisation(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
     activity = models.ForeignKey(
         Activity,
         related_name="reporting_organisations")
+
     organisation = models.ForeignKey(Organisation, null=True, default=None, blank=True) # if in organisation standard
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
