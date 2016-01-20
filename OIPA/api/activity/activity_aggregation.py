@@ -452,17 +452,15 @@ class ActivityAggregationSerializer(BaseSerializer):
                         value = i.get(field)
                         if isinstance(value, unicode):
                             value = value.encode('utf-8')
-                        else:
-                            value = str(value)
                         serializers[field][value] = value
 
         for i, result in enumerate(list(results)):
             for key, value in result.iteritems():
                 if key in groupfield_list:
                     if value is not None:
-                        if not isinstance(value, unicode):
-                            value = str(value)
-                        result[key] = serializers.get(key, {}).get(value.encode('utf-8'))
+                        if isinstance(value, unicode):
+                            value = value.encode('utf-8')
+                        result[key] = serializers.get(key, {}).get(value)
                     else:
                         del results[i]
                         break
