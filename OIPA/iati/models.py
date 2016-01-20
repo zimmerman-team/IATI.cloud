@@ -547,6 +547,8 @@ class DocumentLinkCategory(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     category = models.ForeignKey(DocumentCategory)
 
+    class Meta:
+        verbose_name_plural = "Document link categories"
 
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)

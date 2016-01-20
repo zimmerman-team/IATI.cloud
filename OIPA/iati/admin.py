@@ -1,26 +1,19 @@
+import datetime
+
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-
 from django.contrib.gis.forms import OpenLayersWidget
-
 from django.utils.functional import curry
 from django.utils.html import format_html
+from django import forms
+from django.forms import CharField
+from django.contrib.gis.geos import Point
+
 from nested_inline.admin import NestedModelAdmin, NestedInline
 
 from iati.models import *
 from iati.transaction.models import *
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-
-
-class OpenLayersHttpsWidget(OpenLayersWidget):
-
-    class Media:
-        extend = False
-
-        js = (
-            'js/openlayers/OpenLayers.js',
-            'gis/js/OLMapWidget.js',
-        )
 
 
 class ExtraNestedModelAdmin(NestedModelAdmin):
@@ -49,14 +42,8 @@ class NestedStackedInline(ExtraNestedInline):
 
 
 class NestedTabularInline(ExtraNestedInline):
-    template = 'admin/edit_inline/tabular.html'
-    # template = 'admin/edit_inline/tabular-nested.html'
-
-
-# class NarrativeForm(forms.ModelForm):
-#     class Meta:
-#         model = Narrative
-#         fields = ('language', 'content')
+    # template = 'admin/edit_inline/tabular.html'
+    template = 'admin/edit_inline/tabular-nested.html'
 
 
 class NarrativeInline(GenericTabularInline):
@@ -69,7 +56,7 @@ class NarrativeInline(GenericTabularInline):
     raw_id_fields = ('activity',)
     # form = NarrativeForm
 
-    extra = 2
+    extra = 1
 
     def get_formset(self, request, obj=None, **kwargs):
         activity = self.parent_instance
@@ -151,7 +138,14 @@ class ActivityDateInline(NestedTabularInline):
 
 class ActivityReportingOrganisationInline(NestedTabularInline):
     model = ActivityReportingOrganisation
+    inlines = [
+        NarrativeInline,
+    ]
     extra = 0
+
+    exclude = ('normalized_ref',)
+
+    # TODO save normalized_ref based on ref
 
 
 class ActivityParticipatingOrganisationInline(NestedTabularInline):
@@ -159,11 +153,11 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
     inlines = [
         NarrativeInline,
     ]
-    exclude = ('normalized_ref',)
+    exclude = ('normalized_ref', 'primary_name')
 
     extra = 1
 
-    # TODO save normalized_ref based on ref
+    # TODO save normalized_ref based on ref, and primary_name
 
 
 class TransactionInline(NestedTabularInline):
@@ -182,13 +176,13 @@ class TransactionInline(NestedTabularInline):
 
     def transaction_provider(self, obj):
         try:
-            return obj.receiver_organisation.narratives.all()[0].content
+            return obj.provider_organisation.narratives.all()[0].content
         except Exception as e:
             return 'no provider name'
 
     def transaction_receiver(self, obj):
         try:
-            return obj.provider_organisation.narratives.all()[0].content
+            return obj.receiver_organisation.narratives.all()[0].content
         except Exception as e:
             return 'no receiver name'
 
@@ -246,12 +240,35 @@ class BudgetInline(NestedTabularInline):
 class CategoriesInline(NestedTabularInline):
     model = DocumentLinkCategory
 
+    extra = 0
 
-class DocumentLinkInline(NestedStackedInline):
+    raw_id_fields = ('category',)
+
+    related_lookup_fields = {
+        'fk': ['category'],
+    }
+
+
+class DocumentLinkForm(forms.ModelForm):
+    url = CharField(label='url', max_length=500)
+
+    class Meta:
+        model = DocumentLink
+        exclude = ['']
+
+
+class DocumentLinkInline(NestedTabularInline):
     inlines = [CategoriesInline, ]
-
     model = DocumentLink
     extra = 0
+
+    form = DocumentLinkForm
+
+    raw_id_fields = ('file_format',)
+
+    related_lookup_fields = {
+        'fk': ['file_format'],
+    }
 
 
 class ResultInline(NestedTabularInline):
@@ -267,7 +284,6 @@ class ResultInline(NestedTabularInline):
         except Exception as e:
             return 'no title given'
 
-
     def read_description(self, obj):
         try:
             return obj.title.narratives.all()[0].content
@@ -278,25 +294,80 @@ class ResultInline(NestedTabularInline):
 
         if obj.id:
             return format_html(
-                 '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
-                 str(obj.id))
+                '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+                str(obj.id))
         else:
             return format_html(
                 'Please save the activity to edit result details and to add indicator periods')
+
+
+class LocationForm(forms.ModelForm):
+
+    latitude = forms.DecimalField(
+        label='latitude',
+        min_value=-90,
+        max_value=90,
+        required=True,
+    )
+    longitude = forms.DecimalField(
+        label='longitude',
+        min_value=-180,
+        max_value=180,
+        required=True,
+    )
+
+    class Meta(object):
+        model = Location
+        exclude = []
+        widgets = {'point_pos': forms.HiddenInput()}
+
+    def __init__(self, *args, **kwargs):
+        if args:    # If args exist
+            data = args[0]
+            if data['latitude'] and data['longitude']:    #If lat/lng exist
+                latitude = float(data['latitude'])
+                longitude = float(data['longitude'])
+                data['point_pos'] = Point(longitude, latitude)    # Set PointField
+        try:
+            coordinates = kwargs['instance'].point_pos.tuple    #If PointField exists
+            initial = kwargs.get('initial', {})
+            initial['longitude'] = coordinates[0]    #Set Latitude from coordinates
+            initial['latitude'] = coordinates[1]    #Set Longitude from coordinates
+            kwargs['initial'] = initial
+        except (KeyError, AttributeError):
+            pass
+        super(LocationForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        data = super(LocationForm, self).clean()
+        if "latitude" in self.changed_data or "longitude" in self.changed_data:
+            lat, lng = float(data.pop("latitude", None)), float(data.pop("longitude", None))
+            data["point_pos"] = Point(lng, lat)
+
+        if not (data.get("point_pos") or data.get("latitude")):
+            raise forms.ValidationError({"point_pos": "Coordinates is required"})
+        return data
 
 
 class LocationInline(NestedTabularInline):
     model = Location
     extra = 0
 
-    formfield_overrides = {
-        PointField: {'widget': OpenLayersHttpsWidget},
-    }
+    form = LocationForm
+
+
+    fields = (
+        'ref',
+        'latitude',
+        'longitude',
+        'location_id_code',
+        'point_srs_name',
+        'point_pos')
 
 
 class RelatedActivityInline(NestedTabularInline):
     model = RelatedActivity
-    fk_name='current_activity'
+    fk_name = 'current_activity'
     extra = 0
 
     raw_id_fields = ('ref_activity',)
@@ -306,27 +377,16 @@ class RelatedActivityInline(NestedTabularInline):
     }
 
 
-class DescriptionInline(NestedStackedInline):
+class DescriptionInline(NestedTabularInline):
     model = Description
     extra = 1
     inlines = [NarrativeInline, ]
 
 
-class TitleInline(NestedStackedInline):
+class TitleInline(NestedTabularInline):
     model = Title
     extra = 0
     inlines = [NarrativeInline, ]
-
-    def save_formset(self, request, form, formset, change):
-        """
-        Given an inline formset save it to the database.
-        """
-        formset.save()
-
-        for form in formset.forms:
-            if hasattr(form, 'nested_formsets') and form not in formset.deleted_forms:
-                for nested_formset in form.nested_formsets:
-                    self.save_formset(request, form, nested_formset, change)
 
 
 class ActivityAdmin(ExtraNestedModelAdmin):
@@ -339,7 +399,8 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         'planned_end',
         'actual_end',
         'end_date',
-        'is_searchable')
+        'is_searchable',
+        'default_lang')
     list_display = ['__unicode__']
     inlines = [
         ActivityDateInline,
@@ -368,9 +429,12 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         return inline_instances
 
     def save_model(self, request, obj, form, change):
+        obj.last_updated_datetime = datetime.datetime.now()
         super(ActivityAdmin, self).save_model(request, obj, form, change)
 
         if not change:
+            obj.default_lang = 'en'
+
             title = Title()
             title.activity = obj
             title.save()
@@ -383,7 +447,7 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         super(ActivityAdmin, self).save_formset(request, form, formset, change)
 
         # set derived activity dates (used for sorting)
-        if (formset.model == ActivityDate):
+        if formset.model == ActivityDate:
 
             activity = form.instance
             for ad in activity.activitydate_set.all():
@@ -407,18 +471,10 @@ class ActivityAdmin(ExtraNestedModelAdmin):
                 activity.end_date = activity.planned_end
             activity.save()
 
-
-
         # update aggregations after save of last inline form
-        if(formset.model == Transaction):
-            aggregationCalculator = ActivityAggregationCalculation()
-            aggregationCalculator.parse_activity_aggregations(form.instance)
-
-
-class SectorAdmin(admin.ModelAdmin):
-    search_fields = ['id']
-    list_display = ['code', 'name', 'description', 'category']
-
+        if formset.model == Transaction:
+            aggregation_calculator = ActivityAggregationCalculation()
+            aggregation_calculator.parse_activity_aggregations(form.instance)
 
 
 class TransactionAdmin(ExtraNestedModelAdmin):
@@ -466,27 +522,13 @@ class TransactionAdmin(ExtraNestedModelAdmin):
 
         super(TransactionAdmin, self).save_model(request, obj, form, change)
 
-        if not change:
-            description = TransactionDescription()
-            description.transaction = obj
-            description.save()
-
-            transaction_provider = TransactionProvider()
-            transaction_provider.transaction = obj
-            transaction_provider.save()
-
-            transaction_receiver = TransactionReceiver()
-            transaction_receiver.transaction = obj
-            transaction_receiver.save()
-
-
     def save_formset(self, request, form, formset, change):
         super(TransactionAdmin, self).save_formset(request, form, formset, change)
 
         # update aggregations after save of last inline form
-        if(formset.model == TransactionReceiver):
-            aggregationCalculator = ActivityAggregationCalculation()
-            aggregationCalculator.parse_activity_aggregations(form.instance.activity)
+        if formset.model == TransactionReceiver:
+            aggregation_calculator = ActivityAggregationCalculation()
+            aggregation_calculator.parse_activity_aggregations(form.instance.activity)
 
 
 class ResultIndicatorTitleInline(NestedTabularInline):
@@ -495,15 +537,8 @@ class ResultIndicatorTitleInline(NestedTabularInline):
         NarrativeInline,
     ]
 
-    extra = 0
+    extra = 1
 
-class ResultIndicatorDescriptionInline(NestedTabularInline):
-    model = ResultIndicatorDescription
-    inlines = [
-        NarrativeInline,
-    ]
-
-    extra = 0
 
 class ResultIndicatorBaselineCommentInline(NestedTabularInline):
     model = ResultIndicatorBaselineComment
@@ -513,21 +548,22 @@ class ResultIndicatorBaselineCommentInline(NestedTabularInline):
 
     extra = 0
 
+
 class ResultIndicatorPeriodInline(NestedTabularInline):
     model = ResultIndicatorPeriod
 
-    extra = 0
+    extra = 1
+
 
 class ResultIndicatorInline(NestedTabularInline):
     model = ResultIndicator
     inlines = [
         ResultIndicatorTitleInline,
-        ResultIndicatorDescriptionInline,
-        ResultIndicatorBaselineCommentInline,
         ResultIndicatorPeriodInline,
     ]
 
     extra = 0
+
 
 class ResultTitleInline(NestedTabularInline):
     model = ResultTitle
@@ -537,6 +573,7 @@ class ResultTitleInline(NestedTabularInline):
 
     extra = 0
 
+
 class ResultDescriptionInline(NestedTabularInline):
     model = ResultDescription
     inlines = [
@@ -544,6 +581,7 @@ class ResultDescriptionInline(NestedTabularInline):
     ]
 
     extra = 0
+
 
 class ResultAdmin(ExtraNestedModelAdmin):
     search_fields = ['activity__id']
@@ -577,6 +615,16 @@ class ResultAdmin(ExtraNestedModelAdmin):
             title.save()
             obj.resulttitle = title
 
+        # if obj.resultindicator_set.count() == 0:
+        #
+        #     ri = ResultIndicator()
+        #     ri.result = obj
+        #     ri.save()
+        #
+        #     rit = ResultIndicatorTitle()
+        #     rit.result_indicator = ri
+        #     rit.save()
+
         return obj
 
     def save_model(self, request, obj, form, change):
@@ -594,7 +642,6 @@ class ResultAdmin(ExtraNestedModelAdmin):
 
 
 admin.site.register(Activity, ActivityAdmin)
-admin.site.register(Sector, SectorAdmin)
 admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Narrative)

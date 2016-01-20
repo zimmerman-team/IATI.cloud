@@ -146,7 +146,7 @@ class FileFormat(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return self.name
 
 class FinanceTypeCategory(models.Model):
     code = models.CharField(max_length=10,  primary_key=True)

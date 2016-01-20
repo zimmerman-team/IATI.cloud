@@ -10,7 +10,7 @@ django-filter==0.12.0
 django-formtools==1.0
 django-grappelli==2.7.3
 django-haystack==2.4.1
-django-nested-inline==0.3.5
+git+https://github.com/Egregors/django-nested-inline.git
 django-otp==0.3.4
 django-otp-yubikey==0.3.3
 django-rq==0.9.0

@@ -156,3 +156,20 @@ a{
     color: #51a351;
 
 }
+
+/*.nested-inline .nested-inline{*/
+    /*display: table;*/
+/*}*/
+
+/*.nested-nested-inline,*/
+/*.nested-nested-inline .grp-tr,*/
+/*.nested-nested-inline .grp-group,*/
+/*.nested-nested-inline .grp-thead,*/
+/*.nested-nested-inline .grp-tbody{*/
+    /*display: inline-block !important;*/
+/*}*/
+
+.nested-caption{
+    caption-side: top;
+    display: table-caption;
+}
