@@ -74,6 +74,9 @@ class ActivityAggregations(GenericAPIView):
     filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
     filter_class = filters.ActivityFilter
 
+    ordering_fields = ()
+
+
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
