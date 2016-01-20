@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^home$', TemplateView.as_view(template_name='home/home.html')),
     url(r'^about$', TemplateView.as_view(template_name='home/about.html')),
     url(r'', include('two_factor.urls', 'two_factor')),
+    url(r'^accounts/profile/', RedirectView.as_view(url='/admin')),
     url(r'^$', RedirectView.as_view(url='/home', permanent=True))
 ]
 
