@@ -454,13 +454,9 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_CapitalSpendSerializer(self):
         activity = iati_factory.ActivityFactory.build(capital_spend=80)
-        serializer = serializers.CapitalSpendSerializer(activity)
+        serializer = serializers.CapitalSpendSerializer(activity.capital_spend)
         
-        assert serializer.data['percentage'] == activity.capital_spend,\
-            """
-            'activity.capital_spend' should be serialized to a field called
-            'percentage'
-            """
+        self.assertEqual(serializer.data['percentage'], activity.capital_spend)
 
     def test_ResultTypeSerializer(self):
         result_type = iati_factory.ResultTypeFactory.build()
