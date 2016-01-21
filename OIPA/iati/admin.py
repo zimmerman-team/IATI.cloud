@@ -2,7 +2,6 @@ import datetime
 
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.contrib.gis.forms import OpenLayersWidget
 from django.utils.functional import curry
 from django.utils.html import format_html
 from django import forms
@@ -136,16 +135,50 @@ class ActivityDateInline(NestedTabularInline):
     extra = 0
 
 
+class ActivityReportingOrganisationForm(forms.ModelForm):
+
+    class Meta(object):
+        model = RelatedActivity
+        exclude = []
+        widgets = {'normalized_ref': forms.HiddenInput()}
+
+    def clean(self):
+        data = super(ActivityReportingOrganisationForm, self).clean()
+        if data['ref']:
+            data['normalized_ref'] = data['ref']
+        return data
+
+
 class ActivityReportingOrganisationInline(NestedTabularInline):
     model = ActivityReportingOrganisation
     inlines = [
         NarrativeInline,
     ]
     extra = 0
+    form = ActivityReportingOrganisationForm
 
-    exclude = ('normalized_ref',)
+    fields = (
+        'ref',
+        'organisation',
+        'type',
+        'secondary_reporter',
+        'normalized_ref')
 
-    # TODO save normalized_ref based on ref
+
+class ActivityParticipatingOrganisationForm(forms.ModelForm):
+
+    class Meta(object):
+        model = RelatedActivity
+        exclude = []
+        widgets = {
+            'normalized_ref': forms.HiddenInput(),
+            'primary_name': forms.HiddenInput()}
+
+    def clean(self):
+        data = super(ActivityParticipatingOrganisationForm, self).clean()
+        if data['ref']:
+            data['normalized_ref'] = data['ref']
+        return data
 
 
 class ActivityParticipatingOrganisationInline(NestedTabularInline):
@@ -153,11 +186,15 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
     inlines = [
         NarrativeInline,
     ]
-    exclude = ('normalized_ref', 'primary_name')
+    form = ActivityParticipatingOrganisationForm
+    fields = (
+        'ref',
+        'type',
+        'role',
+        'normalized_ref',
+        'primary_name')
 
     extra = 1
-
-    # TODO save normalized_ref based on ref, and primary_name
 
 
 class TransactionInline(NestedTabularInline):
@@ -365,10 +402,26 @@ class LocationInline(NestedTabularInline):
         'point_pos')
 
 
+class RelatedActivityForm(forms.ModelForm):
+
+    class Meta(object):
+        model = RelatedActivity
+        exclude = []
+        widgets = {'ref': forms.HiddenInput()}
+
+
+    def clean(self):
+        data = super(RelatedActivityForm, self).clean()
+        if data['ref_activity']:
+            data['ref'] = data['ref_activity'].id
+        return data
+
+
 class RelatedActivityInline(NestedTabularInline):
     model = RelatedActivity
     fk_name = 'current_activity'
     extra = 0
+    form = RelatedActivityForm
 
     raw_id_fields = ('ref_activity',)
 
@@ -471,6 +524,12 @@ class ActivityAdmin(ExtraNestedModelAdmin):
                 activity.end_date = activity.planned_end
             activity.save()
 
+        # save primary name on participating organisation to make querying work
+        if isinstance(form, ActivityParticipatingOrganisationForm) and formset.model == Narrative:
+            po = form.instance
+            po.primary_name = po.narratives.all()[0].content
+            po.save()
+
         # update aggregations after save of last inline form
         if formset.model == Transaction:
             aggregation_calculator = ActivityAggregationCalculation()
@@ -498,6 +557,7 @@ class TransactionAdmin(ExtraNestedModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(TransactionAdmin, self).get_object(request, object_id)
 
+        # ugly workaround to get narratives in on edit
         if not getattr(obj, 'description', None):
             description = TransactionDescription()
             description.transaction = obj
@@ -603,6 +663,7 @@ class ResultAdmin(ExtraNestedModelAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(ResultAdmin, self).get_object(request, object_id)
 
+        # ugly workaround to get narratives in on change
         if not getattr(obj, 'resultdescription', None):
             description = ResultDescription()
             description.result = obj
@@ -615,22 +676,13 @@ class ResultAdmin(ExtraNestedModelAdmin):
             title.save()
             obj.resulttitle = title
 
-        # if obj.resultindicator_set.count() == 0:
-        #
-        #     ri = ResultIndicator()
-        #     ri.result = obj
-        #     ri.save()
-        #
-        #     rit = ResultIndicatorTitle()
-        #     rit.result_indicator = ri
-        #     rit.save()
-
         return obj
 
     def save_model(self, request, obj, form, change):
 
         super(ResultAdmin, self).save_model(request, obj, form, change)
 
+        # ugly workaround to get narratives in on add
         if not change:
             title = ResultTitle()
             title.result = obj
