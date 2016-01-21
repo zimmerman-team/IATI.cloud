@@ -359,17 +359,17 @@ class LocationForm(forms.ModelForm):
         widgets = {'point_pos': forms.HiddenInput()}
 
     def __init__(self, *args, **kwargs):
-        if args:    # If args exist
+        if args:
             data = args[0]
-            if data['latitude'] and data['longitude']:    #If lat/lng exist
+            if data['latitude'] and data['longitude']:
                 latitude = float(data['latitude'])
                 longitude = float(data['longitude'])
-                data['point_pos'] = Point(longitude, latitude)    # Set PointField
+                data['point_pos'] = Point(longitude, latitude)
         try:
-            coordinates = kwargs['instance'].point_pos.tuple    #If PointField exists
+            coordinates = kwargs['instance'].point_pos.tuple
             initial = kwargs.get('initial', {})
-            initial['longitude'] = coordinates[0]    #Set Latitude from coordinates
-            initial['latitude'] = coordinates[1]    #Set Longitude from coordinates
+            initial['longitude'] = coordinates[0]
+            initial['latitude'] = coordinates[1]
             kwargs['initial'] = initial
         except (KeyError, AttributeError):
             pass
