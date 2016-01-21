@@ -3,7 +3,7 @@ from rest_framework import serializers
 from iati.transaction import models
 
 from api.generics.serializers import DynamicFieldsModelSerializer
-from api.activity.serializers import ActivitySerializer, CodelistSerializer, NarrativeSerializer
+from api.codelist.serializers import CodelistSerializer, NarrativeSerializer
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
@@ -55,7 +55,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='transactions:transaction-detail',
         lookup_field='pk')
-    activity = ActivitySerializer(fields=('id', 'url'))
+
+    activity = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='activities:activity-detail')
+
     aid_type = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()

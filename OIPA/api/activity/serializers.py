@@ -11,38 +11,8 @@ from api.country.serializers import CountrySerializer
 # from api.activity.filters import BudgetFilter
 from api.activity.filters import RelatedActivityFilter
 
-
-
-# TODO: serialize vocabulary in codelist serializer
-class VocabularySerializer(serializers.Serializer):
-    code = serializers.CharField()
-    name = serializers.CharField()
-
-class CodelistSerializer(DynamicFieldsSerializer):
-    code = serializers.CharField()
-    name = serializers.CharField()
-
-class CodelistCategorySerializer(CodelistSerializer):
-    category = CodelistSerializer()
-
-class CodelistVocabularySerializer(CodelistSerializer):
-    vocabulary = VocabularySerializer()
-
-# TODO: separate this
-class NarrativeSerializer(serializers.ModelSerializer):
-    text = serializers.CharField(source="content")
-    language = CodelistSerializer()
-
-    class Meta:
-        model = iati.models.Narrative
-        fields = (
-            'text',
-            'language',
-        )
-
-class NarrativeContainerSerializer(serializers.Serializer):
-    narratives = NarrativeSerializer(many=True)
-
+from api.transaction.serializers import TransactionSerializer
+from api.codelist.serializers import *
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,7 +39,7 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
-        source='capital_spend',
+        source='*',
         coerce_to_string=False
     )
 
@@ -389,7 +359,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class PointSerializer(serializers.Serializer):
         pos = PointField(source='point_pos')
-        srs_name = serializers.CharField(source="point_srs_name")
+        srsName = serializers.CharField(source="point_srs_name")
 
     class AdministrativeSerializer(serializers.ModelSerializer):
         code = serializers.CharField()
@@ -492,14 +462,13 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # planned_disbursement = serializers.PlannedDisbursementSerializer(many=True,source="?")
 
     capital_spend = CapitalSpendSerializer()
+
     transactions = serializers.HyperlinkedIdentityField(
         view_name='activities:activity-transactions',)
-    # TODO ; hook up with the serializer instead of HyperlinkedIdentityField
-    # to be able to serialize it in XML
-    # 
-    # transaction = TransactionSerializer(
+    # transactions = TransactionSerializer(
     #     many=True,
     #     source='transaction_set')
+
     document_links = DocumentLinkSerializer(
         many=True,
         source='documentlink_set')
