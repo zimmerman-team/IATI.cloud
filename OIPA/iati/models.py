@@ -624,8 +624,8 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.CharField(max_length=50, default="")
-    actual = models.CharField(max_length=50, default="")
+    target = models.CharField(max_length=50, default="", blank=True)
+    actual = models.CharField(max_length=50, default="", blank=True)
 
     def __unicode__(self,):
         return "%s" % self.result_indicator
