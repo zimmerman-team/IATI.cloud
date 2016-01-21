@@ -28,10 +28,21 @@ class SkipNullMixin(object):
             except SkipField:
                 continue
 
-            if attribute is None:
+            if attribute is None or not attribute:
                 # We skip `to_representation` for `None` values so that
                 # fields do not have to explicitly deal with that case.
                 continue
+
+            # check for the case where source="*" is passed
+            # if all fields are null in that field, result will be an empty dictionary
+            elif instance == attribute:
+                result = field.to_representation(attribute)
+
+                if not bool(result): 
+                    continue
+                else:
+                    ret[field.field_name] = result
+
             else:
                 ret[field.field_name] = field.to_representation(attribute)
 

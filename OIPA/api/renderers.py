@@ -9,6 +9,7 @@ from lxml import etree
 from lxml.builder import E
 
 
+# TODO: Make this more generic - 2016-01-21
 class XMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -25,6 +26,7 @@ class XMLRenderer(BaseRenderer):
         """
         Renders `data` into serialized XML.
         """
+
         if data is None:
             return ''
 
@@ -33,7 +35,8 @@ class XMLRenderer(BaseRenderer):
             xml.set('version', self.version)
             self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
         else: # one item
-            xml = E(self.item_tag_name)
+            xml = E(self.root_tag_name)
+            xml.set('version', self.version)
             self._to_xml(xml, data, parent_name=self.item_tag_name)
 
         return etree.tostring(xml, encoding=self.charset)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.generics.fields import PointField
+from api.generics.fields import PointIATIField
 from api.generics.serializers import XMLMetaMixin
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import SkipNullMixin
@@ -7,12 +7,12 @@ import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 
 
-class IsoDateSerializer(XMLMetaMixin, serializers.Serializer):
+class IsoDateSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('iso_date',)}
 
     iso_date = serializers.CharField(source='*')
 
-class CodelistSerializer(XMLMetaMixin, DynamicFieldsSerializer):
+class CodelistSerializer(XMLMetaMixin, SkipNullMixin, DynamicFieldsSerializer):
     """
     Define this from scratch to have only code field.
     """
@@ -24,7 +24,7 @@ class CodelistCategorySerializer(CodelistSerializer):
     category = CodelistSerializer()
 
 # TODO: separate this
-class NarrativeSerializer(XMLMetaMixin, activity_serializers.NarrativeSerializer):
+class NarrativeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.NarrativeSerializer):
     xml_meta = {'attributes': ('xml_lang',)}
 
     xml_lang = serializers.CharField(source='language.code')
@@ -35,23 +35,22 @@ class NarrativeSerializer(XMLMetaMixin, activity_serializers.NarrativeSerializer
             'xml_lang',
         )
 
-class NarrativeContainerSerializer(serializers.Serializer):
-    narrative = NarrativeSerializer(many=True, source='narratives')
+class NarrativeContainerXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
 
-class DocumentCategorySerializer(XMLMetaMixin, activity_serializers.DocumentCategorySerializer):
+class DocumentCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentCategorySerializer):
     xml_meta = {'attributes': ('code',)}
 
     class Meta(activity_serializers.DocumentCategorySerializer.Meta):
         fields = ('code',)
 
-
-class DocumentLinkSerializer(XMLMetaMixin, activity_serializers.DocumentLinkSerializer):
+class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkSerializer):
     xml_meta = {'attributes': ('url', 'format',)}
 
     format = serializers.CharField(source='file_format.code')
     category = DocumentCategorySerializer(many=True, source='categories')
-    title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
+    title = NarrativeContainerXMLSerializer(source="documentlinktitle_set", many=True)
 
     class Meta(activity_serializers.DocumentLinkSerializer.Meta):
         fields = (
@@ -62,14 +61,14 @@ class DocumentLinkSerializer(XMLMetaMixin, activity_serializers.DocumentLinkSeri
         )
 
 
-class CapitalSpendSerializer(XMLMetaMixin, activity_serializers.CapitalSpendSerializer):
+class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CapitalSpendSerializer):
     xml_meta = {'attributes': ('percentage',)}
 
 
-class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
+class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetSerializer):
     xml_meta = {'attributes': ('type',)}
 
-    class ValueSerializer(XMLMetaMixin, serializers.Serializer):
+    class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
         xml_meta = {'attributes': ('currency', 'value_date')}
 
         currency = serializers.CharField(source='currency.code')
@@ -103,17 +102,17 @@ class BudgetSerializer(XMLMetaMixin, activity_serializers.BudgetSerializer):
         )
 
 
-class ActivityDateSerializer(XMLMetaMixin, activity_serializers.ActivityDateSerializer):
+class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityDateSerializer):
     xml_meta = {'attributes': ('type', 'iso_date')}
 
     type = serializers.CharField(source='type.code')
 
 
-class ReportingOrganisationSerializer(XMLMetaMixin, activity_serializers.ReportingOrganisationSerializer):
+class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ReportingOrganisationSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
 
     type = serializers.CharField(source='type.code')
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(activity_serializers.ReportingOrganisationSerializer.Meta):
         fields = (
@@ -123,12 +122,12 @@ class ReportingOrganisationSerializer(XMLMetaMixin, activity_serializers.Reporti
             'narrative',
         )
 
-class ParticipatingOrganisationSerializer(XMLMetaMixin, activity_serializers.ParticipatingOrganisationSerializer):
+class ParticipatingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ParticipatingOrganisationSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'role',)}
 
     type = serializers.CharField(source='type.code')
     role = serializers.CharField(source='role.code')
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(activity_serializers.ParticipatingOrganisationSerializer.Meta):
         fields = (
@@ -138,13 +137,13 @@ class ParticipatingOrganisationSerializer(XMLMetaMixin, activity_serializers.Par
             'narrative',
         )
 
-class ActivityPolicyMarkerSerializer(XMLMetaMixin, activity_serializers.ActivityPolicyMarkerSerializer):
+class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityPolicyMarkerSerializer):
     xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
 
     code = serializers.CharField(source='code.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
     significance = serializers.CharField(source='significance.code')
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(activity_serializers.ActivityPolicyMarkerSerializer.Meta):
         fields = (
@@ -155,11 +154,11 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, activity_serializers.Activity
         )
 
 
-class DescriptionSerializer(XMLMetaMixin, activity_serializers.DescriptionSerializer):
+class DescriptionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DescriptionSerializer):
     xml_meta = {'attributes': ('type',)}
 
     type = serializers.CharField(source='type.code')
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(activity_serializers.DescriptionSerializer.Meta):
         fields = (
@@ -167,7 +166,7 @@ class DescriptionSerializer(XMLMetaMixin, activity_serializers.DescriptionSerial
             'narrative'
         )
 
-class RelatedActivitySerializer(XMLMetaMixin, activity_serializers.RelatedActivitySerializer):
+class RelatedActivitySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RelatedActivitySerializer):
     xml_meta = {'attributes': ('ref', 'type')}
     
     type = serializers.CharField(source='type.code')
@@ -178,7 +177,7 @@ class RelatedActivitySerializer(XMLMetaMixin, activity_serializers.RelatedActivi
             'type',
         )
 
-class ActivitySectorSerializer(XMLMetaMixin, activity_serializers.ActivitySectorSerializer):
+class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySectorSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
 
     code = serializers.CharField(source='sector.code')
@@ -192,7 +191,7 @@ class ActivitySectorSerializer(XMLMetaMixin, activity_serializers.ActivitySector
         )
 
 
-class ActivityRecipientRegionSerializer(XMLMetaMixin, activity_serializers.ActivityRecipientRegionSerializer):
+class ActivityRecipientRegionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
 
     code = serializers.CharField(source='region.code')
@@ -205,7 +204,7 @@ class ActivityRecipientRegionSerializer(XMLMetaMixin, activity_serializers.Activ
             'vocabulary',
         )
 
-class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCountrySerializer):
+class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RecipientCountrySerializer):
     xml_meta = {'attributes': ('percentage', 'code')}
 
     code = serializers.CharField(source='country.code')
@@ -218,79 +217,79 @@ class RecipientCountrySerializer(XMLMetaMixin, activity_serializers.RecipientCou
         )
 
 
-class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
+class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
+    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
 
-class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
+class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
+    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
 
-class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()
 
-class ResultIndicatorBaselineSerializer(XMLMetaMixin, activity_serializers.ResultIndicatorBaselineSerializer):
+class ResultIndicatorBaselineXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorBaselineSerializer):
     xml_meta = {'attributes': ('year', 'value',)}
 
-    comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
+    comment = NarrativeContainerXMLSerializer(source="resultindicatorbaselinecomment")
 
-class ResultIndicatorSerializer(serializers.ModelSerializer):
-    title = NarrativeContainerSerializer(source="resultindicatortitle")
-    description = NarrativeContainerSerializer(source="resultindicatordescription")
-    baseline = ResultIndicatorBaselineSerializer(source="*")
-    period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True)
-    measure = CodelistSerializer()
+class ResultIndicatorXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorSerializer):
+    xml_meta = {'attributes': ('measure', 'ascending',)}
 
-class ResultSerializer(XMLMetaMixin, activity_serializers.ResultSerializer):
+    title = NarrativeContainerXMLSerializer(source="resultindicatortitle")
+    description = NarrativeContainerXMLSerializer(source="resultindicatordescription")
+    baseline = ResultIndicatorBaselineXMLSerializer(source="*")
+    period = ResultIndicatorPeriodXMLSerializer(source='resultindicatorperiod_set', many=True)
+    measure = serializers.CharField(source='measure.code')
+
+class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultSerializer):
     xml_meta = {'attributes': ('type', 'aggregation_status',)}
 
     type = serializers.CharField(source='type.code')
-    title = NarrativeContainerSerializer(source="resulttitle")
-    description = NarrativeContainerSerializer(source="resultdescription")
-    indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True)
+    title = NarrativeContainerXMLSerializer(source="resulttitle")
+    description = NarrativeContainerXMLSerializer(source="resultdescription")
+    indicator = ResultIndicatorXMLSerializer(source='resultindicator_set', many=True)
 
-class LocationSerializer(XMLMetaMixin, activity_serializers.LocationSerializer):
+
+class LocationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
-    class LocationIdSerializer(XMLMetaMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
+    class LocationIdSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary',)}
 
         vocabulary = serializers.CharField(
             source='location_id_vocabulary.code')
 
-    class PointSerializer(XMLMetaMixin, serializers.Serializer):
+    class PointSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.PointSerializer):
         xml_meta = {'attributes': ('srsName',)}
 
-        pos = PointField(source='point_pos')
-        srsName = serializers.CharField(source="point_srs_name")
+        
+        pos = PointIATIField(source='point_pos')
+#         srsName = serializers.CharField(source="point_srs_name")
 
-    class AdministrativeSerializer(XMLMetaMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
+    class AdministrativeSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary', 'level')}
 
         vocabulary = serializers.CharField(source='vocabulary.code')
 
-    location_reach = CodelistSerializer()
     location_id = LocationIdSerializer(source='*')
-    name = NarrativeContainerSerializer(many=True, source="locationname_set")
-    description = NarrativeContainerSerializer(many=True, source="locationdescription_set")
-    activity_description = NarrativeContainerSerializer(many=True, source="locationactivitydescription_set")
+    activity_description = NarrativeContainerXMLSerializer(many=True, source="locationactivitydescription_set")
     administrative = AdministrativeSerializer(many=True, source="locationadministrative_set")
     point = PointSerializer(source="*")
-    exactness = CodelistSerializer()
-    location_class = CodelistSerializer()
-    feature_designation = CodelistCategorySerializer()
 
+    # class Meta(transaction_serializers.LocationSerializer.Meta):
+    #     pass
 
-class TransactionProviderSerializer(XMLMetaMixin, transaction_serializers.TransactionProviderSerializer):
+class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
     xml_meta = {'attributes': ('ref', 'provider_activity_id',)}
 
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(transaction_serializers.TransactionDescriptionSerializer.Meta):
         fields = (
@@ -299,11 +298,10 @@ class TransactionProviderSerializer(XMLMetaMixin, transaction_serializers.Transa
             'narrative'
         )
 
-
-class TransactionReceiverSerializer(XMLMetaMixin, transaction_serializers.TransactionReceiverSerializer):
+class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionReceiverSerializer):
     xml_meta = {'attributes': ('ref', 'receiver_activity_id',)}
 
-    narrative = NarrativeSerializer(many=True, source='narratives')
+    narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(transaction_serializers.TransactionReceiverSerializer.Meta):
         fields = (
@@ -314,7 +312,7 @@ class TransactionReceiverSerializer(XMLMetaMixin, transaction_serializers.Transa
 
 
 class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
-    class ValueSerializer(XMLMetaMixin, serializers.Serializer):
+    class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
         xml_meta = {'attributes': ('currency', 'value_date',)}
 
         currency = serializers.CharField(source='currency.code')
@@ -336,7 +334,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     xml_meta = {'attributes': ('ref', 'type',)}
 
     transaction_type = CodelistSerializer()
-    description = NarrativeContainerSerializer()
+    description = NarrativeContainerXMLSerializer()
     provider_org = TransactionProviderSerializer(source='provider_organisation')
     receiver_org = TransactionReceiverSerializer(source='receiver_organisation')
     flow_type = CodelistSerializer()
@@ -368,25 +366,13 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
             'tied_status',
         )
 
-
-
-
-
-
-
-
-
-
-
-
-
 class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySerializer):
     xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy', 'xml_lang')}
 
     reporting_org = ReportingOrganisationSerializer(
         source='reporting_organisations',
         many=True,)
-    title = NarrativeContainerSerializer()
+    title = NarrativeContainerXMLSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
     participating_org = ParticipatingOrganisationSerializer(
@@ -433,7 +419,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True, 
         source='relatedactivity_set')
 
-    result = ResultSerializer(many=True, source="result_set")
+    result = ResultXMLSerializer(many=True, source="result_set")
     
     default_currency = serializers.CharField(source='default_currency.code')
 

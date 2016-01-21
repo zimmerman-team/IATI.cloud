@@ -7,6 +7,28 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
+class PointIATIField(serializers.Field):
+    """
+    A field for handling GeoDjango Point fields in IATI format.
+    """
+    type_name = 'PointIATIField'
+    type_label = 'point'
+
+    default_error_messages = {
+        'invalid': _('Enter a valid location.'),
+    }
+
+    def to_representation(self, value):
+        """
+        Transform POINT object to json.
+        """
+        if value is None:
+            return value
+
+        if isinstance(value, GEOSGeometry):
+            value = " ".join([smart_str(value.y), smart_str(value.x)])
+        return value
+
 class PointField(serializers.Field):
     """
     A field for handling GeoDjango Point fields as a json format.
