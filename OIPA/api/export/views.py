@@ -13,7 +13,9 @@ from rest_framework.filters import DjangoFilterBackend
 
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
+
 from api.renderers import XMLRenderer
+from rest_framework.renderers import BrowsableAPIRenderer
 
 from api.pagination import IatiXMLPagination
 
@@ -27,7 +29,7 @@ class IATIActivityList(ListAPIView):
     serializer_class = export_serializers.ActivityXMLSerializer
     pagination_class = IatiXMLPagination
 
-    renderer_classes = (XMLRenderer, )
+    renderer_classes = (BrowsableAPIRenderer, XMLRenderer )
 
     fields = difference(
         get_serializer_fields(serializer_class),
