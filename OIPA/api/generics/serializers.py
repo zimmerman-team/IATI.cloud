@@ -28,7 +28,7 @@ class SkipNullMixin(object):
             except SkipField:
                 continue
 
-            if attribute is None or not attribute:
+            if attribute in [None, '']:
                 # We skip `to_representation` for `None` values so that
                 # fields do not have to explicitly deal with that case.
                 continue
