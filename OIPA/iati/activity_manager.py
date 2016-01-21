@@ -32,6 +32,8 @@ class ActivityQuerySet(SearchQuerySet):
             .prefetch_document_links() \
             .prefetch_results() \
             .prefetch_locations() \
+            .prefetch_related_activities() \
+            .prefetch_transactions() \
             .prefetch_aggregations()
 
     def prefetch_default_aid_type(self):
@@ -262,6 +264,27 @@ class ActivityQuerySet(SearchQuerySet):
                 'relatedactivity_set',
                 queryset=RelatedActivity.objects.all()
                 .select_related('type'))
+        )
+
+    def prefetch_transactions(self):
+        from iati.transaction.models import Transaction
+
+        # TODO: Nullable foreign keys do not get prefetched in select_related() call - 2016-01-20
+        return self.prefetch_related(
+            Prefetch(
+                'transaction_set',
+                queryset=Transaction.objects.all() \
+                .select_related('transaction_type')
+                .select_related('currency')
+                .select_related('disbursement_channel')
+                .select_related('recipient_region')
+                .select_related('recipient_country')
+                .select_related('flow_type')
+                .select_related('finance_type')
+                .select_related('aid_type')
+                .select_related('tied_status')
+                .prefetch_all()
+            )
         )
 
     def prefetch_aggregations(self):
