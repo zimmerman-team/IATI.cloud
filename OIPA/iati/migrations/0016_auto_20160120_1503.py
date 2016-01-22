@@ -24,29 +24,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(delete_invalid_transactions),
-        migrations.AlterField(
-            model_name='transaction',
-            name='currency',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
-        ),
-        migrations.AlterField(
-            model_name='transaction',
-            name='recipient_region',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='geodata.Region'),
-        ),
-        migrations.AlterField(
-            model_name='transaction',
-            name='transaction_date',
-            field=models.DateField(),
-        ),
-        migrations.AlterField(
-            model_name='transaction',
-            name='transaction_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.TransactionType'),
-        ),
-        migrations.AlterField(
-            model_name='transaction',
-            name='value_date',
-            field=models.DateField(),
-        ),
     ]
