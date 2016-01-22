@@ -1,23 +1,17 @@
-from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+from rest_framework.filters import DjangoFilterBackend
+
 from iati.models import Activity
 from api.activity import serializers as activitySerializers
 from api.activity import filters
 from api.activity.activity_aggregation import ActivityAggregationSerializer
 from api.activity.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
-from api.generics.utils import get_serializer_fields
-from common.util import difference
-
-from rest_framework.filters import DjangoFilterBackend
-
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
-from api.renderers import XMLRenderer
 
-from rest_framework.response import Response
-from rest_framework import mixins, status
 
 class ActivityAggregations(GenericAPIView):
     """
@@ -60,6 +54,13 @@ class ActivityAggregations(GenericAPIView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
+    - `recipient_country_percentage_weighted_incoming_fund`
+    - `recipient_country_percentage_weighted_disbursement`
+    - `recipient_country_percentage_weighted_expenditure`
+    - `sector_percentage_weighted_budget`
+    - `sector_percentage_weighted_incoming_fund`
+    - `sector_percentage_weighted_disbursement`
+    - `sector_percentage_weighted_expenditure`
     - `sector_percentage_weighted_budget`
 
 

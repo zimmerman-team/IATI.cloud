@@ -297,13 +297,13 @@ class DocumentLinkForm(forms.ModelForm):
 class DocumentLinkInline(NestedTabularInline):
     inlines = [CategoriesInline, ]
     model = DocumentLink
-    extra = 0
+    extra = 1
 
     form = DocumentLinkForm
 
     raw_id_fields = ('file_format',)
 
-    related_lookup_fields = {
+    autocomplete_lookup_fields = {
         'fk': ['file_format'],
     }
 
@@ -527,8 +527,9 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         # save primary name on participating organisation to make querying work
         if isinstance(form, ActivityParticipatingOrganisationForm) and formset.model == Narrative:
             po = form.instance
-            po.primary_name = po.narratives.all()[0].content
-            po.save()
+            if po.narratives.all().count() > 0:
+                po.primary_name = po.narratives.all()[0].content.strip()
+                po.save()
 
         # update aggregations after save of last inline form
         if formset.model == Transaction:
