@@ -1,6 +1,5 @@
-from django.db import models
 from geodata.models import Country, Region
-from activity_manager import ActivityQuerySet, ActivityManager
+from activity_manager import ActivityManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -14,6 +13,7 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
+
 
 # TODO: separate this
 class Narrative(models.Model):
@@ -33,6 +33,7 @@ class Narrative(models.Model):
     class Meta:
         index_together = [('related_content_type', 'related_object_id')]
 
+
 class ActivitySearch(models.Model):
     activity = models.OneToOneField('Activity')
     text = VectorField()
@@ -46,13 +47,14 @@ class ActivitySearch(models.Model):
     document_link = VectorField()
     last_reindexed = models.DateTimeField()
 
+
 class Activity(models.Model):
     hierarchy_choices = (
         (1, u"Parent"),
         (2, u"Child"),
     )
 
-    id = models.CharField(max_length=150,primary_key=True,blank=False)
+    id = models.CharField(max_length=150, primary_key=True, blank=False)
     iati_identifier = models.CharField(max_length=150, blank=False)
 
     iati_standard_version = models.ForeignKey(Version)
@@ -139,6 +141,7 @@ class Activity(models.Model):
             ["end_date", "id"],
         ]
 
+
 class AbstractActivityAggregation(models.Model):
     budget_value = models.DecimalField(
         max_digits=15,
@@ -217,6 +220,7 @@ class AbstractActivityAggregation(models.Model):
             ["expenditure_value", "activity"],
         ]
 
+
 class ActivityAggregation(AbstractActivityAggregation):
     activity = models.OneToOneField(Activity, related_name="activity_aggregation", default=None)
 
@@ -254,6 +258,7 @@ class ActivitySearchData(models.Model):
     search_reporting_organisation_name = models.TextField(max_length=80000)
     search_documentlink_title = models.TextField(max_length=80000)
 
+
 class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250, db_index=True)
     normalized_ref = models.CharField(max_length=120, db_index=True, default="")
@@ -267,7 +272,8 @@ class ActivityReportingOrganisation(models.Model):
         Activity,
         related_name="reporting_organisations")
 
-    organisation = models.ForeignKey(Organisation, null=True, default=None, blank=True) # if in organisation standard
+    # if in organisation standard
+    organisation = models.ForeignKey(Organisation, null=True, default=None, blank=True)
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     secondary_reporter = models.BooleanField(default=False)
@@ -276,6 +282,7 @@ class ActivityReportingOrganisation(models.Model):
         verbose_name = 'Reporting organisation'
         verbose_name_plural = 'Reporting organisations'
 
+
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
     normalized_ref = models.CharField(blank=True, max_length=120, null=True, default=None, db_index=True)
@@ -283,7 +290,9 @@ class ActivityParticipatingOrganisation(models.Model):
     activity = models.ForeignKey(
         Activity,
         related_name="participating_organisations")
-    organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None) # if in organisation standard
+
+    # if in organisation standard
+    organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None)
 
     type = models.ForeignKey(OrganisationType, null=True, blank=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
@@ -302,6 +311,7 @@ class ActivityParticipatingOrganisation(models.Model):
     class Meta:
         verbose_name = 'Participating organisation'
         verbose_name_plural = 'Participating organisations'
+
 
 class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
@@ -361,10 +371,12 @@ class ActivityRecipientCountry(models.Model):
         verbose_name = 'Recipient country'
         verbose_name_plural = 'Recipient countries'
 
+
 class CountryBudgetItem(models.Model):
     activity = models.ForeignKey(Activity)
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
+
 
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
@@ -372,12 +384,14 @@ class BudgetItem(models.Model):
     # code = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
+
 class BudgetItemDescription(models.Model):
     budget_item = models.ForeignKey(BudgetItem)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
@@ -397,6 +411,7 @@ class ActivityRecipientRegion(models.Model):
         verbose_name = 'Recipient region'
         verbose_name_plural = 'Recipient regions'
 
+
 class OtherIdentifier(models.Model):
     activity = models.ForeignKey(Activity)
     identifier = models.CharField(max_length=100)
@@ -406,10 +421,11 @@ class OtherIdentifier(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-    type = models.ForeignKey(OtherIdentifierType,null=True, blank=True)
+    type = models.ForeignKey(OtherIdentifierType, null=True, blank=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.identifier)
+
 
 class ActivityWebsite(models.Model):
     activity = models.ForeignKey(Activity)
@@ -434,11 +450,12 @@ class ContactInfo(models.Model):
     job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
-        return "ContactInfo: %s" % (self.activity.id)
+        return "ContactInfo: %s" % self.activity.id
 
 # class ContactInfoOrganisationNarrative(Narrative):
 #     pass
 # TODO: inherit narratives and link from contactinfo? (API inconsistency?)
+
 
 class ContactInfoOrganisation(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
@@ -447,12 +464,14 @@ class ContactInfoOrganisation(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class ContactInfoDepartment(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ContactInfoPersonName(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
@@ -461,6 +480,7 @@ class ContactInfoPersonName(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class ContactInfoJobTitle(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
     narratives = GenericRelation(
@@ -468,12 +488,14 @@ class ContactInfoJobTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class ContactInfoMailingAddress(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ContactInfoTelephone(models.Model):
     contact_info = models.ForeignKey(ContactInfo)
@@ -491,6 +513,7 @@ class ContactInfoTelephone(models.Model):
 #     def __unicode__(self,):
 #         return "%s - %s" % (self.code, self.name)
 
+
 class PlannedDisbursement(models.Model):
     budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
     activity = models.ForeignKey(Activity)
@@ -504,6 +527,7 @@ class PlannedDisbursement(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.period_start)
+
 
 class RelatedActivity(models.Model):
     current_activity = models.ForeignKey(
@@ -524,10 +548,11 @@ class RelatedActivity(models.Model):
     ref = models.CharField(db_index=True, max_length=200, default="")
 
     def __unicode__(self,):
-        return "%s" % (self.ref)
+        return "%s" % self.ref
 
     class Meta:
         verbose_name_plural = "related activities"
+
 
 class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity)
@@ -550,9 +575,11 @@ class DocumentLinkCategory(models.Model):
     class Meta:
         verbose_name_plural = "Document link categories"
 
+
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     language = models.ForeignKey(Language, null=True, blank=True, default=None)
+
 
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
@@ -562,13 +589,15 @@ class DocumentLinkTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(ResultType, null=True, blank=True, default=None)
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
-        return "Result: %s" % (self.activity.id)
+        return "Result: %s" % self.activity.id
+
 
 class ResultTitle(models.Model):
     result = models.OneToOneField(Result)
@@ -577,12 +606,14 @@ class ResultTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class ResultDescription(models.Model):
     result = models.OneToOneField(Result)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result)
@@ -598,12 +629,14 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.result, self.baseline_year)
 
+
 class ResultIndicatorTitle(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ResultIndicatorDescription(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
@@ -612,12 +645,14 @@ class ResultIndicatorDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class ResultIndicatorBaselineComment(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
@@ -630,12 +665,14 @@ class ResultIndicatorPeriod(models.Model):
     def __unicode__(self,):
         return "%s" % self.result_indicator
 
+
 class ResultIndicatorPeriodTargetComment(models.Model):
     result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class ResultIndicatorPeriodActualComment(models.Model):
     result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
@@ -644,6 +681,7 @@ class ResultIndicatorPeriodActualComment(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class Description(models.Model):
     activity = models.ForeignKey(Activity)
     narratives = GenericRelation(
@@ -651,7 +689,8 @@ class Description(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    type = models.ForeignKey( # TODO: set a default or require
+    # TODO: set a default or require
+    type = models.ForeignKey(
         DescriptionType,
         related_name="description_type",
         null=True,
@@ -660,6 +699,7 @@ class Description(models.Model):
 
     def __unicode__(self,):
         return "Description: %s - %s" % (self.activity.id, self.type)
+
 
 class Budget(models.Model):
     activity = models.ForeignKey(Activity)
@@ -674,6 +714,7 @@ class Budget(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.period_start)
 
+
 class Condition(models.Model):
     activity = models.ForeignKey(Activity)
     text = models.TextField(default="")
@@ -681,6 +722,7 @@ class Condition(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.activity.id, self.type)
+
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity)
@@ -721,6 +763,7 @@ class Location(models.Model):
     def __unicode__(self,):
         return "Location: %s" % (self.activity.id,)
 
+
 # TODO: move to codelist
 class LocationAdministrative(models.Model):
     location = models.ForeignKey(Location)
@@ -730,12 +773,14 @@ class LocationAdministrative(models.Model):
         related_name="administrative_vocabulary")
     level = models.IntegerField(null=True, blank=True, default=None)
 
+
 class LocationName(models.Model):
     location = models.ForeignKey(Location)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class LocationDescription(models.Model):
     location = models.ForeignKey(Location)
@@ -744,12 +789,14 @@ class LocationDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+
 class LocationActivityDescription(models.Model):
     location = models.ForeignKey(Location)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)
@@ -758,7 +805,8 @@ class Fss(models.Model):
     phaseout_year = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s" % (self.extraction_date)
+        return "%s" % self.extraction_date
+
 
 class FssForecast(models.Model):
     fss = models.ForeignKey(Fss)
@@ -770,11 +818,13 @@ class FssForecast(models.Model):
     def __unicode__(self,):
         return "%s" % self.year
 
+
 class CrsAdd(models.Model):
     activity = models.ForeignKey(Activity)
 
     def __unicode__(self,):
-        return "%s" % (self.id)
+        return "%s" % self.id
+
 
 class CrsAddOtherFlags(models.Model):
     crs_add = models.ForeignKey(CrsAdd)
@@ -783,6 +833,7 @@ class CrsAddOtherFlags(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.id
+
 
 class CrsAddLoanTerms(models.Model):
     crs_add = models.ForeignKey(CrsAdd)
@@ -804,7 +855,8 @@ class CrsAddLoanTerms(models.Model):
     repayment_final_date = models.DateField(null=True, blank=True, default=None)
 
     def __unicode__(self,):
-        return "%s" % (self.crs_add_id)
+        return "%s" % self.crs_add_id
+
 
 class CrsAddLoanStatus(models.Model):
     crs_add = models.ForeignKey(CrsAdd)
@@ -837,7 +889,8 @@ class CrsAddLoanStatus(models.Model):
         decimal_places=2)
 
     def __unicode__(self):
-        return "%s" % (self.year)
+        return "%s" % self.year
+
 
 class ActivityDate(models.Model):
     activity = models.ForeignKey(Activity)
@@ -847,6 +900,7 @@ class ActivityDate(models.Model):
     def __unicode__(self):
         return "%s - %s - %s" % (self.activity.id, self.type.name, self.iso_date.strftime('%Y-%m-%d'))
 
+
 class LegacyData(models.Model):
     activity = models.ForeignKey(Activity)
     name = models.CharField(max_length=150, null=True, blank=True)
@@ -855,3 +909,4 @@ class LegacyData(models.Model):
 
     def __unicode__(self):
         return "%s" % self.name
+

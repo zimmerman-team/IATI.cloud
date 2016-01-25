@@ -392,7 +392,6 @@ class LocationInline(NestedTabularInline):
 
     form = LocationForm
 
-
     fields = (
         'ref',
         'latitude',
@@ -661,6 +660,14 @@ class ResultAdmin(ExtraNestedModelAdmin):
 
     }
 
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
+
+        inline_instances = super(ResultAdmin, self).get_inline_instances(request, obj)
+
+        return inline_instances
+
     def get_object(self, request, object_id, from_field=None):
         obj = super(ResultAdmin, self).get_object(request, object_id)
 
@@ -676,6 +683,19 @@ class ResultAdmin(ExtraNestedModelAdmin):
             title.result = obj
             title.save()
             obj.resulttitle = title
+
+        if not obj.resultindicator_set.count():
+            result_indicator = ResultIndicator()
+            result_indicator.result = obj
+            result_indicator.save()
+
+
+        for result_indicator in obj.resultindicator_set.all():
+            if not getattr(result_indicator, 'resultindicatortitle', None):
+                title = ResultIndicatorTitle()
+                title.result_indicator = result_indicator
+                title.save()
+                result_indicator.resultindicatortitle = title
 
         return obj
 
