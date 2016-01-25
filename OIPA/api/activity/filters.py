@@ -186,6 +186,18 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='budget__currency__code')
 
+    transaction_provider_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__provider_organisation__narratives__content')
+
+    transaction_receiver_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__receiver_organisation__narratives__content')
+
+    transaction_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__transaction_type')
+
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
         name='transaction__provider_organisation__provider_activity_ref',)
@@ -193,7 +205,6 @@ class ActivityFilter(TogetherFilterSet):
     transaction_date_year = NumberFilter(
         lookup_type='year',
         name='transaction__transaction_date',)
-
 
     activity_aggregation_budget_value_lte = NumberFilter(
         lookup_type='lte',

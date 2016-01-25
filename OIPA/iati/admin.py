@@ -295,17 +295,17 @@ class DocumentLinkForm(forms.ModelForm):
 
 
 class DocumentLinkInline(NestedTabularInline):
-    inlines = [CategoriesInline, ]
+    inlines = [CategoriesInline, NarrativeInline, ]
     model = DocumentLink
     extra = 1
 
     form = DocumentLinkForm
 
-    raw_id_fields = ('file_format',)
+    # raw_id_fields = ('file_format',)
 
-    autocomplete_lookup_fields = {
-        'fk': ['file_format'],
-    }
+    # autocomplete_lookup_fields = {
+    #     'fk': ['file_format'],
+    # }
 
 
 class ResultInline(NestedTabularInline):
