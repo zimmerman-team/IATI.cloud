@@ -1,18 +1,19 @@
-import uuid
-
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
 from django.db.models import Q
 
-from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
-from rest_framework.filters import OrderingFilter
+from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 
-from api.generics.filters import CommaSeparatedCharFilter, CommaSeparatedCharMultipleFilter, TogetherFilterSet
-from iati.models import Activity, Budget, RelatedActivity
+from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedCharMultipleFilter
+from api.generics.filters import TogetherFilterSet
+from iati.models import Activity, RelatedActivity
 
 from rest_framework import filters
 from common.util import combine_filters
+from djorm_pgfulltext.fields import TSConfig
+
 
 class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
@@ -22,19 +23,22 @@ class SearchFilter(filters.BaseFilterBackend):
         if query:
 
             query_fields = request.query_params.get('q_fields')
+            dict_query_list = [TSConfig('simple'), query]
 
             if query_fields:
 
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{'activitysearch__{}__ft'.format(field): query}) for field in query_fields])
+                    filters = combine_filters([Q(**{'activitysearch__{}__ft'.format(field): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
 
             else:
-                return queryset.filter(activitysearch__text__ft=query)
+
+                return queryset.filter(activitysearch__text__ft=dict_query_list)
 
         return queryset
+
 
 class ActivityFilter(TogetherFilterSet):
 
@@ -317,7 +321,7 @@ class RelatedActivityFilter(FilterSet):
         model = RelatedActivity
 
 
-class RelatedOrderingFilter(OrderingFilter):
+class RelatedOrderingFilter(filters.OrderingFilter):
     """
     Extends OrderingFilter to support ordering by fields in related models
     using the Django ORM __ notation
