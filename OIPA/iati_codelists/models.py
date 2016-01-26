@@ -92,6 +92,9 @@ class Currency(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+    class Meta:
+        verbose_name_plural = "Currencies"
+
 class DescriptionType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=50)
