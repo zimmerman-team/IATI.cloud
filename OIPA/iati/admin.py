@@ -142,18 +142,20 @@ class ActivityDateInline(NestedTabularInline):
 class ActivityReportingOrganisationForm(forms.ModelForm):
 
     class Meta(object):
-        model = RelatedActivity
+        model = ActivityReportingOrganisation
         exclude = []
         widgets = {'normalized_ref': forms.HiddenInput()}
 
     def clean(self):
+        if self.cleaned_data['ref']:
+            self.cleaned_data['normalized_ref'] = self.cleaned_data['ref']
         data = super(ActivityReportingOrganisationForm, self).clean()
-        if data['ref']:
-            data['normalized_ref'] = data['ref']
+
         return data
 
 
 class ActivityReportingOrganisationInline(NestedTabularInline):
+
     model = ActivityReportingOrganisation
     inlines = [
         NarrativeInline,
@@ -163,7 +165,6 @@ class ActivityReportingOrganisationInline(NestedTabularInline):
 
     fields = (
         'ref',
-        'organisation',
         'type',
         'secondary_reporter',
         'normalized_ref')
@@ -172,7 +173,7 @@ class ActivityReportingOrganisationInline(NestedTabularInline):
 class ActivityParticipatingOrganisationForm(forms.ModelForm):
 
     class Meta(object):
-        model = RelatedActivity
+        model = ActivityParticipatingOrganisation
         exclude = []
         widgets = {
             'normalized_ref': forms.HiddenInput(),

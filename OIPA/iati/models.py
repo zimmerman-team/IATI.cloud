@@ -261,7 +261,7 @@ class ActivitySearchData(models.Model):
 
 class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250, db_index=True)
-    normalized_ref = models.CharField(max_length=120, db_index=True, default="")
+    normalized_ref = models.CharField(max_length=120, db_index=True, default="", blank=True)
 
     narratives = GenericRelation(
         Narrative,
@@ -545,7 +545,7 @@ class RelatedActivity(models.Model):
         null=True,
         blank=True,
         default=None)
-    ref = models.CharField(db_index=True, max_length=200, default="")
+    ref = models.CharField(db_index=True, max_length=200, default="", blank=True)
 
     def __unicode__(self,):
         return "%s" % self.ref
