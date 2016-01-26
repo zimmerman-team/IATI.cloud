@@ -52,10 +52,14 @@ class NarrativeInline(GenericTabularInline):
     ct_fk_field = "related_object_id"
     inlines = []
     fields = ('activity', 'language', 'content')
-    raw_id_fields = ('activity',)
+    raw_id_fields = ('activity', 'language',)
     # form = NarrativeForm
 
     extra = 1
+
+    autocomplete_lookup_fields = {
+        'fk': ['language'],
+    }
 
     def get_formset(self, request, obj=None, **kwargs):
         activity = self.parent_instance
@@ -211,6 +215,12 @@ class TransactionInline(NestedTabularInline):
         'edit_transaction',)
     readonly_fields = ('edit_transaction', 'transaction_provider', 'transaction_receiver')
 
+    raw_id_fields = ('currency',)
+
+    autocomplete_lookup_fields = {
+        'fk': ['currency'],
+    }
+
     def transaction_provider(self, obj):
         try:
             return obj.provider_organisation.narratives.all()[0].content
@@ -301,11 +311,11 @@ class DocumentLinkInline(NestedTabularInline):
 
     form = DocumentLinkForm
 
-    # raw_id_fields = ('file_format',)
+    raw_id_fields = ('file_format',)
 
-    # autocomplete_lookup_fields = {
-    #     'fk': ['file_format'],
-    # }
+    autocomplete_lookup_fields = {
+        'fk': ['file_format'],
+    }
 
 
 class ResultInline(NestedTabularInline):
@@ -471,6 +481,16 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         RelatedActivityInline,
         TransactionInline,
     ]
+    #
+    # raw_id_fields = ('default_lang',)
+    #
+    # autocomplete_lookup_fields = {
+    #     'fk': ['language'],
+    # }
+
+    autocomplete_lookup_fields = {
+        'fk': ['language'],
+    }
 
     def get_inline_instances(self, request, obj=None):
         if obj is None:
@@ -547,10 +567,10 @@ class TransactionAdmin(ExtraNestedModelAdmin):
         TransactionReceiverInline,
     ]
 
-    raw_id_fields = ('activity', 'recipient_country')
+    raw_id_fields = ('activity', 'recipient_country', 'currency',)
 
     autocomplete_lookup_fields = {
-        'fk': ['activity', 'recipient_country'],
+        'fk': ['activity', 'recipient_country', 'currency'],
 
     }
 
@@ -657,7 +677,6 @@ class ResultAdmin(ExtraNestedModelAdmin):
 
     autocomplete_lookup_fields = {
         'fk': ['activity'],
-
     }
 
     def get_inline_instances(self, request, obj=None):
