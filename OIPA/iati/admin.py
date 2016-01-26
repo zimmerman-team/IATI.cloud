@@ -481,15 +481,11 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         RelatedActivityInline,
         TransactionInline,
     ]
-    #
-    # raw_id_fields = ('default_lang',)
-    #
-    # autocomplete_lookup_fields = {
-    #     'fk': ['language'],
-    # }
+
+    raw_id_fields = ('default_currency',)
 
     autocomplete_lookup_fields = {
-        'fk': ['language'],
+        'fk': ['default_currency'],
     }
 
     def get_inline_instances(self, request, obj=None):
