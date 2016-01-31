@@ -72,6 +72,7 @@ def export_xml_by_source(request, source):
     
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
+    actions=['really_delete_selected']
     search_fields = ['ref', 'title', 'publisher__org_name']
     list_display = [
         'ref', 
@@ -94,8 +95,6 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def export_btn(self, obj):
         return format_html('<a class="parse-btn" href="{url}" target="_blank">Export</a>',
             url='export-xml/' + obj.ref)
-            # url=reverse('export-xml', kwargs={'xml_source_ref': obj.ref}))
-        # return mark_safe('<button export=""></button')
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 
@@ -142,6 +141,28 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         xml_response = export_xml_by_source(request, xml_source_ref)
 
         return HttpResponse(xml_response, content_type='application/xml')
+
+
+
+
+
+
+
+    def get_actions(self, request):
+        actions = super(IATIXMLSourceAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
+
+    def really_delete_selected(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
+        if queryset.count() == 1:
+            message_bit = "1 IATI data source was"
+        else:
+            message_bit = "%s IATI data sources were" % queryset.count()
+        self.message_user(request, "%s successfully deleted." % message_bit)
+    really_delete_selected.short_description = "Delete selected IATI data sources"
         
 class IATIXMLSourceInline(admin.TabularInline):
     model = IatiXmlSource
