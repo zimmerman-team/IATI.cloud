@@ -285,17 +285,25 @@ class BudgetInline(NestedTabularInline):
     extra = 0
 
 
-class CategoriesInline(NestedTabularInline):
-    model = DocumentLinkCategory
+# class DocumentCategoryInline(NestedTabularInline):
+#     model = DocumentLinkCategory
+#     fields = ('document_link', 'category')
+#     extra = 0
+#
+#     raw_id_fields = ('category',)
+#
+#     related_lookup_fields = {
+#         'fk': ['category'],
+#     }
 
-    extra = 0
 
-    raw_id_fields = ('category',)
+class DocumentLinkTitleInline(NestedTabularInline):
+    model = DocumentLinkTitle
+    inlines = [
+        NarrativeInline,
+    ]
 
-    related_lookup_fields = {
-        'fk': ['category'],
-    }
-
+    extra = 1
 
 class DocumentLinkForm(forms.ModelForm):
     url = CharField(label='url', max_length=500)
@@ -306,17 +314,26 @@ class DocumentLinkForm(forms.ModelForm):
 
 
 class DocumentLinkInline(NestedTabularInline):
-    inlines = [CategoriesInline, NarrativeInline, ]
+    inlines = [NarrativeInline,]
     model = DocumentLink
-    extra = 1
+    extra = 0
 
-    form = DocumentLinkForm
+    # form = DocumentLinkForm
+
+    fields = ('url', 'file_format', 'title')
+    readonly_fields = ('title',)
 
     raw_id_fields = ('file_format',)
 
     autocomplete_lookup_fields = {
         'fk': ['file_format'],
     }
+
+    def title(self, obj):
+
+        if not obj.id:
+            return format_html(
+                'Please save the activity to add a document link title and document link category')
 
 
 class ResultInline(NestedTabularInline):
@@ -499,6 +516,12 @@ class ActivityAdmin(ExtraNestedModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.last_updated_datetime = datetime.datetime.now()
+
+        if change:
+            for link in obj.documentlink_set.all():
+                print link.documentlinktitle_set.count()
+
+
         super(ActivityAdmin, self).save_model(request, obj, form, change)
 
         if not change:
@@ -511,6 +534,7 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             description = Description()
             description.activity = obj
             description.save()
+
 
     def save_formset(self, request, form, formset, change):
         super(ActivityAdmin, self).save_formset(request, form, formset, change)
@@ -551,6 +575,10 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         if formset.model == Transaction:
             aggregation_calculator = ActivityAggregationCalculation()
             aggregation_calculator.parse_activity_aggregations(form.instance)
+
+
+
+
 
 
 class TransactionAdmin(ExtraNestedModelAdmin):
