@@ -61,7 +61,7 @@ class Activity(models.Model):
     xml_source_ref = models.CharField(max_length=200, default="")
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
-    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1)
+    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, db_index=True)
     last_updated_model = models.DateTimeField(null=True, blank=True, auto_now=True)
     last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
     default_lang = models.CharField(max_length=2)
