@@ -66,6 +66,9 @@ and run:
 invoke serve
 ```
 
-and open your browser at `http://localhost:8000/`.
+and open your browser at `http://0.0.0.0:8000/`. 
+
+Now start supervisor
+
 
 This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.
