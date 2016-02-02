@@ -1,7 +1,7 @@
 # admin-multiupload==0.1
 git+git://github.com/gkuhn1/django-admin-multiupload.git
 requests==2.9.1
-Django==1.9.1
+Django==1.9.2
 git+https://github.com/zimmerman-zimmerman/djorm-ext-pgfulltext.git
 django-two-factor-auth==1.3.0
 django-cors-headers==1.1.0
