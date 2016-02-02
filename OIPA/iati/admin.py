@@ -305,6 +305,7 @@ class DocumentLinkTitleInline(NestedTabularInline):
 
     extra = 1
 
+
 class DocumentLinkForm(forms.ModelForm):
     url = CharField(label='url', max_length=500)
 
@@ -316,24 +317,15 @@ class DocumentLinkForm(forms.ModelForm):
 class DocumentLinkInline(NestedTabularInline):
     inlines = [NarrativeInline,]
     model = DocumentLink
-    extra = 0
+    extra = 1
 
-    # form = DocumentLinkForm
-
-    fields = ('url', 'file_format', 'title')
-    readonly_fields = ('title',)
+    form = DocumentLinkForm
 
     raw_id_fields = ('file_format',)
 
     autocomplete_lookup_fields = {
         'fk': ['file_format'],
     }
-
-    def title(self, obj):
-
-        if not obj.id:
-            return format_html(
-                'Please save the activity to add a document link title and document link category')
 
 
 class ResultInline(NestedTabularInline):
@@ -516,11 +508,6 @@ class ActivityAdmin(ExtraNestedModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.last_updated_datetime = datetime.datetime.now()
-
-        if change:
-            for link in obj.documentlink_set.all():
-                print link.documentlinktitle_set.count()
-
 
         super(ActivityAdmin, self).save_model(request, obj, form, change)
 
