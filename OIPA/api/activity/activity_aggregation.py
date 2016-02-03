@@ -401,7 +401,9 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         # apply extras
         group_extras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
-        queryset = queryset.annotate(**before_annotations).extra(**group_extras)
+        queryset = queryset \
+            .annotate(**before_annotations) \
+            .extra(**group_extras)
 
         # preparation for aggregation look
         main_group_key = group_fields[0]
@@ -418,6 +420,7 @@ class ActivityAggregationSerializer(BaseSerializer):
             aggregation_meta = self._aggregations[aggregation]
             aggregation_key = aggregation_meta['field']
             annotation = dict([(aggregation_meta['annotate_name'], aggregation_meta['annotate'])])
+
             extra_filter = aggregation_meta.get('extra_filter', {})
 
             next_result = queryset.filter(**extra_filter).values(*group_fields).annotate(**annotation).filter(**after_filters)
@@ -430,6 +433,10 @@ class ActivityAggregationSerializer(BaseSerializer):
                 result_dict = {}
                 for item in iter(next_result):
                     group_key = self.get_group_key(item, group_fields, has_multiple_group_keys)
+
+                    # eliminate nulls
+                    if not group_key: continue
+
                     result_dict[group_key] = aggregation_key_dict.copy()
                     result_dict[group_key][aggregation_key] = item[aggregation_key]
                     for group_field in group_fields:
@@ -440,6 +447,10 @@ class ActivityAggregationSerializer(BaseSerializer):
             for item in iter(next_result):
                 group_key = self.get_group_key(item, group_fields, has_multiple_group_keys)
                 if group_key not in result_dict:
+
+                    # eliminate nulls
+                    if not group_key: continue
+
                     result_dict[group_key] = aggregation_key_dict.copy()
                     for group_field in group_fields:
                         result_dict[group_key][group_field] = item[group_field]
@@ -527,13 +538,9 @@ class ActivityAggregationSerializer(BaseSerializer):
         for i, result in enumerate(list(results)):
             for key, value in result.iteritems():
                 if key in groupfield_list:
-                    if value is not None:
-                        if isinstance(value, unicode):
-                            value = value.encode('utf-8')
-                        result[key] = serializers.get(key, {}).get(value)
-                    else:
-                        del results[i]
-                        break
+                    if isinstance(value, unicode):
+                        value = value.encode('utf-8')
+                    result[key] = serializers.get(key, {}).get(value)
 
         return results
 
