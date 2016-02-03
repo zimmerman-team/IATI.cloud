@@ -2,9 +2,7 @@
 
 First off:
 
-Install [Vagrant](https://www.vagrantup.com/) then install 
-
-[Virtual Box](https://www.virtualbox.org/wiki/Downloads)
+Install [Vagrant](https://www.vagrantup.com/) then install [Virtual Box](https://www.virtualbox.org/wiki/Downloads)
 
 --------
 Initial setup scripts and Vagrantfile included,
@@ -41,12 +39,11 @@ and open your browser at `http://0.0.0.0:8000/`. That's OIPA
 Now start supervisor and run 
 
 ```#!bash
-invoke serve
+./manage.py runserver 0.0.0.0:8000
 ```
+once again.
 
-again.
-
-Login into the OIPA administrator area at: 'http://0.0.0.0:8000/' making use of default credentials. Collect the IATI code lists in the interface and add IATI data via the Queue Manager - 'http://0.0.0.0:8000/admin/queue/'
+Sign into the OIPA administrator area at: 'http://0.0.0.0:8000/' making use of default credentials. Collect the IATI code lists in the interface and add IATI data via the Queue Manager - 'http://0.0.0.0:8000/admin/queue/'
 
 This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.
 
