@@ -43,7 +43,7 @@ Now start supervisor and run
 ```
 once again.
 
-Sign into the OIPA administrator area at: 'http://0.0.0.0:8000/' making use of default credentials. Collect the IATI code lists in the interface and add IATI data via the Queue Manager - 'http://0.0.0.0:8000/admin/queue/'
+Sign into the OIPA administrator area at: 'http://0.0.0.0:8000/' making use of 'oipa/oipa'. Collect the IATI code lists in the interface and add IATI data via the Queue Manager - 'http://0.0.0.0:8000/admin/queue/'
 
 This setup includes supervisor runnning on background, log is stored at `/vagrant/OIPA/static/supervisor.log`.
 
