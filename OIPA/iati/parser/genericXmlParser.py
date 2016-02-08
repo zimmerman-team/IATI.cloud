@@ -3,16 +3,14 @@ from parse_logger import models as log_models
 from django.core.mail import send_mail
 from collections import OrderedDict
 import datetime
-import re
 import traceback
 from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
-from decimal import Decimal, InvalidOperation
 
 
 class XMLParser(object):
-
-    VERSION = '2.01' # default version
+    # default version
+    VERSION = '2.01'
 
     def __init__(self, root):
         self.logged_functions = []
@@ -21,6 +19,7 @@ class XMLParser(object):
         self.validation_errors = []
         self.required_field_errors = []
         self.iati_source = None
+        self.iati_source_has_changes = False
         self.parse_start_datetime = datetime.datetime.now()
 
 
@@ -39,9 +38,11 @@ class XMLParser(object):
         # TODO: refactor this and the module
         for e in root.getchildren():
             self.model_store = OrderedDict()
-            self.parse(e)
-            self.save_all_models()
-            self.post_save_activity()
+            parsed = self.parse(e)
+            # only save if the activity is updated
+            if parsed:
+                self.save_all_models()
+                self.post_save_activity()
         self.post_save_file(self.iati_source)
             
     def post_save_activity(self):
@@ -66,25 +67,23 @@ class XMLParser(object):
             try:
                 elementMethod(element)
             except self.RequiredFieldError as e:
-                # print(e.field)
-                print(e.message)
-                print(e)
+                print e.message
+                # traceback.print_exc()
                 return
             except self.ValidationError as e:
-                # print(e.field)
-                # print(e.message)
-                traceback.print_exc()
+                print e.message
+                # traceback.print_exc()
                 return
             except Exception as exception:
-                # pass
-                # print(exception.message)
-                traceback.print_exc()
+                print exception.message
+                # traceback.print_exc()
                 return
 
+        # TODO: rewrite this
         for e in element.getchildren():
             self.parse(e)
 
-        # todo: rewrite this
+        return True
 
     def generate_function_name(self, xpath):
         function_name = xpath.replace('/', '__')
@@ -138,38 +137,6 @@ class XMLParser(object):
                     # traceback.print_exc()
                     print(e)
 
-
-    def handle_function_not_found(self, xpath, function_name,element):
-        print 'function not found '+function_name
-        if function_name in self.logged_functions:
-            return  # function already logged
-        # add function name to logged functions
-        self.logged_functions.append(function_name)
-        keys = ''
-        for key in element.attrib:
-            keys += "\t"+key+':'+element.attrib.get(key)+"\n"
-
-        hint = """
-
-    '''atributes:
-"""+keys+"""
-    tag:"""+element.tag+"""
-    found in """+ self.iati_source.source_url+""" at line """+str(element.sourceline)+""" iati_version ="""+self.VERSION+"""'''
-    def """ + function_name + """(self,element):
-        model = self.get_func_parent_model()
-        #store element
-        return element"""
-        #print hint
-        self.hints.append(hint)
-
-        log_entry = log_models.ParseLog()
-        log_entry.error_hint = hint
-        log_entry.error_text = 'Function ' + function_name + ' not found'
-        log_entry.error_msg = function_name
-        log_entry.file_name = self.iati_source.source_url
-        log_entry.location = xpath
-        log_entry.error_time = datetime.datetime.now()
-        log_entry.save()
 
     def remove_brackets(self,function_name):
 

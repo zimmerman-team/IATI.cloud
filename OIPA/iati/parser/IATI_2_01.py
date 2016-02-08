@@ -214,7 +214,7 @@ class Parse(XMLParser):
         }
 
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
-        
+
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
         hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -226,6 +226,15 @@ class Parse(XMLParser):
         old_activity = self.get_or_none(models.Activity, id=id)
 
         if old_activity:
+
+            # update last_updated_model to prevent the activity from being deleted
+            # because its not updated (and thereby assumed not found in the source)
+            old_activity.save()
+
+            if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
+                raise self.ValidationError(
+                    "activity",
+                    "current version of activity already exists: no need to update")
             if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
                 raise self.ValidationError(
                     "activity",
@@ -240,7 +249,7 @@ class Parse(XMLParser):
             # TODO: do this after activity is parsed along with other saves?
             old_activity.delete()
 
-        # TODO: assert title is in xml, for proper OneToOne relation
+        # TODO: assert title is in xml, for proper OneToOne relation (only on 2.01)
 
         activity = models.Activity()
         activity.id = id
@@ -1045,6 +1054,7 @@ class Parse(XMLParser):
 
         if not code: raise self.RequiredFieldError("code", "policy-marker: code is required")
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
+        if not significance: raise self.RequiredFieldError("significance", "policy-marker: significance is required")
 
         activity = self.get_model('Activity')
         activity_policy_marker = models.ActivityPolicyMarker()

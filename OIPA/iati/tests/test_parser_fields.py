@@ -263,11 +263,11 @@ class ActivityTestCase(ParserSetupTestCase):
         new_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
         self.check_parsed(old_activity, new_activity, True)
 
-        # case 1 (equivalence)
+        # case 1 (equivalence) => do not re-parse, keep current activity
         time = datetime.datetime.now().isoformat()
         old_activity.attrib["last-updated-datetime"] = time
         new_activity.attrib["last-updated-datetime"] = time
-        self.check_parsed(old_activity, new_activity, True)
+        self.check_parsed(old_activity, new_activity, False)
 
     def test_activity_smaller_last_updated_time_should_not_parse(self):
         """
