@@ -1,48 +1,30 @@
 import datetime
-
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.utils.functional import curry
 from django.utils.html import format_html
 from django import forms
-from django.forms import CharField
 from django.contrib.gis.geos import Point
-
-from nested_inline.admin import NestedModelAdmin, NestedInline
-
 from iati.models import *
 from iati.transaction.models import *
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
+from autocomplete_light import forms as autocomplete_forms
+import nested_admin
+from exceptions import TypeError, ValueError
 
 
-class ExtraNestedModelAdmin(NestedModelAdmin):
-    def get_inline_instances(self, request, obj=None):
-        inline_instances = super(ExtraNestedModelAdmin, self).get_inline_instances(request, obj)
-        for inline_instance in inline_instances:
-            inline_instance.parent_instance = obj
+class NarrativeForm(autocomplete_forms.ModelForm):
+    activity = forms.ModelChoiceField(Activity.objects.none(), required=False, empty_label='----')
 
-        return inline_instances
+    class Meta(object):
+        model = Narrative
+        fields = ('activity', 'language', 'content')
 
-
-class ExtraNestedInline(NestedInline):
-    def get_inline_instances(self, request, obj=None):
-        inline_instances = super(ExtraNestedInline, self).get_inline_instances(request, obj)
-        for inline_instance in inline_instances:
-            inline_instance.parent_instance = self.parent_instance
-            inline_instance.direct_parent = obj
-
-        return inline_instances
-
-
-# TODO: remove django-grappelli-inline dependency by moving these templates to local repo - 2015-12-01
-class NestedStackedInline(ExtraNestedInline):
-    template = 'admin/edit_inline/stacked.html'
-    # template = 'admin/edit_inline/stacked-nested.html'
-
-
-class NestedTabularInline(ExtraNestedInline):
-    # template = 'admin/edit_inline/tabular.html'
-    template = 'admin/edit_inline/tabular-nested.html'
+    def save(self, commit=True):
+        if not self.instance.activity_id:
+            self.instance.activity = self.cleaned_data['activity']
+        instance = super(NarrativeForm, self).save(commit=False)
+        instance.save()
+        return instance
 
 
 class NarrativeInline(GenericTabularInline):
@@ -52,28 +34,9 @@ class NarrativeInline(GenericTabularInline):
     ct_fk_field = "related_object_id"
     inlines = []
     fields = ('activity', 'language', 'content')
-    raw_id_fields = ('activity', 'language',)
-    # form = NarrativeForm
+    form = NarrativeForm
 
     extra = 1
-
-    autocomplete_lookup_fields = {
-        'fk': ['language'],
-    }
-
-    def get_formset(self, request, obj=None, **kwargs):
-        activity = self.parent_instance
-        
-        if isinstance(self.parent_instance, Transaction):
-            activity = self.parent_instance.activity
-
-        if isinstance(self.parent_instance, Result):
-            activity = self.parent_instance.activity
-
-        initial = [{'activity': activity} for i in range(self.extra)]
-        formset = super(NarrativeInline, self).get_formset(request, obj, **kwargs)
-        formset.__init__ = curry(formset.__init__, initial=initial)
-        return formset
 
 
 class OrganisationAdmin(admin.ModelAdmin):
@@ -81,29 +44,24 @@ class OrganisationAdmin(admin.ModelAdmin):
     list_display = ['code', 'abbreviation', 'name', 'type', 'total_activities']
 
 
-class TransactionDescriptionInline(NestedTabularInline):
+class TransactionDescriptionInline(nested_admin.NestedStackedInline):
     model = TransactionDescription
     inlines = [
         NarrativeInline,
     ]
 
-    extra = 0
+    extra = 1
 
 
-class TransactionProviderInline(NestedTabularInline):
+class TransactionProviderInline(nested_admin.NestedStackedInline):
     model = TransactionProvider
     inlines = [
         NarrativeInline,
     ]
     exclude = ('normalized_ref', 'organisation', 'provider_activity_ref')
 
-    raw_id_fields = ('provider_activity',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['provider_activity'],
-    }
-
-    extra = 0
+    form = autocomplete_forms.modelform_factory(TransactionProvider, fields='__all__')
+    extra = 1
 
     def save_model(self, request, obj, form, change):
         obj.normalized_ref = obj.ref
@@ -112,20 +70,16 @@ class TransactionProviderInline(NestedTabularInline):
         return super(TransactionProviderInline, self).save_model(request, obj, form, change)
 
 
-class TransactionReceiverInline(NestedTabularInline):
+class TransactionReceiverInline(nested_admin.NestedStackedInline):
     model = TransactionReceiver
     inlines = [
         NarrativeInline,
     ]
     exclude = ('normalized_ref', 'organisation', 'receiver_activity_ref')
 
-    raw_id_fields = ('receiver_activity',)
+    form = autocomplete_forms.modelform_factory(TransactionReceiver, fields='__all__')
 
-    autocomplete_lookup_fields = {
-        'fk': ['receiver_activity'],
-    }
-
-    extra = 0
+    extra = 1
 
     def save_model(self, request, obj, form, change):
         obj.normalized_ref = obj.ref
@@ -134,9 +88,9 @@ class TransactionReceiverInline(NestedTabularInline):
         return super(TransactionReceiverInline, self).save_model(request, obj, form, change)
 
 
-class ActivityDateInline(NestedTabularInline):
+class ActivityDateInline(nested_admin.NestedStackedInline):
     model = ActivityDate
-    extra = 0
+    extra = 4
 
 
 class ActivityReportingOrganisationForm(forms.ModelForm):
@@ -154,13 +108,13 @@ class ActivityReportingOrganisationForm(forms.ModelForm):
         return data
 
 
-class ActivityReportingOrganisationInline(NestedTabularInline):
+class ActivityReportingOrganisationInline(nested_admin.NestedStackedInline):
 
     model = ActivityReportingOrganisation
     inlines = [
         NarrativeInline,
     ]
-    extra = 0
+    extra = 2
     form = ActivityReportingOrganisationForm
 
     fields = (
@@ -186,7 +140,7 @@ class ActivityParticipatingOrganisationForm(forms.ModelForm):
         return data
 
 
-class ActivityParticipatingOrganisationInline(NestedTabularInline):
+class ActivityParticipatingOrganisationInline(nested_admin.NestedStackedInline):
     model = ActivityParticipatingOrganisation
     inlines = [
         NarrativeInline,
@@ -199,10 +153,10 @@ class ActivityParticipatingOrganisationInline(NestedTabularInline):
         'normalized_ref',
         'primary_name')
 
-    extra = 1
+    extra = 8
 
 
-class TransactionInline(NestedTabularInline):
+class TransactionInline(nested_admin.NestedStackedInline):
     model = Transaction
 
     fields = (
@@ -216,11 +170,7 @@ class TransactionInline(NestedTabularInline):
         'edit_transaction',)
     readonly_fields = ('edit_transaction', 'transaction_provider', 'transaction_receiver')
 
-    raw_id_fields = ('currency',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['currency'],
-    }
+    form = autocomplete_forms.modelform_factory(Transaction, fields='__all__')
 
     def transaction_provider(self, obj):
         try:
@@ -244,93 +194,89 @@ class TransactionInline(NestedTabularInline):
             return format_html(
                 'Please save the activity to edit receiver/provider details')
 
-    extra = 0
+    extra = 8
 
 
-class ActivityPolicyMarkerInline(NestedTabularInline):
+class ActivityPolicyMarkerInline(nested_admin.NestedStackedInline):
     model = ActivityPolicyMarker
-    extra = 0
+    extra = 8
 
 
-class ActivityRecipientCountryInline(NestedTabularInline):
+class ActivityRecipientCountryInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientCountry
-    extra = 0
+    extra = 8
 
-    raw_id_fields = ('country',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['country'],
-    }
+    form = autocomplete_forms.modelform_factory(ActivityRecipientCountry, fields='__all__')
 
 
-class ActivitySectorInline(NestedTabularInline):
+class ActivitySectorInline(nested_admin.NestedStackedInline):
     model = ActivitySector
-    extra = 0
+    extra = 8
 
-    raw_id_fields = ('sector',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['sector'],
-    }
+    form = autocomplete_forms.modelform_factory(Sector, fields='__all__')
 
 
-class ActivityRecipientRegionInline(NestedTabularInline):
+class ActivityRecipientRegionInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientRegion
-    extra = 0
+    extra = 8
 
 
-class BudgetInline(NestedTabularInline):
+class BudgetInline(nested_admin.NestedStackedInline):
     model = Budget
     exclude = ('value_string',)
+    extra = 2
+
+
+class DocumentCategoryInline(nested_admin.NestedStackedInline):
+    model = DocumentLinkCategory
+    fields = ('document_link', 'category')
     extra = 0
 
-
-# class DocumentCategoryInline(NestedTabularInline):
-#     model = DocumentLinkCategory
-#     fields = ('document_link', 'category')
-#     extra = 0
-#
-#     raw_id_fields = ('category',)
-#
-#     related_lookup_fields = {
-#         'fk': ['category'],
-#     }
+    form = autocomplete_forms.modelform_factory(DocumentCategory, fields='__all__')
 
 
-class DocumentLinkTitleInline(NestedTabularInline):
+class DocumentLinkTitleForm(autocomplete_forms.ModelForm):
+
+    def save(self, commit=True):
+        instance = super(DocumentLinkTitleForm, self).save(commit=False)
+        instance.save()
+        return instance
+
+
+class DocumentLinkTitleInline(nested_admin.NestedStackedInline):
     model = DocumentLinkTitle
     inlines = [
         NarrativeInline,
     ]
 
+    # form = DocumentLinkTitleForm
+
     extra = 1
 
 
-class DocumentLinkForm(forms.ModelForm):
-    url = CharField(label='url', max_length=500)
-
+class DocumentLinkForm(autocomplete_forms.ModelForm):
     class Meta:
         model = DocumentLink
         exclude = ['']
+        widgets = {'url': forms.TextInput(attrs={'class': 'admin-charfield-more-width'})}
+
+    def save(self, commit=True):
+        instance = super(DocumentLinkForm, self).save(commit=False)
+        instance.save()
+        return instance
 
 
-class DocumentLinkInline(NestedTabularInline):
-    inlines = [NarrativeInline,]
+class DocumentLinkInline(nested_admin.NestedStackedInline):
+    inlines = [DocumentLinkTitleInline]
     model = DocumentLink
-    extra = 1
+    extra = 6
 
     form = DocumentLinkForm
 
-    raw_id_fields = ('file_format',)
 
-    autocomplete_lookup_fields = {
-        'fk': ['file_format'],
-    }
-
-
-class ResultInline(NestedTabularInline):
+class ResultInline(nested_admin.NestedStackedInline):
     model = Result
-    extra = 0
+    extra = 6
 
     fields = ('read_title', 'type', 'aggregation_status', 'read_description', 'edit_result',)
     readonly_fields = ('read_title', 'read_description', 'edit_result',)
@@ -385,6 +331,7 @@ class LocationForm(forms.ModelForm):
                 latitude = float(data['latitude'])
                 longitude = float(data['longitude'])
                 data['point_pos'] = Point(longitude, latitude)
+
         try:
             coordinates = kwargs['instance'].point_pos.tuple
             initial = kwargs.get('initial', {})
@@ -398,17 +345,20 @@ class LocationForm(forms.ModelForm):
     def clean(self):
         data = super(LocationForm, self).clean()
         if "latitude" in self.changed_data or "longitude" in self.changed_data:
-            lat, lng = float(data.pop("latitude", None)), float(data.pop("longitude", None))
-            data["point_pos"] = Point(lng, lat)
+            try:
+                lat, lng = float(data.pop("latitude", None)), float(data.pop("longitude", None))
+                data['point_pos'] = Point(lng, lat)
+            except (TypeError, ValueError):
+                data['point_pos'] = None
 
         if not (data.get("point_pos") or data.get("latitude")):
             raise forms.ValidationError({"point_pos": "Coordinates is required"})
         return data
 
 
-class LocationInline(NestedTabularInline):
+class LocationInline(nested_admin.NestedStackedInline):
     model = Location
-    extra = 0
+    extra = 6
 
     form = LocationForm
 
@@ -421,7 +371,7 @@ class LocationInline(NestedTabularInline):
         'point_pos')
 
 
-class RelatedActivityForm(forms.ModelForm):
+class RelatedActivityForm(autocomplete_forms.ModelForm):
 
     class Meta(object):
         model = RelatedActivity
@@ -436,36 +386,30 @@ class RelatedActivityForm(forms.ModelForm):
         return data
 
 
-class RelatedActivityInline(NestedTabularInline):
+class RelatedActivityInline(nested_admin.NestedStackedInline):
     model = RelatedActivity
     fk_name = 'current_activity'
-    extra = 0
+    extra = 3
     form = RelatedActivityForm
 
-    raw_id_fields = ('ref_activity',)
 
-    autocomplete_lookup_fields = {
-        'fk': ['ref_activity'],
-    }
-
-
-class DescriptionInline(NestedTabularInline):
+class DescriptionInline(nested_admin.NestedStackedInline):
     model = Description
-    extra = 1
+    extra = 4
     inlines = [NarrativeInline, ]
 
 
-class TitleInline(NestedTabularInline):
+class TitleInline(nested_admin.NestedStackedInline):
     model = Title
-    extra = 0
+    extra = 2
     inlines = [NarrativeInline, ]
 
 
-class ActivityAdmin(ExtraNestedModelAdmin):
+class ActivityAdmin(nested_admin.NestedAdmin):
     search_fields = ['id']
     exclude = (
         'activity_aggregations',
-        'planned_start', 
+        'planned_start',
         'actual_start',
         'start_date',
         'planned_end',
@@ -492,11 +436,7 @@ class ActivityAdmin(ExtraNestedModelAdmin):
         TransactionInline,
     ]
 
-    raw_id_fields = ('default_currency',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['default_currency'],
-    }
+    form = autocomplete_forms.modelform_factory(Activity, fields='__all__')
 
     def get_inline_instances(self, request, obj=None):
         if obj is None:
@@ -522,8 +462,18 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             description.activity = obj
             description.save()
 
+        self.act = obj
+
 
     def save_formset(self, request, form, formset, change):
+        if formset.model == Narrative:
+            for entry in formset.cleaned_data:
+                if entry and entry['id'] is None:
+                    if isinstance(formset.instance, DocumentLinkTitle):
+                        formset.instance.document_link_id = formset.instance.document_link.id
+                        formset.instance.save()
+                    entry['activity'] = self.act
+
         super(ActivityAdmin, self).save_formset(request, form, formset, change)
 
         # set derived activity dates (used for sorting)
@@ -552,8 +502,8 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             activity.save()
 
         # save primary name on participating organisation to make querying work
-        if isinstance(form, ActivityParticipatingOrganisationForm) and formset.model == Narrative:
-            po = form.instance
+        if isinstance(formset.instance, ActivityParticipatingOrganisation):
+            po = formset.instance
             if po.narratives.all().count() > 0:
                 po.primary_name = po.narratives.all()[0].content.strip()
                 po.save()
@@ -564,11 +514,7 @@ class ActivityAdmin(ExtraNestedModelAdmin):
             aggregation_calculator.parse_activity_aggregations(form.instance)
 
 
-
-
-
-
-class TransactionAdmin(ExtraNestedModelAdmin):
+class TransactionAdmin(nested_admin.NestedAdmin):
     search_fields = ['activity__id']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
@@ -579,12 +525,15 @@ class TransactionAdmin(ExtraNestedModelAdmin):
         TransactionReceiverInline,
     ]
 
-    raw_id_fields = ('activity', 'recipient_country', 'currency',)
+    form = autocomplete_forms.modelform_factory(Transaction, fields='__all__')
 
-    autocomplete_lookup_fields = {
-        'fk': ['activity', 'recipient_country', 'currency'],
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []
 
-    }
+        inline_instances = super(TransactionAdmin, self).get_inline_instances(request, obj)
+
+        return inline_instances
 
     def get_object(self, request, object_id, from_field=None):
         obj = super(TransactionAdmin, self).get_object(request, object_id)
@@ -608,13 +557,15 @@ class TransactionAdmin(ExtraNestedModelAdmin):
             transaction_provider.save()
             obj.provider_organisation = transaction_provider
 
+        self.act = obj.activity
+
         return obj
 
-    def save_model(self, request, obj, form, change):
-
-        super(TransactionAdmin, self).save_model(request, obj, form, change)
-
     def save_formset(self, request, form, formset, change):
+        if formset.model == Narrative:
+            for entry in formset.cleaned_data:
+                if entry and entry['id'] is None:
+                    entry['activity'] = self.act
         super(TransactionAdmin, self).save_formset(request, form, formset, change)
 
         # update aggregations after save of last inline form
@@ -623,7 +574,7 @@ class TransactionAdmin(ExtraNestedModelAdmin):
             aggregation_calculator.parse_activity_aggregations(form.instance.activity)
 
 
-class ResultIndicatorTitleInline(NestedTabularInline):
+class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorTitle
     inlines = [
         NarrativeInline,
@@ -632,50 +583,50 @@ class ResultIndicatorTitleInline(NestedTabularInline):
     extra = 1
 
 
-class ResultIndicatorBaselineCommentInline(NestedTabularInline):
+class ResultIndicatorBaselineCommentInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorBaselineComment
     inlines = [
         NarrativeInline,
     ]
 
-    extra = 0
-
-
-class ResultIndicatorPeriodInline(NestedTabularInline):
-    model = ResultIndicatorPeriod
-
     extra = 1
 
 
-class ResultIndicatorInline(NestedTabularInline):
+class ResultIndicatorPeriodInline(nested_admin.NestedStackedInline):
+    model = ResultIndicatorPeriod
+
+    extra = 4
+
+
+class ResultIndicatorInline(nested_admin.NestedStackedInline):
     model = ResultIndicator
     inlines = [
         ResultIndicatorTitleInline,
         ResultIndicatorPeriodInline,
     ]
 
-    extra = 0
+    extra = 4
 
 
-class ResultTitleInline(NestedTabularInline):
+class ResultTitleInline(nested_admin.NestedStackedInline):
     model = ResultTitle
     inlines = [
         NarrativeInline,
     ]
 
-    extra = 0
+    extra = 1
 
 
-class ResultDescriptionInline(NestedTabularInline):
+class ResultDescriptionInline(nested_admin.NestedStackedInline):
     model = ResultDescription
     inlines = [
         NarrativeInline,
     ]
 
-    extra = 0
+    extra = 1
 
 
-class ResultAdmin(ExtraNestedModelAdmin):
+class ResultAdmin(nested_admin.NestedAdmin):
     search_fields = ['activity__id']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
@@ -685,11 +636,7 @@ class ResultAdmin(ExtraNestedModelAdmin):
         ResultIndicatorInline,
     ]
 
-    raw_id_fields = ('activity',)
-
-    autocomplete_lookup_fields = {
-        'fk': ['activity'],
-    }
+    form = autocomplete_forms.modelform_factory(Result, fields='__all__')
 
     def get_inline_instances(self, request, obj=None):
         if obj is None:
@@ -743,6 +690,15 @@ class ResultAdmin(ExtraNestedModelAdmin):
             description = ResultDescription()
             description.result = obj
             description.save()
+
+        self.act = obj.activity
+
+    def save_formset(self, request, form, formset, change):
+        if formset.model == Narrative:
+            for entry in formset.cleaned_data:
+                if entry and entry['id'] is None:
+                    entry['activity'] = self.act
+        super(ResultAdmin, self).save_formset(request, form, formset, change)
 
 
 admin.site.register(Activity, ActivityAdmin)

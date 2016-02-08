@@ -6,6 +6,18 @@ header#grp-header{
     top: 0;
 }
 
+.inline-group .inline-group .grp-td.activity, .inline-group .inline-group .grp-th.none{
+    display: none;
+}
+
+.admin-charfield-more-width{
+    min-width: 400px;
+}
+
+.autocomplete-light-widget {
+  z-index:10;
+}
+
 .oipa-topnav{
     padding: 5px 20px;
     display: block;
@@ -154,22 +166,22 @@ a{
 #add-task-parser-notification, #add-task-default-notification{
     opacity: 0;
     color: #51a351;
-
 }
-
-/*.nested-inline .nested-inline{*/
-    /*display: table;*/
-/*}*/
-
-/*.nested-nested-inline,*/
-/*.nested-nested-inline .grp-tr,*/
-/*.nested-nested-inline .grp-group,*/
-/*.nested-nested-inline .grp-thead,*/
-/*.nested-nested-inline .grp-tbody{*/
-    /*display: inline-block !important;*/
-/*}*/
 
 .nested-caption{
     caption-side: top;
     display: table-caption;
+}
+
+
+.inline-extra-item{
+    display: none;
+}
+
+.custom-oipa-add-another[data-set="documentlinktitle"] {
+    display: none;
+}
+
+#ui-datepicker-div{
+    z-index: 99 !important;
 }

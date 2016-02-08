@@ -110,9 +110,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'grappelli_nested',
     'grappelli',
     'django.contrib.admin',
+    'autocomplete_light',
     'django.contrib.admindocs',
     'django.contrib.gis',
     'corsheaders',
@@ -140,7 +140,7 @@ INSTALLED_APPS = (
     'iati_vocabulary',
     'iati_codelists',
     'test_without_migrations',
-    'nested_inline',
+    'nested_admin',
     'djorm_pgfulltext',
 )
 

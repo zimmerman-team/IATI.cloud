@@ -1,5 +1,7 @@
 # admin-multiupload==0.1
 git+git://github.com/gkuhn1/django-admin-multiupload.git
+git+git://github.com/theatlantic/django-nested-admin.git
+django-autocomplete-light==2.3.3
 requests==2.9.1
 Django==1.9.2
 git+https://github.com/zimmerman-zimmerman/djorm-ext-pgfulltext.git
@@ -11,7 +13,6 @@ django-filter==0.12.0
 django-formtools==1.0
 django-grappelli==2.7.3
 django-haystack==2.4.1
-git+https://github.com/Egregors/django-nested-inline.git
 django-otp==0.3.4
 django-otp-yubikey==0.3.3
 django-rq==0.9.0
@@ -20,7 +21,6 @@ django-test-without-migrations==0.4
 djangorestframework==3.3.2
 elasticsearch==2.2.0
 factory-boy==2.6.0
-grappelli-nested-inlines==0.6.0
 lxml==3.5.0
 mechanize==0.2.5
 mock==1.3.0

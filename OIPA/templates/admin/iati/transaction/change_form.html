@@ -1,0 +1,7 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_static admin_modify %}
+
+{% block extrahead %}
+{{block.super}}
+<script type="text/javascript" src="/static/admin/js/iati_admin_edit.js"></script>
+{% endblock %}
