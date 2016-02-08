@@ -67,12 +67,25 @@ class TestCountrySerializers(TestCase):
 
         required_fields = (
             'url',
+            'code',
+            'pk',
+            'numerical_code_un',
+            'name',
+            'alt_name',
+            'language',
             'capital_city',
             'region',
             'un_region',
             'unesco_region',
+            'dac_country_code',
+            'iso3',
+            'alpha3',
+            'fips10',
+            'data_source',
             'activities',
-            'indicators',
+            'cities',
+            'location',
+            'polygon',
         )
         assertion_msg = "the field '{0}' should be in the serialized country"
         for field in required_fields:

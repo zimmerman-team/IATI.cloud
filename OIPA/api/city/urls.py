@@ -9,9 +9,4 @@ urlpatterns = [
         views.CityDetail.as_view(),
         name='city-detail'
     ),
-    url(
-        r'^(?P<pk>[0-9]+)/indicators/$',
-        views.CityIndicators.as_view(),
-        name='city-indicators'
-    ),
 ]

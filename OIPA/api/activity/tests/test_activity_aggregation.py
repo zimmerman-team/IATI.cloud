@@ -4,6 +4,7 @@ from iati.transaction import factories as transaction_factory
 from rest_framework.test import APIClient
 from decimal import Decimal
 
+
 class ActivityAggregationTestCase(TestCase):
     def setUp(self):
         """set up 2 activities with the shown specs

@@ -33,8 +33,6 @@ class TestRegionSerializers(TestCase):
             'url',
             'region_vocabulary',
             'parental_region',
-            'countries',
-            'activities',
             'location',
             'child_regions'
         )

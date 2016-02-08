@@ -31,10 +31,6 @@ class RegionSerializer(DynamicFieldsModelSerializer):
     child_regions = BasicRegionSerializer(
         many=True, source='region_set', fields=('url', 'code', 'name'))
     parental_region = BasicRegionSerializer(fields=('url', 'code', 'name'))
-    countries = serializers.HyperlinkedIdentityField(
-        view_name='regions:region-countries')
-    activities = serializers.HyperlinkedIdentityField(
-        view_name='regions:region-activities')
     location = GeometryField(source='center_longlat')
 
     class Meta:
@@ -46,8 +42,6 @@ class RegionSerializer(DynamicFieldsModelSerializer):
             'name',
             'region_vocabulary',
             'parental_region',
-            'countries',
-            'activities',
             'location',
             'child_regions',
         )

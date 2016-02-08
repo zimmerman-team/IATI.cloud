@@ -17,25 +17,16 @@ class TestActivityEndpoints(TestCase):
         expect_url = '/api/activities/activity_id/'
         assert url == expect_url, msg.format(expect_url)
 
-    def test_activity_sectors_endpoint(self):
-        url = reverse('activities:activity-sectors', args={'activity_id'})
+    def test_activity_aggregations_endpoint(self):
+        url = reverse('activities:activity-aggregations')
 
-        msg = 'activity sectors endpoint should be localed at {0}'
-        expect_url = '/api/activities/activity_id/sectors/'
+        msg = 'activity aggregations endpoint should be localed at {0}'
+        expect_url = '/api/activities/aggregations/'
         assert url == expect_url, msg.format(expect_url)
 
-    def test_participating_orgs_endpoint(self):
-        url = reverse(
-            'activities:activity-participating-organisations',
-            args={'activity_id'})
+    def test_transactions_endpoint(self):
+        url = reverse('activities:activity-transactions', args={'activity_id'})
 
-        msg = 'activity participating-orgs endpoint should be localed at {0}'
-        expect_url = '/api/activities/activity_id/participating-orgs/'
-        assert url == expect_url, msg.format(expect_url)
-
-    def test_recipient_countries_endpoint(self):
-        url = reverse('activities:activity-recipient-countries', args={'activity_id'})
-
-        msg = 'activity recipient countries endpoint should be localed at {0}'
-        expect_url = '/api/activities/activity_id/recipient-countries/'
+        msg = 'activity transactions endpoint should be localed at {0}'
+        expect_url = '/api/activities/activity_id/transactions/'
         assert url == expect_url, msg.format(expect_url)

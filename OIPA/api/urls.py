@@ -16,5 +16,4 @@ urlpatterns = [
         namespace='transactions')),
     url(r'^datasets/', include('api.dataset.urls', namespace='datasets')),
     url(r'^publishers/', include('api.publisher.urls', namespace='publishers')),
-    url(r'^policy_markers/', include('api.policy_marker.urls', namespace='policy_markers')),
 ]

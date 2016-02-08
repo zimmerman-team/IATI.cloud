@@ -1,15 +1,10 @@
 import geodata
 from api.country import serializers
-from api.activity.views import ActivityList
-from api.city.serializers import CitySerializer
 from geodata.models import Country
-from indicator.models import IndicatorData
-from api.indicator.views import IndicatorList
-from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from api.country.filters import CountryFilter
+from api.generics.views import DynamicListView
 
-from api.generics.views import DynamicListView, DynamicDetailView
 
 class CountryList(DynamicListView):
     """
@@ -73,90 +68,3 @@ class CountryDetail(RetrieveAPIView):
     """
     queryset = geodata.models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
-
-
-class CountryActivities(ActivityList):
-    """
-    Returns a list of IATI Activities connected to Country stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/countries/{country_id}/activities
-    ```
-
-    ### URI Parameters
-
-    - `country_id`: Numerical ID of desired Country
-
-    ## Result details
-
-    Each result item contains short information about activity including URI
-    to activity details.
-
-    URI is constructed as follows: `/api/activities/{activity_id}`
-
-    """
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        country = Country.objects.get(pk=pk)
-        return country.activity_set.all()
-
-
-class CountryIndicators(IndicatorList):
-    """
-    Returns a list of IATI Country indicators stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/countries/{country_id}/indicators
-    ```
-
-    ### URI Parameters
-
-    - `country_id`: Numerical ID of desired Country
-
-    ## Result details
-
-    Each result item contains short information about indicator including URI
-    to indicator details.
-
-    URI is constructed as follows: `/api/indicators/{indicator_id}`
-
-    """
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        country = Country.objects.get(pk=pk)
-        return country.indicatordata_set.all()
-
-
-class CountryCities(ListAPIView):
-    """
-    Returns a list of IATI Country cities stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/countries/{country_id}/cities
-    ```
-
-    ### URI Parameters
-
-    - `country_id`: Numerical ID of desired Country
-
-    ## Result details
-
-    Each result item contains short information about city including URI
-    to city details.
-
-    URI is constructed as follows: `/api/cities/{city_id}`
-
-    """
-    queryset = IndicatorData.objects.all()
-    serializer_class = CitySerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        country = Country.objects.get(pk=pk)
-        return country.city_set.all()

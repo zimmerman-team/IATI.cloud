@@ -9,8 +9,6 @@ class CitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='cities:city-detail')
     country = CountrySerializer(fields=('url', 'code', 'name'))
     location = GeometryField()
-    indicators = serializers.HyperlinkedIdentityField(
-        view_name='cities:city-indicators')
 
     class Meta:
         model = geodata.models.City
@@ -22,5 +20,4 @@ class CitySerializer(DynamicFieldsModelSerializer):
             'country',
             'location',
             'is_capital',
-            'indicators',
         )
