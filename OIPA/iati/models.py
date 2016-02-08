@@ -30,6 +30,9 @@ class Narrative(models.Model):
     language = models.ForeignKey(Language)
     content = models.TextField()
 
+    def __unicode__(self,):
+        return "%s" % self.content[:30]
+
     class Meta:
         index_together = [('related_content_type', 'related_object_id')]
 
@@ -282,6 +285,8 @@ class ActivityReportingOrganisation(models.Model):
         verbose_name = 'Reporting organisation'
         verbose_name_plural = 'Reporting organisations'
 
+    def __unicode__(self,):
+        return "ref: %s" % self.ref
 
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
@@ -306,7 +311,7 @@ class ActivityParticipatingOrganisation(models.Model):
     primary_name = models.TextField(blank=True)
 
     def __unicode__(self,):
-        return "%s: %s" % (self.activity.id, self.ref)
+        return "name: %s - role: %s" % (self.primary_name, self.role)
 
     class Meta:
         verbose_name = 'Participating organisation'
@@ -318,17 +323,14 @@ class ActivityPolicyMarker(models.Model):
     code = models.ForeignKey(PolicyMarker)
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
     significance = models.ForeignKey(
-        PolicySignificance,
-        null=True,
-        blank=True,
-        default=None)
+        PolicySignificance)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
     def __unicode__(self,):
-        return "%s - %s - %s" % (self.activity.id, self.code, self.significance.code)
+        return "code: %s - significance: %s" % (self.code, self.significance.code)
 
     class Meta:
         verbose_name = 'Policy marker'
@@ -347,7 +349,7 @@ class ActivitySector(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.sector)
+        return "name: %s" % self.sector
 
     class Meta:
         verbose_name = 'Sector'
@@ -365,7 +367,7 @@ class ActivityRecipientCountry(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.country)
+        return "name: %s" % self.country
 
     class Meta:
         verbose_name = 'Recipient country'
@@ -405,7 +407,7 @@ class ActivityRecipientRegion(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.region)
+        return "name: %s" % self.region
 
     class Meta:
         verbose_name = 'Recipient region'
@@ -424,7 +426,7 @@ class OtherIdentifier(models.Model):
     type = models.ForeignKey(OtherIdentifierType, null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.identifier)
+        return "identifier: %s" % self.identifier
 
 
 class ActivityWebsite(models.Model):
@@ -432,7 +434,7 @@ class ActivityWebsite(models.Model):
     url = models.URLField()
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.url)
+        return "%s" % self.url
 
 
 #   Class not truly correct, attributes fully open
@@ -450,7 +452,7 @@ class ContactInfo(models.Model):
     job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
-        return "ContactInfo: %s" % self.activity.id
+        return "type: %s" % self.type
 
 # class ContactInfoOrganisationNarrative(Narrative):
 #     pass
@@ -526,7 +528,7 @@ class PlannedDisbursement(models.Model):
     # updated = models.DateField(null=True, default=None) deprecated
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.period_start)
+        return "value: %s - period_start: %s - period_end: %s" % (self.value, self.period_start, self.period_end)
 
 
 class RelatedActivity(models.Model):
@@ -548,7 +550,7 @@ class RelatedActivity(models.Model):
     ref = models.CharField(db_index=True, max_length=200, default="", blank=True)
 
     def __unicode__(self,):
-        return "%s" % self.ref
+        return "ref-activity: %s" % self.ref_activity
 
     class Meta:
         verbose_name_plural = "related activities"
@@ -563,7 +565,7 @@ class DocumentLink(models.Model):
         through="DocumentLinkCategory")
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.url)
+        return "url: %s" % self.url
 
 
 # enables saving before parent object is saved (workaround)
@@ -596,7 +598,7 @@ class Result(models.Model):
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
-        return "Result: %s" % self.activity.id
+        return "Result"
 
 
 class ResultTitle(models.Model):
@@ -627,7 +629,7 @@ class ResultIndicator(models.Model):
     ascending = models.BooleanField(default=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.result, self.baseline_year)
+        return "baseline year: %s" % self.baseline_year
 
 
 class ResultIndicatorTitle(models.Model):
@@ -698,7 +700,7 @@ class Description(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "Description: %s - %s" % (self.activity.id, self.type)
+        return "Description with type %s" % self.type
 
 
 class Budget(models.Model):
@@ -712,7 +714,7 @@ class Budget(models.Model):
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.period_start)
+        return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
 
 class Condition(models.Model):
@@ -721,7 +723,7 @@ class Condition(models.Model):
     type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.type)
+        return "text: %s - type: %s" % (self.text[:30], self.type)
 
 
 class Location(models.Model):
@@ -761,7 +763,7 @@ class Location(models.Model):
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
 
     def __unicode__(self,):
-        return "Location: %s" % (self.activity.id,)
+        return "Location: %s" % self.point_pos
 
 
 # TODO: move to codelist
@@ -898,7 +900,7 @@ class ActivityDate(models.Model):
     type = models.ForeignKey(ActivityDateType)
 
     def __unicode__(self):
-        return "%s - %s - %s" % (self.activity.id, self.type.name, self.iso_date.strftime('%Y-%m-%d'))
+        return "type: %s - iso_date: %s" % (self.type, self.iso_date.strftime('%Y-%m-%d'))
 
 
 class LegacyData(models.Model):

@@ -51,9 +51,9 @@ class Transaction(models.Model):
     objects = TransactionQuerySet.as_manager()
 
     def __unicode__(self, ):
-        return "%s: %s - %s" % (self.activity,
-                                self.transaction_type,
-                                self.transaction_date)
+        return "value: %s - transaction date: %s - type: %s" % (self.value,
+                                 self.transaction_date,
+                                 self.transaction_type,)
 
 
 class TransactionProvider(models.Model):

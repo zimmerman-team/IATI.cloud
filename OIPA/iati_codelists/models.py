@@ -19,7 +19,7 @@ class ActivityDateType(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class ActivityStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -80,7 +80,7 @@ class ConditionType(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class Currency(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -291,7 +291,7 @@ class PolicyMarker(models.Model):
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class PolicySignificance(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -530,5 +530,5 @@ class TransactionType(models.Model):
     codelist_successor = models.CharField(max_length=100)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
