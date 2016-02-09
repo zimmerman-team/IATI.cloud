@@ -22,6 +22,7 @@ djangorestframework==3.3.2
 elasticsearch==2.2.0
 factory-boy==2.6.0
 lxml==3.5.0
+Markdown==2.6.5
 mechanize==0.2.5
 mock==1.3.0
 psycopg2==2.6.1
