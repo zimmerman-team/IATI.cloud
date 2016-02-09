@@ -49,6 +49,8 @@ class TransactionDescriptionInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
 
     extra = 1
 
@@ -58,6 +60,8 @@ class TransactionProviderInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     exclude = ('normalized_ref', 'organisation', 'provider_activity_ref')
 
     form = autocomplete_forms.modelform_factory(TransactionProvider, fields='__all__')
@@ -75,6 +79,8 @@ class TransactionReceiverInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     exclude = ('normalized_ref', 'organisation', 'receiver_activity_ref')
 
     form = autocomplete_forms.modelform_factory(TransactionReceiver, fields='__all__')
@@ -91,6 +97,8 @@ class TransactionReceiverInline(nested_admin.NestedStackedInline):
 class ActivityDateInline(nested_admin.NestedStackedInline):
     model = ActivityDate
     extra = 4
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
 
 
 class ActivityReportingOrganisationForm(forms.ModelForm):
@@ -116,6 +124,8 @@ class ActivityReportingOrganisationInline(nested_admin.NestedStackedInline):
     ]
     extra = 2
     form = ActivityReportingOrganisationForm
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
 
     fields = (
         'ref',
@@ -142,6 +152,8 @@ class ActivityParticipatingOrganisationForm(forms.ModelForm):
 
 class ActivityParticipatingOrganisationInline(nested_admin.NestedStackedInline):
     model = ActivityParticipatingOrganisation
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         NarrativeInline,
     ]
@@ -158,6 +170,8 @@ class ActivityParticipatingOrganisationInline(nested_admin.NestedStackedInline):
 
 class TransactionInline(nested_admin.NestedStackedInline):
     model = Transaction
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
 
     fields = (
         'transaction_type',
@@ -199,11 +213,15 @@ class TransactionInline(nested_admin.NestedStackedInline):
 
 class ActivityPolicyMarkerInline(nested_admin.NestedStackedInline):
     model = ActivityPolicyMarker
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 8
 
 
 class ActivityRecipientCountryInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientCountry
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 8
 
     form = autocomplete_forms.modelform_factory(ActivityRecipientCountry, fields='__all__')
@@ -211,6 +229,8 @@ class ActivityRecipientCountryInline(nested_admin.NestedStackedInline):
 
 class ActivitySectorInline(nested_admin.NestedStackedInline):
     model = ActivitySector
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 8
 
     form = autocomplete_forms.modelform_factory(Sector, fields='__all__')
@@ -218,17 +238,23 @@ class ActivitySectorInline(nested_admin.NestedStackedInline):
 
 class ActivityRecipientRegionInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientRegion
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 8
 
 
 class BudgetInline(nested_admin.NestedStackedInline):
     model = Budget
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     exclude = ('value_string',)
     extra = 2
 
 
 class DocumentCategoryInline(nested_admin.NestedStackedInline):
     model = DocumentLinkCategory
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     fields = ('document_link', 'category')
     extra = 0
 
@@ -245,6 +271,9 @@ class DocumentLinkTitleForm(autocomplete_forms.ModelForm):
 
 class DocumentLinkTitleInline(nested_admin.NestedStackedInline):
     model = DocumentLinkTitle
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
+
     inlines = [
         NarrativeInline,
     ]
@@ -269,6 +298,8 @@ class DocumentLinkForm(autocomplete_forms.ModelForm):
 class DocumentLinkInline(nested_admin.NestedStackedInline):
     inlines = [DocumentLinkTitleInline]
     model = DocumentLink
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 6
 
     form = DocumentLinkForm
@@ -276,6 +307,8 @@ class DocumentLinkInline(nested_admin.NestedStackedInline):
 
 class ResultInline(nested_admin.NestedStackedInline):
     model = Result
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 6
 
     fields = ('read_title', 'type', 'aggregation_status', 'read_description', 'edit_result',)
@@ -358,6 +391,8 @@ class LocationForm(forms.ModelForm):
 
 class LocationInline(nested_admin.NestedStackedInline):
     model = Location
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 6
 
     form = LocationForm
@@ -388,6 +423,8 @@ class RelatedActivityForm(autocomplete_forms.ModelForm):
 
 class RelatedActivityInline(nested_admin.NestedStackedInline):
     model = RelatedActivity
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     fk_name = 'current_activity'
     extra = 3
     form = RelatedActivityForm
@@ -395,12 +432,16 @@ class RelatedActivityInline(nested_admin.NestedStackedInline):
 
 class DescriptionInline(nested_admin.NestedStackedInline):
     model = Description
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 4
     inlines = [NarrativeInline, ]
 
 
 class TitleInline(nested_admin.NestedStackedInline):
     model = Title
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     extra = 2
     inlines = [NarrativeInline, ]
 
@@ -576,6 +617,8 @@ class TransactionAdmin(nested_admin.NestedAdmin):
 
 class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorTitle
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         NarrativeInline,
     ]
@@ -585,6 +628,8 @@ class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
 
 class ResultIndicatorBaselineCommentInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorBaselineComment
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         NarrativeInline,
     ]
@@ -594,12 +639,16 @@ class ResultIndicatorBaselineCommentInline(nested_admin.NestedStackedInline):
 
 class ResultIndicatorPeriodInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorPeriod
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
 
     extra = 4
 
 
 class ResultIndicatorInline(nested_admin.NestedStackedInline):
     model = ResultIndicator
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         ResultIndicatorTitleInline,
         ResultIndicatorPeriodInline,
@@ -610,6 +659,8 @@ class ResultIndicatorInline(nested_admin.NestedStackedInline):
 
 class ResultTitleInline(nested_admin.NestedStackedInline):
     model = ResultTitle
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         NarrativeInline,
     ]
@@ -619,6 +670,8 @@ class ResultTitleInline(nested_admin.NestedStackedInline):
 
 class ResultDescriptionInline(nested_admin.NestedStackedInline):
     model = ResultDescription
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
     inlines = [
         NarrativeInline,
     ]

@@ -190,3 +190,13 @@ a{
     margin: 10px 10px 10px 0;
     display: inline-block;
 }
+
+.autocomplete-light-widget .deck [data-value] .remove{
+    position: absolute;
+    left: 7px;
+    top: 9px;
+}
+
+.autocomplete-light-widget .deck [data-value]{
+    padding-left: 20px;
+}
