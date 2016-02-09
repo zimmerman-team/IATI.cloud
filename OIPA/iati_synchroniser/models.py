@@ -52,8 +52,8 @@ class IatiXmlSource(models.Model):
     get_parse_activity.allow_tags = True
     get_parse_activity.short_description = _(u"Parse Activity")
 
-    def process(self):
-        parser = ParseIATI(self)
+    def process(self, force_reparse=False):
+        parser = ParseIATI(self, force_reparse=force_reparse)
         parser.parse_all()
 
         self.is_parsed = True
@@ -68,7 +68,7 @@ class IatiXmlSource(models.Model):
         parser = ParseIATI(self)
         parser.parse_activity(activity_id)
 
-    def save(self, process=False , added_manually=True, *args, **kwargs):
+    def save(self, process=False, added_manually=True, *args, **kwargs):
         self.added_manually = added_manually
         super(IatiXmlSource, self).save()
 

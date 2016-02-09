@@ -5,14 +5,10 @@ from django.core import management
 from iati.factory import iati_factory
 from unittest import skip
 from django.test import TestCase as DjangoTestCase
-from lxml.builder import E
-from iati.models import Activity
 import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.parser.genericXmlParser import XMLParser as GenericParser
-from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
-from time import sleep
-import datetime
+
 
 
 # TODO: use factories instead of these fixtures
@@ -74,41 +70,6 @@ class GenericParserTestCase(DjangoTestCase):
 
         with self.assertRaises(Exception):
             activity = self.parser.model_store['Activity'][0]
-
-
-    def test_parser_deletes_removed_activities(self):
-        """The parser should remove activities that are not in the source any longer
-
-        create 2 activities
-        mock a file with 1 of them
-        parsing this file should delete the other activity
-        """
-        version = codelist_models.Version.objects.get(code='2.01')
-        first_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0001',
-            iati_identifier='IATI-0001',
-            iati_standard_version=version,
-            xml_source_ref='source_reference')
-        second_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0002',
-            iati_identifier='IATI-0002',
-            iati_standard_version=first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
-
-        root = E('iati-activities', version='2.01')
-        xml_activity = E('iati-activity')
-        xml_title = E('title', 'Title of activity 1')
-        xml_activity.append(xml_title)
-        xml_identifier = E('iati-identifier', 'IATI-0001')
-        xml_activity.append(xml_identifier)
-        root.append(xml_activity)
-
-        self.parser = Parser_201(root)
-        self.parser.parse_start_datetime = datetime.datetime.now()
-        self.parser.iati_source = DatasetFactory(ref='source_reference')
-        self.parser.parse_activities(root)
-
-        self.assertEqual(Activity.objects.count(), 1)
 
     @skip('NotImplemented')
     def test_save_model_saves_model(self):

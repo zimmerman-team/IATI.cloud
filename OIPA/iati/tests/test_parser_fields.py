@@ -2360,31 +2360,6 @@ class RelatedActivityTestCase(ParserSetupTestCase):
 
         self.assertTrue(test_related_activity.ref_activity == self.activity)
 
-    @skip('NotImplemented')
-    def test_post_save(self):
-        """
-        Check if sets related activities and activity aggregations
-        """
-        self.parser_201.register_model('Activity', None)
-        self.assertFalse(self.parser_201.post_save())
-
-        self.parser_201.register_model('Activity', self.activity)
-
-        # mock set_related_activities and test_calculate_per_activity_aggregations
-        self.parser_201.register_model('Activity', None)
-
-    @skip('NotImplemented')
-    def set_derived_activity_dates(self):
-        """
-        Check if dates are set correctly
-        """
-
-    @skip('NotImplemented')
-    def test_calculate_per_activity_aggregations(self):
-        """
-        Check if calculated budget / transaction etc values are correct
-        """
-
 
 class ResultTestCase(ParserSetupTestCase):
     """

@@ -19,9 +19,8 @@ class XMLParser(object):
         self.validation_errors = []
         self.required_field_errors = []
         self.iati_source = None
-        self.iati_source_has_changes = False
         self.parse_start_datetime = datetime.datetime.now()
-
+        self.force_reparse = False
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()
@@ -75,8 +74,8 @@ class XMLParser(object):
                 # traceback.print_exc()
                 return
             except Exception as exception:
-                print exception.message
-                # traceback.print_exc()
+                # print exception.message
+                traceback.print_exc()
                 return
 
         # TODO: rewrite this

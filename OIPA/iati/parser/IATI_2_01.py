@@ -14,7 +14,7 @@ from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-
+from iati import activity_search_indexes
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
@@ -221,11 +221,12 @@ class Parse(XMLParser):
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
 
-        if not id: raise self.RequiredFieldError("id", "activity: must contain id")
+        if not id:
+            raise self.RequiredFieldError("id", "activity: must contain id")
         
         old_activity = self.get_or_none(models.Activity, id=id)
 
-        if old_activity:
+        if old_activity and not self.force_reparse:
 
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
@@ -247,6 +248,8 @@ class Parse(XMLParser):
             # TODO: test activity is deleted along with related models
             # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
             # TODO: do this after activity is parsed along with other saves?
+
+        if old_activity:
             old_activity.delete()
 
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.01)
@@ -2188,7 +2191,22 @@ class Parse(XMLParser):
         self.set_related_activities(activity)
         self.set_transaction_provider_receiver_activity(activity)
         self.set_derived_activity_dates(activity)
+        self.set_activity_aggregations(activity)
+        self.update_activity_search_index(activity)
 
+    def set_related_activities(self, activity):
+        """ update related-activity references to this activity """
+        models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
+
+    def set_transaction_provider_receiver_activity(self, activity):
+        """ update transaction-provider, transaction-receiver references to this activity """
+        transaction_models.TransactionProvider.objects.filter(
+            provider_activity_ref=activity.iati_identifier
+        ).update(provider_activity=activity)
+
+        transaction_models.TransactionReceiver.objects.filter(
+            receiver_activity_ref=activity.iati_identifier
+        ).update(receiver_activity=activity)
 
     def set_derived_activity_dates(self, activity):
         """Set derived activity dates
@@ -2209,19 +2227,12 @@ class Parse(XMLParser):
             activity.end_date = activity.planned_end
         activity.save()
 
-    def set_related_activities(self, activity):
-        """ update related-activity references to this activity """
-        models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
+    def set_activity_aggregations(self, activity):
+        aac = ActivityAggregationCalculation()
+        aac.parse_activity_aggregations(activity)
 
-    def set_transaction_provider_receiver_activity(self, activity):
-        """ update transaction-provider, transaction-receiver references to this activity """
-        transaction_models.TransactionProvider.objects.filter(
-            provider_activity_ref=activity.iati_identifier
-        ).update(provider_activity=activity)
-
-        transaction_models.TransactionReceiver.objects.filter(
-            receiver_activity_ref=activity.iati_identifier
-        ).update(receiver_activity=activity)
+    def update_activity_search_index(self, activity):
+        activity_search_indexes.reindex_activity(activity)
 
     def post_save_file(self, xml_source):
         """Perform all actions that need to happen after a single IATI source's been parsed.
@@ -2230,11 +2241,7 @@ class Parse(XMLParser):
         xml_source -- the IatiXmlSource object of the current source
         """
         self.delete_removed_activities(xml_source.ref)
-        self.set_activity_aggregations(xml_source.ref)
 
-    def set_activity_aggregations(self, xml_source__ref):
-        aac = ActivityAggregationCalculation()
-        aac.parse_activity_aggregations_by_source(xml_source__ref)
 
     def delete_removed_activities(self, xml_source_ref):
         """ Delete activities that were not found in the XML source any longer
@@ -2249,3 +2256,4 @@ class Parse(XMLParser):
         models.Activity.objects.filter(
             xml_source_ref=xml_source_ref,
             last_updated_model__lt=self.parse_start_datetime).delete()
+
