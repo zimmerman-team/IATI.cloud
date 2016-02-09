@@ -2,6 +2,7 @@ from haystack import indexes
 from models import Activity
 from django.core.exceptions import ObjectDoesNotExist
 
+
 class ActivityIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.MultiValueField(document=True)
     activity_id = indexes.CharField(model_attr='iati_identifier', default='')

@@ -5,6 +5,7 @@ from functools import partial
 from django.core.exceptions import ObjectDoesNotExist
 from common.util import setInterval, print_progress
 
+
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
     try:
@@ -15,6 +16,8 @@ def reindex_activity(activity):
     activity_search.activity = activity
 
     try:
+        activity_search.iati_identifier = activity.iati_identifier
+
         title_text = []
         for narrative in activity.title.narratives.all():
             title_text.append(narrative.content)
@@ -69,9 +72,15 @@ def reindex_activity(activity):
         activity_search.document_link = " ".join(document_link_text)
 
         activity_search.text = " ".join([
-            activity_search.title, activity_search.description, activity_search.reporting_org,
-            activity_search.participating_org, activity_search.recipient_country, activity_search.recipient_region,
-            activity_search.sector, activity_search.document_link
+            activity_search.iati_identifier,
+            activity_search.title,
+            activity_search.description,
+            activity_search.reporting_org,
+            activity_search.participating_org,
+            activity_search.recipient_country,
+            activity_search.recipient_region,
+            activity_search.sector,
+            activity_search.document_link
         ])
 
         activity_search.last_reindexed = datetime.now()

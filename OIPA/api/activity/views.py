@@ -134,7 +134,7 @@ class ActivityList(DynamicListView):
 
     By default, searching is performed on:
 
-    - `activity_id` the IATI identifier
+    - `iati_identifier` the IATI identifier
     - `title` narratives
     - `description` narratives
     - `recipient_country` recipient country code and name

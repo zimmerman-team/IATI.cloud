@@ -1,11 +1,7 @@
 from django.db import models
-from django.db.models import query
-from django.db.models import Sum
-from django.db.models import Count
 from django.db.models import Prefetch
-
-# from common.util import adapt
 from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
+
 
 class ActivityQuerySet(SearchQuerySet):
 
