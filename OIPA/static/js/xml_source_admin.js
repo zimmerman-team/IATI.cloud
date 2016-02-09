@@ -7,16 +7,16 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'xml_id': xml_id}),
-           url: "/admin/iati_synchroniser/iatixmlsource/parse-xml/",
+           url: "/admin/iati_synchroniser/iatixmlsource/add-to-parse-queue/",
            beforeSend: function() {
                btn.removeClass("btn-success");
                btn.addClass("btn-warning");
-               btn.text("Updating...");
+               btn.text("Adding...");
            },
            statusCode: {
                200: function() {
                    btn.addClass("btn-info");
-                   btn.text("Updated");
+                   btn.text("Added to task queue");
                },
                404: function() {
                    btn.addClass("btn-danger");
@@ -30,7 +30,6 @@ $(document).ready(function (){
        });
    });
    $('.parse-activity-btn').click(function(){
-      console.log('clicked')
 
       var btn = $(this);
       var xml_id = $(this).data('xml').replace('xml_', '');

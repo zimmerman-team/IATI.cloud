@@ -67,13 +67,21 @@ header#grp-header{
     cursor: pointer;
     margin-top: 4px;
     text-decoration: none;
+}
 
+.parse-activity-btn{
+    display: block;
+    margin-top: 8px;
 }
 
 a.parse-btn:hover, .parse-activity-btn:hover a.sync-btn:hover{
     text-decoration: none;
     color: #fff;
     background-color: #666;
+}
+
+.parse-btn{
+    white-space: nowrap;
 }
 
 .django-rq-buttons a{

@@ -37,15 +37,36 @@ def advanced_start_worker():
         w = Worker(queue)
         w.work()
 
-
-
 ###############################
 #### TASK QUEUE MANAGEMENT ####
 ###############################
 
+
 @job
 def remove_duplicates_from_parser_queue():
     raise Exception("Not implemented yet")
+
+
+def delete_task_from_queue(job_id):
+    from rq import cancel_job
+    from rq import Connection
+    with Connection():
+        cancel_job(job_id)
+
+
+def delete_all_tasks_from_queue(queue_name):
+    if queue_name == "failed":
+        q = django_rq.get_failed_queue()
+    elif queue_name == "parser":
+        q = django_rq.get_queue("parser")
+    else:
+        q = django_rq.get_queue("default")
+
+    while True:
+        job = q.dequeue()
+        if not job:
+            break
+        job.delete()
 
 
 ###############################
@@ -58,6 +79,7 @@ def add_new_sources_from_registry_and_parse_all():
     queue = django_rq.get_queue("default")
     queue.enqueue(get_new_sources_from_iati_api, timeout=7200)
     queue.enqueue(parse_all_existing_sources, timeout=7200)
+
 
 @job
 def parse_all_existing_sources():
@@ -84,6 +106,7 @@ def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
+
 
 @job
 def calculate_activity_aggregations_per_source(source_ref):
@@ -139,44 +162,22 @@ def update_iati_codelists():
 def update_all_geo_data():
     raise Exception("Not implemented yet")
 
+
 @job
 def update_all_city_data():
     raise Exception("Not implemented yet")
+
 
 @job
 def update_all_country_data():
     raise Exception("Not implemented yet")
 
+
 @job
 def update_all_region_data():
     raise Exception("Not implemented yet")
 
+
 @job
 def update_all_admin1_region_data():
     raise Exception("Not implemented yet")
-
-
-###############################
-######## GENERIC TASK  ########
-###############################
-
-
-def delete_task_from_queue(job_id):
-    from rq import cancel_job
-    from rq import Connection
-    with Connection():
-        cancel_job(job_id)
-
-def delete_all_tasks_from_queue(queue_name):
-    if queue_name == "failed":
-        q = django_rq.get_failed_queue()
-    elif queue_name == "parser":
-        q = django_rq.get_queue("parser")
-    else:
-        q = django_rq.get_queue("default")
-
-    while True:
-        job = q.dequeue()
-        if not job:
-            break
-        job.delete()
