@@ -39,6 +39,7 @@ class Narrative(models.Model):
 
 class ActivitySearch(models.Model):
     activity = models.OneToOneField('Activity')
+    iati_identifier = VectorField()
     text = VectorField()
     title = VectorField()
     description = VectorField()
