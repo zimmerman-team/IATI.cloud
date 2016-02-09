@@ -8,10 +8,10 @@
 {% block content_title %}{% endblock %}
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
-        <a href="{% url 'rq_home' %}">OIPA task queues</a>
-    </div>
+    <ul class="grp-horizontal-list">
+        <li><a href="{% url 'admin:index' %}">Home</a></li>
+        <li><a href="{% url 'rq_home' %}">OIPA task queues</a></li>
+    </ul>
 {% endblock %}
 
 {% block content %}
@@ -57,11 +57,11 @@
                         </table>
                     </div>
 
-                        <button id="add-worker-for-default-queue" class="btn-info oipa-admin-button" style="margin-right: 10px;">Stop worker for default queue</button>
+                        <button id="add-worker-for-default-queue" class="task-btn btn-info oipa-admin-button" style="margin-right: 10px;">Stop worker for default queue</button>
 
-                        <button id="add-worker-for-parser-queue" class="btn-info oipa-admin-button" style="margin-right: 10px;">Stop worker for parser queue</button>
+                        <button id="add-worker-for-parser-queue" class="task-btn btn-info oipa-admin-button" style="margin-right: 10px;">Stop worker for parser queue</button>
 
-                        <button id="add-second-worker-for-parser-queue" class="btn-info oipa-admin-button">Start second worker for parser queue</button>
+                        <button id="add-second-worker-for-parser-queue" class="task-btn btn-info oipa-admin-button">Start second worker for parser queue</button>
                         
                     </div>
                 </div>
@@ -91,16 +91,16 @@
                     <div class="span12">
 
                         <select name="add-task-select-default">
-                            <option value="parse_all_existing_sources">Update all existing IATI source</option>
+                            <option value="add_new_sources_from_registry_and_parse_all">Add new sources from IATI registry and parse all sources</option>
+                            <option value="parse_all_existing_sources">Parse all IATI source currently in OIPA</option>
                             <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
                             <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
                             <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
-                            <option value="calculate_activity_aggregations">Calculate activity aggregations</option>
                         </select>
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
 
-                        <button id="add-task-button-default" class="btn-info oipa-admin-button">Add</button>
+                        <button id="add-task-button-default" class="task-btn btn-info oipa-admin-button">Add</button>
                         <div id="add-task-default-notification">Task added to default queue</div>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         <h1>Default queue</h1>
                     </div>
                     <div class="span6 django-rq-align-right">
-                        <a id="clear-default-queue" href="#" class="btn-info oipa-admin-button">Clear default queue</a>
+                        <a id="clear-default-queue" href="#" class="task-btn btn-info oipa-admin-button">Clear default queue</a>
                     </div>
                 </div>
                 <div class="row-fluid">
@@ -264,7 +264,7 @@
                 </div>
                 <div class="row-fluid django-rq-buttons" style="margin-top:20px;">
                     <div class="span12">
-                        <button id="new-schedule-submit" class="btn-info oipa-admin-button">Add</button>
+                        <button id="new-schedule-submit" class="task-btn btn-info oipa-admin-button">Add</button>
                     </div>
                 </div>
                 <div class="row-fluid">
@@ -285,8 +285,8 @@
                         <h1>Failed tasks</h1>
                     </div>
                     <div class="span6 django-rq-align-right">
-                        <a id="requeue-all-failed-tasks" href="#" class="btn-info oipa-admin-button">Re-queue all failed tasks</a>
-                        <a id="clear-failed-tasks" href="#" class="btn-info oipa-admin-button">Clear failed tasks</a>
+                        <a id="requeue-all-failed-tasks" href="#" class="task-btn btn-info oipa-admin-button">Re-queue all failed tasks</a>
+                        <a id="clear-failed-tasks" href="#" class="task-btn btn-info oipa-admin-button">Clear failed tasks</a>
                     </div>
                 </div>
 
@@ -726,20 +726,7 @@ $(document).ready(function (){
     function reload_task_queue_overview_table(){
         $( "#task-queue-overview-table-wrapper" ).load( "/admin/queue/ #task-queue-overview-table",function(){
 
-            $( "#task-queue-overview-table-wrapper tbody" ).animate({
-                opacity: 0.5
-            }, {
-                duration: 100,
-                easing: "easeOutQuad",
-                complete: function() {
-                  $( "#task-queue-overview-table-wrapper tbody" ).animate({
-                    opacity: 1
-                  }, {
-                    duration: 400,
-                    easing: "easeOutQuad"
-                  });
-                }
-            });
+            $( "#task-queue-overview-table-wrapper tbody" ).css('opacity', 1);
             reload_worker_buttons();
         });
     }
@@ -776,13 +763,11 @@ $(document).ready(function (){
             opacity: 1
         }, {
             duration: 500,
-            easing: "easeOutQuad",
             complete: function() {
               div.animate({
                 opacity: 0
               }, {
-                duration: 3000,
-                easing: "easeOutQuad"
+                duration: 3000
               });
             }
         });
@@ -1031,8 +1016,8 @@ $(document).ready(function (){
 
         $('.error-details-link').click(function(e){
             e.preventDefault();
-            $('.error-details-tr').hide(500);
-            $(this).closest('tr').next('tr').show(500);
+            $('.error-details-tr').hide();
+            $(this).closest('tr').next('tr').show();
         });
 
         $(".delete-parser-task").click(function(e){
@@ -1138,13 +1123,15 @@ $(document).ready(function (){
 
     load_listeners();
 
-    var auto_refresh = setInterval(function (){
+    setInterval(function (){
         reload_task_queue_overview_table();
         fill_default_queue();
-        fill_failed_tasks();
         fill_workers();
-{#            fill_parser_queue();#}
-    }, 20000);
+    }, 5000);
+
+    setInterval(function (){
+        fill_failed_tasks();
+    }, 60000);
 
 });
 

@@ -52,6 +52,13 @@ def remove_duplicates_from_parser_queue():
 ######## PARSING TASKS ########
 ###############################
 
+
+@job
+def add_new_sources_from_registry_and_parse_all():
+    queue = django_rq.get_queue("default")
+    queue.enqueue(get_new_sources_from_iati_api, timeout=7200)
+    queue.enqueue(parse_all_existing_sources, timeout=7200)
+
 @job
 def parse_all_existing_sources():
     for e in IatiXmlSource.objects.all():
@@ -77,14 +84,6 @@ def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
-
-
-@job
-def calculate_activity_aggregations():
-    for source in IatiXmlSource.objects.all():
-        queue = django_rq.get_queue("parser")
-        queue.enqueue(calculate_activity_aggregations_per_source, args=(source.ref,), timeout=7200)
-
 
 @job
 def calculate_activity_aggregations_per_source(source_ref):

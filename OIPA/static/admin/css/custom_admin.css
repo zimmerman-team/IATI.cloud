@@ -115,7 +115,7 @@ a{
 .django-rq-block{
     background-color: #fff;
     border-radius: 4px;
-    padding: 2em;
+    padding: 0;
     margin: 0 0 3em;
     position: relative;
 }
@@ -184,4 +184,9 @@ a{
 
 #ui-datepicker-div{
     z-index: 99 !important;
+}
+
+.task-btn{
+    margin: 10px 10px 10px 0;
+    display: inline-block;
 }
