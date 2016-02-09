@@ -91,11 +91,13 @@
                     <div class="span12">
 
                         <select name="add-task-select-default">
+                            <option value="update_iati_codelists">Update codelists from IATI registry</option>
                             <option value="add_new_sources_from_registry_and_parse_all">Add new sources from IATI registry and parse all sources</option>
                             <option value="parse_all_existing_sources">Parse all IATI source currently in OIPA</option>
                             <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
                             <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
                             <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
+                            <option value="force_parse_all_existing_sources">Force parse all IATI sources currently in OIPA</option>
                         </select>
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -175,7 +177,7 @@
         </div>
     </div>
 
-    <div class="row-fluid">
+    <div class="row-fluid" style="display: none">
         <div class="span7">
 
             <div class="django-rq-block">

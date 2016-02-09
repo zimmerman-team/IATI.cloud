@@ -12,20 +12,6 @@ from task_queue.tasks import parse_source_by_url
 class CodeListAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'count', 'fields', 'date_updated']
 
-    def get_urls(self):
-        urls = super(CodeListAdmin, self).get_urls()
-        extra_urls = [
-            url(r'^sync-codelists/$', self.admin_site.admin_view(self.sync_view))
-        ]
-        return extra_urls + urls
-
-    def sync_view(self, request):
-        sync_id = request.GET.get('sync_id')
-        from iati_synchroniser.codelist_importer import CodeListImporter
-        cli = CodeListImporter()
-        cli.synchronise_with_codelists()
-        return HttpResponse('Success')
-
 
 import requests
 import datetime
@@ -74,7 +60,7 @@ def export_xml_by_source(request, source):
     
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
-    actions=['really_delete_selected']
+    actions = ['really_delete_selected']
     search_fields = ['ref', 'title', 'publisher__org_name']
     list_display = [
         'ref',
@@ -95,7 +81,8 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     show_source_url.short_description = "Source URL"
 
     def export_btn(self, obj):
-        return format_html('<a class="parse-btn" href="{url}" target="_blank">Export</a>',
+        return format_html(
+            '<a class="parse-btn" href="{url}" target="_blank">Export</a>',
             url='export-xml/' + obj.ref)
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
@@ -104,20 +91,26 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         urls = super(IATIXMLSourceAdmin, self).get_urls()
         extra_urls = [
             url(
+                r'^parse-source/$',
+                self.admin_site.admin_view(self.parse_source)),
+            url(
                 r'^add-to-parse-queue/$',
                 self.admin_site.admin_view(self.add_to_parse_queue)),
             url(
                 r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', 
                 self.admin_site.admin_view(self.parse_activity_view)),
             url(
-                r'^parse-sources/$',
-                self.admin_site.admin_view(self.parse_sources)),
-            url(
                 r'^export-xml/(?P<xml_source_ref>[^@$&+,/:;=?]+)$', 
                 self.admin_site.admin_view(self.export_xml),
                 name='export-xml'),
         ]
         return extra_urls + urls
+
+    def parse_source(self, request):
+        xml_id = request.GET.get('xml_id')
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj.process()
+        return HttpResponse('Success')
 
     def add_to_parse_queue(self, request):
         xml_id = request.GET.get('xml_id')
@@ -131,12 +124,6 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
         obj.process_activity(activity_id)
-        return HttpResponse('Success')
-
-    def parse_sources(self, request):
-        from iati_synchroniser.dataset_syncer import DatasetSyncer
-        syncer = DatasetSyncer()
-        syncer.synchronize_with_iati_api()
         return HttpResponse('Success')
 
     def export_xml(self, request, xml_source_ref):

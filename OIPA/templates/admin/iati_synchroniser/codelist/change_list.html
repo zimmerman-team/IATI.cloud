@@ -1,18 +1,10 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_urls admin_static admin_list %}
 
-
-{% block extrastyle %}
-{{block.super}}
-<script type="text/javascript" src="/static/js/codelist_sync_admin.js"></script>
-
-{% endblock %}
-
 {% block breadcrumbs %}
 
 {{block.super}}
 <div class="module oipa-topnav">
-    <button id="sync-codelists" class="btn-success oipa-admin-button">Update codelists</button>
+    Updating codelists can be done through the <a href="{% url 'rq_home' %}">task queue</a>
 </div>
-
 {% endblock %}

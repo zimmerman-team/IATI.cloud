@@ -50,7 +50,8 @@ header#grp-header{
     background-color: #5bc0de;
 }
 
-.parse-btn.btn-info, .parse-activity-btn.btn-info .oipa-admin-button.btn-info{
+.parse-btn.btn-info, .parse-activity-btn.btn-info, .oipa-admin-button.btn-info,
+.parse-btn.btn-info:hover, .parse-activity-btn.btn-info:hover, .oipa-admin-button.btn-info:hover{
     background-color: #5cb85c;
 }
 
