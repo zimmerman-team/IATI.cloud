@@ -28,7 +28,8 @@ class ActivityAggregations(GenericAPIView):
     - `recipient_region`
     - `sector`
     - `reporting_organisation`
-    - `participating_organisation`
+    - `participating_organisation_ref`
+    - `participating_organisation_name`
     - `activity_status`
     - `policy_marker`
     - `collaboration_type`
@@ -54,15 +55,15 @@ class ActivityAggregations(GenericAPIView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
-    - `recipient_country_percentage_weighted_incoming_fund`
-    - `recipient_country_percentage_weighted_disbursement`
-    - `recipient_country_percentage_weighted_expenditure`
-    - `sector_percentage_weighted_budget`
-    - `sector_percentage_weighted_incoming_fund`
-    - `sector_percentage_weighted_disbursement`
-    - `sector_percentage_weighted_expenditure`
-    - `sector_percentage_weighted_budget`
-
+    - `transaction_value`
+    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
+    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
+    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
 
     ## Request parameters
 
@@ -145,7 +146,7 @@ class ActivityList(DynamicListView):
     - `participating_org` ref and narratives
 
     To search on subset of these fields the `q_fields` parameter can be used, like so;
-    `q_fields=activity_id,title,description`
+    `q_fields=iati_identifier,title,description`
 
 
     ## Ordering

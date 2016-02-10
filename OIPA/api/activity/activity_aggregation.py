@@ -199,7 +199,13 @@ class ActivityAggregationSerializer(BaseSerializer):
             "serializer": None,
             "serializer_fields": (),
         },
-        "participating_organisation": {
+        "participating_organisation_ref": {
+            "fields": (("participating_organisations__normalized_ref", "ref"),),
+            "queryset": ActivityParticipatingOrganisation,
+            "serializer": None,
+            "serializer_fields": (),
+        },
+        "participating_organisation_name": {
             "fields": (("participating_organisations__normalized_ref", "ref"),
                        ("participating_organisations__primary_name", "name"),),
             "queryset": ActivityParticipatingOrganisation,

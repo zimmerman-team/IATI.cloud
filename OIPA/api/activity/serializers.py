@@ -1,22 +1,24 @@
 from rest_framework import serializers
 
-import iati
+from iati import models as iati_models
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
-from api.generics.serializers import FilterableModelSerializer
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
-# from api.activity.filters import BudgetFilter
 from api.activity.filters import RelatedActivityFilter
 
-from api.transaction.serializers import TransactionSerializer
-from api.codelist.serializers import *
+from api.codelist.serializers import VocabularySerializer
+from api.codelist.serializers import CodelistSerializer
+from api.codelist.serializers import NarrativeContainerSerializer
+from api.codelist.serializers import NarrativeSerializer
+from api.codelist.serializers import CodelistCategorySerializer
+
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = iati.models.DocumentCategory
+        model = iati_models.DocumentCategory
         fields = ('code', 'name')
 
 
@@ -26,7 +28,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
 
     class Meta:
-        model = iati.models.DocumentLink
+        model = iati_models.DocumentLink
         fields = (
             'url',
             'format',
@@ -44,7 +46,7 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = iati.models.Activity
+        model = iati_models.Activity
         fields = ('percentage',)
 
 
@@ -59,7 +61,7 @@ class BudgetSerializer(serializers.ModelSerializer):
         )
 
         class Meta:
-            model = iati.models.Budget
+            model = iati_models.Budget
             fields = (
                 'value',
                 'date',
@@ -70,7 +72,7 @@ class BudgetSerializer(serializers.ModelSerializer):
     type = CodelistSerializer()
 
     class Meta:
-        model = iati.models.Budget
+        model = iati_models.Budget
         # filter_class = BudgetFilter
         fields = (
             'type',
@@ -85,7 +87,7 @@ class ActivityDateSerializer(serializers.Serializer):
     iso_date = serializers.DateTimeField()
 
     class Meta:
-        model = iati.models.ActivityDate
+        model = iati_models.ActivityDate
         fields = ('iso_date', 'type')
 
 
@@ -125,7 +127,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
-        model = iati.models.ActivityReportingOrganisation
+        model = iati_models.ActivityReportingOrganisation
         fields = (
             'ref',
             'type',
@@ -141,7 +143,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
-        model = iati.models.ActivityParticipatingOrganisation
+        model = iati_models.ActivityParticipatingOrganisation
         fields = (
             'ref',
             'type',
@@ -156,7 +158,7 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
-        model = iati.models.ActivityPolicyMarker
+        model = iati_models.ActivityPolicyMarker
         fields = (
             'narratives',
             'vocabulary',
@@ -170,7 +172,7 @@ class TitleSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
-        model = iati.models.Title
+        model = iati_models.Title
         fields = ('narratives',)
 
 class DescriptionSerializer(serializers.ModelSerializer):
@@ -178,7 +180,7 @@ class DescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
-        model = iati.models.Description
+        model = iati_models.Description
         fields = (
             'type',
             'narratives'
@@ -186,7 +188,7 @@ class DescriptionSerializer(serializers.ModelSerializer):
 
 class RelatedActivityTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = iati.models.RelatedActivityType
+        model = iati_models.RelatedActivityType
         fields = (
             'code',
             'name'
@@ -197,7 +199,7 @@ class RelatedActivitySerializer(serializers.ModelSerializer):
     type = RelatedActivityTypeSerializer()
 
     class Meta:
-        model = iati.models.RelatedActivity
+        model = iati_models.RelatedActivity
         filter_class = RelatedActivityFilter
         fields = (
             'ref_activity',
@@ -215,7 +217,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
 
     class Meta:
-        model = iati.models.ActivitySector
+        model = iati_models.ActivitySector
         fields = (
             'sector',
             'percentage',
@@ -235,7 +237,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     vocabulary = VocabularySerializer()
 
     class Meta:
-        model = iati.models.ActivityRecipientRegion
+        model = iati_models.ActivityRecipientRegion
         fields = (
             'region',
             'percentage',
@@ -252,7 +254,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     # vocabulary = VocabularySerializer()
 
     class Meta:
-        model = iati.models.ActivityRecipientCountry
+        model = iati_models.ActivityRecipientCountry
         fields = (
             'country',
             'percentage',
@@ -261,7 +263,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
 
 class ResultTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = iati.models.ResultType
+        model = iati_models.ResultType
         fields = (
             'code',
             'name',
@@ -271,7 +273,7 @@ class ResultDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(source="*")
 
     class Meta:
-        model = iati.models.ResultDescription
+        model = iati_models.ResultDescription
         fields = (
             'narratives',
         )
@@ -280,7 +282,7 @@ class ResultTitleSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(source="*")
 
     class Meta:
-        model = iati.models.ResultTitle
+        model = iati_models.ResultTitle
         fields = (
             'narratives',
         )
@@ -303,7 +305,7 @@ class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
     class Meta:
-        model = iati.models.ResultIndicatorPeriod
+        model = iati_models.ResultIndicatorPeriod
         fields = (
             'period_start',
             'period_end',
@@ -325,7 +327,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
     measure = CodelistSerializer()
 
     class Meta:
-        model = iati.models.ResultIndicator
+        model = iati_models.ResultIndicator
         fields = (
             'title',
             'description',
@@ -342,7 +344,7 @@ class ResultSerializer(serializers.ModelSerializer):
     indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True)
 
     class Meta:
-        model = iati.models.Result
+        model = iati_models.Result
         fields = (
             'title',
             'description',
@@ -366,7 +368,7 @@ class LocationSerializer(serializers.ModelSerializer):
         vocabulary = VocabularySerializer()
 
         class Meta:
-            model = iati.models.LocationAdministrative
+            model = iati_models.LocationAdministrative
             fields = (
                 'code',
                 'vocabulary',
@@ -385,7 +387,7 @@ class LocationSerializer(serializers.ModelSerializer):
     feature_designation = CodelistCategorySerializer()
     
     class Meta:
-        model = iati.models.Location
+        model = iati_models.Location
         fields = (
             'ref',
             'location_reach',
@@ -501,7 +503,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     aggregations = ActivityAggregationContainerSerializer(source="*")
 
     class Meta:
-        model = iati.models.Activity
+        model = iati_models.Activity
         fields = (
             'url',
             'id',

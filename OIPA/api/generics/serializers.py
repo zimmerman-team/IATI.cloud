@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.fields import SkipField
 
 from collections import OrderedDict
+
 
 class XMLMetaMixin(object):
     def to_representation(self, *args, **kwargs):
@@ -10,6 +10,7 @@ class XMLMetaMixin(object):
         if hasattr(self, 'xml_meta'):
             representation.xml_meta = self.xml_meta
         return representation
+
 
 class SkipNullMixin(object):
 
@@ -66,6 +67,7 @@ class FilteredListSerializer(serializers.ListSerializer):
             queryset = self.filter_class(request.query_params, queryset=queryset).qs
         
         return super(FilteredListSerializer, self).to_representation(queryset)
+
 
 class FilterableModelSerializer(serializers.ModelSerializer):
 
