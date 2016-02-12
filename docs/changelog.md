@@ -1,0 +1,1 @@
+Every release, along with the migration instructions, is documented on the Github <a href="https://github.com/zimmerman-zimmerman/OIPA/releases" target="_blank">Releases</a> page.

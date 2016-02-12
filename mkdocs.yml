@@ -1,1 +1,15 @@
-site_name: My Docs
+site_name: OIPA
+site_url: http://www.oipa.nl
+repo_url: http://ww.github.com/zimmerman-zimmerman/OIPA/
+theme: readthedocs
+docs_dir: 'docs'
+pages:
+- Introduction: index.md
+- Installing: installing.md
+- 'Where to start': where_to_start.md
+- 'Admin interface': admin_interface.md
+- Parser: parser.md
+- API: api.md
+- Glossary: glossary.md
+- Changelog: changelog.md
+- License: license.md
