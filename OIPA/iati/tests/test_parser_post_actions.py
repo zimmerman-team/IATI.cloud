@@ -19,9 +19,6 @@ class PostSaveActivityTestCase(TestCase):
     def setUp(self):
         self.parser = GenericParser(None)
 
-    def setUp(self):
-        super(PostSaveActivityTestCase, self).setUp()
-
     @skip('NotImplemented')
     def test_post_save_activity(self):
         """
