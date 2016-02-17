@@ -98,6 +98,7 @@
                             <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
                             <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
                             <option value="force_parse_all_existing_sources">Force parse all IATI sources currently in OIPA</option>
+                            <option value="force_parse_by_publisher_ref">Force parse all sources from a publisher</option>
                         </select>
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -817,10 +818,10 @@ $(document).ready(function (){
     });
 
     $('select[name="add-task-select-default"]').change(function(){
-        if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "delete_sources_not_found_in_registry_in_x_days"){
+        if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref" || $(this).val() == "delete_sources_not_found_in_registry_in_x_days"){
 
             $('#add-task-input-parameters').show(500);
-            if ($(this).val() == "parse_all_sources_by_publisher_ref"){
+            if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref"){
                 $('#add-task-input-parameters').attr("placeholder", "organisation ref here");
             } else{
                 $('#add-task-input-parameters').attr("placeholder", "days (only the number)");

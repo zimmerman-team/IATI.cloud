@@ -31,6 +31,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 
 Yes please! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
 
+
 ## Who makes use of OIPA?
 --------
 * Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">https://www.openaid.nl</a>
@@ -39,5 +40,3 @@ Yes please! We are mainly looking for coders to help on the project. If you are 
 * UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">http://open.unhabitat.org</a>
 * Netherlands Enterprise Agency:             <a href="http://aiddata.rvo.nl" target="_blank">http://aiddata.rvo.nl/</a>
 * Mohinga AIMS                               <a href="http://mohinga.info/en/" target="_blank">http://mohinga.info/en/</a>
-
-
