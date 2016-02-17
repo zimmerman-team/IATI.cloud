@@ -2,6 +2,11 @@
 {% load staticfiles %}
 {% load rest_framework %}
 
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="/static/css/drf_customizations.css" />
+{% endblock %}
+
 {% block bodyclass %}api{% endblock %}
 
 {% block navi %}

@@ -1,16 +1,15 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_urls admin_static admin_list %}
 
-{% block extrastyle %}
-{{block.super}}
-<script type="text/javascript" src="/static/js/xml_source_admin.js"></script>
-
+{% block extrahead %}
+    {{block.super}}
+    <script type="text/javascript" src="/static/js/xml_source_admin.js"></script>
 {% endblock %}
 
 {% block breadcrumbs %}
-
 {{block.super}}
-<div class="module" style="margin-bottom: 20px;">
+<div class="module oipa-topnav">
     Note: to add sources from the IATI registry or update all sources at once please use the <a href="/admin/queue/">task queue</a>.
 </div>
 {% endblock %}
+

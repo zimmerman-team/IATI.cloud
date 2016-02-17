@@ -3,7 +3,7 @@ import geodata
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.region.serializers import RegionSerializer
 from api.fields import JSONField
-from api.activity.aggregation import AggregationsSerializer
+from django.core.urlresolvers import reverse
 
 
 class CountrySerializer(DynamicFieldsModelSerializer):
@@ -25,12 +25,18 @@ class CountrySerializer(DynamicFieldsModelSerializer):
     capital_city = BasicCitySerializer()
     location = JSONField(source='center_longlat.json')
     polygon = JSONField()
-    activities = serializers.HyperlinkedIdentityField(
-        view_name='countries:country-activities')
-    indicators = serializers.HyperlinkedIdentityField(
-        view_name='countries:country-indicators')
-    cities = serializers.HyperlinkedIdentityField(view_name='countries:country-cities')
-    aggregations = AggregationsSerializer(source='activity_set', fields=())
+    activities = serializers.SerializerMethodField()
+    cities = serializers.SerializerMethodField()
+
+    def get_activities(self, obj):
+        request = self.context.get('request')
+        url = request.build_absolute_uri(reverse('activities:activity-list'))
+        return url + '?recipient_country=' + obj.code
+
+    def get_cities(self, obj):
+        request = self.context.get('request')
+        url = request.build_absolute_uri(reverse('cities:city-list'))
+        return url + '?country=' + obj.code
 
     class Meta:
         model = geodata.models.Country
@@ -52,10 +58,7 @@ class CountrySerializer(DynamicFieldsModelSerializer):
             'fips10',
             'data_source',
             'activities',
-            'indicators',
-            # 'adm1region_set',
             'cities',
-            'aggregations',
             'location',
             'polygon',
         )

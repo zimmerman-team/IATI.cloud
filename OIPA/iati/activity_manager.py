@@ -1,9 +1,36 @@
-from django.db.models import query
-from django.db.models import Sum
+from django.db import models
 from django.db.models import Prefetch
+from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 
-class ActivityQuerySet(query.QuerySet):
+class ActivityQuerySet(SearchQuerySet):
+
+    # TODO: this makes counting a lot slower than it has to be for a lot of queries
+    def count(self):
+        self = self.order_by().only('id')
+        return super(ActivityQuerySet, self).count()
+
+    # TODO: fix import conflicts - 2016-01-18
+    def prefetch_all(self):
+
+        return self.prefetch_default_aid_type() \
+            .prefetch_default_finance_type() \
+            .prefetch_participating_organisations() \
+            .prefetch_reporting_organisations() \
+            .prefetch_recipient_countries() \
+            .prefetch_recipient_regions() \
+            .prefetch_sectors() \
+            .prefetch_activity_dates() \
+            .prefetch_policy_markers() \
+            .prefetch_budgets() \
+            .prefetch_title() \
+            .prefetch_descriptions() \
+            .prefetch_document_links() \
+            .prefetch_results() \
+            .prefetch_locations() \
+            .prefetch_related_activities() \
+            .prefetch_transactions() \
+            .prefetch_aggregations()
 
     def prefetch_default_aid_type(self):
         return self.select_related('default_aid_type__category')
@@ -100,7 +127,18 @@ class ActivityQuerySet(query.QuerySet):
                 .select_related('type', 'currency'))
         )
 
-    def prefetch_description(self):
+
+    def prefetch_title(self):
+        from iati.models import Narrative
+
+        return self.prefetch_related(
+            Prefetch(
+                'title__narratives',
+                queryset=Narrative.objects.all()
+                .select_related('language'))
+        )
+
+    def prefetch_descriptions(self):
         from iati.models import Description, Narrative
         narrative_prefetch = Prefetch(
             'narratives',
@@ -132,13 +170,72 @@ class ActivityQuerySet(query.QuerySet):
         )
 
     def prefetch_results(self):
-        from iati.models import Result
+        from iati.models import Result, Narrative, ResultIndicatorPeriod, ResultIndicator
+
+        title_prefetch = Prefetch(
+            'resulttitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        description_prefetch = Prefetch(
+            'resultdescription__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_title_prefetch = Prefetch(
+            'resultindicatortitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_description_prefetch = Prefetch(
+            'resultindicatordescription__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        period_target_comment_prefetch = Prefetch(
+            'resultindicatorperiodtargetcomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        period_actual_comment_prefetch = Prefetch(
+            'resultindicatorperiodactualcomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_period_prefetch = Prefetch(
+            'resultindicatorperiod_set',
+            queryset=ResultIndicatorPeriod.objects.all()
+                .select_related('result_indicator')
+                .prefetch_related(period_target_comment_prefetch, period_actual_comment_prefetch)
+        )
+
+        indicator_baseline_comment_prefetch = Prefetch(
+            'resultindicatorbaselinecomment__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        indicator_prefetch = Prefetch(
+            'resultindicator_set',
+            queryset=ResultIndicator.objects.all()
+                .select_related('measure')
+                .prefetch_related(
+                    indicator_title_prefetch, 
+                    indicator_description_prefetch,
+                    indicator_period_prefetch,
+                    indicator_baseline_comment_prefetch
+                )
+        )
 
         return self.prefetch_related(
             Prefetch(
                 'result_set',
                 queryset=Result.objects.all()
-                .select_related('type'))
+                .select_related('type', 'resulttitle', 'resultdescription')
+                .prefetch_related(
+                    title_prefetch,
+                    description_prefetch,
+                    indicator_prefetch
+                ))
         )
 
     def prefetch_locations(self):
@@ -165,52 +262,42 @@ class ActivityQuerySet(query.QuerySet):
                 .select_related('type'))
         )
 
-    def prefetch_title(self):
-        from iati.models import Narrative
+    def prefetch_transactions(self):
+        from iati.transaction.models import Transaction
 
+        # TODO: Nullable foreign keys do not get prefetched in select_related() call - 2016-01-20
         return self.prefetch_related(
             Prefetch(
-                'title__narratives',
-                queryset=Narrative.objects.all()
-                .select_related('language'))
+                'transaction_set',
+                queryset=Transaction.objects.all() \
+                .select_related('transaction_type')
+                .select_related('currency')
+                .select_related('disbursement_channel')
+                .select_related('recipient_region')
+                .select_related('recipient_country')
+                .select_related('flow_type')
+                .select_related('finance_type')
+                .select_related('aid_type')
+                .select_related('tied_status')
+                .prefetch_all()
+            )
         )
 
-    def aggregate_budget(self):
-        sum = self.aggregate(
-            budget=Sum('budget__value')
-        ).get('budget', 0.00)
-        return sum
+    def prefetch_aggregations(self):
+        from iati.models import ActivityAggregation, ChildAggregation, ActivityPlusChildAggregation
 
-    def aggregate_expenditure(self):
-        queryset = self.filter(transaction__transaction_type__code='4')
-        sum = queryset.aggregate(
-            expenditure=Sum('transaction__value')
-        ).get('expenditure', 0.00)
-        return sum
-
-    def aggregate_disbursement(self):
-        queryset = self.filter(transaction__transaction_type__code='3')
-        sum = queryset.aggregate(
-            disbursement=Sum('transaction__value')
-        ).get('disbursement', 0.00)
-        return sum
-
-    def aggregate_commitment(self):
-        queryset = self.filter(transaction__transaction_type__code='2')
-        sum = queryset.aggregate(
-            commitment=Sum('transaction__value')
-        ).get('commitment', 0.00)
-        return sum
-
-    def aggregate_incoming_fund(self):
-        queryset = self.filter(transaction__transaction_type='1')
-        sum = queryset.aggregate(
-            incoming_fund=Sum('transaction__value')
-        ).get('incoming_fund', 0.00)
-        return sum
-
-    def aggregate_title(self):
-        queryset = self.exclude(title__isnull=True)
-        return queryset.count()
+        return self.prefetch_related(
+                'activity_aggregation',
+                'child_aggregation',
+                'activity_plus_child_aggregation',
+        )
 
 
+class ActivityManager(SearchManagerMixIn, models.Manager):
+
+    """Activity manager with search capabilities"""
+    
+    def get_queryset(self):
+        return ActivityQuerySet(self.model, using=self._db)
+        
+        

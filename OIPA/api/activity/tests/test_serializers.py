@@ -6,6 +6,7 @@ import datetime
 
 from django.test import RequestFactory
 from iati.factory import iati_factory
+from iati_codelists.factory import codelist_factory
 from api.activity import serializers
 
 class CodelistSerializerTestCase(TestCase):
@@ -416,7 +417,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_ActivityScopeSerializer(self):
-        activity_scope = iati_factory.ActivityScopeFactory.build()
+        activity_scope = codelist_factory.ActivityScopeFactory.build()
         serializer = serializers.CodelistSerializer(activity_scope)
         assert serializer.data['code'] == activity_scope.code,\
             """
@@ -453,12 +454,9 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_CapitalSpendSerializer(self):
         activity = iati_factory.ActivityFactory.build(capital_spend=80)
-        serializer = serializers.CapitalSpendSerializer(activity)
-        assert serializer.data['percentage'] == activity.capital_spend,\
-            """
-            'activity.capital_spend' should be serialized to a field called
-            'percentage'
-            """
+        serializer = serializers.CapitalSpendSerializer(activity.capital_spend)
+        
+        self.assertEqual(serializer.data['percentage'], activity.capital_spend)
 
     def test_ResultTypeSerializer(self):
         result_type = iati_factory.ResultTypeFactory.build()
@@ -661,7 +659,7 @@ class ActivitySerializerTestCase(TestCase):
             'id',
             'iati_identifier',
             'title',
-            'description',
+            'descriptions',
             'last_updated_datetime',
             'default_currency',
             'hierarchy',
@@ -688,9 +686,7 @@ class ActivitySerializerTestCase(TestCase):
             'document_links',
             'results',
             'locations',
-            'activity_aggregation',
-            'child_aggregation',
-            'activity_plus_child_aggregation'
+            'aggregations',
         )
         assertion_msg = "the field '{0}' should be in the serialized activity"
         for field in required_fields:

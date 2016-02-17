@@ -12,13 +12,13 @@ _slugify_hyphenate_re = re.compile(r'[-\s]+')
 
 class Parse(Parse_2_01):
 
-
+    VERSION = '1.05' # version of iati standard
     default_lang = 'en'
     organisation_identifier = ''
     name = None
 
-    def __init__(self):
-        super(Parse_2_01, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(Parse_2_01, self).__init__(*args, **kwargs)
         self.VERSION = codelist_models.Version.objects.get(code='1.05')
         self.name = None
 

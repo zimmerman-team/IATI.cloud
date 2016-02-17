@@ -1,16 +1,16 @@
-import pytest
+from django.test import TestCase
 from django.test import RequestFactory
 from iati.factory import iati_factory
 from api.sector import serializers
 
 
-class TestSectorSerializers:
+class TestSectorSerializers(TestCase):
 
     request_dummy = RequestFactory().get('/')
 
     def test_SectorSerializer(self):
         sector = iati_factory.SectorFactory.build(
-            code=10,
+            code='10',
             name='Sector A',
             description='Description A'
         )
@@ -18,6 +18,7 @@ class TestSectorSerializers:
             sector,
             context={'request': self.request_dummy}
         )
+
         assert serializer.data['code'] == sector.code, \
             """
             the data in sector.code should be serialized to a field named code
@@ -26,11 +27,6 @@ class TestSectorSerializers:
         assert serializer.data['name'] == sector.name, \
             """
             the data in sector.name should be serialized to a field named code
-            inside the serialized object
-            """
-        assert serializer.data['description'] == sector.description, \
-            """
-            the data in sector.description should be serialized to a field named code
             inside the serialized object
             """
         required_fields = (
@@ -44,7 +40,7 @@ class TestSectorSerializers:
 
     def test_SectorCategorySerializer(self):
         sector_category = iati_factory.SectorCategoryFactory.build(
-            code=2,
+            code='2',
         )
         serializer = serializers.SectorCategorySerializer(sector_category)
         assert serializer.data['code'] == sector_category.code,\

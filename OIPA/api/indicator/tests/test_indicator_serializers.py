@@ -1,8 +1,9 @@
+from django.test import TestCase
 from api.indicator import serializers
 from indicator.factory import indicator_factory
 
 
-class TestIndicatorDataValueSerializer:
+class TestIndicatorDataValueSerializer(TestCase):
     indicator_value = indicator_factory.IndicatorDataValueFactory.build(
         year=2015,
         value=1000)

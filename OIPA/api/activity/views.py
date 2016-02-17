@@ -1,21 +1,16 @@
-from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+from rest_framework.filters import DjangoFilterBackend
+
 from iati.models import Activity
 from api.activity import serializers as activitySerializers
 from api.activity import filters
-from api.activity.aggregation import AggregationsPaginationSerializer
 from api.activity.activity_aggregation import ActivityAggregationSerializer
-from api.generics.filters import SearchFilter
+from api.activity.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
-
-from rest_framework.filters import DjangoFilterBackend
-
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
-
-from rest_framework.response import Response
-from rest_framework import mixins, status
 
 
 class ActivityAggregations(GenericAPIView):
@@ -33,7 +28,8 @@ class ActivityAggregations(GenericAPIView):
     - `recipient_region`
     - `sector`
     - `reporting_organisation`
-    - `participating_organisation`
+    - `participating_organisation_ref`
+    - `participating_organisation_name`
     - `activity_status`
     - `policy_marker`
     - `collaboration_type`
@@ -59,8 +55,15 @@ class ActivityAggregations(GenericAPIView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
-    - `sector_percentage_weighted_budget`
-
+    - `transaction_value`
+    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
+    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
+    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
 
     ## Request parameters
 
@@ -70,7 +73,7 @@ class ActivityAggregations(GenericAPIView):
 
     queryset = Activity.objects.all()
 
-    filter_backends = (SearchFilter, DjangoFilterBackend, OrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = filters.ActivityFilter
 
     def get(self, request, *args, **kwargs):
@@ -132,7 +135,7 @@ class ActivityList(DynamicListView):
 
     By default, searching is performed on:
 
-    - `activity_id` the IATI identifier
+    - `iati_identifier` the IATI identifier
     - `title` narratives
     - `description` narratives
     - `recipient_country` recipient country code and name
@@ -143,7 +146,7 @@ class ActivityList(DynamicListView):
     - `participating_org` ref and narratives
 
     To search on subset of these fields the `q_fields` parameter can be used, like so;
-    `q_fields=activity_id,title,description`
+    `q_fields=iati_identifier,title,description`
 
 
     ## Ordering
@@ -161,6 +164,9 @@ class ActivityList(DynamicListView):
     - `start_date`
     - `end_date`
     - `activity_budget_value`
+    - `activity_incoming_funds_value`
+    - `activity_disbursement_value`
+    - `activity_expenditure_value`
     - `activity_plus_child_budget_value`
 
 
@@ -201,14 +207,18 @@ class ActivityList(DynamicListView):
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
+
     fields = (
         'url', 
         'iati_identifier', 
         'title', 
-        'description', 
+        'descriptions', 
         'transactions', 
-        'reporting_organisations')
-    pagination_class = AggregationsPaginationSerializer
+        'reporting_organisations',
+    )
+
+    always_ordering = 'id'
+
     ordering_fields = (
         'title',
         'planned_start_date',
@@ -218,7 +228,15 @@ class ActivityList(DynamicListView):
         'start_date',
         'end_date',
         'activity_budget_value',
-        'activity_plus_child_budget_value',)
+        'activity_incoming_funds_value',
+        'activity_disbursement_value',
+        'activity_expenditure_value',
+        'activity_plus_child_budget_value',
+    )
+
+    def get_queryset(self):
+        qs = super(ActivityList, self).get_queryset()
+        return qs.distinct('id')
 
 
 class ActivityDetail(DynamicDetailView):
@@ -254,6 +272,7 @@ class ActivityDetail(DynamicDetailView):
 
     """
     queryset = Activity.objects.all()
+    filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
 

@@ -2,9 +2,9 @@ from django.contrib.gis.geos import Point
 from django.test import RequestFactory
 from geodata.factory import geodata_factory
 from api.country import serializers
+from django.test import TestCase
 
-
-class TestCountrySerializers:
+class TestCountrySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
     def test_CountrySerializer(self):
@@ -67,12 +67,25 @@ class TestCountrySerializers:
 
         required_fields = (
             'url',
+            'code',
+            'pk',
+            'numerical_code_un',
+            'name',
+            'alt_name',
+            'language',
             'capital_city',
             'region',
             'un_region',
             'unesco_region',
+            'dac_country_code',
+            'iso3',
+            'alpha3',
+            'fips10',
+            'data_source',
             'activities',
-            'indicators',
+            'cities',
+            'location',
+            'polygon',
         )
         assertion_msg = "the field '{0}' should be in the serialized country"
         for field in required_fields:

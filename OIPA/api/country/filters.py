@@ -13,5 +13,4 @@ class CountryFilter(django_filters.FilterSet):
         fields = [
             'code',
             'name',
-            'region_code',
-        ]
+            'region_code']

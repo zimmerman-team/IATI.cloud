@@ -13,7 +13,8 @@ class DynamicView(GenericAPIView):
         """
         Extract prefetches and default fields from Meta
         """
-        # TODO: move this to a meta class, to evaluate once
+        # TODO: move this to a meta class, to evaluate once when defining the class
+        # TODO: This is not efficient - 2016-01-20
 
         serializer_class = self.get_serializer_class() 
         serializer = serializer_class() # need an instance to extract fields
@@ -23,7 +24,7 @@ class DynamicView(GenericAPIView):
             "serializer class must be an instance of DynamicFieldsModelSerializer "
             "instead got %s") % (serializer_class.__name__,)
 
-        self.serializer_fields= serializer.fields.keys()
+        self.serializer_fields = serializer.fields.keys()
 
         self.select_related_fields = [ field.name for field in model._meta.fields \
                 if isinstance(field, (ForeignKey, OneToOneField)) ]
@@ -39,21 +40,25 @@ class DynamicView(GenericAPIView):
         else:
             return getattr(self, 'fields', ())
 
-    def get_queryset(self, *args, **kwargs):
+    def filter_queryset(self, queryset, *args, **kwargs):
         """
         Prefetches based on 'fields' GET arg
         """
-        queryset = super(DynamicView, self).get_queryset()
 
         fields = self._get_query_fields(*args, **kwargs)
         if not fields: fields = self.serializer_fields
 
         select_related_fields = list(set(self.select_related_fields) & set(fields))
-        queryset = queryset.select_related(*select_related_fields)
+
+        if select_related_fields:
+            queryset = queryset.select_related(*select_related_fields)
 
         for field in fields:
+            # TODO: Hook this up in the view - 2016-01-15
             if hasattr(queryset, 'prefetch_%s' % field):
                 queryset = getattr(queryset, 'prefetch_%s' % field)()
+
+        queryset = super(DynamicView, self).filter_queryset(queryset, *args, **kwargs)
 
         return queryset
 
@@ -63,6 +68,7 @@ class DynamicView(GenericAPIView):
         Apply 'fields' to dynamic fields serializer
         """
         fields = self._get_query_fields()
+        kwargs['context'] = self.get_serializer_context()
         return super(DynamicView, self).get_serializer(fields=fields, *args, **kwargs)
 
 class DynamicListView(DynamicView, ListAPIView):
@@ -74,4 +80,3 @@ class DynamicDetailView(DynamicView, RetrieveAPIView):
     """
     List view with dynamic properties
     """
-

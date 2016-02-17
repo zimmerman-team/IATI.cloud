@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from api.sector import views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.SectorList.as_view(), name='sector-list'),
     url(
         r'^(?P<pk>[0-9]+)/$',
@@ -15,4 +14,4 @@ urlpatterns = patterns(
         views.SectorActivities.as_view(),
         name='sector-activities'
     ),
-)
+]

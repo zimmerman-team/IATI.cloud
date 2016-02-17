@@ -158,43 +158,43 @@ class IndicatorParser:
         return city_name_dict
 
     def find_country(self, country_name, country_name_dict, iso2=None):
-            """
-            Mapping the country string, to a country in the database
-            @param country_name string from csv document:
-            @return: country from database or None if it could not map a country
-            """
-            if iso2:
-                try:
-                    return Country.objects.get(code=iso2)
-                except:
-                    pass
+        """
+        Mapping the country string, to a country in the database
+        @param country_name string from csv document:
+        @return: country from database or None if it could not map a country
+        """
+        if iso2:
+            try:
+                return Country.objects.get(code=iso2)
+            except:
+                pass
 
-            if country_name:
+        if country_name:
 
-                country_name = country_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
+            country_name = country_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
 
-                if country_name in country_name_dict:
-                    iso2 = country_name_dict[country_name]
-                    return Country.objects.get(code=iso2)
+            if country_name in country_name_dict:
+                iso2 = country_name_dict[country_name]
+                return Country.objects.get(code=iso2)
 
-            return None
+        return None
 
     def find_city(self, city_name, city_name_dict, country):
-            """
-            Mapping the city string, to a city in the database
-            @param city_name string from csv document:
-            @return: city from database or None if it could not map a country
-            """
+        """
+        Mapping the city string, to a city in the database
+        @param city_name string from csv document:
+        @return: city from database or None if it could not map a country
+        """
 
-            if city_name and country:
+        if city_name and country:
 
-                city_name = city_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
-                country_id = country.code.lower()
-                if city_name in city_name_dict[country_id]:
-                    city_id = city_name_dict[country_id][city_name]
-                    return City.objects.get(pk=city_id)
+            city_name = city_name.lower().decode('utf8', errors='ignore').strip(' \t\n\r')
+            country_id = country.code.lower()
+            if city_name in city_name_dict[country_id]:
+                city_id = city_name_dict[country_id][city_name]
+                return City.objects.get(pk=city_id)
 
-            return None
+        return None
 
     def save_city_data(self, city_from_db, selection_type_csv, indicator_from_db, year_csv, value_csv):
 

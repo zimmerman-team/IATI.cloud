@@ -21,42 +21,43 @@ from iati.models import Narrative
 
 class Transaction(models.Model):
     activity = models.ForeignKey(Activity)
-    aid_type = models.ForeignKey(AidType, null=True, blank=True, default=None)
+
+    ref = models.CharField(max_length=255, null=True, blank=True, default="")
+
+    transaction_type = models.ForeignKey(
+        TransactionType)
+    transaction_date = models.DateField()
+
+    value = models.DecimalField(max_digits=15, decimal_places=2)
+    value_string = models.CharField(max_length=50)
+    currency = models.ForeignKey(Currency)
+    value_date = models.DateField()
+
 
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,
         null=True,
         blank=True,
         default=None)
-    finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
-    flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
 
-    tied_status = models.ForeignKey(TiedStatus, null=True, blank=True, default=None)
-    transaction_date = models.DateField(null=True, blank=True, default=None)
-    transaction_type = models.ForeignKey(
-        TransactionType,
-        null=True,
-        blank=True,
-        default=None)
-    value_date = models.DateField(null=True, blank=True, default=None)
-    value = models.DecimalField(max_digits=15, decimal_places=2)
-    value_string = models.CharField(max_length=50)
-    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
-    ref = models.CharField(max_length=255, null=True, blank=True, default="")
-    recipient_region = models.ForeignKey(Region, null=True, blank=True)
-    recipient_region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    recipient_region = models.ForeignKey(Region, null=True, blank=True, default=None)
     recipient_country = models.ForeignKey(Country, null=True, blank=True, default=None)
+
+    flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
+    finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
+    aid_type = models.ForeignKey(AidType, null=True, blank=True, default=None)
+    tied_status = models.ForeignKey(TiedStatus, null=True, blank=True, default=None)
 
     objects = TransactionQuerySet.as_manager()
 
     def __unicode__(self, ):
-        return "%s: %s - %s" % (self.activity,
-                                self.transaction_type,
-                                self.transaction_date)
+        return "value: %s - transaction date: %s - type: %s" % (self.value,
+                                 self.transaction_date,
+                                 self.transaction_type,)
 
 
 class TransactionProvider(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(blank=True, default="", max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     organisation = models.ForeignKey(
@@ -90,7 +91,7 @@ class TransactionProvider(models.Model):
 
 
 class TransactionReceiver(models.Model):
-    ref = models.CharField(max_length=250)
+    ref = models.CharField(blank=True, default="", max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
 
     organisation = models.ForeignKey(

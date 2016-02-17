@@ -1,14 +1,43 @@
-import uuid
-
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
+from django.db.models import Q
 
-from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
-from rest_framework.filters import OrderingFilter
+from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 
-from api.generics.filters import CommaSeparatedCharFilter, CommaSeparatedCharMultipleFilter, TogetherFilterSet
-from iati.models import Activity, Budget, RelatedActivity
+from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedCharMultipleFilter
+from api.generics.filters import TogetherFilterSet
+from iati.models import Activity, RelatedActivity
+
+from rest_framework import filters
+from common.util import combine_filters
+from djorm_pgfulltext.fields import TSConfig
+
+
+class SearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        query = request.query_params.get('q', None)
+
+        if query:
+
+            query_fields = request.query_params.get('q_fields')
+            dict_query_list = [TSConfig('simple'), query]
+
+            if query_fields:
+
+                query_fields = query_fields.split(',')
+
+                if isinstance(query_fields, list):
+                    filters = combine_filters([Q(**{'activitysearch__{}__ft'.format(field): dict_query_list}) for field in query_fields])
+                    return queryset.filter(filters)
+
+            else:
+
+                return queryset.filter(activitysearch__text__ft=dict_query_list)
+
+        return queryset
 
 
 class ActivityFilter(TogetherFilterSet):
@@ -19,20 +48,20 @@ class ActivityFilter(TogetherFilterSet):
 
     activity_scope = CommaSeparatedCharFilter(
         name='scope__code',
-        lookup_type='in')
+        lookup_type='in',)
 
     recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='recipient_country')
+        name='recipient_country',)
 
     recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='recipient_region')
+        name='recipient_region',)
 
     recipient_region_not_in = CommaSeparatedCharFilter(
         lookup_type='in',
         name='recipient_region',
-        exclude=True)
+        exclude=True,)
 
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
@@ -88,23 +117,23 @@ class ActivityFilter(TogetherFilterSet):
 
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='sector')
+        name='sector',)
 
     sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='activitysector__sector__category__code')
+        name='activitysector__sector__category__code',)
 
     participating_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__normalized_ref')
+        name='participating_organisations__normalized_ref',)
 
     participating_organisation_name = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__primary_name')
+        name='participating_organisations__primary_name',)
 
     participating_organisation_role = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='participating_organisations__role__code')
+        name='participating_organisations__role__code',)
 
     reporting_organisation = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -116,49 +145,42 @@ class ActivityFilter(TogetherFilterSet):
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='xml_source_ref')
+        name='xml_source_ref',)
 
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='activity_status',
-        distinct=True)
+        name='activity_status',)
 
     hierarchy = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='hierarchy')
+        name='hierarchy',)
 
     related_activity_id = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='relatedactivity__ref_activity__id', distinct=True)
+        lookup_type='in', name='relatedactivity__ref_activity__id', )
 
     related_activity_type = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__type__code',
-        distinct=True)
+        name='relatedactivity__type__code',)
 
     related_activity_recipient_country = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__recipient_country',
-        distinct=True)
+        name='relatedactivity__ref_activity__recipient_country',)
 
     related_activity_recipient_region = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__recipient_region',
-        distinct=True)
+        name='relatedactivity__ref_activity__recipient_region',)
 
     related_activity_sector = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__sector',
-        distinct=True)
+        name='relatedactivity__ref_activity__sector',)
 
     related_activity_sector_category = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='relatedactivity__ref_activity__sector__category',
-        distinct=True)
+        name='relatedactivity__ref_activity__sector__category',)
 
     budget_period_start = DateFilter(
         lookup_type='gte',
-        name='budget__period_start')
+        name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_type='lte',
@@ -168,16 +190,25 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='budget__currency__code')
 
+    transaction_provider_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__provider_organisation__narratives__content')
+
+    transaction_receiver_organisation_name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__receiver_organisation__narratives__content')
+
+    transaction_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__transaction_type')
+
     transaction_provider_activity = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='transaction__provider_organisation__provider_activity_ref',
-        distinct=True)
+        name='transaction__provider_organisation__provider_activity_ref',)
 
     transaction_date_year = NumberFilter(
         lookup_type='year',
-        name='transaction__transaction_date',
-        distinct=True)
-
+        name='transaction__transaction_date',)
 
     activity_aggregation_budget_value_lte = NumberFilter(
         lookup_type='lte',
@@ -266,20 +297,6 @@ class ActivityFilter(TogetherFilterSet):
         together_exclusive = [('budget_period_start', 'budget_period_end')]
 
 
-# class BudgetFilter(FilterSet):
-#
-#     budget_period_start = DateFilter(
-#         lookup_type='gte',
-#         name='period_start')
-#
-#     budget_period_end = DateFilter(
-#         lookup_type='lte',
-#         name='period_end')
-#
-#     class Meta:
-#         model = Budget
-
-
 class RelatedActivityFilter(FilterSet):
 
     related_activity_type = CommaSeparatedCharFilter(
@@ -290,7 +307,7 @@ class RelatedActivityFilter(FilterSet):
         model = RelatedActivity
 
 
-class RelatedOrderingFilter(OrderingFilter):
+class RelatedOrderingFilter(filters.OrderingFilter):
     """
     Extends OrderingFilter to support ordering by fields in related models
     using the Django ORM __ notation
@@ -299,6 +316,27 @@ class RelatedOrderingFilter(OrderingFilter):
     in remove_invalid_fields a mapping is maintained
     to make 'user-friendly' names possible
     """
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super(RelatedOrderingFilter, self).get_ordering(request, queryset, view)
+
+        always_ordering = getattr(view, 'always_ordering', None)
+
+        if ordering and always_ordering:
+            ordering = ordering + [always_ordering] 
+            queryset.distinct(always_ordering)
+
+        return ordering
+
+    def filter_queryset(self, request, queryset, view):
+
+        ordering = self.get_ordering(request, queryset, view)
+
+        if ordering: 
+            ordering = [order.replace("-", "") for order in ordering]
+            queryset = queryset.distinct(*ordering)
+
+        return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
 
     def is_valid_field(self, model, field):
         """
@@ -328,6 +366,9 @@ class RelatedOrderingFilter(OrderingFilter):
         mapped_fields = {
             'title': 'title__narratives__content',
             'activity_budget_value': 'activity_aggregation__budget_value',
+            'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',
+            'activity_disbursement_value': 'activity_aggregation__disbursement_value',
+            'activity_expenditure_value': 'activity_aggregation__expenditure_value',
             'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',
             'planned_start_date': 'planned_start',
             'actual_start_date': 'actual_start',

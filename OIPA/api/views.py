@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -11,10 +9,9 @@ from django.db import OperationalError
 @api_view(('GET',))
 def welcome(request, format=None):
     """
-    # REST API
+    ## REST API
 
-    The REST API provides programmatic access to read and write IATI data.
-    Fetch IATI Activity, Transaction or other IATI data.
+    The REST API provides programmatic access to read (and soon also write) IATI data.
     The REST API responses are available in JSON.
 
     ## Available endpoints
@@ -33,11 +30,14 @@ def welcome(request, format=None):
 
     * Cities: [`/api/cities`](/api/cities)
 
-    # Legacy API
+    * Publishers: [`/api/publishers`](/api/publishers)
 
-    Legacy API (v3) is still accesseble but will be depricated soon.
+    * Datasets: [`/api/datasets`](/api/datasets)
 
-    [`/api/v3/docs/`](/api/v3/docs/)
+    ## Legacy API
+
+    The OIPA Tastypie API (v3) is deprecated and removed from the latest releases of OIPA. 
+    It can still be found in release 1.0 on Github. 
 
     """
     return Response({
@@ -67,7 +67,15 @@ def welcome(request, format=None):
                 request=request,
                 format=format),
             'transactions': reverse(
-                'transactions:list',
+                'transactions:transaction-list',
+                request=request,
+                format=format),
+            'publishers': reverse(
+                'publishers:publisher-list',
+                request=request,
+                format=format),
+            'datasets': reverse(
+                'datasets:dataset-list',
                 request=request,
                 format=format),
         }
@@ -79,7 +87,6 @@ def health_check(request, format=None):
     """
     Performs an API health check
     """
-    print('called')
     okay = True
 
     conn = connections['default']

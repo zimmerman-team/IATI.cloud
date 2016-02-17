@@ -1,5 +1,53 @@
 from rest_framework import serializers
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.fields import SkipField
+
+from collections import OrderedDict
+
+
+class XMLMetaMixin(object):
+    def to_representation(self, *args, **kwargs):
+        representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
+        if hasattr(self, 'xml_meta'):
+            representation.xml_meta = self.xml_meta
+        return representation
+
+
+class SkipNullMixin(object):
+
+    """Don't render null fields"""
+
+    def to_representation(self, instance):
+        """
+        Object instance -> Dict of primitive datatypes.
+        """
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            if attribute in [None, '']:
+                # We skip `to_representation` for `None` values so that
+                # fields do not have to explicitly deal with that case.
+                continue
+
+            # check for the case where source="*" is passed
+            # if all fields are null in that field, result will be an empty dictionary
+            elif instance == attribute:
+                result = field.to_representation(attribute)
+
+                if not bool(result): 
+                    continue
+                else:
+                    ret[field.field_name] = result
+
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
 
 
 class FilteredListSerializer(serializers.ListSerializer):
@@ -19,6 +67,7 @@ class FilteredListSerializer(serializers.ListSerializer):
             queryset = self.filter_class(request.query_params, queryset=queryset).qs
         
         return super(FilteredListSerializer, self).to_representation(queryset)
+
 
 class FilterableModelSerializer(serializers.ModelSerializer):
 
@@ -64,12 +113,3 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-
-# todo: optional remove count or remove this
-class NoCountPaginationSerializer(PageNumberPagination):
-    """
-    PaginationSerializer that removes the count field when specified in the
-    query_params.
-    """
-    def __init__(self, *args, **kwargs):
-        super(NoCountPaginationSerializer, self).__init__(*args, **kwargs)

@@ -19,7 +19,7 @@ class ActivityDateType(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class ActivityStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -80,7 +80,7 @@ class ConditionType(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class Currency(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -91,6 +91,9 @@ class Currency(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
+    class Meta:
+        verbose_name_plural = "Currencies"
 
 class DescriptionType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -133,6 +136,10 @@ class DocumentCategory(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+    class Meta:
+        verbose_name = "Document category"
+        verbose_name_plural = "Document categories"
+
 class FileFormat(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=100)
@@ -142,7 +149,7 @@ class FileFormat(models.Model):
     codelist_successor = models.CharField(max_length=100, null=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return self.name
 
 class FinanceTypeCategory(models.Model):
     code = models.CharField(max_length=10,  primary_key=True)
@@ -284,7 +291,7 @@ class PolicyMarker(models.Model):
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True, default=None)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 
 class PolicySignificance(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -523,5 +530,5 @@ class TransactionType(models.Model):
     codelist_successor = models.CharField(max_length=100)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.code, self.name)
+        return "%s" % self.name
 

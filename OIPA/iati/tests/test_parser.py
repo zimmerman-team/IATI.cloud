@@ -1,31 +1,15 @@
 """
     Unit tests and integration tests for parser.
 """
-
-# import copy
-# import datetime
 from django.core import management
 from iati.factory import iati_factory
 from unittest import skip
-# from iati.transaction import factories as transaction_factory
-
-from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
-# from unittest import TestCase
-
-# from lxml import etree
-# from lxml.builder import E
-
-# from iati.iati_parser import ParseIATI
-
-# from iati_synchroniser.models import IatiXmlSource, Publisher
-import iati.models as iati_models
+from django.test import TestCase as DjangoTestCase
 import iati_codelists.models as codelist_models
+from iati.parser.IATI_2_01 import Parse as Parser_201
+from iati.parser.genericXmlParser import XMLParser as GenericParser
 
-# from iati.IATI_1_03 import Parse as Parser_103
-# from iati.IATI_1_05 import Parse as Parser_105
-from iati.IATI_2_01 import Parse as Parser_201
 
-from iati.genericXmlParser import XMLParser as GenericParser
 
 # TODO: use factories instead of these fixtures
 def setUpModule():
@@ -34,8 +18,10 @@ def setUpModule():
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
 
+
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
+
 
 # TODO: refactor in test util module
 def build_activity(version="2.01", *args, **kwargs):
@@ -46,13 +32,14 @@ def build_activity(version="2.01", *args, **kwargs):
     )
     return activity
 
+
 class GenericParserTestCase(DjangoTestCase):
     """
     Unit tests for the generic parser
     """
 
     def setUp(self):
-        self.parser = GenericParser()
+        self.parser = GenericParser(None)
 
     def test_register_model_stores_model(self):
         activity = build_activity()
@@ -61,7 +48,7 @@ class GenericParserTestCase(DjangoTestCase):
 
     def test_register_model_stores_model_by_name(self):
         # TODO: put this all under genericparser
-        parser = Parser_201()
+        parser = Parser_201(None)
         
         activity = build_activity()
         parser.register_model(activity)
@@ -102,6 +89,7 @@ class GenericParserTestCase(DjangoTestCase):
         """
         raise NotImplementedError()
 
+
 class IatiParserTestCase(DjangoTestCase):
     """
     Unit tests for ParseIati()
@@ -112,6 +100,7 @@ class IatiParserTestCase(DjangoTestCase):
         Test the parser gets prepared accordingly
         """
         raise NotImplementedError()
+
 
 class ParserTestCase(DjangoTestCase):
     """

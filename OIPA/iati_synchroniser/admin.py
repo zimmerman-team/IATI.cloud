@@ -1,27 +1,150 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
 from django.contrib import admin
 from models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from iati_synchroniser.parse_admin import ParseAdmin
+from django.utils.html import format_html
+from django.core.urlresolvers import reverse
+import django_rq
+from task_queue.tasks import parse_source_by_url
 
 
 class CodeListAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'count', 'fields', 'date_updated']
 
+
+import requests
+import datetime
+from api.export.views import IATIActivityList
+from django.test.client import RequestFactory
+from lxml import etree
+from lxml.builder import E
+
+
+# TODO: Make this a celery task - 2016-01-21
+def export_xml_by_source(request, source):
+    """Call export API with this xml_source_ref, combine paginated responses"""
+
+    if not source:
+        return None
+
+    base_url = request.build_absolute_uri(reverse('export:activity-export')) + "?xml_source_ref={source}&format=xml&page_size=100&page={page}".format(source=source, page="{page}")
+
+    def get_result(xml, page_num):
+        print('making request, page: ' + str(page_num))
+        rf = RequestFactory()
+        req = rf.get(base_url.format(page=page_num))
+
+        view = IATIActivityList.as_view()(req).render()
+        xml.extend(etree.fromstring(view.content).getchildren())
+        
+        link_header = view.get('link')
+
+        if not link_header:
+            return xml
+
+        link = requests.utils.parse_header_links(link_header)
+        has_next = reduce(lambda acc, x: acc or (x['rel'] == 'next'), link, False)
+
+        if has_next:
+            return get_result(xml, page_num+1)
+        else:
+            return xml
+
+    xml = E('iati-activities', version="2.01")
+
+    final_xml = get_result(xml, 1)
+    final_xml.attrib['generated-datetime'] = datetime.datetime.now().isoformat()
+    
+    return etree.tostring(final_xml)
+    
+
+class IATIXMLSourceAdmin(admin.ModelAdmin):
+    actions = ['really_delete_selected']
+    search_fields = ['ref', 'title', 'publisher__org_name']
+    list_display = [
+        'ref',
+        'publisher',
+        'title',
+        'show_source_url',
+        'date_created',
+        'export_btn',
+        'get_parse_status',
+        'get_parse_activity',
+        'date_updated',
+        'last_found_in_registry',
+        'is_parsed']
+
+    def show_source_url(self, obj):
+        return format_html('<a target="_blank" href="{url}">Open file in new window</a>', url=obj.source_url)
+    show_source_url.allow_tags = True
+    show_source_url.short_description = "Source URL"
+
+    def export_btn(self, obj):
+        return format_html(
+            '<a class="parse-btn" href="{url}" target="_blank">Export</a>',
+            url='export-xml/' + obj.ref)
+    export_btn.short_description = 'Export XML'
+    export_btn.allow_tags = True
+
     def get_urls(self):
-        urls = super(CodeListAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^sync-codelists/$', self.admin_site.admin_view(self.sync_view))
-        )
+        urls = super(IATIXMLSourceAdmin, self).get_urls()
+        extra_urls = [
+            url(
+                r'^parse-source/$',
+                self.admin_site.admin_view(self.parse_source)),
+            url(
+                r'^add-to-parse-queue/$',
+                self.admin_site.admin_view(self.add_to_parse_queue)),
+            url(
+                r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', 
+                self.admin_site.admin_view(self.parse_activity_view)),
+            url(
+                r'^export-xml/(?P<xml_source_ref>[^@$&+,/:;=?]+)$', 
+                self.admin_site.admin_view(self.export_xml),
+                name='export-xml'),
+        ]
         return extra_urls + urls
 
-    def sync_view(self, request):
-        sync_id = request.GET.get('sync_id')
-        from iati_synchroniser.codelist_importer import CodeListImporter
-        cli = CodeListImporter()
-        cli.synchronise_with_codelists()
+    def parse_source(self, request):
+        xml_id = request.GET.get('xml_id')
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj.process()
         return HttpResponse('Success')
+
+    def add_to_parse_queue(self, request):
+        xml_id = request.GET.get('xml_id')
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(parse_source_by_url, args=(obj.source_url,), timeout=7200)
+        return HttpResponse('Success')
+
+    def parse_activity_view(self, request, activity_id):
+        xml_id = request.GET.get('xml_id')
+
+        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj.process_activity(activity_id)
+        return HttpResponse('Success')
+
+    def export_xml(self, request, xml_source_ref):
+        xml_response = export_xml_by_source(request, xml_source_ref)
+        return HttpResponse(xml_response, content_type='application/xml')
+
+    def get_actions(self, request):
+        actions = super(IATIXMLSourceAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
+
+    def really_delete_selected(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
+        if queryset.count() == 1:
+            message_bit = "1 IATI data source was"
+        else:
+            message_bit = "%s IATI data sources were" % queryset.count()
+        self.message_user(request, "%s successfully deleted." % message_bit)
+    really_delete_selected.short_description = "Delete selected IATI data sources"
 
 
 class IATIXMLSourceInline(admin.TabularInline):
@@ -29,47 +152,13 @@ class IATIXMLSourceInline(admin.TabularInline):
     extra = 0
 
 
-class IATIXMLSourceAdmin(admin.ModelAdmin):
-    search_fields = ['ref', 'title']
-    list_display = ['ref', 'publisher', 'title', 'date_created', 'update_interval', 'get_parse_status', 'date_updated', 'last_found_in_registry', 'xml_activity_count', 'oipa_activity_count', 'is_parsed']
-
-    def get_urls(self):
-        urls = super(IATIXMLSourceAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^parse-xml/$', self.admin_site.admin_view(self.parse_view)),
-            (r'^parse-all/$', self.admin_site.admin_view(self.parse_all)),
-            (r'^parse-all-over-interval/$', self.admin_site.admin_view(self.parse_all_over_interval)),
-            (r'^parse-all-over-two-days/$', self.admin_site.admin_view(self.parse_all_over_x_days)),
-        )
-        return extra_urls + urls
-
-    def parse_view(self, request):
-        xml_id = request.GET.get('xml_id')
-        obj = get_object_or_404(IatiXmlSource, id=xml_id)
-        obj.process()
-        return HttpResponse('Success')
-
-    def parse_all(self, request):
-        parser = ParseAdmin()
-        parser.parseAll()
-        return HttpResponse('Success')
-
-    def parse_all_over_interval(self, request):
-        parser = ParseAdmin()
-        parser.parseSchedule()
-        return HttpResponse('Success')
-
-    def parse_all_over_x_days(self, request):
-        days = request.GET.get('days')
-        parser = ParseAdmin()
-        parser.parseXDays(days)
-        return HttpResponse('Success')
-
-
 class PublisherAdmin(admin.ModelAdmin):
     inlines = [IATIXMLSourceInline]
 
-    list_display = ('org_id', 'org_abbreviate', 'org_name', 'XML_total_activity_count', 'OIPA_total_activity_count')
+    list_display = (
+        'org_id', 
+        'org_abbreviate', 
+        'org_name')
 
     class Media:
         js = (
@@ -79,10 +168,11 @@ class PublisherAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(PublisherAdmin, self).get_urls()
-        extra_urls = patterns('',
-            (r'^parse-publisher/$', self.admin_site.admin_view(self.parse_view)),
-            (r'^count-publisher-activities/', self.admin_site.admin_view(self.count_publisher_activities))
-        )
+        extra_urls = [
+            url(
+                r'^parse-publisher/$', 
+                self.admin_site.admin_view(self.parse_view)),
+        ]
         return extra_urls + urls
 
 
@@ -91,13 +181,6 @@ class PublisherAdmin(admin.ModelAdmin):
         for obj in IatiXmlSource.objects.filter(publisher__id=publisher_id):
             obj.process()
         return HttpResponse('Success')
-
-    def count_publisher_activities(self, request):
-
-        pu = ParseAdmin()
-        pu.update_publisher_activity_count()
-        return HttpResponse('Success')
-
 
 
 admin.site.register(Codelist,CodeListAdmin)

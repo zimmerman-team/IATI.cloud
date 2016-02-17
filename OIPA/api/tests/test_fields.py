@@ -1,8 +1,9 @@
+from django.test import TestCase
 from django.contrib.gis.geos import Point
 from api.fields import GeometryField
 
 
-class TestFields:
+class TestFields(TestCase):
     def test_GeometryField(self):
         point = Point(0, 25)
         field = GeometryField()

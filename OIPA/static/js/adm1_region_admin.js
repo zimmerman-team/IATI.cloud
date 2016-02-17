@@ -1,10 +1,3 @@
-/**
- * Created with PyCharm.
- * User: vincentvantwestende
- * Date: 11/14/13
- * Time: 7:22 PM
- * To change this template use File | Settings | File Templates.
- */
 $(document).ready(function (){
    $('#update-adm1-region').click(function(){
 

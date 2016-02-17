@@ -23,6 +23,12 @@ class TransactionQuerySet(query.QuerySet):
             operator.or_, [Q(f) for f in prepared_filter]
         ))
 
+    def prefetch_all(self):
+        return self.prefetch_description() \
+                .prefetch_provider_organisation() \
+                .prefetch_receiver_organisation() 
+
+
     def prefetch_description(self):
         from iati.models import Narrative
 

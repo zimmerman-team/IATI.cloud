@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from iati_vocabulary.models import RegionVocabulary
 
+
 class Region(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=80)
@@ -64,12 +65,6 @@ class Country(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    # def save(self, *args, **kwargs):
-    #     # if polygon ends up as a Polygon, make it into a MultiPolygon
-    #     if self.polygon and isinstance(self.polygon, geos.Polygon):
-    #         self.polygon = geos.MultiPolygon(self.polygon)
-    #     super(country, self).save(*args, **kwargs)
 
 
 class City(models.Model):

@@ -1,11 +1,9 @@
 {% extends "admin/base_site.html" %}
 
-{% load url from future %}
-
 {% block extrastyle %}
     {{ block.super }}
     <style>table {width: 100%;}</style>
-{% endblock %}
+{% endblock %l
 
 {% block content_title %}<h1>Scheduled tasks</h1>{% endblock %}
 
@@ -62,10 +60,9 @@
             <select>
                 <option value="Choose task">Choose task</option>
                 <option value="Choose task">Parse all existing sources</option>
-                <option value="Choose task">Parse all existing sources over their time interval</option>
-                <option value="Choose task">Parse all sources not parsed in the last 5 days</option>
+                <option value="Choose task">Parse all sources not parsed in the last X days</option>
                 <option value="Choose task">Add new sources from IATI registry API</option>
-                <option value="Choose task">Updae IATI codelists from IATI registry API</option>
+                <option value="Choose task">Update IATI codelists from IATI registry API</option>
                 <option value="Choose task">Update all geo data</option>
                 <option value="Choose task">Update all indicator data</option>
                 <option value="Choose task">Cache long API calls</option>

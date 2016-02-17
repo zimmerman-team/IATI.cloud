@@ -1,10 +1,11 @@
+from django.test import TestCase
 from django.contrib.gis.geos import Point
 from django.test import RequestFactory
 from geodata.factory import geodata_factory
 from api.city import serializers
 
 
-class TestCitySerializers:
+class TestCitySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 
     def test_CitySerializer(self):
@@ -44,7 +45,4 @@ class TestCitySerializers:
             """
             a serialized city should contain a field called 'is_capital'
             """
-        assert 'indicators' in serializer.data,\
-            """
-            a serialized city shoud contain a field called 'indicators'
-            """
+
