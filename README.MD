@@ -2,7 +2,6 @@
 --------
 [![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg?branch=develop)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/zimmerman-zimmerman/OIPA/badge.svg?branch=develop&service=github)](https://coveralls.io/github/zimmerman-zimmerman/OIPA?branch=develop)
-[![Requirements Status](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements.svg?branch=develop)](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements/?branch=develop)
 
 OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
 
