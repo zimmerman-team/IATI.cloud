@@ -59,7 +59,7 @@ class Activity(models.Model):
     )
 
     id = models.CharField(max_length=150, primary_key=True, blank=False)
-    iati_identifier = models.CharField(max_length=150, blank=False)
+    iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
     xml_source_ref = models.CharField(max_length=200, default="")
