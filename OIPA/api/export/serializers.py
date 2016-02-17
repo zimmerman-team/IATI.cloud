@@ -282,7 +282,7 @@ class LocationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Locat
     activity_description = NarrativeContainerXMLSerializer(many=True, source="locationactivitydescription_set")
     administrative = AdministrativeSerializer(many=True, source="locationadministrative_set")
     point = PointSerializer(source="*")
-
+    exactness = CodelistSerializer()
     # class Meta(transaction_serializers.LocationSerializer.Meta):
     #     pass
 
