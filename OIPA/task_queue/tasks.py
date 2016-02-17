@@ -111,6 +111,13 @@ def parse_all_sources_by_publisher_ref(org_ref):
 
 
 @job
+def force_parse_by_publisher_ref(org_ref):
+    for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
+
+
+@job
 def get_new_sources_from_iati_api():
     from django.core import management
     management.call_command('get_new_sources_from_iati_registry', verbosity=0, interactive=False)
