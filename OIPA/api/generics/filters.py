@@ -74,11 +74,11 @@ class TogetherFilterSet(FilterSet):
         meta = getattr(self, 'Meta', None)
 
         # fields that must be filtered in the same filter call
-        self.together_exclusive = getattr(meta, 'together_exclusive', None)
+        together_exclusive = getattr(meta, 'together_exclusive', [])
 
         data = data.copy()
 
-        for filterlist in self.together_exclusive:
+        for filterlist in together_exclusive:
             if set(filterlist).issubset(data.keys()):
 
                 filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
