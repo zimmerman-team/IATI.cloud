@@ -7,5 +7,5 @@ sudo -u postgres bash -c "psql -c \"CREATE DATABASE oipa;\""
 
 # Run syncdb
 sudo -H -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py migrate --noinput
-sudo -H -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py migrate --noinput
 sudo -H -u vagrant /home/vagrant/.env/bin/pip install -r /vagrant/OIPA/requirements.txt
+sudo -H -u vagrant /home/vagrant/.env/bin/python /vagrant/OIPA/manage.py loaddata superuser
