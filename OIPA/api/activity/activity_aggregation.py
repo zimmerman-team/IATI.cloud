@@ -34,7 +34,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         "count": {
             "field": "count",
             "annotate_name": "count",
-            "annotate": Count('id', distinct=True)
+            "annotate": Count('id')
         },
         "budget": {
             "field": "budget",
