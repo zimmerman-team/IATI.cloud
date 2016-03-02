@@ -210,6 +210,10 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='year',
         name='transaction__transaction_date',)
 
+    transaction_currency = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='transaction__currency')
+
     activity_aggregation_budget_value_lte = NumberFilter(
         lookup_type='lte',
         name='activity_aggregation__budget_value')
