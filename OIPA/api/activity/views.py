@@ -234,10 +234,6 @@ class ActivityList(DynamicListView):
         'activity_plus_child_budget_value',
     )
 
-    def get_queryset(self):
-        qs = super(ActivityList, self).get_queryset()
-        return qs.distinct('id')
-
 
 class ActivityDetail(DynamicDetailView):
     """
