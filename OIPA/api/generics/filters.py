@@ -60,7 +60,7 @@ class TogetherFilter(Filter):
     def filter(self, qs, values):
         if self.filter_classes:
             filters = { "%s__%s" % (c[0].name, c[0].lookup_type) : c[1] for c in zip(self.filter_classes, values)}
-            qs = qs.filter(**filters).distinct()
+            qs = qs.filter(**filters)
 
             return qs
 

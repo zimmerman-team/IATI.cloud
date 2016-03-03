@@ -44,8 +44,6 @@ class IATIActivityList(ListAPIView):
     )
 
     def get_queryset(self):
-        return super(IATIActivityList, self).get_queryset() \
-            .prefetch_all() \
-            .distinct('id')
+        return super(IATIActivityList, self).get_queryset().prefetch_all()
 
 

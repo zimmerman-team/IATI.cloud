@@ -1,6 +1,7 @@
 import django_filters
 from iati.transaction.models import Transaction
 from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import ToManyFilter
 
 class TransactionFilter(django_filters.FilterSet):
     """
@@ -13,8 +14,8 @@ class TransactionFilter(django_filters.FilterSet):
 
     activity_related_activity_id = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='activity__relatedactivity__ref_activity__id',
-        distinct=True)
+        name='activity__relatedactivity__ref_activity__id'
+    )
 
     min_value = django_filters.NumberFilter(name='value', lookup_type='gte')
     max_value = django_filters.NumberFilter(name='value', lookup_type='lte')
