@@ -145,8 +145,40 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         nested_qs = self.nested_qs.objects.all()
         nested_qs = super(ToManyFilter, self).filter(nested_qs, value)
 
+
+
         # in_filter = Q(**{"{}__in".format(self.name): value})
         # nested_qs = self.nested_qs.objects.all().filter(in_filter).values(self.fk)
 
         return qs.filter(id__in=nested_qs.values(self.fk))
+
+class NestedFilter(CommaSeparatedCharMultipleFilter):
+    """
+    An in filter for a to-many field, where the IN is executed as a subfilter
+    e.g. instead of 
+    SELECT "iati_activity"."id" FROM "iati_activity" LEFT OUTER JOIN "iati_activityreportingorganisation" as r ON r.activity_id = iati_activity.id  WHERE "r"."ref" IN ('US-USAGOV');
+    
+    we do:
+
+    SELECT "iati_activity"."id" FROM "iati_activity" WHERE "iati_activity"."id" IN (SELECT U0."activity_id" FROM "iati_activityreportingorganisation" U0 WHERE U0."ref" = 'US-USAGOV');
+    """
+
+    def __init__(self, nested_filter=None, fk=None, **kwargs):
+        if not nested_filter:
+            raise ValueError("qs must be specified")
+        if not fk:
+            raise ValueError("fk must be specified, that relates back to the main model")
+
+        self.nested_filter = nested_filter
+        self.fk = fk
+
+        super(NestedFilter, self).__init__(**kwargs)
+
+    def filter(self, qs, value):
+        if not value: return qs
+
+        print(self.nested_filter)
+        print(self.nested_filter())
+
+        return qs.filter(id__in=self.nested_filter.filter(qs, value))
 

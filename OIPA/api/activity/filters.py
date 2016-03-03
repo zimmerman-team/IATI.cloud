@@ -9,6 +9,7 @@ from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedCharMultipleFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import NestedFilter
 from iati.models import Activity, RelatedActivity
 
 from rest_framework import filters
@@ -120,11 +121,6 @@ class ActivityFilter(TogetherFilterSet):
 
     end_date_isnull = BooleanFilter(name='end_date__isnull')
     start_date_isnull = BooleanFilter(name='start_date__isnull')
-
-    # sector = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='sector',)
-
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',
@@ -136,20 +132,12 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='activitysector__sector__category__code',)
 
-    # participating_organisation = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='participating_organisations__normalized_ref',)
-
     participating_organisation = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
         name='normalized_ref',
         fk='activity',
     )
-
-    # participating_organisation_name = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='participating_organisations__primary_name',)
 
     participating_organisation_name = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
@@ -158,20 +146,12 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    # participating_organisation_role = CommaSeparatedCharFilter(
-        # lookup_type='in',
-        # name='participating_organisations__role__code',)
-
-    participating_organisation_name = ToManyFilter(
+    participating_organisation_role = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
         name='role__code',
         fk='activity',
     )
-
-    # reporting_organisation = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='reporting_organisations__normalized_ref')
 
     reporting_organisation = ToManyFilter(
         qs=ActivityReportingOrganisation,
@@ -179,10 +159,6 @@ class ActivityFilter(TogetherFilterSet):
         name='normalized_ref',
         fk='activity',
     )
-
-    # reporting_organisation_startswith = CommaSeparatedCharMultipleFilter(
-    #     lookup_type='startswith',
-    #     name='reporting_organisations__normalized_ref')
 
     # TODO: degrades performance very badly, should probably remove this - 2016-03-02
     reporting_organisation_startswith = ToManyFilter(
@@ -204,19 +180,12 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='hierarchy',)
 
-    # related_activity_id = CommaSeparatedCharFilter(
-    #     lookup_type='in', name='relatedactivity__ref_activity__id', )
-
     related_activity_id = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__id',
         fk='current_activity',
     )
-
-    # related_activity_type = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='relatedactivity__type__code',)
 
     related_activity_type = ToManyFilter(
         qs=RelatedActivity,
@@ -225,21 +194,12 @@ class ActivityFilter(TogetherFilterSet):
         fk='current_activity',
     )
 
-    # related_activity_recipient_country = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='relatedactivity__ref_activity__recipient_country',)
-
-    # TODO: This generates duplicates again? - 2016-03-02
     related_activity_recipient_country = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__recipient_country',
         fk='current_activity',
     )
-
-    # related_activity_recipient_region = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='relatedactivity__ref_activity__recipient_region',)
 
     related_activity_recipient_region = ToManyFilter(
         qs=RelatedActivity,
@@ -248,22 +208,14 @@ class ActivityFilter(TogetherFilterSet):
         fk='current_activity',
     )
 
-    # related_activity_sector = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='relatedactivity__ref_activity__sector',)
-
-    related_activity_recipient_sector = ToManyFilter(
+    related_activity_sector = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__sector',
         fk='current_activity',
     )
 
-    # related_activity_sector_category = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='relatedactivity__ref_activity__sector__category',)
-
-    related_activity_recipient_sector_category = ToManyFilter(
+    related_activity_sector_category = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__sector__category',
@@ -278,10 +230,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
-    # budget_currency = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='budget__currency__code')
-
     budget_currency = ToManyFilter(
         qs=Budget,
         lookup_type='in',
@@ -289,22 +237,29 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    # transaction_provider_organisation_name = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='transaction__provider_organisation__narratives__content')
+#     class TransactionFilter(TogetherFilterSet):
 
-    # transaction_receiver_organisation_name = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='transaction__receiver_organisation__narratives__content')
+#         transaction_type = CommaSeparatedCharFilter(
+#             lookup_type="in",
+#             name="transaction_type",
+#         )
 
-    # transaction_type = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='transaction__transaction_type')
+#         class Meta:
+#             model = Transaction
+#             # together_exclusive = [('budget_period_start', 'budget_period_end')]
 
-    # transaction_provider_activity = CommaSeparatedCharFilter(
-    #     lookup_type='in',
-    #     name='transaction__provider_organisation__provider_activity_ref',)
 
+#     transaction_type = NestedFilter(
+#         nested_filter=TransactionFilter,
+#         fk='activity', # the foreign key back to this Model
+#     )
+
+    transaction_type = ToManyFilter(
+        qs=Transaction,
+        lookup_type='in',
+        name='transaction_type',
+        fk='activity',
+    )
 
     transaction_provider_organisation_name = ToManyFilter(
         qs=Transaction,
@@ -317,13 +272,6 @@ class ActivityFilter(TogetherFilterSet):
         qs=Transaction,
         lookup_type='in',
         name='receiver_organisation__narratives__content',
-        fk='activity',
-    )
-
-    transaction_type = ToManyFilter(
-        qs=Transaction,
-        lookup_type='in',
-        name='transaction_type',
         fk='activity',
     )
 
