@@ -379,9 +379,8 @@ class ActivityAggregationSerializer(BaseSerializer):
         group_fields = []
         result_dict = None
 
-        # before values()
-        before_annotations = dict()
-        after_filters = {}
+        before_annotations = dict() # renames mostly
+        after_filters = {} # TODO: what is this? - 2016-03-07
 
         for grouping in groupings.values():
             fields = grouping['fields']
@@ -399,7 +398,8 @@ class ActivityAggregationSerializer(BaseSerializer):
                     # use F, see https://docs.djangoproject.com/en/1.9/ref/models/expressions/#f-expressions
                     before_annotations[field[1]] = F(field[0])
 
-        # apply extras
+
+        # apply extras for stuff outside of Django's scope
         group_extras = {"select": grouping["extra"] for grouping in groupings.values() if "extra" in grouping}
         queryset = queryset \
             .annotate(**before_annotations) \
@@ -407,7 +407,9 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         # preparation for aggregation look
         main_group_key = group_fields[0]
-        has_multiple_group_keys = len(main_group_key) - 1
+        rest_group_keys = group_fields[1:]
+
+        has_multiple_group_keys = bool(len(main_group_key) - 1)
         aggregation_key_dict = {}
 
         for index, aggregation in enumerate(separate_aggregations):
@@ -569,6 +571,20 @@ class ActivityAggregationSerializer(BaseSerializer):
 
         return result
 
+    def apply_group_filters(self, queryset, group_by_filters):
+        groupings = {group: self._allowed_groupings[group] for group in group_by_filters.keys()}
+
+        for group_by, value in group_by_filters.items():
+            fields = self._allowed_groupings[group_by]['fields']
+
+            main_field = fields[0] # the one giving the relation from activity to id of item
+
+            # TODO: We assume here all item filters are IN filters - 2016-03-07
+            if isinstance(main_field, str):
+                queryset = queryset.filter(**{"{}__in".format(main_field): value.split(',')})
+
+        return queryset
+
     def to_representation(self, queryset):
         # remove default orderings
         queryset = queryset.order_by()
@@ -591,10 +607,16 @@ class ActivityAggregationSerializer(BaseSerializer):
                    params.get('aggregations', "").split(',')),
             self._aggregations.keys())
 
+        # filters that reduce the amount of "items" returned in the group_by
+        # These filters must be applied directly instead of through "activity id" IN filters
+        group_by_filters = { k:v for k, v in params.items() if k in group_by }
+
         if not len(group_by):
             return {'error_message': "Invalid value for mandatory field 'group_by'"}
         elif not len(aggregations):
             return {'error_message': "Invalid value for mandatory field 'aggregations'"}
+
+        queryset = self.apply_group_filters(queryset, group_by_filters)
 
         orderings = self.get_order_filters(order_by)
         queryset = self.apply_annotations(queryset, group_by, aggregations)
