@@ -54,9 +54,12 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_type='in',)
 
-    recipient_country = CommaSeparatedCharFilter(
+    recipient_country = ToManyFilter(
+        qs=ActivityRecipientCountry,
         lookup_type='in',
-        name='recipient_country',)
+        name='country__code',
+        fk='activity',
+    )
 
     recipient_region = ToManyFilter(
         qs=ActivityRecipientRegion,
@@ -128,9 +131,12 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    sector_category = CommaSeparatedCharFilter(
+    sector_category = ToManyFilter(
+        qs=ActivitySector,
         lookup_type='in',
-        name='activitysector__sector__category__code',)
+        name='sector__category__code',
+        fk='activity',
+    )
 
     participating_organisation = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
