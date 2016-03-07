@@ -109,8 +109,6 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
             filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
             final_filters = reduce(lambda a, b: a | b, filters)
 
-        print(final_filters)
-
         return qs.filter(final_filters)
 
 class ToManyFilter(CommaSeparatedCharMultipleFilter):
@@ -138,10 +136,6 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
     def filter(self, qs, value):
         if not value: return qs
 
-        print(value)
-        # if value:
-        #     value = value.split(',')
-        
         nested_qs = self.nested_qs.objects.all()
         nested_qs = super(ToManyFilter, self).filter(nested_qs, value)
 
@@ -176,9 +170,6 @@ class NestedFilter(CommaSeparatedCharMultipleFilter):
 
     def filter(self, qs, value):
         if not value: return qs
-
-        print(self.nested_filter)
-        print(self.nested_filter())
 
         return qs.filter(id__in=self.nested_filter.filter(qs, value))
 
