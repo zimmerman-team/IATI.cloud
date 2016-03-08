@@ -368,7 +368,7 @@ class ActivityRecipientCountry(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "name: %s" % self.country
+        return "name: %s" % self.country.name
 
     class Meta:
         verbose_name = 'Recipient country'
