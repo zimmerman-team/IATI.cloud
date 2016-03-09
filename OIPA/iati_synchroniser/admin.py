@@ -55,8 +55,19 @@ def export_xml_by_source(request, source):
 
     final_xml = get_result(xml, 1)
     final_xml.attrib['generated-datetime'] = datetime.datetime.now().isoformat()
-    
-    return etree.tostring(final_xml)
+
+    from django.core.files.base import File, ContentFile
+    from django.conf import settings
+    import uuid
+
+    file_name = "{}.xml".format(uuid.uuid4())
+    path = "{}/{}".format(settings.MEDIA_ROOT, file_name)
+
+    xml_file = File(open(path, mode='w'))
+    xml_file.write(etree.tostring(final_xml, pretty_print=True))
+    xml_file.close()
+
+    return file_name
     
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
@@ -82,8 +93,9 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
     def export_btn(self, obj):
         return format_html(
-            '<a class="parse-btn" href="{url}" target="_blank">Export</a>',
-            url='export-xml/' + obj.ref)
+            '<a data-ref="{ref}" class="admin-btn export-btn" target="_blank">Export</a>',
+            url='export-xml/' + obj.ref,
+            ref=obj.ref)
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 

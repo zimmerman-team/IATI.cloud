@@ -36,7 +36,7 @@ class XMLRenderer(BaseRenderer):
             xml.set('version', self.version)
             self._to_xml(xml, data, parent_name=self.item_tag_name)
 
-        return etree.tostring(xml, encoding=self.charset)
+        return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):

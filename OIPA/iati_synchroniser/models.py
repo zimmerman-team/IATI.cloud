@@ -43,12 +43,12 @@ class IatiXmlSource(models.Model):
         return self.ref
 
     def get_parse_status(self):
-        return mark_safe("<a data-xml='xml_%i' class='parse-btn'>Add to parser queue</a>") % self.id
+        return mark_safe("<a data-xml='xml_%i' class='admin-btn parse-btn'>Add to parser queue</a>") % self.id
     get_parse_status.allow_tags = True
     get_parse_status.short_description = _(u"Parse")
 
     def get_parse_activity(self):
-        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='parse-activity-btn'>Parse Activity</a>") % self.id
+        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='admin-btn parse-activity-btn'>Parse Activity</a>") % self.id
     get_parse_activity.allow_tags = True
     get_parse_activity.short_description = _(u"Parse Activity")
 
