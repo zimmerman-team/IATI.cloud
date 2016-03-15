@@ -384,7 +384,6 @@ class CountryBudgetItem(models.Model):
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.ForeignKey(BudgetIdentifier)
-    # code = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
 
