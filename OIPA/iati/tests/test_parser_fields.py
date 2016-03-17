@@ -13,6 +13,7 @@ from lxml.builder import E
 from django.core import management
 from django.test import TestCase # Runs each test in a transaction and flushes database
 from unittest import skip
+from mock import MagicMock
 
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
@@ -1877,16 +1878,26 @@ class TransactionTestCase(ParserSetupTestCase):
             "value-date": datetime.datetime.now().isoformat(' ')
         }
 
-        text = "2000.2"
+        value_text = "2000.2"
+        xdr_value = 300
 
-        value = E('value', text, **attrs) 
+        value = E('value', value_text, **attrs)
+
+        # mock xdr canculation
+        self.parser_201.convert.to_xdr = MagicMock(return_value=xdr_value)
+
         self.parser_201.iati_activities__iati_activity__transaction__value(value)
         transaction = self.parser_201.get_model('Transaction')
         transaction.save()
 
-        self.assertTrue(transaction.value == Decimal('2000.2'))
+        self.assertTrue(transaction.value == Decimal(value_text))
         self.assertTrue(str(transaction.value_date) == attrs['value-date'])
         self.assertTrue(transaction.currency.code == attrs['currency'])
+        self.assertTrue(transaction.xdr_value == xdr_value)
+        self.parser_201.convert.to_xdr.assert_called_with(
+            transaction.currency.code,
+            transaction.value_date,
+            transaction.value)
 
     def test_transaction_no_value_date_should_not_parse_201(self):
         """

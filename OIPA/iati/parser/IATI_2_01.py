@@ -1370,7 +1370,8 @@ class Parse(XMLParser):
         transaction.value = decimal_value
         transaction.value_date = value_date
         transaction.currency = currency
-         
+
+        transaction.xdr_value = self.convert.to_xdr(transaction.currency_id, transaction.value_date, transaction.value)
         return element
 
     def iati_activities__iati_activity__transaction__description(self, element):
@@ -2180,7 +2181,7 @@ class Parse(XMLParser):
     #     fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
     #     return element
 
-    def post_save_activity(self):
+    def post_save_models(self):
         """Perform all actions that need to happen after a single activity's been parsed."""
         activity = self.get_model('Activity')
         if not activity:

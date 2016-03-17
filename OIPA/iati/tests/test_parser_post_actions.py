@@ -20,7 +20,7 @@ class PostSaveActivityTestCase(TestCase):
         self.parser = GenericParser(None)
 
     @skip('NotImplemented')
-    def test_post_save_activity(self):
+    def test_post_save_models(self):
         """
         Check if sets related activities and activity aggregations
         """
