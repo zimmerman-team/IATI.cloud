@@ -1,10 +1,8 @@
 import datetime
-from exceptions import TypeError, ValueError
 
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.html import format_html
-from django.contrib.gis.geos import Point
 
 from autocomplete_light import forms as autocomplete_forms
 import nested_admin
@@ -13,6 +11,7 @@ from iati.forms import NarrativeForm
 from iati.forms import ActivityReportingOrganisationForm
 from iati.forms import ActivityParticipatingOrganisationForm
 from iati.forms import DocumentLinkTitleForm
+
 from iati.forms import DocumentLinkForm
 from iati.forms import LocationForm
 from iati.forms import RelatedActivityForm

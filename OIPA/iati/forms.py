@@ -8,6 +8,7 @@ from iati.models import ActivityParticipatingOrganisation
 from iati.models import DocumentLink
 from iati.models import Location
 from iati.models import RelatedActivity
+from django.contrib.gis.geos import Point
 
 
 class NarrativeForm(autocomplete_forms.ModelForm):
