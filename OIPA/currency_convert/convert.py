@@ -20,7 +20,7 @@ def to_xdr(currency_iso, value_date, value):
     else:
         return None
 
-def from_xsd(currency_iso, value_date, value):
+def from_xdr(currency_iso, value_date, value):
     exchange_rate_to_xdr = get_monthly_average(currency_iso, value_date)
     if exchange_rate_to_xdr:
         return value / exchange_rate_to_xdr

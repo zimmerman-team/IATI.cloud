@@ -108,23 +108,17 @@ class RateParser():
             if e.tag == 'EFFECTIVE_DATE':
                 self.parse_day_rates(e)
 
-        self.save_averages()
-
     def save_averages(self):
-
         for currency_iso, cur_obj in self.rates.iteritems():
             average_value = sum(cur_obj['values'])/len(cur_obj['values'])
-
             currency, created = Currency.objects.get_or_create(
                 code=currency_iso,
                 defaults={'name': cur_obj['name']})
-
             obj, created = MonthlyAverage.objects.get_or_create(
                 month=self.month,
                 year=self.year,
                 currency=currency,
                 defaults={'value': average_value})
-
             if not created:
                 obj.value = average_value
                 obj.save()
@@ -153,19 +147,20 @@ class RateParser():
 
         force: re-parse rates even when there's already data in the db for this year / month combination.
         """
+        count = 0
         while self.year < self.now.year or self.month < self.now.month:
             if self.month == 12:
                 self.year += 1
                 self.month = 1
             else:
                 self.month += 1
-
             if not force and MonthlyAverage.objects.filter(year=self.year, month=self.month).count():
                 continue
-
+            count += 1
             self.set_tick_rates()
             url = self.prepare_url()
             data = self.browser.get_xml_data(url, self.imf_download_url)
             self.parse_data(data)
+            self.save_averages()
             # reset data for next loop
             self.reset_data()

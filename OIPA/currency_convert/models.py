@@ -1,6 +1,7 @@
 from django.db import models
 from iati_codelists.models import Currency
 
+
 class MonthlyAverage(models.Model):
 
     currency = models.ForeignKey(Currency)
