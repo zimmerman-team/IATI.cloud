@@ -10,8 +10,8 @@ class MonthlyAverageAdmin(admin.ModelAdmin):
     search_fields = ['currency__code', 'year']
     list_display = [
         'currency',
-        'month',
         'year',
+        'month',
         'value']
     ordering = ['currency', 'year', 'month']
 
