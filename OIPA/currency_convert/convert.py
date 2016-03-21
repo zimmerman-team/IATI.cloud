@@ -7,10 +7,10 @@ def get_monthly_average(currency_iso, value_date):
         ma = MonthlyAverage.objects.get(year=value_date.year, month=value_date.month, currency=currency_iso)
         return ma.value
     except ObjectDoesNotExist:
-        print 'exchange rate for %s does not exist for year %s and month %s' % (
-            currency_iso,
-            value_date.year,
-            value_date.month)
+        # print 'exchange rate for %s does not exist for year %s and month %s' % (
+        #     currency_iso,
+        #     value_date.year,
+        #     value_date.month)
         return False
 
 def to_xdr(currency_iso, value_date, value):

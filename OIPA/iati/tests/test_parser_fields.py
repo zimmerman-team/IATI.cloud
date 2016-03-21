@@ -31,6 +31,7 @@ from iati.parser.IATI_2_01 import Parse as Parser_201
 # TODO: Setup parser classes per test, to isolate tests as much as possible (currently per class) - 2015-12-02
 # TODO: Refactor this file into multiple files - 2015-12-02
 
+
 def build_xml(version, iati_identifier):
     """
         Construct a base activity file to work with in the tests
@@ -58,11 +59,14 @@ def build_xml(version, iati_identifier):
 #     source.save(process=False, added_manually=False)
 #     return source
 
+
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
+
 def print_xml(elem):
     print(etree.tostring(elem, pretty_print=True))
+
 
 def build_activity(version="2.01", *args, **kwargs):
         activity = iati_factory.ActivityFactory.build(
@@ -72,6 +76,7 @@ def build_activity(version="2.01", *args, **kwargs):
         )
         return activity
 
+
 def create_parser(self, version="2.01"):
     iati_identifier = "NL-KVK-51018586-0666"
 
@@ -80,8 +85,10 @@ def create_parser(self, version="2.01"):
 
     return ParseIATI(dummy_source, iati_activities).get_parser()
 
+
 def create_parsers(versions=["2.01", "1.05"]):
     return {version: create_parser(version) for version in versions}
+
 
 def setUpModule():
     fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
@@ -89,8 +96,10 @@ def setUpModule():
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
 
+
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
+
 
 class ParserSetupTestCase(TestCase):
 
@@ -132,6 +141,7 @@ class ParserSetupTestCase(TestCase):
     def tearDownClass(self):
         pass
 
+
 class GenericMethodsTestCase(ParserSetupTestCase):
     """
     test of helper methods available in the parser
@@ -145,8 +155,6 @@ class GenericMethodsTestCase(ParserSetupTestCase):
         self.activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
-
-
 
 
 class ActivityTestCase(ParserSetupTestCase):
@@ -671,7 +679,6 @@ class NarrativeTestCase(ParserSetupTestCase):
         self.assertTrue(narrative.content == self.test_text)
         self.assertTrue(narrative.language.code == self.defaults["language"])
 
-
     def test_addForeignKeyNonDefaultLanguageNarrative(self):
         """
         The narrative should change its language parameter based on the xml:lang element 
@@ -683,9 +690,11 @@ class NarrativeTestCase(ParserSetupTestCase):
 
         self.assertTrue(narrative.language.code == "fr")
 
+
 # Todo: after organization implementation
 class OrganisationTestCase(ParserSetupTestCase):
     pass
+
 
 class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     """
@@ -746,6 +755,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     @skip('NotImplemented')
     def test_reporting_organisation_narrative(self):
         raise NotImplementedError()
+
 
 class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
     """
@@ -1684,6 +1694,9 @@ class BudgetTestCase(ParserSetupTestCase):
         }
         text = "2000.2"
 
+        xdr_value = 200
+        self.parser_201.convert.to_xdr = MagicMock(return_value=xdr_value)
+
         value = E('value', text, **attrs) 
         self.parser_201.iati_activities__iati_activity__budget__value(value)
         budget = self.parser_201.get_model('Budget')
@@ -1692,6 +1705,12 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(budget.value == Decimal('2000.2'))
         self.assertTrue(str(budget.value_date) == attrs['value-date'])
         self.assertTrue(budget.currency.code == attrs['currency'])
+
+        self.assertTrue(budget.xdr_value == xdr_value)
+        self.parser_201.convert.to_xdr.assert_called_with(
+            budget.currency.code,
+            budget.value_date,
+            budget.value)
 
     def test_budget_no_value_date_should_not_parse_201(self):
         """

@@ -1193,7 +1193,6 @@ class Parse(XMLParser):
         value-date:2014-01-01
 
         tag:value"""
-        # TODO: currency decimal separator determination
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
@@ -1212,6 +1211,8 @@ class Parse(XMLParser):
         budget.value = decimal_value
         budget.value_date = value_date
         budget.currency = currency
+
+        budget.xdr_value = self.convert.to_xdr(budget.currency_id, budget.value_date, budget.value)
 
         return element
 
@@ -2191,6 +2192,8 @@ class Parse(XMLParser):
         self.set_derived_activity_dates(activity)
         self.set_activity_aggregations(activity)
         self.update_activity_search_index(activity)
+        self.set_country_region_transaction(activity)
+        self.set_sector_transaction(activity)
 
     def set_related_activities(self, activity):
         """ update related-activity references to this activity """

@@ -56,6 +56,33 @@ class PostSaveActivityTestCase(TestCase):
         Check if dates are set correctly
         """
 
+    @skip('NotImplemented')
+    def test_calculate_country_region_transaction_values_set_on_transaction(self):
+        """
+        When set on the transaction, the whole transaction will be 100% targeted to that country/region
+        """
+
+    @skip('NotImplemented')
+    def test_calculate_country_region_transaction_values_not_set_on_transaction(self):
+        """
+        When not set on the transaction, the transaction will be targeted percentage wise.
+        Percentages are given in recipient-country and/or recipient-region.
+        Percentages of recipient countries and recipient regions together should add up to 100%.
+        If percentages are not given, split through all countries/regions given.
+        """
+
+    @skip('NotImplemented')
+    def test_calculate_sector_transaction_values_set_on_transaction(self):
+        """
+        When set on the transaction, the whole transaction will be 100% targeted to that sector.
+        """
+
+    @skip('NotImplemented')
+    def test_calculate_sector_transaction_values_not_set_on_transaction(self):
+        """
+        Percentages of sectors should add up to 100%.
+        If percentages are not given, split through all countries/regions given.
+        """
 
 class PostSaveFileTestCase(TestCase):
     """
