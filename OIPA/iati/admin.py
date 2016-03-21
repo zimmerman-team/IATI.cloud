@@ -3,6 +3,7 @@ import datetime
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.html import format_html
+from django.core.exceptions import ObjectDoesNotExist
 
 from autocomplete_light import forms as autocomplete_forms
 import nested_admin
@@ -367,6 +368,24 @@ class ActivityAdmin(nested_admin.NestedAdmin):
 
         super(ActivityAdmin, self).save_model(request, obj, form, change)
 
+        try:
+            if obj.title.id is None:
+                obj.title.save()
+        except ObjectDoesNotExist:
+            title = Title()
+            title.activity = obj
+            title.save()
+
+        if not obj.description_set.count():
+            description = Description()
+            description.activity = obj
+            description.save()
+
+        if not change:
+            obj.default_lang = 'en'
+
+        self.act = obj
+
         if not change:
             obj.default_lang = 'en'
 
@@ -479,9 +498,12 @@ class TransactionAdmin(nested_admin.NestedAdmin):
         super(TransactionAdmin, self).save_formset(request, form, formset, change)
 
         if formset.model == TransactionDescription:
-            if formset.instance.description.id is None:
-                formset.instance.description.save()
-
+            try:
+                if formset.instance.description.id is None:
+                    formset.instance.description.save()
+            except ObjectDoesNotExist:
+                # do nothing
+                pass
 
         # update aggregations after save of last inline form
         if formset.model == TransactionReceiver:
