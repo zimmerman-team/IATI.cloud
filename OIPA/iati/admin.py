@@ -386,19 +386,6 @@ class ActivityAdmin(nested_admin.NestedAdmin):
 
         self.act = obj
 
-        if not change:
-            obj.default_lang = 'en'
-
-            title = Title()
-            title.activity = obj
-            title.save()
-
-            description = Description()
-            description.activity = obj
-            description.save()
-
-        self.act = obj
-
 
     def save_formset(self, request, form, formset, change):
         if formset.model == Narrative:
