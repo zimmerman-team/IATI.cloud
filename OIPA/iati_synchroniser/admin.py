@@ -121,7 +121,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def parse_source(self, request):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
-        obj.process()
+        obj.process(force_reparse=True)
         return HttpResponse('Success')
 
     def add_to_parse_queue(self, request):

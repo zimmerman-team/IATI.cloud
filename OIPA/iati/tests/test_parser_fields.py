@@ -845,27 +845,6 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(participating_organisation.type.code == self.attrs_105["type"])
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
-    def test_primary_name_is_set_201(self):
-        """
-        Test the primary name in order to work around ref uniqueness is set correctly for the first narrative only
-        """
-        # TODO: Instead of this, make sure a new parser is created for every test 2015-11-26
-        self.parser_201.model_store = {}
-
-        activity = build_activity(version="2.01")
-        self.parser_201.register_model('Activity', activity)
-
-        self.parser_201.iati_activities__iati_activity__participating_org(self.participating_org_201)
-
-        narrative1 = E('narrative', "Name1")
-        narrative2 = E('narrative', "Name2")
-
-        self.parser_201.iati_activities__iati_activity__participating_org__narrative(narrative1)
-        self.parser_201.iati_activities__iati_activity__participating_org__narrative(narrative2)
-
-        participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
-        self.assertEqual(participating_organisation.primary_name, "Name1")
-
     def test_primary_name_is_set_105(self):
         """
         Test the primary name in order to work around ref uniqueness is set correctly for the first narrative only

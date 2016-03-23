@@ -372,10 +372,7 @@ class Parse(XMLParser):
 
         # TODO: workaround for IATI ref uniqueness limitation,
         # add as participating_organisation.primary_name - 2015-11-26
-        narrative_list = self.get_model_list('ActivityParticipatingOrganisationNarrative')
-        if narrative_list and len(narrative_list) is 1:
-            model.primary_name = element.text
-            text = element.text
+        model.primary_name = element.text    
 
         return element
     
