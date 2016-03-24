@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'corsheaders',
     'haystack',
+    'common',
     'iati',
     'iati_organisation',
     'iati_synchroniser',

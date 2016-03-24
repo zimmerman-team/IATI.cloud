@@ -31,6 +31,7 @@ pytest-django==2.9.1
 python-coveralls==2.7.0
 python-dateutil==2.5.0
 redis==2.10.5
+django-redis-cache==1.6.5
 rq==0.5.6
 rq-scheduler==0.5.1
 supervisor==3.2.2
