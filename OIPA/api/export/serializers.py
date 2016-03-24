@@ -291,7 +291,7 @@ class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
 
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
-    class Meta(transaction_serializers.TransactionDescriptionSerializer.Meta):
+    class Meta(transaction_serializers.TransactionProviderSerializer.Meta):
         fields = (
             'ref',
             'provider_activity_id',
