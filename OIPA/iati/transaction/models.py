@@ -74,7 +74,13 @@ class TransactionProvider(models.Model):
         null=True,
         blank=True,
         default=None)
-    provider_activity_ref = models.CharField(db_index=True, max_length=200, null=True, blank=True, default="")
+    provider_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='provider-activity-id')
 
     transaction = models.OneToOneField(
         Transaction,
@@ -108,7 +114,13 @@ class TransactionReceiver(models.Model):
         null=True,
         blank=True,
         default=None)
-    receiver_activity_ref = models.CharField(db_index=True, max_length=200, null=True, blank=True, default="")
+    receiver_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='receiver-activity-id')
 
     transaction = models.OneToOneField(
         Transaction,

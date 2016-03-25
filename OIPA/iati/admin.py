@@ -56,7 +56,7 @@ class TransactionProviderInline(nested_admin.NestedStackedInline):
     ]
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    exclude = ('normalized_ref', 'organisation', 'provider_activity_ref')
+    exclude = ('normalized_ref', 'organisation', 'provider_activity')
 
     form = autocomplete_forms.modelform_factory(TransactionProvider, fields='__all__')
     extra = 1
@@ -75,7 +75,7 @@ class TransactionReceiverInline(nested_admin.NestedStackedInline):
     ]
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    exclude = ('normalized_ref', 'organisation', 'receiver_activity_ref')
+    exclude = ('normalized_ref', 'organisation', 'receiver_activity')
 
     form = autocomplete_forms.modelform_factory(TransactionReceiver, fields='__all__')
 
@@ -460,17 +460,17 @@ class TransactionAdmin(nested_admin.NestedAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(TransactionAdmin, self).get_object(request, object_id)
 
-        if not getattr(obj, 'receiver_organisation', None):
-            transaction_receiver = TransactionReceiver()
-            transaction_receiver.transaction = obj
-            transaction_receiver.save()
-            obj.receiver_organisation = transaction_receiver
-
-        if not getattr(obj, 'provider_organisation', None):
-            transaction_provider = TransactionProvider()
-            transaction_provider.transaction = obj
-            transaction_provider.save()
-            obj.provider_organisation = transaction_provider
+        # if not getattr(obj, 'receiver_organisation', None):
+        #     transaction_receiver = TransactionReceiver()
+        #     transaction_receiver.transaction = obj
+        #     transaction_receiver.save()
+        #     obj.receiver_organisation = transaction_receiver
+        #
+        # if not getattr(obj, 'provider_organisation', None):
+        #     transaction_provider = TransactionProvider()
+        #     transaction_provider.transaction = obj
+        #     transaction_provider.save()
+        #     obj.provider_organisation = transaction_provider
 
         self.act = obj.activity
 
@@ -489,14 +489,26 @@ class TransactionAdmin(nested_admin.NestedAdmin):
                 if formset.instance.description.id is None:
                     formset.instance.description.save()
             except ObjectDoesNotExist:
-                # do nothing
                 pass
+
+        if formset.model == TransactionProvider:
+            try:
+                if formset.instance.provider_organisation.id is None:
+                    formset.instance.receiver_organisation.save()
+            except ObjectDoesNotExist:
+                pass
+
 
         # update aggregations after save of last inline form
         if formset.model == TransactionReceiver:
+            try:
+                if formset.instance.receiver_organisation.id is None:
+                    formset.instance.receiver_organisation.save()
+            except ObjectDoesNotExist:
+                pass
+
             aggregation_calculator = ActivityAggregationCalculation()
             aggregation_calculator.parse_activity_aggregations(form.instance.activity)
-
 
 class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorTitle
@@ -586,17 +598,17 @@ class ResultAdmin(nested_admin.NestedAdmin):
         obj = super(ResultAdmin, self).get_object(request, object_id)
 
         # ugly workaround to get narratives in on change
-        if not getattr(obj, 'resultdescription', None):
-            description = ResultDescription()
-            description.result = obj
-            description.save()
-            obj.resultdescription = description
-
-        if not getattr(obj, 'resulttitle', None):
-            title = ResultTitle()
-            title.result = obj
-            title.save()
-            obj.resulttitle = title
+        # if not getattr(obj, 'resultdescription', None):
+        #     description = ResultDescription()
+        #     description.result = obj
+        #     description.save()
+        #     obj.resultdescription = description
+        #
+        # if not getattr(obj, 'resulttitle', None):
+        #     title = ResultTitle()
+        #     title.result = obj
+        #     title.save()
+        #     obj.resulttitle = title
 
         if not obj.resultindicator_set.count():
             result_indicator = ResultIndicator()
@@ -617,15 +629,15 @@ class ResultAdmin(nested_admin.NestedAdmin):
 
         super(ResultAdmin, self).save_model(request, obj, form, change)
 
-        # ugly workaround to get narratives in on add
-        if not change:
-            title = ResultTitle()
-            title.result = obj
-            title.save()
-
-            description = ResultDescription()
-            description.result = obj
-            description.save()
+        # # ugly workaround to get narratives in on add
+        # if not change:
+        #     title = ResultTitle()
+        #     title.result = obj
+        #     title.save()
+        #
+        #     description = ResultDescription()
+        #     description.result = obj
+        #     description.save()
 
         self.act = obj.activity
 
@@ -635,6 +647,20 @@ class ResultAdmin(nested_admin.NestedAdmin):
                 if entry and entry['id'] is None:
                     entry['activity'] = self.act
         super(ResultAdmin, self).save_formset(request, form, formset, change)
+
+        if formset.model == ResultTitle:
+            try:
+                if formset.instance.resulttitle.id is None:
+                    formset.instance.resulttitle.save()
+            except ObjectDoesNotExist:
+                pass
+
+        if formset.model == ResultDescription:
+            try:
+                if formset.instance.resultdescription.id is None:
+                    formset.instance.resultdescription.save()
+            except ObjectDoesNotExist:
+                pass
 
 
 admin.site.register(Activity, ActivityAdmin)
