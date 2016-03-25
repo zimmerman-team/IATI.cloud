@@ -9,11 +9,19 @@ from django import db
 from django.conf import settings
 
 
+class ParserDisabledError(Exception):
+    def __init__(self, message):
+        super(ParserDisabledError, self).__init__(message)
+
+
 class ParseIATI():
     def __init__(self, source, root=None, force_reparse=False):
         """
         Given a source IATI file, prepare an IATI parser
         """
+
+        if settings.IATI_PARSER_DISABLED:
+            raise ParserDisabledError("The parser is disabled on this instance of OIPA")
 
         self.source = source
         self.url = source.source_url
