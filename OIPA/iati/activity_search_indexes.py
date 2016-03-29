@@ -91,7 +91,7 @@ def reindex_activity(activity):
         activity_search.last_reindexed = datetime.now()
         activity_search.save()
 
-    except ObjectDoesNotExist as e:
+    except Exception as e:
         print("Building ft indexes for {id} raises: {e}".format(id=activity.id, e=e.message))
 
 
