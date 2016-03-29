@@ -20,6 +20,7 @@ from iati.models import AidType
 from iati.models import FinanceType
 from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
+from iati.models import OrganisationType
 from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
@@ -229,6 +230,12 @@ class ActivityAggregationSerializer(BaseSerializer):
         "activity_status": {
             "fields": ("activity_status",),
             "queryset": ActivityStatus,
+            "serializer": CodelistSerializer,
+            "serializer_fields": (),
+        },
+        "participating_organisation_type": {
+            "fields": (("participating_organisations__type", "participating_organisation_type"),),
+            "queryset": OrganisationType,
             "serializer": CodelistSerializer,
             "serializer_fields": (),
         },

@@ -159,6 +159,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    participating_organisation_type = ToManyFilter(
+        qs=ActivityParticipatingOrganisation,
+        lookup_type='in',
+        name='type__code',
+        fk='activity',
+    )
+
     reporting_organisation = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_type='in',
