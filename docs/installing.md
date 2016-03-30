@@ -31,7 +31,7 @@ Setup includes:
  - OIPA directory mounted into /vagrant on VM
  - all dependencies installed
  - PostgresSQL database created (name: `oipa`, user: `oipa`, password: `oipa`)
- - inital superuser created (name: `oipa`, password: `oipa`)
+ - initial superuser created (name: `oipa`, password: `oipa`)
 
 To start:
 
