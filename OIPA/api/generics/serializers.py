@@ -94,6 +94,10 @@ class DynamicFieldsSerializer(serializers.Serializer):
         if len(fields) > 0:
             allowed = set(fields)
             existing = set(self.fields.keys())
+
+            if 'all' in allowed:
+                return
+
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
@@ -110,6 +114,10 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         if len(fields) > 0:
             allowed = set(fields)
             existing = set(self.fields.keys())
+
+            if 'all' in allowed:
+                return
+
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 

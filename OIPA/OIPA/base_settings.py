@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'indicator_unesco',
     'translation_model',
     'rest_framework',
+    'rest_framework_csv',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
@@ -161,6 +162,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
+        'api.renderers.PaginatedCSVRenderer',
+        # 'rest_framework_csv.renderers.CSVRenderer',
     ),
 
 }
