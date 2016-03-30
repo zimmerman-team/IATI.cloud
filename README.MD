@@ -5,7 +5,6 @@
 [![Requirements Status](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements.svg?branch=develop)](https://requires.io/github/zimmerman-zimmerman/OIPA/requirements/?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/oipa-docs/badge/?version=latest)](http://docs.oipa.nl/en/latest/?badge=latest)
 
-<a class="fa fa-github" href="https://github.com/zimmerman-zimmerman/OIPA"> OIPA on GitHub</a>
 
 OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
 
@@ -22,7 +21,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 
 1. Install [Vagrant](https://www.vagrantup.com/)
 2. Run ```vagrant up```
-3. Go into the machine: ```vagrant ssh```
+3. Find your way into the machine: ```vagrant ssh```
 4. Start the server: ```./manage.py runserver 0.0.0.0:8000```
 5. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 
