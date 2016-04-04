@@ -7,6 +7,7 @@ import datetime
 import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.factory import iati_factory
+from iati.transaction.factories import TransactionFactory
 from iati.parser.genericXmlParser import XMLParser as GenericParser
 from django.test import TestCase
 
@@ -18,6 +19,12 @@ class PostSaveActivityTestCase(TestCase):
 
     def setUp(self):
         self.parser = GenericParser(None)
+        version = codelist_models.Version.objects.get(code='2.01')
+        self.activity = iati_factory.ActivityFactory.create(
+            id='IATI-0001',
+            iati_identifier='IATI-0001',
+            iati_standard_version=version,
+            xml_source_ref='source_reference')
 
     @skip('NotImplemented')
     def test_post_save_models(self):
@@ -84,6 +91,76 @@ class PostSaveActivityTestCase(TestCase):
         If percentages are not given, split through all countries/regions given.
         """
 
+    def test_set_country_region_transaction_with_percentages(self):
+        """
+
+        """
+        # insert 2 countries, 1 region, adds up to 100%
+        # 2 transactions
+        c1 = iati_factory.CountryFactory(code='AF')
+        c2 = iati_factory.CountryFactory(code='AL')
+        r1 = iati_factory.RegionFactory(code='998')
+        currency = iati_factory.CurrencyFactory(code='EUR')
+
+        rc1 = iati_factory.ActivityRecipientCountryFactory(
+            activity=self.activity,
+            country=c1,
+            percentage=30
+        )
+
+        rc2 = iati_factory.ActivityRecipientCountryFactory(
+            activity=self.activity,
+            country=c2,
+            percentage=45
+        )
+
+        rr1 = iati_factory.ActivityRecipientRegionFactory(
+            activity=self.activity,
+            region=r1,
+            percentage=25
+        )
+
+        t1 = TransactionFactory(
+            activity=self.activity,
+            value=10000,
+            value_date='2016-01-01',
+            currency=currency
+        )
+
+        t2 = TransactionFactory(
+            activity=self.activity,
+            value=20000,
+            value_date='2016-01-01',
+            currency=currency
+        )
+
+
+    def test_set_country_region_transaction_without_percentages(self):
+        """
+
+        """
+        # insert 2 countries, 1 region
+
+
+
+    def test_set_sector_transaction_with_percentages(self):
+        """
+
+        """
+        # insert 3 sectors
+
+    def test_set_sector_transaction_without_percentages(self):
+        """
+
+        """
+        # insert 3 activity sectors without percentages
+
+
+        # test if added to transactionsector
+
+
+
+
 class PostSaveFileTestCase(TestCase):
     """
     2.01: post save activity actions called
@@ -91,12 +168,24 @@ class PostSaveFileTestCase(TestCase):
 
     def setUp(self):
         self.parser = GenericParser(None)
+        version = codelist_models.Version.objects.get(code='2.01')
+        self.first_activity = iati_factory.ActivityFactory.create(
+            id='IATI-0001',
+            iati_identifier='IATI-0001',
+            iati_standard_version=version,
+            xml_source_ref='source_reference')
+        self.second_activity = iati_factory.ActivityFactory.create(
+            id='IATI-0002',
+            iati_identifier='IATI-0002',
+            iati_standard_version=self.first_activity.iati_standard_version,
+            xml_source_ref='source_reference')
 
     @skip('NotImplemented')
     def test_post_save_file(self):
         """
-        Check if sets related activities and activity aggregations
+        Check if all required functions are called
         """
+
 
     @skip('NotImplemented')
     def test_delete_removed_activities(self):
@@ -106,18 +195,6 @@ class PostSaveFileTestCase(TestCase):
         mock a file with 1 of them
         parsing this file should delete the other activity
         """
-        version = codelist_models.Version.objects.get(code='2.01')
-        first_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0001',
-            iati_identifier='IATI-0001',
-            iati_standard_version=version,
-            xml_source_ref='source_reference')
-        second_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0002',
-            iati_identifier='IATI-0002',
-            iati_standard_version=first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
-
         root = E('iati-activities', version='2.01')
         xml_activity = E('iati-activity')
         xml_title = E('title', 'Title of activity 1')
