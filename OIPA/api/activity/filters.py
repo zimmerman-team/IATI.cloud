@@ -302,9 +302,12 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    transaction_date_year = NumberFilter(
+    transaction_date_year = ToManyFilter(
+        qs=Transaction,
         lookup_type='year',
-        name='transaction__transaction_date',)
+        name='transaction_date',
+        fk='activity'
+    )
 
     total_budget_lte = NumberFilter(
         lookup_type='lte',
