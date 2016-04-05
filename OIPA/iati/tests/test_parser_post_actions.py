@@ -8,9 +8,8 @@ import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.factory import iati_factory
 from iati.transaction.factories import TransactionFactory
-from iati.parser.genericXmlParser import XMLParser as GenericParser
 from django.test import TestCase
-
+from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 
 class PostSaveActivityTestCase(TestCase):
     """
@@ -18,7 +17,7 @@ class PostSaveActivityTestCase(TestCase):
     """
 
     def setUp(self):
-        self.parser = GenericParser(None)
+        self.parser = Parser_201(None)
         version = codelist_models.Version.objects.get(code='2.01')
         self.activity = iati_factory.ActivityFactory.create(
             id='IATI-0001',
@@ -95,44 +94,61 @@ class PostSaveActivityTestCase(TestCase):
         """
 
         """
-        # insert 2 countries, 1 region, adds up to 100%
+        # insert 2 countries, 1 region
         # 2 transactions
         c1 = iati_factory.CountryFactory(code='AF')
         c2 = iati_factory.CountryFactory(code='AL')
         r1 = iati_factory.RegionFactory(code='998')
         currency = iati_factory.CurrencyFactory(code='EUR')
 
-        rc1 = iati_factory.ActivityRecipientCountryFactory(
+        rc1 = iati_factory.ActivityRecipientCountryFactory.create(
             activity=self.activity,
             country=c1,
             percentage=30
         )
 
-        rc2 = iati_factory.ActivityRecipientCountryFactory(
+        rc2 = iati_factory.ActivityRecipientCountryFactory.create(
             activity=self.activity,
             country=c2,
             percentage=45
         )
 
-        rr1 = iati_factory.ActivityRecipientRegionFactory(
+        rr1 = iati_factory.ActivityRecipientRegionFactory.create(
             activity=self.activity,
             region=r1,
             percentage=25
         )
 
-        t1 = TransactionFactory(
+        t1 = TransactionFactory.create(
             activity=self.activity,
             value=10000,
             value_date='2016-01-01',
             currency=currency
         )
 
-        t2 = TransactionFactory(
+        t2 = TransactionFactory.create(
             activity=self.activity,
             value=20000,
             value_date='2016-01-01',
             currency=currency
         )
+
+        self.parser.set_country_region_transaction(self.activity)
+        self.assertEqual(TransactionRecipientCountry.objects.count(), 4)
+        self.assertEqual(TransactionRecipientRegion.objects.count(), 2)
+        self.assertEqual(TransactionRecipientCountry.objects.filter(
+            country=c1,
+            transaction=t1,
+            value=3000
+        ), 1)
+        self.assertEqual(TransactionRecipientRegion.objects.filter(
+            region=r1,
+            transaction=t2,
+            value=5000
+        ), 1)
+
+
+
 
 
     def test_set_country_region_transaction_without_percentages(self):

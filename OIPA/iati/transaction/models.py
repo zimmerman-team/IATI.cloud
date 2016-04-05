@@ -158,6 +158,7 @@ class TransactionSector(models.Model):
         null=False,
         default=100)
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    reported_on_transaction = models.BooleanField(default=False)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.sector)
@@ -172,6 +173,7 @@ class TransactionRecipientCountry(models.Model):
         null=False,
         default=100)
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    reported_on_transaction = models.BooleanField(default=False)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
@@ -187,6 +189,7 @@ class TransactionRecipientRegion(models.Model):
         null=False,
         default=100)
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    reported_on_transaction = models.BooleanField(default=False)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)

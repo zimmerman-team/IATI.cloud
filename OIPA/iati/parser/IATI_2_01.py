@@ -2235,6 +2235,104 @@ class Parse(XMLParser):
     def update_activity_search_index(self, activity):
         activity_search_indexes.reindex_activity(activity)
 
+    def set_country_region_transaction(self, activity):
+
+        if not activity.transaction_set.count():
+            return False
+
+        # BL: If transaction/recipient-country AND/OR transaction/recipient-region are used
+        # THEN ALL transaction elements MUST contain a recipient-country or recipient-region element
+        # AND (iati-activity/recipient-country AND iati-activity/recipient-region MUST NOT be used)
+
+        # check if country or region are set on transaction by checking the first transaction
+        t = activity.transaction_set[0]
+        if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
+            # its set on transactions
+            for t in activity.transaction_set.all():
+                for trc in t.transactionrecipientcountry_set.all():
+                    trc.percentage = 100
+                    trc.xdr_value = t.xdr_value
+                    trc.save()
+                for trc in t.transactionrecipientregion_set.all():
+                    trc.percentage = 100
+                    trc.xdr_value = t.xdr_value
+                    trc.save()
+        else:
+            # get all countries / regions
+            countries = activity.activityrecipientcountry_set
+            regions = activity.activityrecipientcountry_set
+
+            # check if percentages are not set, then divide equally
+            if countries.filter(percentage=None) and regions.filter(percentage=None):
+                total_count = countries.count() + regions.count()
+                percentage = 100 / total_count
+                for c in countries:
+                    c.percentage = percentage
+                for r in regions:
+                    r.percentage = percentage
+
+            # create TransactionRecipientCountry/Region for each transaction, for each country/region
+            for t in activity.transaction_set.all():
+                for c in countries:
+                    xdr_value = (c.percentage / 100) * t.xdr_value
+                    transaction_models.TransactionRecipientCountry(
+                        transaction=t,
+                        country=c,
+                        percentage=c.percentage,
+                        xdr_value=xdr_value,
+                        reported_on_transaction=False
+                    )
+
+                for r in regions:
+                    xdr_value = (r.percentage / 100) * t.xdr_value
+                    transaction_models.TransactionRecipientRegion(
+                        transaction=t,
+                        region=r,
+                        percentage=r.percentage,
+                        xdr_value=xdr_value,
+                        reported_on_transaction=False
+                    )
+
+
+    def set_sector_transaction(self, activity):
+
+        if not activity.transaction_set.count():
+            return False
+
+        # BL: If this element is used then ALL transaction elements should contain a transaction/sector element
+        # and iati-activity/sector should NOT be used.
+
+        t = activity.transaction_set[0]
+        if t.transactionsector_set.count():
+            # its set on transactions
+            for t in activity.transaction_set.all():
+                for ts in t.transactionsector_set.all():
+                    ts.transactionsector.percentage = 100
+                    ts.transactionsector.xdr_value = t.xdr_value
+                    ts.save()
+        else:
+            # get all sectors
+            sectors = activity.activitysector_set
+
+            # check if percentages are not set, then divide equally
+            if sectors.filter(percentage=None):
+                total_count = sectors.count()
+                percentage = 100 / total_count
+                for s in sectors:
+                    s.percentage = percentage
+
+            # create TransactionSector for each transaction, for each sector
+            for t in activity.transaction_set.all():
+                for s in sectors:
+                    xdr_value = (s.percentage / 100) * t.xdr_value
+                    transaction_models.TransactionSector(
+                        transaction=t,
+                        sector=s,
+                        percentage=s.percentage,
+                        xdr_value=xdr_value,
+                        reported_on_transaction=False
+                    )
+
     def post_save_file(self, xml_source):
         """Perform all actions that need to happen after a single IATI source's been parsed.
 
