@@ -521,6 +521,17 @@ class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     extra = 1
 
 
+class ResultIndicatorDescriptionInline(nested_admin.NestedStackedInline):
+    model = ResultIndicatorDescription
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 1
+
+
 class ResultIndicatorBaselineCommentInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorBaselineComment
     classes = ('collapse open',)
@@ -546,6 +557,7 @@ class ResultIndicatorInline(nested_admin.NestedStackedInline):
     inline_classes = ('collapse open',)
     inlines = [
         ResultIndicatorTitleInline,
+        ResultIndicatorDescriptionInline,
         ResultIndicatorPeriodInline,
     ]
 
@@ -597,24 +609,10 @@ class ResultAdmin(nested_admin.NestedAdmin):
     def get_object(self, request, object_id, from_field=None):
         obj = super(ResultAdmin, self).get_object(request, object_id)
 
-        # ugly workaround to get narratives in on change
-        # if not getattr(obj, 'resultdescription', None):
-        #     description = ResultDescription()
-        #     description.result = obj
-        #     description.save()
-        #     obj.resultdescription = description
-        #
-        # if not getattr(obj, 'resulttitle', None):
-        #     title = ResultTitle()
-        #     title.result = obj
-        #     title.save()
-        #     obj.resulttitle = title
-
         if not obj.resultindicator_set.count():
             result_indicator = ResultIndicator()
             result_indicator.result = obj
             result_indicator.save()
-
 
         for result_indicator in obj.resultindicator_set.all():
             if not getattr(result_indicator, 'resultindicatortitle', None):
@@ -626,19 +624,7 @@ class ResultAdmin(nested_admin.NestedAdmin):
         return obj
 
     def save_model(self, request, obj, form, change):
-
         super(ResultAdmin, self).save_model(request, obj, form, change)
-
-        # # ugly workaround to get narratives in on add
-        # if not change:
-        #     title = ResultTitle()
-        #     title.result = obj
-        #     title.save()
-        #
-        #     description = ResultDescription()
-        #     description.result = obj
-        #     description.save()
-
         self.act = obj.activity
 
     def save_formset(self, request, form, formset, change):
@@ -659,6 +645,16 @@ class ResultAdmin(nested_admin.NestedAdmin):
             try:
                 if formset.instance.resultdescription.id is None:
                     formset.instance.resultdescription.save()
+            except ObjectDoesNotExist:
+                pass
+
+        if formset.model == ResultIndicatorDescription:
+            try:
+                if formset.instance.resultindicatordescription.id is None:
+                    if formset.instance.id is None:
+                        formset.instance.save()
+                        formset.instance.resultindicatordescription.result_indicator = formset.instance
+                    formset.instance.resultindicatordescription.save()
             except ObjectDoesNotExist:
                 pass
 
