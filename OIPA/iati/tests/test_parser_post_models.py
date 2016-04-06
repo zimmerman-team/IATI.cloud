@@ -6,6 +6,7 @@ from django.test import TestCase
 from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, SectorVocabularyFactory
 from mock import MagicMock
+from decimal import Decimal
 
 
 class PostSaveActivityTestCase(TestCase):
@@ -70,7 +71,7 @@ class PostSaveActivityTestCase(TestCase):
             value=1234,
             value_date='2016-01-01',
             currency=self.currency,
-            xdr_value=10000,
+            xdr_value=Decimal(10000),
             transaction_type=self.tt
         )
 
@@ -79,7 +80,7 @@ class PostSaveActivityTestCase(TestCase):
             value=2345,
             value_date='2016-01-01',
             currency=self.currency,
-            xdr_value=20000,
+            xdr_value=Decimal(20000),
             transaction_type=self.tt
         )
 
@@ -261,4 +262,11 @@ class PostSaveActivityTestCase(TestCase):
         trc.save()
 
         self.parser.set_sector_transaction(self.activity)
-        self.assertEqual(TransactionSector.objects.all()[0].xdr_value, self.t1.xdr_value)
+
+        trc_updated = TransactionSector.objects.filter(
+            sector=self.s1,
+            transaction=self.t1
+        )
+        self.assertEqual(trc_updated.count(), 1)
+        
+        self.assertEqual(trc_updated[0].xdr_value, self.t1.xdr_value)
