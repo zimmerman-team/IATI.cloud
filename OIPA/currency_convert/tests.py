@@ -126,7 +126,7 @@ class ConvertTestCase(TestCase):
         """
         value_date = datetime(1995, 1, 1)
         rate = convert.to_xdr('EUR', value_date, 100)
-        self.assertIsNone(rate)
+        self.assertEqual(rate, 0)
 
     def test_from_xdr(self):
         """
@@ -142,4 +142,4 @@ class ConvertTestCase(TestCase):
         """
         value_date = datetime(1995, 1, 1)
         rate = convert.from_xdr('EUR', value_date, 100)
-        self.assertIsNone(rate)
+        self.assertEqual(rate, 0)
