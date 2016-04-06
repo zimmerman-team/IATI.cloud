@@ -1,13 +1,37 @@
 from django.test import TestCase
 from decimal import Decimal
-from currency_convert.imf_rate_parser import RateParser
+from currency_convert.imf_rate_parser import RateBrowser, RateParser
+from mechanize._urllib2_fork import URLError
 from iati_codelists.models import Currency
 from mock import MagicMock
+from mock import Mock
 from lxml.builder import E
 from datetime import datetime
 from currency_convert.models import MonthlyAverage
 from currency_convert import convert
 from currency_convert.factory.currency_convert_factory import MonthlyAverageFactory
+import mechanize
+
+
+class RateBrowserTestCase(TestCase):
+
+    def setUp(self):
+        """
+        
+        """
+        self.rate_browser = RateBrowser()
+
+    def test_prepare_browser(self):
+        """
+        test if returns a browser
+        """
+        self.assertTrue(isinstance(self.rate_browser.browser, mechanize.Browser))
+
+    def test_retry_on_urlerror(self):
+        """
+        should retry 2 times when receiving an URL error
+        """
+        self.rate_browser.browser.open = Mock(side_effect=URLError('cant connect...'))
 
 
 class RateParserTestCase(TestCase):
@@ -86,10 +110,14 @@ class RateParserTestCase(TestCase):
         self.rate_parser.reset_data()
         self.assertEqual(self.rate_parser.rates, {})
 
+    def test_create_browser(self):
+        browser = self.rate_parser.create_browser()
+        self.assertTrue(isinstance(browser, RateBrowser))
+
     def test_update_rates(self):
         currency, created = Currency.objects.get_or_create(code='EUR', name='Euro')
         MonthlyAverageFactory.create(year=1994, month=1, currency=currency, value=1)
-        self.rate_parser.browser = MagicMock()
+        self.rate_parser.create_browser = MagicMock()
         self.rate_parser.parse_data = MagicMock()
         self.rate_parser.save_averages = MagicMock()
         self.rate_parser.update_rates(force=False)
@@ -99,12 +127,14 @@ class RateParserTestCase(TestCase):
     def test_force_update_rates(self):
         currency, created = Currency.objects.get_or_create(code='EUR', name='Euro')
         MonthlyAverageFactory.create(year=1994, month=1, currency=currency, value=1)
-        self.rate_parser.browser = MagicMock()
+        self.rate_parser.create_browser = MagicMock()
         self.rate_parser.parse_data = MagicMock()
         self.rate_parser.save_averages = MagicMock()
         self.rate_parser.update_rates(force=True)
 
+        self.assertEqual(13, self.rate_parser.create_browser.call_count)
         self.assertEqual(13, self.rate_parser.parse_data.call_count)
+        self.assertEqual(13, self.rate_parser.save_averages.call_count)
 
 class ConvertTestCase(TestCase):
 

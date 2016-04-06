@@ -12,9 +12,9 @@ import time
 
 
 class RateBrowser():
-    #
-    # def __init__(self):
-    #     self.browser = self.prepare_browser()
+    
+    def __init__(self):
+        self.browser = self.prepare_browser()
 
     def prepare_browser(self):
         browser = mechanize.Browser()
@@ -46,17 +46,15 @@ class RateBrowser():
         if retry_count > 2:
             return None
         try:
-            browser = self.prepare_browser()
             # wait couple sec to prevent retries due to too many connections
             time.sleep(5)
-            browser.open(url, timeout=80)
-            response = browser.open(download_url, timeout=80)
+            self.browser.open(url, timeout=80)
+            response = self.browser.open(download_url, timeout=80)
             xml_data = response.read()
-            browser.close()
+            self.browser.close()
             return etree.fromstring(str(xml_data))
         except URLError as e:
             # retry once
-            print 'retry ' + str(retry_count)
             self.get_xml_data(url, download_url, retry_count=retry_count+1)
 
 
@@ -71,7 +69,6 @@ class RateParser():
         self.min_tick = 0
         self.max_tick = 0
         self.now = datetime.datetime.now()
-        self.browser = RateBrowser()
         self.rates = {}
 
     def prepare_url(self):
@@ -121,8 +118,8 @@ class RateParser():
         should calculate averages per currency for all dates that an exchange rate is available.
         """
         for e in data.getchildren():
-            if e.tag == 'ReportName':
-                print e.text
+            # if e.tag == 'ReportName':
+            #     print e.text
             if e.tag == 'EFFECTIVE_DATE':
                 self.parse_day_rates(e)
 
@@ -168,6 +165,9 @@ class RateParser():
     def reset_data(self):
         self.rates = {}
 
+    def create_browser(self):
+        return RateBrowser()
+
     def update_rates(self, force):
         """
 
@@ -186,7 +186,8 @@ class RateParser():
             count += 1
             self.set_tick_rates()
             url = self.prepare_url()
-            data = self.browser.get_xml_data(url, self.imf_download_url)
+            browser = self.create_browser()
+            data = browser.get_xml_data(url, self.imf_download_url)
 
             if data is not None:
                 self.parse_data(data)

@@ -2348,6 +2348,7 @@ class Parse(XMLParser):
             for t in activity.transaction_set.all():
                 for recipient_sector in sectors:
                     xdr_value = (recipient_sector.percentage / Decimal(100)) * t.xdr_value
+
                     transaction_models.TransactionSector(
                         transaction=t,
                         sector=recipient_sector.sector,
