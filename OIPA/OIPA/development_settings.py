@@ -6,6 +6,13 @@ DEBUG = True
 
 SECRET_KEY = '__DEV_SECRET_KEY__'
 
+def custom_show_toolbar(self):
+    return True
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
