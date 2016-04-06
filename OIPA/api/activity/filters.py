@@ -10,7 +10,6 @@ from api.generics.filters import CommaSeparatedCharMultipleFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 from api.generics.filters import NestedFilter
-from iati.models import Activity, RelatedActivity
 
 from rest_framework import filters
 from common.util import combine_filters
@@ -54,20 +53,6 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_type='in',)
 
-    recipient_country = ToManyFilter(
-        qs=ActivityRecipientCountry,
-        lookup_type='in',
-        name='country__code',
-        fk='activity',
-    )
-
-    recipient_region = ToManyFilter(
-        qs=ActivityRecipientRegion,
-        lookup_type='in',
-        name='region__code',
-        fk='activity',
-    )
-
     recipient_region_not_in = CommaSeparatedCharFilter(
         lookup_type='in',
         name='recipient_region',
@@ -105,7 +90,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='actual_end')
 
-
     end_date_lte = DateFilter(
         lookup_type='lte',
         name='end_date')
@@ -124,6 +108,89 @@ class ActivityFilter(TogetherFilterSet):
 
     end_date_isnull = BooleanFilter(name='end_date__isnull')
     start_date_isnull = BooleanFilter(name='start_date__isnull')
+
+    xml_source_ref = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='xml_source_ref',)
+
+    activity_status = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity_status',)
+
+    hierarchy = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='hierarchy',)
+
+    budget_period_start = DateFilter(
+        lookup_type='gte',
+        name='budget__period_start',)
+
+    budget_period_end = DateFilter(
+        lookup_type='lte',
+        name='budget__period_end')
+
+    related_activity_id = ToManyFilter(
+        qs=RelatedActivity,
+        fk='current_activity',
+        lookup_type='in',
+        name='ref_activity__id',
+    )
+
+    related_activity_type = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='type__code',
+        fk='current_activity',
+    )
+
+    related_activity_recipient_country = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__recipient_country',
+        fk='current_activity',
+    )
+
+    related_activity_recipient_region = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__recipient_region',
+        fk='current_activity',
+    )
+
+    related_activity_sector = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__sector',
+        fk='current_activity',
+    )
+
+    related_activity_sector_category = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__sector__category',
+        fk='current_activity',
+    )
+
+    budget_currency = ToManyFilter(
+        qs=Budget,
+        lookup_type='in',
+        name='currency__code',
+        fk='activity',
+    )
+
+    recipient_country = ToManyFilter(
+        qs=ActivityRecipientCountry,
+        lookup_type='in',
+        name='country__code',
+        fk='activity',
+    )
+
+    recipient_region = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',
@@ -181,91 +248,9 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='xml_source_ref',)
-
-    activity_status = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity_status',)
-
-    hierarchy = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='hierarchy',)
-
-    related_activity_id = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='ref_activity__id',
-        fk='current_activity',
-    )
-
-    related_activity_type = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='type__code',
-        fk='current_activity',
-    )
-
-    related_activity_recipient_country = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='ref_activity__recipient_country',
-        fk='current_activity',
-    )
-
-    related_activity_recipient_region = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='ref_activity__recipient_region',
-        fk='current_activity',
-    )
-
-    related_activity_sector = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='ref_activity__sector',
-        fk='current_activity',
-    )
-
-    related_activity_sector_category = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='ref_activity__sector__category',
-        fk='current_activity',
-    )
-
-    budget_period_start = DateFilter(
-        lookup_type='gte',
-        name='budget__period_start',)
-
-    budget_period_end = DateFilter(
-        lookup_type='lte',
-        name='budget__period_end')
-
-    budget_currency = ToManyFilter(
-        qs=Budget,
-        lookup_type='in',
-        name='currency__code',
-        fk='activity',
-    )
-
-#     class TransactionFilter(TogetherFilterSet):
-
-#         transaction_type = CommaSeparatedCharFilter(
-#             lookup_type="in",
-#             name="transaction_type",
-#         )
-
-#         class Meta:
-#             model = Transaction
-#             # together_exclusive = [('budget_period_start', 'budget_period_end')]
-
-
-#     transaction_type = NestedFilter(
-#         nested_filter=TransactionFilter,
-#         fk='activity', # the foreign key back to this Model
-#     )
+    #
+    # Transaction filters
+    #
 
     transaction_type = ToManyFilter(
         qs=Transaction,
@@ -308,6 +293,10 @@ class ActivityFilter(TogetherFilterSet):
         name='transaction_date',
         fk='activity'
     )
+
+    #
+    # Aggregated values filters
+    #
 
     total_budget_lte = NumberFilter(
         lookup_type='lte',

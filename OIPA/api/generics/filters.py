@@ -65,6 +65,7 @@ class TogetherFilter(Filter):
             return qs
 
 class TogetherFilterSet(FilterSet):
+
     def __init__(self, data=None, queryset=None, prefix=None, strict=None):
         """
         Adds a together_exclusive meta option that selects fields that have to 
@@ -90,6 +91,25 @@ class TogetherFilterSet(FilterSet):
                 data.appendlist(uid, filter_values)
 
         super(FilterSet, self).__init__(data, queryset, prefix, strict)
+
+
+# class SubFilterSet(FilterSet):
+#     """
+#     Use a FilterSet as a sub filterset for another filterset
+#     """
+
+#     __metaclass__ = SubFilterSetMetaClass
+
+#     def __init__(self, data=None, queryset=None, prefix=None, strict=None):
+
+#         meta = getattr(self, 'Meta', None)
+
+#         sub_filtersets = getattr(meta, 'sub_filtersets', [])
+
+#         data = data.copy()
+
+#         for filterset in sub_filtersets:
+
 
 
 class CommaSeparatedCharMultipleFilter(CharFilter):
@@ -120,9 +140,13 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
     we do:
 
     SELECT "iati_activity"."id" FROM "iati_activity" WHERE "iati_activity"."id" IN (SELECT U0."activity_id" FROM "iati_activityreportingorganisation" U0 WHERE U0."ref" = 'US-USAGOV');
+
+    qs: The queryset which will be queried
+    fk: The foreign key that relates back to the main_fk
+    main_fk: The key being filtered on
     """
 
-    def __init__(self, qs=None, fk=None, **kwargs):
+    def __init__(self, qs=None, fk=None, main_fk="id", **kwargs):
         if not qs:
             raise ValueError("qs must be specified")
         if not fk:
@@ -130,6 +154,7 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
 
         self.nested_qs = qs
         self.fk = fk
+        self.main_fk = main_fk
 
         super(ToManyFilter, self).__init__(**kwargs)
 
@@ -139,12 +164,15 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         nested_qs = self.nested_qs.objects.all()
         nested_qs = super(ToManyFilter, self).filter(nested_qs, value)
 
-
-
-        # in_filter = Q(**{"{}__in".format(self.name): value})
         # nested_qs = self.nested_qs.objects.all().filter(in_filter).values(self.fk)
+        in_filter = {
+            "{}__in".format(self.main_fk): nested_qs.values(self.fk)
+        }
 
-        return qs.filter(id__in=nested_qs.values(self.fk))
+
+        return qs.filter(**in_filter)
+
+        # return qs.filter(id__in=nested_qs.values(self.fk))
 
 class NestedFilter(CommaSeparatedCharMultipleFilter):
     """

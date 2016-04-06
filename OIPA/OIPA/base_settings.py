@@ -165,7 +165,6 @@ REST_FRAMEWORK = {
         'api.renderers.PaginatedCSVRenderer',
         # 'rest_framework_csv.renderers.CSVRenderer',
     ),
-
 }
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
