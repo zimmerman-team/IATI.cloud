@@ -1,12 +1,14 @@
 from calendar import monthrange
 import datetime
 import mechanize
+from mechanize._urllib2_fork import URLError
 import cookielib
 from lxml import etree
 from decimal import Decimal
 from decimal import InvalidOperation
 from currency_convert.models import MonthlyAverage
 from iati_codelists.models import Currency
+import time
 
 
 class RateBrowser():
@@ -40,13 +42,23 @@ class RateBrowser():
 
         return browser
 
-    def get_xml_data(self, url, download_url):
-        browser = self.prepare_browser()
-        browser.open(url, timeout=80)
-        response = browser.open(download_url, timeout=80)
-        xml_data = response.read()
-        browser.close()
-        return etree.fromstring(str(xml_data))
+    def get_xml_data(self, url, download_url, retry_count=0):
+        if retry_count > 2:
+            return None
+        try:
+            browser = self.prepare_browser()
+            # wait couple sec to prevent retries due to too many connections
+            time.sleep(5)
+            browser.open(url, timeout=80)
+            response = browser.open(download_url, timeout=80)
+            xml_data = response.read()
+            browser.close()
+            return etree.fromstring(str(xml_data))
+        except URLError as e:
+            # retry once
+            print 'retry ' + str(retry_count)
+            self.get_xml_data(url, download_url, retry_count=retry_count+1)
+
 
 
 class RateParser():
@@ -78,6 +90,12 @@ class RateParser():
             str(self.max_tick)])
 
     def parse_day_rates(self, effective_rate_elem):
+        """
+        receives rates for all currencies for a specific date
+
+        fills self.rates with all values per month per currency,
+        so we can later take the average per month per currency.
+        """
         for rate_value in effective_rate_elem.getchildren():
 
             currency = rate_value.attrib.get('ISO_CHAR_CODE', '')
@@ -109,6 +127,11 @@ class RateParser():
                 self.parse_day_rates(e)
 
     def save_averages(self):
+        """
+        Based on self.rates (see parse_day_rates) calculates the average per currency for a specific month.
+
+        Stores the results into the MonthlyAverage model.
+        """
         for currency_iso, cur_obj in self.rates.iteritems():
             average_value = sum(cur_obj['values'])/len(cur_obj['values'])
             currency, created = Currency.objects.get_or_create(
@@ -124,6 +147,10 @@ class RateParser():
                 obj.save()
 
     def ticks(self, dt):
+        """
+        calculate ticks. A single tick represents one hundred nanoseconds or one ten-millionth of a second.
+        IMF works with these tickrates. Check MSDN system.datetime.ticks for more info.
+        """
         return long((dt - datetime.datetime(1, 1, 1)).total_seconds() * 10000000)
 
     def set_tick_rates(self):
@@ -160,7 +187,9 @@ class RateParser():
             self.set_tick_rates()
             url = self.prepare_url()
             data = self.browser.get_xml_data(url, self.imf_download_url)
-            self.parse_data(data)
-            self.save_averages()
-            # reset data for next loop
-            self.reset_data()
+
+            if data is not None:
+                self.parse_data(data)
+                self.save_averages()
+                # reset data for next loop
+                self.reset_data()
