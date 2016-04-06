@@ -261,4 +261,4 @@ class PostSaveActivityTestCase(TestCase):
         trc.save()
 
         self.parser.set_sector_transaction(self.activity)
-        self.assertEqual(TransactionSector.objects.all()[0].xdr_value, 10000)
+        self.assertEqual(TransactionSector.objects.all()[0].xdr_value, self.t1.xdr_value)
