@@ -19,6 +19,7 @@ OIPA/static_served/*
 
 OIPA/indicators/data_backup/wdi_data/*
 OIPA/media/csv_files/*
+OIPA/media/*
 
 parse.log
 
