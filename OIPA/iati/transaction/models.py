@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -32,7 +34,7 @@ class Transaction(models.Model):
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField()
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
 
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,

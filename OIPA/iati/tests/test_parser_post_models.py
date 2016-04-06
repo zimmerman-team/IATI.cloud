@@ -261,6 +261,13 @@ class PostSaveActivityTestCase(TestCase):
         )
         trc.save()
 
+        trc2 = TransactionSector(
+            sector=self.s2,
+            transaction=self.t2,
+            vocabulary=sector_vocabulary
+        )
+        trc2.save()
+
         self.parser.set_sector_transaction(self.activity)
 
         trc_updated = TransactionSector.objects.filter(
@@ -268,5 +275,4 @@ class PostSaveActivityTestCase(TestCase):
             transaction=self.t1
         )
         self.assertEqual(trc_updated.count(), 1)
-        
         self.assertEqual(trc_updated[0].xdr_value, self.t1.xdr_value)
