@@ -48,7 +48,14 @@ The task queues page first shows an overview of active workers and the amount of
 
 **Parse all sources from a publisher** <br>Based on the org_id in `http://<oipa_url>/admin/iati_synchroniser/publisher/` it will parse all sources found in `http://<oipa_url>/admin/iati_synchroniser/iatixmlsource/` that belong to that publisher. The org_id can be given through a input box that shows when selecting this option.
 
-**Force parse all sources currently in OIPA** <br>Same as "Parse all IATI sources currently in OIPA", but this task also re-parses activities that are already in OIPA and that do not require an update (because their last-updated-datetime did not change). This can be necessary when a bug is fixed in the parser that requires a re-parse of all activities.
+**Force parse all sources currently in OIPA** <br>Same as "Parse all IATI sources currently in OIPA", but this task also re-parses activities that are already in OIPA and that do not require an update (because their last-updated-datetime did not change). This can be necessary when a bug is fixed in the parser or the data source that requires a re-parse of all activities.
+
+**Force parse all sources from a publisher** <br>Same as "Parse all sources from a publisher", but this task also re-parses activities that do not require an update (same last-updated-datetime).
+
+**Update currency exchange rates** <br>Fetches monthly currency exchange rates from the IMF. Does not reparse exchange rates when they already exist in OIPA.
+
+**Force update currency exchange rates** <br> Fetches monthly currency exchange rates from the IMF. <u>Does</u> reparse exchange rates when they already exist in OIPA.
+
 
 --------
 ## Custom codelists
