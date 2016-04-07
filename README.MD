@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/zimmerman-zimmerman/OIPA.svg?branch=master)](https://travis-ci.org/zimmerman-zimmerman/OIPA)
 [![Coverage Status](https://coveralls.io/repos/zimmerman-zimmerman/OIPA/badge.svg?branch=master&service=github)](https://coveralls.io/github/zimmerman-zimmerman/OIPA?branch=master)
 
-OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
+OIPA extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at: www.iatistandard.org
 
