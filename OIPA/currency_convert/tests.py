@@ -136,6 +136,7 @@ class RateParserTestCase(TestCase):
         self.assertEqual(13, self.rate_parser.parse_data.call_count)
         self.assertEqual(13, self.rate_parser.save_averages.call_count)
 
+
 class ConvertTestCase(TestCase):
 
     def setUp(self):

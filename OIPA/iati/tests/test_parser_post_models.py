@@ -233,7 +233,8 @@ class PostSaveActivityTestCase(TestCase):
 
     def test_set_sector_transaction_without_percentages(self):
         """
-
+        percentages should be split equally among the existing 2 sectors.
+        As a result xdr values should then be split equally.
         """
         self.setUpTransactionModels()
         self.parser.set_sector_transaction(self.activity)
@@ -249,7 +250,7 @@ class PostSaveActivityTestCase(TestCase):
 
     def test_set_sector_transaction_set_on_transaction(self):
         """
-
+        Full transaction.xdr_value should be set on TransactionSector
         """
         self.setUpTransactionModels()
         sector_vocabulary = SectorVocabularyFactory()

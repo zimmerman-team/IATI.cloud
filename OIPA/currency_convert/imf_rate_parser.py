@@ -58,7 +58,6 @@ class RateBrowser():
             self.get_xml_data(url, download_url, retry_count=retry_count+1)
 
 
-
 class RateParser():
 
     def __init__(self):

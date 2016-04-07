@@ -2268,10 +2268,10 @@ class Parse(XMLParser):
         if not activity.transaction_set.count():
             return False
 
-        # check if country or region are set on transaction by checking the first transaction
+        # check if country or region are set on transaction by checking the first transaction,
+        # then 100% of the xdr_value will go to the country/region
         t = activity.transaction_set.all()[0]
         if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
-            # its set on transactions, 100% of the xdr_value will go to the country/region
             for t in activity.transaction_set.all():
                 for trc in t.transactionrecipientcountry_set.all():
                     trc.xdr_value = t.xdr_value
@@ -2280,7 +2280,8 @@ class Parse(XMLParser):
                     trr.xdr_value = t.xdr_value
                     trr.save()
         else:
-            # get all countries / regions
+            # not set on the transaction, check if percentages given
+            # if so use the percentages, else divide equally
             countries = activity.activityrecipientcountry_set.all()
             regions = activity.activityrecipientregion_set.all()
 
@@ -2364,7 +2365,6 @@ class Parse(XMLParser):
         xml_source -- the IatiXmlSource object of the current source
         """
         self.delete_removed_activities(xml_source.ref)
-
 
     def delete_removed_activities(self, xml_source_ref):
         """ Delete activities that were not found in the XML source any longer

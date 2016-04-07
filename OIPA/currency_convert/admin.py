@@ -15,19 +15,4 @@ class MonthlyAverageAdmin(admin.ModelAdmin):
         'value']
     ordering = ['currency', 'year', 'month']
 
-    def get_urls(self):
-        urls = super(MonthlyAverageAdmin, self).get_urls()
-        extra_urls = [
-            url(
-                r'^parse-imf-rates/$',
-                self.admin_site.admin_view(self.parse_imf_rates)),
-        ]
-        return extra_urls + urls
-
-    def parse_imf_rates(self, request):
-        r = RateParser()
-        r.update_rates(force=False)
-        return HttpResponse('Success')
-
-
 admin.site.register(MonthlyAverage, MonthlyAverageAdmin)

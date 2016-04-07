@@ -1,5 +1,6 @@
-from currency_convert.models import MonthlyAverage
 from django.core.exceptions import ObjectDoesNotExist
+
+from currency_convert.models import MonthlyAverage
 
 
 def get_monthly_average(currency_iso, value_date):
