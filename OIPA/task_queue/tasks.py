@@ -194,15 +194,12 @@ def update_exchange_rates():
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=False)
-    return HttpResponse('Success')
-
 
 @job
 def force_update_exchange_rates():
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=True)
-    return HttpResponse('Success')
 
 ###############################
 ######## GEODATA TASKS ########
