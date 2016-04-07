@@ -14,8 +14,8 @@ IATI is a global aid transparency standard and it makes information about aid sp
 * Web Site:         http://www.oipa.nl
 * Authors:          [Zimmerman & Zimmerman ](https://www.zimmermanzimmerman.nl/)
 * License:          AGPLv3 (see included [LICENSE](https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD) file for full license)
-* Github Repo:      https://github.com/openaid-IATI/OIPA/
-* Bug Tracker:      https://github.com/openaid-IATI/OIPA/issues
+* Github Repo:      https://github.com/zimmerman-zimmerman/OIPA/
+* Bug Tracker:      https://github.com/zimmerman-zimmerman/OIPA/issues (be advised core team makes use of external application as well)
 * Documentation:    http://docs.oipa.nl/en/latest/
 
 
