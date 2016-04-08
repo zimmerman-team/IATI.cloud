@@ -11,28 +11,6 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 
-def apply_limit_offset_filters(self, results, page_size, page):
-    """
-    limit the results to the amount set by page_size
-
-    The results are all queried so this gives at most a small performance boost
-    because there's less data to serialize.
-    """
-
-    if page_size:
-
-        if not page:
-            page = 1
-
-        page_size = int(page_size)
-        page = int(page)
-
-        offset = (page * page_size) - page_size
-        offset_plus_limit = offset + page_size
-        return results[offset:offset_plus_limit]
-
-    return results
-
 def apply_annotations(queryset, selected_groupings, selected_aggregations):
     """
     Builds and performs the query, when multiple aggregations were requested it joins the results
@@ -217,10 +195,6 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     queryset = queryset.order_by()
     params = request.query_params
     
-    # TODO: do this in view - 2016-04-08
-    # page_size = params.get('page_size', None)
-    # page = params.get('page', None)
-
     # TODO: just throw exceptions here and catch in view - 2016-04-08
     if not len(selected_groupings):
         return {'error_message': "Invalid value for mandatory field 'group_by'"}
@@ -239,7 +213,6 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
 
     # TODO: Can we let db do the ordering? - 2016-04-07
     result = apply_ordering(result, selected_orderings)
-    # result = apply_limit_offset_filters(result, page_size, page)
     result = serialize_foreign_keys(result, selected_groupings, request)
 
     return {
@@ -248,6 +221,28 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     }
 
 class AggregationView(GenericAPIView):
+
+    def apply_limit_offset_filters(self, results, page_size, page):
+        """
+        limit the results to the amount set by page_size
+
+        The results are all queried so this gives at most a small performance boost
+        because there's less data to serialize.
+        """
+
+        if page_size:
+
+            if not page:
+                page = 1
+
+            page_size = int(page_size)
+            page = int(page)
+
+            offset = (page * page_size) - page_size
+            offset_plus_limit = offset + page_size
+            return results[offset:offset_plus_limit]
+
+        return results
 
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -281,9 +276,12 @@ class AggregationView(GenericAPIView):
             selected_orderings,
         )
 
+        page_size = params.get('page_size', None)
+        page = params.get('page', None)
+
+        result['results'] = self.apply_limit_offset_filters(result['results'], page_size, page)
+
         return Response(result)
-
-
 
 
 class GroupBy():
