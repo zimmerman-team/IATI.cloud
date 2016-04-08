@@ -97,11 +97,11 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
-# TODO: clean this up, separate into test_settings, etc..
 INSTALLED_APPS = (
     'django_rq',
     'django.contrib.auth',
@@ -118,10 +118,10 @@ INSTALLED_APPS = (
     'corsheaders',
     'haystack',
     'common',
-    'iati',
-    'iati_organisation',
-    'iati_synchroniser',
-    'geodata',
+    'iati.apps.IatiConfig',
+    'iati_organisation.apps.IatiOrganisationConfig',
+    'iati_synchroniser.apps.IatiSynchroniserConfig',
+    'geodata.apps.GeodataConfig',
     'indicator',
     'api',
     'task_queue',
@@ -139,11 +139,23 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'parse_logger',
     'django_extensions',
-    'iati_vocabulary',
-    'iati_codelists',
+    'iati_vocabulary.apps.IatiVocabularyConfig',
+    'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
     'nested_admin',
     'djorm_pgfulltext',
+    'admin_reorder',
+)
+
+ADMIN_REORDER = (
+    'iati',
+    'iati_synchroniser',
+    'iati_codelists',
+    'iati_vocabulary',
+    'iati_organisation',
+    'geodata',
+    'indicator',
+    'auth',
 )
 
 RQ_SHOW_ADMIN_LINK = True
