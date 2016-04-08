@@ -106,8 +106,8 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='start_date')
 
-    end_date_isnull = BooleanFilter(name='end_date__isnull')
-    start_date_isnull = BooleanFilter(name='start_date__isnull')
+    end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
+    start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
     xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
