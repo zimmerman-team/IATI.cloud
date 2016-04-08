@@ -1,4 +1,11 @@
 --------
+## API
+--------
+
+The OIPA API is currently based on IATI 2.01 output. 
+
+
+--------
 ## Endpoints
 --------
 
@@ -73,7 +80,7 @@ Percentages for all reported sectors must add up to 100%. Additionally, the perc
 
 The *sector*, *recipient_country* and *recipient_region* fields are related to IATI transactions as pictured below. Every IATI activity has one or multiple transactions and one or multiple sector, recipient_country and recipient_region elements directly related to them.
 
-<div style="text-align: center;">
+<div style="text-align: center;padding:10px 0 30px;">
     <img src="../images/group_by.png" />
 </div>
 

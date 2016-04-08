@@ -14,6 +14,8 @@ The admin interface can be found at `http:\\<oipa_url>\admin\`. When you followe
 
 When you don't have a log-in yet, a superuser can be created with the Django management command: `python manage.py createsuperuser`. 
 
+The main page of the admin interface contains a list of models, the underlying pages provide forms to create/read/update/delete items. These are all basic Django and hopefully self explanatory. All odd or non-standard functionality in the admin will be handled below.  
+
 --------
 ## User management
 --------
@@ -49,13 +51,13 @@ The task queues page first shows an overview of active workers and the amount of
 **Force parse all sources currently in OIPA** <br>Same as "Parse all IATI sources currently in OIPA", but this task also re-parses activities that are already in OIPA and that do not require an update (because their last-updated-datetime did not change). This can be necessary when a bug is fixed in the parser that requires a re-parse of all activities.
 
 --------
-## custom codelists
+## Custom codelists
 --------
 
-When first installing OIPA, it is advised to import all default IATI codelists. In case you require a codelist in an own vocabulary, which is the case if you want to parse IATI sources that use their own custom codelist, this can be done by adding items to the specific codelist under `http://<oipa_url>/admin/iati_codelists/`. (TODO)
+When first installing OIPA, it is advised to import all default IATI codelists using the <a href="#task-queue">task queue</a> (task 'Update codelists from IATI registry'). In case you require a codelist in an own vocabulary, which is the case if you want to parse IATI sources that use their own custom codelist. This can be done by adding items to the specific (vocabulary) codelist under `http://<oipa_url>/admin/iati_vocabulary/` and `http://<oipa_url>/admin/iati_codelists/`.
 
 --------
-## loading geodata
+## Loading geographic data
 --------
 
 Next to IATI codelists and parsing IATI data, OIPA also has functionality to load in geo meta data. This can be done through the city / admin 1 region / country / region admin pages listed at `http://<oipa_url>/admin/geodata/`. It's on our list to move this processes to the task queue. 
