@@ -190,25 +190,19 @@ def update_iati_codelists():
 ###############################
 
 @job
-def update_all_geo_data():
+def update_region_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_city_data():
+def update_country_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_country_data():
+def update_adm1_region_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_region_data():
+def update_country_data():
     raise Exception("Not implemented yet")
 
 
-@job
-def update_all_admin1_region_data():
-    raise Exception("Not implemented yet")
