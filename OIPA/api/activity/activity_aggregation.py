@@ -35,7 +35,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         "count": {
             "field": "count",
             "annotate_name": "count",
-            "annotate": Count('id')
+            "annotate": Count('id'),
         },
         "distinct_count": {
             "field": "count",
@@ -320,7 +320,7 @@ class ActivityAggregationSerializer(BaseSerializer):
         },
     }
 
-    def get_order_filters(self, order_list):
+    def get_allowed_orderings(self, order_list):
         """Order the result by 1 or multiple keys."""
 
         allowed_orderings = []
@@ -330,7 +330,6 @@ class ActivityAggregationSerializer(BaseSerializer):
                 if isinstance(field, str):
                     allowed_orderings.append(field)
                 else:
-                    # renamed
                     allowed_orderings.append(field[1])
 
         for aggregation in self._aggregations.values():

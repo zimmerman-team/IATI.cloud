@@ -13,8 +13,18 @@ from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
 
+from api.generics.aggregation import aggregate, Aggregation, GroupBy, Order, intersection
+from api.generics.aggregation import AggregationView
 
-class ActivityAggregations(GenericAPIView):
+from django.db.models import Count, Sum, Q, F
+
+from geodata.models import Country
+from api.activity.serializers import CodelistSerializer
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.sector.serializers import SectorSerializer
+
+class ActivityAggregations(AggregationView):
     """
     Returns aggregations based on the item grouped by, and the selected aggregation.
 
@@ -77,19 +87,39 @@ class ActivityAggregations(GenericAPIView):
     filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = filters.ActivityFilter
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+    allowed_aggregations = (
+        Aggregation(
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+        ),
+        Aggregation(
+            query_param='budget',
+            field='budget',
+            annotate=Sum('budget__value'),
+        ),
+    )
 
-        results = ActivityAggregationSerializer(
-            queryset,
-            context=self.get_serializer_context())
+    allowed_groupings = (
+        GroupBy(
+            query_param="recipient_country",
+            fields="recipient_country",
+            queryset=Country.objects.all(),
+            serializer=CountrySerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+    )
 
-        if results.data:
-            if isinstance(results.data, dict) and results.data.get('error_message'):
-                return Response({'count': 0, 'error': results.data.get('error_message'), 'results': []})
-            return Response(results.data)
-        else:
-            return Response({'count': 0, 'results': []})
+    allowed_orderings = (
+        Order(
+            query_param="count",
+            fields="count",
+        ),
+        Order(
+            query_param="recipient_country",
+            fields="recipient_country",
+        ),
+    )
 
 
 class ActivityList(DynamicListView):

@@ -3,6 +3,9 @@ from api.transaction.filters import TransactionFilter
 from iati.transaction.models import Transaction
 from api.generics.views import DynamicListView, DynamicDetailView
 
+from rest_framework.filters import DjangoFilterBackend
+from rest_framework.generics import GenericAPIView
+
 class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
@@ -75,4 +78,51 @@ class TransactionDetail(DynamicDetailView):
     """
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
+
+class ActivityAggregations(GenericAPIView):
+    """
+    """
+
+    queryset = Transaction.objects.all()
+
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = TransactionFilter
+
+    # allowed aggregations...
+    allowed_aggregations = (
+        
+    )
+
+    # allowed group_by's...
+    allowed_groupings = (
+
+    )
+
+    # allowed order_by's...
+    allowed_orderings = (
+
+    )
+
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # results = ActivityAggregationSerializer(
+        #     queryset,
+        #     context=self.get_serializer_context())
+
+        return aggregate(queryset,
+            request, 
+            self.allowed_aggregations, 
+            self.allowed_groupings, 
+            self.allowed_orderings,
+        )
+
+        # if results.data:
+        #     if isinstance(results.data, dict) and results.data.get('error_message'):
+        #         return Response({'count': 0, 'error': results.data.get('error_message'), 'results': []})
+        #     return Response(results.data)
+        # else:
+        #     return Response({'count': 0, 'results': []})
+
 
