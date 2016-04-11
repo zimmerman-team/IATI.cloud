@@ -79,50 +79,110 @@ class TransactionDetail(DynamicDetailView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
-class ActivityAggregations(GenericAPIView):
+from django.db.models import Count, Sum, Q, F
+
+from api.activity.filters import SearchFilter
+from api.generics.aggregation import aggregate, Aggregation, GroupBy, Order, intersection
+from api.generics.aggregation import AggregationView
+
+from geodata.models import Country
+from api.country.serializers import CountrySerializer
+
+from iati.models import Activity
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
+
+class TransactionAggregation(AggregationView):
     """
+    Returns aggregations based on the item grouped by, and the selected aggregation.
+
+    ## Group by options
+
+    API request has to include `group_by` parameter.
+    
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
+
+    - `recipient_country`
+    - `recipient_region`
+    - `sector`
+    - `reporting_organisation`
+    - `participating_organisation_ref`
+    - `participating_organisation_name`
+    - `activity_status`
+    - `policy_marker`
+    - `collaboration_type`
+    - `default_flow_type`
+    - `default_aid_type`
+    - `default_finance_type`
+    - `default_tied_status`
+    - `budget_per_year`
+    - `budget_per_quarter`
+    - `transactions_per_quarter`
+    - `transaction_date_year`
+
+    ## Aggregation options
+
+    API request has to include `aggregations` parameter.
+    
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
+
+    - `count`
+    - `budget`
+    - `disbursement`
+    - `expenditure`
+    - `commitment`
+    - `incoming_fund`
+    - `transaction_value`
+    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
+    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
+    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
+    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
+
+    ## Request parameters
+
+    All filters available on the Activity List, can be used on aggregations.
+
     """
 
     queryset = Transaction.objects.all()
 
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = TransactionFilter
 
-    # allowed aggregations...
     allowed_aggregations = (
-        
+        Aggregation(
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+        ),
+        Aggregation(
+            query_param='budget',
+            field='budget',
+            annotate=Sum('activity__budget__value'),
+        ),
     )
 
-    # allowed group_by's...
     allowed_groupings = (
-
+        GroupBy(
+            query_param="recipient_country",
+            fields="activity__recipient_country",
+            queryset=Country.objects.all(),
+            serializer=CountrySerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="reporting_organisation",
+            fields="activity__reporting_organisations__normalized_ref",
+            renamed_fields="reporting_organisation",
+            queryset=ActivityReportingOrganisation.objects.all(),
+            # serializer=CountrySerializer,
+            # serializer_fields=('url', 'code', 'name', 'location'),
+        ),
     )
-
-    # allowed order_by's...
-    allowed_orderings = (
-
-    )
-
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # results = ActivityAggregationSerializer(
-        #     queryset,
-        #     context=self.get_serializer_context())
-
-        return aggregate(queryset,
-            request, 
-            self.allowed_aggregations, 
-            self.allowed_groupings, 
-            self.allowed_orderings,
-        )
-
-        # if results.data:
-        #     if isinstance(results.data, dict) and results.data.get('error_message'):
-        #         return Response({'count': 0, 'error': results.data.get('error_message'), 'results': []})
-        #     return Response(results.data)
-        # else:
-        #     return Response({'count': 0, 'results': []})
-
 

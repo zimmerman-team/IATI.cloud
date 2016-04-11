@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend
 
 from iati.models import Activity
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
+
 from api.activity import serializers as activitySerializers
 from api.activity import filters
 from api.activity.activity_aggregation import ActivityAggregationSerializer
@@ -107,6 +110,14 @@ class ActivityAggregations(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="reporting_organisation",
+            fields="reporting_organisations__normalized_ref",
+            renamed_fields="reporting_organisation",
+            queryset=ActivityReportingOrganisation.objects.all(),
+            # serializer=CountrySerializer,
+            # serializer_fields=('url', 'code', 'name', 'location'),
         ),
     )
 

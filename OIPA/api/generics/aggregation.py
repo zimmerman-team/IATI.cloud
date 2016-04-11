@@ -124,8 +124,6 @@ def serialize_foreign_keys(result, selected_groupings, request):
         serializer = grouping.serializer
         serializer_fields = grouping.serializer_fields
 
-        # this call mutates result
-        # grouping.serialize_results(result, request)
         result = grouping.serialize_results(result, request)
 
     return result
@@ -140,29 +138,17 @@ def apply_ordering(result, orderings):
     """
 
     if len(orderings):
-        # handle reverse, reverse all if any order is reversed,
-        # could be improved by allowing combinations of reversed, non-reversed
-        reverse = False
-
         orderings = reversed(orderings)
         reverse = False
 
         for order in orderings:
-            field = order.fields
+            field = order
 
             if field[0] == '-':
                 reverse = True
                 field = field[1:]
 
             result = sorted(result, key=itemgetter(field), reverse=reverse)
-
-        # for index, order in enumerate(orderings):
-        #     if order[0] == '-':
-        #         reverse = True
-        #         orderings[index] = order[1:]
-
-        # orderings_tuple = tuple(orderings)
-        # result = sorted(result, key=itemgetter(*orderings_tuple), reverse=reverse)
 
     return result
 
@@ -249,9 +235,9 @@ class AggregationView(GenericAPIView):
 
         params = request.query_params
 
-        aggregations = params.get('aggregations', "").split(',')
-        groupings = params.get('group_by', "").split(',')
-        orderings = params.get('order_by', "").split(',')
+        aggregations = filter(None, params.get('aggregations', "").split(','))
+        groupings = filter(None, params.get('group_by', "").split(','))
+        orderings = filter(None, params.get('order_by', "").split(','))
 
         selected_groupings = filter(
             lambda x: x.query_param in groupings,
@@ -263,10 +249,11 @@ class AggregationView(GenericAPIView):
             self.allowed_aggregations
         )
 
-        selected_orderings = filter(
-            lambda x: x.query_param in orderings,
-            self.allowed_orderings
-        )
+        # selected_orderings = filter(
+        #     lambda x: x.query_param in orderings or '-' + x.query_param in orderings,
+        #     self.allowed_groupings + self.allowed_aggregations
+        # )
+        selected_orderings = orderings
 
         result = aggregate(
             queryset,
@@ -302,11 +289,20 @@ class GroupBy():
         else:
             self.fields = fields
 
+        if renamed_fields:
+            if type(renamed_fields) is str:
+                self.renamed_fields = (renamed_fields,)
+            elif type(renamed_fields) is not tuple:
+                raise ValueError("renamed_fields must be either a string or a tuple of values")
+            else:
+                self.renamed_fields = renamed_fields
+        else:
+            self.renamed_fields = renamed_fields
+
         self.queryset = queryset
         self.serializer = serializer
         self.serializer_fields = serializer_fields
         self.extra = extra
-        self.renamed_fields=renamed_fields
 
     def get_renamed_fields(self):
         """
@@ -315,16 +311,17 @@ class GroupBy():
         """
 
         if self.renamed_fields:
-            return { zipped[0]:zipped[1] for zipped in zip(self.fields, self.renamed_fields) }
+            return { zipped[0]:F(zipped[1]) for zipped in zip(self.renamed_fields, self.fields) }
 
         return dict()
 
     def get_fields(self):
         """
-        return list of (field, actual_field_name) tuples
-        for the fields that are grouped by (and renamed when appropriate)
         """
-        return self.fields
+        if self.renamed_fields:
+            return self.renamed_fields
+        else:
+            return self.fields
 
     def serialize_results(self, l, request):
         """
