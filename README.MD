@@ -43,6 +43,15 @@ For more info, see the [install documentation](http://docs.oipa.nl/en/latest/ins
 
 Yes please! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
 
+### Running the tests
+-------
+To run the tests, log into the vagrant machine and run:
+
+```./manage.py test --nomigrations --settings=OIPA.test_settings```
+
+
+
+
 
 ## Who makes use of OIPA?
 --------
