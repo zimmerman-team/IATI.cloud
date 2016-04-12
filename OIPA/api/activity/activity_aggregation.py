@@ -42,11 +42,6 @@ class ActivityAggregationSerializer(BaseSerializer):
             "annotate_name": "count",
             "annotate": Count('id', distinct=True)
         },
-        "budget": {
-            "field": "budget",
-            "annotate_name": "budget",
-            "annotate": Sum('budget__value')
-        },
         "disbursement": {
             "field": "disbursement",
             "extra_filter": {'transaction__transaction_type': 3},

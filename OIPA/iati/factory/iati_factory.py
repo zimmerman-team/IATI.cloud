@@ -175,6 +175,7 @@ class RegionFactory(NoDatabaseFactory):
 class CountryFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Country
+        django_get_or_create = ('code', )
 
     code = 'AD'
     name = 'andorra'

@@ -5,6 +5,29 @@ from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.generics import GenericAPIView
+from api.activity.serializers import ActivitySerializer
+
+from geodata.models import Country
+from geodata.models import Region
+from iati.models import Sector
+from iati.models import ActivityStatus
+from iati.models import PolicyMarker
+from iati.models import CollaborationType
+from iati.models import DocumentCategory
+from iati.models import FlowType
+from iati.models import AidType
+from iati.models import FinanceType
+from iati.models import TiedStatus
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import OrganisationType
+from iati.models import ActivityReportingOrganisation
+
+from api.activity.serializers import CodelistSerializer
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.sector.serializers import SectorSerializer
+
+
 
 class TransactionList(DynamicListView):
     """
@@ -82,13 +105,14 @@ class TransactionDetail(DynamicDetailView):
 from django.db.models import Count, Sum, Q, F
 
 from api.activity.filters import SearchFilter
-from api.generics.aggregation import aggregate, Aggregation, GroupBy, Order, intersection
-from api.generics.aggregation import AggregationView
+from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
-from geodata.models import Country
+from geodata.models import Country, Region
 from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
 
-from iati.models import Activity
+from iati.models import Activity, RelatedActivity, Sector
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import ActivityReportingOrganisation
 
@@ -162,9 +186,38 @@ class TransactionAggregation(AggregationView):
             annotate=Count('id'),
         ),
         Aggregation(
-            query_param='budget',
-            field='budget',
-            annotate=Sum('activity__budget__value'),
+            query_param='activity_count',
+            field='activity_count',
+            annotate=Count('activity', distinct=True),
+        ),
+        Aggregation(
+            query_param='value',
+            field='value',
+            annotate=Sum('value'),
+        ),
+        Aggregation(
+            query_param='incoming_fund',
+            field='incoming_fund',
+            annotate=Sum('value'),
+            extra_filter=Q(transaction_type=1)
+        ),
+        Aggregation(
+            query_param='commitment',
+            field='commitment',
+            annotate=Sum('value'),
+            extra_filter=Q(transaction_type=2)
+        ),
+        Aggregation(
+            query_param='disbursement',
+            field='disbursement',
+            annotate=Sum('value'),
+            extra_filter=Q(transaction_type=3)
+        ),
+        Aggregation(
+            query_param='expenditure',
+            field='expenditure',
+            annotate=Sum('value'),
+            extra_filter=Q(transaction_type=4)
         ),
     )
 
@@ -177,12 +230,118 @@ class TransactionAggregation(AggregationView):
             serializer_fields=('url', 'code', 'name', 'location'),
         ),
         GroupBy(
+            query_param="recipient_region",
+            fields="activity__recipient_region",
+            queryset=Region.objects.all(),
+            serializer=RegionSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="sector",
+            fields="activity__sector",
+            queryset=Sector.objects.all(),
+            serializer=SectorSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        # GroupBy(
+        #     query_param="related_activity",
+        #     fields=("activity__relatedactivity__ref_activity__id"),
+        #     renamed_fields="related_activity",
+        #     queryset=Activity.objects.all(),
+        #     serializer=ActivitySerializer,
+        #     serializer_main_field='id', #
+        #     # serializer_fk='ref',
+        # ),
+        GroupBy(
+            query_param="related_activity",
+            fields=("activity__relatedactivity__ref_activity__id"),
+            renamed_fields="related_activity",
+        ),
+        GroupBy(
             query_param="reporting_organisation",
             fields="activity__reporting_organisations__normalized_ref",
             renamed_fields="reporting_organisation",
             queryset=ActivityReportingOrganisation.objects.all(),
-            # serializer=CountrySerializer,
-            # serializer_fields=('url', 'code', 'name', 'location'),
+            # serializer=OrganisationSerializer,
+        ),
+        GroupBy(
+            query_param="participating_organisation",
+            fields="activity__participating_organisations__normalized_ref",
+            renamed_fields="participating_organisation",
+            queryset=ActivityParticipatingOrganisation.objects.all(),
+            # serializer=OrganisationSerializer,
+        ),
+        GroupBy(
+            query_param="document_link_category",
+            fields="documentlink__categories__code",
+            renamed_fields="activity__document_link_category",
+            queryset=DocumentCategory.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="activity_status",
+            fields="activity__activity_status",
+            renamed_fields="activity_status",
+            queryset=ActivityStatus.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="participating_organisation_type",
+            fields="activity__participating_organisations__type",
+            renamed_fields="participating_organisation_type",
+            queryset=OrganisationType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="policy_marker",
+            fields="activity__policy_marker",
+            renamed_fields="policy_marker",
+            queryset=PolicyMarker.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="collaboration_type",
+            fields="activity__collaboration_type",
+            renamed_fields="collaboration_type",
+            queryset=CollaborationType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_flow_type",
+            fields="activity__default_flow_type",
+            renamed_fields="default_flow_type",
+            queryset=FlowType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_aid_type",
+            fields="activity__default_aid_type",
+            renamed_fields="default_aid_type",
+            queryset=AidType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_tied_status",
+            fields="activity__default_tied_status",
+            renamed_fields="default_tied_status",
+            queryset=TiedStatus.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        # TODO: Make these a full date object instead - 2016-04-12
+        GroupBy(
+            query_param="transaction_per_year",
+            extra={
+                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+            },
+            fields="year",
+        ),
+        GroupBy(
+            query_param="transaction_per_month",
+            extra={
+                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                'month': 'EXTRACT(MONTH FROM "transaction_date")::integer',
+            },
+            fields=("year", "month")
         ),
     )
 
