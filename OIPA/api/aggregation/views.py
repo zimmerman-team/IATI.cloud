@@ -144,11 +144,7 @@ class GroupBy():
 
         field = self.get_fields()[0]
 
-        print(field)
-
         values = map(lambda r: r[field], l)
-
-        print(self.serializer_fk)
 
         queryset = self.queryset.all() \
             .filter(**{"{}__in".format(self.serializer_fk): values})
@@ -182,7 +178,6 @@ class Aggregation():
 
         if extra_filter and not isinstance(extra_filter, Q):
             raise ValueError("extra_filter must be a django Q() object")
-
 
         self.query_param = query_param
         self.field = field

@@ -20,7 +20,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations):
 
     group_fields = flatten([ grouping.get_fields() for grouping in selected_groupings ])
     rename_annotations = merge([ grouping.get_renamed_fields() for grouping in selected_groupings ])
-    group_extras = merge([ grouping.extra for grouping in selected_groupings ])
+    group_extras = merge([ grouping.extra for grouping in selected_groupings if grouping.extra is not None])
 
     eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in group_fields}
 
@@ -183,10 +183,13 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     params = request.query_params
 
     # TODO: just throw exceptions here and catch in view - 2016-04-08
+
     if not len(selected_groupings):
-        return {'error_message': "Invalid value for mandatory field 'group_by'"}
+        raise ValueError("Invalid value for mandatory field 'group_by'")
+        # return {'error_message': "Invalid value for mandatory field 'group_by'"}
     elif not len(selected_aggregations):
-        return {'error_message': "Invalid value for mandatory field 'aggregations'"}
+        raise ValueError("Invalid value for mandatory field 'aggregations'")
+        # return {'error_message': "Invalid value for mandatory field 'aggregations'"}
 
     # filters that reduce the amount of "items" returned in the group_by
     # These filters must be applied directly instead of through "activity id" IN filters
