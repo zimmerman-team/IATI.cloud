@@ -91,31 +91,31 @@
                     <div class="span12">
 
                         <select name="add-task-select-default">
-                            <option value="">Select a task</option>
-                            
-                            <option value="">---- Registry sync tasks ----</option>
-                            <option value="update_iati_codelists">Update codelists from IATI registry</option>
-                            <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
-                            
-                            <option value="">---- Parse tasks ----</option>
-                            <option value="add_new_sources_from_registry_and_parse_all">Add new sources from IATI registry and parse all sources</option>
-                            <option value="parse_all_existing_sources">Parse all IATI source currently in OIPA</option>
-                            <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
-                            
-                            <option value="">---- Force parse tasks ----</option>
-                            <option value="force_parse_all_existing_sources">Force parse all IATI sources currently in OIPA</option>
-                            <option value="force_parse_by_publisher_ref">Force parse all sources from a publisher</option>
+                            <optgroup label="Registry synchronization tasks">
+                                <option value="update_iati_codelists">Update codelists from IATI registry</option>
+                                <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
+                            </optgroup>
+                            <optgroup label="Parse tasks">
+                                <option value="add_new_sources_from_registry_and_parse_all">Add new sources from IATI registry and parse all sources</option>
+                                <option value="parse_all_existing_sources">Parse all IATI source currently in OIPA</option>
+                                <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
+                            </optgroup>
+                            <optgroup label="Force parse tasks">
+                                <option value="force_parse_all_existing_sources">Force parse all IATI sources currently in OIPA</option>
+                                <option value="force_parse_by_publisher_ref">Force parse all sources from a publisher</option>
+                            </optgroup>
 
-                            <option value="">---- Geographic data tasks ----</option>
-                            <option value="update_region_data">Add/update region data</option>
-                            <option value="update_city_data">Add/update city data</option>
-                            <option value="update_country_data">Add/update country data</option>
-                            <option value="update_adm1_region_data">Add/update adm1 region data</option>
+                            <optgroup label="Geographic data tasks">
+                                <option value="update_region_data">Add/update region data</option>
+                                <option value="update_city_data">Add/update city data</option>
+                                <option value="update_country_data">Add/update country data</option>
+                                <option value="update_adm1_region_data">Add/update adm1 region data</option>
+                            </optgroup>
 
-                            <option value="">---- Exchange rate tasks ----</option>
-                            <option value="update_exchange_rates">Update currency exchange rates</option>
-                            <option value="force_update_exchange_rates">Force update currency exchange rates</option>
-                            
+                            <optgroup label="Currency conversion tasks">
+                                <option value="update_exchange_rates">Update currency exchange rates</option>
+                                <option value="force_update_exchange_rates">Force update currency exchange rates</option>
+                            </optgroup>
                         </select> <a target="_blank" href="http://docs.oipa.nl/en/latest/admin_interface/">The docs</a> provide more info on task functionality.
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
