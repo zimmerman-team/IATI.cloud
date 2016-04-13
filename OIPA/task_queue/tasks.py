@@ -186,6 +186,22 @@ def update_iati_codelists():
 
 
 ###############################
+#### EXCHANGE RATE TASKS ####
+###############################
+
+@job
+def update_exchange_rates():
+    from currency_convert.imf_rate_parser import RateParser
+    r = RateParser()
+    r.update_rates(force=False)
+
+@job
+def force_update_exchange_rates():
+    from currency_convert.imf_rate_parser import RateParser
+    r = RateParser()
+    r.update_rates(force=True)
+
+###############################
 ######## GEODATA TASKS ########
 ###############################
 

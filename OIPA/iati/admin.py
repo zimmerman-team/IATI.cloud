@@ -440,7 +440,7 @@ class TransactionAdmin(nested_admin.NestedAdmin):
     search_fields = ['activity__id']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
-    exclude = ('value_string',)
+    exclude = ('value_string', 'xdr_value')
     inlines = [
         TransactionDescriptionInline,
         TransactionProviderInline,

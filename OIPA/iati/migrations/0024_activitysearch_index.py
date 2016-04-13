@@ -35,4 +35,3 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(create_search_indexes, drop_search_indexes),
     ]
-

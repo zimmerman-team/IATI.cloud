@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'iati_synchroniser.apps.IatiSynchroniserConfig',
     'geodata.apps.GeodataConfig',
     'indicator',
+    'currency_convert',
     'api',
     'task_queue',
     'multiupload',
@@ -189,4 +190,3 @@ CORS_ALLOW_METHODS = ('GET',)
 
 IATI_PARSER_DISABLED = False
 ROOT_ORGANISATIONS = []
-

@@ -523,6 +523,7 @@ class PlannedDisbursement(models.Model):
     period_end = models.CharField(max_length=100, default="")
     value_date = models.DateField(null=True, blank=True)
     value = models.DecimalField(max_digits=15, decimal_places=2)
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
     # updated = models.DateField(null=True, default=None) deprecated
@@ -710,6 +711,7 @@ class Budget(models.Model):
     period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
 

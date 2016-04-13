@@ -8,6 +8,7 @@ from iati_vocabulary import models as vocabulary_models
 from factory import SubFactory, RelatedFactory
 from factory.django import DjangoModelFactory
 
+
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):
