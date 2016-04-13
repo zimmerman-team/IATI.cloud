@@ -26,3 +26,5 @@ sudo apt-get install -y binutils libproj-dev gdal-bin libgeos-3.4.2 libgeos-dev
 # redis
 sudo apt-get install -y redis-server
 
+# pip dependencies
+sudo pip install ipython
