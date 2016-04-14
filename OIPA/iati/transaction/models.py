@@ -153,7 +153,7 @@ class TransactionDescription(models.Model):
 class TransactionSector(models.Model):
     transaction = models.ForeignKey(Transaction)
     sector = models.ForeignKey(Sector)
-    vocabulary = models.ForeignKey(SectorVocabulary)
+    vocabulary = models.ForeignKey(SectorVocabulary, null=True, blank=True, default=None)
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     reported_on_transaction = models.BooleanField(default=True)
 
