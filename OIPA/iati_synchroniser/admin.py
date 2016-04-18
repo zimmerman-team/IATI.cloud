@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 from django.core.urlresolvers import reverse
 import django_rq
-from task_queue.tasks import parse_source_by_url
+from task_queue.tasks import force_parse_source_by_url
 
 
 class CodeListAdmin(admin.ModelAdmin):
@@ -128,7 +128,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
         queue = django_rq.get_queue("parser")
-        queue.enqueue(parse_source_by_url, args=(obj.source_url,), timeout=7200)
+        queue.enqueue(force_parse_source_by_url, args=(obj.source_url,), timeout=7200)
         return HttpResponse('Success')
 
     def parse_activity_view(self, request, activity_id):

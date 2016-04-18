@@ -27,8 +27,6 @@ from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 
-
-
 class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
@@ -116,6 +114,34 @@ from iati.models import Activity, RelatedActivity, Sector
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import ActivityReportingOrganisation
 
+# These are the accepted currencies
+currencies = [
+    'usd',
+    'gbp'
+]
+
+def annotate_currency(query_params, groupings):
+    """
+    Choose the right currency field, and aggregate differently based on group_by
+    """
+    currency = query_params.get('currency')
+    currency_field = None
+
+    if currency is None or currency not in currencies:
+        currency_field = 'value'
+    else:
+        currency_field = currency
+
+    for grouping in groupings:
+        if grouping.query_param == "recipient_country":
+            return Sum(F(currency_field) * (F('transactionrecipientcountry__percentage') / 100))
+        elif grouping.query_param == "recipient_region":
+            return Sum(F(currency_field) * (F('transactionrecipientregion__percentage') / 100))
+        elif grouping.query_param == "sector":
+            return Sum(F(currency_field) * (F('transactionsector__percentage') / 100))
+        else:
+            return Sum('value')
+
 class TransactionAggregation(AggregationView):
     """
     Returns aggregations based on the item grouped by, and the selected aggregation.
@@ -199,46 +225,49 @@ class TransactionAggregation(AggregationView):
             query_param='incoming_fund',
             field='incoming_fund',
             annotate=Sum('value'),
-            extra_filter=Q(transaction_type=1)
+            extra_filter=Q(transaction_type=1),
         ),
         Aggregation(
             query_param='commitment',
             field='commitment',
-            annotate=Sum('value'),
-            extra_filter=Q(transaction_type=2)
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=2),
         ),
         Aggregation(
             query_param='disbursement',
             field='disbursement',
-            annotate=Sum('value'),
-            extra_filter=Q(transaction_type=3)
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=3),
         ),
         Aggregation(
             query_param='expenditure',
             field='expenditure',
-            annotate=Sum('value'),
-            extra_filter=Q(transaction_type=4)
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=4),
         ),
     )
 
     allowed_groupings = (
         GroupBy(
             query_param="recipient_country",
-            fields="activity__recipient_country",
+            fields="transactionrecipientcountry__country",
+            renamed_fields="country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
         ),
         GroupBy(
             query_param="recipient_region",
-            fields="activity__recipient_region",
+            fields="transactionrecipientregion__region",
+            renamed_fields="region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
         ),
         GroupBy(
             query_param="sector",
-            fields="activity__sector",
+            fields="transactionsector__sector",
+            renamed_fields="sector",
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),

@@ -193,12 +193,19 @@ class Aggregation():
         else:
             return queryset
 
-    def apply_annotation(self, queryset):
+    def apply_annotation(self, queryset, query_params, groupings):
         """
         apply the specified annotation to ${queryset}
         """
 
-        annotation = dict([(self.annotate_name, self.annotate)])
+        if isfunc(self.annotate):
+            annotate = self.annotate(query_params, groupings)
+        else:
+            annotate = self.annotate
+
+        print(annotate)
+
+        annotation = dict([(self.annotate_name, annotate)])
         return queryset.annotate(**annotation)
 
 # TODO: seems unnescessary - 2016-04-11
@@ -209,6 +216,10 @@ class Order:
         
         self.query_param = query_param
         self.fields = fields
+
+
+def isfunc(obj):
+    return hasattr(obj, '__call__')
 
 def merge(l):
     """

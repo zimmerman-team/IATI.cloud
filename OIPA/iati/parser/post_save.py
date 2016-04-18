@@ -88,9 +88,11 @@ def set_country_region_transaction(activity):
         for t in activity.transaction_set.all():
             for trc in t.transactionrecipientcountry_set.all():
                 trc.xdr_value = t.xdr_value
+                trc.percentage = 100
                 trc.save()
             for trr in t.transactionrecipientregion_set.all():
                 trr.xdr_value = t.xdr_value
+                trc.percentage = 100
                 trr.save()
     else:
         # not set on the transaction, check if percentages given
@@ -114,6 +116,7 @@ def set_country_region_transaction(activity):
                 trc = transaction_models.TransactionRecipientCountry(
                     transaction=t,
                     country=recipient_country.country,
+                    percentage=recipient_country.percentage,
                     xdr_value=xdr_value,
                     reported_on_transaction=False
                 )
@@ -124,6 +127,7 @@ def set_country_region_transaction(activity):
                 trr = transaction_models.TransactionRecipientRegion(
                     transaction=t,
                     region=recipient_region.region,
+                    percentage=recipient_region.percentage,
                     xdr_value=xdr_value,
                     reported_on_transaction=False
                 )
@@ -147,6 +151,7 @@ def set_sector_transaction(activity):
         for t in activity.transaction_set.all():
             for ts in t.transactionsector_set.all():
                 ts.xdr_value = t.xdr_value
+                ts.percentage = 100
                 ts.save()
     # set on activity level
     else:
@@ -167,6 +172,7 @@ def set_sector_transaction(activity):
                 transaction_models.TransactionSector(
                     transaction=t,
                     sector=recipient_sector.sector,
+                    percentage=recipient_sector.percentage,
                     xdr_value=xdr_value,
                     vocabulary=recipient_sector.sector.vocabulary,
                     reported_on_transaction=False

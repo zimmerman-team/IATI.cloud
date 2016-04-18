@@ -7,12 +7,11 @@ from django.db.models import Q, F
 from django.db.models.functions import Coalesce
 from django.db import connection
 
-def apply_annotations(queryset, selected_groupings, selected_aggregations):
+def apply_annotations(queryset, selected_groupings, selected_aggregations, query_params):
     """
     Builds and performs the query, when multiple aggregations were requested it joins the results
     """
     result_dict = None
-
 
     #
     # Apply group_by fields and renames
@@ -50,7 +49,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations):
         next_result = next_result.values(*group_fields)
 
         # apply the aggregation annotation
-        next_result = aggregation.apply_annotation(next_result)
+        next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
 
         return next_result
 
@@ -196,7 +195,7 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     queryset = apply_group_filters(queryset, selected_groupings, params)
 
     # from here, queryset is a list
-    result = apply_annotations(queryset, selected_groupings, selected_aggregations)
+    result = apply_annotations(queryset, selected_groupings, selected_aggregations, params)
 
     # TODO: is this correct? - 2016-04-07
     count = len(result)
