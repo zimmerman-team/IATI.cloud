@@ -142,6 +142,24 @@ class ConvertTestCase(TestCase):
     def setUp(self):
         currency, created = Currency.objects.get_or_create(code='EUR', name='Euro')
         MonthlyAverageFactory.create(year=1994, month=1, currency=currency, value=1.5)
+        usd_currency, created = Currency.objects.get_or_create(code='USD', name='USD')
+        MonthlyAverageFactory.create(year=1994, month=1, currency=usd_currency, value=3)
+
+    def test_currency_from_to(self):
+        """
+
+        """
+        value_date = datetime(1994, 1, 1)
+        rate = convert.currency_from_to('USD', 'EUR', value_date, 200)
+        self.assertEqual(rate, 400)
+
+    def test_currency_from_to_does_not_exist(self):
+        """
+
+        """
+        value_date = datetime(1995, 1, 1)
+        rate = convert.currency_from_to('USD', 'UGX', value_date, 100)
+        self.assertEqual(rate, 0)
 
     def test_to_xdr(self):
         """
