@@ -8,6 +8,7 @@ from api.activity import serializers as activitySerializers
 from api.activity import filters
 from api.activity.activity_aggregation import ActivityAggregationSerializer
 from api.activity.filters import SearchFilter
+from api.activity.filters import DistanceFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
@@ -204,7 +205,7 @@ class ActivityList(DynamicListView):
     # For more advanced aggregations please use the /activities/aggregations endpoint.
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
