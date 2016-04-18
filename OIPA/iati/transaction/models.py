@@ -151,32 +151,74 @@ class TransactionDescription(models.Model):
 
 
 class TransactionSector(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    sector = models.ForeignKey(Sector)
-    vocabulary = models.ForeignKey(SectorVocabulary, null=True, blank=True, default=None)
+    transaction = models.ForeignKey(Transaction,
+            on_delete=models.CASCADE
+            )
+    sector = models.ForeignKey(Sector,
+            on_delete=models.CASCADE
+            )
+    vocabulary = models.ForeignKey(SectorVocabulary,
+            null=True, blank=True, default=None,
+            on_delete=models.CASCADE
+            )
+
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    # usd = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    # eur = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+
     reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        )
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.sector)
 
 
 class TransactionRecipientCountry(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    country = models.ForeignKey(Country)
+    transaction = models.ForeignKey(Transaction,
+            on_delete=models.CASCADE
+            )
+    country = models.ForeignKey(Country,
+            on_delete=models.CASCADE
+            )
+
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        )
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
 
 
 class TransactionRecipientRegion(models.Model):
+    transaction = models.ForeignKey(Transaction,
+            on_delete=models.CASCADE
+            )
+    region = models.ForeignKey(Region,
+            on_delete=models.CASCADE
+            )
+    vocabulary = models.ForeignKey(RegionVocabulary,
+            null=True, blank=True, default=1,
+            on_delete=models.CASCADE
+            )
+
     transaction = models.ForeignKey(Transaction)
     region = models.ForeignKey(Region)
-    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        )
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)
