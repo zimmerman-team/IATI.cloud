@@ -1699,6 +1699,7 @@ class BudgetTestCase(ParserSetupTestCase):
         text = "2000.2"
 
         xdr_value = 200
+        currency_from_to = convert.currency_from_to
         convert.currency_from_to = MagicMock(return_value=xdr_value)
 
         value = E('value', text, **attrs) 
@@ -1716,6 +1717,8 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(budget.gbp_value == xdr_value)
         self.assertTrue(budget.jpy_value == xdr_value)
         self.assertTrue(budget.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_budget_no_value_date_should_not_parse_201(self):
         """
@@ -1908,6 +1911,7 @@ class TransactionTestCase(ParserSetupTestCase):
         value = E('value', value_text, **attrs)
 
         # mock xdr canculation
+        currency_from_to = convert.currency_from_to
         convert.currency_from_to = MagicMock(return_value=xdr_value)
 
         self.parser_201.iati_activities__iati_activity__transaction__value(value)
@@ -1924,6 +1928,8 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction.gbp_value == xdr_value)
         self.assertTrue(transaction.jpy_value == xdr_value)
         self.assertTrue(transaction.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_transaction_no_value_date_should_not_parse_201(self):
         """
