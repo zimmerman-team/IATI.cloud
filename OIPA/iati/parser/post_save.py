@@ -87,11 +87,9 @@ def set_country_region_transaction(activity):
     if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
         for t in activity.transaction_set.all():
             for trc in t.transactionrecipientcountry_set.all():
-                trc.xdr_value = t.xdr_value
                 trc.percentage = 100
                 trc.save()
             for trr in t.transactionrecipientregion_set.all():
-                trr.xdr_value = t.xdr_value
                 trc.percentage = 100
                 trr.save()
     else:
@@ -112,23 +110,19 @@ def set_country_region_transaction(activity):
         # create TransactionRecipientCountry/Region for each transaction, for each country/region
         for t in activity.transaction_set.all():
             for recipient_country in countries:
-                xdr_value = (recipient_country.percentage / 100) * t.xdr_value
                 trc = transaction_models.TransactionRecipientCountry(
                     transaction=t,
                     country=recipient_country.country,
                     percentage=recipient_country.percentage,
-                    xdr_value=xdr_value,
                     reported_on_transaction=False
                 )
                 trc.save()
 
             for recipient_region in regions:
-                xdr_value = (recipient_region.percentage / Decimal(100)) * t.xdr_value
                 trr = transaction_models.TransactionRecipientRegion(
                     transaction=t,
                     region=recipient_region.region,
                     percentage=recipient_region.percentage,
-                    xdr_value=xdr_value,
                     reported_on_transaction=False
                 )
                 trr.save()
@@ -150,7 +144,6 @@ def set_sector_transaction(activity):
         # its set on transactions
         for t in activity.transaction_set.all():
             for ts in t.transactionsector_set.all():
-                ts.xdr_value = t.xdr_value
                 ts.percentage = 100
                 ts.save()
     # set on activity level
@@ -167,13 +160,11 @@ def set_sector_transaction(activity):
         # create TransactionSector for each sector for each transaction with correct xdr_value
         for t in activity.transaction_set.all():
             for recipient_sector in sectors:
-                xdr_value = (recipient_sector.percentage / Decimal(100)) * t.xdr_value
 
                 transaction_models.TransactionSector(
                     transaction=t,
                     sector=recipient_sector.sector,
                     percentage=recipient_sector.percentage,
-                    xdr_value=xdr_value,
                     vocabulary=recipient_sector.sector.vocabulary,
                     reported_on_transaction=False
                 ).save()

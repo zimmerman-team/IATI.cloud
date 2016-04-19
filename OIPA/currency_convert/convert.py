@@ -15,6 +15,8 @@ def get_monthly_average(currency_iso, value_date):
         return False
 
 def currency_from_to(from_currency_iso, to_currency_iso, value_date, value):
+    if from_currency_iso is to_currency_iso:
+        return value
     xdr_value = to_xdr(from_currency_iso, value_date, value)
     requested_value = from_xdr(to_currency_iso, value_date, xdr_value)
     return requested_value

@@ -1375,8 +1375,14 @@ class Parse(XMLParser):
         transaction.value = decimal_value
         transaction.value_date = value_date
         transaction.currency = currency
+        
+        transaction.xdr_value = convert.currency_from_to(transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
+        transaction.usd_value = convert.currency_from_to(transaction.currency_id, 'USD', transaction.value_date, transaction.value)
+        transaction.eur_value = convert.currency_from_to(transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
+        transaction.gbp_value = convert.currency_from_to(transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
+        transaction.jpy_value = convert.currency_from_to(transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
+        transaction.cad_value = convert.currency_from_to(transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
 
-        transaction.xdr_value = convert.to_xdr(transaction.currency_id, transaction.value_date, transaction.value)
         return element
 
     def iati_activities__iati_activity__transaction__description(self, element):
