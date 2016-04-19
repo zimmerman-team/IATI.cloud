@@ -140,8 +140,6 @@ class ActivityAggregationTestCase(TestCase):
             order_by
         ])
         response = self.api_client.get(url)
-        print('called')
-        print(response.data)
         return list(response.data['results'])
 
 
