@@ -146,15 +146,6 @@ class ActivityAggregations(AggregationView):
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
         ),
-        # GroupBy(
-        #     query_param="related_activity",
-        #     fields=("activity__relatedactivity__ref_activity__id"),
-        #     renamed_fields="related_activity",
-        #     queryset=Activity.objects.all(),
-        #     serializer=ActivitySerializer,
-        #     serializer_main_field='id', #
-        #     # serializer_fk='ref',
-        # ),
         GroupBy(
             query_param="related_activity",
             fields=("relatedactivity__ref_activity__id"),
@@ -234,15 +225,26 @@ class ActivityAggregations(AggregationView):
         GroupBy(
             query_param="budget_per_year",
             extra={
-                'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                'select': {
+                    'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
+                ],
             },
             fields="year",
         ),
         GroupBy(
             query_param="budget_per_month",
             extra={
-                'year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                'month': 'EXTRACT(MONTH FROM "period_start")::integer',
+                'select': {
+                    'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'month': 'EXTRACT(MONTH FROM "period_start")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
+                    'EXTRACT(MONTH FROM "period_start")::integer IS NOT NULL',
+                ],
             },
             fields="year",
         ),

@@ -24,13 +24,12 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in group_fields}
 
     queryset = queryset \
-            .extra(select=group_extras) \
-            .annotate(**rename_annotations) \
-            # .filter(**eliminate_nulls) \
+        .extra(**group_extras) \
+        .annotate(**rename_annotations) \
 
     if len(group_extras) is 0:
         queryset = queryset \
-                .filter(**eliminate_nulls) \
+            .filter(**eliminate_nulls) \
 
 
     # preparation for aggregation look

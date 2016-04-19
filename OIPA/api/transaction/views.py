@@ -272,15 +272,6 @@ class TransactionAggregation(AggregationView):
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
         ),
-        # GroupBy(
-        #     query_param="related_activity",
-        #     fields=("activity__relatedactivity__ref_activity__id"),
-        #     renamed_fields="related_activity",
-        #     queryset=Activity.objects.all(),
-        #     serializer=ActivitySerializer,
-        #     serializer_main_field='id', #
-        #     # serializer_fk='ref',
-        # ),
         GroupBy(
             query_param="related_activity",
             fields=("activity__relatedactivity__ref_activity__id"),
