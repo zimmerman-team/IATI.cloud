@@ -1978,6 +1978,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_sector.transaction == self.test_transaction)
         self.assertTrue(transaction_sector.sector.code == attrs['code'])
         self.assertTrue(transaction_sector.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_sector.percentage == 100)
 
     def test_transaction_recipient_country_201(self):
         """
@@ -1993,6 +1994,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction_recipient_country.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_country.country.code == attrs['code'])
+        self.assertTrue(transaction_recipient_country.percentage == 100)
 
     def test_transaction_recipient_region_201(self):
         """
@@ -2011,6 +2013,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_recipient_region.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_region.region.code == attrs['code'])
         self.assertTrue(transaction_recipient_region.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_recipient_region.percentage == 100)
 
     def test_transaction_flow_type_201(self):
         """

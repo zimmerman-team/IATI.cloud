@@ -1510,6 +1510,7 @@ class Parse(XMLParser):
         transaction_sector.transaction = transaction
         transaction_sector.sector = sector
         transaction_sector.vocabulary = vocabulary
+        transaction_sector.percentage = 100
         transaction_sector.reported_on_transaction = True
 
         self.register_model('TransactionSector', transaction_sector)
@@ -1528,6 +1529,7 @@ class Parse(XMLParser):
         transaction_country = transaction_models.TransactionRecipientCountry()
         transaction_country.transaction = transaction
         transaction_country.country = country
+        transaction_country.percentage = 100
         transaction_country.reported_on_transaction = True
 
         self.register_model('TransactionRecipientCountry', transaction_country)
@@ -1552,6 +1554,7 @@ class Parse(XMLParser):
         transaction_recipient_region.transaction = transaction
         transaction_recipient_region.region = region
         transaction_recipient_region.vocabulary = vocabulary
+        transaction_recipient_region.percentage = 100
         transaction_recipient_region.reported_on_transaction = True
 
         transaction = self.register_model('TransactionRecipientRegion', transaction_recipient_region)
