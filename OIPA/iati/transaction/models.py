@@ -48,9 +48,6 @@ class Transaction(models.Model):
         blank=True,
         default=None)
 
-    recipient_region = models.ForeignKey(Region, null=True, blank=True, default=None)
-    recipient_country = models.ForeignKey(Country, null=True, blank=True, default=None)
-
     flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
     finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
     aid_type = models.ForeignKey(AidType, null=True, blank=True, default=None)
