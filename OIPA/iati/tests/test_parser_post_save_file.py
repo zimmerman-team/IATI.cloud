@@ -57,6 +57,7 @@ class PostSaveFileTestCase(TestCase):
         self.parser.iati_source = self.iati_source
         # mock non related functions that are called (and that use postgres fts which makes the test fail on sqlite)
         self.parser.update_activity_search_index = MagicMock()
+        self.parser.post_save_models = MagicMock()
 
         self.parser.parse_start_datetime = datetime.datetime.now()
         self.parser.parse_activities(root)

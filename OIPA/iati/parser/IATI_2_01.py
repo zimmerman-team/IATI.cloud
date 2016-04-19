@@ -1216,7 +1216,12 @@ class Parse(XMLParser):
         budget.value_date = value_date
         budget.currency = currency
 
-        budget.xdr_value = convert.to_xdr(budget.currency_id, budget.value_date, budget.value)
+        budget.xdr_value = convert.currency_from_to(budget.currency_id, 'XDR', budget.value_date, budget.value)
+        budget.usd_value = convert.currency_from_to(budget.currency_id, 'USD', budget.value_date, budget.value)
+        budget.eur_value = convert.currency_from_to(budget.currency_id, 'EUR', budget.value_date, budget.value)
+        budget.gbp_value = convert.currency_from_to(budget.currency_id, 'GBP', budget.value_date, budget.value)
+        budget.jpy_value = convert.currency_from_to(budget.currency_id, 'JPY', budget.value_date, budget.value)
+        budget.cad_value = convert.currency_from_to(budget.currency_id, 'CAD', budget.value_date, budget.value)
 
         return element
 
