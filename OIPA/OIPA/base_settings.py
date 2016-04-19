@@ -123,7 +123,7 @@ INSTALLED_APPS = (
     'iati_synchroniser.apps.IatiSynchroniserConfig',
     'geodata.apps.GeodataConfig',
     'indicator',
-    'currency_convert',
+    'currency_convert.apps.CurrencyConvertConfig',
     'api',
     'task_queue',
     'multiupload',
@@ -155,6 +155,7 @@ ADMIN_REORDER = (
     'iati_vocabulary',
     'iati_organisation',
     'geodata',
+    'currency_convert',
     'indicator',
     'auth',
 )
