@@ -9,7 +9,6 @@ from iati.models import ActivityReportingOrganisation
 
 from api.activity import serializers as activitySerializers
 from api.activity import filters
-from api.activity.activity_aggregation import ActivityAggregationSerializer
 from api.activity.filters import SearchFilter
 from api.activity.filters import DistanceFilter
 from api.generics.views import DynamicListView, DynamicDetailView
