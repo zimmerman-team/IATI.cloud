@@ -193,7 +193,7 @@ class Aggregation():
         else:
             return queryset
 
-    def apply_annotation(self, queryset, query_params, groupings):
+    def apply_annotation(self, queryset, query_params=None, groupings=None):
         """
         apply the specified annotation to ${queryset}
         """
@@ -202,8 +202,6 @@ class Aggregation():
             annotate = self.annotate(query_params, groupings)
         else:
             annotate = self.annotate
-
-        print(annotate)
 
         annotation = dict([(self.annotate_name, annotate)])
         return queryset.annotate(**annotation)

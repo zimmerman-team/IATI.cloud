@@ -129,19 +129,11 @@ class GroupByInstanceTestCase(DjangoTestCase):
         with self.assertRaises(ValueError):
             group_by = GroupBy(
                 fields="id",
-                queryset=self.queryset,
                 )
 
         with self.assertRaises(ValueError):
             group_by = GroupBy(
                 query_param="test",
-                queryset=self.queryset,
-                )
-
-        with self.assertRaises(ValueError):
-            group_by = GroupBy(
-                query_param="test",
-                fields="id",
                 )
 
     def test_required_params_passes(self):

@@ -8,6 +8,7 @@ from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactor
 from mock import MagicMock
 from decimal import Decimal
 
+from iati.parser import post_save
 
 class PostSaveActivityTestCase(TestCase):
     """
@@ -84,29 +85,6 @@ class PostSaveActivityTestCase(TestCase):
             transaction_type=self.tt
         )
 
-    def test_post_save_models(self):
-        """
-        Check if correct methods are called
-        """
-        self.parser.get_model = MagicMock(return_value=self.activity)
-        self.parser.set_related_activities = MagicMock()
-        self.parser.set_transaction_provider_receiver_activity = MagicMock()
-        self.parser.set_derived_activity_dates = MagicMock()
-        self.parser.set_activity_aggregations = MagicMock()
-        self.parser.update_activity_search_index = MagicMock()
-        self.parser.set_country_region_transaction = MagicMock()
-        self.parser.set_sector_transaction = MagicMock()
-
-        self.parser.post_save_models()
-
-        self.parser.set_related_activities.assert_called_with(self.activity)
-        self.parser.set_transaction_provider_receiver_activity.assert_called_with(self.activity)
-        self.parser.set_derived_activity_dates.assert_called_with(self.activity)
-        self.parser.set_activity_aggregations.assert_called_with(self.activity)
-        self.parser.update_activity_search_index.assert_called_with(self.activity)
-        self.parser.set_country_region_transaction.assert_called_with(self.activity)
-        self.parser.set_sector_transaction.assert_called_with(self.activity)
-
     @skip('NotImplemented')
     def set_related_activities(self):
         """
@@ -151,7 +129,7 @@ class PostSaveActivityTestCase(TestCase):
         self.rr1.percentage = 25
         self.rr1.save()
 
-        self.parser.set_country_region_transaction(self.activity)
+        post_save.set_country_region_transaction(self.activity)
 
         self.assertEqual(TransactionRecipientCountry.objects.count(), 4)
         self.assertEqual(TransactionRecipientRegion.objects.count(), 2)
@@ -173,7 +151,7 @@ class PostSaveActivityTestCase(TestCase):
 
         """
         self.setUpTransactionModels()
-        self.parser.set_country_region_transaction(self.activity)
+        post_save.set_country_region_transaction(self.activity)
         self.assertEqual(TransactionRecipientCountry.objects.count(), 4)
         self.assertEqual(TransactionRecipientRegion.objects.count(), 2)
 
@@ -202,7 +180,7 @@ class PostSaveActivityTestCase(TestCase):
         )
         trr.save()
 
-        self.parser.set_country_region_transaction(self.activity)
+        post_save.set_country_region_transaction(self.activity)
         self.assertEqual(TransactionRecipientCountry.objects.all()[0].xdr_value, 10000)
         self.assertEqual(TransactionRecipientRegion.objects.all()[0].xdr_value, 20000)
 
@@ -216,7 +194,7 @@ class PostSaveActivityTestCase(TestCase):
         self.rs2.percentage = 75
         self.rs2.save()
 
-        self.parser.set_sector_transaction(self.activity)
+        post_save.set_sector_transaction(self.activity)
 
         self.assertEqual(TransactionSector.objects.count(), 4)
 
@@ -237,7 +215,7 @@ class PostSaveActivityTestCase(TestCase):
         As a result xdr values should then be split equally.
         """
         self.setUpTransactionModels()
-        self.parser.set_sector_transaction(self.activity)
+        post_save.set_sector_transaction(self.activity)
         self.assertEqual(TransactionSector.objects.count(), 4)
 
         ts1 = TransactionSector.objects.filter(sector=self.s1, transaction=self.t1)[0]
@@ -269,7 +247,7 @@ class PostSaveActivityTestCase(TestCase):
         )
         trc2.save()
 
-        self.parser.set_sector_transaction(self.activity)
+        post_save.set_sector_transaction(self.activity)
 
         trc_updated = TransactionSector.objects.filter(
             sector=self.s1,
