@@ -1,8 +1,19 @@
 
 from iati.factory.iati_factory import *
+from iati.transaction.factories import *
 
 def _create_test_narrative(activity, related_object, content):
     NarrativeFactory.create(activity=activity, related_object=related_object, content=content)
+
+def _create_test_transaction(
+    activity,
+    transaction_type,
+    value):
+
+    TransactionFactory.create(
+        activity=second_activity,
+        value=25000,
+        transaction_type=first_transaction.transaction_type)
 
 def _create_test_activity(
     id="IATI-search1",
@@ -86,8 +97,6 @@ def _create_test_activity(
 
     sector = ActivitySectorFactory.create(
         activity=activity,
-        narrative1=_create_test_narrative(sector1),
-        narrative2=_create_test_narrative(sector2),
     )
 
     _create_test_narrative(activity, sector, sector1)

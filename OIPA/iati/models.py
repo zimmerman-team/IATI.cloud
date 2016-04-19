@@ -13,6 +13,7 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
+from decimal import Decimal
 
 
 # TODO: separate this
@@ -711,9 +712,15 @@ class Budget(models.Model):
     period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
 
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)

@@ -23,9 +23,13 @@ from iati_synchroniser.models import IatiXmlSource
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
+from currency_convert import convert
+from iati.parser.post_save import *
+
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_01 import Parse as Parser_201
+
 
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
 # TODO: Setup parser classes per test, to isolate tests as much as possible (currently per class) - 2015-12-02
@@ -1695,7 +1699,8 @@ class BudgetTestCase(ParserSetupTestCase):
         text = "2000.2"
 
         xdr_value = 200
-        self.parser_201.convert.to_xdr = MagicMock(return_value=xdr_value)
+        currency_from_to = convert.currency_from_to
+        convert.currency_from_to = MagicMock(return_value=xdr_value)
 
         value = E('value', text, **attrs) 
         self.parser_201.iati_activities__iati_activity__budget__value(value)
@@ -1707,10 +1712,13 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(budget.currency.code == attrs['currency'])
 
         self.assertTrue(budget.xdr_value == xdr_value)
-        self.parser_201.convert.to_xdr.assert_called_with(
-            budget.currency.code,
-            budget.value_date,
-            budget.value)
+        self.assertTrue(budget.usd_value == xdr_value)
+        self.assertTrue(budget.eur_value == xdr_value)
+        self.assertTrue(budget.gbp_value == xdr_value)
+        self.assertTrue(budget.jpy_value == xdr_value)
+        self.assertTrue(budget.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_budget_no_value_date_should_not_parse_201(self):
         """
@@ -1903,7 +1911,8 @@ class TransactionTestCase(ParserSetupTestCase):
         value = E('value', value_text, **attrs)
 
         # mock xdr canculation
-        self.parser_201.convert.to_xdr = MagicMock(return_value=xdr_value)
+        currency_from_to = convert.currency_from_to
+        convert.currency_from_to = MagicMock(return_value=xdr_value)
 
         self.parser_201.iati_activities__iati_activity__transaction__value(value)
         transaction = self.parser_201.get_model('Transaction')
@@ -1912,11 +1921,15 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction.value == Decimal(value_text))
         self.assertTrue(str(transaction.value_date) == attrs['value-date'])
         self.assertTrue(transaction.currency.code == attrs['currency'])
+
         self.assertTrue(transaction.xdr_value == xdr_value)
-        self.parser_201.convert.to_xdr.assert_called_with(
-            transaction.currency.code,
-            transaction.value_date,
-            transaction.value)
+        self.assertTrue(transaction.usd_value == xdr_value)
+        self.assertTrue(transaction.eur_value == xdr_value)
+        self.assertTrue(transaction.gbp_value == xdr_value)
+        self.assertTrue(transaction.jpy_value == xdr_value)
+        self.assertTrue(transaction.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_transaction_no_value_date_should_not_parse_201(self):
         """
@@ -1978,6 +1991,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_sector.transaction == self.test_transaction)
         self.assertTrue(transaction_sector.sector.code == attrs['code'])
         self.assertTrue(transaction_sector.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_sector.percentage == 100)
 
     def test_transaction_recipient_country_201(self):
         """
@@ -1993,6 +2007,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction_recipient_country.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_country.country.code == attrs['code'])
+        self.assertTrue(transaction_recipient_country.percentage == 100)
 
     def test_transaction_recipient_region_201(self):
         """
@@ -2011,6 +2026,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_recipient_region.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_region.region.code == attrs['code'])
         self.assertTrue(transaction_recipient_region.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_recipient_region.percentage == 100)
 
     def test_transaction_flow_type_201(self):
         """
@@ -2363,8 +2379,9 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         test_related_activity.save()
         self.assertTrue(test_related_activity.ref_activity == None)
 
+        from iati.parser import post_save
+        post_save.set_related_activities(self.activity)
 
-        self.parser_201.set_related_activities(self.activity)
         test_related_activity.refresh_from_db()
 
         self.assertTrue(test_related_activity.ref_activity == self.activity)

@@ -259,7 +259,6 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    # TODO: degrades performance very badly, should probably remove this - 2016-03-02
     reporting_organisation_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_type='startswith',

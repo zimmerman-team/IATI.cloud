@@ -1,9 +1,9 @@
+
 from django.test import TestCase
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 from rest_framework.test import APIClient
 from decimal import Decimal
-
 
 class ActivityAggregationTestCase(TestCase):
     def setUp(self):
@@ -71,68 +71,88 @@ class ActivityAggregationTestCase(TestCase):
             id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=first_activity.iati_standard_version)
-        first_sector = iati_factory.SectorFactory.build(code=11000, name='Sector 1')
-        activity_sector = iati_factory.ActivitySectorFactory.create(
-            activity=first_activity,
-            sector=first_sector,
-            percentage=100
-        )
-        iati_factory.ActivitySectorFactory.create(
-            activity=second_activity,
-            sector=first_sector,
-            percentage=50,
-            vocabulary=activity_sector.vocabulary
-        )
-
-        second_sector = iati_factory.SectorFactory.build(code=11001, name='Sector 2')
-        iati_factory.ActivitySectorFactory.create(
-            activity=second_activity,
-            sector=second_sector,
-            percentage=50,
-            vocabulary=activity_sector.vocabulary
-        )
-
-        country = iati_factory.CountryFactory.build(code="AD", name="Andorra")
-        iati_factory.ActivityRecipientCountryFactory.create(
-            activity=first_activity,
-            country=country,
-            percentage=100
-        )
-        iati_factory.ActivityRecipientCountryFactory.create(
-            activity=second_activity,
-            country=country,
-            percentage=50
-        )
-
-        second_country = iati_factory.CountryFactory.build(code="KE", name="Kenya")
-        iati_factory.ActivityRecipientCountryFactory.create(
-            activity=second_activity,
-            country=second_country,
-            percentage=50
-        )
-
-        iati_factory.BudgetFactory.create(activity=first_activity, value=20000)
-        iati_factory.BudgetFactory.create(activity=first_activity, value=50000)
-        iati_factory.BudgetFactory.create(activity=second_activity, value=80000)
 
         # transaction type = 1 (incoming funds), works the same for disbursements etc.
         first_transaction = transaction_factory.TransactionFactory.create(
             activity=first_activity,
             value=50000)
-        transaction_factory.TransactionFactory.create(
+        second_transaction = transaction_factory.TransactionFactory.create(
             activity=second_activity,
             value=10000,
             transaction_type=first_transaction.transaction_type)
-        transaction_factory.TransactionFactory.create(
+        third_transaction = transaction_factory.TransactionFactory.create(
             activity=second_activity,
             value=25000,
             transaction_type=first_transaction.transaction_type)
+
+        first_sector = iati_factory.SectorFactory.build(code=11000, name='Sector 1')
+        second_sector = iati_factory.SectorFactory.build(code=11001, name='Sector 2')
+
+        # TODO: Create appropraite objects here - 2016-04-18
+        transaction_sector = transaction_factory.TransactionSectorFactory.create(
+            transaction=first_transaction,
+            sector=first_sector,
+            percentage=100
+        )
+        transaction_factory.TransactionSectorFactory.create(
+            transaction=second_transaction,
+            sector=first_sector,
+            percentage=50,
+            vocabulary=transaction_sector.vocabulary
+        )
+        transaction_factory.TransactionSectorFactory.create(
+            transaction=third_transaction,
+            sector=first_sector,
+            percentage=50,
+            vocabulary=transaction_sector.vocabulary
+        )
+        transaction_factory.TransactionSectorFactory.create(
+            transaction=second_transaction,
+            sector=second_sector,
+            percentage=50,
+            vocabulary=transaction_sector.vocabulary
+        )
+        transaction_factory.TransactionSectorFactory.create(
+            transaction=third_transaction,
+            sector=second_sector,
+            percentage=50,
+            vocabulary=transaction_sector.vocabulary
+        )
+
+        country = iati_factory.CountryFactory.build(code="AD", name="Andorra")
+        second_country = iati_factory.CountryFactory.build(code="KE", name="Kenya")
+
+        transaction_factory.TransactionRecipientCountryFactory.create(
+            transaction=first_transaction,
+            country=country,
+            percentage=100
+        )
+        transaction_factory.TransactionRecipientCountryFactory.create(
+            transaction=second_transaction,
+            country=country,
+            percentage=50
+        )
+        transaction_factory.TransactionRecipientCountryFactory.create(
+            transaction=third_transaction,
+            country=country,
+            percentage=50
+        )
+        transaction_factory.TransactionRecipientCountryFactory.create(
+            transaction=second_transaction,
+            country=second_country,
+            percentage=50
+        )
+        transaction_factory.TransactionRecipientCountryFactory.create(
+            transaction=third_transaction,
+            country=second_country,
+            percentage=50
+        )
 
         self.api_client = APIClient()
 
     def get_results(self, group_by, aggregations, order_by):
         url = ''.join([
-            '/api/activities/aggregations/?format=json&group_by=',
+            '/api/transactions/aggregations/?format=json&group_by=',
             group_by,
             '&aggregations=',
             aggregations,
@@ -140,53 +160,39 @@ class ActivityAggregationTestCase(TestCase):
             order_by
         ])
         response = self.api_client.get(url)
+
         return list(response.data['results'])
 
 
-    def test_sector_budget_group_by(self):
-        """group budget by sector, this is the non percentage aware sector aggregation
+    def test_sector_incoming_fund_group_by(self):
+        """group incoming funds by sector, this is the non percentage aware sector aggregation
 
         expected results:
-            sector 11000 = 150000 (70000 + 80000)
-            sector 11001 = 80000
+            sector 11000 = 85000 (50000 + 10000)
+            sector 11001 = 35000 (10000 + 25000
         """
         results = self.get_results(
             group_by='sector',
-            aggregations='budget',
+            aggregations='incoming_fund',
             order_by='sector')
 
         self.assertTrue(len(results) == 2)
-        self.assertEqual(results[0]['budget'], Decimal(150000))
-        self.assertEqual(results[1]['budget'], Decimal(80000))
+        self.assertEqual(results[0]['incoming_fund'], Decimal(85000))
+        self.assertEqual(results[1]['incoming_fund'], Decimal(35000))
 
-    # def test_sector_weighted_budget_aggregation(self):
-    #     """group sector weighted budget by sector, this makes budgets percentage aware
-
-    #     expected results:
-    #         sector 11000 = 110000 (70000 * 100% + 80000 * 50%)
-    #         sector 11001 = 40000 (80000 * 50%)
-    #     """
-    #     results = self.get_results(
-    #         group_by='sector',
-    #         aggregations='sector_percentage_weighted_budget',
-    #         order_by='sector')
-        
-    #     self.assertTrue(len(results) == 2)
-    #     self.assertEqual(results[0]['budget'], Decimal(110000))
-    #     self.assertEqual(results[1]['budget'], Decimal(40000))
-
-    def test_recipient_country_budget_group_by(self):
-        """group budget by recipient country, this is the non percentage aware sector aggregation
+    def test_recipient_country_incoming_fund_group_by(self):
+        """group incoming fund by recipient country, this is the non percentage aware sector aggregation
 
         expected results:
-            sector 11000 = 150000 (70000 + 80000)
-            sector 11001 = 80000
+            country AD = 85000 (50000 + 10000 + 25000)
+            country KE = 35000 (10000 + 25000)
         """
         results = self.get_results(
             group_by='recipient_country',
-            aggregations='budget',
+            aggregations='incoming_fund',
             order_by='recipient_country')
 
         self.assertTrue(len(results) == 2)
-        self.assertEqual(results[0]['budget'], Decimal(150000))
-        self.assertEqual(results[1]['budget'], Decimal(80000))
+        self.assertEqual(results[0]['incoming_fund'], Decimal(85000))
+        self.assertEqual(results[1]['incoming_fund'], Decimal(35000))
+

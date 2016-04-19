@@ -6,7 +6,6 @@ import datetime
 import traceback
 from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
-from currency_convert import convert
 
 
 class XMLParser(object):
@@ -22,7 +21,6 @@ class XMLParser(object):
         self.iati_source = None
         self.parse_start_datetime = datetime.datetime.now()
         self.force_reparse = False
-        self.convert = convert
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()

@@ -285,6 +285,3 @@ class TransactionFilter(FilterSet):
             'max_value',
         ]
 
-        sub_filtersets = (
-            ('activity', ActivityFilter),
-        )

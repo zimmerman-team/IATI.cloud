@@ -7,6 +7,8 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
 
+from currency_convert import convert
+
 from genericXmlParser import XMLParser
 from iati import models
 from iati.transaction import models as transaction_models
@@ -15,6 +17,8 @@ from iati_vocabulary import models as vocabulary_models
 from geodata.models import Country, Region
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati import activity_search_indexes
+
+from iati.parser import post_save
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
@@ -1212,7 +1216,12 @@ class Parse(XMLParser):
         budget.value_date = value_date
         budget.currency = currency
 
-        budget.xdr_value = self.convert.to_xdr(budget.currency_id, budget.value_date, budget.value)
+        budget.xdr_value = convert.currency_from_to(budget.currency_id, 'XDR', budget.value_date, budget.value)
+        budget.usd_value = convert.currency_from_to(budget.currency_id, 'USD', budget.value_date, budget.value)
+        budget.eur_value = convert.currency_from_to(budget.currency_id, 'EUR', budget.value_date, budget.value)
+        budget.gbp_value = convert.currency_from_to(budget.currency_id, 'GBP', budget.value_date, budget.value)
+        budget.jpy_value = convert.currency_from_to(budget.currency_id, 'JPY', budget.value_date, budget.value)
+        budget.cad_value = convert.currency_from_to(budget.currency_id, 'CAD', budget.value_date, budget.value)
 
         return element
 
@@ -1371,8 +1380,14 @@ class Parse(XMLParser):
         transaction.value = decimal_value
         transaction.value_date = value_date
         transaction.currency = currency
+        
+        transaction.xdr_value = convert.currency_from_to(transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
+        transaction.usd_value = convert.currency_from_to(transaction.currency_id, 'USD', transaction.value_date, transaction.value)
+        transaction.eur_value = convert.currency_from_to(transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
+        transaction.gbp_value = convert.currency_from_to(transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
+        transaction.jpy_value = convert.currency_from_to(transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
+        transaction.cad_value = convert.currency_from_to(transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
 
-        transaction.xdr_value = self.convert.to_xdr(transaction.currency_id, transaction.value_date, transaction.value)
         return element
 
     def iati_activities__iati_activity__transaction__description(self, element):
@@ -1500,6 +1515,7 @@ class Parse(XMLParser):
         transaction_sector.transaction = transaction
         transaction_sector.sector = sector
         transaction_sector.vocabulary = vocabulary
+        transaction_sector.percentage = 100
         transaction_sector.reported_on_transaction = True
 
         self.register_model('TransactionSector', transaction_sector)
@@ -1518,6 +1534,7 @@ class Parse(XMLParser):
         transaction_country = transaction_models.TransactionRecipientCountry()
         transaction_country.transaction = transaction
         transaction_country.country = country
+        transaction_country.percentage = 100
         transaction_country.reported_on_transaction = True
 
         self.register_model('TransactionRecipientCountry', transaction_country)
@@ -1542,6 +1559,7 @@ class Parse(XMLParser):
         transaction_recipient_region.transaction = transaction
         transaction_recipient_region.region = region
         transaction_recipient_region.vocabulary = vocabulary
+        transaction_recipient_region.percentage = 100
         transaction_recipient_region.reported_on_transaction = True
 
         transaction = self.register_model('TransactionRecipientRegion', transaction_recipient_region)
@@ -2190,173 +2208,14 @@ class Parse(XMLParser):
         activity = self.get_model('Activity')
         if not activity:
             return False
-        self.set_related_activities(activity)
-        self.set_transaction_provider_receiver_activity(activity)
-        self.set_derived_activity_dates(activity)
-        self.set_activity_aggregations(activity)
-        self.update_activity_search_index(activity)
-        self.set_country_region_transaction(activity)
-        self.set_sector_transaction(activity)
 
-    def set_related_activities(self, activity):
-        """ update related-activity references to this activity """
-        models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
-
-    def set_transaction_provider_receiver_activity(self, activity):
-        """ update transaction-provider, transaction-receiver references to this activity """
-        transaction_models.TransactionProvider.objects.filter(
-            provider_activity_ref=activity.iati_identifier
-        ).update(provider_activity=activity)
-
-        transaction_models.TransactionReceiver.objects.filter(
-            receiver_activity_ref=activity.iati_identifier
-        ).update(receiver_activity=activity)
-
-    def set_derived_activity_dates(self, activity):
-        """Set derived activity dates
-
-        actual start dates are preferred.
-        In case they don't exist, use planned dates.
-
-        This is used for ordering by start/end date.
-        """
-        if activity.actual_start:
-            activity.start_date = activity.actual_start
-        else:
-            activity.start_date = activity.planned_start
-
-        if activity.actual_end:
-            activity.end_date = activity.actual_end
-        else:
-            activity.end_date = activity.planned_end
-        activity.save()
-
-    def set_activity_aggregations(self, activity):
-        """
-        set total activity aggregations for the different transaction types and budget
-        """
-        aac = ActivityAggregationCalculation()
-        aac.parse_activity_aggregations(activity)
-
-    def update_activity_search_index(self, activity):
-        """
-        Update the Postgres FTS indexes
-        """
-        activity_search_indexes.reindex_activity(activity)
-
-    def set_country_region_transaction(self, activity):
-        """
-        IATI business rule: If transaction/recipient-country AND/OR transaction/recipient-region are used
-        THEN ALL transaction elements MUST contain a recipient-country or recipient-region element
-        AND (iati-activity/recipient-country AND iati-activity/recipient-region MUST NOT be used)
-
-        Functionality:
-        -adds TransactionRecipientCountry/TransactionRecipientRegion if recipient country/region are not set on the transaction itself
-        -sets correct xdr_value on TransactionRecipientCountry/TransactionRecipientRegion based on percentages
-
-        Notes:
-        for added items, TransactionRecipientCountry.reported_on_transaction is set to False.
-        This is to make sure we can serialize it correctly on API output;
-        when a reporting org does not report recipient-country on the transaction,
-        we'll have to be sure we also don't show it when exporting to XML in our API.
-
-        Purpose:
-        Make both ways of reporting on recipient country / recipient region comparable by storing them in the same way.
-        Aggregations become less complex when doing so.
-
-        """
-        if not activity.transaction_set.count():
-            return False
-
-        # check if country or region are set on transaction by checking the first transaction,
-        # then 100% of the xdr_value will go to the country/region
-        t = activity.transaction_set.all()[0]
-        if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
-            for t in activity.transaction_set.all():
-                for trc in t.transactionrecipientcountry_set.all():
-                    trc.xdr_value = t.xdr_value
-                    trc.save()
-                for trr in t.transactionrecipientregion_set.all():
-                    trr.xdr_value = t.xdr_value
-                    trr.save()
-        else:
-            # not set on the transaction, check if percentages given
-            # if so use the percentages, else divide equally
-            countries = activity.activityrecipientcountry_set.all()
-            regions = activity.activityrecipientregion_set.all()
-
-            # check if percentages are not set, then divide equally
-            if len(countries.filter(percentage=None)) or len(regions.filter(percentage=None)):
-                total_count = countries.count() + regions.count()
-                percentage = Decimal(100) / Decimal(total_count)
-                for recipient_country in countries:
-                    recipient_country.percentage = percentage
-                for recipient_region in regions:
-                    recipient_region.percentage = percentage
-
-            # create TransactionRecipientCountry/Region for each transaction, for each country/region
-            for t in activity.transaction_set.all():
-                for recipient_country in countries:
-                    xdr_value = (recipient_country.percentage / 100) * t.xdr_value
-                    trc = transaction_models.TransactionRecipientCountry(
-                        transaction=t,
-                        country=recipient_country.country,
-                        xdr_value=xdr_value,
-                        reported_on_transaction=False
-                    )
-                    trc.save()
-
-                for recipient_region in regions:
-                    xdr_value = (recipient_region.percentage / Decimal(100)) * t.xdr_value
-                    trr = transaction_models.TransactionRecipientRegion(
-                        transaction=t,
-                        region=recipient_region.region,
-                        xdr_value=xdr_value,
-                        reported_on_transaction=False
-                    )
-                    trr.save()
-
-    def set_sector_transaction(self, activity):
-        """
-        IATI business rule: If this element is used then ALL transaction elements should contain
-        a transaction/sector element and iati-activity/sector should NOT be used.
-
-        For functionality/notes/purpose see set_country_region_transaction.
-        This function does the same thing for sectors.
-        """
-        if not activity.transaction_set.count():
-            return False
-
-        t = activity.transaction_set.all()[0]
-        if t.transactionsector_set.count():
-            # its set on transactions
-            for t in activity.transaction_set.all():
-                for ts in t.transactionsector_set.all():
-                    ts.xdr_value = t.xdr_value
-                    ts.save()
-        else:
-            # get all sectors
-            sectors = activity.activitysector_set.all()
-
-            # check if percentages are not set, if so divide percentages equally over amount of sector
-            if len(sectors.filter(percentage=None)):
-                total_count = sectors.count()
-                percentage = Decimal(100) / Decimal(total_count)
-                for s in sectors:
-                    s.percentage = percentage
-
-            # create TransactionSector for each sector for each transaction with correct xdr_value
-            for t in activity.transaction_set.all():
-                for recipient_sector in sectors:
-                    xdr_value = (recipient_sector.percentage / Decimal(100)) * t.xdr_value
-
-                    transaction_models.TransactionSector(
-                        transaction=t,
-                        sector=recipient_sector.sector,
-                        xdr_value=xdr_value,
-                        vocabulary=recipient_sector.sector.vocabulary,
-                        reported_on_transaction=False
-                    ).save()
+        post_save.set_related_activities(activity)
+        post_save.set_transaction_provider_receiver_activity(activity)
+        post_save.set_derived_activity_dates(activity)
+        post_save.set_activity_aggregations(activity)
+        post_save.update_activity_search_index(activity)
+        post_save.set_country_region_transaction(activity)
+        post_save.set_sector_transaction(activity)
 
     def post_save_file(self, xml_source):
         """Perform all actions that need to happen after a single IATI source's been parsed.
