@@ -20,6 +20,7 @@ class GetOrCreateMetaMixin():
 class VersionFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.Version
+        django_get_or_create = ('code',)
 
     code = '2.01'
     name = 'IATI version 2.01'

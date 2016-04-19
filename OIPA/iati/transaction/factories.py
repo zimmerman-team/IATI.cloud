@@ -1,9 +1,11 @@
 from datetime import date
 from factory import SubFactory
-from iati.transaction.models import Transaction
+from iati.transaction.models import Transaction, TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 from iati.transaction.models import TransactionType
+
 from iati.factory.iati_factory import NoDatabaseFactory
 from iati.factory.iati_factory import ActivityFactory
+from iati.factory.iati_factory import SectorFactory, SectorVocabularyFactory, RegionFactory, RegionVocabularyFactory, CountryFactory
 
 from iati_codelists.factory.codelist_factory import CurrencyFactory
 
@@ -43,3 +45,38 @@ class TransactionFactory(NoDatabaseFactory):
 
     class Meta:
         model = Transaction
+
+class TransactionSectorFactory(NoDatabaseFactory):
+    class Meta:
+        model = TransactionSector
+
+    transaction = SubFactory(TransactionFactory)
+    sector = SubFactory(SectorFactory)
+    vocabulary = SubFactory(SectorVocabularyFactory)
+
+    percentage = 100
+    xdr_value = 10000
+    reported_on_transaction = False
+
+class TransactionRecipientCountryFactory(NoDatabaseFactory):
+    class Meta:
+        model = TransactionRecipientCountry
+
+    transaction = SubFactory(TransactionFactory)
+    country = SubFactory(CountryFactory)
+
+    percentage = 100
+    xdr_value = 10000
+    reported_on_transaction = False
+
+class TransactionRecipientRegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = TransactionRecipientRegion
+
+    transaction = SubFactory(TransactionFactory)
+    region = SubFactory(RegionFactory)
+
+    percentage = 100
+    xdr_value = 10000
+    reported_on_transaction = False
+

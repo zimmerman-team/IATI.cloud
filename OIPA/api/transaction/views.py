@@ -251,7 +251,7 @@ class TransactionAggregation(AggregationView):
         GroupBy(
             query_param="recipient_country",
             fields="transactionrecipientcountry__country",
-            renamed_fields="country",
+            renamed_fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
@@ -259,7 +259,7 @@ class TransactionAggregation(AggregationView):
         GroupBy(
             query_param="recipient_region",
             fields="transactionrecipientregion__region",
-            renamed_fields="region",
+            renamed_fields="recipient_region",
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
