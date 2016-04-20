@@ -18,17 +18,20 @@ class TransactionTypeFactory(NoDatabaseFactory):
     class Meta:
         model = TransactionType
 
+
 class TransactionProviderFactory(NoDatabaseFactory):
     ref = "some-ref"
     normalized_ref = "some_ref"
     provider_activity = SubFactory(ActivityFactory)
     provider_activity_ref = "IATI-0001"
 
+
 class TransactionReceiverFactory(NoDatabaseFactory):
     ref = "some-ref"
     normalized_ref = "some_ref"
     receiver_activity = SubFactory(ActivityFactory)
     receiver_activity_ref = "IATI-0001"
+
 
 class TransactionFactory(NoDatabaseFactory):
 
@@ -41,7 +44,6 @@ class TransactionFactory(NoDatabaseFactory):
     value_string = "200"
     value_date = date.today()
     currency = SubFactory(CurrencyFactory)
-
 
     class Meta:
         model = Transaction

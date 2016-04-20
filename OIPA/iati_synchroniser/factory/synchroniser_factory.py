@@ -4,6 +4,7 @@ from iati_synchroniser.models import IatiXmlSource
 from iati_synchroniser.models import Publisher
 from datetime import datetime
 
+
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):
