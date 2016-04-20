@@ -207,6 +207,13 @@ class ActivityAggregations(AggregationView):
             serializer=CodelistSerializer,
         ),
         GroupBy(
+            query_param="default_finance_type",
+            fields="activity__default_finance_type",
+            renamed_fields="default_finance_type",
+            queryset=FinanceType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
             query_param="default_aid_type",
             fields="default_aid_type",
             renamed_fields="default_aid_type",

@@ -293,8 +293,8 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="document_link_category",
-            fields="documentlink__categories__code",
-            renamed_fields="activity__document_link_category",
+            fields="activity__documentlink__categories__code",
+            renamed_fields="document_link_category",
             queryset=DocumentCategory.objects.all(),
             serializer=CodelistSerializer,
         ),
@@ -331,6 +331,13 @@ class TransactionAggregation(AggregationView):
             fields="activity__default_flow_type",
             renamed_fields="default_flow_type",
             queryset=FlowType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_finance_type",
+            fields="activity__default_finance_type",
+            renamed_fields="default_finance_type",
+            queryset=FinanceType.objects.all(),
             serializer=CodelistSerializer,
         ),
         GroupBy(

@@ -183,11 +183,9 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     # TODO: just throw exceptions here and catch in view - 2016-04-08
 
     if not len(selected_groupings):
-        raise ValueError("Invalid value for mandatory field 'group_by'")
-        # return {'error_message': "Invalid value for mandatory field 'group_by'"}
+        raise ValueError("Invalid value {} for mandatory field 'group_by'".format(params.get('group_by')))
     elif not len(selected_aggregations):
-        raise ValueError("Invalid value for mandatory field 'aggregations'")
-        # return {'error_message': "Invalid value for mandatory field 'aggregations'"}
+        raise ValueError("Invalid value {} for mandatory field 'aggregations'".format(params.get('aggregations')))
 
     # filters that reduce the amount of "items" returned in the group_by
     # These filters must be applied directly instead of through "activity id" IN filters
