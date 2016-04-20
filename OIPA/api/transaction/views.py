@@ -356,19 +356,30 @@ class TransactionAggregation(AggregationView):
         ),
         # TODO: Make these a full date object instead - 2016-04-12
         GroupBy(
-            query_param="transaction_per_year",
+            query_param="transaction_date_year",
             extra={
-                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                'select': {
+                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
+                ],
             },
-            fields="year",
+            fields="transaction_date_year",
         ),
         GroupBy(
-            query_param="transaction_per_month",
+            query_param="transaction_date_month",
             extra={
-                'year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
-                'month': 'EXTRACT(MONTH FROM "transaction_date")::integer',
+                'select': {
+                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                    'transaction_date_month': 'EXTRACT(MONTH FROM "transaction_date")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
+                    'EXTRACT(MONTH FROM "transaction_date")::integer IS NOT NULL',
+                ],
             },
-            fields=("year", "month")
+            fields=("transaction_date_year", "transaction_date_month")
         ),
     )
 

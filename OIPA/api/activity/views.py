@@ -238,7 +238,7 @@ class ActivityAggregations(AggregationView):
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
                 ],
             },
-            fields="year",
+            fields="budget_per_year",
         ),
         GroupBy(
             query_param="budget_per_month",
@@ -252,7 +252,7 @@ class ActivityAggregations(AggregationView):
                     'EXTRACT(MONTH FROM "period_start")::integer IS NOT NULL',
                 ],
             },
-            fields="year",
+            fields="budget_per_year",
         ),
     )
 
