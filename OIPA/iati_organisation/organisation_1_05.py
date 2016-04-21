@@ -29,6 +29,11 @@ class Parse(Parse_2_01):
         if not id:
             raise self.RequiredFieldError("id", "organisation: must contain iati-identifier")
 
+        old_organisation = self.get_or_none(Organisation, id=id)
+
+        if old_organisation:
+            old_organisation.delete()
+
         organisation = Organisation()
         organisation.id = id
         organisation.organisation_identifier = id

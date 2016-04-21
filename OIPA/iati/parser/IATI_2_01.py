@@ -228,7 +228,6 @@ class Parse(XMLParser):
         old_activity = self.get_or_none(models.Activity, id=id)
 
         if old_activity and not self.force_reparse:
-
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
             old_activity.save()

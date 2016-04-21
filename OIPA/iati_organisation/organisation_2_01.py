@@ -77,6 +77,11 @@ class Parse(IATI_201_Parser):
         if not id:
             raise self.RequiredFieldError("id", "organisation: must contain organisation-identifier")
 
+        old_organisation = self.get_or_none(Organisation, id=id)
+
+        if old_organisation:
+            old_organisation.delete()
+
         organisation = Organisation()
         organisation.id = id
         organisation.organisation_identifier = id
@@ -87,7 +92,6 @@ class Parse(IATI_201_Parser):
 
         self.organisation_identifier = organisation.organisation_identifier
         self.default_currency = default_currency
-
 
         # add to reporting organisation and recipient_organisation
         # TODO: ? - 2016-04-20
