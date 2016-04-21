@@ -19,7 +19,7 @@ django-supervisor==0.3.4
 django-test-without-migrations==0.4
 djangorestframework==3.3.3
 elasticsearch==2.3.0
-factory-boy==2.6.1
+factory-boy==2.7.0
 lxml==3.6.0
 Markdown==2.6.6
 mechanize==0.2.5
@@ -29,7 +29,7 @@ pysqlite==2.8.2
 pytest==2.9.1
 pytest-django==2.9.1
 python-coveralls==2.7.0
-python-dateutil==2.5.2
+python-dateutil==2.5.3
 redis==2.10.5
 django-redis-cache==1.6.5
 rq==0.5.6
