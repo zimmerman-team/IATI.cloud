@@ -77,6 +77,10 @@ class ActivityFilter(TogetherFilterSet):
         name='recipient_region',
         exclude=True,)
 
+    document_link_category = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='documentlink__categories')
+
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
         name='planned_start')

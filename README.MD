@@ -6,7 +6,7 @@
 [![Documentation Status](https://readthedocs.org/projects/oipa-docs/badge/?version=latest)](http://docs.oipa.nl/en/latest/?badge=latest)
 
 
-OIPA is a data-engine, enabling IATI XML compliant data to be parsed and interfaced using an API.
+OIPA extracts all published IATI XML files from the [IATI Registry](http://www.iatiregistry.org/publisher) and makes them available in a normalised PostgreSQL database, that you can access using a RESTful API.
 
 IATI is a global aid transparency standard and it makes information about aid spending easier to access, re-use and understand the underlying data using a unified open standard. You can find more about the IATA XML standard at: <a href="http://www.iatistandard.org" target="_blank">www.iatistandard.org</a>
 
@@ -16,6 +16,7 @@ IATI is a global aid transparency standard and it makes information about aid sp
 
 Documentation on installing, running and using OIPA can be found at <a href="http://docs.oipa.nl" target="_blank">http://docs.oipa.nl</a>
 
+
 ## Quick start
 -------
 
@@ -24,6 +25,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 3. Find your way into the machine: ```vagrant ssh```
 4. Start the server: ```./manage.py runserver 0.0.0.0:8000```
 5. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+
 
 For more info, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
 
@@ -50,14 +52,13 @@ To run the tests, log into the vagrant machine and run:
 ```./manage.py test --nomigrations --settings=OIPA.test_settings```
 
 
-
-
-
 ## Who makes use of OIPA?
 --------
-* Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">https://www.openaid.nl</a>
-* DFID Devtracker                            <a href="https://devtracker.dfid.gov.uk" target="_blank">https://devtracker.dfid.gov.uk/</a>
-* UNESCO Transparency Portal:                <a href="http://opendata.unesco.org/" target="_blank">http://opendata.unesco.org/</a>
+* Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">www.openaid.nl</a>
+* IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a>
+* DFID Devtracker:                           <a href="https://devtracker.dfid.gov.uk/" target="_blank">devtracker.dfid.gov.uk</a>
+* UNESCO Transparency Portal:                <a href="http://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
 * UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">http://open.unhabitat.org</a>
-* Netherlands Enterprise Agency:             <a href="http://aiddata.rvo.nl" target="_blank">http://aiddata.rvo.nl/</a>
-* Mohinga AIMS                               <a href="http://mohinga.info/en/" target="_blank">http://mohinga.info/en/</a>
+* Netherlands Enterprise Agency:             <a href="https://aiddata.rvo.nl/" target="_blank">aiddata.rvo.nl</a>
+* Mohinga AIMS:                              <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
+
