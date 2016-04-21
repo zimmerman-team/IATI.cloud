@@ -156,18 +156,18 @@ class TransactionAggregation(AggregationView):
     - `recipient_country`
     - `recipient_region`
     - `sector`
+    - `related_activity`
     - `reporting_organisation`
-    - `participating_organisation_ref`
-    - `participating_organisation_name`
+    - `participating_organisation`
+    - `document_link_category`
     - `activity_status`
+    - `participating_organisation_type`
     - `policy_marker`
     - `collaboration_type`
     - `default_flow_type`
-    - `default_aid_type`
     - `default_finance_type`
+    - `default_aid_type`
     - `default_tied_status`
-    - `budget_per_year`
-    - `budget_per_quarter`
     - `transactions_per_quarter`
     - `transaction_date_year`
 
@@ -179,24 +179,16 @@ class TransactionAggregation(AggregationView):
     can be one or more (comma separated values) of:
 
     - `count`
-    - `budget`
+    - `activity_count`
+    - `value`
     - `disbursement`
     - `expenditure`
     - `commitment`
     - `incoming_fund`
-    - `transaction_value`
-    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
-    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
-    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
 
     ## Request parameters
 
-    All filters available on the Activity List, can be used on aggregations.
+    All filters available on the Transaction List, can be used on aggregations.
 
     """
 
