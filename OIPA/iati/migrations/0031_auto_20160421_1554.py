@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activityreportingorganisation',
             name='organisation',
-            field=models.ForeignKey(default='gb-1', on_delete=django.db.models.deletion.CASCADE, to='iati_organisation.Organisation'),
+            field=models.ForeignKey(default='GB-1', on_delete=django.db.models.deletion.CASCADE, to='iati_organisation.Organisation'),
             preserve_default=False,
         ),
     ]
