@@ -84,10 +84,13 @@ def delete_all_tasks_from_queue(queue_name):
 
 @job
 def force_parse_all_existing_sources():
-    for e in IatiXmlSource.objects.all():
+    for e in IatiXmlSource.objects.all().filter(type=2):
         queue = django_rq.get_queue("parser")
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
+    for e in IatiXmlSource.objects.all().filter(type=1):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 @job
 def add_new_sources_from_registry_and_parse_all():
