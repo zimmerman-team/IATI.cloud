@@ -45,7 +45,7 @@ For more info, see the [install documentation](http://docs.oipa.nl/en/latest/ins
 
 Yes please! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
 
-### Running the tests
+## Running the tests
 -------
 To run the tests, log into the vagrant machine and run:
 
@@ -58,7 +58,7 @@ To run the tests, log into the vagrant machine and run:
 * IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a>
 * DFID Devtracker:                           <a href="https://devtracker.dfid.gov.uk/" target="_blank">devtracker.dfid.gov.uk</a>
 * UNESCO Transparency Portal:                <a href="http://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
-* UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">http://open.unhabitat.org</a>
+* UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">open.unhabitat.org</a>
 * Netherlands Enterprise Agency:             <a href="https://aiddata.rvo.nl/" target="_blank">aiddata.rvo.nl</a>
 * Mohinga AIMS:                              <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
 
