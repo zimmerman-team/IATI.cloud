@@ -5,24 +5,24 @@ from iati_codelists import models as codelist_models
 
 from models import (
     Organisation,
-    Name,
-    ReportingOrg,
+    OrganisationName,
+    OrganisationReportingOrganisation,
     TotalBudget,
-    Narrative,
+    OrganisationNarrative,
     BudgetLine,
     RecipientOrgBudget,
     RecipientCountryBudget,
     DocumentLink,
     DocumentLinkTitle)
+
 from geodata.models import Country
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
 
-
 class Parse(IATI_201_Parser):
     VERSION = '2.01'
-    default_lang = 'en'
+    default_lang = None
     organisation_identifier = ''
 
     # TODO: remove this inheritance - 2015-12-10
@@ -30,30 +30,33 @@ class Parse(IATI_201_Parser):
         super(IATI_201_Parser, self).__init__(*args, **kwargs)
 
     def add_narrative(self, element, parent):
-        default_lang = self.default_lang  # set on activity (if set)
+        default_lang = self.default_lang # set on activity (if set)
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
-        if not language: raise self.RequiredFieldError(
-            "narrative: must specify default_lang on activities or language on the element itself")
-        if not text: raise self.RequiredFieldError("narrative: must contain text")
-        if not parent: raise self.RequiredFieldError("parent", "Narrative: parent object must be passed")
-        narrative = Narrative()
-        lang = self.default_lang
-        if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
-            lang = element.attrib['{http://www.w3.org/XML/1998/namespace}lang']
+        if not parent:
+            raise self.RequiredFieldError("parent", "OrganisationNarrative: parent object must be passed")
 
-        if element.text is None or element.text == '':
-            return
+        register_name = parent.__class__.__name__ + "Narrative"
+
+        if not language:
+            raise self.RequiredFieldError(
+                "language",
+                "{}: must specify default_lang on activities or language on the element itself".format(register_name))
+        if not text:
+            raise self.RequiredFieldError("text", "{}: must contain text".format(register_name))
+
+        narrative = OrganisationNarrative()
         narrative.language = language
         narrative.content = element.text
-        narrative.organisation_identifier = self.organisation_identifier
-        narrative.parent_object = parent
+        narrative.related_object = parent
+        narrative.organisation = self.get_model('Organisation')
+
         # TODO: handle this differently (also: breaks tests)
-        register_name = parent.__class__.__name__ + "Narrative"
         self.register_model(register_name, narrative)
+
 
     def _get_currency_or_raise(self, currency):
         """
@@ -65,83 +68,76 @@ class Parse(IATI_201_Parser):
 
         return currency
 
-    '''atributes:
-        default-currency:EUR
-        last-updated-datetime:2014-09-10T07:15:37Z
-        {http://www.w3.org/XML/1998/namespace}lang:en
-
-    tag:iati-organisation'''
-
     def iati_organisations__iati_organisation(self, element):
+        id = self._normalize(element.xpath('organisation-identifier/text()')[0])
+        last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
+
+        if not id:
+            raise self.RequiredFieldError("id", "organisation: must contain organisation-identifier")
+
         organisation = Organisation()
-        organisation.organisation_identifier = element.xpath('organisation-identifier/text()')[0]
+        organisation.id = id
+        organisation.organisation_identifier = id
+        organisation.last_updated_datetime = last_updated_datetime
+        organisation.default_lang_id = default_lang
+        organisation.iati_standard_version_id = self.VERSION
+        organisation.default_currency = default_currency
 
         self.organisation_identifier = organisation.organisation_identifier
-        organisation.code = self.organisation_identifier
-        organisation.original_ref = self.organisation_identifier
-        organisation.last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        if '{http://www.w3.org/XML/1998/namespace}lang' in element.attrib:
-            organisation.default_lang = self.get_or_none(codelist_models.Language, code=element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang'))
-        organisation.iati_version_id = self.VERSION
-        self.default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
-        organisation.default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
-        organisation.save()
+        self.default_currency = default_currency
+
+
         # add to reporting organisation and recipient_organisation
-        RecipientOrgBudget.objects.filter(recipient_org_identifier=self.organisation_identifier).update(
-            recipient_org=organisation)
-        ReportingOrg.objects.filter(reporting_org_identifier=self.organisation_identifier).update(
-            reporting_org=organisation)
+        # TODO: ? - 2016-04-20
+        # RecipientOrgBudget.objects.filter(recipient_org_identifier=self.organisation_identifier).update(
+        #     recipient_org=organisation)
+        # OrganisationReportingOrganisation.objects.filter(reporting_org_identifier=self.organisation_identifier).update(
+        #     reporting_org=organisation)
+        
         self.register_model('Organisation', organisation)
-        # store element
+
         return element
 
-    '''atributes:
-
-    tag:organisation-identifier'''
 
     def iati_organisations__iati_organisation__organisation_identifier(self, element):
         # already set in iati_organisation
         return element
 
-    '''atributes:
-
-    tag:name'''
 
     def iati_organisations__iati_organisation__name(self, element):
-        model = self.get_model('Organisation')
-        name = Name()
-        name.organisation = model
+        name_list = self.get_model_list('Name')
+
+        if name_list and len(name_list) > 0:
+            raise self.ValidationError("name", "Duplicate names are not allowed")
+
+        organisation = self.get_model('Organisation')
+
+        name = OrganisationName()
+        name.organisation = organisation
+
         self.register_model('Name', name)
 
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__name__narrative(self, element):
         model = self.get_model('Name')
         self.add_narrative(element, model)
-        # store element
+
         return element
-
-    '''atributes:
-        ref:AA-AAA-123456789
-        type:40
-        secondary-reporter:0
-
-    tag:reporting-org'''
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
         model = self.get_model('Organisation')
-        reporting_org = ReportingOrg()
+
+        reporting_org = OrganisationReportingOrganisation()
         reporting_org.organisation = model
         reporting_org.reporting_org_identifier = element.attrib.get('ref')
         type_ref = element.attrib.get('type')
         if self.isInt(type_ref) and self.get_or_none(codelist_models.OrganisationType, code=type_ref) != None:
             org_type = self.get_or_none(codelist_models.OrganisationType, code=type_ref)
             reporting_org.org_type = org_type
-        self.register_model('ReportingOrg', reporting_org)
+        self.register_model('OrganisationReportingOrganisation', reporting_org)
 
         return element
 
@@ -150,7 +146,7 @@ class Parse(IATI_201_Parser):
     tag:narrative'''
 
     def iati_organisations__iati_organisation__reporting_org__narrative(self, element):
-        model = self.get_model('ReportingOrg')
+        model = self.get_model('OrganisationReportingOrganisation')
         self.add_narrative(element, model)
         # store element
         return element
@@ -263,7 +259,7 @@ class Parse(IATI_201_Parser):
     def iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self, element):
         model = self.get_model('RecipientOrgBudget')
         model.recipient_org_identifier = element.attrib.get('ref')
-        if Organisation.objects.filter(code=element.attrib.get('ref')).exists():
+        if Organisation.objects.filter(id=element.attrib.get('ref')).exists():
             model.recipient_org = Organisation.objects.get(pk=element.attrib.get('ref'))
 
         # store element

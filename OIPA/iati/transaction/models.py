@@ -46,7 +46,8 @@ class Transaction(models.Model):
         DisbursementChannel,
         null=True,
         blank=True,
-        default=None)
+        default=None
+    )
 
     flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
     finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)

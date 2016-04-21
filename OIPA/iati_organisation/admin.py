@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 # Register your models here.
 
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ('code',)
+    search_fields = ['id', ]
+    list_display = ('id',)
 
 admin.site.register(Organisation, OrganisationAdmin)

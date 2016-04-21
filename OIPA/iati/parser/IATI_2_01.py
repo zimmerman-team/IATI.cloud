@@ -2,6 +2,7 @@ import hashlib
 import dateutil.parser
 import re
 import unicodedata
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
 from django.db.models import Model
@@ -14,6 +15,7 @@ from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
+from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati import activity_search_indexes
@@ -27,10 +29,10 @@ _slugify_hyphenate_re = re.compile(r'[-\s]+')
 class Parse(XMLParser):
 
     VERSION = '2.01' 
-    default_lang = 'en'
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
+        self.default_lang = None
 
     class RequiredFieldError(Exception):
         def __init__(self, field, msg):
@@ -212,15 +214,10 @@ class Parse(XMLParser):
 
         tag:iati-activity"""
 
-        defaults = {
-            'default_lang': 'en',
-            'hierarchy': 1,
-        }
-
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
 
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
-        hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        hierarchy = element.attrib.get('hierarchy')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
@@ -261,16 +258,16 @@ class Parse(XMLParser):
         activity = models.Activity()
         activity.id = id
         activity.default_lang = default_lang
-        activity.hierarchy = hierarchy
+        if hierarchy:
+            activity.hierarchy = hierarchy
         activity.xml_source_ref = self.iati_source.ref
-        if last_updated_datetime:
-            activity.last_updated_datetime = last_updated_datetime
+        activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
 
         # for later reference
-        self.default_lang = activity.default_lang
+        self.default_lang = default_lang
 
         self.register_model('Activity', activity)
         return element
@@ -307,7 +304,21 @@ class Parse(XMLParser):
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         # TODO: should secondary_reporter be false by default?
         secondary_reporter = element.attrib.get('secondary-reporter', False)
-        organisation = self.get_or_none(models.Organisation, code=element.attrib.get('ref'))
+
+
+        organisation = self.get_or_none(models.Organisation, pk=element.attrib.get('ref'))
+
+        # create an organisation
+        # TODO: Also infer reporting_organisation name? - 2016-04-20
+        if not organisation:
+            organisation = models.Organisation()
+            organisation.id = ref
+            organisation.organisation_identifier = ref
+            organisation.last_updated_datetime = datetime.now()
+            organisation.iati_standard_version_id = "2.01"
+            organisation.reported_in_iati = False
+
+            self.register_model('Organisation', organisation)
 
         activity = self.get_model('Activity')
         reporting_organisation = models.ActivityReportingOrganisation()
@@ -341,7 +352,7 @@ class Parse(XMLParser):
     
         tag:participating-org"""
         ref = element.attrib.get('ref', '')
-        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
+        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
         # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
         # simply because they don't know the ref.
@@ -350,7 +361,7 @@ class Parse(XMLParser):
             raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')
@@ -385,6 +396,7 @@ class Parse(XMLParser):
     
         tag:title"""
         title_list = self.get_model_list('Title')
+
         if title_list and len(title_list) > 0:
             raise self.ValidationError("title", "Duplicate titles are not allowed")
 
@@ -1421,7 +1433,7 @@ class Parse(XMLParser):
         provider_activity = element.attrib.get('provider-activity-id')
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
 
         transaction = self.get_model('Transaction')
 
@@ -1456,7 +1468,7 @@ class Parse(XMLParser):
         receiver_activity = element.attrib.get('receiver-activity-id')
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
 
         transaction = self.get_model('Transaction')
 

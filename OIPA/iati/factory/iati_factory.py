@@ -204,6 +204,15 @@ class ParticipatingOrganisationFactory(NoDatabaseFactory):
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
 
+class OrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.Organisation
+        django_get_or_create = ('id',)
+
+    id = 'GB-COH-03580586'
+    organisation_identifier = 'GB-COH-03580586'
+    iati_standard_version = SubFactory(VersionFactory)
+
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityReportingOrganisation
@@ -214,15 +223,10 @@ class ReportingOrganisationFactory(NoDatabaseFactory):
     type = SubFactory(OrganisationTypeFactory)
     secondary_reporter = False
 
+    organisation = SubFactory(OrganisationFactory)
+
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
-
-class OrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati_organisation.models.Organisation
-
-    code = 'GB-COH-03580586'
-    iati_version = SubFactory(VersionFactory)
 
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:

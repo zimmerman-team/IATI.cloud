@@ -16,65 +16,59 @@ def make_abs_url(org_identifier):
     return '/api/organisation/'+org_identifier
 
 #narrative for adding free text to elements
-class Narrative(models.Model):
-    content_type = models.ForeignKey(
-        ContentType,
-        verbose_name='xml Parent',
-        null=True,
-        blank=True,
-        related_name='narratives'
-    )
-    object_id = models.CharField(
-        max_length=250,
-        verbose_name='related object',
-        null=True
-    )
-    parent_object = GenericForeignKey('content_type', 'object_id')
-    language = models.ForeignKey(Language, null=True, default=None,related_name='narratives_for_lang')
-    organisation_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
-    content = models.TextField(null=True,blank=True)
-    related_object = models.BooleanField(default=True)
-    def get_absolute_url(self):
-        return make_abs_url(self.organisation_identifier)
+class OrganisationNarrative(models.Model):
 
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.IntegerField(
+        verbose_name='related object',
+        db_index=True,
+    )
+    related_object = GenericForeignKey()
+
+    organisation = models.ForeignKey('Organisation')
+
+    language = models.ForeignKey(Language)
+    content = models.TextField()
+
+    def __unicode__(self,):
+        return "%s" % self.content[:30]
+
+    class Meta:
+        index_together = [('content_type', 'object_id')]
 
 # organisation base class
 class Organisation(models.Model):
-    code = models.CharField(max_length=250,primary_key=True)
-    abbreviation = models.CharField(max_length=120, default="")
-    organisation_identifier = models.CharField(max_length=150,verbose_name='organisation_identifier',null=True)
-    type = models.ForeignKey(OrganisationType, null=True, default=None,related_name='organisations')
-    original_ref = models.CharField(max_length=120, default="")
-    last_updated_datetime =  models.DateTimeField(null=True)
-    iati_version = models.ForeignKey(Version)
-    default_currency = models.ForeignKey(Currency,null=True)
-    default_lang = models.ForeignKey(Language,null=True)
+
+    id = models.CharField(max_length=150, primary_key=True, blank=False)
+    organisation_identifier = models.CharField(max_length=150, db_index=True)
+
+    iati_standard_version = models.ForeignKey(Version)
+    last_updated_datetime = models.DateTimeField(blank=True, null=True)
+
+    default_currency = models.ForeignKey(Currency, null=True)
+    default_lang = models.ForeignKey(Language, null=True)
+
+    reported_in_iati = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.code
+        return self.organisation_identifier
 
 
 #class for narrative
-class Name(models.Model):
+class OrganisationName(models.Model):
     organisation = models.ForeignKey(Organisation)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
 
 
-#reporting organisation (can only be one but needs separate class for narratives)
-class ReportingOrg(models.Model):
+class OrganisationReportingOrganisation(models.Model):
     organisation = models.ForeignKey(Organisation,related_name='reporting_orgs')
     org_type = models.ForeignKey(OrganisationType, null=True, default=None)
     reporting_org = models.ForeignKey(Organisation,related_name='reported_by_orgs',null=True, db_constraint=False)
     reporting_org_identifier = models.CharField(max_length=250,null=True)
     secondary_reporter = models.BooleanField(default=False)
 
+# TODO: below this must be changed - 2016-04-20
 
-#budgetLine
 class BudgetLine(models.Model):
     content_type = models.ForeignKey(
         ContentType,
@@ -88,18 +82,13 @@ class BudgetLine(models.Model):
         null=True,
     )
     parent_object = GenericForeignKey('content_type', 'object_id')
-    organisation_identifier = models.CharField(max_length=150,verbose_name='iati_identifier',null=True)
+    organisation_identifier = models.CharField(max_length=150,verbose_name='organisation_identifier',null=True)
     language = models.ForeignKey(Language, null=True, default=None)
     ref = models.CharField(max_length=150,primary_key=True)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
 
     def get_absolute_url(self):
         return make_abs_url(self.organisation_identifier)
@@ -112,12 +101,7 @@ class TotalBudget(models.Model):
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
     budget_lines = GenericRelation(
         BudgetLine,
         content_type_field='content_type',
@@ -132,12 +116,7 @@ class RecipientOrgBudget(models.Model):
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
     budget_lines = GenericRelation(
         BudgetLine,
@@ -153,12 +132,7 @@ class RecipientCountryBudget(models.Model):
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
     budget_lines = GenericRelation(
         BudgetLine,
         content_type_field='content_type',
@@ -188,10 +162,5 @@ class DocumentLink(models.Model):
 # TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
     document_link = models.ForeignKey(DocumentLink, related_name='documentlinktitles')
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='content_type',
-        object_id_field='object_id',
-        related_query_name='narratives'
-    )
+    narratives = GenericRelation(OrganisationNarrative)
 

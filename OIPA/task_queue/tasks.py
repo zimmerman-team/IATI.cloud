@@ -98,7 +98,15 @@ def add_new_sources_from_registry_and_parse_all():
 
 @job
 def parse_all_existing_sources():
-    for e in IatiXmlSource.objects.all():
+    """
+    First parse all organisation sources, then all activity sources
+    """
+
+    for e in IatiXmlSource.objects.all().filter(type=2):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
+
+    for e in IatiXmlSource.objects.all().filter(type=1):
         queue = django_rq.get_queue("parser")
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 

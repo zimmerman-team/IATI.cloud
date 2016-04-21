@@ -66,10 +66,12 @@ class Activity(models.Model):
     xml_source_ref = models.CharField(max_length=200, default="", db_index=True)
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
-    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, db_index=True)
+    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)
     last_updated_model = models.DateTimeField(null=True, blank=True, auto_now=True)
-    last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
-    default_lang = models.CharField(max_length=2)
+
+    last_updated_datetime = models.DateTimeField(blank=True, null=True)
+
+    default_lang = models.CharField(max_length=2, blank=True, null=True)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
     planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
@@ -278,7 +280,7 @@ class ActivityReportingOrganisation(models.Model):
         related_name="reporting_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation, null=True, default=None, blank=True)
+    organisation = models.ForeignKey(Organisation)
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     secondary_reporter = models.BooleanField(default=False)

@@ -133,6 +133,11 @@ class ParserSetupTestCase(TestCase):
         self.parser_105 = ParseIATI(dummy_source, self.iati_105).get_parser()
         self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
 
+        self.parser_103.default_lang = "en"
+        self.parser_104.default_lang = "en"
+        self.parser_105.default_lang = "en"
+        self.parser_201.default_lang = "en"
+
         assert(isinstance(self.parser_103, Parser_103))
         assert(isinstance(self.parser_104, Parser_105))
         assert(isinstance(self.parser_105, Parser_105))
@@ -183,7 +188,6 @@ class ActivityTestCase(ParserSetupTestCase):
         # default activity model fields
         self.defaults = {
             "hierarchy": 1,
-            "default_lang": "en",
         }
 
         iati_activity = E("iati-activity", **self.attrs)
@@ -215,7 +219,6 @@ class ActivityTestCase(ParserSetupTestCase):
         self.assertTrue(str(activity.last_updated_datetime) == self.attrs["last-updated-datetime"])
         self.assertTrue(activity.linked_data_uri == self.attrs["linked-data-uri"])
         self.assertTrue(activity.hierarchy == self.attrs["hierarchy"])
-        self.assertTrue(activity.default_lang == "en")
         self.assertTrue(activity.iati_standard_version.code == "2.01")
 
     def test_activity_default_201(self):
@@ -236,7 +239,6 @@ class ActivityTestCase(ParserSetupTestCase):
 
         for field, default in self.defaults.iteritems():
             self.assertTrue(getattr(activity, field) == default)
-        self.assertTrue(activity.default_lang == "en")
         self.assertTrue(activity.iati_standard_version.code == "2.01")
 
 
@@ -730,8 +732,15 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(reporting_organisation.ref == self.attrs["ref"])
         self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.activity == activity)
-        self.assertTrue(reporting_organisation.organisation == None)
         self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
+
+        # should create an organisation
+        organisation = self.parser_201.get_model('Organisation')
+        self.assertEqual(organisation.id, self.attrs["ref"])
+        self.assertEqual(organisation.organisation_identifier, self.attrs["ref"])
+        self.assertEqual(organisation.reported_in_iati, False)
+
+        self.assertEqual(reporting_organisation.organisation, organisation)
 
     def test_reporting_organisation_already_parsed(self):
         """
@@ -752,7 +761,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         reporting_organisation = self.parser_201.get_model('ActivityReportingOrganisation')
 
         self.assertTrue(reporting_organisation.activity == activity)
-        self.assertTrue(reporting_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(reporting_organisation.organisation.id == test_organisation.id)
         self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
 
@@ -816,7 +825,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
 
         self.assertTrue(participating_organisation.activity == activity)
-        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.organisation.id == test_organisation.id)
         self.assertTrue(participating_organisation.type.code == self.attrs_201["type"])
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
@@ -856,7 +865,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
 
         self.assertTrue(participating_organisation.activity == activity)
-        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.organisation.id == test_organisation.id)
         self.assertTrue(participating_organisation.type.code == self.attrs_105["type"])
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
