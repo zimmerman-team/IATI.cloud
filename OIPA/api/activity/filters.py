@@ -63,6 +63,10 @@ class ActivityFilter(TogetherFilterSet):
         name='recipient_region',
         exclude=True,)
 
+    document_link_category = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='documentlink__categories')
+
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
         name='planned_start')
@@ -112,8 +116,8 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='start_date')
 
-    end_date_isnull = BooleanFilter(name='end_date__isnull')
-    start_date_isnull = BooleanFilter(name='start_date__isnull')
+    end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
+    start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
     sector = CommaSeparatedCharFilter(
         lookup_type='in',
