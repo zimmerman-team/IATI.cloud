@@ -39,11 +39,6 @@ def advanced_start_worker():
         w.work()
 
 
-@job
-def update_codelists():
-    cli = CodeListImporter()
-    cli.synchronise_with_codelists()
-
 ###############################
 #### TASK QUEUE MANAGEMENT ####
 ###############################
