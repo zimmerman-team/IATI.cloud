@@ -116,8 +116,12 @@ from iati.models import ActivityReportingOrganisation
 
 # These are the accepted currencies
 currencies = [
+    'xdr',
     'usd',
-    'gbp'
+    'eur',
+    'gbp',
+    'jpy',
+    'cad'
 ]
 
 def annotate_currency(query_params, groupings):
@@ -134,11 +138,11 @@ def annotate_currency(query_params, groupings):
 
     for grouping in groupings:
         if grouping.query_param == "recipient_country":
-            return Sum(F(currency_field) * (F('transactionrecipientcountry__percentage') / 100))
+            return Sum(F(currency_field) * (F('transactionrecipientcountry__percentage') / 100.0))
         elif grouping.query_param == "recipient_region":
-            return Sum(F(currency_field) * (F('transactionrecipientregion__percentage') / 100))
+            return Sum(F(currency_field) * (F('transactionrecipientregion__percentage') / 100.0))
         elif grouping.query_param == "sector":
-            return Sum(F(currency_field) * (F('transactionsector__percentage') / 100))
+            return Sum(F(currency_field) * (F('transactionsector__percentage') / 100.0))
         else:
             return Sum('value')
 
@@ -186,6 +190,24 @@ class TransactionAggregation(AggregationView):
     - `commitment`
     - `incoming_fund`
 
+    ## Currency options
+
+    By default the values returned by the aggregations are in the reported currency. This only renders meaningful results when all values were in the same currency. Which is only the case when you filter your results down.
+
+    The aggregation endpoints have the ability to return values in a currency. Options for this `currency` parameter are:
+
+    -`xdr`
+    -`usd`
+    -`eur`
+    -`gbp`
+    -`jpy`
+    -`cad`
+
+    This results in converted values when the original value was in another currency. 
+
+    Information on used exchange rates can be found <a href='https://docs.oipa.nl/'>in the docs</a>.
+
+
     ## Request parameters
 
     All filters available on the Transaction List, can be used on aggregations.
@@ -211,12 +233,12 @@ class TransactionAggregation(AggregationView):
         Aggregation(
             query_param='value',
             field='value',
-            annotate=Sum('value'),
+            annotate=annotate_currency,
         ),
         Aggregation(
             query_param='incoming_fund',
             field='incoming_fund',
-            annotate=Sum('value'),
+            annotate=annotate_currency,
             extra_filter=Q(transaction_type=1),
         ),
         Aggregation(

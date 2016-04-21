@@ -80,19 +80,6 @@ class ActivityAggregations(AggregationView):
 
     - `count`
     - `budget`
-    - `disbursement`
-    - `expenditure`
-    - `commitment`
-    - `incoming_fund`
-    - `transaction_value`
-    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
-    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
-    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
 
     ## Request parameters
 
@@ -181,14 +168,12 @@ class ActivityAggregations(AggregationView):
         GroupBy(
             query_param="activity_status",
             fields="activity_status",
-            renamed_fields="activity_status",
             queryset=ActivityStatus.objects.all(),
             serializer=CodelistSerializer,
         ),
         GroupBy(
             query_param="policy_marker",
             fields="policy_marker",
-            renamed_fields="policy_marker",
             queryset=PolicyMarker.objects.all(),
             serializer=CodelistSerializer,
         ),
@@ -202,7 +187,6 @@ class ActivityAggregations(AggregationView):
         GroupBy(
             query_param="default_flow_type",
             fields="default_flow_type",
-            renamed_fields="default_flow_type",
             queryset=FlowType.objects.all(),
             serializer=CodelistSerializer,
         ),
@@ -216,14 +200,12 @@ class ActivityAggregations(AggregationView):
         GroupBy(
             query_param="default_aid_type",
             fields="default_aid_type",
-            renamed_fields="default_aid_type",
             queryset=AidType.objects.all(),
             serializer=CodelistSerializer,
         ),
         GroupBy(
             query_param="default_tied_status",
             fields="default_tied_status",
-            renamed_fields="default_tied_status",
             queryset=TiedStatus.objects.all(),
             serializer=CodelistSerializer,
         ),

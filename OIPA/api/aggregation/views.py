@@ -38,6 +38,11 @@ class AggregationView(GenericAPIView):
         groupings = filter(None, params.get('group_by', "").split(','))
         orderings = filter(None, params.get('order_by', "").split(','))
 
+        if not len(groupings):
+            return Response({'error_message': "Invalid value for mandatory field 'group_by'"})
+        elif not len(aggregations):
+            return Response({'error_message': "Invalid value for mandatory field 'aggregations'"})
+
         selected_groupings = filter(
             lambda x: x.query_param in groupings,
             self.allowed_groupings
