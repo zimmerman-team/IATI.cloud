@@ -92,39 +92,20 @@ class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
 
-
-
-
-class BasicOrganisationSerializer(DynamicFieldsModelSerializer):
-
-    class NameSerializer(serializers.Serializer):
-        def to_representation(self, obj):
-            return {'narratives': [{'text': obj}, ], }
-
-    class Meta:
-        model = org_models.Organisation
-        fields = ('url', 'code', 'name')
-
-    url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail')
-    name = NarrativeContainerSerializer(source="name_set",many=True)
-    documentlinks = DocumentLinkSerializer(many=True)
-    recipient_country_budget = RecipientCountryBudgetSerializer(many=True)
-
-
-class OrganisationSerializer(BasicOrganisationSerializer):
+class OrganisationSerializer(DynamicFieldsModelSerializer):
     class TypeSerializer(serializers.ModelSerializer):
         class Meta:
             model = iati.models.OrganisationType
             fields = ('code','name')
 
-
+    url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail')
 
     class Meta:
         model = org_models.Organisation
         fields = (
             'url',
-            'code',
-            'name',
-            'documentlinks',
-            'recipient_country_budget',
+            'organisation_identifier',
+            'last_updated_datetime',
+            'default_currency',
+            'default_lang',
         )

@@ -33,6 +33,7 @@ from iati.models import FinanceType
 from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import OrganisationType
+from iati.models import Organisation
 from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
@@ -41,6 +42,7 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.sector.serializers import SectorSerializer
 from api.activity.serializers import ActivitySerializer
+from api.organisation.serializers import OrganisationSerializer
 
 class ActivityAggregations(AggregationView):
     """
@@ -141,8 +143,9 @@ class ActivityAggregations(AggregationView):
             query_param="reporting_organisation",
             fields="reporting_organisations__normalized_ref",
             renamed_fields="reporting_organisation",
-            queryset=ActivityReportingOrganisation.objects.all(),
-            # serializer=OrganisationSerializer,
+            queryset=Organisation.objects.all(),
+            serializer=OrganisationSerializer,
+            serializer_main_field='organisation_identifier'
         ),
         GroupBy(
             query_param="participating_organisation",

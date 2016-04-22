@@ -7,6 +7,7 @@ from rest_framework.generics import RetrieveAPIView
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
 
+from api.generics.views import DynamicListView, DynamicDetailView
 
 def custom_get_object(self):
     """
@@ -26,7 +27,7 @@ def custom_get_object_from_queryset(self, queryset):
     return get_object_or_404(queryset, **filter_kwargs)
 
 
-class OrganisationList(ListAPIView):
+class OrganisationList(DynamicListView):
     """
     Returns a list of IATI Organisations stored in OIPA.
 
@@ -38,18 +39,11 @@ class OrganisationList(ListAPIView):
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
     """
+    queryset = iati_organisation.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
-    fields = ('url', 'code','name')
+    fields = ('url', 'organisation_identifier','last_updated_datetime',)
 
-    def get_queryset(self):
-        queryset = iati_organisation.models.Organisation.objects.all()
-        query = self.request.query_params.get('reporting_organisations', None)
-        if query is not None:
-            queryset = queryset.reporting_organisations()
-        return queryset
-
-
-class OrganisationDetail(RetrieveAPIView):
+class OrganisationDetail(DynamicDetailView):
     """
     Returns detailed information about Organisation.
 
@@ -70,7 +64,6 @@ class OrganisationDetail(RetrieveAPIView):
     """
     queryset = iati_organisation.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
-    get_object = custom_get_object
 
 
 class ParticipatedActivities(ActivityList):

@@ -162,7 +162,7 @@ class GroupBy():
             many=True,
             fields=self.serializer_fields
         ).data
-        
+
         # TODO: get serializer main field from serializer? - 2016-04-12
 
         # TODO: eliminate this expensive step - 2016-04-08
