@@ -305,19 +305,37 @@ class Parse(XMLParser):
         secondary_reporter = element.attrib.get('secondary-reporter', False)
 
 
-        organisation = self.get_or_none(models.Organisation, pk=element.attrib.get('ref'))
+        organisation = self.get_or_none(models.Organisation, pk=ref)
 
         # create an organisation
-        # TODO: Also infer reporting_organisation name? - 2016-04-20
         if not organisation:
-            organisation = models.Organisation()
+
+            organisation = organisation_models.Organisation()
             organisation.id = ref
             organisation.organisation_identifier = ref
             organisation.last_updated_datetime = datetime.now()
             organisation.iati_standard_version_id = "2.01"
             organisation.reported_in_iati = False
 
+            organisation_name = organisation_models.OrganisationName()
+            organisation_name.organisation = organisation
+
             self.register_model('Organisation', organisation)
+            self.register_model('OrganisationName', organisation_name)
+
+            narratives = element.findall('narrative')
+            narratives_text = element.xpath('narrative/text()')
+
+
+            if len(narratives) > 0:
+                for narrative in narratives:
+                    self.add_narrative(narrative, organisation_name)
+
+                first_narrative = narratives_text[0]
+                organisation.primary_name = first_narrative
+            else:
+                organisation.primary_name = ref
+
 
         activity = self.get_model('Activity')
         reporting_organisation = models.ActivityReportingOrganisation()

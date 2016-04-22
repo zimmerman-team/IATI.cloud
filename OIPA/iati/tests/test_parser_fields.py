@@ -714,9 +714,10 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
             "ref": "GB-COH-03580586",
             "type": '40',
             "secondary-reporter": "0",
+            "primary_name": "primary_name"
         }
 
-        self.reporting_org = E('reporting-org', **self.attrs)
+        self.reporting_org = E('reporting-org', E('narrative', "primary_name"), **self.attrs)
 
     def test_reporting_organisation_not_parsed_yet(self):
         """
@@ -738,9 +739,14 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         organisation = self.parser_201.get_model('Organisation')
         self.assertEqual(organisation.id, self.attrs["ref"])
         self.assertEqual(organisation.organisation_identifier, self.attrs["ref"])
+        self.assertEqual(organisation.primary_name, self.attrs["primary_name"])
         self.assertEqual(organisation.reported_in_iati, False)
 
         self.assertEqual(reporting_organisation.organisation, organisation)
+
+        organisation_narrative = self.parser_201.get_model('OrganisationNameNarrative')
+        self.assertEqual(organisation_narrative.content, self.attrs["primary_name"])
+
 
     def test_reporting_organisation_already_parsed(self):
         """

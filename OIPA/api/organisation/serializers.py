@@ -30,22 +30,6 @@ class NarrativeSerializer(serializers.ModelSerializer):
             'text',
             'language',
         )
-
-    # def __init__(self, *args, **kwargs):
-    #     print(kwargs)
-    #     super(NarrativeSerializer, self).__init__(*args, **kwargs)
-    #
-    # def to_representation(self, obj):
-    #     print(self.__dict__)
-    #     help(self)
-    #     help(obj)
-    #
-    #     return [
-    #     {
-    #         "text": narrative.content,
-    #         "language": narrative.language.name
-    #     }  for narrative in obj.all() ]
-
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
@@ -92,6 +76,15 @@ class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
 
+# TODO: change to NarrativeContainer
+class OrganisationNameSerializer(serializers.Serializer):
+    narratives = NarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.OrganisationName
+        fields = ('narratives',)
+
+
 class OrganisationSerializer(DynamicFieldsModelSerializer):
     class TypeSerializer(serializers.ModelSerializer):
         class Meta:
@@ -99,13 +92,17 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             fields = ('code','name')
 
     url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail')
+    name = OrganisationNameSerializer()
 
     class Meta:
         model = org_models.Organisation
         fields = (
             'url',
             'organisation_identifier',
+            'name',
+            'primary_name',
             'last_updated_datetime',
             'default_currency',
             'default_lang',
         )
+

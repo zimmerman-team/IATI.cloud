@@ -50,13 +50,16 @@ class Organisation(models.Model):
 
     reported_in_iati = models.BooleanField(default=True)
 
+    # first narrative
+    primary_name = models.CharField(max_length=150, db_index=True)
+
     def __unicode__(self):
         return self.organisation_identifier
 
 
 #class for narrative
 class OrganisationName(models.Model):
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.OneToOneField(Organisation, related_name="name")
     narratives = GenericRelation(OrganisationNarrative)
 
 
