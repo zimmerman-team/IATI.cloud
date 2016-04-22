@@ -12,7 +12,7 @@ class TransactionFilter(FilterSet):
     Transaction filter class
     """
 
-    type = CommaSeparatedCharFilter(
+    transaction_type = CommaSeparatedCharFilter(
         name='transaction_type',
         lookup_type='in')
 
@@ -20,7 +20,7 @@ class TransactionFilter(FilterSet):
         name='currency',
         lookup_type='in')
 
-    date_year = NumberFilter(
+    transaction_date_year = NumberFilter(
         lookup_type='year',
         name='transaction_date'
     )

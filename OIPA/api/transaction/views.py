@@ -128,13 +128,13 @@ def annotate_currency(query_params, groupings):
     """
     Choose the right currency field, and aggregate differently based on group_by
     """
-    currency = query_params.get('currency')
+    currency = query_params.get('convert_to')
     currency_field = None
 
     if currency is None or currency not in currencies:
         currency_field = 'value'
     else:
-        currency_field = currency
+        currency_field = currency + '_value'
 
     for grouping in groupings:
         if grouping.query_param == "recipient_country":
@@ -194,14 +194,14 @@ class TransactionAggregation(AggregationView):
 
     By default the values returned by the aggregations are in the reported currency. This only renders meaningful results when all values were in the same currency. Which is only the case when you filter your results down.
 
-    The aggregation endpoints have the ability to return values in a currency. Options for this `currency` parameter are:
+    The aggregation endpoints have the ability to return values in a currency. Options for this `convert_to` parameter are:
 
-    -`xdr`
-    -`usd`
-    -`eur`
-    -`gbp`
-    -`jpy`
-    -`cad`
+    - `xdr`
+    - `usd`
+    - `eur`
+    - `gbp`
+    - `jpy`
+    - `cad`
 
     This results in converted values when the original value was in another currency. 
 
