@@ -99,6 +99,9 @@ class Parse(IATI_201_Parser):
         #     recipient_org=organisation)
         # OrganisationReportingOrganisation.objects.filter(reporting_org_identifier=self.organisation_identifier).update(
         #     reporting_org=organisation)
+
+        # for later reference
+        self.default_lang = default_lang
         
         self.register_model('Organisation', organisation)
 
