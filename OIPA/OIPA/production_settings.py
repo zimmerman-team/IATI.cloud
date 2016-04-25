@@ -26,14 +26,7 @@ CACHES = {
     }
 }
 
-# cache everything
-MIDDLEWARE_CLASSES = [
-    'django.middleware.cache.UpdateCacheMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
-] + MIDDLEWARE_CLASSES
-
-CACHE_MIDDLEWARE_SECONDS = 60 * 60 * 24
+API_CACHE_SECONDS = 60 * 60 * 24
 
 
 HAYSTACK_CONNECTIONS = {
