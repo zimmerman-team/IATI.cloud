@@ -1,11 +1,19 @@
 from datetime import date
 from factory import SubFactory
-from iati.transaction.models import Transaction, TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
+from iati.transaction.models import Transaction
+from iati.transaction.models import TransactionSector
+from iati.transaction.models import TransactionRecipientCountry
+from iati.transaction.models import TransactionRecipientRegion
 from iati.transaction.models import TransactionType
+from iati.transaction.models import TransactionProvider
 
 from iati.factory.iati_factory import NoDatabaseFactory
 from iati.factory.iati_factory import ActivityFactory
-from iati.factory.iati_factory import SectorFactory, SectorVocabularyFactory, RegionFactory, RegionVocabularyFactory, CountryFactory
+from iati.factory.iati_factory import SectorFactory
+from iati.factory.iati_factory import SectorVocabularyFactory
+from iati.factory.iati_factory import RegionFactory
+from iati.factory.iati_factory import RegionVocabularyFactory
+from iati.factory.iati_factory import CountryFactory
 
 from iati_codelists.factory.codelist_factory import CurrencyFactory
 
@@ -24,6 +32,9 @@ class TransactionProviderFactory(NoDatabaseFactory):
     normalized_ref = "some_ref"
     provider_activity = SubFactory(ActivityFactory)
     provider_activity_ref = "IATI-0001"
+
+    class Meta:
+        model = TransactionProvider
 
 
 class TransactionReceiverFactory(NoDatabaseFactory):
@@ -48,9 +59,8 @@ class TransactionFactory(NoDatabaseFactory):
     class Meta:
         model = Transaction
 
+
 class TransactionSectorFactory(NoDatabaseFactory):
-    class Meta:
-        model = TransactionSector
 
     transaction = SubFactory(TransactionFactory)
     sector = SubFactory(SectorFactory)
@@ -59,23 +69,30 @@ class TransactionSectorFactory(NoDatabaseFactory):
     percentage = 100
     reported_on_transaction = False
 
-class TransactionRecipientCountryFactory(NoDatabaseFactory):
     class Meta:
-        model = TransactionRecipientCountry
+        model = TransactionSector
 
+
+class TransactionRecipientCountryFactory(NoDatabaseFactory):
+    
     transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
 
     percentage = 100
     reported_on_transaction = False
 
-class TransactionRecipientRegionFactory(NoDatabaseFactory):
     class Meta:
-        model = TransactionRecipientRegion
+        model = TransactionRecipientCountry
+
+
+class TransactionRecipientRegionFactory(NoDatabaseFactory):
 
     transaction = SubFactory(TransactionFactory)
     region = SubFactory(RegionFactory)
 
     percentage = 100
     reported_on_transaction = False
+
+    class Meta:
+        model = TransactionRecipientRegion
 
