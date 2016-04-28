@@ -41,7 +41,6 @@ class Parse(Parse_2_01):
         super(Parse, self).iati_organisations__iati_organisation__name(element)
         name = self.get_model('OrganisationName')
 
-        # print 
         if element.text:
             self.add_narrative(element, name)
 

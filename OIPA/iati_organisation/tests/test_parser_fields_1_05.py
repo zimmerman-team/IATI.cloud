@@ -129,6 +129,5 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model('OrganisationNameNarrative')
 
-        print(narrative)
         self.assertEqual('test narrative name', narrative.content)
 

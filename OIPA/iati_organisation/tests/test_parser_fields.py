@@ -143,7 +143,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         self.parser_201.iati_organisations__iati_organisation__name__narrative(element)
         model = self.parser_201.get_model('OrganisationNameNarrative')
-        self.assertEqual('test narrative name',model.content)
+        self.assertEqual('test narrative name', model.content)
 
 
     def test_iati_organisations__iati_organisation__reporting_org(self):

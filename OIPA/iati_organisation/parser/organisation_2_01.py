@@ -34,7 +34,6 @@ class Parse(IatiParser):
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not parent:
-            print element.text
             raise self.RequiredFieldError("parent", "OrganisationNarrative: parent object must be passed")
 
         register_name = parent.__class__.__name__ + "Narrative"
@@ -117,7 +116,7 @@ class Parse(IatiParser):
         return element
 
     def iati_organisations__iati_organisation__name__narrative(self, element):
-        model = self.get_model('Name')
+        model = self.get_model('OrganisationName')
         self.add_narrative(element, model)
 
         return element
