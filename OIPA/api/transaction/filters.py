@@ -62,83 +62,83 @@ class TransactionFilter(FilterSet):
         name='activity__scope__code',
         lookup_type='in',)
 
-    activity_recipient_region_not_in = CommaSeparatedCharFilter(
+    recipient_region_not_in = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__recipient_region',
         exclude=True,)
 
-    activity_planned_start_date_lte = DateFilter(
+    planned_start_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__planned_start')
 
-    activity_planned_start_date_gte = DateFilter(
+    planned_start_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__planned_start')
 
-    activity_actual_start_date_lte = DateFilter(
+    actual_start_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__actual_start')
 
-    activity_actual_start_date_gte = DateFilter(
+    actual_start_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__actual_start')
 
-    activity_planned_end_date_lte = DateFilter(
+    planned_end_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__planned_end')
 
-    activity_planned_end_date_gte = DateFilter(
+    planned_end_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__planned_end')
 
-    activity_actual_end_date_lte = DateFilter(
+    actual_end_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__actual_end')
 
-    activity_actual_end_date_gte = DateFilter(
+    actual_end_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__actual_end')
 
-    activity_end_date_lte = DateFilter(
+    end_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__end_date')
 
-    activity_end_date_gte = DateFilter(
+    end_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__end_date')
 
-    activity_start_date_lte = DateFilter(
+    start_date_lte = DateFilter(
         lookup_type='lte',
         name='activity__start_date')
 
-    activity_start_date_gte = DateFilter(
+    start_date_gte = DateFilter(
         lookup_type='gte',
         name='activity__start_date')
 
-    activity_end_date_isnull = BooleanFilter(name='activity__end_date__isnull')
-    activity_start_date_isnull = BooleanFilter(name='activity__start_date__isnull')
+    end_date_isnull = BooleanFilter(name='activity__end_date__isnull')
+    start_date_isnull = BooleanFilter(name='activity__start_date__isnull')
 
-    activity_xml_source_ref = CommaSeparatedCharFilter(
+    xml_source_ref = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__xml_source_ref',)
 
-    activity_activity__status = CommaSeparatedCharFilter(
+    activity__status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)
 
-    activity_hierarchy = CommaSeparatedCharFilter(
+    hierarchy = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__hierarchy',)
 
-    activity_budget_period_start = DateFilter(
+    budget_period_start = DateFilter(
         lookup_type='gte',
         name='activity__budget__period_start',)
 
-    activity_budget_period_end = DateFilter(
+    budget_period_end = DateFilter(
         lookup_type='lte',
         name='activity__budget__period_end')
 
-    activity_related_activity_id = ToManyFilter(
+    related_activity_id = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         fk='current_activity',
@@ -146,7 +146,7 @@ class TransactionFilter(FilterSet):
         name='ref_activity__id',
     )
 
-    activity_related_activity_type = ToManyFilter(
+    related_activity_type = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
@@ -154,7 +154,7 @@ class TransactionFilter(FilterSet):
         fk='current_activity',
     )
 
-    activity_related_activity_recipient_country = ToManyFilter(
+    related_activity_recipient_country = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
@@ -162,7 +162,7 @@ class TransactionFilter(FilterSet):
         fk='current_activity',
     )
 
-    activity_related_activity_recipient_region = ToManyFilter(
+    related_activity_recipient_region = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
@@ -170,7 +170,7 @@ class TransactionFilter(FilterSet):
         fk='current_activity',
     )
 
-    activity_related_activity_sector = ToManyFilter(
+    related_activity_sector = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
@@ -178,7 +178,7 @@ class TransactionFilter(FilterSet):
         fk='current_activity',
     )
 
-    activity_related_activity_sector_category = ToManyFilter(
+    related_activity_sector_category = ToManyFilter(
 	main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
@@ -186,7 +186,7 @@ class TransactionFilter(FilterSet):
         fk='current_activity',
     )
 
-    activity_budget_currency = ToManyFilter(
+    budget_currency = ToManyFilter(
 	main_fk='activity',
         qs=Budget,
         lookup_type='in',
@@ -194,7 +194,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_recipient_country = ToManyFilter(
+    recipient_country = ToManyFilter(
 	main_fk='activity',
         qs=ActivityRecipientCountry,
         lookup_type='in',
@@ -202,14 +202,14 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_recipient_region = ToManyFilter(
+    recipient_region = ToManyFilter(
 	main_fk='activity',
         qs=ActivityRecipientRegion,
         lookup_type='in',
         name='region__code',
         fk='activity',
     )
-    activity_sector = ToManyFilter(
+    sector = ToManyFilter(
 	main_fk='activity',
         qs=ActivitySector,
         lookup_type='in',
@@ -217,7 +217,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_sector_category = ToManyFilter(
+    sector_category = ToManyFilter(
 	main_fk='activity',
         qs=ActivitySector,
         lookup_type='in',
@@ -225,7 +225,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_participating_organisation = ToManyFilter(
+    participating_organisation = ToManyFilter(
 	main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
@@ -233,7 +233,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_participating_organisation_name = ToManyFilter(
+    participating_organisation_name = ToManyFilter(
 	main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
@@ -241,7 +241,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_participating_organisation_role = ToManyFilter(
+    participating_organisation_role = ToManyFilter(
 	main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
@@ -249,7 +249,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_participating_organisation_type = ToManyFilter(
+    participating_organisation_type = ToManyFilter(
 	main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
@@ -257,7 +257,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    activity_reporting_organisation = ToManyFilter(
+    reporting_organisation = ToManyFilter(
 	main_fk='activity',
         qs=ActivityReportingOrganisation,
         lookup_type='in',
@@ -266,7 +266,7 @@ class TransactionFilter(FilterSet):
     )
 
     # TODO: degrades performance very badly, should probably remove this - 2016-03-02
-    activity_reporting_organisation_startswith = ToManyFilter(
+    reporting_organisation_startswith = ToManyFilter(
 	main_fk='activity',
         qs=ActivityReportingOrganisation,
         lookup_type='startswith',

@@ -133,6 +133,8 @@ def annotate_currency(query_params, groupings):
     currency = query_params.get('convert_to')
     currency_field = None
 
+    if currency: currency = currency.lower()
+
     if currency is None or currency not in currencies:
         currency_field = 'value'
     else:

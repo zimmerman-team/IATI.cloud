@@ -169,7 +169,13 @@ class GroupBy():
         # data_dict = {str(i.get('code')): i for i in data}
         data_dict = {str(i.get(self.serializer_main_field)): i for i in data}
 
-        result = map(lambda i: merge([i, dict([(field, data_dict.get(i[field]))])]), l)
+        result = map(lambda i: merge([i, dict([
+            (
+                field, 
+                data_dict.get(i[field])
+            )
+            ])
+            ]), l)
 
         return result
 

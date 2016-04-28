@@ -326,7 +326,6 @@ class Parse(XMLParser):
             narratives = element.findall('narrative')
             narratives_text = element.xpath('narrative/text()')
 
-
             if len(narratives) > 0:
                 for narrative in narratives:
                     self.add_narrative(narrative, organisation_name)
