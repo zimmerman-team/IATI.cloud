@@ -27,6 +27,9 @@ class Parse(IatiParser):
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
 
+        if lang:
+            lang = lang.lower()
+
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not parent:
