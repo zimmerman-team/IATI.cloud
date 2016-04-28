@@ -153,6 +153,15 @@ class ConvertTestCase(TestCase):
         rate = convert.currency_from_to('USD', 'EUR', value_date, 200)
         self.assertEqual(rate, 400)
 
+    def test_currency_from_to_xdr(self):
+        """
+            when converted to xdr, only to_xdr should be called.
+        """
+        value_date = datetime(1994, 1, 1)
+        rate = convert.currency_from_to('USD', 'XDR', value_date, 100)
+        self.assertEqual(rate, 300)
+
+
     def test_currency_from_to_does_not_exist(self):
         """
 

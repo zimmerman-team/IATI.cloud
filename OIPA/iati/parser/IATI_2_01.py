@@ -21,7 +21,7 @@ class Parse(IatiParser):
         super(Parse, self).__init__(*args, **kwargs)
         self.default_lang = None
 
-    def add_narrative(self, element,parent):
+    def add_narrative(self, element, parent):
         # set on activity (if set)
         default_lang = self.default_lang
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
