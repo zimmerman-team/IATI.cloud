@@ -770,7 +770,7 @@ class Location(models.Model):
         related_name="feature_designation")
 
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
-    point_pos = PointField(null=True, blank=True)
+    point_pos = PointField(null=True, blank=True, spatial_index=True)
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
 
     def __unicode__(self,):
