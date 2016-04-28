@@ -119,6 +119,10 @@ class Parse(IatiParser):
         model = self.get_model('OrganisationName')
         self.add_narrative(element, model)
 
+        if element.text:
+            organisation = self.get_model('Organisation')
+            organisation.primary_name = element.text
+
         return element
 
     def iati_organisations__iati_organisation__reporting_org(self, element):
