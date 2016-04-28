@@ -113,9 +113,9 @@ class TotalBudget(models.Model):
 
 
 class RecipientOrgBudget(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name='donor_org')
-    recipient_org_identifier = models.CharField(max_length=150,verbose_name='recipient_org_identifier',null=True)
-    recipient_org = models.ForeignKey(Organisation,related_name='recieving_org',db_constraint=False,null=True)
+    organisation = models.ForeignKey(Organisation, related_name='donor_org')
+    recipient_org_identifier = models.CharField(max_length=150, verbose_name='recipient_org_identifier', null=True)
+    recipient_org = models.ForeignKey(Organisation, related_name='recieving_org', db_constraint=False, null=True)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)

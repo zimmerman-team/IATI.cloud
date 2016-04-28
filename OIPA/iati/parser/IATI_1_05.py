@@ -3,8 +3,8 @@ from lxml.builder import E
 
 from iati import models
 from iati_codelists import models as codelist_models
-
 # TODO: separate validation logic and model saving login in recursive tree walk
+
 
 class Parse(IATI_201_Parser):
 

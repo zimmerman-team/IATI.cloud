@@ -2,7 +2,7 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 
 class Publisher(models.Model):
@@ -53,7 +53,7 @@ class IatiXmlSource(models.Model):
     get_parse_activity.short_description = _(u"Parse Activity")
 
     def process(self, force_reparse=False):
-        parser = ParseIATI(self, force_reparse=force_reparse)
+        parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
 
         self.is_parsed = True
@@ -65,7 +65,7 @@ class IatiXmlSource(models.Model):
         """
         process a single activity
         """
-        parser = ParseIATI(self)
+        parser = ParseManager(self)
         parser.parse_activity(activity_id)
 
     def save(self, process=False, added_manually=True, *args, **kwargs):

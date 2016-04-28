@@ -17,7 +17,7 @@ from mock import MagicMock
 
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 from iati_synchroniser.models import IatiXmlSource
 import iati.models as iati_models
@@ -87,7 +87,7 @@ def create_parser(self, version="2.01"):
     iati_activities = build_xml(version, iati_identifier)
     dummy_source = IatiXmlSource.objects.get(id=1)
 
-    return ParseIATI(dummy_source, iati_activities).get_parser()
+    return ParseManager(dummy_source, iati_activities).get_parser()
 
 
 def create_parsers(versions=["2.01", "1.05"]):
@@ -128,10 +128,10 @@ class ParserSetupTestCase(TestCase):
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
         dummy_source = IatiXmlSource.objects.get(id=1)
 
-        self.parser_103 = ParseIATI(dummy_source, self.iati_103).get_parser()
-        self.parser_104 = ParseIATI(dummy_source, self.iati_104).get_parser()
-        self.parser_105 = ParseIATI(dummy_source, self.iati_105).get_parser()
-        self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
+        self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
+        self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()
+        self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
+        self.parser_201 = ParseManager(dummy_source, self.iati_201).get_parser()
 
         self.parser_103.default_lang = "en"
         self.parser_104.default_lang = "en"

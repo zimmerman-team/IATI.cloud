@@ -7,8 +7,7 @@ from unittest import skip
 from django.test import TestCase as DjangoTestCase
 import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati.parser.genericXmlParser import XMLParser as GenericParser
-
+from iati.parser.iati_parser import IatiParser
 
 
 # TODO: use factories instead of these fixtures
@@ -33,13 +32,13 @@ def build_activity(version="2.01", *args, **kwargs):
     return activity
 
 
-class GenericParserTestCase(DjangoTestCase):
+class IatiParserTestCase(DjangoTestCase):
     """
-    Unit tests for the generic parser
+    Unit tests for the iati parser
     """
 
     def setUp(self):
-        self.parser = GenericParser(None)
+        self.parser = IatiParser(None)
 
     def test_register_model_stores_model(self):
         activity = build_activity()
@@ -47,7 +46,7 @@ class GenericParserTestCase(DjangoTestCase):
         self.assertTrue(self.parser.model_store['Activity'][0] == activity)
 
     def test_register_model_stores_model_by_name(self):
-        # TODO: put this all under genericparser
+        # TODO: put this all under IatiParser
         parser = Parser_201(None)
         
         activity = build_activity()
@@ -92,7 +91,7 @@ class GenericParserTestCase(DjangoTestCase):
 
 class IatiParserTestCase(DjangoTestCase):
     """
-    Unit tests for ParseIati()
+    Unit tests for ParseManager()
     """
     @skip('NotImplemented')
     def test_prepare_parser(self):

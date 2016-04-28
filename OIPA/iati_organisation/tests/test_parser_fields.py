@@ -12,7 +12,7 @@ from unittest import TestCase
 from lxml import etree
 from lxml.builder import E
 
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 from iati_synchroniser.models import IatiXmlSource, Publisher
 import iati.models as iati_models
@@ -22,7 +22,7 @@ from geodata.models import Country
 from iati.factory import iati_factory
 
 from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati_organisation.organisation_2_01 import Parse as OrgParse_201
+from iati_organisation.parser.organisation_2_01 import Parse as OrgParse_201
 
 
 def build_xml(version, organisation_identifier):
@@ -67,7 +67,7 @@ class ParserSetupTestCase(DjangoTestCase):
 
         self.iati_201 = build_xml("2.01", self.iati_identifier)
         dummy_source = IatiXmlSource.objects.get(id=2)
-        self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
+        self.parser_201 = ParseManager(dummy_source, self.iati_201).get_parser()
 
         assert(isinstance(self.parser_201, OrgParse_201))
 

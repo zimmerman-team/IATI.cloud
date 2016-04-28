@@ -1,179 +1,25 @@
-import hashlib
-import dateutil.parser
-import re
-import unicodedata
 from datetime import datetime
-from decimal import Decimal, InvalidOperation
 
-from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
 
-from currency_convert import convert
-
-from genericXmlParser import XMLParser
+from iati_parser import IatiParser
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
-from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-from iati import activity_search_indexes
-
 from iati.parser import post_save
-
-_slugify_strip_re = re.compile(r'[^\w\s-]')
-_slugify_hyphenate_re = re.compile(r'[-\s]+')
+from currency_convert import convert
 
 
-class Parse(XMLParser):
+class Parse(IatiParser):
 
     VERSION = '2.01' 
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
         self.default_lang = None
-
-    class RequiredFieldError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is required
-            msg: explanation why
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-    class ValidationError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is validated
-            msg: explanation what went wrong
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-    def get_or_none(self, model, *args, **kwargs):
-        try:
-            return model.objects.get(*args, **kwargs)
-        except model.DoesNotExist:
-            return None
-
-    def _get_currency_or_raise(self, currency):
-        """
-        get default currency if not available for currency-related fields
-        """
-        # TO DO; this does not invalidate the whole element (budget, transaction, planned disbursement) while it should
-        if not currency:
-            currency = getattr(self.get_model('Activity'), 'default_currency')
-            if not currency:
-                raise self.RequiredFieldError(
-                    "currency",
-                    "value__currency: currency is not set and default-currency is not set on activity as well")
-
-        return currency
-
-    # TODO: separate these functions in their own data structure - 2015-12-02
-    def get_model_list(self, key):
-        if key in self.model_store:
-            return self.model_store[key]
-        return None
-
-    def get_model(self, key, index=-1):
-        if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__class__.__name__, index) # class name
-
-        return super(Parse, self).get_model(key, index)
-
-    def pop_model(self, key):
-        if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__class__.__name__) # class name
-
-        return super(Parse, self).pop_model(key)
-
-    def register_model(self, key, model=None):
-        if isinstance(key, Model):
-            return super(Parse, self).register_model(key.__class__.__name__, key) # class name
-
-        super(Parse, self).register_model(key, model)
-
-    def makeBool(self, text):
-        if text == '1':
-            return True
-        return False
-
-    def guess_number(self,number_string):
-        #first strip non numeric values, except for -.,
-        decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
-
-        try:
-            return Decimal(decimal_string)
-        except ValueError:
-            raise ValueError("ValueError: Input must be decimal or integer string")
-        except InvalidOperation:
-            raise InvalidOperation("InvalidOperation: Input must be decimal or integer string")
-
-    def isInt(self, obj):
-        try:
-            int(obj)
-            return True
-        except:
-            return False
-
-    def _slugify(self,value):
-        """
-        Normalizes string, converts to lowercase, removes non-alpha characters,
-        and converts spaces to hyphens.
-        From Django's "django/template/defaultfilters.py".
-        """
-        if not isinstance(value, unicode):
-            value = unicode(value)
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-        value = unicode(_slugify_strip_re.sub('', value).strip().lower())
-        return _slugify_hyphenate_re.sub('-', value)
-
-    def hash8(self,w):
-        h = hashlib.md5(w.encode('ascii', 'ignore'))
-        hash_generated = h.digest().encode('base64')[:8]
-        return self._slugify(hash_generated)
-
-    def validate_date(self, unvalidated_date):
-
-        if unvalidated_date:
-            unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
-        else:
-            return None
-
-        #check if standard data parser works
-        try:
-            return dateutil.parser.parse(unvalidated_date, ignoretz=True)
-        except:
-            raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
-
-    def _get_main_narrative_child(self, elem):
-        if len(elem):
-            return elem[0].text.strip()
-
-    def _in_whitelist(self, ref):
-        """
-        reporting_org and participating_org @ref attributes can be whitelisted,
-        causing name to be determined by whitelist
-        """
-        return False
-
-    def _save_whitelist(self, ref):
-        """
-        Actually save the whitelisted organisation when first encountered
-        """
-        pass
-
-    def _normalize(self, attr):
-        return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "").replace("'", "")
 
     def add_narrative(self, element,parent):
 

@@ -41,7 +41,7 @@ class OrganisationList(DynamicListView):
     """
     queryset = iati_organisation.models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
-    fields = ('url', 'organisation_identifier','last_updated_datetime',)
+    fields = ('url', 'organisation_identifier','last_updated_datetime', 'name')
 
 class OrganisationDetail(DynamicDetailView):
     """

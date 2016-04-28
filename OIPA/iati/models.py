@@ -280,7 +280,7 @@ class ActivityReportingOrganisation(models.Model):
         related_name="reporting_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation, null=True, default=None, on_delete=models.SET_NULL)
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     secondary_reporter = models.BooleanField(default=False)

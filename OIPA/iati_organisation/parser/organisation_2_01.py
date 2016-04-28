@@ -1,9 +1,7 @@
-import re
-
-from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
 
-from models import (
+from iati_organisation.models import (
     Organisation,
     OrganisationName,
     OrganisationReportingOrganisation,
@@ -16,18 +14,17 @@ from models import (
     DocumentLinkTitle)
 
 from geodata.models import Country
+from iati_organisation.parser import post_save
 
-_slugify_strip_re = re.compile(r'[^\w\s-]')
-_slugify_hyphenate_re = re.compile(r'[-\s]+')
 
-class Parse(IATI_201_Parser):
+class Parse(IatiParser):
     VERSION = '2.01'
     default_lang = None
     organisation_identifier = ''
 
     # TODO: remove this inheritance - 2015-12-10
     def __init__(self, *args, **kwargs):
-        super(IATI_201_Parser, self).__init__(*args, **kwargs)
+        super(Parse, self).__init__(*args, **kwargs)
 
     def add_narrative(self, element, parent):
         default_lang = self.default_lang # set on activity (if set)
@@ -37,6 +34,7 @@ class Parse(IATI_201_Parser):
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not parent:
+            print element.text
             raise self.RequiredFieldError("parent", "OrganisationNarrative: parent object must be passed")
 
         register_name = parent.__class__.__name__ + "Narrative"
@@ -56,7 +54,6 @@ class Parse(IATI_201_Parser):
 
         # TODO: handle this differently (also: breaks tests)
         self.register_model(register_name, narrative)
-
 
     def _get_currency_or_raise(self, currency):
         """
@@ -93,13 +90,6 @@ class Parse(IATI_201_Parser):
         self.organisation_identifier = organisation.organisation_identifier
         self.default_currency = default_currency
 
-        # add to reporting organisation and recipient_organisation
-        # TODO: ? - 2016-04-20
-        # RecipientOrgBudget.objects.filter(recipient_org_identifier=self.organisation_identifier).update(
-        #     recipient_org=organisation)
-        # OrganisationReportingOrganisation.objects.filter(reporting_org_identifier=self.organisation_identifier).update(
-        #     reporting_org=organisation)
-
         # for later reference
         self.default_lang = default_lang
         
@@ -107,14 +97,12 @@ class Parse(IATI_201_Parser):
 
         return element
 
-
     def iati_organisations__iati_organisation__organisation_identifier(self, element):
         # already set in iati_organisation
         return element
 
-
     def iati_organisations__iati_organisation__name(self, element):
-        name_list = self.get_model_list('Name')
+        name_list = self.get_model_list('OrganisationName')
 
         if name_list and len(name_list) > 0:
             raise self.ValidationError("name", "Duplicate names are not allowed")
@@ -124,7 +112,7 @@ class Parse(IATI_201_Parser):
         name = OrganisationName()
         name.organisation = organisation
 
-        self.register_model('Name', name)
+        self.register_model('OrganisationName', name)
 
         return element
 
@@ -148,21 +136,20 @@ class Parse(IATI_201_Parser):
 
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__reporting_org__narrative(self, element):
+        """atributes:
+
+        tag:narrative"""
         model = self.get_model('OrganisationReportingOrganisation')
         self.add_narrative(element, model)
+        model.primary_name = element.text
         # store element
         return element
 
-    '''atributes:
-
-    tag:total-budget'''
-
     def iati_organisations__iati_organisation__total_budget(self, element):
+        """atributes:
+
+        tag:total-budget"""
         model = self.get_model('Organisation')
         total_budget = TotalBudget()
         total_budget.organisation = model
@@ -170,36 +157,33 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__total_budget__period_start(self, element):
+        """atributes:
         iso-date:2014-01-01
 
-    tag:period-start'''
-
-    def iati_organisations__iati_organisation__total_budget__period_start(self, element):
+        tag:period-start"""
         model = self.get_model('TotalBudget')
         model.period_start = self.validate_date(element.attrib.get('iso-date'))
 
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__total_budget__period_end(self, element):
+        """atributes:
         iso-date:2014-12-31
 
-    tag:period-end'''
-
-    def iati_organisations__iati_organisation__total_budget__period_end(self, element):
+        tag:period-end"""
         model = self.get_model('TotalBudget')
         model.period_end = self.validate_date(element.attrib.get('iso-date'))
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__total_budget__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-0
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__total_budget__value(self, element):
+        tag:value"""
         model = self.get_model('TotalBudget')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value_date = self.validate_date(element.attrib.get('value-date'))
@@ -207,12 +191,11 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__total_budget__budget_line(self, element):
+        """atributes:
         ref:1234
 
-    tag:budget-line'''
-
-    def iati_organisations__iati_organisation__total_budget__budget_line(self, element):
+        tag:budget-line"""
         model = self.get_model('TotalBudget')
         budget_line = BudgetLine()
         budget_line.ref = element.attrib.get('ref')
@@ -221,13 +204,12 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__total_budget__budget_line__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-01
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__total_budget__budget_line__value(self, element):
+        tag:value"""
         model = self.get_model('TotalBudgetLine')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value = element.text
@@ -235,22 +217,20 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__total_budget__budget_line__narrative(self, element):
+        """atributes:
+
+        tag:narrative"""
         model = self.get_model('TotalBudgetLine')
 
         self.add_narrative(element, model)
         # store element
         return element
 
-    '''atributes:
-
-    tag:recipient-org-budget'''
-
     def iati_organisations__iati_organisation__recipient_org_budget(self, element):
+        """atributes:
+
+        tag:recipient-org-budget"""
         model = self.get_model('Organisation')
         recipient_org_budget = RecipientOrgBudget()
         recipient_org_budget.organisation = model
@@ -258,12 +238,11 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self, element):
+        """atributes:
         ref:AA-ABC-1234567
 
-    tag:recipient-org'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__recipient_org(self, element):
+        tag:recipient-org"""
         model = self.get_model('RecipientOrgBudget')
         model.recipient_org_identifier = element.attrib.get('ref')
         if Organisation.objects.filter(id=element.attrib.get('ref')).exists():
@@ -272,58 +251,53 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__recipient_org_budget__recipient_org__narrative(self, element):
+        """atributes:
+
+        tag:narrative"""
         model = self.get_model('RecipientOrgBudget')
         self.add_narrative(element, model)
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__period_start(self, element):
+        """atributes:
         iso-date:2014-01-01
 
-    tag:period-start'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__period_start(self, element):
+        tag:period-start"""
         model = self.get_model('RecipientOrgBudget')
         model.period_start = self.validate_date(element.attrib.get('iso-date'))
 
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__period_end(self, element):
+        """atributes:
         iso-date:2014-12-31
 
-    tag:period-end'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__period_end(self, element):
+        tag:period-end"""
         model = self.get_model('RecipientOrgBudget')
         model.period_end = self.validate_date(element.attrib.get('iso-date'))
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-01
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__value(self, element):
+        tag:value"""
         model = self.get_model('RecipientOrgBudget')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value = element.text
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__budget_line(self, element):
+        """atributes:
         ref:1234
 
-    tag:budget-line'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__budget_line(self, element):
+        tag:budget-line"""
         model = self.get_model('RecipientOrgBudget')
         budget_line = BudgetLine()
         budget_line.ref = element.attrib.get('ref')
@@ -332,13 +306,12 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-01
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__recipient_org_budget__budget_line__value(self, element):
+        tag:value"""
         model = self.get_model('RecipientOrgBudgetLine')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value = element.text
@@ -346,21 +319,19 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(self, element):
+        """atributes:
+
+        tag:narrative"""
         model = self.get_model('RecipientOrgBudgetLine')
         self.add_narrative(element, model)
         # store element
         return element
 
-    '''atributes:
-
-    tag:recipient-country-budget'''
-
     def iati_organisations__iati_organisation__recipient_country_budget(self, element):
+        """atributes:
+
+        tag:recipient-country-budget"""
         model = self.get_model('Organisation')
         recipient_country_budget = RecipientCountryBudget()
         recipient_country_budget.organisation = model
@@ -368,59 +339,54 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__recipient_country(self, element):
+        """atributes:
         code:AF
 
-    tag:recipient-country'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__recipient_country(self, element):
+        tag:recipient-country"""
         model = self.get_model('RecipientCountryBudget')
         model.country = self.get_or_none(Country, code=element.attrib.get('code'))
 
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__period_start(self, element):
+        """atributes:
         iso-date:2014-01-01
 
-    tag:period-start'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__period_start(self, element):
+        tag:period-start"""
         model = self.get_model('RecipientCountryBudget')
         model.period_start = self.validate_date(element.attrib.get('iso-date'))
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__period_end(self, element):
+        """atributes:
         iso-date:2014-12-31
 
-    tag:period-end'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__period_end(self, element):
+        tag:period-end"""
         model = self.get_model('RecipientCountryBudget')
         model.period_end = self.validate_date(element.attrib.get('iso-date'))
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-01
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__value(self, element):
+        tag:value"""
         model = self.get_model('RecipientCountryBudget')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value = element.text
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line(self, element):
+        """atributes:
         ref:1234
 
-    tag:budget-line'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__budget_line(self, element):
+        tag:budget-line"""
         model = self.get_model('RecipientCountryBudget')
         budget_line = BudgetLine()
         budget_line.ref = element.attrib.get('ref')
@@ -429,13 +395,12 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(self, element):
+        """atributes:
         currency:USD
         value-date:2014-01-01
 
-    tag:value'''
-
-    def iati_organisations__iati_organisation__recipient_country_budget__budget_line__value(self, element):
+        tag:value"""
         model = self.get_model('RecipientCountryBudgetLine')
         model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
         model.value = element.text
@@ -443,23 +408,21 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(self, element):
+        """atributes:
+
+        tag:narrative"""
         model = self.get_model('RecipientCountryBudgetLine')
         self.add_narrative(element, model)
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__document_link(self, element):
+        """atributes:
         format:application/vnd.oasis.opendocument.text
         url:http:www.example.org/docs/report_en.odt
 
-    tag:document-link'''
-
-    def iati_organisations__iati_organisation__document_link(self, element):
+        tag:document-link"""
         model = self.get_model('Organisation')
         document_link = DocumentLink()
         document_link.organisation = model
@@ -470,11 +433,10 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:title'''
-
     def iati_organisations__iati_organisation__document_link__title(self, element):
+        """atributes:
+
+        tag:title"""
         model = self.get_model('DocumentLink')
         document_link_title = DocumentLinkTitle()
         document_link_title.document_link = model
@@ -483,21 +445,20 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
-
-    tag:narrative'''
-
     def iati_organisations__iati_organisation__document_link__title__narrative(self, element):
+        """atributes:
+
+    tag:narrative"""
         model = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, model)
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__document_link__category(self, element):
+        """atributes:
         code:B01
 
-    tag:category'''
-    def iati_organisations__iati_organisation__document_link__category(self, element):
+        tag:category"""
         model = self.get_model('DocumentLink')
         model.save()
         document_category = self.get_or_none(codelist_models.DocumentCategory, code=element.attrib.get('code'))
@@ -505,26 +466,36 @@ class Parse(IATI_201_Parser):
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__document_link__language(self, element):
+        """atributes:
         code:en
 
-    tag:language'''
-
-    def iati_organisations__iati_organisation__document_link__language(self, element):
+        tag:language"""
         model = self.get_model('DocumentLink')
         model.language = self.get_or_none(codelist_models.Language, code=element.attrib.get('code'))
         # store element
         return element
 
-    '''atributes:
+    def iati_organisations__iati_organisation__document_link__recipient_country(self, element):
+        """atributes:
         code:AF
 
-    tag:recipient-country'''
-
-    def iati_organisations__iati_organisation__document_link__recipient_country(self, element):
+        tag:recipient-country"""
         model = self.get_model('DocumentLink')
         country = self.get_or_none(Country, code=element.attrib.get('code'))
         model.recipient_countries.add(country)
 
         # store element
         return element
+
+    def post_save_models(self):
+        """Perform all actions that need to happen after a single activity's been parsed."""
+        organisation = self.get_model('Organisation')
+
+        if not organisation:
+            return False
+
+        post_save.set_activity_reporting_organisation(organisation)
+
+    def post_save_file(self, xml_source):
+        pass

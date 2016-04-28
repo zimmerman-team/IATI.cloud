@@ -25,11 +25,13 @@ class NarrativeSerializer(serializers.ModelSerializer):
     language = CodelistSerializer()
 
     class Meta:
-        model = iati.models.Narrative
+        model = org_models.OrganisationNarrative
         fields = (
             'text',
             'language',
         )
+
+
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
