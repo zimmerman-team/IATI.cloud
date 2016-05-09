@@ -145,11 +145,11 @@ def annotate_currency(query_params, groupings):
     param_additions = []
 
     for param in query_params:
-        if param == 'transaction_recipient_country':
+        if param == 'recipient_country':
             param_additions.append('transactionrecipientcountry__percentage')
-        elif param == 'transaction_recipient_region':
+        elif param == 'recipient_region':
             param_additions.append('transactionrecipientregion__percentage')
-        elif param == 'transaction_sector':
+        elif param == 'sector':
             param_additions.append('transactionsector__percentage')
 
     grouping_additions = []
