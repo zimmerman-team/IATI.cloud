@@ -1,12 +1,15 @@
 import uuid
 import gc
 
+from django.utils import six
 from django.db.models.sql.constants import QUERY_TERMS
 from django.db.models import Q
 from django_filters import CharFilter
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
+from django_filters.filters import Lookup
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
+
 
 class CommaSeparatedCharFilter(CharFilter):
 
@@ -18,6 +21,20 @@ class CommaSeparatedCharFilter(CharFilter):
         self.lookup_type = 'in'
 
         return super(CommaSeparatedCharFilter, self).filter(qs, value)
+
+
+class CommaSeparatedStickyCharFilter(CharFilter):
+
+    def filter(self, qs, value):
+
+        if value:
+            value = value.split(',')
+
+        self.lookup_type = 'in'
+        qs._next_is_sticky()
+
+        return super(CommaSeparatedStickyCharFilter, self).filter(qs, value)
+
 
 class CommaSeparatedCharMultipleFilter(CharFilter):
     """

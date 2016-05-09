@@ -1,5 +1,6 @@
 from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import ToManyFilter
 
 from api.activity.filters import ActivityFilter
@@ -317,32 +318,32 @@ class TransactionAggregationFilter(TransactionFilter):
     Transaction aggregation filter class
     """
 
-    recipient_country = CommaSeparatedCharFilter(
+    recipient_country = CommaSeparatedStickyCharFilter(
         name='transactionrecipientcountry__country__code',
         lookup_type='in',
     )
 
-    recipient_region = CommaSeparatedCharFilter(
+    recipient_region = CommaSeparatedStickyCharFilter(
         name='transactionrecipientregion__region__code',
         lookup_type='in',
     )
 
-    sector = CommaSeparatedCharFilter(
+    sector = CommaSeparatedStickyCharFilter(
         name='transactionsector__sector__code',
         lookup_type='in',
     )
 
-    transaction_recipient_country = CommaSeparatedCharFilter(
+    transaction_recipient_country = CommaSeparatedStickyCharFilter(
         name='transactionrecipientcountry__country__code',
         lookup_type='in',
     )
 
-    transaction_recipient_region = CommaSeparatedCharFilter(
+    transaction_recipient_region = CommaSeparatedStickyCharFilter(
         name='transactionrecipientregion__region__code',
         lookup_type='in',
     )
 
-    transaction_sector = CommaSeparatedCharFilter(
+    transaction_sector = CommaSeparatedStickyCharFilter(
         name='transactionsector__sector__code',
         lookup_type='in',
     )
