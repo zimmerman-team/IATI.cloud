@@ -1,5 +1,5 @@
 from api.transaction.serializers import TransactionSerializer
-from api.transaction.filters import TransactionFilter
+from api.transaction.filters import TransactionFilter, TransactionAggregationFilter
 from iati.transaction.models import Transaction
 from api.generics.views import DynamicListView, DynamicDetailView
 
@@ -132,7 +132,7 @@ def annotate_currency(query_params, groupings):
     """
     currency = query_params.get('convert_to')
     currency_field = None
-
+    
     if currency: currency = currency.lower()
 
     if currency is None or currency not in currencies:
@@ -140,15 +140,35 @@ def annotate_currency(query_params, groupings):
     else:
         currency_field = currency + '_value'
 
+    annotation_components = F(currency_field)
+
+    param_additions = []
+
+    for param in query_params:
+        if param == 'transaction_recipient_country':
+            param_additions.append('transactionrecipientcountry__percentage')
+        elif param == 'transaction_recipient_region':
+            param_additions.append('transactionrecipientregion__percentage')
+        elif param == 'transaction_sector':
+            param_additions.append('transactionsector__percentage')
+
+    grouping_additions = []
+
     for grouping in groupings:
-        if grouping.query_param == "recipient_country":
-            return Sum(F(currency_field) * (F('transactionrecipientcountry__percentage') / 100.0))
-        elif grouping.query_param == "recipient_region":
-            return Sum(F(currency_field) * (F('transactionrecipientregion__percentage') / 100.0))
-        elif grouping.query_param == "sector":
-            return Sum(F(currency_field) * (F('transactionsector__percentage') / 100.0))
-        else:
-            return Sum('value')
+        if grouping.query_param == 'recipient_country':
+            grouping_additions.append('transactionrecipientcountry__percentage')
+        elif grouping.query_param == 'recipient_region':
+            grouping_additions.append('transactionrecipientregion__percentage')
+        elif grouping.query_param == 'sector':
+            grouping_additions.append('transactionsector__percentage')
+
+    additions = list(set(param_additions).union(grouping_additions))
+
+    for percentage_field in additions:
+        percentage_expression = F(percentage_field) / 100.0
+        annotation_components = annotation_components * percentage_expression
+
+    return Sum(annotation_components)
 
 class TransactionAggregation(AggregationView):
     """
@@ -221,7 +241,7 @@ class TransactionAggregation(AggregationView):
     queryset = Transaction.objects.all()
 
     filter_backends = (SearchFilter, DjangoFilterBackend,)
-    filter_class = TransactionFilter
+    filter_class = TransactionAggregationFilter
 
     allowed_aggregations = (
         Aggregation(
