@@ -25,11 +25,11 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
     queryset = queryset \
         .extra(**group_extras) \
-        .annotate(**rename_annotations) \
-
+        .annotate(**rename_annotations) 
+    
     if len(group_extras) is 0:
         queryset = queryset \
-            .filter(**eliminate_nulls) \
+            .filter(**eliminate_nulls)
 
 
     # preparation for aggregation look
@@ -49,7 +49,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         # apply the aggregation annotation
         next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
-
+        
         return next_result
 
 
@@ -72,6 +72,13 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         result_dict = {}
 
+        def set_item_keys(item, group_fields):
+            
+            for aggregation in selected_aggregations:
+                if not aggregation.field in item:
+                    item[aggregation.field] = 0
+            return item
+
         def get_group_key(item, group_fields):
             """
             Generate a unique group key from fields that are grouped by
@@ -86,10 +93,10 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
                     if isinstance(item[group_field], unicode):
                         group_keys.append(item[group_field].encode('utf-8'))
                 return '__'.join(group_keys)
-
+        
         for item in iter(first_queryset):
             group_key = get_group_key(item, group_fields)
-            result_dict[group_key] = item.copy()
+            result_dict[group_key] = set_item_keys(item.copy(), group_fields)
 
         for queryset in next_querysets:
             for item in iter(queryset):
@@ -98,7 +105,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
                 # new key not previously seen
                 if group_key not in result_dict:
-                    result_dict[group_key] = item.copy()
+                    result_dict[group_key] = set_item_keys(item.copy(), group_fields)
                 else:
                     result_dict[group_key] = merge([result_dict[group_key], item.copy()])
 
