@@ -122,13 +122,41 @@ class TransactionFilter(FilterSet):
         lookup_type='in',
         name='activity__xml_source_ref',)
 
-    activity__status = CommaSeparatedCharFilter(
+    activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)
+
+    document_link_category = ToManyFilter(
+        main_fk='activity',
+        qs=DocumentLink,
+        fk='activity',
+        lookup_type='in',
+        name='categories__code',
+    )
 
     hierarchy = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__hierarchy',)
+
+    collaboration_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__collaboration_type',)
+
+    default_flow_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__default_flow_type',)
+
+    default_aid_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__default_aid_type',)
+
+    default_finance_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__default_finance_type',)
+
+    default_tied_status = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='activity__default_tied_status',)
 
     budget_period_start = DateFilter(
         lookup_type='gte',

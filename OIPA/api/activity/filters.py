@@ -144,6 +144,26 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='hierarchy',)
 
+    collaboration_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='collaboration_type',)
+
+    default_flow_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='default_flow_type',)
+
+    default_aid_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='default_aid_type',)
+
+    default_finance_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='default_finance_type',)
+
+    default_tied_status = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='default_tied_status',)
+
     budget_period_start = DateFilter(
         lookup_type='gte',
         name='budget__period_start',)
