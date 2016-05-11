@@ -12,6 +12,7 @@ from geodata.models import Region
 from iati.models import Sector
 from iati.models import ActivityStatus
 from iati.models import PolicyMarker
+from iati.models import TransactionType
 from iati.models import CollaborationType
 from iati.models import DocumentCategory
 from iati.models import FlowType
@@ -314,6 +315,12 @@ class TransactionAggregation(AggregationView):
             query_param="related_activity",
             fields=("activity__relatedactivity__ref_activity__id"),
             renamed_fields="related_activity",
+        ),
+        GroupBy(
+            query_param="transaction_type",
+            fields=("transaction_type"),
+            queryset=TransactionType.objects.all(),
+            serializer=CodelistSerializer,
         ),
         GroupBy(
             query_param="reporting_organisation",
