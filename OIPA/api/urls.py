@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^regions/', include('api.region.urls', namespace='regions')),
     url(r'^countries/', include('api.country.urls', namespace='countries')),
     url(r'^cities/', include('api.city.urls', namespace='cities')),
+    url(r'^locations/', include('api.location.urls', namespace='locations')),
     url(r'^organisations/', include('api.organisation.urls', namespace='organisations')),
     url(r'^sectors/', include('api.sector.urls', namespace='sectors')),
     url(r'^transactions/', include('api.transaction.urls',
