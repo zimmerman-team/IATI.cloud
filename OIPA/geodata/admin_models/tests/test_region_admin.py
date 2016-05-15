@@ -33,10 +33,7 @@ class RegionAdminTestCase(TestCase):
         for url in region_admin.get_urls():
             patterns.append(url.regex.pattern)
 
-        added_patterns = [
-            '^update-region-center/$',
-            '^import-unesco-regions/$',
-            '^import-un-regions/$', ]
+        added_patterns = ['^update-region-center/$']
 
         for pattern in added_patterns:
             self.assertIn(pattern, patterns)
