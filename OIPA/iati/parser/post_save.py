@@ -90,7 +90,7 @@ def set_country_region_transaction(activity):
                 trc.percentage = 100
                 trc.save()
             for trr in t.transactionrecipientregion_set.all():
-                trc.percentage = 100
+                trr.percentage = 100
                 trr.save()
     else:
         # not set on the transaction, check if percentages given
