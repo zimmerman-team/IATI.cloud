@@ -88,6 +88,22 @@ class IatiParserTestCase(DjangoTestCase):
         """
         raise NotImplementedError()
 
+    def test_normalize(self):
+        """
+        normalize should remove spaces / tabs etc, replace special characters by a -
+        """
+        self.assertEqual(self.parser._normalize("notrailingtabs\t"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingtabs\r"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingnewline\n"), 'notrailingnewline')
+        self.assertEqual(self.parser._normalize("notrailingspaces "), 'notrailingspaces')
+        self.assertEqual(self.parser._normalize("no spaces"), 'nospaces')
+        self.assertEqual(self.parser._normalize("replace,commas"), 'replace-commas')
+        self.assertEqual(self.parser._normalize("replace:colons"), 'replace-colons')
+        self.assertEqual(self.parser._normalize("replace/slash"), 'replace-slash')
+        self.assertEqual(self.parser._normalize("replace'apostrophe"), 'replace-apostrophe')
+
+
+
 
 class IatiParserTestCase(DjangoTestCase):
     """
