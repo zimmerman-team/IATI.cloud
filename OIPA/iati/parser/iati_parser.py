@@ -114,7 +114,11 @@ class IatiParser(object):
 
         #check if standard data parser works
         try:
-            return dateutil.parser.parse(unvalidated_date, ignoretz=True)
+            date = dateutil.parser.parse(unvalidated_date, ignoretz=True)
+            if date.year >= 1900 and date.year <= 2100:
+                return date
+            else:
+                return None
         except:
             raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
 

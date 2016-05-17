@@ -8,6 +8,7 @@ from django.test import TestCase as DjangoTestCase
 import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.parser.iati_parser import IatiParser
+from iati.models import Activity
 
 
 # TODO: use factories instead of these fixtures
@@ -46,11 +47,10 @@ class IatiParserTestCase(DjangoTestCase):
         self.assertTrue(self.parser.model_store['Activity'][0] == activity)
 
     def test_register_model_stores_model_by_name(self):
-        # TODO: put this all under IatiParser
         parser = Parser_201(None)
         
         activity = build_activity()
-        parser.register_model(activity)
+        parser.register_model(activity, activity)
         self.assertTrue(parser.model_store['Activity'][0] == activity)
 
     def test_get_model_returns_model(self):
@@ -70,6 +70,37 @@ class IatiParserTestCase(DjangoTestCase):
         with self.assertRaises(Exception):
             activity = self.parser.model_store['Activity'][0]
 
+    def test_normalize(self):
+        """
+        normalize should remove spaces / tabs etc, replace special characters by a -
+        """
+        self.assertEqual(self.parser._normalize("notrailingtabs\t"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingtabs\r"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingnewline\n"), 'notrailingnewline')
+        self.assertEqual(self.parser._normalize("notrailingspaces "), 'notrailingspaces')
+        self.assertEqual(self.parser._normalize("no spaces"), 'nospaces')
+        self.assertEqual(self.parser._normalize("replace,commas"), 'replace-commas')
+        self.assertEqual(self.parser._normalize("replace:colons"), 'replace-colons')
+        self.assertEqual(self.parser._normalize("replace/slash"), 'replace-slash')
+        self.assertEqual(self.parser._normalize("replace'apostrophe"), 'replace-apostrophe')
+
+    def test_validate_date(self):
+        """
+        date should return valid dates and return None on an invalid date
+        values lower than year 1900 or higher than 2100 should be dropped
+        """
+
+        date = self.parser.validate_date('1900-01-01')
+        self.assertEqual(date.year, 1900)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = self.parser.validate_date('1899-06-01')
+        self.assertEqual(date, None)
+
+        date = self.parser.validate_date('2101-01-01')
+        self.assertEqual(date, None)
+
     @skip('NotImplemented')
     def test_save_model_saves_model(self):
         raise NotImplementedError()
@@ -85,34 +116,6 @@ class IatiParserTestCase(DjangoTestCase):
     def test_save_all_models(self):
         """
         Test all models are stored in order of input
-        """
-        raise NotImplementedError()
-
-    def test_normalize(self):
-        """
-        normalize should remove spaces / tabs etc, replace special characters by a -
-        """
-        self.assertEqual(self.parser._normalize("notrailingtabs\t"), 'notrailingtabs')
-        self.assertEqual(self.parser._normalize("notrailingtabs\r"), 'notrailingtabs')
-        self.assertEqual(self.parser._normalize("notrailingnewline\n"), 'notrailingnewline')
-        self.assertEqual(self.parser._normalize("notrailingspaces "), 'notrailingspaces')
-        self.assertEqual(self.parser._normalize("no spaces"), 'nospaces')
-        self.assertEqual(self.parser._normalize("replace,commas"), 'replace-commas')
-        self.assertEqual(self.parser._normalize("replace:colons"), 'replace-colons')
-        self.assertEqual(self.parser._normalize("replace/slash"), 'replace-slash')
-        self.assertEqual(self.parser._normalize("replace'apostrophe"), 'replace-apostrophe')
-
-
-
-
-class IatiParserTestCase(DjangoTestCase):
-    """
-    Unit tests for ParseManager()
-    """
-    @skip('NotImplemented')
-    def test_prepare_parser(self):
-        """
-        Test the parser gets prepared accordingly
         """
         raise NotImplementedError()
 
