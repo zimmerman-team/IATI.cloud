@@ -28,6 +28,10 @@ class TransactionFilter(FilterSet):
 
     min_value = NumberFilter(name='value', lookup_type='gte')
     max_value = NumberFilter(name='value', lookup_type='lte')
+    value_not = NumberFilter(
+        lookup_type='exact',
+        name='value',
+        exclude=True,)
 
     provider_activity = ToManyFilter(
         qs=TransactionProvider,
