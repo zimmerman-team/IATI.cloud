@@ -28,10 +28,14 @@ class TransactionFilter(FilterSet):
 
     min_value = NumberFilter(name='value', lookup_type='gte')
     max_value = NumberFilter(name='value', lookup_type='lte')
-    value_not = NumberFilter(
-        lookup_type='exact',
-        name='value',
-        exclude=True,)
+    
+    value_not = NumberFilter(lookup_type='exact', name='value', exclude=True)
+    xdr_value_not = NumberFilter(lookup_type='exact', name='xdr_value', exclude=True)
+    usd_value_not = NumberFilter(lookup_type='exact', name='usd_value', exclude=True)
+    eur_value_not = NumberFilter(lookup_type='exact', name='eur_value', exclude=True)
+    gbp_value_not = NumberFilter(lookup_type='exact', name='gbp_value', exclude=True)
+    jpy_value_not = NumberFilter(lookup_type='exact', name='jpy_value', exclude=True)
+    cad_value_not = NumberFilter(lookup_type='exact', name='cad_value', exclude=True)
 
     provider_activity = ToManyFilter(
         qs=TransactionProvider,
@@ -65,11 +69,6 @@ class TransactionFilter(FilterSet):
     activity_scope = CommaSeparatedCharFilter(
         name='activity__scope__code',
         lookup_type='in',)
-
-    recipient_region_not_in = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity__recipient_region',
-        exclude=True,)
 
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
