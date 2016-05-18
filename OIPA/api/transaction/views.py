@@ -338,6 +338,16 @@ class TransactionAggregation(AggregationView):
             # serializer=OrganisationSerializer,
         ),
         GroupBy(
+            query_param="provider_org",
+            fields=("provider_organisation__primary_name"),
+            renamed_fields="provider_org",
+        ),
+        GroupBy(
+            query_param="receiver_org",
+            fields=("receiver_organisation__primary_name"),
+            renamed_fields="receiver_org",
+        ),
+        GroupBy(
             query_param="document_link_category",
             fields="activity__documentlink__categories__code",
             renamed_fields="document_link_category",

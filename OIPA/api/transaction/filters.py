@@ -53,10 +53,24 @@ class TransactionFilter(FilterSet):
         fk='transaction',
     )
 
+    provider_organisation_primary_name = ToManyFilter(
+        qs=TransactionProvider,
+        lookup_type='in',
+        name='primary_name',
+        fk='transaction',
+    )
+
     provider_organisation_name = ToManyFilter(
         qs=TransactionProvider,
         lookup_type='in',
         name='narratives__content',
+        fk='transaction',
+    )
+
+    receiver_organisation_primary_name = ToManyFilter(
+        qs=TransactionReceiver,
+        lookup_type='in',
+        name='primary_name',
         fk='transaction',
     )
 
