@@ -26,6 +26,15 @@ class TransactionFilter(FilterSet):
         name='transaction_date'
     )
 
+    transaction_date_lte = DateFilter(
+        lookup_type='lte',
+        name='transaction_date')
+
+    transaction_date_gte = DateFilter(
+        lookup_type='gte',
+        name='transaction_date')
+
+
     min_value = NumberFilter(name='value', lookup_type='gte')
     max_value = NumberFilter(name='value', lookup_type='lte')
     
