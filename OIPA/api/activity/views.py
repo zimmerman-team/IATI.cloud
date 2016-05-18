@@ -214,30 +214,30 @@ class ActivityAggregations(AggregationView):
         ),
         # TODO: Make these a full date object instead - 2016-04-12
         GroupBy(
-            query_param="budget_per_year",
+            query_param="budget_year",
             extra={
                 'select': {
-                    'year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
                 ],
             },
-            fields="budget_per_year",
+            fields="budget_year",
         ),
         GroupBy(
-            query_param="budget_per_month",
+            query_param="budget_month",
             extra={
                 'select': {
-                    'year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                    'month': 'EXTRACT(MONTH FROM "period_start")::integer',
+                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_month': 'EXTRACT(MONTH FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
                     'EXTRACT(MONTH FROM "period_start")::integer IS NOT NULL',
                 ],
             },
-            fields="budget_per_year",
+            fields=("budget_year", "budget_month")
         ),
     )
 
@@ -402,14 +402,8 @@ class ActivityDetail(DynamicDetailView):
 
     ## Extra endpoints
 
-    Detailed information about activity sectors, participating organizations
-    and recipient countries can be found in separate pages:
+    All information on activity transactions can be found on a separate page:
 
-    - `/api/activities/{activity_id}/sectors`: Lists sectors activity presents
-    - `/api/activities/{activity_id}/participating-orgs`: List of participating
-        organizations in this activity
-    - `/api/activities/{activity_id}/recipient-countries`:
-        List of recipient countries.
     - `/api/activities/{activity_id}/transactions`:
         List of transactions.
 
