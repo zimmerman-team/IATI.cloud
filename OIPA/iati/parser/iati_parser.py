@@ -27,6 +27,7 @@ class IatiParser(object):
         self.iati_source = None
         self.parse_start_datetime = datetime.datetime.now()
         self.force_reparse = False
+        self.default_lang = None
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()
@@ -121,6 +122,15 @@ class IatiParser(object):
                 return None
         except:
             raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
+
+    def get_primary_name(self, element, primary_name):
+        if primary_name:
+            lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', self.default_lang)
+            if lang == 'en':
+                primary_name = element.text
+        else:
+            primary_name = element.text
+        return primary_name
 
     def load_and_parse(self, root):
         self.parse_activities(root)

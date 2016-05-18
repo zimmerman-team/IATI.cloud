@@ -19,7 +19,6 @@ class Parse(IatiParser):
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
-        self.default_lang = None
 
     def add_narrative(self, element, parent):
         # set on activity (if set)
@@ -178,9 +177,7 @@ class Parse(IatiParser):
             if len(narratives) > 0:
                 for narrative in narratives:
                     self.add_narrative(narrative, organisation_name)
-
-                first_narrative = narratives_text[0]
-                organisation.primary_name = first_narrative
+                    organisation.primary_name = self.get_primary_name(narrative, organisation.primary_name)
             else:
                 organisation.primary_name = ref
 
@@ -250,9 +247,8 @@ class Parse(IatiParser):
         model = self.get_model('ActivityParticipatingOrganisation')
         self.add_narrative(element, model)
 
-        # TODO: workaround for IATI ref uniqueness limitation,
-        # add as participating_organisation.primary_name - 2015-11-26
-        model.primary_name = element.text    
+        # workaround for IATI ref uniqueness limitation
+        model.primary_name = self.get_primary_name(element, model.primary_name)
 
         return element
     
@@ -1321,6 +1317,9 @@ class Parse(IatiParser):
         # transaction_provider = self.get_model('Transaction', -2)
         transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
+
+        transaction_provider.primary_name = self.get_primary_name(element, transaction_provider.primary_name)
+
         return element
 
     def iati_activities__iati_activity__transaction__receiver_org(self, element):
@@ -1354,11 +1353,15 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self, element):
         """attributes:
 
-    tag:narrative"""
+        tag:narrative
+        """
         # TODO: make this more transparent by changing data structure
         # transaction_receiver = self.get_model('Transaction', -2)
         transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
+
+        transaction_receiver.primary_name = self.get_primary_name(element, transaction_receiver.primary_name)
+
         return element
 
     def iati_activities__iati_activity__transaction__disbursement_channel(self, element):

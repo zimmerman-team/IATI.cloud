@@ -98,6 +98,14 @@ class TransactionProvider(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
+
     def __unicode__(self, ):
         return "%s - %s" % (self.ref,
                             self.provider_activity_ref,)
@@ -137,6 +145,14 @@ class TransactionReceiver(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.ref,

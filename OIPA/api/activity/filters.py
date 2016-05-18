@@ -72,11 +72,6 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_type='in',)
 
-    recipient_region_not_in = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='recipient_region',
-        exclude=True,)
-
     document_link_category = CommaSeparatedCharFilter(
         lookup_type='in',
         name='documentlink__categories')

@@ -9,6 +9,7 @@ import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.parser.iati_parser import IatiParser
 from iati.models import Activity
+from lxml.builder import E
 
 
 # TODO: use factories instead of these fixtures
@@ -100,6 +101,28 @@ class IatiParserTestCase(DjangoTestCase):
 
         date = self.parser.validate_date('2101-01-01')
         self.assertEqual(date, None)
+
+    def test_get_primary_name(self):
+        """
+        if no primary name, set
+        if primary name english, set
+        if primary name and not english, dont set
+        """
+
+        narrative = E('narrative', "first narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr"
+        primary_name = self.parser.get_primary_name(narrative, "")
+        self.assertEqual(primary_name, "first narrative")
+
+        narrative = E('narrative', "new narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en"
+        primary_name = self.parser.get_primary_name(narrative, "current primary name")
+        self.assertEqual(primary_name, "new narrative")
+
+        narrative = E('narrative', "french narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr"
+        primary_name = self.parser.get_primary_name(narrative, primary_name)
+        self.assertEqual(primary_name, "new narrative")
 
     @skip('NotImplemented')
     def test_save_model_saves_model(self):

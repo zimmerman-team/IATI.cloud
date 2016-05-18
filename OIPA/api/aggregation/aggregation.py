@@ -49,7 +49,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         # apply the aggregation annotation
         next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
-        
+        # print str(next_result.query)
         return next_result
 
 

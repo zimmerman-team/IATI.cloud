@@ -70,7 +70,8 @@ class Parse(IATI_201_Parser):
 
         if element.text:
             self.add_narrative(element, activity_reporting_organisation)
-
+            if activity_reporting_organisation.organisation:
+                activity_reporting_organisation.organisation.primary_name = self.get_primary_name(element, activity_reporting_organisation.organisation.primary_name)
         return element
 
     def iati_activities__iati_activity__participating_org(self, element):
@@ -91,13 +92,11 @@ class Parse(IATI_201_Parser):
         super(Parse, self).iati_activities__iati_activity__participating_org(element)
 
         participating_organisation = self.get_model('ActivityParticipatingOrganisation')
-        # TODO: workaround for IATI ref uniqueness limitation, add as participating_organisation.primary_name -
-        # 2015-11-26
-        if element.text:
-            participating_organisation.primary_name = element.text
 
         if element.text:
             self.add_narrative(element, participating_organisation)
+            # workaround for IATI ref uniqueness limitation
+            participating_organisation.primary_name = self.get_primary_name(element, participating_organisation.primary_name)
 
         return element
 
@@ -368,6 +367,7 @@ class Parse(IATI_201_Parser):
 
         if element.text:
             self.add_narrative(element, transaction_provider)
+            transaction_provider.primary_name = self.get_primary_name(element, transaction_provider.primary_name)
 
         return element
 
@@ -384,6 +384,7 @@ class Parse(IATI_201_Parser):
 
         if element.text:
             self.add_narrative(element, transaction_receiver)
+            transaction_receiver.primary_name = self.get_primary_name(element, transaction_receiver.primary_name)
 
         return element
 

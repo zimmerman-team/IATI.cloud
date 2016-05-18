@@ -796,6 +796,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.participating_org_201 = E('participating-org', **self.attrs_201)
         self.participating_org_105 = E('participating-org', "some text", **self.attrs_105)
 
+        self.narrative = E('narrative', "random text")
+
     def test_participating_organisation_not_parsed_yet_201(self):
         """
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
@@ -811,6 +813,11 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(participating_organisation.activity == activity)
         self.assertTrue(participating_organisation.organisation == None)
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+        self.parser_201.iati_activities__iati_activity__participating_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('ActivityParticipatingOrganisationNarrative')
+        self.assertTrue(narrative.related_object == participating_organisation)
+        self.assertTrue(participating_organisation.primary_name == 'random text')
 
     def test_participating_organisation_already_parsed_201(self):
         """
@@ -851,6 +858,10 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(participating_organisation.activity == activity)
         self.assertTrue(participating_organisation.organisation == None)
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+        narrative = self.parser_105.get_model('ActivityParticipatingOrganisationNarrative')
+        self.assertTrue(narrative.related_object == participating_organisation)
+        self.assertTrue(participating_organisation.primary_name == 'some text')
 
     def test_participating_organisation_already_parsed_105(self):
         """
@@ -2146,6 +2157,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
         narrative = self.parser_201.get_model('TransactionProviderNarrative')
         self.assertTrue(narrative.related_object == provider_organisation)
+        self.assertTrue(provider_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_201.pop_model('TransactionProvider')
@@ -2176,6 +2188,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.parser_201.register_model('Transaction', self.test_transaction)
         narrative = self.parser_105.get_model('TransactionProviderNarrative')
         self.assertTrue(narrative.related_object == provider_organisation)
+        self.assertTrue(provider_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_201.pop_model('TransactionProvider')
@@ -2222,11 +2235,10 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(receiver_organisation.receiver_activity_id == None)
         self.assertTrue(receiver_organisation.transaction == self.test_transaction)
 
-        # self.assertTrue(self.test_transaction.receiver_organisation == receiver_organisation)
-
         self.parser_201.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
         narrative = self.parser_201.get_model('TransactionReceiverNarrative')
         self.assertTrue(narrative.related_object == receiver_organisation)
+        self.assertTrue(receiver_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_201.pop_model('TransactionReceiver')
@@ -2262,6 +2274,7 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model('TransactionReceiverNarrative')
         self.assertTrue(narrative.related_object == receiver_organisation)
+        self.assertTrue(receiver_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_105.pop_model('TransactionReceiver')
