@@ -6,8 +6,8 @@ from iati.models import Location
 
 from api.generics.views import DynamicListView
 from api.location.serializers import LocationSerializer
-from api.location.filters import LocationFilter, DistanceFilter
-
+from api.location.filters import LocationFilter
+from api.generics.filters import DistanceFilter
 
 
 class LocationList(DynamicListView):
@@ -20,7 +20,7 @@ class LocationList(DynamicListView):
     """
 
     queryset = Location.objects.all()
-    filter_backends = (DjangoFilterBackend, DistanceFilter, )
+    filter_backends = (DjangoFilterBackend, DistanceFilter)
     filter_class = LocationFilter
     serializer_class = LocationSerializer
 

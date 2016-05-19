@@ -103,9 +103,10 @@ class TransactionDetail(DynamicDetailView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
 
+
 from django.db.models import Count, Sum, Q, F
 
-from api.activity.filters import SearchFilter
+from api.generics.filters import SearchFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
 from geodata.models import Country, Region
@@ -170,6 +171,7 @@ def annotate_currency(query_params, groupings):
         annotation_components = annotation_components * percentage_expression
 
     return Sum(annotation_components)
+
 
 class TransactionAggregation(AggregationView):
     """

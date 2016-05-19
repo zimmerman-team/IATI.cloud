@@ -12,54 +12,9 @@ from api.generics.filters import ToManyFilter
 from api.generics.filters import NestedFilter
 
 from rest_framework import filters
-from common.util import combine_filters
-from djorm_pgfulltext.fields import TSConfig
 
 from iati.models import *
 from iati.transaction.models import *
-
-
-from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.gis.measure import D
-
-
-class DistanceFilter(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-
-        location_longitude = request.query_params.get('location_longitude', None)
-        location_latitude = request.query_params.get('location_latitude', None)
-        distance_km = request.query_params.get('location_distance_km', None)
-
-        if location_longitude and location_latitude and distance_km:
-            pnt = GEOSGeometry('POINT({0} {1})'.format(location_longitude, location_latitude))            
-            return queryset.filter(location__point_pos__distance_lte=(pnt, D(km=distance_km)))
-
-        return queryset
-
-
-class SearchFilter(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-
-        query = request.query_params.get('q', None)
-
-        if query:
-
-            query_fields = request.query_params.get('q_fields')
-            dict_query_list = [TSConfig('simple'), query]
-
-            if query_fields:
-
-                query_fields = query_fields.split(',')
-
-                if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{'activitysearch__{}__ft'.format(field): dict_query_list}) for field in query_fields])
-                    return queryset.filter(filters)
-
-            else:
-
-                return queryset.filter(activitysearch__text__ft=dict_query_list)
-
-        return queryset
 
 
 class ActivityFilter(TogetherFilterSet):

@@ -7,8 +7,66 @@ from django.db.models import Q
 from django_filters import CharFilter
 from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
 from django_filters.filters import Lookup
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
+from rest_framework import filters
+from djorm_pgfulltext.fields import TSConfig
+from iati.models import Activity
+from iati.models import Location
+from common.util import combine_filters
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
+
+
+class DistanceFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        location_longitude = request.query_params.get('location_longitude', None)
+        location_latitude = request.query_params.get('location_latitude', None)
+        distance_km = request.query_params.get('location_distance_km', None)
+
+        if location_longitude and location_latitude and distance_km:
+            pnt = GEOSGeometry('POINT({0} {1})'.format(location_longitude, location_latitude))
+
+            if Location is not queryset.model:
+                model_prefix = 'location__'
+            else:
+                model_prefix = ''
+
+            return queryset.filter(**{'{}point_pos__distance_lte'.format(model_prefix): (pnt, D(km=distance_km))})
+
+        return queryset
+
+
+class SearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        query = request.query_params.get('q', None)
+
+        if query:
+
+            query_fields = request.query_params.get('q_fields')
+            dict_query_list = [TSConfig('simple'), query]
+
+            model_prefix = ''
+
+            # when SearchFilter is used on other endpoints than activities, 
+            # add activity__ to the filter name
+            if Activity is not queryset.model:
+                model_prefix = 'activity__'
+
+            if query_fields:
+                query_fields = query_fields.split(',')
+
+                if isinstance(query_fields, list):
+                    filters = combine_filters([Q(**{model_prefix + 'activitysearch__{}__ft'.format(field): dict_query_list}) for field in query_fields])
+                    return queryset.filter(filters)
+
+            else:
+
+                return queryset.filter(**{'{}activitysearch__text__ft'.format(model_prefix): dict_query_list})
+
+        return queryset
 
 
 class CommaSeparatedCharFilter(CharFilter):
@@ -52,6 +110,7 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
 
         return qs.filter(final_filters)
 
+
 class CommaSeparatedDateRangeFilter(Filter):
 
     def filter(self, qs, value):
@@ -62,6 +121,7 @@ class CommaSeparatedDateRangeFilter(Filter):
         values = value.split(',')
 
         return super(CommaSeparatedDateRangeFilter, self).filter(qs, values)
+
 
 class TogetherFilter(Filter):
     """
@@ -80,6 +140,7 @@ class TogetherFilter(Filter):
             qs = qs.filter(**filters)
 
             return qs
+
 
 class TogetherFilterSet(FilterSet):
 
@@ -128,7 +189,6 @@ class TogetherFilterSet(FilterSet):
 #         for filterset in sub_filtersets:
 
 
-
 class CommaSeparatedCharMultipleFilter(CharFilter):
     """
     Comma separated filter for lookups like 'exact', 'iexact', etc..
@@ -147,6 +207,7 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
             final_filters = reduce(lambda a, b: a | b, filters)
 
         return qs.filter(final_filters)
+
 
 class ToManyFilter(CommaSeparatedCharMultipleFilter):
     """
@@ -190,6 +251,7 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         return qs.filter(**in_filter)
 
         # return qs.filter(id__in=nested_qs.values(self.fk))
+
 
 class NestedFilter(CommaSeparatedCharMultipleFilter):
     """

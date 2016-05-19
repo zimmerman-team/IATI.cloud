@@ -9,8 +9,8 @@ from iati.models import ActivityReportingOrganisation
 
 from api.activity import serializers as activitySerializers
 from api.activity import filters
-from api.activity.filters import SearchFilter
-from api.activity.filters import DistanceFilter
+from api.generics.filters import DistanceFilter
+from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
@@ -18,7 +18,6 @@ from api.transaction.filters import TransactionFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
 from django.db.models import Count, Sum, Q, F
-
 
 from geodata.models import Country
 from geodata.models import Region

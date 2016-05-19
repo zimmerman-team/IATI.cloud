@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView
 from iati.models import Activity
 from api.export import serializers as export_serializers
 from api.activity import filters
-from api.activity.filters import SearchFilter
+from api.generics.filters import SearchFilter
 from api.generics.utils import get_serializer_fields
 from common.util import difference
 from rest_framework.filters import DjangoFilterBackend
