@@ -170,6 +170,9 @@ def apply_group_filters(queryset, selected_groupings, params):
     )
 
     for group in groupings:
+        if hasattr(group, 'extra'):
+            continue
+
         main_field = group.fields[0] # the one giving the relation from activity to id of item
         value = params[group.query_param]
 
