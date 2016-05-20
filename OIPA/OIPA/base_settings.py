@@ -8,6 +8,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 LOGIN_URL = reverse_lazy('two_factor:login')
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -29,6 +31,13 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
 
 
 def rel(*x):
@@ -116,7 +125,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.gis',
     'corsheaders',
-    'haystack',
     'common',
     'iati.apps.IatiConfig',
     'iati_organisation.apps.IatiOrganisationConfig',
@@ -128,8 +136,6 @@ INSTALLED_APPS = (
     'task_queue',
     'multiupload',
     'djsupervisor',
-    'indicator_unesco',
-    'translation_model',
     'rest_framework',
     'rest_framework_csv',
     'django_otp',
@@ -138,7 +144,6 @@ INSTALLED_APPS = (
     'otp_yubikey',
     'two_factor',
     'debug_toolbar',
-    'parse_logger',
     'django_extensions',
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
