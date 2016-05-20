@@ -28,17 +28,6 @@ CACHES = {
 
 API_CACHE_SECONDS = 60 * 60 * 24
 
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'TIMEOUT': 60,
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.BaseSignalProcessor'
-
 ROOT_ORGANISATIONS = []
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

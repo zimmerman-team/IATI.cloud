@@ -11,8 +11,6 @@ from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
 
-from parse_logger import models as log_models
-
 
 class IatiParser(object):
     # default version
