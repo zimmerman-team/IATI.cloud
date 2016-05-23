@@ -12,13 +12,16 @@ class Command(BaseCommand):
             Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
         """
 
-        # set all non root activities as non searchable
-        Activity.objects.exclude(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(is_searchable=False)
+        # set all activities as non searchable
+        Activity.objects.update(is_searchable=False)
+
+        # set all root activities as searchable
+        Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(is_searchable=True)
+
         # loop through root activities and set children as searchable
         activities = Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS)
+
         for activity in activities:
-            activity.is_searchable = True
-            activity.save()
             self.set_children_searchable(activity.iati_identifier)
 
     def set_children_searchable(self, iati_identifier):
@@ -32,13 +35,13 @@ class Command(BaseCommand):
 
         for transaction in provider_activity_transactions:
             activity = transaction.activity
-            activity.is_searchable = True
-            activity.save()
-            self.set_children_searchable(activity.iati_identifier)
+            if not activity.is_searchable:
+                activity.is_searchable = True
+                activity.save()
+                self.set_children_searchable(activity.iati_identifier)
         return
 
     def handle(self, *args, **options):
         self.update_searchable_activities()
-
 
 
