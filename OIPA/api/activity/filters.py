@@ -2,6 +2,7 @@ from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
 from django.db.models import Q
+from django.conf import settings
 
 from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 
@@ -21,6 +22,8 @@ class SearchFilter(filters.BaseFilterBackend):
         query = request.query_params.get('q', None)
 
         if query:
+            if settings.ROOT_ORGANISATIONS:
+                queryset = queryset.filter(is_searchable=True)
 
             query_fields = request.query_params.get('q_fields')
             dict_query_list = [TSConfig('simple'), query]
@@ -34,7 +37,6 @@ class SearchFilter(filters.BaseFilterBackend):
                     return queryset.filter(filters)
 
             else:
-
                 return queryset.filter(activitysearch__text__ft=dict_query_list)
 
         return queryset
