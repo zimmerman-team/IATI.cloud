@@ -2,6 +2,7 @@ from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
 from django.db.models import Q
+from django.conf import settings
 
 from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 

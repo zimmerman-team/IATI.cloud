@@ -44,6 +44,8 @@ class SearchFilter(filters.BaseFilterBackend):
         query = request.query_params.get('q', None)
 
         if query:
+            if settings.ROOT_ORGANISATIONS:
+                queryset = queryset.filter(is_searchable=True)
 
             query_fields = request.query_params.get('q_fields')
             dict_query_list = [TSConfig('simple'), query]
