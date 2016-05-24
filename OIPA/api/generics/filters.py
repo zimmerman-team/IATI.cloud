@@ -1,6 +1,7 @@
 import uuid
 import gc
 
+from django.conf import settings
 from django.utils import six
 from django.db.models.sql.constants import QUERY_TERMS
 from django.db.models import Q
