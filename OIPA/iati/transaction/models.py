@@ -28,7 +28,7 @@ class Transaction(models.Model):
 
     transaction_type = models.ForeignKey(
         TransactionType)
-    transaction_date = models.DateField()
+    transaction_date = models.DateField(db_index=True)
 
     value = models.DecimalField(max_digits=15, decimal_places=2)
     value_string = models.CharField(max_length=50)
