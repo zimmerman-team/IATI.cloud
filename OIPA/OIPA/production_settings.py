@@ -16,6 +16,7 @@ DATABASES = {
         'USER': 'oipa',
         'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
+        'CONN_MAX_AGE': 500
     },
 }
 
