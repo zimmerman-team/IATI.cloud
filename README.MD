@@ -32,7 +32,7 @@ For more detailed informtion, see the [install documentation](http://docs.oipa.n
 
 ## About the project
 --------
-* Web Site:         <a href="https://www.oipa.nl" target="_blank">oipa.nl</a>
+* Website:         <a href="https://www.oipa.nl" target="_blank">oipa.nl</a>
 * Authors:          <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
 * License:          AGPLv3 (see included <a href="https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
 * Github Repo:      <a href="https://github.com/zimmerman-zimmerman/OIPA/" target="_blank">github.com/openaid-IATI/OIPA/</a>
