@@ -34,9 +34,9 @@ For more detailed informtion, see the [install documentation](http://docs.oipa.n
 --------
 * Website:         <a href="https://www.oipa.nl" target="_blank">oipa.nl</a>
 * Authors:          <a href="https://www.zimmermanzimmerman.nl/" target="_blank">Zimmerman & Zimmerman</a>
-* License:          AGPLv3 (see included <a href="https://github.com/openaid-IATI/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
-* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/OIPA/" target="_blank">github.com/openaid-IATI/OIPA/</a>
-* Bug Tracker:      <a href="https://github.com/zimmerman-zimmerman/OIPA/issues" target="_blank">github.com/openaid-IATI/OIPA/issues</a>
+* License:          AGPLv3 (see included <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">LICENSE</a> file for full license)
+* Github Repo:      <a href="https://github.com/zimmerman-zimmerman/OIPA/" target="_blank">github.com/zimmerman-zimmerman/OIPA/</a>
+* Bug Tracker:      <a href="https://github.com/zimmerman-zimmerman/OIPA/issues" target="_blank">github.com/zimmerman-zimmerman/OIPA/issues</a>
 * Documentation:    <a href="https://github.com/zimmerman-zimmerman/OIPA/wiki" target="_blank">docs.oipa.nl</a>
 
 
