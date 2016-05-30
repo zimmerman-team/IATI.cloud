@@ -225,7 +225,8 @@ class ActivitySerializerTestCase(TestCase):
         reporting_organisation = iati_factory.ReportingOrganisationFactory.build()
 
         data = serializers.ReportingOrganisationSerializer(
-            reporting_organisation
+            reporting_organisation,
+            context={'request': self.request_dummy},
             ).data
         assert data['secondary_reporter'] == reporting_organisation.secondary_reporter,\
             """

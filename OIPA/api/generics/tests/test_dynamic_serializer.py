@@ -1,3 +1,4 @@
+from unittest import skip
 from django.test import TestCase
 from rest_framework.views import APIView
 from api.generics.serializers import DynamicFieldsSerializer
@@ -18,8 +19,8 @@ class SimpleModelSerializer(DynamicFieldsSerializer):
 
 class SimpleView(APIView):
     fields = (
-        'id',
-    )
+            'id',
+            )
 
 
 class TestDynamicFields(TestCase):
@@ -28,87 +29,45 @@ class TestDynamicFields(TestCase):
             'description': 'DESC-10A',
             'type': {
                 'code': 'CODE-10A'
+                }
             }
-    }
 
     def test_fields_serializer(self):
         request = RequestFactory().get('/')
-        context = {
-            'view': SimpleView,
-            'request': request
-        }
-        serializer = SimpleModelSerializer(
-            data=self.data,
-            context=context,
-            fields=('id','name')
-        )
-        serializer.is_valid()
-        assert 'id' in serializer.data, \
-            'id should be serialized since it is defined in the fields kwarg'
-        assert 'name' in serializer.data, \
-            'name should be serialized since it is defined in the fields kwarg'
-        assert 'description' not in serializer.data, \
-            'description should not be serialized ' \
-            'since it is not defined in the fields kwarg'
 
+        context = {
+                'view': SimpleView,
+                'request': request
+                }
+        serializer = SimpleModelSerializer(
+                data=self.data,
+                context=context,
+                fields=('id','name')
+                )
+        serializer.is_valid()
+
+        self.assertIn('id', serializer.data)
+        self.assertIn('name', serializer.data)
+        self.assertNotIn('description', serializer.data)
+
+    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
     def test_request_fields_serializer(self):
-        request = RequestFactory().get('/')
-        request.query_params = {'fields': 'id,name'}
-        context = {
-            'view': SimpleView,
-            'request': request
-        }
-        serializer = SimpleModelSerializer(
-            data=self.data,
-            fields=('id',),
-            context=context
-        )
-        serializer.is_valid()
-        assert 'id' in serializer.data, \
-            'id should be serialized since it is defined in query_params'
-        assert 'name' in serializer.data, \
-            'name should be serialized since it is defined in query_params'
-        assert 'description' not in serializer.data, \
-            'name should not be serialized ' \
-            'since it is not defined in query_params'
+        pass
 
+    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
     def test_sub_request_fields_serializer(self):
-        request = RequestFactory().get('/')
-        request.query_params = {'fields[type]': 'code'}
-        context = {
-            'view': SimpleView,
-            'request': request
-        }
-        serializer = SimpleModelSerializer(
-            data=self.data,
-            fields=('id','name'),
-            context=context
-        )
-        serializer.is_valid()
-        assert 'id' not in serializer.data, \
-            'id should not be serialized ' \
-            'since it is not defined in query_params'
-        assert 'name' not in serializer.data, \
-            'name should not be serialized ' \
-            'since it is not defined in query_params'
-        assert 'description' not in serializer.data, \
-            'description should not be serialized ' \
-            'since it is not defined in query_params'
-        assert 'code' in serializer.data['type'], \
-            'type: {code: <code>} should be serialized ' \
-            'because it is defined in query_params'
+        pass
 
+    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
     def test_view_fields_serializer(self):
         context = {
-            'view': SimpleView
-        }
+                'view': SimpleView
+                }
         serializer = SimpleModelSerializer(data=self.data, context=context)
         serializer.is_valid()
-        assert 'id' in serializer.data, \
-            'id should be serialized because it is defined in view.fields'
-        assert 'name' not in serializer.data, \
-            'name should not be serialized ' \
-            'because it is not defined in view.fields'
-        assert 'description' not in serializer.data, \
-            'description should not be serialized ' \
-            'because it is not defined in view.fields'
+
+        self.assertIn('id', serializer.data)
+        self.assertNotIn('name', serializer.data)
+        self.assertNotIn('description', serializer.data)
+
+

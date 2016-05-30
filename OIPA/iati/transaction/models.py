@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -26,22 +28,26 @@ class Transaction(models.Model):
 
     transaction_type = models.ForeignKey(
         TransactionType)
-    transaction_date = models.DateField()
+    transaction_date = models.DateField(db_index=True)
 
     value = models.DecimalField(max_digits=15, decimal_places=2)
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField()
 
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
 
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,
         null=True,
         blank=True,
-        default=None)
-
-    recipient_region = models.ForeignKey(Region, null=True, blank=True, default=None)
-    recipient_country = models.ForeignKey(Country, null=True, blank=True, default=None)
+        default=None
+    )
 
     flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
     finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
@@ -51,9 +57,10 @@ class Transaction(models.Model):
     objects = TransactionQuerySet.as_manager()
 
     def __unicode__(self, ):
-        return "value: %s - transaction date: %s - type: %s" % (self.value,
-                                 self.transaction_date,
-                                 self.transaction_type,)
+        return "value: %s - transaction date: %s - type: %s" % (
+            self.value,
+            self.transaction_date,
+            self.transaction_type,)
 
 
 class TransactionProvider(models.Model):
@@ -74,7 +81,13 @@ class TransactionProvider(models.Model):
         null=True,
         blank=True,
         default=None)
-    provider_activity_ref = models.CharField(db_index=True, max_length=200, null=True, blank=True, default="")
+    provider_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='provider-activity-id')
 
     transaction = models.OneToOneField(
         Transaction,
@@ -84,6 +97,14 @@ class TransactionProvider(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.ref,
@@ -108,7 +129,13 @@ class TransactionReceiver(models.Model):
         null=True,
         blank=True,
         default=None)
-    receiver_activity_ref = models.CharField(db_index=True, max_length=200, null=True, blank=True, default="")
+    receiver_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='receiver-activity-id')
 
     transaction = models.OneToOneField(
         Transaction,
@@ -118,6 +145,14 @@ class TransactionReceiver(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.ref,
@@ -136,26 +171,69 @@ class TransactionDescription(models.Model):
 
 
 class TransactionSector(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    sector = models.ForeignKey(Sector)
-    vocabulary = models.ForeignKey(SectorVocabulary)
+    transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.CASCADE)
+    
+    sector = models.ForeignKey(
+        Sector,
+        on_delete=models.CASCADE)
+
+    vocabulary = models.ForeignKey(
+        SectorVocabulary,
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.CASCADE)
+
+    reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.sector)
 
 
 class TransactionRecipientCountry(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    country = models.ForeignKey(Country)
+    transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.CASCADE)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.CASCADE)
+
+    reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
 
 
 class TransactionRecipientRegion(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    region = models.ForeignKey(Region)
-    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.CASCADE)
+    region = models.ForeignKey(
+        Region,
+        on_delete=models.CASCADE)
+
+    vocabulary = models.ForeignKey(
+        RegionVocabulary,
+        null=True, 
+        blank=True, 
+        default=1,
+        on_delete=models.CASCADE)
+
+    reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)

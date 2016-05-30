@@ -39,11 +39,6 @@ def advanced_start_worker():
         w.work()
 
 
-@job
-def update_codelists():
-    cli = CodeListImporter()
-    cli.synchronise_with_codelists()
-
 ###############################
 #### TASK QUEUE MANAGEMENT ####
 ###############################
@@ -84,10 +79,13 @@ def delete_all_tasks_from_queue(queue_name):
 
 @job
 def force_parse_all_existing_sources():
-    for e in IatiXmlSource.objects.all():
+    for e in IatiXmlSource.objects.all().filter(type=2):
         queue = django_rq.get_queue("parser")
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
+    for e in IatiXmlSource.objects.all().filter(type=1):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 @job
 def add_new_sources_from_registry_and_parse_all():
@@ -98,7 +96,15 @@ def add_new_sources_from_registry_and_parse_all():
 
 @job
 def parse_all_existing_sources():
-    for e in IatiXmlSource.objects.all():
+    """
+    First parse all organisation sources, then all activity sources
+    """
+
+    for e in IatiXmlSource.objects.all().filter(type=2):
+        queue = django_rq.get_queue("parser")
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
+
+    for e in IatiXmlSource.objects.all().filter(type=1):
         queue = django_rq.get_queue("parser")
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 
@@ -186,29 +192,39 @@ def update_iati_codelists():
 
 
 ###############################
+#### EXCHANGE RATE TASKS ####
+###############################
+
+@job
+def update_exchange_rates():
+    from currency_convert.imf_rate_parser import RateParser
+    r = RateParser()
+    r.update_rates(force=False)
+
+@job
+def force_update_exchange_rates():
+    from currency_convert.imf_rate_parser import RateParser
+    r = RateParser()
+    r.update_rates(force=True)
+
+###############################
 ######## GEODATA TASKS ########
 ###############################
 
 @job
-def update_all_geo_data():
+def update_region_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_city_data():
+def update_country_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_country_data():
+def update_adm1_region_data():
     raise Exception("Not implemented yet")
-
 
 @job
-def update_all_region_data():
+def update_country_data():
     raise Exception("Not implemented yet")
 
 
-@job
-def update_all_admin1_region_data():
-    raise Exception("Not implemented yet")

@@ -175,6 +175,7 @@ class RegionFactory(NoDatabaseFactory):
 class CountryFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Country
+        django_get_or_create = ('code', )
 
     code = 'AD'
     name = 'andorra'
@@ -203,6 +204,15 @@ class ParticipatingOrganisationFactory(NoDatabaseFactory):
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
 
+class OrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.Organisation
+        django_get_or_create = ('id',)
+
+    id = 'GB-COH-03580586'
+    organisation_identifier = 'GB-COH-03580586'
+    iati_standard_version = SubFactory(VersionFactory)
+
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityReportingOrganisation
@@ -213,15 +223,10 @@ class ReportingOrganisationFactory(NoDatabaseFactory):
     type = SubFactory(OrganisationTypeFactory)
     secondary_reporter = False
 
+    organisation = SubFactory(OrganisationFactory)
+
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
-
-class OrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati_organisation.models.Organisation
-
-    code = 'GB-COH-03580586'
-    iati_version = SubFactory(VersionFactory)
 
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:
@@ -242,6 +247,18 @@ class ActivityRecipientCountryFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     country = SubFactory(CountryFactory)
     percentage = 50
+
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
+
+class ActivityRecipientRegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityRecipientRegion
+
+    percentage = 100
+    region = RegionFactory.build()
+    vocabulary = RegionVocabularyFactory.build()
+    activity = ActivityFactory.build()
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
@@ -272,19 +289,6 @@ class ActivityPolicyMarkerFactory(NoDatabaseFactory):
     # alt_policy_marker = 'alt_policy_marker' # ?
     vocabulary = PolicyMarkerVocabularyFactory.build()
     significance = PolicySignificanceFactory.build()
-
-
-class ActivityRecipientRegionFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.ActivityRecipientRegion
-
-    percentage = 100
-    region = RegionFactory.build()
-    vocabulary = RegionVocabularyFactory.build()
-    activity = ActivityFactory.build()
-
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class ResultFactory(NoDatabaseFactory):
     class Meta:

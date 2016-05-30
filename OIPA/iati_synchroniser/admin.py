@@ -55,13 +55,24 @@ def export_xml_by_source(request, source):
 
     final_xml = get_result(xml, 1)
     final_xml.attrib['generated-datetime'] = datetime.datetime.now().isoformat()
-    
-    return etree.tostring(final_xml)
+
+    from django.core.files.base import File, ContentFile
+    from django.conf import settings
+    import uuid
+
+    file_name = "{}.xml".format(uuid.uuid4())
+    path = "{}/{}".format(settings.MEDIA_ROOT, file_name)
+
+    xml_file = File(open(path, mode='w'))
+    xml_file.write(etree.tostring(final_xml, pretty_print=True))
+    xml_file.close()
+
+    return file_name
     
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
-    search_fields = ['ref', 'title', 'publisher__org_name']
+    search_fields = ['ref', 'title', 'publisher__org_name', 'publisher__org_id']
     list_display = [
         'ref',
         'publisher',
@@ -82,8 +93,9 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
     def export_btn(self, obj):
         return format_html(
-            '<a class="parse-btn" href="{url}" target="_blank">Export</a>',
-            url='export-xml/' + obj.ref)
+            '<a data-ref="{ref}" class="admin-btn export-btn" target="_blank">Export</a>',
+            url='export-xml/' + obj.ref,
+            ref=obj.ref)
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 
@@ -109,7 +121,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     def parse_source(self, request):
         xml_id = request.GET.get('xml_id')
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
-        obj.process()
+        obj.process(force_reparse=True)
         return HttpResponse('Success')
 
     def add_to_parse_queue(self, request):

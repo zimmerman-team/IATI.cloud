@@ -8,7 +8,7 @@ from api.activity.serializers import ActivitySerializer
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
-    ref = serializers.CharField(source="normalized_ref")
+    ref = serializers.CharField()
     narratives = NarrativeSerializer(many=True)
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
@@ -25,7 +25,7 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
         )
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
-    ref = serializers.CharField(source="normalized_ref")
+    ref = serializers.CharField()
     narratives = NarrativeSerializer(many=True)
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,

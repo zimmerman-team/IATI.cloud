@@ -15,6 +15,8 @@ def reindex_activity(activity):
 
     activity_search.activity = activity
 
+    from iati.models import DescriptionType
+
     try:
         activity_search.iati_identifier = activity.iati_identifier
 
@@ -31,12 +33,14 @@ def reindex_activity(activity):
 
         reporting_org_text = []
         for reporting_org in activity.reporting_organisations.all():
+            reporting_org_text.append(reporting_org.normalized_ref)
             for narrative in reporting_org.narratives.all():
                 reporting_org_text.append(narrative.content)
         activity_search.reporting_org = " ".join(reporting_org_text)
 
         participating_org_text = []
         for participating_org in activity.participating_organisations.all():
+            participating_org_text.append(participating_org.normalized_ref)
             for narrative in participating_org.narratives.all():
                 participating_org_text.append(narrative.content)
         activity_search.participating_org = " ".join(participating_org_text)
@@ -69,6 +73,7 @@ def reindex_activity(activity):
             for title in document_link.documentlinktitle_set.all():
                 for narrative in title.narratives.all():
                     document_link_text.append(narrative.content)
+
         activity_search.document_link = " ".join(document_link_text)
 
         activity_search.text = " ".join([
@@ -80,14 +85,13 @@ def reindex_activity(activity):
             activity_search.recipient_country,
             activity_search.recipient_region,
             activity_search.sector,
-            activity_search.document_link
+            activity_search.document_link,
         ])
 
         activity_search.last_reindexed = datetime.now()
-
         activity_search.save()
 
-    except ObjectDoesNotExist as e:
+    except Exception as e:
         print("Building ft indexes for {id} raises: {e}".format(id=activity.id, e=e.message))
 
 

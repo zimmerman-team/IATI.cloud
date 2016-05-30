@@ -13,22 +13,28 @@ from lxml.builder import E
 from django.core import management
 from django.test import TestCase # Runs each test in a transaction and flushes database
 from unittest import skip
+from mock import MagicMock
 
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 from iati_synchroniser.models import IatiXmlSource
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
+from currency_convert import convert
+from iati.parser.post_save import *
+
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_01 import Parse as Parser_201
 
+
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
 # TODO: Setup parser classes per test, to isolate tests as much as possible (currently per class) - 2015-12-02
 # TODO: Refactor this file into multiple files - 2015-12-02
+
 
 def build_xml(version, iati_identifier):
     """
@@ -57,11 +63,14 @@ def build_xml(version, iati_identifier):
 #     source.save(process=False, added_manually=False)
 #     return source
 
+
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
+
 def print_xml(elem):
     print(etree.tostring(elem, pretty_print=True))
+
 
 def build_activity(version="2.01", *args, **kwargs):
         activity = iati_factory.ActivityFactory.build(
@@ -71,16 +80,19 @@ def build_activity(version="2.01", *args, **kwargs):
         )
         return activity
 
+
 def create_parser(self, version="2.01"):
     iati_identifier = "NL-KVK-51018586-0666"
 
     iati_activities = build_xml(version, iati_identifier)
     dummy_source = IatiXmlSource.objects.get(id=1)
 
-    return ParseIATI(dummy_source, iati_activities).get_parser()
+    return ParseManager(dummy_source, iati_activities).get_parser()
+
 
 def create_parsers(versions=["2.01", "1.05"]):
     return {version: create_parser(version) for version in versions}
+
 
 def setUpModule():
     fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
@@ -88,8 +100,10 @@ def setUpModule():
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
 
+
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
+
 
 class ParserSetupTestCase(TestCase):
 
@@ -114,10 +128,15 @@ class ParserSetupTestCase(TestCase):
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
         dummy_source = IatiXmlSource.objects.get(id=1)
 
-        self.parser_103 = ParseIATI(dummy_source, self.iati_103).get_parser()
-        self.parser_104 = ParseIATI(dummy_source, self.iati_104).get_parser()
-        self.parser_105 = ParseIATI(dummy_source, self.iati_105).get_parser()
-        self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
+        self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
+        self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()
+        self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
+        self.parser_201 = ParseManager(dummy_source, self.iati_201).get_parser()
+
+        self.parser_103.default_lang = "en"
+        self.parser_104.default_lang = "en"
+        self.parser_105.default_lang = "en"
+        self.parser_201.default_lang = "en"
 
         assert(isinstance(self.parser_103, Parser_103))
         assert(isinstance(self.parser_104, Parser_105))
@@ -130,6 +149,7 @@ class ParserSetupTestCase(TestCase):
     @classmethod
     def tearDownClass(self):
         pass
+
 
 class GenericMethodsTestCase(ParserSetupTestCase):
     """
@@ -144,8 +164,6 @@ class GenericMethodsTestCase(ParserSetupTestCase):
         self.activity = build_activity(version="2.01")
         self.parser_201.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
-
-
 
 
 class ActivityTestCase(ParserSetupTestCase):
@@ -170,7 +188,6 @@ class ActivityTestCase(ParserSetupTestCase):
         # default activity model fields
         self.defaults = {
             "hierarchy": 1,
-            "default_lang": "en",
         }
 
         iati_activity = E("iati-activity", **self.attrs)
@@ -202,7 +219,6 @@ class ActivityTestCase(ParserSetupTestCase):
         self.assertTrue(str(activity.last_updated_datetime) == self.attrs["last-updated-datetime"])
         self.assertTrue(activity.linked_data_uri == self.attrs["linked-data-uri"])
         self.assertTrue(activity.hierarchy == self.attrs["hierarchy"])
-        self.assertTrue(activity.default_lang == "en")
         self.assertTrue(activity.iati_standard_version.code == "2.01")
 
     def test_activity_default_201(self):
@@ -223,7 +239,6 @@ class ActivityTestCase(ParserSetupTestCase):
 
         for field, default in self.defaults.iteritems():
             self.assertTrue(getattr(activity, field) == default)
-        self.assertTrue(activity.default_lang == "en")
         self.assertTrue(activity.iati_standard_version.code == "2.01")
 
 
@@ -670,7 +685,6 @@ class NarrativeTestCase(ParserSetupTestCase):
         self.assertTrue(narrative.content == self.test_text)
         self.assertTrue(narrative.language.code == self.defaults["language"])
 
-
     def test_addForeignKeyNonDefaultLanguageNarrative(self):
         """
         The narrative should change its language parameter based on the xml:lang element 
@@ -682,9 +696,11 @@ class NarrativeTestCase(ParserSetupTestCase):
 
         self.assertTrue(narrative.language.code == "fr")
 
+
 # Todo: after organization implementation
 class OrganisationTestCase(ParserSetupTestCase):
     pass
+
 
 class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     """
@@ -698,9 +714,10 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
             "ref": "GB-COH-03580586",
             "type": '40',
             "secondary-reporter": "0",
+            "primary_name": "primary_name"
         }
 
-        self.reporting_org = E('reporting-org', **self.attrs)
+        self.reporting_org = E('reporting-org', E('narrative', "primary_name"), **self.attrs)
 
     def test_reporting_organisation_not_parsed_yet(self):
         """
@@ -716,8 +733,20 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(reporting_organisation.ref == self.attrs["ref"])
         self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.activity == activity)
-        self.assertTrue(reporting_organisation.organisation == None)
         self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
+
+        # should create an organisation
+        organisation = self.parser_201.get_model('Organisation')
+        self.assertEqual(organisation.id, self.attrs["ref"])
+        self.assertEqual(organisation.organisation_identifier, self.attrs["ref"])
+        self.assertEqual(organisation.primary_name, self.attrs["primary_name"])
+        self.assertEqual(organisation.reported_in_iati, False)
+
+        self.assertEqual(reporting_organisation.organisation, organisation)
+
+        organisation_narrative = self.parser_201.get_model('OrganisationNameNarrative')
+        self.assertEqual(organisation_narrative.content, self.attrs["primary_name"])
+
 
     def test_reporting_organisation_already_parsed(self):
         """
@@ -738,13 +767,14 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         reporting_organisation = self.parser_201.get_model('ActivityReportingOrganisation')
 
         self.assertTrue(reporting_organisation.activity == activity)
-        self.assertTrue(reporting_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(reporting_organisation.organisation.id == test_organisation.id)
         self.assertTrue(reporting_organisation.type.code == self.attrs["type"])
         self.assertTrue(reporting_organisation.secondary_reporter == bool(int(self.attrs["secondary-reporter"])))
 
     @skip('NotImplemented')
     def test_reporting_organisation_narrative(self):
         raise NotImplementedError()
+
 
 class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
     """
@@ -766,6 +796,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.participating_org_201 = E('participating-org', **self.attrs_201)
         self.participating_org_105 = E('participating-org', "some text", **self.attrs_105)
 
+        self.narrative = E('narrative', "random text")
+
     def test_participating_organisation_not_parsed_yet_201(self):
         """
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
@@ -781,6 +813,11 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(participating_organisation.activity == activity)
         self.assertTrue(participating_organisation.organisation == None)
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
+
+        self.parser_201.iati_activities__iati_activity__participating_org__narrative(self.narrative)
+        narrative = self.parser_201.get_model('ActivityParticipatingOrganisationNarrative')
+        self.assertTrue(narrative.related_object == participating_organisation)
+        self.assertTrue(participating_organisation.primary_name == 'random text')
 
     def test_participating_organisation_already_parsed_201(self):
         """
@@ -801,7 +838,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
 
         self.assertTrue(participating_organisation.activity == activity)
-        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.organisation.id == test_organisation.id)
         self.assertTrue(participating_organisation.type.code == self.attrs_201["type"])
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
@@ -822,6 +859,10 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(participating_organisation.organisation == None)
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
 
+        narrative = self.parser_105.get_model('ActivityParticipatingOrganisationNarrative')
+        self.assertTrue(narrative.related_object == participating_organisation)
+        self.assertTrue(participating_organisation.primary_name == 'some text')
+
     def test_participating_organisation_already_parsed_105(self):
         """
         Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
@@ -841,30 +882,9 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
 
         self.assertTrue(participating_organisation.activity == activity)
-        self.assertTrue(participating_organisation.organisation.code == test_organisation.code)
+        self.assertTrue(participating_organisation.organisation.id == test_organisation.id)
         self.assertTrue(participating_organisation.type.code == self.attrs_105["type"])
         self.assertTrue(participating_organisation.role.code == self.attrs_201["role"])
-
-    def test_primary_name_is_set_201(self):
-        """
-        Test the primary name in order to work around ref uniqueness is set correctly for the first narrative only
-        """
-        # TODO: Instead of this, make sure a new parser is created for every test 2015-11-26
-        self.parser_201.model_store = {}
-
-        activity = build_activity(version="2.01")
-        self.parser_201.register_model('Activity', activity)
-
-        self.parser_201.iati_activities__iati_activity__participating_org(self.participating_org_201)
-
-        narrative1 = E('narrative', "Name1")
-        narrative2 = E('narrative', "Name2")
-
-        self.parser_201.iati_activities__iati_activity__participating_org__narrative(narrative1)
-        self.parser_201.iati_activities__iati_activity__participating_org__narrative(narrative2)
-
-        participating_organisation = self.parser_201.get_model('ActivityParticipatingOrganisation')
-        self.assertEqual(participating_organisation.primary_name, "Name1")
 
     def test_primary_name_is_set_105(self):
         """
@@ -1704,6 +1724,10 @@ class BudgetTestCase(ParserSetupTestCase):
         }
         text = "2000.2"
 
+        xdr_value = 200
+        currency_from_to = convert.currency_from_to
+        convert.currency_from_to = MagicMock(return_value=xdr_value)
+
         value = E('value', text, **attrs) 
         self.parser_201.iati_activities__iati_activity__budget__value(value)
         budget = self.parser_201.get_model('Budget')
@@ -1712,6 +1736,15 @@ class BudgetTestCase(ParserSetupTestCase):
         self.assertTrue(budget.value == Decimal('2000.2'))
         self.assertTrue(str(budget.value_date) == attrs['value-date'])
         self.assertTrue(budget.currency.code == attrs['currency'])
+
+        self.assertTrue(budget.xdr_value == xdr_value)
+        self.assertTrue(budget.usd_value == xdr_value)
+        self.assertTrue(budget.eur_value == xdr_value)
+        self.assertTrue(budget.gbp_value == xdr_value)
+        self.assertTrue(budget.jpy_value == xdr_value)
+        self.assertTrue(budget.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_budget_no_value_date_should_not_parse_201(self):
         """
@@ -1898,16 +1931,31 @@ class TransactionTestCase(ParserSetupTestCase):
             "value-date": datetime.datetime.now().isoformat(' ')
         }
 
-        text = "2000.2"
+        value_text = "2000.2"
+        xdr_value = 300
 
-        value = E('value', text, **attrs) 
+        value = E('value', value_text, **attrs)
+
+        # mock xdr canculation
+        currency_from_to = convert.currency_from_to
+        convert.currency_from_to = MagicMock(return_value=xdr_value)
+
         self.parser_201.iati_activities__iati_activity__transaction__value(value)
         transaction = self.parser_201.get_model('Transaction')
         transaction.save()
 
-        self.assertTrue(transaction.value == Decimal('2000.2'))
+        self.assertTrue(transaction.value == Decimal(value_text))
         self.assertTrue(str(transaction.value_date) == attrs['value-date'])
         self.assertTrue(transaction.currency.code == attrs['currency'])
+
+        self.assertTrue(transaction.xdr_value == xdr_value)
+        self.assertTrue(transaction.usd_value == xdr_value)
+        self.assertTrue(transaction.eur_value == xdr_value)
+        self.assertTrue(transaction.gbp_value == xdr_value)
+        self.assertTrue(transaction.jpy_value == xdr_value)
+        self.assertTrue(transaction.cad_value == xdr_value)
+
+        convert.currency_from_to = currency_from_to
 
     def test_transaction_no_value_date_should_not_parse_201(self):
         """
@@ -1969,6 +2017,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_sector.transaction == self.test_transaction)
         self.assertTrue(transaction_sector.sector.code == attrs['code'])
         self.assertTrue(transaction_sector.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_sector.percentage == 100)
 
     def test_transaction_recipient_country_201(self):
         """
@@ -1984,6 +2033,7 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertTrue(transaction_recipient_country.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_country.country.code == attrs['code'])
+        self.assertTrue(transaction_recipient_country.percentage == 100)
 
     def test_transaction_recipient_region_201(self):
         """
@@ -2002,6 +2052,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertTrue(transaction_recipient_region.transaction == self.test_transaction)
         self.assertTrue(transaction_recipient_region.region.code == attrs['code'])
         self.assertTrue(transaction_recipient_region.vocabulary.code == attrs['vocabulary'])
+        self.assertTrue(transaction_recipient_region.percentage == 100)
 
     def test_transaction_flow_type_201(self):
         """
@@ -2106,6 +2157,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.parser_201.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
         narrative = self.parser_201.get_model('TransactionProviderNarrative')
         self.assertTrue(narrative.related_object == provider_organisation)
+        self.assertTrue(provider_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_201.pop_model('TransactionProvider')
@@ -2136,6 +2188,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.parser_201.register_model('Transaction', self.test_transaction)
         narrative = self.parser_105.get_model('TransactionProviderNarrative')
         self.assertTrue(narrative.related_object == provider_organisation)
+        self.assertTrue(provider_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_201.pop_model('TransactionProvider')
@@ -2182,11 +2235,10 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         self.assertTrue(receiver_organisation.receiver_activity_id == None)
         self.assertTrue(receiver_organisation.transaction == self.test_transaction)
 
-        # self.assertTrue(self.test_transaction.receiver_organisation == receiver_organisation)
-
         self.parser_201.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
         narrative = self.parser_201.get_model('TransactionReceiverNarrative')
         self.assertTrue(narrative.related_object == receiver_organisation)
+        self.assertTrue(receiver_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_201.pop_model('TransactionReceiver')
@@ -2222,6 +2274,7 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model('TransactionReceiverNarrative')
         self.assertTrue(narrative.related_object == receiver_organisation)
+        self.assertTrue(receiver_organisation.primary_name == 'random text')
 
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_105.pop_model('TransactionReceiver')
@@ -2354,8 +2407,9 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         test_related_activity.save()
         self.assertTrue(test_related_activity.ref_activity == None)
 
+        from iati.parser import post_save
+        post_save.set_related_activities(self.activity)
 
-        self.parser_201.set_related_activities(self.activity)
         test_related_activity.refresh_from_db()
 
         self.assertTrue(test_related_activity.ref_activity == self.activity)

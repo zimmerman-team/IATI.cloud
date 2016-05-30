@@ -1,9 +1,6 @@
 from __future__ import unicode_literals
-
 from django.utils import six
-from django.utils.xmlutils import SimplerXMLGenerator
 from django.utils.six.moves import StringIO
-from django.utils.encoding import smart_text
 from rest_framework.renderers import BaseRenderer
 from lxml import etree
 from lxml.builder import E
@@ -39,7 +36,7 @@ class XMLRenderer(BaseRenderer):
             xml.set('version', self.version)
             self._to_xml(xml, data, parent_name=self.item_tag_name)
 
-        return etree.tostring(xml, encoding=self.charset)
+        return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
@@ -78,3 +75,13 @@ class XMLRenderer(BaseRenderer):
             xml.text = six.text_type(data)
             pass
 
+from rest_framework_csv.renderers import CSVRenderer
+
+class PaginatedCSVRenderer (CSVRenderer):
+    results_field = 'results'
+    header = []
+
+    def render(self, data, *args, **kwargs):
+        if not isinstance(data, list):
+            data = data.get(self.results_field, [])
+        return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)

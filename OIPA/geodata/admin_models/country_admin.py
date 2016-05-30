@@ -33,8 +33,6 @@ class CountryAdmin(admin.ModelAdmin):
             url(r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
             url(r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
             url(r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
-            url(r'^update-country-identifiers/$', self.admin_site.admin_view(self.update_country_identifiers)),
-            url(r'^update-alt-names/$', self.admin_site.admin_view(self.update_alt_names))
         ]
         return my_urls + urls
 
@@ -94,35 +92,6 @@ class CountryAdmin(admin.ModelAdmin):
             if the_country.region is None and the_country is not None and the_region is not None:
                 the_country.region = the_region
                 the_country.save()
-
-        return HttpResponse('Success')
-
-    def update_country_identifiers(self, request):
-        un_numerical_country_codes = self.get_json_data("/../data_backup/un_numerical_country_codes.json")
-
-        for c in un_numerical_country_codes.get('codemappings').get('territorycodes'):
-            iso2 = c.get('type')
-
-            if Country.objects.filter(code=iso2).exists():
-                the_country = Country.objects.get(code=iso2)
-
-                the_country.numerical_code_un = c.get('numeric')
-                the_country.alpha3 = c.get('alpha3')
-                the_country.iso3 = c.get('alpha3')
-                the_country.fips10 = c.get('fips10')
-
-                the_country.save()
-
-        return HttpResponse('Success')
-
-    def update_alt_names(self, request):
-        alt_names = self.get_json_data("/../data_backup/urbnnrs_alt_country_name.json")
-
-        for c in alt_names:
-            if Country.objects.filter(code=c).exists():
-                current_country = Country.objects.get(code=c)
-                current_country.alt_name = alt_names.get(c).get('alt_name')
-                current_country.save()
 
         return HttpResponse('Success')
 

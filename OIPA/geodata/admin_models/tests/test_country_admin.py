@@ -36,10 +36,7 @@ class CountryAdminTestCase(TestCase):
 
         added_patterns = [
             '^update-polygon/$',
-            '^update-country-center/$',
-            '^update-alt-names/$',
-            '^update-regions/$',
-            '^update-country-identifiers/$']
+            '^update-country-center/$']
 
         for pattern in added_patterns:
             self.assertIn(pattern, patterns)
@@ -92,31 +89,3 @@ class CountryAdminTestCase(TestCase):
         country = Country.objects.all()[0]
         self.assertEqual(country.region, region)
 
-    def test_update_country_identifiers(self):
-        country_admin = CountryAdmin(self.country, self.site)
-        data = {
-            "codemappings":{
-                "territorycodes": [
-                {
-                    "type": "AF",
-                    "numeric": 4,
-                    "alpha3": "AFG"
-                },
-        ]}}
-
-        country_admin.get_json_data = MagicMock(return_value=data)
-        country_admin.update_country_identifiers(request)
-        country = Country.objects.all()[0]
-
-        self.assertEqual(country.numerical_code_un, 4)
-        self.assertEqual(country.alpha3, "AFG")
-
-    def test_update_alt_names(self):
-        country_admin = CountryAdmin(self.country, self.site)
-        data = {"AF": {"alt_name": "Alt AF name"}, }
-        country_admin.get_json_data = MagicMock(return_value=data)
-        country_admin.update_alt_names(request)
-
-        country = Country.objects.all()[0]
-
-        self.assertEqual(country.alt_name, "Alt AF name")

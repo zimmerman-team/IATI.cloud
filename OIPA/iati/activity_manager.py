@@ -273,8 +273,6 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('transaction_type')
                 .select_related('currency')
                 .select_related('disbursement_channel')
-                .select_related('recipient_region')
-                .select_related('recipient_country')
                 .select_related('flow_type')
                 .select_related('finance_type')
                 .select_related('aid_type')

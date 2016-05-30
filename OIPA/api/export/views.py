@@ -1,23 +1,15 @@
-from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
-from rest_framework.generics import GenericAPIView
 from iati.models import Activity
 from api.export import serializers as export_serializers
 from api.activity import filters
-from api.activity.filters import SearchFilter
-from api.generics.views import DynamicListView
+from api.generics.filters import SearchFilter
 from api.generics.utils import get_serializer_fields
 from common.util import difference
-
 from rest_framework.filters import DjangoFilterBackend
-
-from api.transaction.serializers import TransactionSerializer
-from api.transaction.filters import TransactionFilter
-
 from api.renderers import XMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
-
 from api.pagination import IatiXMLPagination
+
 
 class IATIActivityList(ListAPIView):
 
@@ -52,8 +44,6 @@ class IATIActivityList(ListAPIView):
     )
 
     def get_queryset(self):
-        return super(IATIActivityList, self).get_queryset() \
-            .prefetch_all() \
-            .distinct('id')
+        return super(IATIActivityList, self).get_queryset().prefetch_all()
 
 

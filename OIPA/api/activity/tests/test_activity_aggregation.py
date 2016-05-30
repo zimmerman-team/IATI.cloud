@@ -143,22 +143,6 @@ class ActivityAggregationTestCase(TestCase):
         return list(response.data['results'])
 
 
-    def test_sector_incoming_fund_group_by(self):
-        """group incoming funds by sector, this is the non percentage aware sector aggregation
-
-        expected results:
-            sector 11000 = 85000 (50000 + 10000)
-            sector 11001 = 35000 (10000 + 25000
-        """
-        results = self.get_results(
-            group_by='sector',
-            aggregations='incoming_fund',
-            order_by='sector')
-
-        self.assertTrue(len(results) == 2)
-        self.assertEqual(results[0]['incoming_fund'], Decimal(85000))
-        self.assertEqual(results[1]['incoming_fund'], Decimal(35000))
-
     def test_sector_budget_group_by(self):
         """group budget by sector, this is the non percentage aware sector aggregation
 
@@ -175,37 +159,21 @@ class ActivityAggregationTestCase(TestCase):
         self.assertEqual(results[0]['budget'], Decimal(150000))
         self.assertEqual(results[1]['budget'], Decimal(80000))
 
-    def test_sector_weighted_budget_aggregation(self):
-        """group sector weighted budget by sector, this makes budgets percentage aware
+    # def test_sector_weighted_budget_aggregation(self):
+    #     """group sector weighted budget by sector, this makes budgets percentage aware
 
-        expected results:
-            sector 11000 = 110000 (70000 * 100% + 80000 * 50%)
-            sector 11001 = 40000 (80000 * 50%)
-        """
-        results = self.get_results(
-            group_by='sector',
-            aggregations='sector_percentage_weighted_budget',
-            order_by='sector')
+    #     expected results:
+    #         sector 11000 = 110000 (70000 * 100% + 80000 * 50%)
+    #         sector 11001 = 40000 (80000 * 50%)
+    #     """
+    #     results = self.get_results(
+    #         group_by='sector',
+    #         aggregations='sector_percentage_weighted_budget',
+    #         order_by='sector')
         
-        self.assertTrue(len(results) == 2)
-        self.assertEqual(results[0]['budget'], Decimal(110000))
-        self.assertEqual(results[1]['budget'], Decimal(40000))
-
-    def test_recipient_country_incoming_fund_group_by(self):
-        """group incoming fund by recipient country, this is the non percentage aware sector aggregation
-
-        expected results:
-            country AD = 85000 (50000 + 10000 + 25000)
-            country KE = 35000 (10000 + 25000)
-        """
-        results = self.get_results(
-            group_by='recipient_country',
-            aggregations='incoming_fund',
-            order_by='recipient_country')
-        
-        self.assertTrue(len(results) == 2)
-        self.assertEqual(results[0]['incoming_fund'], Decimal(85000))
-        self.assertEqual(results[1]['incoming_fund'], Decimal(35000))
+    #     self.assertTrue(len(results) == 2)
+    #     self.assertEqual(results[0]['budget'], Decimal(110000))
+    #     self.assertEqual(results[1]['budget'], Decimal(40000))
 
     def test_recipient_country_budget_group_by(self):
         """group budget by recipient country, this is the non percentage aware sector aggregation

@@ -46,20 +46,20 @@ header#grp-header{
     border-radius: 4px;
 }
 
-.parse-btn.btn-warning, .parse-activity-btn.btn-warning .oipa-admin-button.btn-warning{
+.admin-btn.btn-warning, .parse-activity-btn.btn-warning .oipa-admin-button.btn-warning{
     background-color: #5bc0de;
 }
 
-.parse-btn.btn-info, .parse-activity-btn.btn-info, .oipa-admin-button.btn-info,
-.parse-btn.btn-info:hover, .parse-activity-btn.btn-info:hover, .oipa-admin-button.btn-info:hover{
+.admin-btn.btn-info, .parse-activity-btn.btn-info, .oipa-admin-button.btn-info,
+.admin-btn.btn-info:hover, .parse-activity-btn.btn-info:hover, .oipa-admin-button.btn-info:hover{
     background-color: #5cb85c;
 }
 
-.parse-btn.btn-danger, .parse-activity-btn.btn-danger, .oipa-admin-button.btn-danger{
+.admin-btn.btn-danger, .parse-activity-btn.btn-danger, .oipa-admin-button.btn-danger{
     background-color: #d9534f;
 }
 
-.parse-btn, .parse-activity-btn, .sync-btn{
+.admin-btn, .parse-activity-btn, .sync-btn{
     padding: 2px 6px;
     border-radius: 4px;
     background-color: #999;
@@ -70,19 +70,20 @@ header#grp-header{
     text-decoration: none;
 }
 
-.parse-activity-btn{
-    display: block;
-    margin-top: 8px;
-}
 
-a.parse-btn:hover, .parse-activity-btn:hover a.sync-btn:hover{
+a.admin-btn:hover, .parse-activity-btn:hover a.sync-btn:hover{
     text-decoration: none;
     color: #fff;
     background-color: #666;
 }
 
-.parse-btn{
+.admin-btn{
     white-space: nowrap;
+}
+
+.parse-activity-btn{
+    display: block;
+    margin-top: 8px;
 }
 
 .django-rq-buttons a{

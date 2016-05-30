@@ -29,6 +29,7 @@ $(document).ready(function (){
            }
        });
    });
+
    $('.parse-activity-btn').click(function(){
 
       var btn = $(this);
@@ -59,5 +60,36 @@ $(document).ready(function (){
             }
          }
       });
+   });
+
+   $('.export-btn').click(function(){
+
+       var btn = $(this);
+       var ref = $(this).data('ref');
+
+       $.ajax({
+           type: "GET",
+           url: 'export-xml/' + ref,
+           beforeSend: function() {
+               btn.removeClass("btn-success");
+               btn.addClass("btn-warning");
+               btn.text("Exporting...");
+           },
+           statusCode: {
+               200: function(data) {
+                   btn.attr("href", "/media/" + data.responseText)
+                   btn.addClass("btn-info");
+                   btn.text("Download");
+               },
+               404: function() {
+                   btn.addClass("btn-danger");
+                   btn.text("404 error...");
+               },
+               500: function() {
+                   btn.addClass("btn-danger");
+                   btn.text("500 error...");
+               }
+           }
+       });
    });
 });

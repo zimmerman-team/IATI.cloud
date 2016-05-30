@@ -16,18 +16,18 @@ DATABASES = {
         'USER': 'oipa',
         'PASSWORD': 'oipa',
         'HOST': '127.0.0.1',
+        'CONN_MAX_AGE': 500
     },
 }
 
-HAYSTACK_CONNECTIONS = {
+CACHES = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'TIMEOUT': 60,
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'localhost:6379',
+    }
 }
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.BaseSignalProcessor'
+
+API_CACHE_SECONDS = 60 * 60 * 24
 
 ROOT_ORGANISATIONS = []
 

@@ -8,6 +8,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 LOGIN_URL = reverse_lazy('two_factor:login')
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -26,10 +28,15 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
             ],
+            #'loaders': [
+            #    ('django.template.loaders.cached.Loader', [
+            #        'django.template.loaders.filesystem.Loader',
+            #        'django.template.loaders.app_directories.Loader',
+            #    ]),
+            #],
         },
     },
 ]
-
 
 def rel(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
@@ -97,11 +104,11 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
-# TODO: clean this up, separate into test_settings, etc..
 INSTALLED_APPS = (
     'django_rq',
     'django.contrib.auth',
@@ -116,32 +123,44 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.gis',
     'corsheaders',
-    'haystack',
-    'iati',
-    'iati_organisation',
-    'iati_synchroniser',
-    'geodata',
+    'common',
+    'iati.apps.IatiConfig',
+    'iati_organisation.apps.IatiOrganisationConfig',
+    'iati_synchroniser.apps.IatiSynchroniserConfig',
+    'geodata.apps.GeodataConfig',
     'indicator',
+    'currency_convert.apps.CurrencyConvertConfig',
     'api',
     'task_queue',
     'multiupload',
     'djsupervisor',
-    'indicator_unesco',
-    'translation_model',
     'rest_framework',
+    'rest_framework_csv',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'otp_yubikey',
     'two_factor',
     'debug_toolbar',
-    'parse_logger',
     'django_extensions',
-    'iati_vocabulary',
-    'iati_codelists',
+    'iati_vocabulary.apps.IatiVocabularyConfig',
+    'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
     'nested_admin',
     'djorm_pgfulltext',
+    'admin_reorder',
+)
+
+ADMIN_REORDER = (
+    'iati',
+    'iati_synchroniser',
+    'iati_codelists',
+    'iati_vocabulary',
+    'iati_organisation',
+    'geodata',
+    'currency_convert',
+    'indicator',
+    'auth',
 )
 
 RQ_SHOW_ADMIN_LINK = True
@@ -160,8 +179,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
+        'api.renderers.PaginatedCSVRenderer',
+        # 'rest_framework_csv.renderers.CSVRenderer',
     ),
-
 }
 
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
@@ -172,5 +192,5 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_METHODS = ('GET',)
 
+IATI_PARSER_DISABLED = False
 ROOT_ORGANISATIONS = []
-

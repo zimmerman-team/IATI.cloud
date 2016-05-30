@@ -44,3 +44,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.update_searchable_activities()
 
+

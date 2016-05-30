@@ -13,6 +13,7 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
+from decimal import Decimal
 
 
 # TODO: separate this
@@ -62,13 +63,15 @@ class Activity(models.Model):
     iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
-    xml_source_ref = models.CharField(max_length=200, default="")
+    xml_source_ref = models.CharField(max_length=200, default="", db_index=True)
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
-    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, db_index=True)
+    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)
     last_updated_model = models.DateTimeField(null=True, blank=True, auto_now=True)
-    last_updated_datetime = models.DateTimeField(max_length=100, blank=True, null=True)
-    default_lang = models.CharField(max_length=2)
+
+    last_updated_datetime = models.DateTimeField(blank=True, null=True)
+
+    default_lang = models.CharField(max_length=2, blank=True, null=True)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
     planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
@@ -277,7 +280,7 @@ class ActivityReportingOrganisation(models.Model):
         related_name="reporting_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation, null=True, default=None, blank=True)
+    organisation = models.ForeignKey(Organisation, null=True, default=None, on_delete=models.SET_NULL)
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     secondary_reporter = models.BooleanField(default=False)
@@ -368,7 +371,7 @@ class ActivityRecipientCountry(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "name: %s" % self.country
+        return "name: %s" % self.country.name
 
     class Meta:
         verbose_name = 'Recipient country'
@@ -384,7 +387,6 @@ class CountryBudgetItem(models.Model):
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.ForeignKey(BudgetIdentifier)
-    # code = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
 
@@ -524,6 +526,7 @@ class PlannedDisbursement(models.Model):
     period_end = models.CharField(max_length=100, default="")
     value_date = models.DateField(null=True, blank=True)
     value = models.DecimalField(max_digits=15, decimal_places=2)
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
     # updated = models.DateField(null=True, default=None) deprecated
@@ -714,6 +717,13 @@ class Budget(models.Model):
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
 
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
@@ -760,7 +770,7 @@ class Location(models.Model):
         related_name="feature_designation")
 
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
-    point_pos = PointField(null=True, blank=True)
+    point_pos = PointField(null=True, blank=True, spatial_index=True)
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
 
     def __unicode__(self,):

@@ -4,16 +4,46 @@ from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend
 
 from iati.models import Activity
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
+
 from api.activity import serializers as activitySerializers
 from api.activity import filters
-from api.activity.activity_aggregation import ActivityAggregationSerializer
-from api.activity.filters import SearchFilter
+from api.generics.filters import DistanceFilter
+from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
 
+from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
-class ActivityAggregations(GenericAPIView):
+from django.db.models import Count, Sum, Q, F
+
+from geodata.models import Country
+from geodata.models import Region
+from iati.models import Sector
+from iati.models import ActivityStatus
+from iati.models import PolicyMarker
+from iati.models import CollaborationType
+from iati.models import DocumentCategory
+from iati.models import FlowType
+from iati.models import AidType
+from iati.models import FinanceType
+from iati.models import TiedStatus
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import OrganisationType
+from iati.models import Organisation
+from iati.models import ActivityReportingOrganisation
+
+from api.activity.serializers import CodelistSerializer
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.sector.serializers import SectorSerializer
+from api.sector.serializers import SectorSerializer
+from api.activity.serializers import ActivitySerializer
+from api.organisation.serializers import OrganisationSerializer
+
+class ActivityAggregations(AggregationView):
     """
     Returns aggregations based on the item grouped by, and the selected aggregation.
 
@@ -51,19 +81,6 @@ class ActivityAggregations(GenericAPIView):
 
     - `count`
     - `budget`
-    - `disbursement`
-    - `expenditure`
-    - `commitment`
-    - `incoming_fund`
-    - `transaction_value`
-    - `recipient_country_percentage_weighted_incoming_fund` (only in combination with recipient_country group_by)
-    - `recipient_country_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `recipient_country_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
-    - `sector_percentage_weighted_incoming_fund` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_disbursement` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_expenditure` (only in combination with transaction based group_by's)
-    - `sector_percentage_weighted_budget` (only in combination with budget based group_by's)
 
     ## Request parameters
 
@@ -76,19 +93,152 @@ class ActivityAggregations(GenericAPIView):
     filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = filters.ActivityFilter
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+    allowed_aggregations = (
+        Aggregation(
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+        ),
+        Aggregation(
+            query_param='transaction_count',
+            field='transaction_count',
+            annotate=Count('transaction', distinct=True),
+        ),
+        Aggregation(
+            query_param='budget',
+            field='budget',
+            annotate=Sum('budget__value'),
+        ),
+    )
 
-        results = ActivityAggregationSerializer(
-            queryset,
-            context=self.get_serializer_context())
-
-        if results.data:
-            if isinstance(results.data, dict) and results.data.get('error_message'):
-                return Response({'count': 0, 'error': results.data.get('error_message'), 'results': []})
-            return Response(results.data)
-        else:
-            return Response({'count': 0, 'results': []})
+    allowed_groupings = (
+        GroupBy(
+            query_param="recipient_country",
+            fields="recipient_country",
+            queryset=Country.objects.all(),
+            serializer=CountrySerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="recipient_region",
+            fields="recipient_region",
+            queryset=Region.objects.all(),
+            serializer=RegionSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="sector",
+            fields="sector",
+            queryset=Sector.objects.all(),
+            serializer=SectorSerializer,
+            serializer_fields=('url', 'code', 'name', 'location'),
+        ),
+        GroupBy(
+            query_param="related_activity",
+            fields=("relatedactivity__ref_activity__id"),
+            renamed_fields="related_activity",
+        ),
+        GroupBy(
+            query_param="reporting_organisation",
+            fields="reporting_organisations__normalized_ref",
+            renamed_fields="reporting_organisation",
+            queryset=Organisation.objects.all(),
+            serializer=OrganisationSerializer,
+            serializer_main_field='organisation_identifier'
+        ),
+        GroupBy(
+            query_param="participating_organisation",
+            fields="participating_organisations__normalized_ref",
+            renamed_fields="participating_organisation",
+            queryset=ActivityParticipatingOrganisation.objects.all(),
+            # serializer=OrganisationSerializer,
+        ),
+        GroupBy(
+            query_param="participating_organisation_type",
+            fields="participating_organisations__type",
+            renamed_fields="participating_organisation_type",
+            queryset=OrganisationType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="document_link_category",
+            fields="documentlink__categories__code",
+            renamed_fields="document_link_category",
+            queryset=DocumentCategory.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="activity_status",
+            fields="activity_status",
+            queryset=ActivityStatus.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="policy_marker",
+            fields="policy_marker",
+            queryset=PolicyMarker.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="collaboration_type",
+            fields="activity__collaboration_type",
+            renamed_fields="collaboration_type",
+            queryset=CollaborationType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_flow_type",
+            fields="default_flow_type",
+            queryset=FlowType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_finance_type",
+            fields="activity__default_finance_type",
+            renamed_fields="default_finance_type",
+            queryset=FinanceType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_aid_type",
+            fields="default_aid_type",
+            queryset=AidType.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        GroupBy(
+            query_param="default_tied_status",
+            fields="default_tied_status",
+            queryset=TiedStatus.objects.all(),
+            serializer=CodelistSerializer,
+        ),
+        # TODO: Make these a full date object instead - 2016-04-12
+        GroupBy(
+            query_param="budget_year",
+            extra={
+                'select': {
+                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
+                ],
+            },
+            fields="budget_year",
+        ),
+        GroupBy(
+            query_param="budget_month",
+            extra={
+                'select': {
+                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_month': 'EXTRACT(MONTH FROM "period_start")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
+                    'EXTRACT(MONTH FROM "period_start")::integer IS NOT NULL',
+                ],
+            },
+            fields=("budget_year", "budget_month")
+        ),
+    )
 
 
 class ActivityList(DynamicListView):
@@ -204,7 +354,7 @@ class ActivityList(DynamicListView):
     # For more advanced aggregations please use the /activities/aggregations endpoint.
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
@@ -234,10 +384,6 @@ class ActivityList(DynamicListView):
         'activity_plus_child_budget_value',
     )
 
-    def get_queryset(self):
-        qs = super(ActivityList, self).get_queryset()
-        return qs.distinct('id')
-
 
 class ActivityDetail(DynamicDetailView):
     """
@@ -255,14 +401,8 @@ class ActivityDetail(DynamicDetailView):
 
     ## Extra endpoints
 
-    Detailed information about activity sectors, participating organizations
-    and recipient countries can be found in separate pages:
+    All information on activity transactions can be found on a separate page:
 
-    - `/api/activities/{activity_id}/sectors`: Lists sectors activity presents
-    - `/api/activities/{activity_id}/participating-orgs`: List of participating
-        organizations in this activity
-    - `/api/activities/{activity_id}/recipient-countries`:
-        List of recipient countries.
     - `/api/activities/{activity_id}/transactions`:
         List of transactions.
 

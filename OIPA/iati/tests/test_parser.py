@@ -7,8 +7,9 @@ from unittest import skip
 from django.test import TestCase as DjangoTestCase
 import iati_codelists.models as codelist_models
 from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati.parser.genericXmlParser import XMLParser as GenericParser
-
+from iati.parser.iati_parser import IatiParser
+from iati.models import Activity
+from lxml.builder import E
 
 
 # TODO: use factories instead of these fixtures
@@ -33,13 +34,13 @@ def build_activity(version="2.01", *args, **kwargs):
     return activity
 
 
-class GenericParserTestCase(DjangoTestCase):
+class IatiParserTestCase(DjangoTestCase):
     """
-    Unit tests for the generic parser
+    Unit tests for the iati parser
     """
 
     def setUp(self):
-        self.parser = GenericParser(None)
+        self.parser = IatiParser(None)
 
     def test_register_model_stores_model(self):
         activity = build_activity()
@@ -47,11 +48,10 @@ class GenericParserTestCase(DjangoTestCase):
         self.assertTrue(self.parser.model_store['Activity'][0] == activity)
 
     def test_register_model_stores_model_by_name(self):
-        # TODO: put this all under genericparser
         parser = Parser_201(None)
         
         activity = build_activity()
-        parser.register_model(activity)
+        parser.register_model(activity, activity)
         self.assertTrue(parser.model_store['Activity'][0] == activity)
 
     def test_get_model_returns_model(self):
@@ -71,6 +71,59 @@ class GenericParserTestCase(DjangoTestCase):
         with self.assertRaises(Exception):
             activity = self.parser.model_store['Activity'][0]
 
+    def test_normalize(self):
+        """
+        normalize should remove spaces / tabs etc, replace special characters by a -
+        """
+        self.assertEqual(self.parser._normalize("notrailingtabs\t"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingtabs\r"), 'notrailingtabs')
+        self.assertEqual(self.parser._normalize("notrailingnewline\n"), 'notrailingnewline')
+        self.assertEqual(self.parser._normalize("notrailingspaces "), 'notrailingspaces')
+        self.assertEqual(self.parser._normalize("no spaces"), 'nospaces')
+        self.assertEqual(self.parser._normalize("replace,commas"), 'replace-commas')
+        self.assertEqual(self.parser._normalize("replace:colons"), 'replace-colons')
+        self.assertEqual(self.parser._normalize("replace/slash"), 'replace-slash')
+        self.assertEqual(self.parser._normalize("replace'apostrophe"), 'replace-apostrophe')
+
+    def test_validate_date(self):
+        """
+        date should return valid dates and return None on an invalid date
+        values lower than year 1900 or higher than 2100 should be dropped
+        """
+
+        date = self.parser.validate_date('1900-01-01')
+        self.assertEqual(date.year, 1900)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = self.parser.validate_date('1899-06-01')
+        self.assertEqual(date, None)
+
+        date = self.parser.validate_date('2101-01-01')
+        self.assertEqual(date, None)
+
+    def test_get_primary_name(self):
+        """
+        if no primary name, set
+        if primary name english, set
+        if primary name and not english, dont set
+        """
+
+        narrative = E('narrative', "first narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr"
+        primary_name = self.parser.get_primary_name(narrative, "")
+        self.assertEqual(primary_name, "first narrative")
+
+        narrative = E('narrative', "new narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en"
+        primary_name = self.parser.get_primary_name(narrative, "current primary name")
+        self.assertEqual(primary_name, "new narrative")
+
+        narrative = E('narrative', "french narrative")
+        narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr"
+        primary_name = self.parser.get_primary_name(narrative, primary_name)
+        self.assertEqual(primary_name, "new narrative")
+
     @skip('NotImplemented')
     def test_save_model_saves_model(self):
         raise NotImplementedError()
@@ -86,18 +139,6 @@ class GenericParserTestCase(DjangoTestCase):
     def test_save_all_models(self):
         """
         Test all models are stored in order of input
-        """
-        raise NotImplementedError()
-
-
-class IatiParserTestCase(DjangoTestCase):
-    """
-    Unit tests for ParseIati()
-    """
-    @skip('NotImplemented')
-    def test_prepare_parser(self):
-        """
-        Test the parser gets prepared accordingly
         """
         raise NotImplementedError()
 

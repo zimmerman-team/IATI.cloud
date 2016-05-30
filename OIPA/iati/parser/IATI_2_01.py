@@ -1,179 +1,33 @@
-import hashlib
-import dateutil.parser
-import re
-import unicodedata
-from decimal import Decimal, InvalidOperation
+from datetime import datetime
 
-from django.db.models import Model
 from django.contrib.gis.geos import GEOSGeometry, Point
 
-from genericXmlParser import XMLParser
+from iati_parser import IatiParser
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
+from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
-from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-from iati import activity_search_indexes
-
-_slugify_strip_re = re.compile(r'[^\w\s-]')
-_slugify_hyphenate_re = re.compile(r'[-\s]+')
+from iati.parser import post_save
+from currency_convert import convert
 
 
-class Parse(XMLParser):
+class Parse(IatiParser):
 
     VERSION = '2.01' 
-    default_lang = 'en'
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
 
-    class RequiredFieldError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is required
-            msg: explanation why
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-    class ValidationError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is validated
-            msg: explanation what went wrong
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-    def get_or_none(self, model, *args, **kwargs):
-        try:
-            return model.objects.get(*args, **kwargs)
-        except model.DoesNotExist:
-            return None
-
-    def _get_currency_or_raise(self, currency):
-        """
-        get default currency if not available for currency-related fields
-        """
-        # TO DO; this does not invalidate the whole element (budget, transaction, planned disbursement) while it should
-        if not currency:
-            currency = getattr(self.get_model('Activity'), 'default_currency')
-            if not currency:
-                raise self.RequiredFieldError(
-                    "currency",
-                    "value__currency: currency is not set and default-currency is not set on activity as well")
-
-        return currency
-
-    # TODO: separate these functions in their own data structure - 2015-12-02
-    def get_model_list(self, key):
-        if key in self.model_store:
-            return self.model_store[key]
-        return None
-
-    def get_model(self, key, index=-1):
-        if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__class__.__name__, index) # class name
-
-        return super(Parse, self).get_model(key, index)
-
-    def pop_model(self, key):
-        if isinstance(key, Model):
-            return super(Parse, self).get_model(key.__class__.__name__) # class name
-
-        return super(Parse, self).pop_model(key)
-
-    def register_model(self, key, model=None):
-        if isinstance(key, Model):
-            return super(Parse, self).register_model(key.__class__.__name__, key) # class name
-
-        super(Parse, self).register_model(key, model)
-
-    def makeBool(self, text):
-        if text == '1':
-            return True
-        return False
-
-    def guess_number(self,number_string):
-        #first strip non numeric values, except for -.,
-        decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
-
-        try:
-            return Decimal(decimal_string)
-        except ValueError:
-            raise ValueError("ValueError: Input must be decimal or integer string")
-        except InvalidOperation:
-            raise InvalidOperation("InvalidOperation: Input must be decimal or integer string")
-
-    def isInt(self, obj):
-        try:
-            int(obj)
-            return True
-        except:
-            return False
-
-    def _slugify(self,value):
-        """
-        Normalizes string, converts to lowercase, removes non-alpha characters,
-        and converts spaces to hyphens.
-        From Django's "django/template/defaultfilters.py".
-        """
-        if not isinstance(value, unicode):
-            value = unicode(value)
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-        value = unicode(_slugify_strip_re.sub('', value).strip().lower())
-        return _slugify_hyphenate_re.sub('-', value)
-
-    def hash8(self,w):
-        h = hashlib.md5(w.encode('ascii', 'ignore'))
-        hash_generated = h.digest().encode('base64')[:8]
-        return self._slugify(hash_generated)
-
-    def validate_date(self, unvalidated_date):
-
-        if unvalidated_date:
-            unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
-        else:
-            return None
-
-        #check if standard data parser works
-        try:
-            return dateutil.parser.parse(unvalidated_date, ignoretz=True)
-        except:
-            raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
-
-    def _get_main_narrative_child(self, elem):
-        if len(elem):
-            return elem[0].text.strip()
-
-    def _in_whitelist(self, ref):
-        """
-        reporting_org and participating_org @ref attributes can be whitelisted,
-        causing name to be determined by whitelist
-        """
-        return False
-
-    def _save_whitelist(self, ref):
-        """
-        Actually save the whitelisted organisation when first encountered
-        """
-        pass
-
-    def _normalize(self, attr):
-        return attr.strip(' \t\n\r').replace("/", "-").replace(":", "-").replace(" ", "").replace("'", "")
-
-    def add_narrative(self, element,parent):
-
-        default_lang = self.default_lang # set on activity (if set)
+    def add_narrative(self, element, parent):
+        # set on activity (if set)
+        default_lang = self.default_lang
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
+
+        if lang:
+            lang = lang.lower()
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
@@ -208,15 +62,10 @@ class Parse(XMLParser):
 
         tag:iati-activity"""
 
-        defaults = {
-            'default_lang': 'en',
-            'hierarchy': 1,
-        }
-
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
 
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', defaults['default_lang'])
-        hierarchy = element.attrib.get('hierarchy', defaults['hierarchy'])
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        hierarchy = element.attrib.get('hierarchy')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
@@ -227,7 +76,6 @@ class Parse(XMLParser):
         old_activity = self.get_or_none(models.Activity, id=id)
 
         if old_activity and not self.force_reparse:
-
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
             old_activity.save()
@@ -257,16 +105,16 @@ class Parse(XMLParser):
         activity = models.Activity()
         activity.id = id
         activity.default_lang = default_lang
-        activity.hierarchy = hierarchy
+        if hierarchy:
+            activity.hierarchy = hierarchy
         activity.xml_source_ref = self.iati_source.ref
-        if last_updated_datetime:
-            activity.last_updated_datetime = last_updated_datetime
+        activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
 
         # for later reference
-        self.default_lang = activity.default_lang
+        self.default_lang = default_lang
 
         self.register_model('Activity', activity)
         return element
@@ -303,7 +151,36 @@ class Parse(XMLParser):
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         # TODO: should secondary_reporter be false by default?
         secondary_reporter = element.attrib.get('secondary-reporter', False)
-        organisation = self.get_or_none(models.Organisation, code=element.attrib.get('ref'))
+
+
+        organisation = self.get_or_none(models.Organisation, pk=ref)
+
+        # create an organisation
+        if not organisation:
+
+            organisation = organisation_models.Organisation()
+            organisation.id = ref
+            organisation.organisation_identifier = ref
+            organisation.last_updated_datetime = datetime.now()
+            organisation.iati_standard_version_id = "2.01"
+            organisation.reported_in_iati = False
+
+            organisation_name = organisation_models.OrganisationName()
+            organisation_name.organisation = organisation
+
+            self.register_model('Organisation', organisation)
+            self.register_model('OrganisationName', organisation_name)
+
+            narratives = element.findall('narrative')
+            narratives_text = element.xpath('narrative/text()')
+
+            if len(narratives) > 0:
+                for narrative in narratives:
+                    self.add_narrative(narrative, organisation_name)
+                    organisation.primary_name = self.get_primary_name(narrative, organisation.primary_name)
+            else:
+                organisation.primary_name = ref
+
 
         activity = self.get_model('Activity')
         reporting_organisation = models.ActivityReportingOrganisation()
@@ -337,7 +214,7 @@ class Parse(XMLParser):
     
         tag:participating-org"""
         ref = element.attrib.get('ref', '')
-        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
+        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
         # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
         # simply because they don't know the ref.
@@ -346,7 +223,7 @@ class Parse(XMLParser):
             raise self.RequiredFieldError("role", "participating-org: role must be specified")
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')
@@ -370,12 +247,8 @@ class Parse(XMLParser):
         model = self.get_model('ActivityParticipatingOrganisation')
         self.add_narrative(element, model)
 
-        # TODO: workaround for IATI ref uniqueness limitation,
-        # add as participating_organisation.primary_name - 2015-11-26
-        narrative_list = self.get_model_list('ActivityParticipatingOrganisationNarrative')
-        if narrative_list and len(narrative_list) is 1:
-            model.primary_name = element.text
-            text = element.text
+        # workaround for IATI ref uniqueness limitation
+        model.primary_name = self.get_primary_name(element, model.primary_name)
 
         return element
     
@@ -384,6 +257,7 @@ class Parse(XMLParser):
     
         tag:title"""
         title_list = self.get_model_list('Title')
+
         if title_list and len(title_list) > 0:
             raise self.ValidationError("title", "Duplicate titles are not allowed")
 
@@ -1196,7 +1070,6 @@ class Parse(XMLParser):
         value-date:2014-01-01
 
         tag:value"""
-        # TODO: currency decimal separator determination
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
@@ -1215,6 +1088,13 @@ class Parse(XMLParser):
         budget.value = decimal_value
         budget.value_date = value_date
         budget.currency = currency
+
+        budget.xdr_value = convert.currency_from_to(budget.currency_id, 'XDR', budget.value_date, budget.value)
+        budget.usd_value = convert.currency_from_to(budget.currency_id, 'USD', budget.value_date, budget.value)
+        budget.eur_value = convert.currency_from_to(budget.currency_id, 'EUR', budget.value_date, budget.value)
+        budget.gbp_value = convert.currency_from_to(budget.currency_id, 'GBP', budget.value_date, budget.value)
+        budget.jpy_value = convert.currency_from_to(budget.currency_id, 'JPY', budget.value_date, budget.value)
+        budget.cad_value = convert.currency_from_to(budget.currency_id, 'CAD', budget.value_date, budget.value)
 
         return element
 
@@ -1373,7 +1253,14 @@ class Parse(XMLParser):
         transaction.value = decimal_value
         transaction.value_date = value_date
         transaction.currency = currency
-         
+        
+        transaction.xdr_value = convert.currency_from_to(transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
+        transaction.usd_value = convert.currency_from_to(transaction.currency_id, 'USD', transaction.value_date, transaction.value)
+        transaction.eur_value = convert.currency_from_to(transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
+        transaction.gbp_value = convert.currency_from_to(transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
+        transaction.jpy_value = convert.currency_from_to(transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
+        transaction.cad_value = convert.currency_from_to(transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
+
         return element
 
     def iati_activities__iati_activity__transaction__description(self, element):
@@ -1407,7 +1294,7 @@ class Parse(XMLParser):
         provider_activity = element.attrib.get('provider-activity-id')
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
 
         transaction = self.get_model('Transaction')
 
@@ -1430,6 +1317,9 @@ class Parse(XMLParser):
         # transaction_provider = self.get_model('Transaction', -2)
         transaction_provider = self.get_model('TransactionProvider')
         self.add_narrative(element, transaction_provider)
+
+        transaction_provider.primary_name = self.get_primary_name(element, transaction_provider.primary_name)
+
         return element
 
     def iati_activities__iati_activity__transaction__receiver_org(self, element):
@@ -1442,7 +1332,7 @@ class Parse(XMLParser):
         receiver_activity = element.attrib.get('receiver-activity-id')
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, code=ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
 
         transaction = self.get_model('Transaction')
 
@@ -1463,11 +1353,15 @@ class Parse(XMLParser):
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self, element):
         """attributes:
 
-    tag:narrative"""
+        tag:narrative
+        """
         # TODO: make this more transparent by changing data structure
         # transaction_receiver = self.get_model('Transaction', -2)
         transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
+
+        transaction_receiver.primary_name = self.get_primary_name(element, transaction_receiver.primary_name)
+
         return element
 
     def iati_activities__iati_activity__transaction__disbursement_channel(self, element):
@@ -1501,6 +1395,8 @@ class Parse(XMLParser):
         transaction_sector.transaction = transaction
         transaction_sector.sector = sector
         transaction_sector.vocabulary = vocabulary
+        transaction_sector.percentage = 100
+        transaction_sector.reported_on_transaction = True
 
         self.register_model('TransactionSector', transaction_sector)
         return element
@@ -1518,6 +1414,8 @@ class Parse(XMLParser):
         transaction_country = transaction_models.TransactionRecipientCountry()
         transaction_country.transaction = transaction
         transaction_country.country = country
+        transaction_country.percentage = 100
+        transaction_country.reported_on_transaction = True
 
         self.register_model('TransactionRecipientCountry', transaction_country)
         return element
@@ -1541,6 +1439,8 @@ class Parse(XMLParser):
         transaction_recipient_region.transaction = transaction
         transaction_recipient_region.region = region
         transaction_recipient_region.vocabulary = vocabulary
+        transaction_recipient_region.percentage = 100
+        transaction_recipient_region.reported_on_transaction = True
 
         transaction = self.register_model('TransactionRecipientRegion', transaction_recipient_region)
         return element
@@ -2183,56 +2083,19 @@ class Parse(XMLParser):
     #     fss_forecast.currency = self.cached_db_call(models.Currency, element.attrib.get('currency'))
     #     return element
 
-    def post_save_activity(self):
+    def post_save_models(self):
         """Perform all actions that need to happen after a single activity's been parsed."""
         activity = self.get_model('Activity')
         if not activity:
             return False
-        self.set_related_activities(activity)
-        self.set_transaction_provider_receiver_activity(activity)
-        self.set_derived_activity_dates(activity)
-        self.set_activity_aggregations(activity)
-        self.update_activity_search_index(activity)
 
-    def set_related_activities(self, activity):
-        """ update related-activity references to this activity """
-        models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
-
-    def set_transaction_provider_receiver_activity(self, activity):
-        """ update transaction-provider, transaction-receiver references to this activity """
-        transaction_models.TransactionProvider.objects.filter(
-            provider_activity_ref=activity.iati_identifier
-        ).update(provider_activity=activity)
-
-        transaction_models.TransactionReceiver.objects.filter(
-            receiver_activity_ref=activity.iati_identifier
-        ).update(receiver_activity=activity)
-
-    def set_derived_activity_dates(self, activity):
-        """Set derived activity dates
-
-        actual start dates are preferred.
-        In case they don't exist, use planned dates.
-
-        This is used for ordering by start/end date.
-        """
-        if activity.actual_start:
-            activity.start_date = activity.actual_start
-        else:
-            activity.start_date = activity.planned_start
-
-        if activity.actual_end:
-            activity.end_date = activity.actual_end
-        else:
-            activity.end_date = activity.planned_end
-        activity.save()
-
-    def set_activity_aggregations(self, activity):
-        aac = ActivityAggregationCalculation()
-        aac.parse_activity_aggregations(activity)
-
-    def update_activity_search_index(self, activity):
-        activity_search_indexes.reindex_activity(activity)
+        post_save.set_related_activities(activity)
+        post_save.set_transaction_provider_receiver_activity(activity)
+        post_save.set_derived_activity_dates(activity)
+        post_save.set_activity_aggregations(activity)
+        post_save.update_activity_search_index(activity)
+        post_save.set_country_region_transaction(activity)
+        post_save.set_sector_transaction(activity)
 
     def post_save_file(self, xml_source):
         """Perform all actions that need to happen after a single IATI source's been parsed.
@@ -2241,7 +2104,6 @@ class Parse(XMLParser):
         xml_source -- the IatiXmlSource object of the current source
         """
         self.delete_removed_activities(xml_source.ref)
-
 
     def delete_removed_activities(self, xml_source_ref):
         """ Delete activities that were not found in the XML source any longer

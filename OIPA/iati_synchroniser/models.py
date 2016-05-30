@@ -2,7 +2,7 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 
 class Publisher(models.Model):
@@ -43,17 +43,17 @@ class IatiXmlSource(models.Model):
         return self.ref
 
     def get_parse_status(self):
-        return mark_safe("<a data-xml='xml_%i' class='parse-btn'>Add to parser queue</a>") % self.id
+        return mark_safe("<a data-xml='xml_%i' class='admin-btn parse-btn'>Add to parser queue</a>") % self.id
     get_parse_status.allow_tags = True
     get_parse_status.short_description = _(u"Parse")
 
     def get_parse_activity(self):
-        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='parse-activity-btn'>Parse Activity</a>") % self.id
+        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='admin-btn parse-activity-btn'>Parse Activity</a>") % self.id
     get_parse_activity.allow_tags = True
     get_parse_activity.short_description = _(u"Parse Activity")
 
     def process(self, force_reparse=False):
-        parser = ParseIATI(self, force_reparse=force_reparse)
+        parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
 
         self.is_parsed = True
@@ -65,7 +65,7 @@ class IatiXmlSource(models.Model):
         """
         process a single activity
         """
-        parser = ParseIATI(self)
+        parser = ParseManager(self)
         parser.parse_activity(activity_id)
 
     def save(self, process=False, added_manually=True, *args, **kwargs):

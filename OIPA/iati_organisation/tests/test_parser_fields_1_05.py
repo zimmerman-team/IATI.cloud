@@ -12,19 +12,18 @@ from unittest import TestCase
 from lxml import etree
 from lxml.builder import E
 
-from iati.parser.iati_parser import ParseIATI
+from iati.parser.parse_manager import ParseManager
 
 from iati_synchroniser.models import IatiXmlSource, Publisher
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 import iati_organisation.models as org_models
 from geodata.models import Country
+from iati.factory import iati_factory
 
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
-from iati.parser.IATI_2_01 import Parse as Parser_201
-from iati_organisation.organisation_2_01 import Parse as OrgParse_201
-from iati_organisation.organisation_1_05 import Parse as OrgPArse_105
+from iati_organisation.parser.organisation_1_05 import Parse as OrgParse_105
 
 
 def build_xml(version, organisation_identifier):
@@ -43,24 +42,13 @@ def build_xml(version, organisation_identifier):
 
     return activity
 
-# def create_dummy_source(url, title, name, current_publisher, cur_type):
-#     source = IatiXmlSource(
-#         ref=name,
-#         title=title,
-#         publisher=current_publisher,
-#         source_url=url,
-#         type=cur_type)
-
-#     source.save(process=False, added_manually=False)
-#     return source
-
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 def print_xml(elem):
     print(etree.tostring(elem, pretty_print=True))
 
-
+# TODO: Get rid of fixtures - 2016-04-21
 def setUpModule():
     fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
 
@@ -72,44 +60,24 @@ def tearDownModule():
 
 class ParserSetupTestCase(DjangoTestCase):
 
-    # fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
-
-    def _get_organisation(self, iati_identifier):
-        return org_models.Organisation.objects.get(id=iati_identifier)
-
     @classmethod
     def setUpClass(self):
         # for fixture in self.fixtures:
         #     management.call_command("loaddata", fixture)
 
         self.iati_identifier = "NL-KVK-51018586-0666"
-        self.alt_iati_identifier = "NL-KVK-51018586-0667"
 
-        self.iati_103 = build_xml("1.03", self.iati_identifier)
-        self.iati_104 = build_xml("1.04", self.iati_identifier)
         self.iati_105 = build_xml("1.05", self.iati_identifier)
-        self.iati_201 = build_xml("2.01", self.iati_identifier)
-
 
         dummy_source = IatiXmlSource.objects.get(id=2)
 
-        self.parser_103 = ParseIATI(dummy_source, self.iati_103).get_parser()
-        self.parser_104 = ParseIATI(dummy_source, self.iati_104).get_parser()
-        self.parser_105 = ParseIATI(dummy_source, self.iati_105).get_parser()
-        self.parser_201 = ParseIATI(dummy_source, self.iati_201).get_parser()
+        self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
 
-        assert(isinstance(self.parser_103, OrgPArse_105))
-        assert(isinstance(self.parser_104, OrgPArse_105))
-        assert(isinstance(self.parser_105, OrgPArse_105))
-        assert(isinstance(self.parser_201, OrgParse_201))
-
-        # todo: self.assertTrue source was handled appropriately
-        # self.self.assertTrueEqual(self.parser_103.iati_source, self.parser_104.iati_source, self.parser_105.iati_source, self.parser_201.iati_source)
+        assert(isinstance(self.parser_105, OrgParse_105))
 
     @classmethod
     def tearDownClass(self):
         pass
-
 
 class OrganisationTestCase(ParserSetupTestCase):
     """
@@ -119,11 +87,8 @@ class OrganisationTestCase(ParserSetupTestCase):
     1.02: Introduced the linked-data-uri attribute on iati-activity element
     """
     def setUp(self):
-        self.iati_201 = copy_xml_tree(self.iati_201)
-
         # sample attributes on iati-activity xml
         self.attrs = {
-            # "xml:lang": "en",
             "default-currency": "USD",
             "last-updated-datetime": datetime.datetime.now().isoformat(' '),
         }
@@ -131,76 +96,38 @@ class OrganisationTestCase(ParserSetupTestCase):
         # default activity model fields
         self.defaults = {
             "hierarchy": 1,
-            "default_lang": "en",
         }
 
-        self.test_parser = self.parser_105
-        iati_organisation = E("iati-organisation", **self.attrs)
-        iati_organisation.append(E("organisation-identifier", self.iati_identifier))
-        self.iati_201.append(iati_organisation)
-        self.iati_201.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en" # ISO 639-1:2002
-        # print(etree.tostring(self.iati_201, pretty_print=True))
+        # iati_organisation = E("iati-organisation", **self.attrs)
+        # iati_organisation.append(E("organisation-identifier", self.iati_identifier))
 
-        organisation = org_models.Organisation(iati_version_id="2.01")
-        self.parser_201.register_model('Organisation', organisation)
+        self.organisation = iati_factory.OrganisationFactory.create()
+        self.parser_105.default_lang = "en"
+        self.parser_105.register_model('Organisation', self.organisation)
 
-
-
-    '''attributes:
-            'default-currency':'EUR',
-        'last-updated-datetime':'2014-09-10T07:15:37Z',
-        '{http://www.w3.org/XML/1998/namespace}lang':'en',
-
-    tag:iati-organisation
-    '''
     def test_iati_organisations__iati_organisation(self):
         attribs = {
                 'default-currency':'EUR',
-        'last-updated-datetime':'2014-09-10T07:15:37Z',
-        '{http://www.w3.org/XML/1998/namespace}lang':'en',
+                'last-updated-datetime':'2014-09-10T07:15:37Z',
+                '{http://www.w3.org/XML/1998/namespace}lang':'en',
+                }
 
-        }
-        element = E('iati-organisation',E('iati-identifier','AA-AAA-123456789',{}),attribs)
+        element = E('iati-organisation', E('iati-identifier','test-id',{}),attribs)
 
-        self.test_parser.iati_organisations__iati_organisation(element)
-        org = self.test_parser.get_model('Organisation')
-        """:type : org_models.Organisation """
-        self.assertEqual(org.code,'AA-AAA-123456789')
-        currency = self.test_parser.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
-        language = self.test_parser.get_or_none(codelist_models.Language, code='en')
-        self.assertEqual(org.default_currency , currency)
-        self.assertEqual(org.default_lang,language)
-        self.assertEqual(org.last_updated_datetime,self.test_parser.validate_date(element.attrib.get('last-updated-datetime')))
-        self.assertEqual(org.code,"AA-AAA-123456789")
+        self.parser_105.iati_organisations__iati_organisation(element)
 
+        organisation = self.parser_105.get_model('Organisation')
 
-        #assert
+        self.assertEqual(organisation.id, 'test-id')
+        self.assertEqual(organisation.default_currency_id , attribs['default-currency'])
+        self.assertEqual(organisation.last_updated_datetime, self.parser_105.validate_date(attribs['last-updated-datetime']))
 
-
-    '''attributes:
-
-    tag:name
-    '''
     def test_iati_organisations__iati_organisation__name(self):
-        attribs = {
+        element = E('name', 'test narrative name')
 
-        }
-        element = E('name','test narrative name',attribs)
-        self.test_parser.iati_organisations__iati_organisation__name(element)
-        org = self.test_parser.get_model('Organisation')
-        """:type : org_models.Organisation """
-        attribs = {
+        self.parser_105.iati_organisations__iati_organisation__name(element)
 
-        }
-        model = self.test_parser.get_model('NameNarrative')
-        """ :type : org_models.Narrative """
-        self.assertEqual('test narrative name',model.content)
-        #assert
+        narrative = self.parser_105.get_model('OrganisationNameNarrative')
 
-
-
-        #assert
-
-
-
+        self.assertEqual('test narrative name', narrative.content)
 

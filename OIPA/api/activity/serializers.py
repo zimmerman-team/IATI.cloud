@@ -5,6 +5,7 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
+from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 from api.activity.filters import RelatedActivityFilter
@@ -125,11 +126,13 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField()
     narratives = NarrativeSerializer(many=True)
+    organisation = OrganisationSerializer()
 
     class Meta:
         model = iati_models.ActivityReportingOrganisation
         fields = (
             'ref',
+            'organisation',
             'type',
             'secondary_reporter',
             'narratives',

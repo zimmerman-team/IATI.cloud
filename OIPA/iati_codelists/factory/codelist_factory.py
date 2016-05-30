@@ -8,6 +8,7 @@ from iati_vocabulary import models as vocabulary_models
 from factory import SubFactory, RelatedFactory
 from factory.django import DjangoModelFactory
 
+
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
     def _setup_next_sequence(cls):
@@ -19,6 +20,7 @@ class GetOrCreateMetaMixin():
 class VersionFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.Version
+        django_get_or_create = ('code',)
 
     code = '2.01'
     name = 'IATI version 2.01'

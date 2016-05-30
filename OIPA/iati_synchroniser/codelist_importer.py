@@ -115,9 +115,12 @@ class CodeListImporter():
             region_voc = RegionVocabulary.objects.get(code=1)
             item = Region(region_vocabulary=region_voc)
 
+        elif tag == "Sector":
+            sector_vocabulary = SectorVocabulary.objects.get(code=1)
+            item = Sector(vocabulary=sector_vocabulary)
+
         elif tag == "AidType-category":
             model_name = 'AidTypeCategory'
-
 
         elif tag == "CRSAddOtherFlags":
             model_name = 'OtherFlags'
