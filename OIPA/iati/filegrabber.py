@@ -39,7 +39,7 @@ class FileGrabber():
 
     def get_the_file(self, url, try_number=0):
         try:
-            response = self.browser.open(url, timeout=80)
+            response = self.browser.open(url, timeout=10)
             self.browser.close()
             return response
 
