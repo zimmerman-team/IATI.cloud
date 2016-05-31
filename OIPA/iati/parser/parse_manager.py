@@ -56,7 +56,9 @@ class ParseManager():
             iati_version = iati_version[0]
         # activity file
         if source.type == 1:
-            if iati_version == '2.01':
+            if iati_version == '2.02':
+                parser = IATI_201_Parser(root)
+            elif iati_version == '2.01':
                 parser = IATI_201_Parser(root)
             elif iati_version == '1.03':
                 parser = IATI_103_Parser(root)
@@ -67,7 +69,10 @@ class ParseManager():
 
         #organisation file
         elif source.type == 2:
-            if iati_version == '2.01':
+            if iati_version == '2.02':
+                parser = Org_2_01_Parser(root)
+                parser.VERSION = iati_version
+            elif iati_version == '2.01':
                 parser = Org_2_01_Parser(root)
                 parser.VERSION = iati_version
             else:
