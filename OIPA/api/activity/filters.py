@@ -4,7 +4,10 @@ from django.db.models.fields.related import OneToOneRel
 from django.db.models import Q
 from django.conf import settings
 
-from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
+from django_filters import FilterSet
+from django_filters import NumberFilter
+from django_filters import DateFilter
+from django_filters import BooleanFilter
 
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedCharMultipleFilter
