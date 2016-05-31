@@ -336,7 +336,10 @@ class ActivityPolicyMarker(models.Model):
     activity = models.ForeignKey(Activity)
     code = models.ForeignKey(PolicyMarker)
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
+    vocabulary_uri = models.URLField(null=True, blank=True)
     significance = models.ForeignKey(
+        null=True,
+        blank=True,
         PolicySignificance)
     narratives = GenericRelation(
         Narrative,
@@ -398,6 +401,7 @@ class HumanitarianScope(models.Model):
     activity = models.ForeignKey(Activity)
     code = models.CharField(max_length=100)
     vocabulary = models.ForeignKey(HumanitarianScopeVocabulary)
+    vocabulary_uri = models.URLField(null=True, blank=True)
     type = models.ForeignKey(HumanitarianScopeType)
 
 class BudgetItem(models.Model):
@@ -733,6 +737,7 @@ class Description(models.Model):
 class Budget(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
+    status = models.ForeignKey(BudgetStatus, default=1)
     period_start = models.DateField(blank=True, default=None)
     period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)

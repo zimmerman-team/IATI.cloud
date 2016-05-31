@@ -976,17 +976,19 @@ class Parse(IatiParser):
         # TODO: custom vocabulary (other than 1)
         code = self.get_or_none(codelist_models.PolicyMarker, code=element.attrib.get('code')) 
         vocabulary = self.get_or_none(vocabulary_models.PolicyMarkerVocabulary, code=element.attrib.get('vocabulary')) 
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
         significance = self.get_or_none(codelist_models.PolicySignificance, code=element.attrib.get('significance')) 
 
         if not code: raise self.RequiredFieldError("code", "policy-marker: code is required")
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
-        if not significance: raise self.RequiredFieldError("significance", "policy-marker: significance is required")
+        if vocabulary and vocabulary.code == 1 and (not significance): raise self.RequiredFieldError("significance", "policy-marker: significance is required when using OECD DAC CRS vocabulary")
 
         activity = self.get_model('Activity')
         activity_policy_marker = models.ActivityPolicyMarker()
         activity_policy_marker.activity = activity
         activity_policy_marker.code = code
         activity_policy_marker.vocabulary = vocabulary
+        activity_policy_marker.vocabulary_uri = vocabulary_uri
         activity_policy_marker.significance = significance
 
         self.register_model('ActivityPolicyMarker', activity_policy_marker)
@@ -1076,6 +1078,7 @@ class Parse(IatiParser):
 
         tag:budget"""
         budget_type = self.get_or_none(codelist_models.BudgetType, code=element.attrib.get('type')) 
+        status = self.get_or_none(codelist_models.BudgetStatus, code=element.attrib.get('status')) 
         activity = self.get_model('Activity')
 
         # if not budget_type: raise self.RequiredFieldError("type", "budget: type is required")
@@ -1083,6 +1086,8 @@ class Parse(IatiParser):
         budget = models.Budget()
         budget.activity = activity
         budget.type = budget_type
+        if status:
+            budget.status = status
 
         self.register_model('Budget', budget)
         return element

@@ -71,12 +71,14 @@ class BudgetSerializer(serializers.ModelSerializer):
 
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
+    status = CodelistSerializer()
 
     class Meta:
         model = iati_models.Budget
         # filter_class = BudgetFilter
         fields = (
             'type',
+            'status',
             'period_start',
             'period_end',
             'value',
@@ -159,6 +161,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     code = CodelistSerializer()
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
     significance = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
@@ -167,6 +170,7 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
         fields = (
             'narratives',
             'vocabulary',
+            'vocabulary_uri',
             'significance',
             'code',
         )
@@ -232,6 +236,25 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         )
 
 
+class ActivitySectorSerializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('url', 'code', 'name'))
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
+    )
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+
+    class Meta:
+        model = iati_models.ActivitySector
+        fields = (
+            'sector',
+            'percentage',
+            'vocabulary',
+            'vocabulary_uri',
+        )
+
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(
         fields=('url', 'code', 'name')
@@ -251,6 +274,21 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'percentage',
             'vocabulary',
             'vocabulary_uri',
+        )
+
+class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
+    type = CodelistSerializer() 
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+    code = CodelistSerializer()
+
+    class Meta:
+        model = iati_models.HumanitarianScope
+        fields = (
+            'type',
+            'vocabulary',
+            'vocabulary_uri',
+            'code',
         )
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
@@ -454,8 +492,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # TODO ; add country-budget-items serializer
     # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
 
-    # TODO ; add humanitarian-scope serializer
-    # humanitarian_scope = serializers.HumanitarianScopeSerializer(many=True,source="?")
+    humanitarian_scope = serializers.HumanitarianScopeSerializer(many=True,source="?")
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,

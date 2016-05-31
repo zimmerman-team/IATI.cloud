@@ -89,6 +89,7 @@ class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetS
 
     value = ValueSerializer(source='*')
     type = serializers.CharField(source='type.code')
+    status = serializers.CharField(source='status.code')
 
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()
@@ -96,6 +97,7 @@ class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetS
     class Meta(activity_serializers.BudgetSerializer.Meta):
         fields = (
             'type',
+            'status',
             'period_start',
             'period_end',
             'value',
@@ -144,6 +146,7 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
 
     code = serializers.CharField(source='code.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
     significance = serializers.CharField(source='significance.code')
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
@@ -151,6 +154,7 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
         fields = (
             'narrative',
             'vocabulary',
+            'vocabulary_uri',
             'significance',
             'code',
         )
@@ -194,6 +198,20 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
             'vocabulary_uri',
         )
 
+class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySectorSerializer):
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
+
+    code = serializers.CharField(source='sector.code')
+    vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
+
+    class Meta(activity_serializers.ActivitySectorSerializer.Meta):
+        fields = (
+            'code',
+            'percentage',
+            'vocabulary',
+            'vocabulary_uri',
+        )
 
 class ActivityRecipientRegionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
@@ -209,6 +227,16 @@ class ActivityRecipientRegionSerializer(XMLMetaMixin, SkipNullMixin, activity_se
             'vocabulary',
             'vocabulary_uri',
         )
+
+
+class HumanitarianScopeSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.HumanitarianScopeSerializer):
+    xml_meta = {'attributes': ('type', 'vocabulary', 'vocabulary_uri', 'code',)}
+
+    type = serializers.CharField(source='type.code')
+    code = serializers.CharField(source='code.code')
+    vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
+
 
 class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RecipientCountrySerializer):
     xml_meta = {'attributes': ('percentage', 'code')}
@@ -401,6 +429,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     sector = ActivitySectorSerializer(
         many=True,
         source='activitysector_set')
+
+    humanitarian_scope = HumanitarianScopeSerializer(many=True,source="?")
 
     policy_marker = ActivityPolicyMarkerSerializer(
         many=True,

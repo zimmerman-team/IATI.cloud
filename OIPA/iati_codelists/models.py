@@ -50,6 +50,14 @@ class BudgetType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+class BudgetStatus(models.Model):
+    code = models.CharField(primary_key=True, max_length=40)
+    name = models.CharField(max_length=20)
+    description = models.TextField(default="")
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
 class CollaborationType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=100)
