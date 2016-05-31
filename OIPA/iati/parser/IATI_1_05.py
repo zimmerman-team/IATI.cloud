@@ -306,6 +306,18 @@ class Parse(IATI_201_Parser):
 
         return element
 
+    def iati_activities__iati_activity__humanitarian_scope(self, element):
+        """attributes:
+
+        tag:narrative"""
+        super(Parse, self).iati_activities__iati_activity__humanitarian_scope(element)
+        humanitarian_scope = self.get_model('HumanitarianScope')
+
+        if element.text:
+            self.add_narrative(element, humanitarian_scope)
+
+        return element
+
     def iati_activities__iati_activity__policy_marker(self, element):
         """atributes:
     vocabulary:1

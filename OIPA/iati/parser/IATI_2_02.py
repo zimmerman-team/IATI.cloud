@@ -216,7 +216,7 @@ class Parse(IatiParser):
     
         tag:participating-org"""
         ref = element.attrib.get('ref', '')
-        activity_id = element.attrib.get('activity_id', '')
+        activity_id = element.attrib.get('activity-id', '')
 
         role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
@@ -616,7 +616,7 @@ class Parse(IatiParser):
         tag:recipient-region"""
         region = self.get_or_none(Region, code=element.attrib.get('code'))
         vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
-        vocabulary_uri = element.attrib.get('vocabulary_uri')
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
         if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
@@ -855,6 +855,7 @@ class Parse(IatiParser):
         tag:recipient-sector"""
         sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
         vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
         if not sector: raise self.RequiredFieldError("code", "sector: code is required")
@@ -866,6 +867,7 @@ class Parse(IatiParser):
         activity_sector.activity = activity
         activity_sector.percentage = percentage
         activity_sector.vocabulary = vocabulary
+        activity_sector.vocabulary_uri = vocabulary_uri
         self.register_model('ActivitySector', activity_sector)
          
         return element
@@ -927,6 +929,41 @@ class Parse(IatiParser):
         tag:narrative"""
         budget_item_description = self.get_model('BudgetItemDescription')
         self.add_narrative(element, budget_item_description)
+        return element
+
+
+    def iati_activities__iati_activity__humanitarian_scope(self, element):
+
+        activity = self.get_model('Activity')
+
+        scope_type = self.get_or_none(codelist_models.HumanitarianScopeType, code=element.attrib.get('type')) 
+        vocabulary = self.get_or_none(vocabulary_models.HumanitarianScopeVocabulary, code=element.attrib.get('vocabulary')) 
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
+        code = element.attrib.get('code')
+
+
+        if not code: raise self.RequiredFieldError("code", "humanitarian-scope: code is required")
+        if not scope_type: raise self.RequiredFieldError("type", "humanitarian-scope: type is required")
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "humanitarian-scope: vocabulary is required")
+
+
+        activity = self.get_model('Activity')
+        humanitarian_scope = models.HumanitarianScope()
+        humanitarian_scope.activity = activity
+        humanitarian_scope.type = scope_type
+        humanitarian_scope.vocabulary = vocabulary
+        humanitarian_scope.vocabulary_uri = vocabulary_uri
+
+        return element
+
+    def iati_activities__iati_activity__humanitarian_scope__narrative(self, element):
+        """attributes:
+
+        tag:narrative"""
+
+        humanitarian_scope = self.get_model('HumanitarianScope')
+        self.add_narrative(element, humanitarian_scope)
+
         return element
 
     def iati_activities__iati_activity__policy_marker(self, element):

@@ -10,6 +10,7 @@ from iati_vocabulary.models import GeographicVocabulary
 from iati_vocabulary.models import PolicyMarkerVocabulary
 from iati_vocabulary.models import SectorVocabulary
 from iati_vocabulary.models import BudgetIdentifierVocabulary
+from iati_vocabulary.models import HumanitarianScopeVocabulary
 from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
@@ -354,6 +355,7 @@ class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
     sector = models.ForeignKey(Sector, null=True, blank=True, default=None)
     vocabulary = models.ForeignKey(SectorVocabulary, null=True, blank=True, default=None)
+    vocabulary_uri = models.URLField(null=True, blank=True)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -392,6 +394,11 @@ class CountryBudgetItem(models.Model):
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
+class HumanitarianScope(models.Model):
+    activity = models.ForeignKey(Activity)
+    code = models.CharField(max_length=100)
+    vocabulary = models.ForeignKey(HumanitarianScopeVocabulary)
+    type = models.ForeignKey(HumanitarianScopeType)
 
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)

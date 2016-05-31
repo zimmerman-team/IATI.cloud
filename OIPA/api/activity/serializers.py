@@ -220,6 +220,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         coerce_to_string=False
     )
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
 
     class Meta:
         model = iati_models.ActivitySector
@@ -227,6 +228,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
             'sector',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
         )
 
 

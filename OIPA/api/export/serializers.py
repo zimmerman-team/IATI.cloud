@@ -184,12 +184,14 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
 
     code = serializers.CharField(source='sector.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
 
     class Meta(activity_serializers.ActivitySectorSerializer.Meta):
         fields = (
             'code',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
         )
 
 
