@@ -13,8 +13,8 @@ urlpatterns = [
     url(r'^locations/', include('api.location.urls', namespace='locations')),
     url(r'^organisations/', include('api.organisation.urls', namespace='organisations')),
     url(r'^sectors/', include('api.sector.urls', namespace='sectors')),
-    url(r'^transactions/', include('api.transaction.urls',
-        namespace='transactions')),
+    url(r'^transactions/', include('api.transaction.urls', namespace='transactions')),
+    url(r'^results/', include('api.result.urls', namespace='results')),
     url(r'^datasets/', include('api.dataset.urls', namespace='datasets')),
     url(r'^publishers/', include('api.publisher.urls', namespace='publishers')),
 ]

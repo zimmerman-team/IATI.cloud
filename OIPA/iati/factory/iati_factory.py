@@ -303,6 +303,12 @@ class ResultIndicatorFactory(NoDatabaseFactory):
 
     result = ResultFactory.build()
 
+class ResultIndicatorTitleFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorTitle
+
+    result_indicator = ResultIndicatorFactory.build()
+    primary_name = 'title'
+
 class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriod

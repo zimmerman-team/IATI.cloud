@@ -78,6 +78,14 @@ def welcome(request, format=None):
                 'datasets:dataset-list',
                 request=request,
                 format=format),
+            'locations': reverse(
+                'locations:location-list',
+                request=request,
+                format=format),
+            'results': reverse(
+                'results:result-aggregations',
+                request=request,
+                format=format),
         }
     })
 
