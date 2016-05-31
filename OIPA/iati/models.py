@@ -120,6 +120,7 @@ class Activity(models.Model):
         default=None)
     # @attached on iati-conditions
     has_conditions = models.BooleanField(default=False)
+    humanitarian = models.NullBooleanField(null=True, blank=True)
 
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
@@ -306,6 +307,14 @@ class ActivityParticipatingOrganisation(models.Model):
     type = models.ForeignKey(OrganisationType, null=True, blank=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
 
+    # when organisation is not mentioned in transactions
+    org_activity_id = models.ForeignKey(
+        Activity,
+        related_name="activity_id",
+        null=True,
+        blank=True,
+    )
+
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -402,6 +411,7 @@ class ActivityRecipientRegion(models.Model):
     activity = models.ForeignKey(Activity)
     region = models.ForeignKey(Region)
     vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    vocabulary_uri = models.URLField(null=True, blank=True)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,

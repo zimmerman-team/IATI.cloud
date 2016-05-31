@@ -143,6 +143,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
     role = CodelistSerializer()
+    activity_id = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', source='org_activity_id', read_only=True)
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
@@ -151,6 +152,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'ref',
             'type',
             'role',
+            'activity_id'
             'narratives',
         )
 
@@ -238,6 +240,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
         coerce_to_string=False
     )
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
 
     class Meta:
         model = iati_models.ActivityRecipientRegion
@@ -245,6 +248,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'region',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
         )
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
@@ -500,7 +504,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     last_updated_datetime = serializers.DateTimeField()
     xml_lang = serializers.CharField(source='default_lang')
     default_currency = CodelistSerializer()
-    # TODO 2.02; humanitarian = serializers.BooleanField()
+
+    humanitarian = serializers.BooleanField()
 
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*")
@@ -546,7 +551,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'last_updated_datetime',
             'xml_lang',
             'default_currency',
-            # 'humanitarian',
+            'humanitarian',
             'hierarchy',
             'linked_data_uri',
             'aggregations',

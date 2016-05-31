@@ -15,6 +15,11 @@ def set_related_activities(activity):
     """ update related-activity references to this activity """
     models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
 
+def set_participating_organisation_activity_id(participating_organisation):
+    """ update activity_id references to this activity """
+    # TODO: add reverse relation for participating organisation activity_id - 2016-05-31
+    pass
+
 def set_transaction_provider_receiver_activity(activity):
     """ update transaction-provider, transaction-receiver references to this activity """
     transaction_models.TransactionProvider.objects.filter(

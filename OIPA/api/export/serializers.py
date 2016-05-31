@@ -123,17 +123,19 @@ class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_seri
         )
 
 class ParticipatingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ParticipatingOrganisationSerializer):
-    xml_meta = {'attributes': ('ref', 'type', 'role',)}
+    xml_meta = {'attributes': ('ref', 'type', 'role', 'activity_id')}
 
     type = serializers.CharField(source='type.code')
     role = serializers.CharField(source='role.code')
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
+    activity_id = serializers.CharField(source='org_activity_id')
 
     class Meta(activity_serializers.ParticipatingOrganisationSerializer.Meta):
         fields = (
             'ref',
             'type',
             'role',
+            'activity_id',
             'narrative',
         )
 
@@ -192,16 +194,18 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
 
 
 class ActivityRecipientRegionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
-    xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
 
     code = serializers.CharField(source='region.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
 
     class Meta(activity_serializers.ActivityRecipientRegionSerializer.Meta):
         fields = (
             'code',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
         )
 
 class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RecipientCountrySerializer):
@@ -367,7 +371,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
         )
 
 class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySerializer):
-    xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'linked_data_uri', 'hierarchy', 'xml_lang')}
+    xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'humanitarian', 'linked_data_uri', 'hierarchy', 'xml_lang')}
 
     reporting_org = ReportingOrganisationSerializer(
         source='reporting_organisations',
@@ -420,6 +424,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         source='relatedactivity_set')
 
     result = ResultXMLSerializer(many=True, source="result_set")
+
+    humanitarian = serializers.BooleanField()
     
     default_currency = serializers.CharField(source='default_currency.code')
 
@@ -461,7 +467,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'last_updated_datetime',
             'xml_lang',
             'default_currency',
-            # 'humanitarian',
+            'humanitarian',
             'hierarchy',
             'linked_data_uri',
             # 'xml_source_ref',

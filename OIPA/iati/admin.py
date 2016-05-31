@@ -338,7 +338,7 @@ class ActivityAdmin(nested_admin.NestedAdmin):
     inlines = [
         ActivityDateInline,
         ActivityReportingOrganisationInline,
-        ActivityParticipatingOrganisationInline,
+        # ActivityParticipatingOrganisationInline,
         ActivityPolicyMarkerInline,
         ActivityRecipientCountryInline,
         ActivitySectorInline,
