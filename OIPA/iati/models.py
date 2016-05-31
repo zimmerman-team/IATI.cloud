@@ -638,6 +638,12 @@ class ResultIndicator(models.Model):
 
 class ResultIndicatorTitle(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
+    primary_name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -665,8 +671,8 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.CharField(max_length=50, default="", blank=True)
-    actual = models.CharField(max_length=50, default="", blank=True)
+    target = models.CharField(max_length=50, default=None, blank=True, null=True)
+    actual = models.CharField(max_length=50, default=None, blank=True, null=True)
 
     def __unicode__(self,):
         return "%s" % self.result_indicator

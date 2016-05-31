@@ -495,6 +495,7 @@ class Parse(IATI_201_Parser):
 
         if element.text:
             self.add_narrative(element, result_indicator_title)
+            result_indicator_title.primary_name = self.get_primary_name(element, result_indicator_title.primary_name)
 
         return element
 

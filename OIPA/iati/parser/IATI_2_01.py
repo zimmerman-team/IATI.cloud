@@ -1746,6 +1746,7 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__title__narrative(self, element):
         title = self.get_model('ResultIndicatorTitle') # this points to Title
         self.add_narrative(element, title)
+        title.primary_name = self.get_primary_name(element, title.primary_name)
 
         return element
 
