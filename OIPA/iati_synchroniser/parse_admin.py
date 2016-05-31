@@ -7,8 +7,8 @@ class ParseAdmin():
     def parseAll(self):
 
         def parse(source):
-
             source.save()
+
         [parse(source) for source in IatiXmlSource.objects.all()]
 
     def parseXDays(self, days):
