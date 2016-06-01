@@ -7,6 +7,7 @@ from iati.filegrabber import FileGrabber
 from lxml import etree
 from django import db
 from django.conf import settings
+import hashlib
 
 
 class ParserDisabledError(Exception):
@@ -27,6 +28,8 @@ class ParseManager():
         self.url = source.source_url
         self.xml_source_ref = source.ref
         self.force_reparse = force_reparse
+        self.hash_changed = True
+        self.valid_source = True
         
         if root is not None:
             self.root = root
@@ -37,13 +40,32 @@ class ParseManager():
         response = file_grabber.get_the_file(self.url)
 
         if not response or response.code != 200:
-            # TODO: add error code to log - 2015-12-09
-            raise ValueError("source url {} down or doesn't exist".format(self.url))
+            self.valid_source = False
+            self.source.parse_notes = 'URL down or does not exist'
+            self.source.save()
+            return
 
         iati_file = response.read()
+        iati_file_str = str(iati_file)
 
-        self.root = etree.fromstring(str(iati_file))
-        self.parser = self._prepare_parser(self.root, source)
+        hasher = hashlib.sha1()
+        hasher.update(iati_file_str)
+        sha1 = hasher.hexdigest()
+
+        if source.sha1 == sha1:
+            # source did not change, no need to reparse normally
+            self.hash_changed = False
+        else:
+            source.sha1 = sha1
+
+        try:
+            self.root = etree.fromstring(iati_file_str)
+            self.parser = self._prepare_parser(self.root, source)
+        except etree.XMLSyntaxError as e:
+            self.valid_source = False
+            self.source.parse_notes = 'XMLSyntaxError: ' + e.message
+            self.source.save()
+            return
 
     def _prepare_parser(self, root, source):
         """
@@ -90,7 +112,9 @@ class ParseManager():
         """
         Parse all activities 
         """
-        self.parser.load_and_parse(self.root)
+        # only start parsing when the file changed (or on force)
+        if (self.force_reparse or self.hash_changed) and self.valid_source:
+            self.parser.load_and_parse(self.root)
 
         # Throw away query logs when in debug mode to prevent memory from overflowing
         if settings.DEBUG:
@@ -105,7 +129,7 @@ class ParseManager():
             (activity,) = self.root.xpath('//iati-activity/iati-identifier[text()="{}"]'.format(activity_id))
         except ValueError:
             raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
-        
+
         self.parser.parse(activity.getparent())
         self.parser.save_all_models()
 

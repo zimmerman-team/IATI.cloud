@@ -29,8 +29,8 @@ class IatiParser(object):
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()
-
         self.root = root
+
 
     class RequiredFieldError(Exception):
         def __init__(self, field, msg):
@@ -44,6 +44,7 @@ class IatiParser(object):
         def __str__(self):
             return repr(self.field)
 
+
     class ValidationError(Exception):
         def __init__(self, field, msg):
             """
@@ -55,6 +56,17 @@ class IatiParser(object):
 
         def __str__(self):
             return repr(self.field)
+
+
+    class NoUpdateRequired(Exception):
+        def __init__(self, field, msg):
+            """
+            field: the field that is validated
+            msg: explanation what went wrong
+            """
+        def __str__(self):
+            return 'Current version of activity exists'
+ 
 
     def get_or_none(self, model, *args, **kwargs):
         try:
@@ -88,9 +100,9 @@ class IatiParser(object):
         try:
             return Decimal(decimal_string)
         except ValueError:
-            raise ValueError("ValueError: Input must be decimal or integer string")
+            raise ValueError("value must be decimal or integer string")
         except InvalidOperation:
-            raise InvalidOperation("InvalidOperation: Input must be decimal or integer string")
+            raise InvalidOperation("value must be decimal or integer string")
 
     def isInt(self, obj):
         try:
@@ -137,7 +149,6 @@ class IatiParser(object):
         """
 
         """
-        # TODO: refactor this and the module
         for e in root.getchildren():
             self.model_store = OrderedDict()
             parsed = self.parse(e)
@@ -145,13 +156,30 @@ class IatiParser(object):
             if parsed:
                 self.save_all_models()
                 self.post_save_models()
+
         self.post_save_file(self.iati_source)
+        self.iati_source.note_count = len(self.errors)
+        self.iati_source.parse_notes = "\n".join(self.errors[:500])
     
     def post_save_models(self):
         print "override in children"
 
     def post_save_file(self, iati_source):
         print "override in children"
+
+    def append_error(self, error_type, error_message):
+        msg = [self.iati_source.ref, ' | ']
+
+        if self.iati_source.type == 1:
+            model = self.get_model('Activity')
+        else:
+            model = self.get_model('Organisation')
+        
+        if model:
+            msg.append(model.id)
+
+        msg.extend([' | ', error_type, ' | ', error_message, '\n'])
+        self.errors.append(''.join(msg))
 
     def parse(self, element):
         if element == None:
@@ -169,19 +197,24 @@ class IatiParser(object):
             try:
                 elementMethod(element)
             except self.RequiredFieldError as e:
-                print e.message
-                # traceback.print_exc()
+                self.append_error('RequiredFieldError', e.message)
                 return
             except self.ValidationError as e:
-                print e.message
-                # traceback.print_exc()
+                self.append_error('ValidationError', e.message)
+                return
+            except ValueError as e:
+                self.append_error('ValueError', e.message)
+                return
+            except InvalidOperation as e:
+                self.append_error('InvalidOperation', e.message)
+                return
+            except self.NoUpdateRequired as e:
+                # do nothing, go to next activity
                 return
             except Exception as exception:
                 # print exception.message
                 traceback.print_exc()
-                return
 
-        # TODO: rewrite this
         for e in element.getchildren():
             self.parse(e)
 
@@ -251,12 +284,9 @@ class IatiParser(object):
                     # if model.__class__.__name__ == "Narrative":
                     #     print(type(model.parent_object))
                 except Exception as e:
-                    # traceback.print_exc()
-                    print(e)
-
+                    self.append_error(str(type(e)), e.message)
 
     def remove_brackets(self,function_name):
-
         result = ""
         flag = True
         for c in function_name:
@@ -264,55 +294,4 @@ class IatiParser(object):
             if flag: result += c
             if c == "]": flag = True
         return result
-
-    def handle_exception(self, xpath, function_name, exception,element):
-        hint = """look at XML document"""
-        errorStr = "error in method:"+function_name+" location in document:"+xpath+" at line "+str(element.sourceline)+" source is "+self.iati_source.source_url
-        errExceptionStr = errorStr+"\n"+str(traceback.format_exc())+"\n"
-        for attr in element.attrib :
-            errExceptionStr = errExceptionStr+" "+attr+" = "+element.attrib.get(attr)+"\n"
-        if element.text != '':
-            errExceptionStr = errExceptionStr+element.text
-        self.errors.append(errExceptionStr)
-        log_entry = log_models.ParseLog()
-        log_entry.error_hint = hint
-        log_entry.error_text = errExceptionStr
-        log_entry.error_msg = str(exception)
-        log_entry.file_name = self.iati_source.source_url
-        log_entry.location = xpath
-        log_entry.error_time = datetime.datetime.now()
-        log_entry.save()
-
-    def sendErrorMail(self,toAddress, errorString):
-        send_mail('error mail!', errorString, 'error@oipa.nl',[toAddress], fail_silently=False)
-
-    def handle_log(self):
-        hintsStr = ''
-        errorStr = ''
-        validating_error_str = ''
-        required_field_error_str = ''
-
-        send_mail = False
-        print 'before sending mail'
-        if len(self.hints) > 0:
-            hintsStr = "function that are missing:"
-            hintsStr += "\n".join( self.hints )
-            send_mail = True
-        if len(self.errors) > 0:
-            errorStr = hintsStr+"\n\n errors found:\n"
-            errorStr += "\n".join( self.errors)
-            send_mail = True
-        if len(self.validation_errors) > 0:
-            validating_error_str = required_field_error_str+"\n\n validation errors found:\n"
-            validating_error_str += "\n".join( self.validation_errors)
-            send_mail = True
-        if len(self.required_field_errors) > 0:
-            required_field_error_str = required_field_error_str+"\n\n required field errors found:\n"
-            required_field_error_str += "\n".join( self.required_field_errors)
-            send_mail = True
-
-        if(send_mail):
-            print 'sending mail'
-            for developer in User.objects.filter(groups__name='developers').all():
-                self.sendErrorMail(developer.email, hintsStr +"\n"+errorStr +"\n"+validating_error_str+"\n"+required_field_error_str)
 

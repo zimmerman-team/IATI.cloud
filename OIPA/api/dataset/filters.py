@@ -1,6 +1,6 @@
 from api.generics.filters import CommaSeparatedCharFilter
 from iati_synchroniser.models import IatiXmlSource
-from django_filters import FilterSet
+from django_filters import FilterSet, CharFilter, NumberFilter
 
 
 class DatasetFilter(FilterSet):
@@ -8,12 +8,23 @@ class DatasetFilter(FilterSet):
     Filter countries list
     """
 
+    ref = CommaSeparatedCharFilter(
+        lookup_type='in')
+
+    source_type = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='type')
+
     publisher = CommaSeparatedCharFilter(
         lookup_type='in',
         name='publisher__org_id')
 
+    parse_notes = CharFilter(
+        lookup_type='icontains')
+
+    note_count_gte = NumberFilter(
+        lookup_type='gte',
+        name='note_count')
+
     class Meta:
         model = IatiXmlSource
-        fields = [
-            'ref',
-            'type',]

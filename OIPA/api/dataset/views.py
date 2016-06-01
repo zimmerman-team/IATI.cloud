@@ -1,6 +1,7 @@
 from api.dataset.serializers import DatasetSerializer
 from iati_synchroniser.models import IatiXmlSource
 from rest_framework.generics import RetrieveAPIView
+from rest_framework import filters
 from api.dataset.filters import DatasetFilter
 
 from api.generics.views import DynamicListView, DynamicDetailView
@@ -27,6 +28,8 @@ class DatasetList(DynamicListView):
     queryset = IatiXmlSource.objects.all()
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
+    filter_backends = (filters.OrderingFilter, filters.DjangoFilterBackend)
+    ordering_fields = '__all__'
 
     fields = (
         'ref',
@@ -40,7 +43,8 @@ class DatasetList(DynamicListView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version')
+        'iati_standard_version',
+        'note_count')
 
 
 class DatasetDetail(RetrieveAPIView):
@@ -68,4 +72,6 @@ class DatasetDetail(RetrieveAPIView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version')
+        'iati_standard_version',
+        'note_count',
+        'parse_notes')

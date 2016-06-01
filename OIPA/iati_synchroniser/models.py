@@ -34,6 +34,9 @@ class IatiXmlSource(models.Model):
     iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
+    sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
+    parse_notes = models.TextField(default="", blank=True, null=False)
+    note_count = models.IntegerField(default=0, null=False)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"

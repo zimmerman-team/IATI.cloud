@@ -32,7 +32,9 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'date_created',
             'date_updated',
             'last_found_in_registry',
-            'iati_standard_version')
+            'iati_standard_version',
+            'note_count',
+            'parse_notes')
 
     def get_type(self, obj):
         return obj.get_type_display()
