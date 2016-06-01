@@ -4,7 +4,10 @@ from django_rq import job
 from iati_synchroniser.codelist_importer import CodeListImporter
 import django_rq
 import datetime
+from rq import Queue, Connection, Worker, cancel_job
+from redis import Redis
 
+redis_conn = Redis()
 
 ###############################
 ######## WORKER TASKS  ########
@@ -12,12 +15,7 @@ import datetime
 
 @job
 def start_worker(queue_name, amount_of_workers):
-    from rq import Queue, Connection, Worker
-    from redis import Redis
-
-    redis_conn = Redis()
     queue = Queue(queue_name, connection=redis_conn)
-
     amount_of_workers = int(amount_of_workers) + 1
 
     with Connection():
@@ -28,10 +26,6 @@ def start_worker(queue_name, amount_of_workers):
 
 @job
 def advanced_start_worker():
-    from rq import Queue, Connection, Worker
-    from redis import Redis
-
-    redis_conn = Redis()
     queue = Queue('default', connection=redis_conn)
 
     with Connection():
@@ -48,10 +42,7 @@ def advanced_start_worker():
 def remove_duplicates_from_parser_queue():
     raise Exception("Not implemented yet")
 
-
 def delete_task_from_queue(job_id):
-    from rq import cancel_job
-    from rq import Connection
     with Connection():
         cancel_job(job_id)
 

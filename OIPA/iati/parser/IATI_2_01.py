@@ -81,9 +81,7 @@ class Parse(IatiParser):
             old_activity.save()
 
             if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
-                raise self.ValidationError(
-                    "activity",
-                    "current version of activity already exists: no need to update")
+                raise self.NoUpdateRequired('activity', 'already up to date')
             if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
                 raise self.ValidationError(
                     "activity",
@@ -94,7 +92,7 @@ class Parse(IatiParser):
                     "duplicate activity: last_updated_time is not present, but is present on 'old' activity")
     
             # TODO: test activity is deleted along with related models
-            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
+            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm - 08-2015
             # TODO: do this after activity is parsed along with other saves?
 
         if old_activity:

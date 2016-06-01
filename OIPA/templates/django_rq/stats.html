@@ -195,7 +195,7 @@
         </div>
     </div>
 
-    <div class="row-fluid" style="display: none">
+    <div class="row-fluid">
         <div class="span7">
 
             <div class="django-rq-block">
@@ -254,12 +254,33 @@
                 <div class="row-fluid django-rq-buttons" style="margin-top:14px;">
                     <div class="span12">
                         <label for="new-schedule-task">Task to be performed:</label>
+
                         <select name="new-schedule-task">
-                            <option value="Choose task">Choose task</option>
-                            <option value="parse_all_existing_sources">Update all existing IATI source</option>
-                            <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
-                            <option value="delete_sources_not_found_in_registry_in_x_days">Delete sources not found in registry in x days (and not added manually)</option>
-                            <option value="calculate_activity_aggregations">Calculate activity aggregations</option>
+                            <optgroup label="Registry synchronization tasks">
+                                <option value="update_iati_codelists">Update codelists from IATI registry</option>
+                                <option value="get_new_sources_from_iati_api">Add new sources from IATI registry</option>
+                            </optgroup>
+                            <optgroup label="Parse tasks">
+                                <option value="add_new_sources_from_registry_and_parse_all">Add new sources from IATI registry and parse all sources</option>
+                                <option value="parse_all_existing_sources">Parse all IATI source currently in OIPA</option>
+                                <option value="parse_all_sources_by_publisher_ref">Parse all sources from a publisher</option>
+                            </optgroup>
+                            <optgroup label="Force parse tasks">
+                                <option value="force_parse_all_existing_sources">Force parse all IATI sources currently in OIPA</option>
+                                <option value="force_parse_by_publisher_ref">Force parse all sources from a publisher</option>
+                            </optgroup>
+
+                            <optgroup label="Geographic data tasks">
+                                <option value="update_region_data">Add/update region data</option>
+                                <option value="update_city_data">Add/update city data</option>
+                                <option value="update_country_data">Add/update country data</option>
+                                <option value="update_adm1_region_data">Add/update adm1 region data</option>
+                            </optgroup>
+
+                            <optgroup label="Currency conversion tasks">
+                                <option value="update_exchange_rates">Update currency exchange rates</option>
+                                <option value="force_update_exchange_rates">Force update currency exchange rates</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -663,7 +684,6 @@ $(document).ready(function (){
                workers_html = "";
 
                $.each(data, function( index, value ) {
-                   console.log(value);
                    workers_html += "<tr>";
                    workers_html += "<td>" + value.pid + "</td>";
                    workers_html += "<td>" + value.name + "</td>";

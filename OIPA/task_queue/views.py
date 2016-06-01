@@ -14,6 +14,9 @@ from rq import Worker, push_connection
 from rq_scheduler import Scheduler
 
 from task_queue import tasks
+from redis import Redis
+
+redis_conn = Redis()
 
 
 # PARSE TASKS
@@ -48,9 +51,7 @@ def start_worker_with_supervisor(request):
 @staff_member_required
 def get_workers(request):
 
-    connection = redis.Redis()
-    push_connection(connection)
-    workers = Worker.all(connection=connection)
+    workers = Worker.all(connection=redis_conn)
 
     workerdata = list()
     # serialize workers
@@ -94,11 +95,8 @@ def delete_all_tasks_from_queue(request):
 @staff_member_required
 def get_current_job(request):
     from rq import get_current_job
-    from rq import use_connection
-    from redis import Redis
     from rq import Queue
-    use_connection()
-    redis_conn = Redis()
+
     q = Queue(connection=redis_conn)
     job = get_current_job(q)
     import json
@@ -116,6 +114,9 @@ def start_scheduler(request):
 
 @staff_member_required
 def add_scheduled_task(request):
+    from redis import Redis
+    from rq_scheduler import Scheduler
+    from datetime import datetime
 
     task = request.GET.get('task')
     period = request.GET.get('period')
@@ -123,23 +124,25 @@ def add_scheduled_task(request):
     parameters = request.GET.get('parameters')
 
     # Use RQ's default Redis connection
-    use_connection()
+    # use_connection()
     # Get a scheduler for the "default" queue
-    scheduler = Scheduler(queue)
+    # scheduler = Scheduler(queue)
+
+    scheduler = Scheduler(connection=Redis())
 
     if parameters:
         scheduler.schedule(
-            scheduled_time=datetime.now(),   # Time for first execution
+            scheduled_time=datetime.utcnow(),   # Time for first execution
             func=getattr(tasks, task),       # Function to be queued
             args=[int(parameters)],
-            interval=period,                 # Time before the function is called again, in seconds
+            interval=int(period),                 # Time before the function is called again, in seconds
             repeat=None                      # Repeat this number of times (None means repeat forever)
         )
     else:
         scheduler.schedule(
-            scheduled_time=datetime.now(),   # Time for first execution
+            scheduled_time=datetime.utcnow(),   # Time for first execution
             func=getattr(tasks, task),       # Function to be queued
-            interval=period,                 # Time before the function is called again, in seconds
+            interval=int(period),                 # Time before the function is called again, in seconds
             repeat=None                      # Repeat this number of times (None means repeat forever)
         )
     return HttpResponse('Success')
@@ -175,9 +178,9 @@ def get_queue(request):
 def get_scheduled_tasks(request):
 
     # Use RQ's default Redis connection
-    use_connection()
+    # use_connection()
     # Get a scheduler for the "default" queue
-    scheduler = Scheduler()
+    scheduler = Scheduler(connection=redis_conn)
     list_of_job_instances = scheduler.get_jobs()
 
     jobdata = list()
