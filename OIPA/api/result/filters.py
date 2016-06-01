@@ -1,6 +1,7 @@
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedStickyCharFilter
 
 from django_filters import DateFilter
 from django_filters import BooleanFilter
@@ -19,22 +20,17 @@ class ResultFilter(TogetherFilterSet):
         name='activity__id',
         lookup_type='in')
 
-    result_title = ToManyFilter(
-        qs=ResultTitle,
+    result_title = CommaSeparatedStickyCharFilter(
+        name='resulttitle__primary_name',
         lookup_type='in',
-        name='primary_name',
-        fk='result',
     )
 
-    indicator_title = ToManyFilter(
-        qs=ResultIndicatorTitle,
+    indicator_title = CommaSeparatedStickyCharFilter(
+        name='resultindicator__resultindicatortitle__primary_name',
         lookup_type='in',
-        name='primary_name',
-        fk='result__indicator',
     )
 
     # default filters
-
     activity_scope = CommaSeparatedCharFilter(
         name='activity__scope__code',
         lookup_type='in',)

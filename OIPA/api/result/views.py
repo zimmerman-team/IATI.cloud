@@ -1,6 +1,6 @@
 from api.result.filters import ResultFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from django.db.models import Sum, Func, F
+from django.db.models import Sum, Func, F, Count
 from iati.models import Result
 from rest_framework.filters import DjangoFilterBackend
 
@@ -56,6 +56,11 @@ class ResultAggregations(AggregationView):
                 F('resultindicator__resultindicatorperiod__actual'), 
                 function='CAST', 
                 template='%(function)s(%(expressions)s as double precision)')),
+        ),
+        Aggregation(
+            query_param='activity_count',
+            field='activity_count',
+            annotate=Count('activity', distinct=True),
         ),
     )
 
