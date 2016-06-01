@@ -8,8 +8,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 LOGIN_URL = reverse_lazy('two_factor:login')
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
