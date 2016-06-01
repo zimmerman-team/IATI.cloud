@@ -2,6 +2,7 @@ from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
+from api.generics.filters import StickyBooleanFilter
 
 from django_filters import DateFilter
 from django_filters import BooleanFilter
@@ -29,6 +30,19 @@ class ResultFilter(TogetherFilterSet):
         name='resultindicator__resultindicatortitle__primary_name',
         lookup_type='in',
     )
+
+    indicator_period_actual_not = CommaSeparatedStickyCharFilter(
+        name='resultindicator__resultindicatorperiod__actual',
+        lookup_type='in',
+        exclude=True)
+
+    # indicator_period_actual_null = StickyBooleanFilter(
+    #     name='resultindicator__resultindicatorperiod__actual__isnull',
+    #     lookup_type='exact')
+
+    indicator_period_actual_null = StickyBooleanFilter(
+        lookup_type='isnull',
+        name='resultindicator__resultindicatorperiod__actual')
 
     # default filters
     activity_scope = CommaSeparatedCharFilter(

@@ -114,6 +114,17 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
         return qs.filter(final_filters)
 
 
+
+class StickyBooleanFilter(BooleanFilter):
+    """
+    Comma separated filter for lookups like 'exact', 'iexact', etc..
+    """
+    def filter(self, qs, value):
+        qs._next_is_sticky()
+
+        return super(StickyBooleanFilter, self).filter(qs, value)
+
+
 class CommaSeparatedDateRangeFilter(Filter):
 
     def filter(self, qs, value):
