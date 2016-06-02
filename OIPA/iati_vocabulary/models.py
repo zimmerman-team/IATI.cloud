@@ -46,7 +46,7 @@ class BudgetIdentifierVocabulary(models.Model):
 
 class RegionVocabulary(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
     def __unicode__(self,):
@@ -54,7 +54,7 @@ class RegionVocabulary(models.Model):
 
 class HumanitarianScopeVocabulary(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
     def __unicode__(self,):

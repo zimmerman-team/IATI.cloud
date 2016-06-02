@@ -51,8 +51,8 @@ class BudgetType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 class BudgetStatus(models.Model):
-    code = models.CharField(primary_key=True, max_length=40)
-    name = models.CharField(max_length=20)
+    code = models.CharField(primary_key=True, max_length=1)
+    name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
     def __unicode__(self,):
@@ -256,7 +256,7 @@ class PolicyMarker(models.Model):
         return "%s" % self.name
 
 class PolicySignificance(models.Model):
-    code = models.CharField(primary_key=True, max_length=40)
+    code = models.CharField(primary_key=True, max_length=1)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
 
