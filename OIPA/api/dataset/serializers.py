@@ -33,6 +33,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'date_updated',
             'last_found_in_registry',
             'iati_standard_version',
+            'sha1',
             'note_count',
             'parse_notes')
 
