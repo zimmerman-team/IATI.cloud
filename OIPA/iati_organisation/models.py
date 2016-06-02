@@ -89,7 +89,7 @@ class BudgetLine(models.Model):
     language = models.ForeignKey(Language, null=True, default=None)
     ref = models.CharField(max_length=150,primary_key=True)
     currency = models.ForeignKey(Currency,null=True)
-    value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
 
@@ -103,7 +103,7 @@ class TotalBudget(models.Model):
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
-    value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
     budget_lines = GenericRelation(
         BudgetLine,
@@ -120,7 +120,7 @@ class RecipientOrgBudget(models.Model):
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
     narratives = GenericRelation(OrganisationNarrative)
-    value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     budget_lines = GenericRelation(
         BudgetLine,
         content_type_field='content_type',
@@ -134,7 +134,7 @@ class RecipientCountryBudget(models.Model):
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
-    value = models.DecimalField(max_digits=12, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
     budget_lines = GenericRelation(
         BudgetLine,
