@@ -7,6 +7,26 @@ import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 
 
+class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
+    xml_meta = {'attributes': ('currency', 'value_date')}
+
+    currency = serializers.CharField(source='currency.code')
+    value_date = serializers.CharField()
+    text = serializers.DecimalField(
+            source='value',
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+            )
+
+    class Meta():
+        fields = (
+                'text',
+                'value_date',
+                'currency',
+                )
+
+
 class IsoDateSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('iso_date',)}
 
@@ -68,25 +88,6 @@ class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.C
 class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetSerializer):
     xml_meta = {'attributes': ('type',)}
 
-    class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
-        xml_meta = {'attributes': ('currency', 'value_date')}
-
-        currency = serializers.CharField(source='currency.code')
-        value_date = serializers.CharField()
-        text = serializers.DecimalField(
-            source='value',
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-        )
-
-        class Meta(activity_serializers.BudgetSerializer.ValueSerializer.Meta):
-            fields = (
-                'text',
-                'value_date',
-                'currency',
-            )
-
     value = ValueSerializer(source='*')
     type = serializers.CharField(source='type.code')
     status = serializers.CharField(source='status.code')
@@ -103,6 +104,22 @@ class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetS
             'value',
         )
 
+class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementSerializer):
+    xml_meta = {'attributes': ('type',)}
+
+    value = ValueSerializer(source='*')
+    type = serializers.CharField(source='type.code')
+
+    period_start = IsoDateSerializer()
+    period_end = IsoDateSerializer()
+
+    class Meta(activity_serializers.PlannedDisbursementSerializer.Meta):
+        fields = (
+            'type',
+            'period_start',
+            'period_end',
+            'value',
+        )
 
 class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityDateSerializer):
     xml_meta = {'attributes': ('type', 'iso_date')}
@@ -346,25 +363,6 @@ class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
 
 
 class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
-    class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
-        xml_meta = {'attributes': ('currency', 'value_date',)}
-
-        currency = serializers.CharField(source='currency.code')
-        value_date = serializers.CharField()
-        text = serializers.DecimalField(
-            source='value',
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-        )
-
-        class Meta(activity_serializers.BudgetSerializer.ValueSerializer.Meta):
-            fields = (
-                'text',
-                'value_date',
-                'currency',
-            )
-
     xml_meta = {'attributes': ('ref', 'type',)}
 
     transaction_type = CodelistSerializer()
@@ -442,6 +440,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     default_tied_status = CodelistSerializer()
 
     budget = BudgetSerializer(many=True, source='budget_set')
+    planned_disbursement = PlannedDisbursementSerializer(many=True, source='planned_disbursement_set')
 
     capital_spend = CapitalSpendSerializer()
     transaction = TransactionSerializer(
@@ -485,7 +484,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            # 'planned_disbursement',
+            'planned_disbursement',
             'budget',
             'capital_spend',
             'transaction',

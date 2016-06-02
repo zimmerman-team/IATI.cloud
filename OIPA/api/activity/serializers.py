@@ -16,6 +16,21 @@ from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
+class ValueSerializer(serializers.Serializer):
+    currency = CodelistSerializer()
+    date = serializers.CharField(source='value_date')
+    value = serializers.DecimalField(
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+            )
+
+    class Meta:
+        fields = (
+                'value',
+                'date',
+                'currency',
+                )
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,22 +67,6 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    class ValueSerializer(serializers.Serializer):
-        currency = CodelistSerializer()
-        date = serializers.CharField(source='value_date')
-        value = serializers.DecimalField(
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-        )
-
-        class Meta:
-            model = iati_models.Budget
-            fields = (
-                'value',
-                'date',
-                'currency',
-            )
 
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
@@ -79,6 +78,20 @@ class BudgetSerializer(serializers.ModelSerializer):
         fields = (
             'type',
             'status',
+            'period_start',
+            'period_end',
+            'value',
+        )
+
+class PlannedDisbursementSerializer(serializers.ModelSerializer):
+    value = ValueSerializer(source='*')
+    type = CodelistSerializer()
+
+    class Meta:
+        model = iati_models.PlannedDisbursement
+
+        fields = (
+            'type',
             'period_start',
             'period_end',
             'value',
@@ -492,7 +505,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # TODO ; add country-budget-items serializer
     # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
 
-    humanitarian_scope = serializers.HumanitarianScopeSerializer(many=True,source="?")
+    humanitarian_scope = HumanitarianScopeSerializer(many=True)
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,
@@ -505,9 +518,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     budgets = BudgetSerializer(many=True, source='budget_set')
 
-    # TODO ; add planned-disbursement serializer
     # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
-    # planned_disbursement = serializers.PlannedDisbursementSerializer(many=True,source="?")
+    planned_disbursements = PlannedDisbursementSerializer(many=True, source='planned_disbursement_set')
 
     capital_spend = CapitalSpendSerializer()
 
@@ -569,14 +581,14 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'locations',
             'sectors',
             # 'country_budget_items',
-            # 'humanitarian_scope',
+            'humanitarian_scope',
             'policy_markers',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            # 'planned_disbursement',
+            'planned_disbursements',
             'budgets',
             'capital_spend',
             'transactions',

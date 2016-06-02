@@ -253,8 +253,9 @@ class IatiParser(object):
         return None
 
     # register last seen model of this type. Is overwritten on later encounters
-    def register_model(self, key, model):
+    def register_model(self, key, model=None):
         if isinstance(key, Model):
+            model = key
             key = key.__class__.__name__
 
         if key in self.model_store:

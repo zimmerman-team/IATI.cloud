@@ -338,9 +338,10 @@ class ActivityPolicyMarker(models.Model):
     vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
     vocabulary_uri = models.URLField(null=True, blank=True)
     significance = models.ForeignKey(
+        PolicySignificance,
         null=True,
         blank=True,
-        PolicySignificance)
+        )
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -539,21 +540,6 @@ class ContactInfoTelephone(models.Model):
 #     def __unicode__(self,):
 #         return "%s - %s" % (self.code, self.name)
 
-
-class PlannedDisbursement(models.Model):
-    budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
-    activity = models.ForeignKey(Activity)
-    period_start = models.CharField(max_length=100, default="")
-    period_end = models.CharField(max_length=100, default="")
-    value_date = models.DateField(null=True, blank=True)
-    value = models.DecimalField(max_digits=15, decimal_places=2)
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
-    value_string = models.CharField(max_length=50)
-    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
-    # updated = models.DateField(null=True, default=None) deprecated
-
-    def __unicode__(self,):
-        return "value: %s - period_start: %s - period_end: %s" % (self.value, self.period_start, self.period_end)
 
 
 class RelatedActivity(models.Model):
@@ -755,6 +741,136 @@ class Budget(models.Model):
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
+
+class PlannedDisbursement(models.Model):
+
+    activity = models.ForeignKey(Activity)
+    type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
+    period_start = models.DateField(blank=True, default=None)
+    period_end = models.DateField(blank=True, default=None)
+    value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    value_string = models.CharField(max_length=50)
+    value_date = models.DateField(null=True, blank=True, default=None)
+    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+
+    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+
+    def __unicode__(self,):
+        return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
+
+    # budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
+    # activity = models.ForeignKey(Activity)
+    # period_start = models.CharField(max_length=100, default="")
+    # period_end = models.CharField(max_length=100, default="")
+    # value_date = models.DateField(null=True, blank=True)
+    # value = models.DecimalField(max_digits=15, decimal_places=2)
+    # xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
+    # value_string = models.CharField(max_length=50)
+    # currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+    # # updated = models.DateField(null=True, default=None) deprecated
+
+    # def __unicode__(self,):
+    #     return "value: %s - period_start: %s - period_end: %s" % (self.value, self.period_start, self.period_end)
+
+class PlannedDisbursementProvider(models.Model):
+    ref = models.CharField(blank=True, default="", max_length=250)
+    normalized_ref = models.CharField(max_length=120, default="")
+
+    organisation = models.ForeignKey(
+        Organisation,
+        related_name="planned_disbursement_providing_organisation",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None)
+    provider_activity = models.ForeignKey(
+        Activity,
+        related_name="planned_disbursement_provider_activity",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None)
+    provider_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='provider-activity-id')
+
+    planned_disbursement = models.OneToOneField(
+        PlannedDisbursement,
+        related_name="provider_organisation")
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
+
+    def __unicode__(self, ):
+        return "%s - %s" % (self.ref,
+                            self.provider_activity_ref,)
+
+
+class PlannedDisbursementReceiver(models.Model):
+    ref = models.CharField(blank=True, default="", max_length=250)
+    normalized_ref = models.CharField(max_length=120, default="")
+
+    organisation = models.ForeignKey(
+        Organisation,
+        related_name="planned_disbursement_receiving_organisation",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None)
+    receiver_activity = models.ForeignKey(
+        Activity,
+        related_name="planned_disbursement_receiver_activity",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None)
+    receiver_activity_ref = models.CharField(
+        db_index=True,
+        max_length=200,
+        null=True,
+        blank=True,
+        default="",
+        verbose_name='receiver-activity-id')
+
+    planned_disbursement = models.OneToOneField(
+        PlannedDisbursement,
+        related_name="receiver_organisation")
+
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+    # first narrative
+    primary_name = models.CharField(
+        max_length=250,
+        null=False,
+        blank=True,
+        default="",
+        db_index=True)
+
+    def __unicode__(self, ):
+        return "%s - %s" % (self.ref,
+                            self.receiver_activity_ref,)
 
 class Condition(models.Model):
     activity = models.ForeignKey(Activity)

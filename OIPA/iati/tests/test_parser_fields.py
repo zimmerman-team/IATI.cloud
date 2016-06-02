@@ -95,7 +95,7 @@ def create_parsers(versions=["2.01", "1.05"]):
 
 
 def setUpModule():
-    fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
+    fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)

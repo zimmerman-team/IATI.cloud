@@ -12,6 +12,8 @@ from geodata.models import Country, Region
 from iati.parser import post_save
 from currency_convert import convert
 
+from iati.parser.higher_order_parser import provider_org, receiver_org
+
 
 class Parse(IatiParser):
 
@@ -22,6 +24,7 @@ class Parse(IatiParser):
 
     def add_narrative(self, element, parent):
         # set on activity (if set)
+
         default_lang = self.default_lang
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
@@ -1164,7 +1167,7 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         planned_disbursement = models.PlannedDisbursement()
         planned_disbursement.activity = activity
-        planned_disbursement.budget_type = budget_type
+        planned_disbursement.type = budget_type
 
         self.register_model('PlannedDisbursement', planned_disbursement)
          
@@ -1226,6 +1229,50 @@ class Parse(IatiParser):
         planned_disbursement.value_date = value_date
         planned_disbursement.currency = currency
          
+        return element
+
+    def iati_activities__iati_activity__planned_disbursement__provider_org(self, element):
+        """attributes:
+        provider-activity-id:BB-BBB-123456789-1234AA
+        ref:BB-BBB-123456789
+
+        tag:provider-org"""
+        
+        return provider_org(
+            self.get_model('PlannedDisbursement'),
+            models.PlannedDisbursementProvider(),
+            'planned_disbursement',
+        )(element)
+
+    def iati_activities__iati_activity__planned_disbursement__provider_org__narrative(self, element):
+        """attributes:
+
+        tag:narrative"""
+        planned_disbursement_provider = self.get_model('PlannedDisbursementProvider')
+        self.add_narrative(element, planned_disbursement_provider)
+
+        return element
+
+    def iati_activities__iati_activity__planned_disbursement__receiver_org(self, element):
+        """attributes:
+        receiver-activity-id:BB-BBB-123456789-1234AA
+        ref:BB-BBB-123456789
+
+        tag:receiver-org"""
+
+        return receiver_org(
+            self.get_model('PlannedDisbursement'),
+            models.PlannedDisbursementReceiver(),
+            'planned_disbursement',
+        )(element)
+
+    def iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(self, element):
+        """attributes:
+
+        tag:narrative"""
+        planned_disbursement_receiver = self.get_model('PlannedDisbursementReceiver')
+        self.add_narrative(element, planned_disbursement_receiver)
+
         return element
 
     def iati_activities__iati_activity__capital_spend(self, element):
@@ -1344,24 +1391,13 @@ class Parse(IatiParser):
         ref:BB-BBB-123456789
 
         tag:provider-org"""
-        ref = element.attrib.get('ref', '')
-        provider_activity = element.attrib.get('provider-activity-id')
 
-        normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
-
-        transaction = self.get_model('Transaction')
-
-        transaction_provider = transaction_models.TransactionProvider()
-        transaction_provider.transaction = transaction
-        transaction_provider.ref = ref
-        transaction_provider.normalized_ref = normalized_ref
-        transaction_provider.organisation = organisation
-        transaction_provider.provider_activity_ref = provider_activity
-        transaction_provider.provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity)
-
-        self.register_model('TransactionProvider', transaction_provider)
-        return element
+        return provider_org(
+            self,
+            self.get_model('Transaction'),
+            transaction_models.TransactionProvider(),
+            'transaction',
+        )(element)
 
     def iati_activities__iati_activity__transaction__provider_org__narrative(self, element):
         """attributes:
@@ -1382,34 +1418,19 @@ class Parse(IatiParser):
         ref:AA-AAA-123456789
 
         tag:receiver-org"""
-        ref = element.attrib.get('ref', '')
-        receiver_activity = element.attrib.get('receiver-activity-id')
 
-        normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
-
-        transaction = self.get_model('Transaction')
-
-        transaction_receiver = transaction_models.TransactionReceiver()
-        transaction_receiver.transaction = transaction
-        transaction_receiver.ref = ref
-        transaction_receiver.normalized_ref = normalized_ref
-        transaction_receiver.organisation = organisation
-        transaction_receiver.receiver_activity_ref = receiver_activity
-        transaction_receiver.receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity) 
-
-        # update existing  transaction receiver-activity foreign keys happens post_save
-
-        self.register_model('TransactionReceiver', transaction_receiver)
-        return element
-
+        return receiver_org(
+            self,
+            self.get_model('Transaction'),
+            transaction_models.TransactionReceiver(),
+            'transaction',
+        )(element)
 
     def iati_activities__iati_activity__transaction__receiver_org__narrative(self, element):
         """attributes:
 
-        tag:narrative
-        """
-        # TODO: make this more transparent by changing data structure
+        tag:narrative"""
+        # TODO: make this more transparant in data structure or handling
         # transaction_receiver = self.get_model('Transaction', -2)
         transaction_receiver = self.get_model('TransactionReceiver')
         self.add_narrative(element, transaction_receiver)
@@ -1417,6 +1438,7 @@ class Parse(IatiParser):
         transaction_receiver.primary_name = self.get_primary_name(element, transaction_receiver.primary_name)
 
         return element
+
 
     def iati_activities__iati_activity__transaction__disbursement_channel(self, element):
         """attributes:
