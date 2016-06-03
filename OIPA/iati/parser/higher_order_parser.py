@@ -11,6 +11,7 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
     def func(element):
         ref = element.attrib.get('ref', '')
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         provider_activity_id = element.attrib.get('provider-activity-id')
         provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity_id)
 
@@ -19,6 +20,7 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
         setattr(provider_model, fk_name, parent_model)
         provider_model.ref = ref
+        provider_model.type = org_type
         provider_model.normalized_ref = normalized_ref
         provider_model.organisation = organisation
         provider_model.provider_activity_ref = provider_activity

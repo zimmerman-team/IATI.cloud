@@ -71,6 +71,7 @@ class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.D
     format = serializers.CharField(source='file_format.code')
     category = DocumentCategorySerializer(many=True, source='categories')
     title = NarrativeContainerXMLSerializer(source="documentlinktitle_set", many=True)
+    document_date = IsoDateSerializer()
 
     class Meta(activity_serializers.DocumentLinkSerializer.Meta):
         fields = (
@@ -338,32 +339,36 @@ class LocationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Locat
     #     pass
 
 class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
-    xml_meta = {'attributes': ('ref', 'provider_activity_id',)}
+    xml_meta = {'attributes': ('ref', 'provider_activity_id', 'type')}
 
+    type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(transaction_serializers.TransactionProviderSerializer.Meta):
         fields = (
             'ref',
             'provider_activity_id',
+            'type',
             'narrative'
         )
 
 class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionReceiverSerializer):
-    xml_meta = {'attributes': ('ref', 'receiver_activity_id',)}
+    xml_meta = {'attributes': ('ref', 'receiver_activity_id', 'type')}
 
+    type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
     class Meta(transaction_serializers.TransactionReceiverSerializer.Meta):
         fields = (
             'ref',
             'receiver_activity_id',
+            'type',
             'narrative'
         )
 
 
 class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
-    xml_meta = {'attributes': ('ref', 'type',)}
+    xml_meta = {'attributes': ('ref', 'humanitarian',)}
 
     transaction_type = CodelistSerializer()
     description = NarrativeContainerXMLSerializer()
@@ -378,6 +383,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     value = ValueSerializer(source='*')
     transaction_date = IsoDateSerializer()
     disbursement_channel = CodelistSerializer()
+    humanitarian = serializers.BooleanField()
 
     class Meta(transaction_serializers.TransactionSerializer.Meta):
         fields = (

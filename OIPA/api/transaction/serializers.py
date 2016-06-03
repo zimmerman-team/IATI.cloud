@@ -9,6 +9,7 @@ from api.activity.serializers import ActivitySerializer
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
+    type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
@@ -19,6 +20,7 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
         model = models.TransactionProvider
         fields = (
             'ref',
+            'type',
             'provider_activity',
             'provider_activity_id',
             'narratives'
@@ -26,6 +28,7 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
+    type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
@@ -36,6 +39,7 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
         model = models.TransactionReceiver
         fields = (
             'ref',
+            'type',
             'receiver_activity',
             'receiver_activity_id',
             'narratives'
@@ -69,11 +73,13 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
     description = TransactionDescriptionSerializer()
+    humanitarian = serializers.BooleanField()
 
     class Meta:
         model = models.Transaction
         fields = (
             'ref',
+            'humanitarian',
             'url',
             'activity',
             'aid_type',

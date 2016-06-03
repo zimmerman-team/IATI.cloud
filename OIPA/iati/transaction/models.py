@@ -16,7 +16,7 @@ from iati_codelists.models import TiedStatus
 from iati_codelists.models import Currency
 from iati_codelists.models import Sector
 from iati_codelists.models import TransactionType
-from iati_organisation.models import Organisation
+from iati_organisation.models import Organisation, OrganisationType
 from iati.models import Activity
 from iati.models import Narrative
 
@@ -34,6 +34,8 @@ class Transaction(models.Model):
     value_string = models.CharField(max_length=50)
     currency = models.ForeignKey(Currency)
     value_date = models.DateField()
+
+    humanitarian = models.NullBooleanField(null=True, blank=True)
 
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
@@ -74,6 +76,13 @@ class TransactionProvider(models.Model):
         null=True,
         blank=True,
         default=None)
+    type = models.ForeignKey(
+        OrganisationType, 
+        null=True, 
+        default=None, 
+        blank=True
+    )
+
     provider_activity = models.ForeignKey(
         Activity,
         related_name="transaction_provider_activity",
@@ -122,6 +131,13 @@ class TransactionReceiver(models.Model):
         null=True,
         blank=True,
         default=None)
+    type = models.ForeignKey(
+        OrganisationType, 
+        null=True, 
+        default=None, 
+        blank=True
+    )
+
     receiver_activity = models.ForeignKey(
         Activity,
         related_name="transaction_receiver_activity",
@@ -185,6 +201,7 @@ class TransactionSector(models.Model):
         blank=True,
         default=None,
         on_delete=models.CASCADE)
+    vocabulary_uri = models.URLField(null=True, blank=True)
 
     reported_on_transaction = models.BooleanField(default=True)
 
@@ -228,6 +245,7 @@ class TransactionRecipientRegion(models.Model):
         blank=True, 
         default=1,
         on_delete=models.CASCADE)
+    vocabulary_uri = models.URLField(null=True, blank=True)
 
     reported_on_transaction = models.BooleanField(default=True)
 

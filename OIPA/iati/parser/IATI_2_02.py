@@ -69,7 +69,7 @@ class Parse(IatiParser):
 
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         hierarchy = element.attrib.get('hierarchy')
-        humanitarian = element.attrib.get('hierarchy', False)
+        humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
@@ -194,7 +194,7 @@ class Parse(IatiParser):
         reporting_organisation.type = org_type  
         reporting_organisation.activity = activity
         reporting_organisation.organisation = organisation
-        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
+        reporting_organisation.secondary_reporter = self.makeBoolNone(secondary_reporter)
 
         self.register_model('ActivityReportingOrganisation', reporting_organisation)
     
@@ -1292,11 +1292,13 @@ class Parse(IatiParser):
 
         tag:transaction"""
         ref = element.attrib.get('ref')
+        humanitarian = element.attrib.get('hierarchy', False)
 
         activity = self.get_model('Activity')
         transaction = transaction_models.Transaction()
         transaction.activity = activity
         transaction.ref = ref
+        transaction.humanitarian = self.makeBoolNone(humanitarian)
 
         self.register_model('Transaction', transaction)
         return element
@@ -1462,6 +1464,7 @@ class Parse(IatiParser):
         tag:sector"""
         sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
         vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
 
         if not sector: raise self.RequiredFieldError("code", "transaction-sector: code is required")
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "transaction-sector: vocabulary is required")
@@ -1471,6 +1474,7 @@ class Parse(IatiParser):
         transaction_sector.transaction = transaction
         transaction_sector.sector = sector
         transaction_sector.vocabulary = vocabulary
+        transaction_sector.vocabulary_uri = vocabulary_uri
         transaction_sector.percentage = 100
         transaction_sector.reported_on_transaction = True
 
@@ -1506,6 +1510,7 @@ class Parse(IatiParser):
         region = self.get_or_none(Region, code=element.attrib.get('code'))
         # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1'))
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
 
         if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
         if not vocabulary: raise self.RequiredFieldError("vocabulary", "recipient-region: vocabulary is required")
@@ -1515,6 +1520,7 @@ class Parse(IatiParser):
         transaction_recipient_region.transaction = transaction
         transaction_recipient_region.region = region
         transaction_recipient_region.vocabulary = vocabulary
+        transaction_recipient_region.vocabulary_uri = vocabulary_uri
         transaction_recipient_region.percentage = 100
         transaction_recipient_region.reported_on_transaction = True
 
@@ -1603,6 +1609,22 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
+
+    def iati_activities__iati_activity__document_link__document_date(self, element):
+        """attributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+
+        tag:document-link"""
+        iso_date = self.validate_date(element.attrib.get('iso-date'))
+
+        if not iso_date: raise self.RequiredFieldError("iso-date", "document_link: iso-date is required")
+
+        document_link = self.pop_model('DocumentLink')
+        document_link.iso_date = iso_date
+
+        self.register_model('DocumentLink', document_link)
+        return element
 
     def iati_activities__iati_activity__document_link__title(self, element):
         """attributes:

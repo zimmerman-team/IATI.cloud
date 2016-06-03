@@ -575,9 +575,10 @@ class DocumentLink(models.Model):
         DocumentCategory,
         through="DocumentLinkCategory")
 
+    iso_date = models.DateField(null=True, blank=True)
+
     def __unicode__(self,):
         return "url: %s" % self.url
-
 
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
@@ -788,6 +789,13 @@ class PlannedDisbursementProvider(models.Model):
         null=True,
         blank=True,
         default=None)
+    type = models.ForeignKey(
+        OrganisationType, 
+        null=True, 
+        default=None, 
+        blank=True
+    )
+
     provider_activity = models.ForeignKey(
         Activity,
         related_name="planned_disbursement_provider_activity",
@@ -836,6 +844,13 @@ class PlannedDisbursementReceiver(models.Model):
         null=True,
         blank=True,
         default=None)
+    type = models.ForeignKey(
+        OrganisationType, 
+        null=True, 
+        default=None, 
+        blank=True
+    )
+
     receiver_activity = models.ForeignKey(
         Activity,
         related_name="planned_disbursement_receiver_activity",

@@ -94,6 +94,14 @@ class IatiParser(object):
             return True
         return False
 
+    def makeBoolNone(self, text):
+        if text == '1':
+            return True
+        elif text == '0':
+            return False
+
+        return None
+
     def guess_number(self,number_string):
         #first strip non numeric values, except for -.,
         decimal_string = re.sub(r'[^\d.,-]+', '', number_string)

@@ -49,7 +49,8 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'url',
             'format',
             'categories',
-            'title'
+            'title',
+            'document_date',
         )
 
 
