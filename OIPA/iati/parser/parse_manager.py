@@ -50,6 +50,8 @@ class ParseManager():
                 line_number=None
             )
             note.save()
+            self.source.note_count = 1
+            self.source.save()
             return
 
         iati_file = response.read()
@@ -79,6 +81,8 @@ class ParseManager():
                 line_number=None
             )
             note.save()
+            self.source.note_count = 1
+            self.source.save()
             return
 
     def _prepare_parser(self, root, source):

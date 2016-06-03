@@ -161,6 +161,8 @@ class IatiParser(object):
         self.post_save_file(self.iati_source)
         
         if settings.ERROR_LOGS_ENABLED:
+            self.iati_source.note_count = len(self.errors)
+            self.iati_source.save()
             IatiXmlSourceNote.objects.filter(source=self.iati_source).delete()
             IatiXmlSourceNote.objects.bulk_create(self.errors)
     

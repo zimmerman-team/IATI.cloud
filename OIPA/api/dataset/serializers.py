@@ -25,7 +25,6 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()
 
-    note_count =  SerializerMethodField()
     notes = DatasetNoteSerializer(many=True, source="iatixmlsourcenote_set")
 
     class Meta:
@@ -57,6 +56,3 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(xml_source_ref=obj.ref).count()
-
-    def get_note_count(self, obj):
-        return IatiXmlSourceNote.objects.filter(source=obj).count()
