@@ -46,7 +46,7 @@ class ParseManager():
                 iati_identifier="n/a",
                 model="URL error",
                 field="URL down or does not exist",
-                exception_type=error_type,
+                exception_type='UrlError',
                 line_number=None
             )
             note.save()
@@ -72,9 +72,11 @@ class ParseManager():
             self.valid_source = False
             note = IatiXmlSourceNote(
                 source=self.source,
-                model='source error',
+                iati_identifier="n/a",
+                model="Source error",
+                field=e.message,
                 exception_type='XMLSyntaxError',
-                note=e.message
+                line_number=None
             )
             note.save()
             return
