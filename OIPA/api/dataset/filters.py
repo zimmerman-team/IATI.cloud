@@ -19,8 +19,13 @@ class DatasetFilter(FilterSet):
         lookup_type='in',
         name='publisher__org_id')
 
-    parse_notes = CharFilter(
-        lookup_type='icontains')
+    note_exception_type = CharFilter(
+        lookup_type='icontains',
+        name='iatixmlsourcenote__exception_type')
+
+    note_field = CharFilter(
+        lookup_type='icontains',
+        name='iatixmlsourcenote__field')
 
     note_count_gte = NumberFilter(
         lookup_type='gte',
