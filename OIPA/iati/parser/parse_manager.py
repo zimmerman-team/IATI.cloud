@@ -42,7 +42,7 @@ class ParseManager():
         if not response or response.code != 200:
             self.valid_source = False
             note = IatiXmlSourceNote(
-                source=self.iati_source,
+                source=self.source,
                 iati_identifier="n/a",
                 model="URL error",
                 field="URL down or does not exist",
