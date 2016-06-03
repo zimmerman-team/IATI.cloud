@@ -175,13 +175,15 @@ class IatiParser(object):
             return
 
         if self.iati_source.type == 1:
-            iati_identifier = self.get_model('Activity')
-            iati_identifier = iati_identifier.id
+            activity = self.get_model('Activity')
+            if activity:
+                iati_identifier = activity.id
         else:
-            iati_identifier = self.get_model('Organisation')
-            iati_identifier = iati_identifier.id
+            organisation = self.get_model('Organisation')
+            if organisation:
+                iati_identifier = organisation.id
         
-        if not iati_identifier:
+        if not iati_identifier and self.identifier:
             iati_identifier = self.identifier
 
         note = IatiXmlSourceNote(

@@ -85,7 +85,7 @@ class IatiXmlSource(models.Model):
 
 class IatiXmlSourceNote(models.Model):
     source = models.ForeignKey(IatiXmlSource)
-    iati_identifier = models.CharField(max_length=20, null=False, blank=False)
+    iati_identifier = models.CharField(max_length=100, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)
     field = models.TextField(max_length=1000, default=0, null=False)
