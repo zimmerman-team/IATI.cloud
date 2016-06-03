@@ -269,18 +269,28 @@ class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serialize
         )
 
 
-class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
+class ResultIndicatorPeriodLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodLocationSerializer):
+    xml_meta = {'attributes': ('ref',)}
+
+class ResultIndicatorPeriodDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodDimensionSerializer):
+    xml_meta = {'attributes': ('name', 'value')}
+
+class ResultIndicatorPeriodTargetXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
     xml_meta = {'attributes': ('value',)}
 
+    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
+    dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
 
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
     xml_meta = {'attributes': ('value',)}
 
+    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
+    dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
 
 class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
-    target = ResultIndicatorPeriodTargetSerializer(source="*")
+    target = ResultIndicatorPeriodTargetXMLSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
     period_start = IsoDateSerializer()

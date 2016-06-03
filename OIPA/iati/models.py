@@ -685,12 +685,44 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.CharField(max_length=50, default=None, blank=True, null=True)
-    actual = models.CharField(max_length=50, default=None, blank=True, null=True)
+    target = models.DecimalField(max_digits=25, decimal_places=10, null=True, blank=True)
+    actual = models.DecimalField(max_digits=25, decimal_places=10, null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s" % self.result_indicator
+        return "target: %s, actual: %s" % (self.target, self.actual)
 
+class ResultIndicatorPeriodTargetLocation(models.Model):
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    ref = models.CharField(max_length=50)
+    location = models.ForeignKey('Location')
+
+    def __unicode__(self,):
+        return "%s" % self.ref
+
+class ResultIndicatorPeriodActualLocation(models.Model):
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    ref = models.CharField(max_length=50)
+    location = models.ForeignKey('Location')
+
+    def __unicode__(self,):
+        return "%s" % self.ref
+
+
+class ResultIndicatorPeriodTargetDimension(models.Model):
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+
+    def __unicode__(self,):
+        return "%s: %s" % (self.name, self.value)
+
+class ResultIndicatorPeriodActualDimension(models.Model):
+    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+
+    def __unicode__(self,):
+        return "%s: %s" % (self.name, self.value)
 
 class ResultIndicatorPeriodTargetComment(models.Model):
     result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)

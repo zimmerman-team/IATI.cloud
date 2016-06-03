@@ -1958,10 +1958,6 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    # """attributes:
-    # value:10
-
-    # tag:target"""
     def iati_activities__iati_activity__result__indicator__period__target(self, element):
         value = element.attrib.get('value')
 
@@ -1973,9 +1969,44 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    # """attributes:
+    def iati_activities__iati_activity__result__indicator__period__target__location(self, element):
 
-    # tag:comment"""
+        ref = element.attrib.get('ref')
+
+        if not ref: raise self.RequiredFieldError("ref", "result_indicator_period_target_location: ref is required")
+
+        locations = self.get_model_list('Location')
+        location = filter(lambda x: x.ref == ref, locations)
+
+        if not len(location): raise self.RequiredFieldError("location", "result_indicator_period_target_location: location is required")
+
+        period = self.get_model('ResultIndicatorPeriod')
+        target_location = models.ResultIndicatorPeriodTargetLocation()
+        target_location.result_indicator_period = period
+        target_location.ref = ref
+        target_location.location = location[0]
+
+        self.register_model('ResultIndicatorPeriodTargetLocation', target_location)
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__target__dimension(self, element):
+
+        name = element.attrib.get('name')
+        value = element.attrib.get('value')
+
+        if not name: raise self.RequiredFieldError("name", "result_indicator_period_target_dimension: name is required")
+        if not value: raise self.RequiredFieldError("value", "result_indicator_period_target_dimension: value is required")
+
+        period = self.get_model('ResultIndicatorPeriod')
+
+        target_dimension = models.ResultIndicatorPeriodTargetDimension()
+        target_dimension.result_indicator_period = period
+        target_dimension.name = name
+        target_dimension.value = value
+
+        self.register_model('ResultIndicatorPeriodTargetDimension', target_dimension)
+        return element
+
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period_target_comment = models.ResultIndicatorPeriodTargetComment()
@@ -2008,9 +2039,45 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
-    # """attributes:
+    def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):
 
-    # tag:comment"""
+        ref = element.attrib.get('ref')
+
+        if not ref: raise self.RequiredFieldError("ref", "result_indicator_period_period_end: iso-date is required")
+
+        locations = self.get_model_list('Location')
+        location = filter(lambda x: x.ref == ref, locations)
+
+        if not len(location): raise self.RequiredFieldError("ref", "result_indicator_period_period_end: iso-date is required")
+
+        period = self.get_model('ResultIndicatorPeriod')
+
+        actual_location = models.ResultIndicatorPeriodActualLocation()
+        actual_location.result_indicator_period = period
+        actual_location.ref = ref
+        actual_location.location = location[0]
+
+        self.register_model('ResultIndicatorPeriodActualLocation', result_indicator_period_actual_comment)
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__actual__dimension(self, element):
+
+        name = element.attrib.get('name')
+        value = element.attrib.get('value')
+
+        if not name: raise self.RequiredFieldError("name", "result_indicator_period_actual_dimension: name is required")
+        if not value: raise self.RequiredFieldError("value", "result_indicator_period_actual_dimension: value is required")
+
+        period = self.get_model('ResultIndicatorPeriod')
+
+        actual_dimension = models.ResultIndicatorPeriodActualDimension()
+        actual_dimension.result_indicator_period = period
+        actual_dimension.name = name
+        actual_dimension.value = value
+
+        self.register_model('ResultIndicatorPeriodActualDimension', actual_dimension)
+        return element
+
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period_actual_comment = models.ResultIndicatorPeriodActualComment()

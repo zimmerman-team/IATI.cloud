@@ -349,17 +349,39 @@ class ResultTitleSerializer(serializers.ModelSerializer):
         )
 
 
+
+class ResultIndicatorPeriodLocationSerializer(serializers.Serializer):
+    ref = serializers.CharField()
+
+    class Meta:
+        fields = (
+            'ref',
+        )
+
+class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.DecimalField(
+        max_digits=25,
+        decimal_places=10,
+        coerce_to_string=False)
+
+    class Meta:
+        fields = (
+            'name',
+            'value',
+        )
+
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
-    # TODO 2.02 : location = 
-    # TODO 2.02 : dimension = 
     value = serializers.CharField(source='target')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
-    # TODO 2.02 : location = 
-    # TODO 2.02 : dimension = 
     value = serializers.CharField(source='actual')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set")
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set")
 
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
