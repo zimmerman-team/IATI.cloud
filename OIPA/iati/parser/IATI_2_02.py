@@ -1807,11 +1807,6 @@ class Parse(IatiParser):
 
         return element
 
-    # """attributes:
-    # measure:1
-    # ascending:1
-
-    # tag:indicator"""
     def iati_activities__iati_activity__result__indicator(self, element):
         measure = self.get_or_none(codelist_models.IndicatorMeasure, code=element.attrib.get('measure')) 
         ascending = element.attrib.get('ascending', '1')
@@ -1827,9 +1822,24 @@ class Parse(IatiParser):
         self.register_model('ResultIndicator', result_indicator)
         return element
 
-    # """attributes:
+    def iati_activities__iati_activity__result__indicator__reference(self, element):
+        vocabulary = self.get_or_none(vocabulary_models.IndicatorVocabulary, code=element.attrib.get('vocabulary')) 
+        code = element.attrib.get('code')
+        indicator_uri = element.attrib.get('indicator_uri')
 
-    # tag:title"""
+        if not vocabulary: raise self.RequiredFieldError("vocabulary", "reference: vocabulary is required")
+        if not code: raise self.RequiredFieldError("code", "reference: code is required")
+
+        result_indicator = self.get_model('ResultIndicator')
+        result_indicator_reference = models.ResultIndicatorReference()
+        result_indicator_reference.result_indicator = result_indicator
+        result_indicator_reference.code = code
+        result_indicator_reference.vocabulary = vocabulary
+        result_indicator_reference.indicatory_uri = indicator_uri
+
+        self.register_model('ResultIndicatorReference', result_indicator_reference)
+        return element
+
     def iati_activities__iati_activity__result__indicator__title(self, element):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_title = models.ResultIndicatorTitle()

@@ -59,3 +59,12 @@ class HumanitarianScopeVocabulary(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
+class IndicatorVocabulary(models.Model):
+    code = models.CharField(primary_key=True, max_length=2)
+    name = models.CharField(max_length=100)
+    description = models.TextField(default="")
+    url = models.URLField()
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)

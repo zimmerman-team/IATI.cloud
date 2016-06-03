@@ -11,13 +11,12 @@ from iati_vocabulary.models import PolicyMarkerVocabulary
 from iati_vocabulary.models import SectorVocabulary
 from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_vocabulary.models import HumanitarianScopeVocabulary
+from iati_vocabulary.models import IndicatorVocabulary
 from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
 
-
-# TODO: separate this
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
     related_content_type = models.ForeignKey(ContentType, related_name='related_agent')
@@ -642,6 +641,13 @@ class ResultIndicator(models.Model):
 
     def __unicode__(self,):
         return "baseline year: %s" % self.baseline_year
+
+class ResultIndicatorReference(models.Model):
+    result_indicator = models.ForeignKey(ResultIndicator)
+    code = models.CharField(max_length=255)
+    vocabulary = models.ForeignKey(IndicatorVocabulary)
+    # TODO: this should be renamed to vocabulary_uri in IATI standard... - 2016-06-03
+    indicator_uri = models.URLField(null=True, blank=True)
 
 
 class ResultIndicatorTitle(models.Model):
