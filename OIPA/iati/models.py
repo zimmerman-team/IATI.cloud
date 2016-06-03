@@ -1039,7 +1039,7 @@ class CrsAdd(models.Model):
 class CrsAddOtherFlags(models.Model):
     crs_add = models.ForeignKey(CrsAdd)
     other_flags = models.ForeignKey(OtherFlags)
-    other_flags_significance = models.IntegerField(null=True, blank=True, default=None)
+    other_flags_significance = models.BooleanField(default=True)
 
     def __unicode__(self,):
         return "%s" % self.id

@@ -77,3 +77,54 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
 
     return func
 
+
+def activity_field(self, model, activity_model):
+    def func(element):
+
+        model.activity = activity_model
+        self.register_model(model)
+
+        return element
+
+    return func
+
+def codelist_field(self, model, codelist_model):
+    def func(element):
+        code = element.attrib.get('code')
+        code_model = self.get_or_none(codelist_model, code=code)
+
+        if not code_model: raise self.RequiredFieldError("code", model, element)
+
+        model.code = code_model
+
+        return element
+
+    return func
+
+
+def compose(*functions):
+    return functools.reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
+
+def parent(parent_model, fk):
+    """
+    set parent model fk on model
+    """
+    def func(model):
+        setattr(model, fk, parent_model)
+        return model
+
+    return func
+
+def code(codelist_model):
+    def func(model, element):
+        code = element.attrib.get('code')
+        code_model = self.get_or_none(codelist_model, code=code)
+
+        if not code_model: raise self.RequiredFieldError("code", model, element)
+
+        model.code = code_model
+
+        return model
+
+    return func
+

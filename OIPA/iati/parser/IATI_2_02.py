@@ -2095,74 +2095,48 @@ class Parse(IatiParser):
 
         return element
 
-    # """attributes:
+    def iati_activities__iati_activity__crs_add(self, element):
+        return activity_field(models.CrsAdd(), self.get_model('Activity'))(element)
 
-    # tag:crs-add"""
-    # def iati_activities__iati_activity__crs_add(self, element):
-    #     model = self.get_func_parent_model()
-    #     crs_add = models.CrsAdd()
-    #     crs_add.activity = model
-    #     self.set_func_model(crs_add)
-         
-    #     return element
+    def iati_activities__iati_activity__crs_add__other_flags(self, element):
 
-    # """attributes:
-    # code:1
-    # significance:1
-
-    # tag:other-flags"""
-    # def iati_activities__iati_activity__crs_add__other_flags(self, element):
-    #     model = self.get_func_parent_model()
-    #     crs_other_flags = models.CrsAddOtherFlags()
-    #     crs_other_flags.crs_add = model
-    #     crs_other_flags.other_flags =  self.cached_db_call(models.OtherFlags,element.attrib.get('code'))
-    #     crs_other_flags.significance = element.attrib.get('significance')
-    #     crs_other_flags.save()
-    #     return element
+        # TODO: compose model, pass element to each method - 2016-06-03
+        return compose(
+            self.register_model,
+            parent(self.get_model('CrsAdd'), 'crs_add')
+        )(models.CrsAddOtherFlags(), element)
 
     # """attributes:
     # rate-1:4
     # rate-2:3
 
     # tag:loan-terms"""
-    # def iati_activities__iati_activity__crs_add__loan_terms(self, element):
-    #     model = self.get_func_parent_model()
-    #     add_loan_terms = models.CrsAddLoanTerms()
-    #     add_loan_terms.crs_add = model
-    #     add_loan_terms.rate_1 = element.attrib.get('rate-1')
-    #     add_loan_terms.rate_2 = element.attrib.get('rate-2')
-    #     self.set_func_model(add_loan_terms)
-    #     return element
+    def iati_activities__iati_activity__crs_add__loan_terms(self, element):
+        return compose(
+            self.register_model,
+            percentage_field('rate-1'),
+            percentage_field('rate-2'),
+        )(self.get_model('CrsAddLoanTerms'), element)
 
-    # """attributes:
-    # code:1
 
-    # tag:repayment-type"""
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.repayment_type = self.cached_db_call(models.LoanRepaymentType,element.attrib.get('code'))
+    def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self, element):
+        return compose(
+            self.register_model,
+            code(codelist_models.LoanRepaymentType),
+        )(self.pop_model('CrsAddLoanTerms'), element)
 
-         
-    #     return element
 
-    # """attributes:
-    # code:4
+    def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self, element):
+        return compose(
+            self.register_model,
+            code(codelist_models.LoanRepaymentPeriod),
+        )(self.pop_model('CrsAddLoanTerms'), element)
 
-    # tag:repayment-plan"""
-    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.repayment_plan = self.cached_db_call(models.LoanRepaymentPeriod,element.attrib.get('code'))
-
-    #     return element
-
-    # """attributes:
-    # iso-date:2013-09-01
-
-    # tag:commitment-date"""
-    # def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self, element):
-    #     model = self.get_func_parent_model()
-    #     model.commitment_date = self.validate_date(element.attrib.get('iso-date'))
-    #     return element
+    def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self, element):
+        return compose(
+            self.register_model,
+            iso_date(codelist_models.LoanRepaymentPeriod),
+        )(self.pop_model('CrsAddLoanTerms'), element)
 
     # """attributes:
     # iso-date:2014-01-01
