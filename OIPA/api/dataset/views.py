@@ -74,4 +74,4 @@ class DatasetDetail(RetrieveAPIView):
         'last_found_in_registry',
         'iati_standard_version',
         'note_count',
-        'parse_notes')
+        'notes')

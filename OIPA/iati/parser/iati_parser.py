@@ -6,10 +6,11 @@ import dateutil.parser
 import re
 from decimal import Decimal, InvalidOperation
 
-from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
+from iati_synchroniser.models import IatiXmlSourceNote
+from django.conf import settings
 
 
 class IatiParser(object):
@@ -158,8 +159,10 @@ class IatiParser(object):
                 self.post_save_models()
 
         self.post_save_file(self.iati_source)
-        self.iati_source.note_count = len(self.errors)
-        self.iati_source.parse_notes = "\n".join(self.errors[:500])
+        
+        if settings.ERROR_LOGS_ENABLED:
+            IatiXmlSourceNote.objects.filter(source=self.iati_source).delete()
+            IatiXmlSourceNote.objects.bulk_create(self.errors)
     
     def post_save_models(self):
         print "override in children"
@@ -167,19 +170,30 @@ class IatiParser(object):
     def post_save_file(self, iati_source):
         print "override in children"
 
-    def append_error(self, error_type, error_message):
-        msg = [self.iati_source.ref, ' | ']
+    def append_error(self, error_type, error_message, sourceline):
+        if not settings.ERROR_LOGS_ENABLED:
+            return
 
         if self.iati_source.type == 1:
-            model = self.get_model('Activity')
+            iati_identifier = self.get_model('Activity')
+            iati_identifier = iati_identifier.id
         else:
-            model = self.get_model('Organisation')
+            iati_identifier = self.get_model('Organisation')
+            iati_identifier = iati_identifier.id
         
-        if model:
-            msg.append(model.id)
+        if not iati_identifier:
+            iati_identifier = self.identifier
 
-        msg.extend([' | ', error_type, ' | ', error_message, '\n'])
-        self.errors.append(''.join(msg))
+        note = IatiXmlSourceNote(
+            source=self.iati_source,
+            iati_identifier=iati_identifier,
+            model="TO DO",
+            field=error_message,
+            exception_type=error_type,
+            line_number=sourceline
+        )
+
+        self.errors.append(note)
 
     def parse(self, element):
         if element == None:
@@ -197,16 +211,16 @@ class IatiParser(object):
             try:
                 elementMethod(element)
             except self.RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.message)
+                self.append_error('RequiredFieldError', e.message, element.sourceline)
                 return
             except self.ValidationError as e:
-                self.append_error('ValidationError', e.message)
+                self.append_error('ValidationError', e.message, element.sourceline)
                 return
             except ValueError as e:
-                self.append_error('ValueError', e.message)
+                self.append_error('ValueError', e.message, element.sourceline)
                 return
             except InvalidOperation as e:
-                self.append_error('InvalidOperation', e.message)
+                self.append_error('InvalidOperation', e.message, element.sourceline)
                 return
             except self.NoUpdateRequired as e:
                 # do nothing, go to next activity
@@ -284,7 +298,7 @@ class IatiParser(object):
                     # if model.__class__.__name__ == "Narrative":
                     #     print(type(model.parent_object))
                 except Exception as e:
-                    self.append_error(str(type(e)), e.message)
+                    self.append_error(str(type(e)), e.message, None)
 
     def remove_brackets(self,function_name):
         result = ""

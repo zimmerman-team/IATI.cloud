@@ -2,7 +2,6 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from iati.parser.parse_manager import ParseManager
 
 
 class Publisher(models.Model):
@@ -35,8 +34,6 @@ class IatiXmlSource(models.Model):
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
-    parse_notes = models.TextField(default="", blank=True, null=False)
-    note_count = models.IntegerField(default=0, null=False)
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
@@ -56,6 +53,7 @@ class IatiXmlSource(models.Model):
     get_parse_activity.short_description = _(u"Parse Activity")
 
     def process(self, force_reparse=False):
+        from iati.parser.parse_manager import ParseManager
         parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
 
@@ -68,6 +66,7 @@ class IatiXmlSource(models.Model):
         """
         process a single activity
         """
+        from iati.parser.parse_manager import ParseManager
         parser = ParseManager(self)
         parser.parse_activity(activity_id)
 
@@ -82,6 +81,15 @@ class IatiXmlSource(models.Model):
         from iati.models import Activity
         Activity.objects.filter(xml_source_ref=self.ref).delete()
         super(IatiXmlSource, self).delete()
+
+
+class IatiXmlSourceNote(models.Model):
+    source = models.ForeignKey(IatiXmlSource)
+    iati_identifier = models.CharField(max_length=20, null=False, blank=False)
+    exception_type = models.CharField(max_length=100, blank=False, null=False)
+    model = models.CharField(max_length=50, null=False, blank=False)
+    field = models.TextField(max_length=1000, default=0, null=False)
+    line_number = models.IntegerField(null=True)
 
 
 class Codelist(models.Model):

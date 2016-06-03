@@ -52,6 +52,8 @@ RQ_QUEUES = {
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'OIPA.wsgi.application'
 
+ERROR_LOGS_ENABLED = False
+
 try:
     from local_settings import *
 except ImportError:

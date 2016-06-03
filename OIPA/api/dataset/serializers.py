@@ -1,11 +1,18 @@
 from rest_framework.serializers import HyperlinkedIdentityField
 from rest_framework.serializers import HyperlinkedRelatedField
-from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import IatiXmlSourceNote
 from api.generics.serializers import DynamicFieldsModelSerializer
 
 from django.core.urlresolvers import reverse
 from iati.models import Activity
+
+
+class DatasetNoteSerializer(ModelSerializer):
+    class Meta:
+        model = IatiXmlSourceNote
+        fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'line_number')
 
 
 class DatasetSerializer(DynamicFieldsModelSerializer):
@@ -17,6 +24,9 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     type = SerializerMethodField()
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()
+
+    note_count =  SerializerMethodField()
+    notes = DatasetNoteSerializer(many=True, source="iatixmlsourcenote_set")
 
     class Meta:
         model = IatiXmlSource
@@ -35,7 +45,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'iati_standard_version',
             'sha1',
             'note_count',
-            'parse_notes')
+            'notes')
 
     def get_type(self, obj):
         return obj.get_type_display()
@@ -47,3 +57,6 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(xml_source_ref=obj.ref).count()
+
+    def get_note_count(self, obj):
+        return IatiXmlSourceNote.objects.filter(source=obj).count()

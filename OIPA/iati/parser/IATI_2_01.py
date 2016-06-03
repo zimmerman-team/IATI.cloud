@@ -63,7 +63,7 @@ class Parse(IatiParser):
         tag:iati-activity"""
 
         id = self._normalize(element.xpath('iati-identifier/text()')[0])
-
+        self.identifier = id
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         hierarchy = element.attrib.get('hierarchy')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -928,7 +928,8 @@ class Parse(IatiParser):
         significance = self.get_or_none(codelist_models.PolicySignificance, code=element.attrib.get('significance')) 
 
         if not code: raise self.RequiredFieldError("code", "policy-marker: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
+        if not vocabulary:
+            vocabulary = self.get_or_none(vocabulary_models.PolicyMarkerVocabulary, code='1')
         if not significance: raise self.RequiredFieldError("significance", "policy-marker: significance is required")
 
         activity = self.get_model('Activity')

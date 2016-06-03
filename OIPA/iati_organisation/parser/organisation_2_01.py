@@ -66,6 +66,7 @@ class Parse(IatiParser):
 
     def iati_organisations__iati_organisation(self, element):
         id = self._normalize(element.xpath('organisation-identifier/text()')[0])
+        self.identifier = id
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))

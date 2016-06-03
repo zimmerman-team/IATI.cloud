@@ -38,11 +38,18 @@ class ParseManager():
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
-
+        from iati_synchroniser.models import IatiXmlSourceNote
         if not response or response.code != 200:
             self.valid_source = False
-            self.source.parse_notes = 'URL down or does not exist'
-            self.source.save()
+            note = IatiXmlSourceNote(
+                source=self.iati_source,
+                iati_identifier="n/a",
+                model="URL error",
+                field="URL down or does not exist",
+                exception_type=error_type,
+                line_number=None
+            )
+            note.save()
             return
 
         iati_file = response.read()
@@ -63,8 +70,13 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, source)
         except etree.XMLSyntaxError as e:
             self.valid_source = False
-            self.source.parse_notes = 'XMLSyntaxError: ' + e.message
-            self.source.save()
+            note = IatiXmlSourceNote(
+                source=self.source,
+                model='source error',
+                exception_type='XMLSyntaxError',
+                note=e.message
+            )
+            note.save()
             return
 
     def _prepare_parser(self, root, source):
