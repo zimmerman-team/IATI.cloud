@@ -174,6 +174,7 @@ class IatiParser(object):
         if not settings.ERROR_LOGS_ENABLED:
             return
 
+        iati_identifier = None
         if self.iati_source.type == 1:
             activity = self.get_model('Activity')
             if activity:
@@ -183,7 +184,7 @@ class IatiParser(object):
             if organisation:
                 iati_identifier = organisation.id
         
-        if not iati_identifier and self.identifier:
+        if not iati_identifier and hasattr(self, 'identifier'):
             iati_identifier = self.identifier
 
         note = IatiXmlSourceNote(
