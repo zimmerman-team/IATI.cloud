@@ -172,12 +172,13 @@ class GroupBy():
         result = map(lambda i: merge([i, dict([
             (
                 field, 
-                data_dict.get(i[field])
+                data_dict.get(str(i[field]))
             )
             ])
             ]), l)
 
         return result
+
 
 class Aggregation():
 
