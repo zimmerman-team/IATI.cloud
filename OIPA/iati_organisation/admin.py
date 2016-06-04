@@ -38,7 +38,7 @@ class OrganisationAdmin(admin.ModelAdmin):
                 org.primary_name = org_names[o]
                 org.save()
 
-        return HttpResponse('Success')
+        return HttpResponse('<html><body>Success</body></html>', content_type='text/html')
 
 
 admin.site.register(Organisation, OrganisationAdmin)

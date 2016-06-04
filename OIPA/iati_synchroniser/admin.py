@@ -127,7 +127,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
             force = True
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
         obj.process(force_reparse=force)
-        return HttpResponse('Success')
+        return HttpResponse('<html><body>Success</body></html>', content_type='text/html')
 
     def add_to_parse_queue(self, request):
         xml_id = request.GET.get('xml_id')
@@ -138,7 +138,6 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
     def parse_activity_view(self, request, activity_id):
         xml_id = request.GET.get('xml_id')
-
         obj = get_object_or_404(IatiXmlSource, id=xml_id)
         obj.process_activity(activity_id)
         return HttpResponse('Success')
