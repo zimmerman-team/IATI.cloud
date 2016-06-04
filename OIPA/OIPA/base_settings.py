@@ -182,6 +182,19 @@ REST_FRAMEWORK = {
     ),
 }
 
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'parser': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    }
+}
+
 GRAPPELLI_ADMIN_TITLE = 'OIPA admin'
 ADMINFILES_UPLOAD_TO = 'csv_files'
 LOGIN_REDIRECT_URL = '/admin/'
