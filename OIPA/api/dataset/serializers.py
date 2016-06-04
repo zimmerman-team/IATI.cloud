@@ -15,6 +15,28 @@ class DatasetNoteSerializer(ModelSerializer):
         fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'line_number')
 
 
+class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
+    url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
+    publisher = HyperlinkedRelatedField(
+        view_name='publishers:publisher-detail',
+        read_only=True)
+    type = SerializerMethodField()
+
+    class Meta:
+        model = IatiXmlSource
+        fields = (
+            'id',
+            'url',
+            'ref',
+            'title',
+            'type',
+            'publisher',
+            'source_url',
+            'iati_standard_version')
+
+    def get_type(self, obj):
+        return obj.get_type_display()
+
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
@@ -30,6 +52,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = IatiXmlSource
         fields = (
+            'id',
             'url',
             'ref',
             'title',
