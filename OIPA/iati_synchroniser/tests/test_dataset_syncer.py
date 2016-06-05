@@ -4,11 +4,16 @@ from iati_synchroniser.dataset_syncer import DatasetSyncer
 from iati_synchroniser.models import IatiXmlSource
 from iati_synchroniser.models import Publisher
 from iati_synchroniser.factory import synchroniser_factory
+from django.core import management
+
 
 class DatasetSyncerTestCase(TestCase):
     """
     Test DatasetSyncer functionality
     """
+    def setUp(self):
+        management.call_command('flush', interactive=False, verbosity=0)
+
     def test_line_parser(self):
         """
         Test if activity source data parsed

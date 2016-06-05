@@ -68,10 +68,6 @@ def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 
-def print_xml(elem):
-    print(etree.tostring(elem, pretty_print=True))
-
-
 def build_activity(version="2.01", *args, **kwargs):
         activity = iati_factory.ActivityFactory.build(
             iati_standard_version=codelist_models.Version.objects.get(code=version), # TODO: cache this
@@ -556,6 +552,27 @@ class TitleTestCase(ParserSetupTestCase):
 
         # TODO: refactor so this isnt nescessary
         title = self.parser_201.pop_model('Title')
+
+    def test_second_title_as_narrative_105(self):
+        self.title.text = "random text"
+        second_title = E('title', 'second title')
+
+        self.parser_105.iati_activities__iati_activity__title(self.title)
+
+        title = self.parser_105.get_model('Title')
+        narrative = self.parser_105.get_model('TitleNarrative')
+
+        self.parser_105.iati_activities__iati_activity__title(second_title)
+        second_narrative = self.parser_105.get_model('TitleNarrative')
+
+        self.assertTrue(title.activity == self.activity)
+        self.assertTrue(narrative.related_object == title)
+        self.assertEqual(narrative.content, 'random text')
+        self.assertEqual(second_narrative.content, 'second title')
+
+        # TODO: refactor so this isnt nescessary
+        title = self.parser_201.pop_model('Title')
+
         
 class DescriptionTestCase(ParserSetupTestCase):
     def setUp(self):
@@ -865,7 +882,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
 
     def test_participating_organisation_already_parsed_105(self):
         """
-        Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
+        Check complete element is parsed correctly, 
+        excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
         """
         activity = build_activity(version="1.05")
 
@@ -1640,6 +1658,18 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         narrative = self.parser_201.get_model('ActivityPolicyMarkerNarrative')
         self.assertTrue(narrative.related_object == activity_policy_marker)
 
+    def test_activity_policy_marker_201_vocabulary_ommited(self):
+        """
+        An IATI code for the vocabulary to be used to define policy markers. 
+        If omitted then the OECD DAC vocabulary is assumed.
+        """
+        attrs = self.attrs
+        del attrs['vocabulary']
+        activity_policy_marker = E('policy-marker', **attrs)
+        self.parser_201.iati_activities__iati_activity__policy_marker(activity_policy_marker)
+        activity_policy_marker = self.parser_201.get_model('ActivityPolicyMarker')
+        self.assertTrue(activity_policy_marker.vocabulary.code == "1")
+
     def test_activity_policy_marker_105(self):
         """
         Should perform the (less than ideal) mapping from 105 Vocabulary to 201 PolicyMarkerVocabulary
@@ -1804,7 +1834,7 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         planned_disbursement = self.parser_201.get_model('PlannedDisbursement')
 
         self.assertTrue(planned_disbursement.activity == self.activity)
-        self.assertTrue(planned_disbursement.budget_type.code == self.attrs['type'])
+        self.assertTrue(planned_disbursement.type.code == self.attrs['type'])
 
     def test_planned_disbursement_period_start_201(self):
         """

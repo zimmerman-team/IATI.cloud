@@ -293,6 +293,7 @@ class ActivityReportingOrganisation(models.Model):
     def __unicode__(self,):
         return "ref: %s" % self.ref
 
+
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
     normalized_ref = models.CharField(blank=True, max_length=120, null=True, default=None, db_index=True)
@@ -465,22 +466,9 @@ class ActivityWebsite(models.Model):
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(ContactType, null=True, blank=True)
-    # person_name = GenericRelation(Narrative, related_query_name="person_name")
-    # organisation = GenericRelation(ContactInfoOrganisationNarrative)
-    # person_name = models.CharField(max_length=100, default="", null=True, blank=True)
-    # organisation = models.CharField(max_length=100, default="", null=True, blank=True)
-    telephone = models.CharField(max_length=100, default="", null=True, blank=True)
-    email = models.TextField(default="", null=True, blank=True)
-    mailing_address = models.TextField(default="", null=True, blank=True)
-    website = models.CharField(max_length=255, default="", null=True, blank=True)
-    job_title = models.CharField(max_length=150, default="", null=True, blank=True)
 
     def __unicode__(self,):
         return "type: %s" % self.type
-
-# class ContactInfoOrganisationNarrative(Narrative):
-#     pass
-# TODO: inherit narratives and link from contactinfo? (API inconsistency?)
 
 
 class ContactInfoOrganisation(models.Model):
@@ -529,16 +517,6 @@ class ContactInfoTelephone(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-
-# class transaction_description(models.Model):
-#     transaction = models.ForeignKey(transaction)
-#     type = models.ForeignKey(description_type, null=True, default=None)
-#     language = models.ForeignKey(language, null=True, default=None)
-#     description = models.TextField(default="")
-#
-#     def __unicode__(self,):
-#         return "%s - %s" % (self.code, self.name)
-
 
 
 class RelatedActivity(models.Model):

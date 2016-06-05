@@ -1,6 +1,7 @@
 # Return parser functions for generic elements
-
 from iati import models
+import iati_codelists.models as codelist_models
+
 
 def provider_org(self, parent_model, provider_model, fk_name):
     """
@@ -39,7 +40,6 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
     return func
 
-
 def receiver_org(self, parent_model, receiver_model, fk_name):
     """
     parent_model: the model to which the receiver_org will be applied
@@ -63,7 +63,7 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
         receiver_model.receiver_activity = receiver_activity
 
 
-        print(receiver_model)
+        # print(receiver_model)
         self.register_model(receiver_model)
 
         # # now add narrative(s)
@@ -76,7 +76,6 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
         return element
 
     return func
-
 
 def activity_field(self, model, activity_model):
     def func(element):
@@ -93,14 +92,17 @@ def codelist_field(self, model, codelist_model):
         code = element.attrib.get('code')
         code_model = self.get_or_none(codelist_model, code=code)
 
-        if not code_model: raise self.RequiredFieldError("code", model, element)
+        if not code_model:
+            raise self.RequiredFieldError(
+                model,
+                "code", 
+                "Unspecified or invalid.")
 
         model.code = code_model
 
         return element
 
     return func
-
 
 def compose(*functions):
     return functools.reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
@@ -120,7 +122,11 @@ def code(codelist_model):
         code = element.attrib.get('code')
         code_model = self.get_or_none(codelist_model, code=code)
 
-        if not code_model: raise self.RequiredFieldError("code", model, element)
+        if not code_model: 
+            raise self.RequiredFieldError(
+                model,
+                "code",
+                element)
 
         model.code = code_model
 

@@ -44,11 +44,8 @@ def build_xml(version, organisation_identifier):
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
-def print_xml(elem):
-    print(etree.tostring(elem, pretty_print=True))
-
 def setUpModule():
-    fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
+    fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)

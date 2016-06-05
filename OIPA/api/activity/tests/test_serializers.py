@@ -189,7 +189,7 @@ class ActivitySerializerTestCase(TestCase):
             value_date='2014-12-1',
             currency=iati_factory.CurrencyFactory.build(code='USD')
         )
-        serializer = serializers.BudgetSerializer.ValueSerializer(budget)
+        serializer = serializers.ValueSerializer(budget)
         assert serializer.data['value'] == budget.value, \
             """
             budget.value should be serialized to a field called value

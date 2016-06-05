@@ -55,8 +55,17 @@ class Parse(IATI_105_Parser):
         longitude = element.attrib.get('longitude')
         precision = element.attrib.get('precision')
          
-        if not latitude: raise self.RequiredFieldError("latitude", "location_coordinates: latitude is required")
-        if not longitude: raise self.RequiredFieldError("longitude", "location_coordinates: longitude is required")
+        if not latitude: 
+            raise self.RequiredFieldError(
+                "location/coordinates", 
+                "latitude", 
+                "Unspecified.")
+        
+        if not longitude: 
+            raise self.RequiredFieldError(
+                "location/coordinates", 
+                "longitude", 
+                "Unspecified.")
 
         point = E('point')
         super(Parse, self).iati_activities__iati_activity__location__point(point)
@@ -78,8 +87,17 @@ class Parse(IATI_105_Parser):
         gazetteer_ref = self.gazetteer_agency_mapping.get(element.attrib.get('gazetteer-ref'))
         code = element.text
 
-        if not gazetteer_ref: raise self.RequiredFieldError("gazeteer_ref", "gazeteer_entry: ref is required")
-        if not code: raise self.RequiredFieldError("gazeteer_ref", "gazeteer_entry: text is required")
+        if not gazetteer_ref: 
+            raise self.RequiredFieldError(
+                "location/gazetteer-entry", 
+                "gazeteer-ref", 
+                "Unspecified.")
+
+        if not code: 
+            raise self.RequiredFieldError(
+                "location/gazetteer-entry", 
+                "text", 
+                "Unspecified.")
 
         location_id = E('location-id', code=code, vocabulary=gazetteer_ref)
         super(Parse, self).iati_activities__iati_activity__location__location_id(location_id)
@@ -93,7 +111,11 @@ class Parse(IATI_105_Parser):
     def iati_activities__iati_activity__location__location_type(self,element):
         code = element.attrib.get('code')
 
-        if not code: raise self.RequiredFieldError("location_type", "location_type: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location/location-type",
+                "code", 
+                "Unspecified or invalid.")
 
         feature_designation = E('feature-designation', code=code)
         super(Parse, self).iati_activities__iati_activity__location__feature_designation(feature_designation)

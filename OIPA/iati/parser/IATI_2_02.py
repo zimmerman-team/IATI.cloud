@@ -13,6 +13,7 @@ from iati.parser import post_save
 from currency_convert import convert
 
 from iati.parser.higher_order_parser import provider_org, receiver_org
+from django.conf import settings
 
 
 class Parse(IatiParser):
@@ -35,16 +36,23 @@ class Parse(IatiParser):
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not parent:
-            raise self.RequiredFieldError("parent", "Narrative: parent object must be passed")
+            raise self.ParserError(
+                "Unknown", 
+                "narrative", 
+                "parent object must be passed")
 
         register_name = parent.__class__.__name__ + "Narrative"
 
         if not language:
             raise self.RequiredFieldError(
-                "language",
-                "{}: must specify default_lang on activities or language on the element itself".format(register_name))
+                register_name,
+                "xml:lang",
+                "must specify xml:lang on iati-activity or xml:lang on the element itself")
         if not text:
-            raise self.RequiredFieldError("text", "{}: must contain text".format(register_name))
+            raise self.RequiredFieldError(
+                register_name,
+                "text", 
+                "empty narrative")
 
         narrative = models.Narrative()
         narrative.language = language
@@ -75,8 +83,11 @@ class Parse(IatiParser):
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
 
         if not id:
-            raise self.RequiredFieldError("id", "activity: must contain id")
-        
+            raise self.RequiredFieldError(
+                "iati-identifier",
+                "text", 
+                "must contain iati-identifier")
+
         old_activity = self.get_or_none(models.Activity, id=id)
 
         if old_activity and not self.force_reparse:
@@ -89,13 +100,15 @@ class Parse(IatiParser):
 
             if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
                 raise self.ValidationError(
-                    "activity",
-                    "newer version of activity exists: last_updated_time is less than existing activity")
+                    "iati-activity",
+                    "last-updated-datetime",
+                    "last-updated-time is less than existing activity")
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise self.ValidationError(
-                    "activity",
-                    "duplicate activity: last_updated_time is not present, but is present on 'old' activity")
+                    "iati-activity",
+                    "last-updated-datetime",
+                    "last-updated-time is not present, but is present on existing activity")
     
             # TODO: test activity is deleted along with related models
             # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
@@ -133,7 +146,11 @@ class Parse(IatiParser):
         """
         iati_identifier = element.text
             
-        if not iati_identifier: raise self.RequiredFieldError("text", "iati_identifier: must contain text")
+        if not iati_identifier: 
+            raise self.RequiredFieldError(
+                "iati-identifier",
+                "text",
+                "must contain iati-identifier")
 
         activity = self.get_model('Activity')
         activity.iati_identifier = iati_identifier
@@ -150,13 +167,15 @@ class Parse(IatiParser):
         ref = element.attrib.get('ref')
 
         if not ref:
-            raise self.RequiredFieldError("ref", "reporting-org: ref must be specified")
+            raise self.RequiredFieldError(
+                "reporting-org",
+                "ref",
+                "must contain ref")
 
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         # TODO: should secondary_reporter be false by default?
         secondary_reporter = element.attrib.get('secondary-reporter', False)
-
 
         organisation = self.get_or_none(models.Organisation, pk=ref)
 
@@ -219,7 +238,7 @@ class Parse(IatiParser):
     
         tag:participating-org"""
         ref = element.attrib.get('ref', '')
-        activity_id = element.attrib.get('activity-id', '')
+        activity_id = element.attrib.get('activity-id', None)
 
         role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
@@ -227,7 +246,10 @@ class Parse(IatiParser):
         # simply because they don't know the ref.
         # if not ref: raise self.RequiredFieldError("ref", "participating-org: ref must be specified")
         if not role:
-            raise self.RequiredFieldError("role", "participating-org: role must be specified")
+            raise self.RequiredFieldError(
+                "participating-org",
+                "role", 
+                "role must be specified")
 
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, pk=ref)
@@ -272,7 +294,10 @@ class Parse(IatiParser):
         title_list = self.get_model_list('Title')
 
         if title_list and len(title_list) > 0:
-            raise self.ValidationError("title", "Duplicate titles are not allowed")
+            raise self.ValidationError(
+                "title",
+                "title", 
+                "Duplicate titles are not allowed")
 
         # activity = self.pop_model('Activity')
         activity = self.get_model('Activity')
@@ -330,16 +355,20 @@ class Parse(IatiParser):
         type:A1
         tag:other-identifier"""
         identifier = element.attrib.get('ref')
-        type = self.get_or_none(models.OtherIdentifierType, code=element.attrib.get('type'))
+        other_identifier_type = self.get_or_none(models.OtherIdentifierType, code=element.attrib.get('type'))
 
-        if not identifier: raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+        if not identifier: 
+            raise self.RequiredFieldError(
+                "other-identifier",
+                "ref", 
+                "ref must be specified")
         # TODO: iati docs say type should be required (but can't for backwards compatibility)
 
         activity = self.get_model('Activity')
         other_identifier = models.OtherIdentifier()
         other_identifier.activity = activity
         other_identifier.identifier=identifier
-        other_identifier.type=type
+        other_identifier.type=other_identifier_type
 
         self.register_model('OtherIdentifier', other_identifier)
         return element
@@ -351,7 +380,11 @@ class Parse(IatiParser):
         tag:owner-org"""
         ref = element.attrib.get('ref')
 
-        if not ref: raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+        if not ref: 
+            raise self.RequiredFieldError(
+                "other-identifier",
+                "owner-org", 
+                "ref must be specified")
 
         other_identifier = self.get_model('OtherIdentifier')
         other_identifier.owner_ref = ref
@@ -375,7 +408,11 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
 
-        if not code: raise self.RequiredFieldError("Code", "activity status: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "activity-status",
+                "code", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.activity_status = activity_status
@@ -392,8 +429,16 @@ class Parse(IatiParser):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
         type_code = self.get_or_none(codelist_models.ActivityDateType, code=element.attrib.get('type'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "activity date: invalid iso-date")
-        if not type_code: raise self.RequiredFieldError("Type", "activity date type: type is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "activity-date",
+                "iso-date", 
+                "iso-date is unspecified or not of type xsd:date")
+        if not type_code: 
+            raise self.RequiredFieldError(
+                "activity-date",
+                "type", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
 
@@ -522,7 +567,11 @@ class Parse(IatiParser):
         tag:telephone"""
         text = element.text
 
-        if not text: raise self.RequiredFieldError("text", "contact_info_telephone: text is required")
+        if not text: 
+            raise self.RequiredFieldError(
+                "contact-info",
+                "telephone", 
+                "text is required")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.telephone = text
@@ -535,7 +584,11 @@ class Parse(IatiParser):
         tag:email"""
         text = element.text
 
-        if not text: raise self.RequiredFieldError("text", "contact_info_email: text is required")
+        if not text: 
+            raise self.RequiredFieldError(
+                "contact-info",
+                "email",
+                "text is required")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.email = text
@@ -548,7 +601,11 @@ class Parse(IatiParser):
         tag:website"""
         text = element.text
 
-        if not text: raise self.RequiredFieldError("text", "contact_info_website: text is required")
+        if not text:
+            raise self.RequiredFieldError(
+                "contact-info",
+                "website", 
+                "text is required")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.website = text
@@ -581,7 +638,11 @@ class Parse(IatiParser):
         tag:activity-scope"""
         activity_scope = self.get_or_none(codelist_models.ActivityScope, code=element.attrib.get('code'))
 
-        if not activity_scope: raise self.RequiredFieldError("code", "activity_scope: code is required")
+        if not activity_scope: 
+            raise self.RequiredFieldError(
+                "activity-status",
+                "code",
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.scope = activity_scope
@@ -598,7 +659,11 @@ class Parse(IatiParser):
         country = self.get_or_none(Country, code=element.attrib.get('code'))
         percentage = element.attrib.get('percentage')
 
-        if not country: raise self.RequiredFieldError("code", "recipient-country: code is required")
+        if not country: 
+            raise self.RequiredFieldError(
+                "recipient-country",
+                "code",
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity_recipient_country =  models.ActivityRecipientCountry()
@@ -622,8 +687,17 @@ class Parse(IatiParser):
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
-        if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "recipient-region: vocabulary is required")
+        if not region: 
+            raise self.RequiredFieldError(
+                "recipient-region", 
+                "code", 
+                "code is unspecified or invalid")
+
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "recipient-region", 
+                "vocabulary", 
+                "invalid vocabulary")
 
         activity = self.get_model('Activity')
         activity_recipient_region =  models.ActivityRecipientRegion()
@@ -659,7 +733,11 @@ class Parse(IatiParser):
         tag:location-reach"""
         location_reach = self.get_or_none(codelist_models.GeographicLocationReach, code=element.attrib.get('code'))
 
-        if not location_reach: raise self.RequiredFieldError("code", "location_reach: code is required")
+        if not location_reach: 
+            raise self.RequiredFieldError(
+                "location",
+                "location-reach", 
+                "code is unspecified or invalid")
 
         location = self.get_model('Location')
         location.location_reach = location_reach
@@ -675,8 +753,18 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=element.attrib.get('vocabulary'))
 
-        if not code: raise self.RequiredFieldError("code", "location_id: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "location_id: vocabulary is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location",
+                "location-id", 
+                "code is unspecified or invalid")
+
+        # TODO parse logging -> check if there's a default vocabulary for this
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "location",
+                "location-id", 
+                "Invalid vocabulary")
 
         location = self.get_model('Location')
         location.location_id_vocabulary = vocabulary
@@ -755,8 +843,18 @@ class Parse(IatiParser):
         vocabulary = self.get_or_none(codelist_models.GeographicVocabulary, code=element.attrib.get('vocabulary'))
         level = element.attrib.get('level')
 
-        if not code: raise self.RequiredFieldError("code", "location_administrative: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "location_administrative: vocabulary is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location",
+                "administrative", 
+                "code is unspecified or invalid")
+        # TODO parse logging check if there's a default voc
+
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "location", 
+                "administrative", 
+                "Invalid vocabulary")
 
         location = self.get_model('Location')
         location_administrative = models.LocationAdministrative()
@@ -793,14 +891,21 @@ class Parse(IatiParser):
         # TODO: Allow for different srid's
         text = element.text
 
-        if not text: raise self.RequiredFieldError("text", "location_point_pos: text is required")
+        if not text: 
+            raise self.RequiredFieldError(
+                "location",
+                "point/pos", 
+                "text is required")
 
         try: 
             latlong = text.strip().split(' ')
             # geos point = long lat, iati point lat long, hence the latlong[1], latlong[0]
             point = GEOSGeometry(Point(float(latlong[1]), float(latlong[0])), srid=4326)
         except Exception as e:
-            raise self.ValidationError("latlong", "either lat or long is not present")
+            raise self.ValidationError(
+                "location", 
+                "point/pos", 
+                "latitude/longitude formatting incorrect")
 
         location = self.get_model('Location')
         location.point_pos = point
@@ -814,7 +919,11 @@ class Parse(IatiParser):
         tag:exactness"""
         code = self.get_or_none(codelist_models.GeographicExactness, code=element.attrib.get('code'))
 
-        if not code: raise self.RequiredFieldError("code", "location_exactness: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location",
+                "exactness", 
+                "code is unspecified or invalid")
 
         location = self.get_model('Location')
         location.exactness = code
@@ -828,7 +937,11 @@ class Parse(IatiParser):
         tag:location-class"""
         code = self.get_or_none(codelist_models.GeographicLocationClass, code=element.attrib.get('code'))
 
-        if not code: raise self.RequiredFieldError("code", "location_class: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location",
+                "location-class", 
+                "code is unspecified or invalid")
 
         location = self.get_model('Location')
         location.location_class = code
@@ -842,7 +955,11 @@ class Parse(IatiParser):
         tag:feature-designation"""
         code = self.get_or_none(codelist_models.LocationType, code=element.attrib.get('code'))
 
-        if not code: raise self.RequiredFieldError("code", "location_feature_designation: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "location",
+                "feature-designation", 
+                "code is unspecified or invalid")
 
         location = self.get_model('Location')
         location.feature_designation = code
@@ -861,8 +978,17 @@ class Parse(IatiParser):
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
-        if not sector: raise self.RequiredFieldError("code", "sector: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "sector: vocabulary is required")
+        if not sector: 
+            raise self.RequiredFieldError(
+                "sector",
+                "code",
+                "code is unspecified or invalid")
+
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "sector",
+                "vocabulary",
+                "invalid vocabulary")
 
         activity = self.get_model('Activity')
         activity_sector =  models.ActivitySector()
@@ -884,7 +1010,11 @@ class Parse(IatiParser):
             vocabulary_models.BudgetIdentifierVocabulary,
             code=element.attrib.get('vocabulary'))
 
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "country-budget-items: vocabulary is required")
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "country-budget-items",
+                "vocabulary",
+                "invalid vocabulary")
 
         activity = self.get_model('Activity')
         country_budget_item = models.CountryBudgetItem()
@@ -904,7 +1034,11 @@ class Parse(IatiParser):
         code = self.get_or_none(codelist_models.BudgetIdentifier, code=element.attrib.get('code')) 
         percentage = element.attrib.get('percentage')
 
-        if not code: raise self.RequiredFieldError("code", "country-budget: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "country-budget-items",
+                "budget-item",
+                "code is unspecified or invalid")
 
         country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
@@ -944,10 +1078,23 @@ class Parse(IatiParser):
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         code = element.attrib.get('code')
 
-
-        if not code: raise self.RequiredFieldError("code", "humanitarian-scope: code is required")
-        if not scope_type: raise self.RequiredFieldError("type", "humanitarian-scope: type is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "humanitarian-scope: vocabulary is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "humanitarian-scope",
+                "code",
+                "code is unspecified or invalid")
+        
+        if not scope_type: 
+            raise self.RequiredFieldError(
+                "humanitarian-scope",
+                "type",
+                "type is unspecified or invalid")
+        
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "humanitarian-scope",
+                "vocabulary",
+                "invalid vocabulary")
 
 
         activity = self.get_model('Activity')
@@ -982,9 +1129,20 @@ class Parse(IatiParser):
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         significance = self.get_or_none(codelist_models.PolicySignificance, code=element.attrib.get('significance')) 
 
-        if not code: raise self.RequiredFieldError("code", "policy-marker: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
-        if vocabulary and vocabulary.code == 1 and (not significance): raise self.RequiredFieldError("significance", "policy-marker: significance is required when using OECD DAC CRS vocabulary")
+        if not code: 
+            raise self.RequiredFieldError(
+                "policy-marker"
+                "code",
+                "code is unspecified or invalid")
+
+        if not vocabulary: 
+            vocabulary = vocabulary_models.PolicyMarkerVocabulary.objects.get(code='1')
+
+        if vocabulary and vocabulary.code == 1 and (not significance): 
+            raise self.RequiredFieldError(
+                "policy-marker",
+                "significance",
+                "significance is required when using OECD DAC CRS vocabulary")
 
         activity = self.get_model('Activity')
         activity_policy_marker = models.ActivityPolicyMarker()
@@ -1012,7 +1170,11 @@ class Parse(IatiParser):
         tag:collaboration-type"""
         code = self.get_or_none(codelist_models.CollaborationType, code=element.attrib.get('code')) 
 
-        if not code: raise self.RequiredFieldError("code", "collaboration-type: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "collaboration-type",
+                "code", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.collaboration_type = code
@@ -1026,7 +1188,11 @@ class Parse(IatiParser):
         tag:default-flow-type"""
         code = self.get_or_none(codelist_models.FlowType, code=element.attrib.get('code')) 
 
-        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "default-flow-type", 
+                "code", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.default_flow_type = code
@@ -1040,7 +1206,11 @@ class Parse(IatiParser):
         tag:default-finance-type"""
         code = self.get_or_none(codelist_models.FinanceType, code=element.attrib.get('code')) 
 
-        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "default-finance-type", 
+                "code", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.default_finance_type = code
@@ -1054,7 +1224,10 @@ class Parse(IatiParser):
         tag:default-aid-type"""
         code = self.get_or_none(codelist_models.AidType, code=element.attrib.get('code')) 
 
-        if not code: raise self.RequiredFieldError("code", "default-flow-type: code is required")
+        if not code: raise self.RequiredFieldError(
+            "default-aid-type", 
+            "code", 
+            "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.default_aid_type = code
@@ -1068,7 +1241,11 @@ class Parse(IatiParser):
         tag:default-tied-status"""
         code = self.get_or_none(codelist_models.TiedStatus, code=element.attrib.get('code')) 
 
-        if not code: raise self.RequiredFieldError("code", "default-tied-status: code is required")
+        if not code: 
+            raise self.RequiredFieldError(
+                "default-tied-status",
+                "code", 
+                "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
         activity.default_tied_status = code
@@ -1083,8 +1260,6 @@ class Parse(IatiParser):
         budget_type = self.get_or_none(codelist_models.BudgetType, code=element.attrib.get('type')) 
         status = self.get_or_none(codelist_models.BudgetStatus, code=element.attrib.get('status')) 
         activity = self.get_model('Activity')
-
-        # if not budget_type: raise self.RequiredFieldError("type", "budget: type is required")
 
         budget = models.Budget()
         budget.activity = activity
@@ -1102,7 +1277,12 @@ class Parse(IatiParser):
         tag:period-start"""
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "budget-period-start: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "budget/period-start",
+                "iso-date", 
+                "Unspecified or invalid. Date should be of type xml:date..")
+        
         budget = self.get_model('Budget')
         budget.period_start = iso_date
          
@@ -1115,7 +1295,12 @@ class Parse(IatiParser):
         tag:period-end"""
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "budget-period-end: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "budget/period-end",
+                "iso-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
+
         budget = self.get_model('Budget')
         budget.period_end = iso_date
          
@@ -1133,10 +1318,16 @@ class Parse(IatiParser):
         decimal_value = self.guess_number(value)
 
         if decimal_value is None:
-            raise self.RequiredFieldError("value", "budget__value: value is required")
+            raise self.RequiredFieldError(
+                "budget",
+                "value", 
+                "Unspecified or invalid")
 
         if value_date is None:
-            raise self.RequiredFieldError("value_date", "budget__value_date: value_date is required")
+            raise self.RequiredFieldError(
+                "budget/value",
+                "value-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         currency = self._get_currency_or_raise(currency)
 
@@ -1146,12 +1337,13 @@ class Parse(IatiParser):
         budget.value_date = value_date
         budget.currency = currency
 
-        budget.xdr_value = convert.currency_from_to(budget.currency_id, 'XDR', budget.value_date, budget.value)
-        budget.usd_value = convert.currency_from_to(budget.currency_id, 'USD', budget.value_date, budget.value)
-        budget.eur_value = convert.currency_from_to(budget.currency_id, 'EUR', budget.value_date, budget.value)
-        budget.gbp_value = convert.currency_from_to(budget.currency_id, 'GBP', budget.value_date, budget.value)
-        budget.jpy_value = convert.currency_from_to(budget.currency_id, 'JPY', budget.value_date, budget.value)
-        budget.cad_value = convert.currency_from_to(budget.currency_id, 'CAD', budget.value_date, budget.value)
+        if settings.CONVERT_CURRENCIES:
+            budget.xdr_value = convert.currency_from_to(budget.currency_id, 'XDR', budget.value_date, budget.value)
+            budget.usd_value = convert.currency_from_to(budget.currency_id, 'USD', budget.value_date, budget.value)
+            budget.eur_value = convert.currency_from_to(budget.currency_id, 'EUR', budget.value_date, budget.value)
+            budget.gbp_value = convert.currency_from_to(budget.currency_id, 'GBP', budget.value_date, budget.value)
+            budget.jpy_value = convert.currency_from_to(budget.currency_id, 'JPY', budget.value_date, budget.value)
+            budget.cad_value = convert.currency_from_to(budget.currency_id, 'CAD', budget.value_date, budget.value)
 
         return element
 
@@ -1181,7 +1373,10 @@ class Parse(IatiParser):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
         if not iso_date:
-            raise self.RequiredFieldError("iso-date", "planned-disbursement-period-start:  iso-date is required")
+            raise self.RequiredFieldError(
+                "planned-disbursement/period-start",
+                "iso-date",
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_start = iso_date
@@ -1195,7 +1390,10 @@ class Parse(IatiParser):
         tag:period-end"""
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "planned-disbursement-period-end: iso-date is required")
+        if not iso_date: raise self.RequiredFieldError(
+            "planned-disbursement/period-end",
+            "iso-date",
+            "Unspecified or invalid. Date should be of type xml:date.")
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_end = iso_date
@@ -1216,10 +1414,16 @@ class Parse(IatiParser):
         decimal_value = self.guess_number(value)
 
         if decimal_value is None:
-            raise self.RequiredFieldError("value", "planned_disbursement__value: value is required")
+            raise self.RequiredFieldError(
+                "planned-disbursement/value", 
+                "text",
+                "Unspecified or invalid")
 
         if value_date is None:
-            raise self.RequiredFieldError("value_date", "planned_disbursement__value_date: value_date is required")
+            raise self.RequiredFieldError(
+                "planned-disbursement/value",
+                "value-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         currency = self._get_currency_or_raise(currency)
 
@@ -1311,7 +1515,10 @@ class Parse(IatiParser):
         transaction_type = self.get_or_none(codelist_models.TransactionType, code=element.attrib.get('code'))
 
         if not transaction_type:
-            raise self.RequiredFieldError("code", "transaction-type: code is required")
+            raise self.RequiredFieldError(
+                "transaction/transaction-type",
+                "code",
+                "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.transaction_type = transaction_type
@@ -1325,7 +1532,11 @@ class Parse(IatiParser):
         tag:transaction-date"""
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "transaction-date: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "trnsaction/transaction-date",
+                "iso-date",
+                "Unspecified or invalid. Date should be of type xml:date.")
         
         transaction = self.get_model('Transaction')
         transaction.transaction_date = iso_date
@@ -1344,10 +1555,16 @@ class Parse(IatiParser):
         decimal_value = self.guess_number(value)
 
         if decimal_value is None:
-            raise self.RequiredFieldError("value", "transaction__value: value is required")
+            raise self.RequiredFieldError(
+                "transaction/value",
+                "text", 
+                "Unspecified or invalid.")
 
         if value_date is None:
-            raise self.RequiredFieldError("value_date", "transaction__value_date: value_date is required")
+            raise self.RequiredFieldError(
+                "transaction/value",
+                "value-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         currency = self._get_currency_or_raise(currency)
 
@@ -1357,12 +1574,13 @@ class Parse(IatiParser):
         transaction.value_date = value_date
         transaction.currency = currency
         
-        transaction.xdr_value = convert.currency_from_to(transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
-        transaction.usd_value = convert.currency_from_to(transaction.currency_id, 'USD', transaction.value_date, transaction.value)
-        transaction.eur_value = convert.currency_from_to(transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
-        transaction.gbp_value = convert.currency_from_to(transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
-        transaction.jpy_value = convert.currency_from_to(transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
-        transaction.cad_value = convert.currency_from_to(transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
+        if settings.CONVERT_CURRENCIES:
+            transaction.xdr_value = convert.currency_from_to(transaction.currency_id, 'XDR', transaction.value_date, transaction.value)
+            transaction.usd_value = convert.currency_from_to(transaction.currency_id, 'USD', transaction.value_date, transaction.value)
+            transaction.eur_value = convert.currency_from_to(transaction.currency_id, 'EUR', transaction.value_date, transaction.value)
+            transaction.gbp_value = convert.currency_from_to(transaction.currency_id, 'GBP', transaction.value_date, transaction.value)
+            transaction.jpy_value = convert.currency_from_to(transaction.currency_id, 'JPY', transaction.value_date, transaction.value)
+            transaction.cad_value = convert.currency_from_to(transaction.currency_id, 'CAD', transaction.value_date, transaction.value)
 
         return element
 
@@ -1421,6 +1639,7 @@ class Parse(IatiParser):
 
         tag:receiver-org"""
 
+        # To do; test this!
         return receiver_org(
             self,
             self.get_model('Transaction'),
@@ -1449,7 +1668,11 @@ class Parse(IatiParser):
         tag:disbursement-channel"""
         disbursement_channel = self.get_or_none(codelist_models.DisbursementChannel, code=element.attrib.get('code'))
 
-        if not disbursement_channel: raise self.RequiredFieldError("code", "disbursement-channel: code must be specified")
+        if not disbursement_channel: 
+            raise self.RequiredFieldError(
+                "transaction/disbursement-channel",
+                "code",
+                "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.disbursement_channel = disbursement_channel
@@ -1466,8 +1689,17 @@ class Parse(IatiParser):
         vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary_uri = element.attrib.get('vocabulary-uri')
 
-        if not sector: raise self.RequiredFieldError("code", "transaction-sector: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "transaction-sector: vocabulary is required")
+        if not sector:
+            raise self.RequiredFieldError(
+                "transaction/sector",
+                "code", 
+                "Unspecified or invalid.")
+        
+        if not vocabulary:
+            raise self.RequiredFieldError(
+                "transaction/sector",
+                "vocabulary", 
+                "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction_sector = transaction_models.TransactionSector()
@@ -1488,7 +1720,11 @@ class Parse(IatiParser):
         tag:recipient-country"""
         country = self.get_or_none(Country, code=element.attrib.get('code'))
 
-        if not country: raise self.RequiredFieldError("code", "transaction-recipient-country: code is required")
+        if not country: 
+            raise self.RequiredFieldError(
+                "transaction/recipient-country", 
+                "code", 
+                "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction_country = transaction_models.TransactionRecipientCountry()
@@ -1512,8 +1748,17 @@ class Parse(IatiParser):
         vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
 
-        if not region: raise self.RequiredFieldError("code", "recipient-region: code is required")
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "recipient-region: vocabulary is required")
+        if not region: 
+            raise self.RequiredFieldError(
+                "transaction/recipient-region",
+                "code",
+                "Unspecified or invalid.")
+        
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "transaction/recipient-region",
+                "vocabulary",
+                "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction_recipient_region = transaction_models.TransactionRecipientRegion()
@@ -1536,7 +1781,12 @@ class Parse(IatiParser):
 
         if not flow_type:
             flow_type = self.get_model('Activity').flow_type
-            if not flow_type: raise self.RequiredFieldError("code", "transaction-flow-type: code is required")
+            
+            if not flow_type: 
+                raise self.RequiredFieldError(
+                    "transaction/flow-type",
+                    "code", 
+                    "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.flow_type = flow_type
@@ -1551,7 +1801,11 @@ class Parse(IatiParser):
 
         if not finance_type:
             finance_type = self.get_model('Activity').finance_type
-            if not finance_type: raise self.RequiredFieldError("code", "transaction-finance-type: code is required")
+            if not finance_type: 
+                raise self.RequiredFieldError(
+                    "transaction/finance-type",
+                    "code", 
+                    "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.finance_type = finance_type
@@ -1567,7 +1821,11 @@ class Parse(IatiParser):
 
         if not aid_type:
             aid_type = self.get_model('Activity').aid_type
-            if not aid_type: raise self.RequiredFieldError("code", "transaction-aid-type: code is required")
+            if not aid_type: 
+                raise self.RequiredFieldError(
+                    "transaction/aid-type", 
+                    "code", 
+                    "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.aid_type = aid_type
@@ -1583,7 +1841,11 @@ class Parse(IatiParser):
 
         if not tied_status:
             tied_status = self.get_model('Activity').tied_status
-            if not tied_status: raise self.RequiredFieldError("code", "transaction-tied-status: code is required")
+            if not tied_status: 
+                raise self.RequiredFieldError(
+                    "transaction/tied-status",
+                    "code", 
+                    "Unspecified or invalid.")
 
         transaction = self.get_model('Transaction')
         transaction.tied_status = tied_status
@@ -1598,7 +1860,17 @@ class Parse(IatiParser):
         url = element.attrib.get('url')
         file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format'))
 
-        if not url: raise self.RequiredFieldError("url", "document_link: url is required")
+        if not url: 
+            raise self.RequiredFieldError(
+                "document-link",
+                "url", 
+                "Unspecified.")
+
+        if not file_format:
+            raise self.RequiredFieldError(
+                "document-link",
+                "format",
+                "Unspecified or invalid.")
 
         activity = self.get_model('Activity')
         document_link = models.DocumentLink()
@@ -1618,7 +1890,11 @@ class Parse(IatiParser):
         tag:document-link"""
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "document_link: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "document-link/document-date",
+                "iso-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         document_link = self.pop_model('DocumentLink')
         document_link.iso_date = iso_date
@@ -1653,7 +1929,11 @@ class Parse(IatiParser):
         tag:category"""
         category = self.get_or_none(codelist_models.DocumentCategory, code=element.attrib.get('code')) 
 
-        if not category: raise self.RequiredFieldError("code", "document-link-category: code is required")
+        if not category: 
+            raise self.RequiredFieldError(
+                "document-link/category",
+                "code",
+                "Unspecified or invalid.")
 
         document_link = self.get_model('DocumentLink')
         document_link_category = models.DocumentLinkCategory()
@@ -1670,7 +1950,11 @@ class Parse(IatiParser):
         tag:language"""
         language = self.get_or_none(codelist_models.Language, code=element.attrib.get('code'))
 
-        if not language: raise self.RequiredFieldError("language", "document-link: code is required")
+        if not language: 
+            raise self.RequiredFieldError(
+                "document-link/language",
+                "code",
+                "Unspecified or invalid.")
 
         document_link = self.get_model('DocumentLink')
         document_link_language = models.DocumentLinkLanguage()
@@ -1689,8 +1973,17 @@ class Parse(IatiParser):
         related_activity_type = self.get_or_none(codelist_models.RelatedActivityType, code=element.attrib.get('type')) 
         ref = element.attrib.get('ref')
 
-        if not related_activity_type: raise self.RequiredFieldError("type", "related-activity: type is required")
-        if not ref: raise self.RequiredFieldError("ref", "related-activity: ref is required")
+        if not related_activity_type: 
+            raise self.RequiredFieldError(
+                "related-activity",
+                "type", 
+                "Unspecified or invalid.")
+        
+        if not ref: 
+            raise self.RequiredFieldError(
+                "related-activity",
+                "ref",
+                "Unspecified.")
 
         activity = self.get_model('Activity')
         related_activity = models.RelatedActivity()
@@ -1700,7 +1993,6 @@ class Parse(IatiParser):
         related_activity.type = related_activity_type
 
         # update existing related activity foreign keys, happens post save
-
         self.register_model('RelatedActivity', related_activity)
         return element
 
@@ -1759,7 +2051,11 @@ class Parse(IatiParser):
         result_type = self.get_or_none(codelist_models.ResultType, code=element.attrib.get('type')) 
         aggregation_status = element.attrib.get('aggregation-status')
 
-        if not result_type: raise self.RequiredFieldError("result_type", "result: result_type is required")
+        if not result_type: 
+            raise self.RequiredFieldError(
+                "result",
+                "type",
+                "Unspecified or invalid.")
 
         activity = self.get_model('Activity')
         result = models.Result()
@@ -1811,7 +2107,11 @@ class Parse(IatiParser):
         measure = self.get_or_none(codelist_models.IndicatorMeasure, code=element.attrib.get('measure')) 
         ascending = element.attrib.get('ascending', '1')
 
-        if not measure: raise self.RequiredFieldError("measure", "result_indicator: measure is required")
+        if not measure: 
+            raise self.RequiredFieldError(
+                "result/indicator", 
+                "measure", 
+                "Unspecified or invalid.")
 
         result = self.get_model('Result')
         result_indicator = models.ResultIndicator()
@@ -1827,8 +2127,17 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         indicator_uri = element.attrib.get('indicator_uri')
 
-        if not vocabulary: raise self.RequiredFieldError("vocabulary", "reference: vocabulary is required")
-        if not code: raise self.RequiredFieldError("code", "reference: code is required")
+        if not vocabulary: 
+            raise self.RequiredFieldError(
+                "result/indicator/reference",
+                "vocabulary",
+                "Unspecified or invalid.")
+        
+        if not code: 
+            raise self.RequiredFieldError(
+                "result/indicator/reference",
+                "code",
+                "Unspecified or invalid.")
 
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_reference = models.ResultIndicatorReference()
@@ -1887,10 +2196,20 @@ class Parse(IatiParser):
         year = element.attrib.get('year')
         value = element.attrib.get('value')
 
-        if not year: raise self.RequiredFieldError("year", "result_indicator_baseline: year is required")
-        if not value: raise self.RequiredFieldError("value", "result_indicator_baseline: value is required")
+        if not year: 
+            raise self.RequiredFieldError(
+                "result/indicator/baseline", 
+                "year", 
+                "Unspecified or invalid. Should be of type xsd:positiveInteger with format (yyyy).")
+        
+        if not value: 
+            raise self.RequiredFieldError(
+                "result/indicator/baseline",
+                "value",
+                "Unspecified or invalid. (this error might be incorrect, xsd:decimal is used to check instead of xsd:string).")
 
         result_indicator = self.pop_model('ResultIndicator')
+        # TODO line below is risky, should check for exceptions.
         result_indicator.baseline_year = int(year)
         result_indicator.baseline_value = value
 
@@ -1935,7 +2254,11 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__period__period_start(self, element):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "result_indicator_period_period_start: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period-start", 
+                "iso-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.period_start = iso_date
@@ -1950,7 +2273,11 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__period__period_end(self, element):
         iso_date = self.validate_date(element.attrib.get('iso-date'))
 
-        if not iso_date: raise self.RequiredFieldError("iso-date", "result_indicator_period_period_end: iso-date is required")
+        if not iso_date: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period-end",
+                "iso-date", 
+                "Unspecified or invalid. Date should be of type xml:date.")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.period_end = iso_date
@@ -1960,8 +2287,13 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__period__target(self, element):
         value = element.attrib.get('value')
+        # TODO, 'guess number'
 
-        if not value: raise self.RequiredFieldError("value", "result_indicator_period_target: value is required")
+        if not value: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target",
+                "value", 
+                "Unspecified or invalid. (this error might be incorrect, xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.target = value
@@ -1973,12 +2305,20 @@ class Parse(IatiParser):
 
         ref = element.attrib.get('ref')
 
-        if not ref: raise self.RequiredFieldError("ref", "result_indicator_period_target_location: ref is required")
+        if not ref: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target/location",
+                "ref", 
+                "Unspecified.")
 
         locations = self.get_model_list('Location')
         location = filter(lambda x: x.ref == ref, locations)
 
-        if not len(location): raise self.RequiredFieldError("location", "result_indicator_period_target_location: location is required")
+        if not len(location): 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target/location",
+                "ref", 
+                "Referenced location does not exist in a location element of this activity.")
 
         period = self.get_model('ResultIndicatorPeriod')
         target_location = models.ResultIndicatorPeriodTargetLocation()
@@ -1994,8 +2334,22 @@ class Parse(IatiParser):
         name = element.attrib.get('name')
         value = element.attrib.get('value')
 
-        if not name: raise self.RequiredFieldError("name", "result_indicator_period_target_dimension: name is required")
-        if not value: raise self.RequiredFieldError("value", "result_indicator_period_target_dimension: value is required")
+        if not name: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target/dimension",
+                "name",
+                "Unspecified.")
+        
+        if not value:
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target/dimension",
+                "name",
+                "Unspecified.")
+
+            raise self.RequiredFieldError(
+                "result/indicator/period/period/target/dimension",
+                "value",
+                "Unspecified.")
 
         period = self.get_model('ResultIndicatorPeriod')
 
@@ -2031,7 +2385,11 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__period__actual(self, element):
         value = element.attrib.get('value')
 
-        if not value: raise self.RequiredFieldError("value", "result_indicator_period_actual: value is required")
+        if not value: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/actual",
+                "value", 
+                "Unspecified.")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.actual = value
@@ -2043,12 +2401,20 @@ class Parse(IatiParser):
 
         ref = element.attrib.get('ref')
 
-        if not ref: raise self.RequiredFieldError("ref", "result_indicator_period_period_end: iso-date is required")
+        if not ref: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/actual/location", 
+                "ref", 
+                "Unspecified.")
 
         locations = self.get_model_list('Location')
         location = filter(lambda x: x.ref == ref, locations)
 
-        if not len(location): raise self.RequiredFieldError("ref", "result_indicator_period_period_end: iso-date is required")
+        if not len(location): 
+            raise self.RequiredFieldError(
+                "result/indicator/period/actual/location",
+                "ref",
+                "Referenced location does not exist in a location element of this activity.")
 
         period = self.get_model('ResultIndicatorPeriod')
 
@@ -2065,8 +2431,17 @@ class Parse(IatiParser):
         name = element.attrib.get('name')
         value = element.attrib.get('value')
 
-        if not name: raise self.RequiredFieldError("name", "result_indicator_period_actual_dimension: name is required")
-        if not value: raise self.RequiredFieldError("value", "result_indicator_period_actual_dimension: value is required")
+        if not name: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/actual/dimension",
+                "name",
+                "Unspecified.")
+        
+        if not value: 
+            raise self.RequiredFieldError(
+                "result/indicator/period/actual/dimension",
+                "value",
+                "Unspecified.")
 
         period = self.get_model('ResultIndicatorPeriod')
 

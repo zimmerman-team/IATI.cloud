@@ -25,7 +25,10 @@ class Parse(Parse_2_01):
         org_id = element.xpath('iati-identifier/text()')[0]
 
         if not org_id:
-            raise self.RequiredFieldError("id", "1.05 organisation: must contain iati-identifier")
+            raise self.RequiredFieldError(
+                "iati-identifier",
+                "text", 
+                "Unspecified.")
 
         # add as organisation-identifier to be able to use in super of this def
         element.append(E("organisation-identifier", org_id))

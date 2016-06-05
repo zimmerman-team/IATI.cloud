@@ -16,6 +16,7 @@ from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
+
 class ValueSerializer(serializers.Serializer):
     currency = CodelistSerializer()
     date = serializers.CharField(source='value_date')
@@ -32,6 +33,7 @@ class ValueSerializer(serializers.Serializer):
                 'currency',
                 )
 
+
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.DocumentCategory
@@ -39,9 +41,14 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
 
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
+
+    class DocumentDateSerializer(serializers.Serializer):
+        iso_date = serializers.DateField(source='iso_date')
+
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
+    document_date = DocumentDateSerializer(source="iso_date")
 
     class Meta:
         model = iati_models.DocumentLink
@@ -168,7 +175,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'ref',
             'type',
             'role',
-            'activity_id'
+            'activity_id',
             'narratives',
         )
 
@@ -528,7 +535,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # TODO ; add country-budget-items serializer
     # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
 
-    humanitarian_scope = HumanitarianScopeSerializer(many=True)
+    humanitarian_scope = HumanitarianScopeSerializer(many=True, source='humanitarianscope_set')
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,
@@ -542,7 +549,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     budgets = BudgetSerializer(many=True, source='budget_set')
 
     # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
-    planned_disbursements = PlannedDisbursementSerializer(many=True, source='planned_disbursement_set')
+    planned_disbursements = PlannedDisbursementSerializer(many=True, source='planneddisbursement_set')
 
     capital_spend = CapitalSpendSerializer()
 
@@ -604,6 +611,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'locations',
             'sectors',
             # 'country_budget_items',
+            'humanitarian',
             'humanitarian_scope',
             'policy_markers',
             'collaboration_type',

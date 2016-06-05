@@ -32,13 +32,30 @@ class IatiParser(object):
         self.model_store = OrderedDict()
         self.root = root
 
-
-    class RequiredFieldError(Exception):
-        def __init__(self, field, msg):
+    class ParserError(Exception):
+        def __init__(self, model, field, msg):
             """
+            This error indicates there's an OIPA
+
             field: the field that is required
             msg: explanation why
             """
+            self.model = model
+            self.field = field
+            self.message = msg
+
+        def __str__(self):
+            return repr(self.field)
+
+    class RequiredFieldError(Exception):
+        def __init__(self, model, field, msg):
+            """
+            This error 
+
+            field: the field that is required
+            msg: explanation why
+            """
+            self.model = model
             self.field = field
             self.message = msg
 
@@ -47,11 +64,14 @@ class IatiParser(object):
 
 
     class ValidationError(Exception):
-        def __init__(self, field, msg):
+        def __init__(self, model, field, msg):
             """
+
+
             field: the field that is validated
             msg: explanation what went wrong
             """
+            self.model = model
             self.field = field
             self.message = msg
 
@@ -140,7 +160,8 @@ class IatiParser(object):
             else:
                 return None
         except:
-            raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
+            raise self.ValidationError(
+                "date", "Invalid date used: " + unvalidated_date)
 
     def get_primary_name(self, element, primary_name):
         if primary_name:
@@ -234,6 +255,9 @@ class IatiParser(object):
                 return
             except InvalidOperation as e:
                 self.append_error('InvalidOperation', e.message, element.sourceline)
+                return
+            except self.ParserError as e:
+                self.append_error('ParserError', e.message)
                 return
             except self.NoUpdateRequired as e:
                 # do nothing, go to next activity
