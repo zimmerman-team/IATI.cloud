@@ -1,4 +1,5 @@
-from iati_organisation.parser.organisation_2_02 import IATI_202_Parser
+from iati_organisation.parser.organisation_2_02 import Parse as IATI_202_Parser
+
 from iati_codelists import models as codelist_models
 
 from iati_organisation.models import (

@@ -10,6 +10,8 @@ from iati.models import DocumentCategory
 from iati.models import Version
 from iati.models import BudgetStatus
 from geodata.models import Country
+from geodata.models import Region
+from iati_vocabulary.models import RegionVocabulary
 
 
 #function for making url
@@ -145,6 +147,7 @@ class RecipientCountryBudget(models.Model):
         content_type_field='content_type',
         object_id_field='object_id',
         related_query_name="budget_lines")
+
 
 class RecipientRegionBudget(models.Model):
     organisation = models.ForeignKey(Organisation, related_name='recipient_country_budget')
