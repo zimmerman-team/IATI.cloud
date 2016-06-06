@@ -264,10 +264,12 @@ class IatiParser(object):
                 self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline)
                 return
             except ValueError as e:
-                self.append_error('ValueError', 'TO DO', 'TO DO', e.message, element.sourceline)
+                traceback.print_exc()
+                # self.append_error('ValueError', 'TO DO', 'TO DO', e.message, element.sourceline)
                 return
             except InvalidOperation as e:
-                self.append_error('InvalidOperation', 'TO DO', 'TO DO', e.message, element.sourceline)
+                traceback.print_exc()
+                # self.append_error('InvalidOperation', 'TO DO', 'TO DO', e.message, element.sourceline)
                 return
             except self.ParserError as e:
                 self.append_error('ParserError', 'TO DO', 'TO DO', e.message, None)

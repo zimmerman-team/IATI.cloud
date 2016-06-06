@@ -670,7 +670,7 @@ class Parse(IatiParser):
         activity_recipient_country.country = country
         activity_recipient_country.activity = activity
         activity_recipient_country.percentage = percentage
-         
+
         self.register_model('ActivityRecipientCountry', activity_recipient_country)
 
         return element
