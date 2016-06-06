@@ -466,7 +466,10 @@ class ActivityWebsite(models.Model):
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(ContactType, null=True, blank=True)
-
+    telephone = models.CharField(max_length=100, default="", null=True, blank=True)
+    email = models.TextField(default="", null=True, blank=True)
+    website = models.CharField(max_length=255, default="", null=True, blank=True)
+   
     def __unicode__(self,):
         return "type: %s" % self.type
 
@@ -670,7 +673,7 @@ class ResultIndicatorPeriod(models.Model):
         return "target: %s, actual: %s" % (self.target, self.actual)
 
 class ResultIndicatorPeriodTargetLocation(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
     ref = models.CharField(max_length=50)
     location = models.ForeignKey('Location')
 
@@ -678,7 +681,7 @@ class ResultIndicatorPeriodTargetLocation(models.Model):
         return "%s" % self.ref
 
 class ResultIndicatorPeriodActualLocation(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
     ref = models.CharField(max_length=50)
     location = models.ForeignKey('Location')
 
@@ -687,7 +690,7 @@ class ResultIndicatorPeriodActualLocation(models.Model):
 
 
 class ResultIndicatorPeriodTargetDimension(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -695,7 +698,7 @@ class ResultIndicatorPeriodTargetDimension(models.Model):
         return "%s: %s" % (self.name, self.value)
 
 class ResultIndicatorPeriodActualDimension(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 

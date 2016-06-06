@@ -120,6 +120,12 @@ class Parse(IATI_201_Parser):
                 "text",
                 "Unspecified.")
 
+        if identifier and len(identifier) > 100:
+            raise self.ValidationError(
+                "other-identifier",
+                "text",
+                "identifier is longer than 100 characters. This seems unlikely and is most often a data bug.")
+
         if not (owner_ref or owner_name):
             raise self.RequiredFieldError(
                 "other-identifier",

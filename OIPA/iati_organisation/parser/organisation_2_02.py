@@ -60,16 +60,17 @@ class Parse(IatiParser):
         # TODO: handle this differently (also: breaks tests)
         self.register_model(register_name, narrative)
 
-    def _get_currency_or_raise(self, currency):
+    def _get_currency_or_raise(self, model_name, currency):
         """
         get default currency if not available for currency-related fields
         """
         if not currency:
             currency = getattr(self.get_model('Organisation'), 'default_currency')
-            if not currency: raise self.RequiredFieldError(
-                "", 
-                "currency", 
-                "currency: currency is not set and default-currency is not set on activity as well")
+            if not currency:
+                raise self.RequiredFieldError(
+                    model_name,
+                    "currency",
+                    "must specify default-currency on iati-organisation or as currency on the element itself")
 
         return currency
 
@@ -211,7 +212,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('TotalBudget')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('total-budget/value', element.attrib.get('currency')))
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         model.value = element.text
         # store element
@@ -237,7 +238,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('TotalBudgetLine')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('total-budget/budget-line/value', element.attrib.get('currency')))
         model.value = element.text
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         # store element
@@ -318,7 +319,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientOrgBudget')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-org-budget/value', element.attrib.get('currency')))
         model.value = element.text
         # store element
         return element
@@ -343,7 +344,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientOrgBudgetLine')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-org-budget/budget-line/value', element.attrib.get('currency')))
         model.value = element.text
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         # store element
@@ -410,7 +411,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientCountryBudget')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-country-budget/value', element.attrib.get('currency')))
         model.value = element.text
         # store element
         return element
@@ -435,7 +436,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientCountryBudgetLine')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-country-budget/budget-line/value', element.attrib.get('currency')))
         model.value = element.text
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         # store element
@@ -514,7 +515,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientRegionBudget')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-region-budget/value', element.attrib.get('currency')))
         model.value = element.text
         # store element
         return element
@@ -539,7 +540,7 @@ class Parse(IatiParser):
 
         tag:value"""
         model = self.get_model('RecipientRegionBudgetLine')
-        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise(element.attrib.get('currency')))
+        model.currency = self.get_or_none(codelist_models.Currency, code=self._get_currency_or_raise('recipient-region-budget/budget-line/value', element.attrib.get('currency')))
         model.value = element.text
         model.value_date = self.validate_date(element.attrib.get('value-date'))
         # store element

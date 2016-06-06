@@ -1802,7 +1802,7 @@ class BudgetTestCase(ParserSetupTestCase):
 
         value = E('value', text, **attrs)
 
-        with self.assertRaises(InvalidOperation):
+        with self.assertRaises(self.parser_201.ValidationError):
             self.parser_201.iati_activities__iati_activity__budget__value(value)
 
 

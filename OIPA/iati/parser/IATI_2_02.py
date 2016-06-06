@@ -1315,7 +1315,7 @@ class Parse(IatiParser):
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
-        decimal_value = self.guess_number(value)
+        decimal_value = self.guess_number('budget', value)
 
         if decimal_value is None:
             raise self.RequiredFieldError(
@@ -1329,7 +1329,7 @@ class Parse(IatiParser):
                 "value-date", 
                 "Unspecified or invalid. Date should be of type xml:date.")
 
-        currency = self._get_currency_or_raise(currency)
+        currency = self._get_currency_or_raise('budget/value', currency)
 
         budget = self.get_model('Budget')
         budget.value_string = value
@@ -1411,7 +1411,7 @@ class Parse(IatiParser):
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
-        decimal_value = self.guess_number(value)
+        decimal_value = self.guess_number('planned-disbursement', value)
 
         if decimal_value is None:
             raise self.RequiredFieldError(
@@ -1425,7 +1425,7 @@ class Parse(IatiParser):
                 "value-date", 
                 "Unspecified or invalid. Date should be of type xml:date.")
 
-        currency = self._get_currency_or_raise(currency)
+        currency = self._get_currency_or_raise('planned-disbursement/value', currency)
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.value_string = value
@@ -1515,6 +1515,7 @@ class Parse(IatiParser):
         transaction_type = self.get_or_none(codelist_models.TransactionType, code=element.attrib.get('code'))
 
         if not transaction_type:
+            # TODO; pop transaction model to prevent loss on save?
             raise self.RequiredFieldError(
                 "transaction/transaction-type",
                 "code",
@@ -1552,7 +1553,7 @@ class Parse(IatiParser):
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
-        decimal_value = self.guess_number(value)
+        decimal_value = self.guess_number('transaction', value)
 
         if decimal_value is None:
             raise self.RequiredFieldError(
@@ -1566,7 +1567,7 @@ class Parse(IatiParser):
                 "value-date", 
                 "Unspecified or invalid. Date should be of type xml:date.")
 
-        currency = self._get_currency_or_raise(currency)
+        currency = self._get_currency_or_raise('transaction/value', currency)
 
         transaction = self.get_model('Transaction')
         transaction.value_string = value

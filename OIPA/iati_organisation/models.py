@@ -150,7 +150,7 @@ class RecipientCountryBudget(models.Model):
 
 
 class RecipientRegionBudget(models.Model):
-    organisation = models.ForeignKey(Organisation, related_name='recipient_country_budget')
+    organisation = models.ForeignKey(Organisation, related_name='recipient_region_budget')
     status = models.ForeignKey(BudgetStatus, default=1)
     region = models.ForeignKey(Region, null=True)
     vocabulary = models.ForeignKey(RegionVocabulary, default=1)
@@ -168,7 +168,7 @@ class RecipientRegionBudget(models.Model):
 
 
 class TotalExpenditure(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name="total_budget")
+    organisation = models.ForeignKey(Organisation,related_name="total_expenditure")
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
