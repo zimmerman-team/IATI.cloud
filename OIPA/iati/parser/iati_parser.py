@@ -111,7 +111,7 @@ class IatiParser(object):
         return currency
 
     def makeBool(self, text):
-        if text == '1':
+        if text == '1' or text == 'true':
             return True
         return False
 

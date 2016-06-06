@@ -175,7 +175,7 @@ class Parse(IatiParser):
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         # TODO: should secondary_reporter be false by default?
-        secondary_reporter = element.attrib.get('secondary-reporter', False)
+        secondary_reporter = element.attrib.get('secondary-reporter', '0')
 
         organisation = self.get_or_none(models.Organisation, pk=ref)
 
@@ -213,7 +213,7 @@ class Parse(IatiParser):
         reporting_organisation.type = org_type  
         reporting_organisation.activity = activity
         reporting_organisation.organisation = organisation
-        reporting_organisation.secondary_reporter = self.makeBoolNone(secondary_reporter)
+        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
 
         self.register_model('ActivityReportingOrganisation', reporting_organisation)
     
