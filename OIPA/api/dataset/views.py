@@ -134,8 +134,7 @@ class DatasetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="publisher",
-            fields=("publisher__org_id"),
-            renamed_fields="publisher",
+            fields=("publisher__id"),
             queryset=Publisher.objects.all(),
             serializer=PublisherSerializer,
         ),
@@ -146,8 +145,18 @@ class DatasetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="field",
-            fields=("iatixmlsourcenote__field"),
-            renamed_fields="field",
+            fields=("iatixmlsourcenote__field", "iatixmlsourcenote__exception_type"),
+            renamed_fields=("field", "exception_type"),
+        ),
+        GroupBy(
+            query_param="model",
+            fields=("iatixmlsourcenote__field", "iatixmlsourcenote__model", "iatixmlsourcenote__exception_type"),
+            renamed_fields=("field", "model", "exception_type"),
+        ),
+        GroupBy(
+            query_param="message",
+            fields=("iatixmlsourcenote__message", "iatixmlsourcenote__field", "iatixmlsourcenote__model", "iatixmlsourcenote__exception_type"),
+            renamed_fields=("message", "field", "model", "exception_type"),
         ),
     )
 
