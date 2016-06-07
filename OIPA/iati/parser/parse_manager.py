@@ -41,6 +41,7 @@ class ParseManager():
         from iati_synchroniser.models import IatiXmlSourceNote
         if not response or response.code != 200:
             self.valid_source = False
+            IatiXmlSourceNote.objects.filter(source=self.source).delete()
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
@@ -72,6 +73,7 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, source)
         except etree.XMLSyntaxError as e:
             self.valid_source = False
+            IatiXmlSourceNote.objects.filter(source=self.source).delete()
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
