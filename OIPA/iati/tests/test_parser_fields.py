@@ -29,7 +29,7 @@ from iati.parser.post_save import *
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_01 import Parse as Parser_201
-
+from iati.parser.exceptions import ValidationError
 
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
 # TODO: Setup parser classes per test, to isolate tests as much as possible (currently per class) - 2015-12-02
@@ -1406,7 +1406,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     # TODO : test for latlong validation
     # def test_location_pos_pos_invalid_latlong_201(self):
     #     pos = E('pos', '91.616944 328392189031283.716944')
-    #     with self.assertRaises(self.parser_201.ValidationError):
+    #     with self.assertRaises(ValidationError):
     #         self.parser_201.iati_activities__iati_activity__location__point__pos(pos)
 
     def test_location_exactness_201(self):
@@ -1802,7 +1802,7 @@ class BudgetTestCase(ParserSetupTestCase):
 
         value = E('value', text, **attrs)
 
-        with self.assertRaises(self.parser_201.ValidationError):
+        with self.assertRaises(ValidationError):
             self.parser_201.iati_activities__iati_activity__budget__value(value)
 
 
@@ -2661,7 +2661,7 @@ class ResultTestCase(ParserSetupTestCase):
 
         result_indicator = self.parser_201.get_model('ResultIndicator')
         self.assertEquals(result_indicator.baseline_year, int(attrs['year']))
-        self.assertEquals(result_indicator.baseline_value, attrs['value'])
+        self.assertEquals(result_indicator.baseline_value, Decimal(attrs['value']))
 
     def test_result_indicator_baseline_comment_201(self):
         """

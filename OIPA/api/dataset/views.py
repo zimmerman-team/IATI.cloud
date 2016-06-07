@@ -16,9 +16,22 @@ class DatasetList(DynamicListView):
     ## Request parameters
 
     - `ref` (*optional*): ref to search for.
-    - `type` (*optional*): Filter datasets by type (activity or organisation).
+    - `source_type` (*optional*): Filter datasets by type (activity or organisation).
     - `publisher` (*optional*): List of publisher refs.
+    - `note_exception_type` (*optional*): Exact exception type name of notes.
+    - `note_exception_type_contains` (*optional*): Word the exception type contains.
+    - `note_model` (*optional*): Exact model content of notes.
+    - `note_model_contains` (*optional*): Word the model contains.
+    - `note_field` (*optional*): Exact field content of notes.
+    - `note_field_contains` (*optional*): Word the field contains.
+    - `note_message` (*optional*): Exact message content of notes.
+    - `note_message_contains` (*optional*): Word the message contains.
+    - `note_count_gte` (*optional*): Note count greater or equal.
+    - `date_updated_gte` (*optional*): Last updated greater or equal, format exampe; `2016-01-01%2012:00:00`.
 
+    ## Ordering
+
+    
 
     ## Result details
 
@@ -93,6 +106,10 @@ class DatasetAggregations(AggregationView):
 
     - `dataset`
     - `publisher`
+    - `exception_type`
+    - `field`
+    - `model`
+    - `message`
     
 
     ## Aggregation options
@@ -102,11 +119,11 @@ class DatasetAggregations(AggregationView):
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
-    - `note_count` Indicator period target. Currently breaks on non number results.
+    - `note_count` count the amount of notes
 
     ## Request parameters
 
-    All filters available on the Activity List, can be used on aggregations.
+    All filters available on the Dataset List, can be used on aggregations.
 
     """
 
