@@ -25,9 +25,11 @@ class DatasetFilter(FilterSet):
         name='exception_type',
         fk='source')
 
-    note_exception_type_contains = CharFilter(
+    note_exception_type_contains = ToManyFilter(
+        qs=IatiXmlSourceNote,
         lookup_type='icontains',
-        name='exception_type')
+        name='exception_type',
+        fk='source')
 
     note_model = ToManyFilter(
         qs=IatiXmlSourceNote,
@@ -35,9 +37,11 @@ class DatasetFilter(FilterSet):
         name='model',
         fk='source')
 
-    note_model_contains = CharFilter(
+    note_model_contains = ToManyFilter(
+        qs=IatiXmlSourceNote,
         lookup_type='icontains',
-        name='model')
+        name='model',
+        fk='source')
 
     note_field = ToManyFilter(
         qs=IatiXmlSourceNote,
@@ -45,9 +49,11 @@ class DatasetFilter(FilterSet):
         name='field',
         fk='source')
 
-    note_field_contains = CharFilter(
+    note_field_contains = ToManyFilter(
+        qs=IatiXmlSourceNote,
         lookup_type='icontains',
-        name='field')
+        name='field',
+        fk='source')
 
     note_message = ToManyFilter(
         qs=IatiXmlSourceNote,
@@ -55,9 +61,11 @@ class DatasetFilter(FilterSet):
         name='field',
         fk='source')
 
-    note_message_contains = CharFilter(
+    note_message_contains = ToManyFilter(
+        qs=IatiXmlSourceNote,
         lookup_type='icontains',
-        name='field')
+        name='field',
+        fk='source')
 
     note_count_gte = NumberFilter(
         lookup_type='gte',
