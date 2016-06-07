@@ -29,15 +29,35 @@ class DatasetFilter(FilterSet):
         lookup_type='icontains',
         name='exception_type')
 
+    note_model = ToManyFilter(
+        qs=IatiXmlSourceNote,
+        lookup_type='in',
+        name='model',
+        fk='source')
+
+    note_model_contains = CharFilter(
+        lookup_type='icontains',
+        name='model')
+
     note_field = ToManyFilter(
         qs=IatiXmlSourceNote,
         lookup_type='in',
-        name='iatixmlsourcenote__field',
+        name='field',
         fk='source')
 
     note_field_contains = CharFilter(
         lookup_type='icontains',
-        name='iatixmlsourcenote__field')
+        name='field')
+
+    note_message = ToManyFilter(
+        qs=IatiXmlSourceNote,
+        lookup_type='in',
+        name='field',
+        fk='source')
+
+    note_message_contains = CharFilter(
+        lookup_type='icontains',
+        name='field')
 
     note_count_gte = NumberFilter(
         lookup_type='gte',
