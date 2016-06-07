@@ -4,6 +4,7 @@ from geodata.models import Country, Region
 import dateutil.parser
 from lxml.builder import E
 from iati_codelists import models as codelist_models
+from iati.parser.exceptions import *
 
 
 class Parse(IATI_105_Parser):
@@ -56,16 +57,16 @@ class Parse(IATI_105_Parser):
         precision = element.attrib.get('precision')
          
         if not latitude: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "location/coordinates", 
                 "latitude", 
-                "Unspecified.")
+                "required attribute missing")
         
         if not longitude: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "location/coordinates", 
                 "longitude", 
-                "Unspecified.")
+                "required attribute missing")
 
         point = E('point')
         super(Parse, self).iati_activities__iati_activity__location__point(point)
@@ -88,16 +89,16 @@ class Parse(IATI_105_Parser):
         code = element.text
 
         if not gazetteer_ref: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "location/gazetteer-entry", 
                 "gazeteer-ref", 
-                "Unspecified.")
+                "required attribute missing")
 
         if not code: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "location/gazetteer-entry", 
                 "text", 
-                "Unspecified.")
+                "required element empty")
 
         location_id = E('location-id', code=code, vocabulary=gazetteer_ref)
         super(Parse, self).iati_activities__iati_activity__location__location_id(location_id)
@@ -112,10 +113,10 @@ class Parse(IATI_105_Parser):
         code = element.attrib.get('code')
 
         if not code: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "location/location-type",
                 "code", 
-                "Unspecified or invalid.")
+                "required attribute missing")
 
         feature_designation = E('feature-designation', code=code)
         super(Parse, self).iati_activities__iati_activity__location__feature_designation(feature_designation)

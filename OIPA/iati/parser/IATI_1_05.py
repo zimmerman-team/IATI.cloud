@@ -4,6 +4,8 @@ from lxml.builder import E
 from iati import models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models 
+from iati.parser.exceptions import *
+
 # TODO: separate validation logic and model saving login in recursive tree walk
 
 
@@ -86,11 +88,17 @@ class Parse(IATI_201_Parser):
         role_name = element.attrib.get('role')
         role = self.get_or_none(codelist_models.OrganisationRole, name=role_name)
 
-        if not role: 
-            raise self.RequiredFieldError(
+        if not role_name: 
+            raise RequiredFieldError(
                 "participating-org",
                 "role",
-                "Unspecified or invalid.")
+                "required attribute missing")
+
+        if not role: 
+            raise ValidationError(
+                "participating-org",
+                "role",
+                "not found on the accompanying code list")
 
         element.attrib['role'] = role.code
 
@@ -115,22 +123,22 @@ class Parse(IATI_201_Parser):
         owner_name = element.attrib.get('owner-name')
 
         if not identifier:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "other-identifier",
                 "text",
-                "Unspecified.")
+                "required element empty")
 
-        if identifier and len(identifier) > 100:
-            raise self.ValidationError(
+        if identifier and len(identifier) > 200:
+            raise ValidationError(
                 "other-identifier",
                 "text",
-                "identifier is longer than 100 characters. This seems unlikely and is most often a data bug.")
+                "identifier is longer than 200 characters (unlikely and is most often a data bug)")
 
         if not (owner_ref or owner_name):
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "other-identifier",
                 "owner-ref/owner-name", 
-                "Either owner_ref or owner_name must be set.")
+                "either owner_ref or owner_name must be set")
 
         activity = self.get_model('Activity')
 
@@ -173,10 +181,10 @@ class Parse(IATI_201_Parser):
         description_type_code = element.attrib.get('type', 1)
 
         if not text:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "description", 
                 "text", 
-                "Unspecified.")
+                "required element empty")
 
         description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
 
@@ -203,11 +211,17 @@ class Parse(IATI_201_Parser):
         type_name = element.attrib.get('type')
         type_code = self.activity_date_type_mapping.get(type_name)
 
-        if not type_code: 
-            raise self.RequiredFieldError(
+        if not type_name:
+            raise RequiredFieldError(
                 "activity-date",
                 "type",
-                "Unspecified or invalid.")
+                "required attribute missing")
+
+        if not type_code:
+            raise RequiredFieldError(
+                "activity-date",
+                "type",
+                "not found on the accompanying code list")
 
         if type_code:
             element.attrib['type'] = type_code

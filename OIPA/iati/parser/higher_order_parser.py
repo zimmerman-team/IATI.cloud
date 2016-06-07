@@ -93,7 +93,7 @@ def codelist_field(self, model, codelist_model):
         code_model = self.get_or_none(codelist_model, code=code)
 
         if not code_model:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 model,
                 "code", 
                 "Unspecified or invalid.")
@@ -123,7 +123,7 @@ def code(codelist_model):
         code_model = self.get_or_none(codelist_model, code=code)
 
         if not code_model: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 model,
                 "code",
                 element)

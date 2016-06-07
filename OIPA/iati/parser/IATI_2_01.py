@@ -12,6 +12,7 @@ from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
 from iati.parser import post_save
 from currency_convert import convert
+from iati.parser.exceptions import *
 
 
 class Parse(IATI_202_Parser):

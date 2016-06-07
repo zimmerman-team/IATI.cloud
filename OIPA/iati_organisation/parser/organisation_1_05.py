@@ -9,6 +9,7 @@ from iati_organisation.models import RecipientOrgBudget
 from iati_organisation.models import OrganisationReportingOrganisation
 from iati_organisation.models import Organisation
 from iati_codelists import models as codelist_models
+from iati.parser.exceptions import *
 
 
 class Parse(Parse_2_01):

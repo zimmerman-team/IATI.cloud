@@ -166,7 +166,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
     role = CodelistSerializer()
-    activity_id = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', source='org_activity_id', read_only=True)
+    activity_id = serializers.CharField(source='org_activity_id')
     narratives = NarrativeSerializer(many=True)
 
     class Meta:

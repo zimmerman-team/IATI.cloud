@@ -309,12 +309,7 @@ class ActivityParticipatingOrganisation(models.Model):
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
 
     # when organisation is not mentioned in transactions
-    org_activity_id = models.ForeignKey(
-        Activity,
-        related_name="activity_id",
-        null=True,
-        blank=True,
-    )
+    org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
 
     narratives = GenericRelation(
         Narrative,

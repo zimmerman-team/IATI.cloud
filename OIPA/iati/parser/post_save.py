@@ -10,6 +10,8 @@ from iati_vocabulary import models as vocabulary_models
 
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati import activity_search_indexes
+from iati.parser.exceptions import *
+
 
 def set_related_activities(activity):
     """ update related-activity references to this activity """
@@ -173,4 +175,6 @@ def set_sector_transaction(activity):
                     vocabulary=recipient_sector.sector.vocabulary,
                     reported_on_transaction=False
                 ).save()
+
+
 

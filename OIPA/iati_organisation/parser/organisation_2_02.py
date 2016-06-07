@@ -15,6 +15,7 @@ from iati_organisation.models import (
 
 from geodata.models import Country
 from iati_organisation.parser import post_save
+from iati.parser.exceptions import *
 
 
 class Parse(IatiParser):
