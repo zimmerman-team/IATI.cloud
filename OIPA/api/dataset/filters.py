@@ -1,6 +1,6 @@
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
 from iati_synchroniser.models import IatiXmlSource, IatiXmlSourceNote
-from django_filters import FilterSet, CharFilter, NumberFilter, DateFilter
+from django_filters import FilterSet, CharFilter, NumberFilter, DateTimeFilter
 
 
 class DatasetFilter(FilterSet):
@@ -43,7 +43,7 @@ class DatasetFilter(FilterSet):
         lookup_type='gte',
         name='note_count')
 
-    date_updated_gte = DateFilter(
+    date_updated_gte = DateTimeFilter(
         lookup_type='gte',
         name='date_updated')
 
