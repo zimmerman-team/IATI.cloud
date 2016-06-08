@@ -13,9 +13,8 @@ class Parse(IATI_105_Parser):
 
     # maps to geographic vocabulary
     gazetteer_agency_mapping = {
-        "1": "G1",
-        # "2": "",
-        "3": "G2",
+        "GEO": "G1",
+        "OSM": "G2",
     }
 
     def __init__(self, *args, **kwargs):
@@ -85,19 +84,26 @@ class Parse(IATI_105_Parser):
 
     tag:gazetteer-entry'''
     def iati_activities__iati_activity__location__gazetteer_entry(self,element):
-        gazetteer_ref = self.gazetteer_agency_mapping.get(element.attrib.get('gazetteer-ref'))
+        gazetteer_ref_code = element.attrib.get('gazetteer-ref')
+        gazetteer_ref = self.gazetteer_agency_mapping.get(gazetteer_ref_code)
         code = element.text
 
-        if not gazetteer_ref: 
+        if not gazetteer_ref_code:
             raise RequiredFieldError(
-                "location/gazetteer-entry", 
-                "gazeteer-ref", 
+                "location/gazetteer-entry",
+                "gazetteer-ref",
                 "required attribute missing")
 
-        if not code: 
+        if not gazetteer_ref:
+            raise ValidationError(
+                "location/gazetteer-entry",
+                "gazetteer-ref",
+                "not found on the accompanying code list")
+
+        if not code:
             raise RequiredFieldError(
-                "location/gazetteer-entry", 
-                "text", 
+                "location/gazetteer-entry",
+                "text",
                 "required element empty")
 
         location_id = E('location-id', code=code, vocabulary=gazetteer_ref)

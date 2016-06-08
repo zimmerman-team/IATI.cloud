@@ -1451,7 +1451,7 @@ class Parse(IatiParser):
                 "type",
                 "not found on the accompanying code list")
 
-        if not status_code: 
+        if not status_code:
             raise RequiredFieldError(
                 "budget",
                 "status",

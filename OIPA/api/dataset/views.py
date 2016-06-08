@@ -31,7 +31,12 @@ class DatasetList(DynamicListView):
 
     ## Ordering
 
-    
+    API request may include `ordering` parameter. This parameter controls the order in which
+    results are returned.
+
+    Results can be ordered by all displayed fields.
+
+    The user may also specify reverse orderings by prefixing the field name with '-', like so: `-note_count`
 
     ## Result details
 

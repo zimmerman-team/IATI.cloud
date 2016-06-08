@@ -1457,14 +1457,14 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         Map to 201 location-id field
         """
         props = {
-            "gazetteer-ref": "1"
+            "gazetteer-ref": "OSM"
         }
         gazetteer = E('gazetteer-entry', "some code", **props) # Geonames.org
         self.parser_103.iati_activities__iati_activity__location__gazetteer_entry(gazetteer)
         location = self.parser_103.get_model('Location')
-
+        
         self.assertTrue(location.location_id_code == "some code")
-        self.assertTrue(location.location_id_vocabulary.code == "G1")
+        self.assertTrue(location.location_id_vocabulary.code == "G2")
 
     def test_location_gazetteer_deprecated_field_103(self):
         """
