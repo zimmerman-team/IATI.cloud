@@ -45,8 +45,9 @@ class ParseManager():
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
-                model="URL error",
-                field="URL down or does not exist",
+                model="n/a",
+                field="n/a",
+                message="URL down or does not exist",
                 exception_type='UrlError',
                 line_number=None
             )
@@ -77,8 +78,9 @@ class ParseManager():
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
-                model="Source error",
-                field=e.message,
+                model="n/a",
+                field="n/a",
+                message="This file contains XML syntax errors",
                 exception_type='XMLSyntaxError',
                 line_number=None
             )
