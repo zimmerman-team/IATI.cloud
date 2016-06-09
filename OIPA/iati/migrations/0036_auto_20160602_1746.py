@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('iati_vocabulary', '0004_auto_20160602_1726'),
         ('iati_organisation', '0006_auto_20160602_1104'),
-        ('iati_codelists', '0005_auto_20160602_1644'),
+        ('iati_codelists', '0006_add_budget_status_1'),
         ('iati', '0035_auto_20160531_0246'),
     ]
 

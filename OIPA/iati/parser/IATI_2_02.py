@@ -1271,7 +1271,7 @@ class Parse(IatiParser):
                 "policy-marker",
                 "code",
                 "not found on the accompanying code list")
-        elif vocabulary.code == '1' and not significance: 
+        elif vocabulary.code == '1' and significance is None: 
             raise RequiredFieldError(
                 "policy-marker",
                 "significance",
