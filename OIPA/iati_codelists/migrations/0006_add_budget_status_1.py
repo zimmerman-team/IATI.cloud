@@ -18,10 +18,11 @@ def add_budget_status(apps, schema_editor):
     except:
         return
 
-    BudgetStatus(
-    	code='1', 
-    	name='Indicative', 
-    	description='A non-binding estimate for the described budget.').save()
+    if not BudgetStatus.objects.filter(code='1').exists(): 
+        BudgetStatus(
+            code='1', 
+            name='Indicative', 
+            description='A non-binding estimate for the described budget.').save()
 
 
 class Migration(migrations.Migration):
