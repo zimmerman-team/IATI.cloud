@@ -3,6 +3,7 @@ from api.generics.filters import ToManyFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import StickyBooleanFilter
+from api.generics.filters import StickyCharFilter
 
 from django_filters import DateFilter
 from django_filters import BooleanFilter
@@ -43,6 +44,11 @@ class ResultFilter(TogetherFilterSet):
     indicator_period_actual_null = StickyBooleanFilter(
         lookup_type='isnull',
         name='resultindicator__resultindicatorperiod__actual')
+
+    result_indicator_period_end_year = StickyCharFilter(
+        name='resultindicator__resultindicatorperiod__period_end',
+        lookup_type='year'
+    )
 
     # default filters
     activity_scope = CommaSeparatedCharFilter(

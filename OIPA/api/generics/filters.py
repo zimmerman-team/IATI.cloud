@@ -84,6 +84,13 @@ class CommaSeparatedCharFilter(CharFilter):
         return super(CommaSeparatedCharFilter, self).filter(qs, value)
 
 
+class StickyCharFilter(CharFilter):
+
+    def filter(self, qs, value):
+        qs._next_is_sticky()
+        return super(StickyCharFilter, self).filter(qs, value)
+
+
 class CommaSeparatedStickyCharFilter(CharFilter):
 
     def filter(self, qs, value):
