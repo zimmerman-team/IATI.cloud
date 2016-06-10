@@ -148,7 +148,7 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields="participating_organisations__normalized_ref",
+            fields="participating_organisations__primary_name",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             # serializer=OrganisationSerializer,
