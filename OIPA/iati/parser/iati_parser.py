@@ -202,6 +202,9 @@ class IatiParser(object):
             except RequiredFieldError as e:
                 self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
                 return
+            except EmptyFieldError as e:
+                self.append_error('EmptyFieldError', e.model, e.field, e.message, element.sourceline)
+                return
             except ValidationError as e:
                 self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline)
                 return

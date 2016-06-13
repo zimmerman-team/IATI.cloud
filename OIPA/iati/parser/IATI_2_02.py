@@ -589,7 +589,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text: 
-            raise RequiredFieldError(
+            raise EmptyFieldError(
                 "contact-info",
                 "telephone",
                 "required element empty")
@@ -606,7 +606,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text: 
-            raise RequiredFieldError(
+            raise EmptyFieldError(
                 "contact-info",
                 "email",
                 "required element empty")
@@ -623,7 +623,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text:
-            raise RequiredFieldError(
+            raise EmptyFieldError(
                 "contact-info",
                 "website", 
                 "required element empty")

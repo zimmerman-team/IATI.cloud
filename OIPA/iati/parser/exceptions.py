@@ -30,6 +30,22 @@ class RequiredFieldError(Exception):
         return repr(self.field)
 
 
+class EmptyFieldError(Exception):
+    def __init__(self, model, field, msg):
+        """
+        This error 
+
+        field: the field that is required
+        msg: explanation why
+        """
+        self.model = model
+        self.field = field
+        self.message = msg
+
+    def __str__(self):
+        return repr(self.field)
+
+
 class ValidationError(Exception):
     def __init__(self, model, field, msg):
         """
