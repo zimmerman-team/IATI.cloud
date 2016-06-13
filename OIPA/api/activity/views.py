@@ -43,6 +43,7 @@ from api.sector.serializers import SectorSerializer
 from api.activity.serializers import ActivitySerializer
 from api.organisation.serializers import OrganisationSerializer
 
+
 class ActivityAggregations(AggregationView):
     """
     Returns aggregations based on the item grouped by, and the selected aggregation.
@@ -118,7 +119,7 @@ class ActivityAggregations(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-        ),
+        ),  
         GroupBy(
             query_param="recipient_region",
             fields="recipient_region",

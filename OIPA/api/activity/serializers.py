@@ -427,6 +427,29 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'ascending'
         )
 
+
+class ContactInfoSerializer(serializers.ModelSerializer):
+    type = CodelistSerializer()
+    organisation = NarrativeContainerSerializer()
+    department = NarrativeContainerSerializer()
+    person_name = NarrativeContainerSerializer()
+    job_title = NarrativeContainerSerializer()
+    mailing_address = NarrativeContainerSerializer()
+
+    class Meta:
+        model = iati_models.ContactInfo
+        fields = (
+            'type',
+            'organisation',
+            'department',
+            'person_name',
+            'job_title',
+            'telephone',
+            'email',
+            'website',
+            'mailing_address',
+        )
+
 class ResultSerializer(serializers.ModelSerializer):
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
@@ -518,7 +541,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     # TODO ; add contact-info serializer
     # note; contact info has a sequence we should use in the ContactInfoSerializer!
-    # contact_info = serializers.ContactInfoSerializer(many=True,source="?")
+    contact_info = ContactInfoSerializer(many=True,source="contactinfo_set")
 
     activity_scope = CodelistSerializer(source='scope')
     recipient_countries = RecipientCountrySerializer(
@@ -604,7 +627,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             # 'other_identifier',
             'activity_status',
             'activity_dates',
-            # 'contact_info',
+            'contact_info',
             'activity_scope',
             'recipient_countries',
             'recipient_regions',

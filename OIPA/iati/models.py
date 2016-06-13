@@ -470,7 +470,7 @@ class ContactInfo(models.Model):
 
 
 class ContactInfoOrganisation(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
+    contact_info = models.OneToOneField(ContactInfo, related_name="organisation", default=None)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -478,7 +478,7 @@ class ContactInfoOrganisation(models.Model):
 
 
 class ContactInfoDepartment(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
+    contact_info = models.OneToOneField(ContactInfo, related_name="department", default=None)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -486,7 +486,7 @@ class ContactInfoDepartment(models.Model):
 
 
 class ContactInfoPersonName(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
+    contact_info = models.OneToOneField(ContactInfo, related_name="person_name", default=None)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -494,7 +494,7 @@ class ContactInfoPersonName(models.Model):
 
 
 class ContactInfoJobTitle(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
+    contact_info = models.OneToOneField(ContactInfo, related_name="job_title", default=None)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -502,15 +502,7 @@ class ContactInfoJobTitle(models.Model):
 
 
 class ContactInfoMailingAddress(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
-    narratives = GenericRelation(
-        Narrative,
-        content_type_field='related_content_type',
-        object_id_field='related_object_id')
-
-
-class ContactInfoTelephone(models.Model):
-    contact_info = models.ForeignKey(ContactInfo)
+    contact_info = models.OneToOneField(ContactInfo, related_name="mailing_address", default=None)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
