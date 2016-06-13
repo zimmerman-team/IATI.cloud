@@ -244,6 +244,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+
+    indicator_title = ToManyFilter(
+        qs=ResultIndicatorTitle,
+        lookup_type='in',
+        name='primary_name',
+        fk='result_indicator__result__activity')
+
     #
     # Transaction filters
     #

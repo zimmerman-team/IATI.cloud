@@ -49,9 +49,8 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         # apply the aggregation annotation
         next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
-        # print str(next_result.query)
-        return next_result
 
+        return next_result
 
     aggregation_querysets = [ 
         get_aggregation_queryset(queryset, group_fields, aggregation)
@@ -63,7 +62,6 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         Execute the querysets and merge the results into one list of dictionaries
         This method keeps ordering of keys in order of execution of the aggregations
         """
-
         if len(querysets) is 1:
             return querysets[0]
 
@@ -170,7 +168,7 @@ def apply_group_filters(queryset, selected_groupings, params):
     )
 
     for group in groupings:
-        if hasattr(group, 'extra'):
+        if group.extra is not None:
             continue
 
         main_field = group.fields[0] # the one giving the relation from activity to id of item

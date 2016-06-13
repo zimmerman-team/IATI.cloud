@@ -14,7 +14,6 @@ class AggregationView(GenericAPIView):
         The results are all queried so this gives at most a small performance boost
         because there's less data to serialize.
         """
-
         if page_size:
 
             if not page:
