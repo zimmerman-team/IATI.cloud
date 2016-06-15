@@ -149,7 +149,8 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField()
     narratives = NarrativeSerializer(many=True)
-    organisation = OrganisationSerializer()
+    # organisation = OrganisationSerializer()
+    organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
 
     class Meta:
         model = iati_models.ActivityReportingOrganisation
