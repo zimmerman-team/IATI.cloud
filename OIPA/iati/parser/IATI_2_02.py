@@ -51,7 +51,7 @@ class Parse(IatiParser):
                 "xml:lang",
                 "must specify xml:lang on iati-activity or xml:lang on the element itself")
         if not text:
-            raise RequiredFieldError(
+            raise EmptyFieldError(
                 register_name,
                 "text", 
                 "empty narrative")
@@ -359,7 +359,7 @@ class Parse(IatiParser):
                 "other-identifier",
                 "ref",
                 "required attribute missing")
-        # TODO: iati docs say type should be required (but can't for backwards compatibility)
+        # TODO: iati docs say type should be required (but can't for backwards compatibility), should throw error on 2.0x
 
         activity = self.get_model('Activity')
         other_identifier = models.OtherIdentifier()
@@ -592,7 +592,7 @@ class Parse(IatiParser):
             raise EmptyFieldError(
                 "contact-info",
                 "telephone",
-                "required element empty")
+                "empty element")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.telephone = text
@@ -609,7 +609,7 @@ class Parse(IatiParser):
             raise EmptyFieldError(
                 "contact-info",
                 "email",
-                "required element empty")
+                "empty element")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.email = text
@@ -626,7 +626,7 @@ class Parse(IatiParser):
             raise EmptyFieldError(
                 "contact-info",
                 "website", 
-                "required element empty")
+                "empty element")
 
         contact_info = self.get_model('ContactInfo')
         contact_info.website = text
