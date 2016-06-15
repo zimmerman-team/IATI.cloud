@@ -131,6 +131,15 @@ class DescriptionTypeFactory(NoDatabaseFactory):
     description = 'description here'
 
 
+class ContactTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.ContactType
+
+    code = "1"
+    name = 'General Enquiries'
+    description = 'General Enquiries'
+
+
 class SectorFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.Sector

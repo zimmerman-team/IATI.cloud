@@ -115,7 +115,6 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
     return result
 
-
 def serialize_foreign_keys(result, selected_groupings, request):
     """
     Re-use serializers to show full info of the grouped by items.

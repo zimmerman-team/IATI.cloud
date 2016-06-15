@@ -457,7 +457,6 @@ class ActivityWebsite(models.Model):
         return "%s" % self.url
 
 
-#   Class not truly correct, attributes fully open
 class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(ContactType, null=True, blank=True)

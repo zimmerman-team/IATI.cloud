@@ -100,6 +100,8 @@ class ContactInfoFactory(NoDatabaseFactory):
         model = iati.models.ContactInfo
 
     activity = SubFactory(ActivityFactory)
+    type = SubFactory(ContactTypeFactory)
+
 
 class RelatedActivityFactory(NoDatabaseFactory):
     class Meta:
