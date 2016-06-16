@@ -303,7 +303,7 @@ class ActivityParticipatingOrganisation(models.Model):
         related_name="participating_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None)
+    organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None, on_delete=models.SET_NULL)
 
     type = models.ForeignKey(OrganisationType, null=True, blank=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
