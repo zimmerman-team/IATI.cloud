@@ -16,14 +16,14 @@ from iati.parser.higher_order_parser import provider_org, receiver_org
 from django.conf import settings
 from decimal import Decimal
 from iati.parser.exceptions import *
+# from iati.parser.higher_order_parser import compose, code
 
 
 class Parse(IatiParser):
-
-    VERSION = '2.02' 
-
+    
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
+        self.VERSION = '2.02'
 
     def add_narrative(self, element, parent):
         # set on activity (if set)
@@ -62,7 +62,6 @@ class Parse(IatiParser):
         narrative.related_object = parent
         narrative.activity = self.get_model('Activity')
 
-        # TODO: handle this differently (also: breaks tests)
         self.register_model(register_name, narrative)
 
     def iati_activities__iati_activity(self, element):
@@ -75,7 +74,7 @@ class Parse(IatiParser):
 
         tag:iati-activity"""
 
-        id = self._normalize(element.xpath('iati-identifier/text()')[0])
+        activity_id = self._normalize(element.xpath('iati-identifier/text()')[0])
 
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         hierarchy = element.attrib.get('hierarchy')
@@ -84,13 +83,13 @@ class Parse(IatiParser):
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
 
-        if not id:
+        if not activity_id:
             raise RequiredFieldError(
                 "iati-identifier",
                 "text", 
                 "required element empty")
 
-        old_activity = self.get_or_none(models.Activity, id=id)
+        old_activity = self.get_or_none(models.Activity, id=activity_id)
 
         if old_activity and not self.force_reparse:
             # update last_updated_model to prevent the activity from being deleted
@@ -122,11 +121,11 @@ class Parse(IatiParser):
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
 
         activity = models.Activity()
-        activity.id = id
+        activity.id = activity_id
         activity.default_lang = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
-        activity.humanitarian = self.makeBool(humanitarian)
+        activity.humanitarian = self.makeBoolNone(humanitarian)
         activity.xml_source_ref = self.iati_source.ref
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
@@ -138,7 +137,6 @@ class Parse(IatiParser):
 
         self.register_model('Activity', activity)
         return element
-
 
     def iati_activities__iati_activity__iati_identifier(self, element):
         """
@@ -176,7 +174,6 @@ class Parse(IatiParser):
 
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
-        # TODO: should secondary_reporter be false by default?
         secondary_reporter = element.attrib.get('secondary-reporter', '0')
 
         organisation = self.get_or_none(models.Organisation, pk=ref)
@@ -198,15 +195,14 @@ class Parse(IatiParser):
             self.register_model('OrganisationName', organisation_name)
 
             narratives = element.findall('narrative')
-            narratives_text = element.xpath('narrative/text()')
 
             if len(narratives) > 0:
                 for narrative in narratives:
+                    # TODO this goes wrong somewhere, narrative not displying in API
                     self.add_narrative(narrative, organisation_name)
                     organisation.primary_name = self.get_primary_name(narrative, organisation.primary_name)
             else:
                 organisation.primary_name = ref
-
 
         activity = self.get_model('Activity')
         reporting_organisation = models.ActivityReportingOrganisation()
@@ -221,7 +217,6 @@ class Parse(IatiParser):
     
         return element
 
-    
     def iati_activities__iati_activity__reporting_org__narrative(self, element):
         """attributes:
 
@@ -271,7 +266,6 @@ class Parse(IatiParser):
 
         return element
 
-    
     def iati_activities__iati_activity__participating_org__narrative(self, element):
         """attributes:
     
@@ -499,7 +493,7 @@ class Parse(IatiParser):
         type_code = self.get_or_none(codelist_models.ContactType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')
-        contact_info =  models.ContactInfo()
+        contact_info = models.ContactInfo()
         contact_info.activity = activity
         contact_info.type = type_code
         self.register_model('ContactInfo', contact_info)
@@ -511,8 +505,8 @@ class Parse(IatiParser):
 
         tag:organisation"""
         contact_info = self.get_model('ContactInfo')
-        contact_info_organisation =  models.ContactInfoOrganisation()
-        contact_info_organisation.contact_info = contact_info;
+        contact_info_organisation = models.ContactInfoOrganisation()
+        contact_info_organisation.contact_info = contact_info
         self.register_model('ContactInfoOrganisation', contact_info_organisation)
         return element
 
@@ -529,7 +523,7 @@ class Parse(IatiParser):
 
         tag:department"""
         contact_info = self.get_model('ContactInfo')
-        contact_info_department =  models.ContactInfoDepartment()
+        contact_info_department = models.ContactInfoDepartment()
         contact_info_department.contact_info = contact_info
 
         self.register_model('ContactInfoDepartment', contact_info_department)
@@ -549,7 +543,7 @@ class Parse(IatiParser):
 
         tag:person-name"""
         contact_info = self.get_model('ContactInfo')
-        contact_info_person_name =  models.ContactInfoPersonName()
+        contact_info_person_name = models.ContactInfoPersonName()
         contact_info_person_name.contact_info = contact_info
         self.register_model('ContactInfoPersonName', contact_info_person_name)
          
@@ -572,7 +566,6 @@ class Parse(IatiParser):
         contact_info_job_title.contact_info = contact_info
         self.register_model('ContactInfoJobTitle', contact_info_job_title)
         return element
-
 
     def iati_activities__iati_activity__contact_info__job_title__narrative(self, element):
         """attributes:
@@ -700,7 +693,7 @@ class Parse(IatiParser):
                 "not found on the accompanying code list")
 
         activity = self.get_model('Activity')
-        activity_recipient_country =  models.ActivityRecipientCountry()
+        activity_recipient_country = models.ActivityRecipientCountry()
         activity_recipient_country.country = country
         activity_recipient_country.activity = activity
         activity_recipient_country.percentage = percentage
@@ -718,7 +711,8 @@ class Parse(IatiParser):
         tag:recipient-region"""
         code = element.attrib.get('code')
         region = self.get_or_none(Region, code=code)
-        vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
@@ -746,7 +740,7 @@ class Parse(IatiParser):
                 "code is unspecified or invalid")
 
         activity = self.get_model('Activity')
-        activity_recipient_region =  models.ActivityRecipientRegion()
+        activity_recipient_region = models.ActivityRecipientRegion()
         activity_recipient_region.region = region
         activity_recipient_region.activity = activity
         activity_recipient_region.percentage = percentage
@@ -764,7 +758,7 @@ class Parse(IatiParser):
         ref = element.attrib.get('ref')
 
         activity = self.get_model('Activity')
-        location =  models.Location()
+        location = models.Location()
         location.activity = activity
         location.ref = ref
         # location.adm_code = 'no admin code'
@@ -1063,7 +1057,8 @@ class Parse(IatiParser):
         tag:recipient-sector"""
         code = element.attrib.get('code')
         sector = self.get_or_none(models.Sector, code=code)
-        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
         percentage = element.attrib.get('percentage')
 
@@ -1180,7 +1175,6 @@ class Parse(IatiParser):
         self.add_narrative(element, budget_item_description)
         return element
 
-
     def iati_activities__iati_activity__humanitarian_scope(self, element):
 
         activity = self.get_model('Activity')
@@ -1221,7 +1215,6 @@ class Parse(IatiParser):
                 "vocabulary",
                 "not found on the accompanying code list")
 
-        activity = self.get_model('Activity')
         humanitarian_scope = models.HumanitarianScope()
         humanitarian_scope.activity = activity
         humanitarian_scope.type = scope_type
@@ -1649,7 +1642,6 @@ class Parse(IatiParser):
         value-date:2014-01-01
 
         tag:value"""
-        value = element.text
 
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
         value = element.text
@@ -1715,7 +1707,7 @@ class Parse(IatiParser):
         ref:BB-BBB-123456789
 
         tag:receiver-org"""
-
+        # TODO fix/test higher order parser or do this in the old fashion
         return receiver_org(
             self.get_model('PlannedDisbursement'),
             models.PlannedDisbursementReceiver(),
@@ -1811,7 +1803,6 @@ class Parse(IatiParser):
 
         tag:value"""
         currency = self.get_or_none(models.Currency, code=element.attrib.get('currency'))
-        value_date = self.validate_date(element.attrib.get('value-date'))
         value = element.text
         decimal_value = self.guess_number('transaction', value)
 
@@ -1820,7 +1811,6 @@ class Parse(IatiParser):
                 "transaction/value",
                 "text", 
                 "Unspecified or invalid.")
-
 
         value_date = element.attrib.get('value-date')
 
@@ -1966,7 +1956,8 @@ class Parse(IatiParser):
         tag:sector"""
         code = element.attrib.get('code')
         sector = self.get_or_none(models.Sector, code=element.attrib.get('code'))
-        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary = self.get_or_none(vocabulary_models.SectorVocabulary, code=element.attrib.get('vocabulary', '1'))
         vocabulary_uri = element.attrib.get('vocabulary-uri')
 
         if not code:
@@ -2078,7 +2069,7 @@ class Parse(IatiParser):
         transaction_recipient_region.percentage = 100
         transaction_recipient_region.reported_on_transaction = True
 
-        transaction = self.register_model('TransactionRecipientRegion', transaction_recipient_region)
+        self.register_model('TransactionRecipientRegion', transaction_recipient_region)
         return element
 
     def iati_activities__iati_activity__transaction__flow_type(self, element):
@@ -2225,7 +2216,6 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-
     def iati_activities__iati_activity__document_link__document_date(self, element):
         """attributes:
         format:application/vnd.oasis.opendocument.text
@@ -2360,7 +2350,8 @@ class Parse(IatiParser):
 
         activity = self.get_model('Activity')
         related_activity = models.RelatedActivity()
-        related_activity.current_activity = activity # TODO: remove this field?
+        # TODO: remove this field?
+        related_activity.current_activity = activity
         related_activity.ref_activity = self.get_or_none(models.Activity, iati_identifier=ref)
         related_activity.ref = ref
         related_activity.type = related_activity_type
@@ -2458,7 +2449,8 @@ class Parse(IatiParser):
         return element
 
     def iati_activities__iati_activity__result__title__narrative(self, element):
-        title = self.get_model('ResultTitle') # this points to Title
+        # this points to Title
+        title = self.get_model('ResultTitle')
         self.add_narrative(element, title)
 
         return element
@@ -2478,7 +2470,8 @@ class Parse(IatiParser):
 
     # tag:narrative"""
     def iati_activities__iati_activity__result__description__narrative(self, element):
-        description = self.get_model('ResultDescription') # this points to Description
+        # this points to Description
+        description = self.get_model('ResultDescription')
         self.add_narrative(element, description)
 
         return element
@@ -2554,7 +2547,7 @@ class Parse(IatiParser):
 
     # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__title__narrative(self, element):
-        title = self.get_model('ResultIndicatorTitle') # this points to Title
+        title = self.get_model('ResultIndicatorTitle')
         self.add_narrative(element, title)
         title.primary_name = self.get_primary_name(element, title.primary_name)
 
@@ -2611,7 +2604,7 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "value",
-                "required attribute missing (this error might be incorrect, xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (note; xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator = self.pop_model('ResultIndicator')
         result_indicator.baseline_year = year
@@ -2849,7 +2842,7 @@ class Parse(IatiParser):
         actual_location.ref = ref
         actual_location.location = location[0]
 
-        self.register_model('ResultIndicatorPeriodActualLocation', result_indicator_period_actual_comment)
+        self.register_model('ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__actual__dimension(self, element):
@@ -2896,48 +2889,48 @@ class Parse(IatiParser):
 
         return element
 
-    def iati_activities__iati_activity__crs_add(self, element):
-        return activity_field(models.CrsAdd(), self.get_model('Activity'))(element)
-
-    def iati_activities__iati_activity__crs_add__other_flags(self, element):
-
-        # TODO: compose model, pass element to each method - 2016-06-03
-        return compose(
-            self.register_model,
-            parent(self.get_model('CrsAdd'), 'crs_add')
-        )(models.CrsAddOtherFlags(), element)
+    # def iati_activities__iati_activity__crs_add(self, element):
+    #     return activity_field(models.CrsAdd(), self.get_model('Activity'))(element)
+    #
+    # def iati_activities__iati_activity__crs_add__other_flags(self, element):
+    #
+    #     # TODO: compose model, pass element to each method - 2016-06-03
+    #     return compose(
+    #         self.register_model,
+    #         parent(self.get_model('CrsAdd'), 'crs_add')
+    #     )(models.CrsAddOtherFlags(), element)
 
     # """attributes:
     # rate-1:4
     # rate-2:3
 
     # tag:loan-terms"""
-    def iati_activities__iati_activity__crs_add__loan_terms(self, element):
-        return compose(
-            self.register_model,
-            percentage_field('rate-1'),
-            percentage_field('rate-2'),
-        )(self.get_model('CrsAddLoanTerms'), element)
-
-
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self, element):
-        return compose(
-            self.register_model,
-            code(codelist_models.LoanRepaymentType),
-        )(self.pop_model('CrsAddLoanTerms'), element)
-
-
-    def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self, element):
-        return compose(
-            self.register_model,
-            code(codelist_models.LoanRepaymentPeriod),
-        )(self.pop_model('CrsAddLoanTerms'), element)
-
-    def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self, element):
-        return compose(
-            self.register_model,
-            iso_date(codelist_models.LoanRepaymentPeriod),
-        )(self.pop_model('CrsAddLoanTerms'), element)
+    # def iati_activities__iati_activity__crs_add__loan_terms(self, element):
+    #     return compose(
+    #         self.register_model,
+    #         percentage_field('rate-1'),
+    #         percentage_field('rate-2'),
+    #     )(self.get_model('CrsAddLoanTerms'), element)
+    #
+    #
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_type(self, element):
+    #     return compose(
+    #         self.register_model,
+    #         code(codelist_models.LoanRepaymentType),
+    #     )(self.pop_model('CrsAddLoanTerms'), element)
+    #
+    #
+    # def iati_activities__iati_activity__crs_add__loan_terms__repayment_plan(self, element):
+    #     return compose(
+    #         self.register_model,
+    #         code(codelist_models.LoanRepaymentPeriod),
+    #     )(self.pop_model('CrsAddLoanTerms'), element)
+    #
+    # def iati_activities__iati_activity__crs_add__loan_terms__commitment_date(self, element):
+    #     return compose(
+    #         self.register_model,
+    #         iso_date(codelist_models.LoanRepaymentPeriod),
+    #     )(self.pop_model('CrsAddLoanTerms'), element)
 
     # """attributes:
     # iso-date:2014-01-01

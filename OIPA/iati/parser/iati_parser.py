@@ -16,7 +16,7 @@ from iati.parser.exceptions import *
 
 class IatiParser(object):
     # default version
-    VERSION = '2.01'
+    VERSION = '2.02'
 
     def __init__(self, root):
         self.logged_functions = []

@@ -1,6 +1,8 @@
 # Return parser functions for generic elements
 from iati import models
 import iati_codelists.models as codelist_models
+from iati.parser.exceptions import RequiredFieldError
+import functools
 
 
 def provider_org(self, parent_model, provider_model, fk_name):
@@ -117,7 +119,7 @@ def parent(parent_model, fk):
 
     return func
 
-def code(codelist_model):
+def code(self, codelist_model):
     def func(model, element):
         code = element.attrib.get('code')
         code_model = self.get_or_none(codelist_model, code=code)

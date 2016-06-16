@@ -12,7 +12,6 @@ from iati.parser.exceptions import *
 class Parse(IATI_201_Parser):
 
     #version of iati standard
-    VERSION = '1.05'
     
     activity_date_type_mapping = {
         "start-planned": "1",
@@ -59,7 +58,7 @@ class Parse(IATI_201_Parser):
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
-        # self.VERSION = codelist_models.Version.objects.get(code='1.05')
+        self.VERSION = '1.05'
         
     def iati_activities__iati_activity__reporting_org(self, element):
         """atributes:

@@ -9,8 +9,6 @@ from iati.parser.exceptions import *
 
 class Parse(IATI_105_Parser):
 
-    VERSION = '1.03' # version of iati standard
-
     # maps to geographic vocabulary
     gazetteer_agency_mapping = {
         "GEO": "G1",
@@ -19,6 +17,7 @@ class Parse(IATI_105_Parser):
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
+        self.VERSION = '1.03'
 
     '''atributes:
     code:ADM2

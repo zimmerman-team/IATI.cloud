@@ -1,3 +1,4 @@
+from IATI_2_02 import Parse as IATI_202_Parser
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
 from IATI_1_03 import Parse as IATI_103_Parser
@@ -101,7 +102,7 @@ class ParseManager():
         # activity file
         if source.type == 1:
             if iati_version == '2.02':
-                parser = IATI_201_Parser(root)
+                parser = IATI_202_Parser(root)
             elif iati_version == '2.01':
                 parser = IATI_201_Parser(root)
             elif iati_version == '1.03':
