@@ -5,7 +5,6 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
-from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 from api.activity.filters import RelatedActivityFilter

@@ -1,7 +1,6 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework.serializers import BaseSerializer
-from django.db.models import  Q, F
+from django.db.models import Q, F
 from api.aggregation.aggregation import aggregate
 
 
