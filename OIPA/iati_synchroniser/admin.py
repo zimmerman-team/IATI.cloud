@@ -84,12 +84,13 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         'get_parse_activity',
         'date_updated',
         'last_found_in_registry',
-        'is_parsed']
+        'is_parsed',
+        'time_to_parse']
 
     def show_source_url(self, obj):
         return format_html('<a target="_blank" href="{url}">Open file in new window</a>', url=obj.source_url)
     show_source_url.allow_tags = True
-    show_source_url.short_description = "Source URL"
+    show_source_url.short_description = "URL"
 
     def export_btn(self, obj):
         return format_html(

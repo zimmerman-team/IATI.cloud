@@ -29,6 +29,7 @@ class IatiXmlSource(models.Model):
         unique=True)
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
+    time_to_parse = models.CharField(null=True, default=None, max_length=40)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
     iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
@@ -55,12 +56,20 @@ class IatiXmlSource(models.Model):
 
     def process(self, force_reparse=False):
         from iati.parser.parse_manager import ParseManager
+        start_datetime = datetime.datetime.now()
         parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
 
         self.is_parsed = True
         self.date_updated = datetime.datetime.now()
 
+        time_diff = self.date_updated - start_datetime
+        self.time_to_parse = ''.join([
+            str(time_diff.seconds//3600), 
+            ':',
+            str((time_diff.seconds//60)%60),
+            ':',
+            str(time_diff.seconds%60)])
         self.save(process=False)
 
     def process_activity(self, activity_id):
