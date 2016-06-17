@@ -10,21 +10,24 @@ from iati_organisation.models import (
     BudgetLine,
     RecipientOrgBudget,
     RecipientCountryBudget,
+    RecipientRegionBudget,
     DocumentLink,
-    DocumentLinkTitle)
+    DocumentLinkTitle,
+    TotalExpenditure)
 
-from geodata.models import Country
+from geodata.models import Country, Region
 from iati_organisation.parser import post_save
 from iati.parser.exceptions import *
+from iati_vocabulary.models import RegionVocabulary
 
 
 class Parse(IatiParser):
-    VERSION = '2.02'
+    
     organisation_identifier = ''
 
-    # TODO: remove this inheritance - 2015-12-10
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
+        self.VERSION = '2.02'
 
     def add_narrative(self, element, parent):
         default_lang = self.default_lang # set on activity (if set)
@@ -474,7 +477,7 @@ class Parse(IatiParser):
         model = self.get_model('RecipientRegionBudget')
         model.region = self.get_or_none(Region, code=element.attrib.get('code'))
 
-        vocabulary = self.get_or_none(vocabulary_models.RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
+        vocabulary = self.get_or_none(RegionVocabulary, code=element.attrib.get('vocabulary', '1')) # TODO: make defaults more transparant, here: 'OECD-DAC default'
         vocabulary_uri = element.attrib.get('vocabulary-uri')
 
         if not vocabulary: 
@@ -556,6 +559,95 @@ class Parse(IatiParser):
         # store element
         return element
 
+    def iati_organisations__iati_organisation__total_expenditure(self, element):
+        """
+        """ 
+        model = self.get_model('Organisation')
+        total_expenditure = TotalExpenditure()
+        total_expenditure.organisation = model
+
+        self.register_model('TotalExpenditure', total_expenditure)
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__period_start(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditure')
+        model.period_start = self.validate_date(element.attrib.get('iso-date'))
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__period_end(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditure')
+        model.period_end = self.validate_date(element.attrib.get('iso-date'))
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__value(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditure')
+        code = element.attrib.get('currency')
+        currency = self.get_or_none(codelist_models.Currency, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "total-expenditure/value/currency",
+                "code",
+                "required element empty")
+
+        if not currency:
+            raise ValidationError(
+                "total-expenditure/value/currency",
+                "code",
+                "not found on the accompanying code list")
+
+        model.value_date = self.validate_date(element.attrib.get('value-date'))
+        model.currency = currency
+        model.value = element.text
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditure')
+        budget_line = BudgetLine()
+        budget_line.ref = element.attrib.get('ref')
+        budget_line.parent = model
+        self.register_model('TotalExpenditureBudgetLine',budget_line)
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line__value(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditureBudgetLine')
+        code = element.attrib.get('currency')
+        currency = self.get_or_none(codelist_models.Currency, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "total-expenditure/value/currency",
+                "code",
+                "required element empty")
+
+        if not currency:
+            raise ValidationError(
+                "total-expenditure/value/currency",
+                "code",
+                "not found on the accompanying code list")
+
+        model.value_date = self.validate_date(element.attrib.get('value-date'))
+        model.currency = currency
+        model.value = element.text
+        return element
+
+    def iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(self, element):
+        """
+        """
+        model = self.get_model('TotalExpenditureBudgetLine')
+        self.add_narrative(element, model)
+        return element
+
     def iati_organisations__iati_organisation__document_link(self, element):
         """atributes:
         format:application/vnd.oasis.opendocument.text
@@ -613,6 +705,32 @@ class Parse(IatiParser):
         model = self.get_model('DocumentLink')
         model.language = self.get_or_none(codelist_models.Language, code=element.attrib.get('code'))
         # store element
+        return element
+
+    def iati_organisations__iati_organisation__document_link__document_date(self, element):
+        """attributes:
+        format:application/vnd.oasis.opendocument.text
+        url:http:www.example.org/docs/report_en.odt
+
+        tag:document-link"""
+        iso_date = element.attrib.get('iso-date')
+
+        if not iso_date: 
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing")
+
+        iso_date = self.validate_date(iso_date)
+
+        if not iso_date:
+            raise ValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date")
+
+        document_link = self.get_model('DocumentLink')
+        document_link.iso_date = iso_date
         return element
 
     def iati_organisations__iati_organisation__document_link__recipient_country(self, element):

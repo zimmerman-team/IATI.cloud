@@ -20,9 +20,9 @@ from iati.parser.exceptions import *
 
 
 class Parse(IATI_202_Parser):
-    VERSION = '2.01'
+    
     organisation_identifier = ''
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
-
+        self.VERSION = '2.01'
