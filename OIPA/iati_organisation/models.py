@@ -8,7 +8,10 @@ from iati.models import Currency
 from iati.models import FileFormat
 from iati.models import DocumentCategory
 from iati.models import Version
+from iati.models import BudgetStatus
 from geodata.models import Country
+from geodata.models import Region
+from iati_vocabulary.models import RegionVocabulary
 
 
 #function for making url
@@ -70,8 +73,8 @@ class OrganisationReportingOrganisation(models.Model):
     reporting_org_identifier = models.CharField(max_length=250,null=True)
     secondary_reporter = models.BooleanField(default=False)
 
-# TODO: below this must be changed - 2016-04-20
 
+# TODO: below this must be changed - 2016-04-20
 class BudgetLine(models.Model):
     content_type = models.ForeignKey(
         ContentType,
@@ -99,6 +102,7 @@ class BudgetLine(models.Model):
 
 class TotalBudget(models.Model):
     organisation = models.ForeignKey(Organisation,related_name="total_budget")
+    status = models.ForeignKey(BudgetStatus, default=1)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
@@ -114,6 +118,7 @@ class TotalBudget(models.Model):
 
 class RecipientOrgBudget(models.Model):
     organisation = models.ForeignKey(Organisation, related_name='donor_org')
+    status = models.ForeignKey(BudgetStatus, default=1)
     recipient_org_identifier = models.CharField(max_length=150, verbose_name='recipient_org_identifier', null=True)
     recipient_org = models.ForeignKey(Organisation, related_name='recieving_org', db_constraint=False, null=True)
     period_start = models.DateField(null=True)
@@ -130,7 +135,26 @@ class RecipientOrgBudget(models.Model):
 
 class RecipientCountryBudget(models.Model):
     organisation = models.ForeignKey(Organisation,related_name='recipient_country_budget')
-    country = models.ForeignKey(Country,null=True)
+    status = models.ForeignKey(BudgetStatus, default=1)
+    country = models.ForeignKey(Country, null=True)
+    period_start = models.DateField(null=True)
+    period_end = models.DateField(null=True)
+    currency = models.ForeignKey(Currency, null=True)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    narratives = GenericRelation(OrganisationNarrative)
+    budget_lines = GenericRelation(
+        BudgetLine,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name="budget_lines")
+
+
+class RecipientRegionBudget(models.Model):
+    organisation = models.ForeignKey(Organisation, related_name='recipient_region_budget')
+    status = models.ForeignKey(BudgetStatus, default=1)
+    region = models.ForeignKey(Region, null=True)
+    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    vocabulary_uri = models.URLField(null=True, blank=True)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     currency = models.ForeignKey(Currency,null=True)
@@ -143,17 +167,35 @@ class RecipientCountryBudget(models.Model):
         related_query_name="budget_lines")
 
 
+class TotalExpenditure(models.Model):
+    organisation = models.ForeignKey(Organisation,related_name="total_expenditure")
+    period_start = models.DateField(null=True)
+    period_end = models.DateField(null=True)
+    value_date = models.DateField(null=True)
+    currency = models.ForeignKey(Currency,null=True)
+    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    narratives = GenericRelation(OrganisationNarrative)
+    # using BudgetLine model for this since it has the same data
+    expense_lines = GenericRelation(
+        BudgetLine,
+        content_type_field='content_type',
+        object_id_field='object_id',
+        related_query_name="expense_lines")
+
+
 class DocumentLink(models.Model):
     organisation = models.ForeignKey(Organisation, related_name='documentlinks')
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(FileFormat, null=True, default=None, related_name='file_formats')
     categories = models.ManyToManyField(
-        DocumentCategory,related_name='doc_categories')
+        DocumentCategory,
+        related_name='doc_categories')
     # title = models.CharField(max_length=255, default="")
-    language = models.ForeignKey(Language, null=True, default=None,related_name='languages')
+    language = models.ForeignKey(Language, null=True, default=None, related_name='languages')
     recipient_countries = models.ManyToManyField(
         Country, blank=True,
         related_name='recipient_countries')
+    iso_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self,):
         return "%s - %s" % (self.organisation.code, self.url)

@@ -11,20 +11,19 @@ from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
 from iati_synchroniser.models import IatiXmlSourceNote
 from django.conf import settings
+from iati.parser.exceptions import *
 
 
 class IatiParser(object):
     # default version
-    VERSION = '2.01'
+    VERSION = '2.02'
 
     def __init__(self, root):
         self.logged_functions = []
         self.hints = []
         self.errors = []
-        self.validation_errors = []
-        self.required_field_errors = []
-        self.iati_source = None
         self.parse_start_datetime = datetime.datetime.now()
+        self.iati_source = None
         self.force_reparse = False
         self.default_lang = None
 
@@ -32,50 +31,13 @@ class IatiParser(object):
         self.model_store = OrderedDict()
         self.root = root
 
-
-    class RequiredFieldError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is required
-            msg: explanation why
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-
-    class ValidationError(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is validated
-            msg: explanation what went wrong
-            """
-            self.field = field
-            self.message = msg
-
-        def __str__(self):
-            return repr(self.field)
-
-
-    class NoUpdateRequired(Exception):
-        def __init__(self, field, msg):
-            """
-            field: the field that is validated
-            msg: explanation what went wrong
-            """
-        def __str__(self):
-            return 'Current version of activity exists'
- 
-
     def get_or_none(self, model, *args, **kwargs):
         try:
             return model.objects.get(*args, **kwargs)
         except model.DoesNotExist:
             return None
 
-    def _get_currency_or_raise(self, currency):
+    def _get_currency_or_raise(self, model_name, currency):
         """
         get default currency if not available for currency-related fields
         """
@@ -83,27 +45,42 @@ class IatiParser(object):
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
             if not currency:
-                raise self.RequiredFieldError(
+                raise RequiredFieldError(
+                    model_name,
                     "currency",
-                    "value__currency: currency is not set and default-currency is not set on activity as well")
+                    "must specify default-currency on iati-activity or as currency on the element itself")
 
         return currency
 
     def makeBool(self, text):
-        if text == '1':
+        if text == '1' or text == 'true':
             return True
         return False
 
-    def guess_number(self,number_string):
+    def makeBoolNone(self, text):
+        if text == '1':
+            return True
+        elif text == '0':
+            return False
+
+        return None
+
+    def guess_number(self, model_name, number_string):
         #first strip non numeric values, except for -.,
         decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
 
         try:
             return Decimal(decimal_string)
         except ValueError:
-            raise ValueError("value must be decimal or integer string")
+            raise ValidationError(
+                model_name,
+                "value",
+                "Must be decimal or integer string")
         except InvalidOperation:
-            raise InvalidOperation("value must be decimal or integer string")
+            raise ValidationError(
+                model_name,
+                "value",
+                "Must be decimal or integer string")
 
     def isInt(self, obj):
         try:
@@ -132,7 +109,11 @@ class IatiParser(object):
             else:
                 return None
         except:
-            raise self.ValidationError("date", "Invalid date used: " + unvalidated_date)
+            if not iso_date: 
+                raise RequiredFieldError(
+                    "TO DO",
+                    "iso-date", 
+                    "Unspecified or invalid. Date should be of type xml:date.")
 
     def get_primary_name(self, element, primary_name):
         if primary_name:
@@ -172,7 +153,7 @@ class IatiParser(object):
     def post_save_file(self, iati_source):
         print "override in children"
 
-    def append_error(self, error_type, error_message, sourceline):
+    def append_error(self, error_type, model, field, message, sourceline):
         if not settings.ERROR_LOGS_ENABLED:
             return
 
@@ -188,12 +169,15 @@ class IatiParser(object):
         
         if not iati_identifier and hasattr(self, 'identifier'):
             iati_identifier = self.identifier
+        elif not iati_identifier:
+            iati_identifier = 'no-identifier'
 
         note = IatiXmlSourceNote(
             source=self.iati_source,
             iati_identifier=iati_identifier,
-            model="TO DO",
-            field=error_message,
+            model=model,
+            field=field,
+            message=message,
             exception_type=error_type,
             line_number=sourceline
         )
@@ -215,19 +199,30 @@ class IatiParser(object):
             elementMethod = getattr(self, function_name)
             try:
                 elementMethod(element)
-            except self.RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.message, element.sourceline)
+            except RequiredFieldError as e:
+                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
                 return
-            except self.ValidationError as e:
-                self.append_error('ValidationError', e.message, element.sourceline)
+            except EmptyFieldError as e:
+                self.append_error('EmptyFieldError', e.model, e.field, e.message, element.sourceline)
+                return
+            except ValidationError as e:
+                self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline)
                 return
             except ValueError as e:
-                self.append_error('ValueError', e.message, element.sourceline)
+                traceback.print_exc()
+                # self.append_error('ValueError', 'TO DO', 'TO DO', e.message, element.sourceline)
                 return
             except InvalidOperation as e:
-                self.append_error('InvalidOperation', e.message, element.sourceline)
+                traceback.print_exc()
+                # self.append_error('InvalidOperation', 'TO DO', 'TO DO', e.message, element.sourceline)
                 return
-            except self.NoUpdateRequired as e:
+            except IgnoredVocabularyError as e:
+                # not implemented, ignore for now
+                return
+            except ParserError as e:
+                self.append_error('ParserError', 'TO DO', 'TO DO', e.message, None)
+                return
+            except NoUpdateRequired as e:
                 # do nothing, go to next activity
                 return
             except Exception as exception:
@@ -253,8 +248,9 @@ class IatiParser(object):
         return None
 
     # register last seen model of this type. Is overwritten on later encounters
-    def register_model(self, key, model):
+    def register_model(self, key, model=None):
         if isinstance(key, Model):
+            model = key
             key = key.__class__.__name__
 
         if key in self.model_store:
@@ -300,10 +296,15 @@ class IatiParser(object):
                 try:
                     self.update_related(model)
                     model.save()
-                    # if model.__class__.__name__ == "Narrative":
-                    #     print(type(model.parent_object))
+
+                except ValueError as e:
+                    # TO DO; check if we need to do internal logging on these value errors
+                    print e.message
+
                 except Exception as e:
-                    self.append_error(str(type(e)), e.message, None)
+                    # these stay in the logs until we know what to do with them
+                    print e.message
+                    # self.append_error(str(type(e)), e.message, 'TO DO')
 
     def remove_brackets(self,function_name):
         result = ""

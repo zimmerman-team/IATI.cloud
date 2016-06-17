@@ -13,7 +13,7 @@ def remove_organisations(apps, schema_editor):
     takes ~20 mins
     """
     update_contenttypes(apps.get_app_config('iati'), interactive=False) # make sure all content types exist
-    
+
     try: # don't run on first migration
         Organisation = apps.get_model('iati_organisation', 'Organisation')
     except:
@@ -27,6 +27,7 @@ class Migration(migrations.Migration):
         ('iati_codelists', '0003_auto_20160204_1305'),
         ('contenttypes', '0002_remove_content_type_name'),
         ('iati_organisation', '0001_initial'),
+        ('iati', '0001_initial'),
     ]
 
     operations = [

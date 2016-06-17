@@ -14,7 +14,7 @@ from lxml.builder import E
 
 # TODO: use factories instead of these fixtures
 def setUpModule():
-    fixtures = ['test_codelists.json', 'test_vocabulary',]
+    fixtures = ['test_vocabulary', 'test_codelists.json',]
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)

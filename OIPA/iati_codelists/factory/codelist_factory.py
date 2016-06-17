@@ -1,9 +1,5 @@
-
-# TODO: separate files per logical element (as represented in the API)
-# TODO: also, separate for codelists
 import iati 
 from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models
 
 from factory import SubFactory, RelatedFactory
 from factory.django import DjangoModelFactory
@@ -60,8 +56,17 @@ class BudgetTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.BudgetType
 
-    code = 1
+    code = '1'
     name = 'Original'
+
+
+class BudgetStatusFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.BudgetStatus
+
+    code = '1'
+    name = 'Indicative'
+
 
 class ActivityDateTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -131,6 +136,15 @@ class DescriptionTypeFactory(NoDatabaseFactory):
     description = 'description here'
 
 
+class ContactTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.ContactType
+
+    code = "1"
+    name = 'General Enquiries'
+    description = 'General Enquiries'
+
+
 class SectorFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.Sector
@@ -138,6 +152,7 @@ class SectorFactory(NoDatabaseFactory):
     code = 200
     name = 'advice'
     description = ''
+
 
 class SectorCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -147,12 +162,14 @@ class SectorCategoryFactory(NoDatabaseFactory):
     name = 'education'
     description = 'education description'
 
+
 class OrganisationTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.OrganisationType
 
     code = '10'
     name = 'Government'
+
 
 class OrganisationRoleFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -161,19 +178,6 @@ class OrganisationRoleFactory(NoDatabaseFactory):
     code = '1'
     name = 'Funding'
 
-class SectorVocabularyFactory(NoDatabaseFactory):
-    class Meta(GetOrCreateMetaMixin):
-        model = vocabulary_models.SectorVocabulary
-
-    code = "1"
-    name = "OECD DAC CRS (5 digit)"
-
-class BudgetIdentifierVocabularyFactory(NoDatabaseFactory):
-    class Meta(GetOrCreateMetaMixin):
-        model = codelist_models.BudgetIdentifierVocabulary
-
-    code = "1"
-    name = "IATI"
 
 class BudgetIdentifierFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -182,18 +186,14 @@ class BudgetIdentifierFactory(NoDatabaseFactory):
     code = "1"
     name = "IATI"
 
+
 class PolicyMarkerFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.PolicyMarker
 
     code = "1"
     name = 'Gender Equality'
-class PolicyMarkerVocabularyFactory(NoDatabaseFactory):
-    class Meta(GetOrCreateMetaMixin):
-        model = vocabulary_models.PolicyMarkerVocabulary
 
-    code = "1"
-    name = "OECD DAC CRS"
 
 class PolicySignificanceFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -203,12 +203,6 @@ class PolicySignificanceFactory(NoDatabaseFactory):
     name = 'not targeted'
     description = 'test description'
 
-class RegionVocabularyFactory(NoDatabaseFactory):
-    class Meta(GetOrCreateMetaMixin):
-        model = iati.models.RegionVocabulary
-
-    code = "1"
-    name = 'test vocabulary'
 
 class FinanceTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -275,17 +269,19 @@ class LocationTypeFactory(NoDatabaseFactory):
     category = LocationTypeCategoryFactory.build()
 
 
-class GeographicVocabularyFactory(NoDatabaseFactory):
-    class Meta(GetOrCreateMetaMixin):
-        model = iati.models.GeographicVocabulary
-
-    code = 'A1'
-    name = 'Global Admininistrative Unit Layers'
-    description = 'description'
-
 class ActivityScopeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.ActivityScope
 
     code = "1"
     name = 'example scope'
+
+
+class HumanitarianScopeTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.HumanitarianScopeType
+
+    code = "1"
+    name = 'Emergency'
+
+

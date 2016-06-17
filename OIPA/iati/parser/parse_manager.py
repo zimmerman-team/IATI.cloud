@@ -1,3 +1,4 @@
+from IATI_2_02 import Parse as IATI_202_Parser
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
 from IATI_1_03 import Parse as IATI_103_Parser
@@ -41,11 +42,13 @@ class ParseManager():
         from iati_synchroniser.models import IatiXmlSourceNote
         if not response or response.code != 200:
             self.valid_source = False
+            IatiXmlSourceNote.objects.filter(source=self.source).delete()
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
-                model="URL error",
-                field="URL down or does not exist",
+                model="n/a",
+                field="n/a",
+                message="URL down or does not exist",
                 exception_type='UrlError',
                 line_number=None
             )
@@ -72,11 +75,13 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, source)
         except etree.XMLSyntaxError as e:
             self.valid_source = False
+            IatiXmlSourceNote.objects.filter(source=self.source).delete()
             note = IatiXmlSourceNote(
                 source=self.source,
                 iati_identifier="n/a",
-                model="Source error",
-                field=e.message,
+                model="n/a",
+                field="n/a",
+                message="This file contains XML syntax errors",
                 exception_type='XMLSyntaxError',
                 line_number=None
             )
@@ -97,7 +102,7 @@ class ParseManager():
         # activity file
         if source.type == 1:
             if iati_version == '2.02':
-                parser = IATI_201_Parser(root)
+                parser = IATI_202_Parser(root)
             elif iati_version == '2.01':
                 parser = IATI_201_Parser(root)
             elif iati_version == '1.03':

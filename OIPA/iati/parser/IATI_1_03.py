@@ -4,21 +4,20 @@ from geodata.models import Country, Region
 import dateutil.parser
 from lxml.builder import E
 from iati_codelists import models as codelist_models
+from iati.parser.exceptions import *
 
 
 class Parse(IATI_105_Parser):
 
-    VERSION = '1.03' # version of iati standard
-
     # maps to geographic vocabulary
     gazetteer_agency_mapping = {
-        "1": "G1",
-        # "2": "",
-        "3": "G2",
+        "GEO": "G1",
+        "OSM": "G2",
     }
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
+        self.VERSION = '1.03'
 
     '''atributes:
     code:ADM2
@@ -55,8 +54,17 @@ class Parse(IATI_105_Parser):
         longitude = element.attrib.get('longitude')
         precision = element.attrib.get('precision')
          
-        if not latitude: raise self.RequiredFieldError("latitude", "location_coordinates: latitude is required")
-        if not longitude: raise self.RequiredFieldError("longitude", "location_coordinates: longitude is required")
+        if not latitude: 
+            raise RequiredFieldError(
+                "location/coordinates", 
+                "latitude", 
+                "required attribute missing")
+        
+        if not longitude: 
+            raise RequiredFieldError(
+                "location/coordinates", 
+                "longitude", 
+                "required attribute missing")
 
         point = E('point')
         super(Parse, self).iati_activities__iati_activity__location__point(point)
@@ -75,11 +83,27 @@ class Parse(IATI_105_Parser):
 
     tag:gazetteer-entry'''
     def iati_activities__iati_activity__location__gazetteer_entry(self,element):
-        gazetteer_ref = self.gazetteer_agency_mapping.get(element.attrib.get('gazetteer-ref'))
+        gazetteer_ref_code = element.attrib.get('gazetteer-ref')
+        gazetteer_ref = self.gazetteer_agency_mapping.get(gazetteer_ref_code)
         code = element.text
 
-        if not gazetteer_ref: raise self.RequiredFieldError("gazeteer_ref", "gazeteer_entry: ref is required")
-        if not code: raise self.RequiredFieldError("gazeteer_ref", "gazeteer_entry: text is required")
+        if not gazetteer_ref_code:
+            raise RequiredFieldError(
+                "location/gazetteer-entry",
+                "gazetteer-ref",
+                "required attribute missing")
+
+        if not gazetteer_ref:
+            raise ValidationError(
+                "location/gazetteer-entry",
+                "gazetteer-ref",
+                "not found on the accompanying code list")
+
+        if not code:
+            raise RequiredFieldError(
+                "location/gazetteer-entry",
+                "text",
+                "required element empty")
 
         location_id = E('location-id', code=code, vocabulary=gazetteer_ref)
         super(Parse, self).iati_activities__iati_activity__location__location_id(location_id)
@@ -93,7 +117,11 @@ class Parse(IATI_105_Parser):
     def iati_activities__iati_activity__location__location_type(self,element):
         code = element.attrib.get('code')
 
-        if not code: raise self.RequiredFieldError("location_type", "location_type: code is required")
+        if not code: 
+            raise RequiredFieldError(
+                "location/location-type",
+                "code", 
+                "required attribute missing")
 
         feature_designation = E('feature-designation', code=code)
         super(Parse, self).iati_activities__iati_activity__location__feature_designation(feature_designation)

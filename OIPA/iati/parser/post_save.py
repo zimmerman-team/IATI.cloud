@@ -10,10 +10,17 @@ from iati_vocabulary import models as vocabulary_models
 
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati import activity_search_indexes
+from iati.parser.exceptions import *
+
 
 def set_related_activities(activity):
     """ update related-activity references to this activity """
     models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
+
+def set_participating_organisation_activity_id(participating_organisation):
+    """ update activity_id references to this activity """
+    # TODO: add reverse relation for participating organisation activity_id - 2016-05-31
+    pass
 
 def set_transaction_provider_receiver_activity(activity):
     """ update transaction-provider, transaction-receiver references to this activity """
@@ -168,4 +175,6 @@ def set_sector_transaction(activity):
                     vocabulary=recipient_sector.sector.vocabulary,
                     reported_on_transaction=False
                 ).save()
+
+
 

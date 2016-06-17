@@ -1,11 +1,5 @@
 from rest_framework.generics import ListAPIView
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
 from rest_framework.filters import DjangoFilterBackend
-
-from iati.models import Activity
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import ActivityReportingOrganisation
 
 from api.activity import serializers as activitySerializers
 from api.activity import filters
@@ -17,10 +11,11 @@ from api.transaction.filters import TransactionFilter
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
-from django.db.models import Count, Sum, Q, F
+from django.db.models import Count, Sum
 
 from geodata.models import Country
 from geodata.models import Region
+from iati.models import Activity
 from iati.models import Sector
 from iati.models import ActivityStatus
 from iati.models import PolicyMarker
@@ -33,15 +28,13 @@ from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import OrganisationType
 from iati.models import Organisation
-from iati.models import ActivityReportingOrganisation
 
 from api.activity.serializers import CodelistSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
-from api.sector.serializers import SectorSerializer
-from api.activity.serializers import ActivitySerializer
 from api.organisation.serializers import OrganisationSerializer
+
 
 class ActivityAggregations(AggregationView):
     """
@@ -118,7 +111,7 @@ class ActivityAggregations(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-        ),
+        ),  
         GroupBy(
             query_param="recipient_region",
             fields="recipient_region",
@@ -148,7 +141,7 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields="participating_organisations__normalized_ref",
+            fields="participating_organisations__primary_name",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             # serializer=OrganisationSerializer,

@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 class CodeListImporter():
 
     def __init__(self):
-        self.looping_through_version = "2.01"
-        self.iati_versions = ["2.01",]
+        self.looping_through_version = "2.02"
+        self.iati_versions = ["2.02",]
 
     def synchronise_with_codelists(self):
         # Do categories first
@@ -27,6 +27,7 @@ class CodeListImporter():
         self.get_codelist_data(name="SectorVocabulary")
         self.get_codelist_data(name="RegionVocabulary")
         self.get_codelist_data(name="PolicyMarkerVocabulary")
+        self.get_codelist_data(name="IndicatorVocabulary")
         self.get_codelist_data(name="BudgetIdentifierSector-category")
         self.get_codelist_data(name="LocationType-category")
         self.get_codelist_data(name="FinanceType-category")
@@ -63,22 +64,7 @@ class CodeListImporter():
         url = self.return_first(elem.xpath('url/text()')) or ' '
         model_name = tag
 
-        if tag == "ActivityDateType":
-            codelist_successor = None
-            # if not latest version
-            if self.looping_through_version != self.iati_versions[0]:
-                if code == 'start-planned':
-                    codelist_successor = 1
-                if code == 'start-actual':
-                    codelist_successor = 2
-                if code == 'end-planned':
-                    codelist_successor = 3
-                if code == 'end-actual':
-                    codelist_successor = 4
-
-            item = ActivityDateType(codelist_successor=codelist_successor)
-
-        elif tag == "Country":
+        if tag == "Country":
             name = name.lower().capitalize()
             item = Country(language=language_name, data_source="IATI")
 

@@ -189,7 +189,7 @@ class ActivitySerializerTestCase(TestCase):
             value_date='2014-12-1',
             currency=iati_factory.CurrencyFactory.build(code='USD')
         )
-        serializer = serializers.BudgetSerializer.ValueSerializer(budget)
+        serializer = serializers.ValueSerializer(budget)
         assert serializer.data['value'] == budget.value, \
             """
             budget.value should be serialized to a field called value
@@ -467,6 +467,16 @@ class ActivitySerializerTestCase(TestCase):
             'result_type.code' should be serialized to a field called
             'code'
             """
+
+    def test_ContactInfoSerializer(self):
+        contact_info = iati_factory.ContactInfoFactory.build(telephone='1234567890')
+        serializer = serializers.ContactInfoSerializer(contact_info)
+        # TODO add all other fields here
+        assert serializer.data['type']['code'] == contact_info.type.code,\
+            "type should be serialized to a field called 'type'"
+        
+        assert serializer.data['telephone'] == contact_info.telephone,\
+            "telephone text should be serialized to a field called 'telephone'"
 
     @skip('NotImplemented')
     def test_ResultSerializer(self):

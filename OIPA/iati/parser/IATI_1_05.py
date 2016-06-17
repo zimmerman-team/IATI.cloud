@@ -3,13 +3,15 @@ from lxml.builder import E
 
 from iati import models
 from iati_codelists import models as codelist_models
+from iati_vocabulary import models as vocabulary_models 
+from iati.parser.exceptions import *
+
 # TODO: separate validation logic and model saving login in recursive tree walk
 
 
 class Parse(IATI_201_Parser):
 
     #version of iati standard
-    VERSION = '1.05'
     
     activity_date_type_mapping = {
         "start-planned": "1",
@@ -56,7 +58,7 @@ class Parse(IATI_201_Parser):
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
-        # self.VERSION = codelist_models.Version.objects.get(code='1.05')
+        self.VERSION = '1.05'
         
     def iati_activities__iati_activity__reporting_org(self, element):
         """atributes:
@@ -85,7 +87,17 @@ class Parse(IATI_201_Parser):
         role_name = element.attrib.get('role')
         role = self.get_or_none(codelist_models.OrganisationRole, name=role_name)
 
-        if not role: raise self.RequiredFieldError("role", "participating-org: role must be specified")
+        if not role_name: 
+            raise RequiredFieldError(
+                "participating-org",
+                "role",
+                "required attribute missing")
+
+        if not role: 
+            raise ValidationError(
+                "participating-org",
+                "role",
+                "not found on the accompanying code list")
 
         element.attrib['role'] = role.code
 
@@ -110,9 +122,22 @@ class Parse(IATI_201_Parser):
         owner_name = element.attrib.get('owner-name')
 
         if not identifier:
-            raise self.RequiredFieldError("identifier", "other-identifier: identifier is required")
+            raise RequiredFieldError(
+                "other-identifier",
+                "text",
+                "required element empty")
+
+        if identifier and len(identifier) > 200:
+            raise ValidationError(
+                "other-identifier",
+                "text",
+                "identifier is longer than 200 characters (unlikely and is most often a data bug)")
+
         if not (owner_ref or owner_name):
-            raise self.RequiredFieldError("owner_ref", "Either owner_ref or owner_name must be set")
+            raise RequiredFieldError(
+                "other-identifier",
+                "owner-ref/owner-name", 
+                "either owner_ref or owner_name must be set")
 
         activity = self.get_model('Activity')
 
@@ -133,7 +158,12 @@ class Parse(IATI_201_Parser):
         """atributes:
 
         tag:title"""
-        super(Parse, self).iati_activities__iati_activity__title(element)
+        title_list = self.get_model_list('Title')
+
+        if not title_list or len(title_list) == 0:
+            super(Parse, self).iati_activities__iati_activity__title(element)
+        # else title exists, this is a new narrative
+
         title = self.get_model('Title')
 
         if element.text:
@@ -150,7 +180,10 @@ class Parse(IATI_201_Parser):
         description_type_code = element.attrib.get('type', 1)
 
         if not text:
-            raise self.RequiredFieldError("text", "text is required")
+            raise RequiredFieldError(
+                "description", 
+                "text", 
+                "required element empty")
 
         description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
 
@@ -177,8 +210,17 @@ class Parse(IATI_201_Parser):
         type_name = element.attrib.get('type')
         type_code = self.activity_date_type_mapping.get(type_name)
 
-        if not type_code: 
-            raise self.RequiredFieldError("type", "activity_date: type is required")
+        if not type_name:
+            raise RequiredFieldError(
+                "activity-date",
+                "type",
+                "required attribute missing")
+
+        if not type_code:
+            raise RequiredFieldError(
+                "activity-date",
+                "type",
+                "not found on the accompanying code list")
 
         if type_code:
             element.attrib['type'] = type_code
@@ -282,11 +324,7 @@ class Parse(IATI_201_Parser):
     vocabulary:DAC
 
     tag:sector"""
-        # code = element.attrib.get('code')
         vocabulary = self.sector_vocabulary_mapping.get(element.attrib.get('vocabulary'))
-
-        # if not code: raise self.RequiredFieldError("code", "activity_sector: code is required")
-        # if not vocabulary: raise self.RequiredFieldError("vocabulary", "activity_sector: vocabulary is required")
 
         if vocabulary:
             element.attrib['vocabulary'] = vocabulary
@@ -297,12 +335,24 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__country_budget_items__budget_item__description(self, element):
         """atributes:
 
-    tag:description"""
+        tag:description"""
         super(Parse, self).iati_activities__iati_activity__country_budget_items__budget_item__description(element)
         budget_item_description = self.get_model('BudgetItemDescription')
 
         if element.text:
             self.add_narrative(element, budget_item_description)
+
+        return element
+
+    def iati_activities__iati_activity__humanitarian_scope(self, element):
+        """attributes:
+
+        tag:narrative"""
+        super(Parse, self).iati_activities__iati_activity__humanitarian_scope(element)
+        humanitarian_scope = self.get_model('HumanitarianScope')
+
+        if element.text:
+            self.add_narrative(element, humanitarian_scope)
 
         return element
 
@@ -316,7 +366,7 @@ class Parse(IATI_201_Parser):
         vocabulary = self.policy_marker_vocabulary_mapping.get(element.attrib.get('vocabulary'))
 
         if not vocabulary:
-            raise self.RequiredFieldError("vocabulary", "policy-marker: vocabulary is required")
+            vocabulary = vocabulary_models.PolicyMarkerVocabulary.objects.get(code='1')
 
         if vocabulary:
             element.attrib['vocabulary'] = vocabulary

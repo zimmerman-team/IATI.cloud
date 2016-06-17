@@ -1,11 +1,4 @@
-
 from operator import itemgetter
-
-from django.db.models import Count
-from django.db.models import Sum
-from django.db.models import Q, F
-from django.db.models.functions import Coalesce
-from django.db import connection
 
 def apply_annotations(queryset, selected_groupings, selected_aggregations, query_params):
     """
@@ -21,16 +14,18 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     rename_annotations = merge([ grouping.get_renamed_fields() for grouping in selected_groupings ])
     group_extras = merge([ grouping.extra for grouping in selected_groupings if grouping.extra is not None])
 
-    eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in group_fields}
-
     queryset = queryset \
         .extra(**group_extras) \
         .annotate(**rename_annotations) 
-    
-    if len(group_extras) is 0:
-        queryset = queryset \
-            .filter(**eliminate_nulls)
 
+    # null filter should not be applied to:
+    # - group by's that also has a filter on the group by
+    # - group by's that have extra's (null filter would not be correct)
+    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (grouping.extra is None and grouping.query_param not in query_params) ])
+    eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in nullable_group_fields}
+
+    queryset = queryset \
+        .filter(**eliminate_nulls)
 
     # preparation for aggregation look
     main_group_key = group_fields[0]
@@ -49,9 +44,8 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         # apply the aggregation annotation
         next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
-        # print str(next_result.query)
+        #print str(next_result.query)
         return next_result
-
 
     aggregation_querysets = [ 
         get_aggregation_queryset(queryset, group_fields, aggregation)
@@ -63,7 +57,6 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         Execute the querysets and merge the results into one list of dictionaries
         This method keeps ordering of keys in order of execution of the aggregations
         """
-
         if len(querysets) is 1:
             return querysets[0]
 
@@ -114,7 +107,6 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     result = merge_results(aggregation_querysets, group_fields)
 
     return result
-
 
 def serialize_foreign_keys(result, selected_groupings, request):
     """
@@ -170,7 +162,7 @@ def apply_group_filters(queryset, selected_groupings, params):
     )
 
     for group in groupings:
-        if hasattr(group, 'extra'):
+        if group.extra is not None:
             continue
 
         main_field = group.fields[0] # the one giving the relation from activity to id of item
@@ -178,6 +170,7 @@ def apply_group_filters(queryset, selected_groupings, params):
 
         # TODO: We assume here all item filters are IN filters - 2016-03-07
         if isinstance(main_field, str):
+            queryset._next_is_sticky()
             queryset = queryset.filter(**{"{}__in".format(main_field): value.split(',')})
 
     return queryset
@@ -226,6 +219,8 @@ def flatten(l):
     """
     flatten a list of lists to a single list
     """
+    if len(l) is 0:
+        return ()
     return reduce(lambda x, y: x+y, l)
 
 def merge(l):

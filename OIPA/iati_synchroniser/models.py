@@ -89,7 +89,8 @@ class IatiXmlSourceNote(models.Model):
     iati_identifier = models.CharField(max_length=100, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)
-    field = models.TextField(max_length=1000, default=0, null=False)
+    field = models.CharField(max_length=100, default='')
+    message = models.CharField(max_length=150, default=0, null=False)
     line_number = models.IntegerField(null=True)
 
 

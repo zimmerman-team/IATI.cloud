@@ -5,7 +5,6 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
-from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.country.serializers import CountrySerializer
 from api.activity.filters import RelatedActivityFilter
@@ -17,6 +16,23 @@ from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
 
+class ValueSerializer(serializers.Serializer):
+    currency = CodelistSerializer()
+    date = serializers.CharField(source='value_date')
+    value = serializers.DecimalField(
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+            )
+
+    class Meta:
+        fields = (
+                'value',
+                'date',
+                'currency',
+                )
+
+
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.DocumentCategory
@@ -24,9 +40,14 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
 
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
+
+    class DocumentDateSerializer(serializers.Serializer):
+        iso_date = serializers.DateField(source='iso_date')
+
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
     title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
+    document_date = DocumentDateSerializer(source="iso_date")
 
     class Meta:
         model = iati_models.DocumentLink
@@ -34,7 +55,8 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'url',
             'format',
             'categories',
-            'title'
+            'title',
+            'document_date',
         )
 
 
@@ -52,29 +74,29 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    class ValueSerializer(serializers.Serializer):
-        currency = CodelistSerializer()
-        date = serializers.CharField(source='value_date')
-        value = serializers.DecimalField(
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-        )
-
-        class Meta:
-            model = iati_models.Budget
-            fields = (
-                'value',
-                'date',
-                'currency',
-            )
 
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
+    status = CodelistSerializer()
 
     class Meta:
         model = iati_models.Budget
         # filter_class = BudgetFilter
+        fields = (
+            'type',
+            'status',
+            'period_start',
+            'period_end',
+            'value',
+        )
+
+class PlannedDisbursementSerializer(serializers.ModelSerializer):
+    value = ValueSerializer(source='*')
+    type = CodelistSerializer()
+
+    class Meta:
+        model = iati_models.PlannedDisbursement
+
         fields = (
             'type',
             'period_start',
@@ -126,7 +148,8 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField()
     narratives = NarrativeSerializer(many=True)
-    organisation = OrganisationSerializer()
+    # organisation = OrganisationSerializer()
+    organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
 
     class Meta:
         model = iati_models.ActivityReportingOrganisation
@@ -143,6 +166,7 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
     role = CodelistSerializer()
+    activity_id = serializers.CharField(source='org_activity_id')
     narratives = NarrativeSerializer(many=True)
 
     class Meta:
@@ -151,12 +175,14 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'ref',
             'type',
             'role',
+            'activity_id',
             'narratives',
         )
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     code = CodelistSerializer()
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
     significance = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
@@ -165,6 +191,7 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
         fields = (
             'narratives',
             'vocabulary',
+            'vocabulary_uri',
             'significance',
             'code',
         )
@@ -218,6 +245,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         coerce_to_string=False
     )
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
 
     class Meta:
         model = iati_models.ActivitySector
@@ -225,8 +253,28 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
             'sector',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
         )
 
+
+class ActivitySectorSerializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('url', 'code', 'name'))
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
+    )
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+
+    class Meta:
+        model = iati_models.ActivitySector
+        fields = (
+            'sector',
+            'percentage',
+            'vocabulary',
+            'vocabulary_uri',
+        )
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(
@@ -238,6 +286,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
         coerce_to_string=False
     )
     vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
 
     class Meta:
         model = iati_models.ActivityRecipientRegion
@@ -245,6 +294,22 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
             'region',
             'percentage',
             'vocabulary',
+            'vocabulary_uri',
+        )
+
+class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
+    type = CodelistSerializer() 
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+    code = CodelistSerializer()
+
+    class Meta:
+        model = iati_models.HumanitarianScope
+        fields = (
+            'type',
+            'vocabulary',
+            'vocabulary_uri',
+            'code',
         )
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
@@ -291,17 +356,39 @@ class ResultTitleSerializer(serializers.ModelSerializer):
         )
 
 
+
+class ResultIndicatorPeriodLocationSerializer(serializers.Serializer):
+    ref = serializers.CharField()
+
+    class Meta:
+        fields = (
+            'ref',
+        )
+
+class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.DecimalField(
+        max_digits=25,
+        decimal_places=10,
+        coerce_to_string=False)
+
+    class Meta:
+        fields = (
+            'name',
+            'value',
+        )
+
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
-    # TODO 2.02 : location = 
-    # TODO 2.02 : dimension = 
     value = serializers.CharField(source='target')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
-    # TODO 2.02 : location = 
-    # TODO 2.02 : dimension = 
     value = serializers.CharField(source='actual')
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set")
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set")
 
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
@@ -338,6 +425,29 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'period',
             'measure',
             'ascending'
+        )
+
+
+class ContactInfoSerializer(serializers.ModelSerializer):
+    type = CodelistSerializer()
+    organisation = NarrativeContainerSerializer()
+    department = NarrativeContainerSerializer()
+    person_name = NarrativeContainerSerializer()
+    job_title = NarrativeContainerSerializer()
+    mailing_address = NarrativeContainerSerializer()
+
+    class Meta:
+        model = iati_models.ContactInfo
+        fields = (
+            'type',
+            'organisation',
+            'department',
+            'person_name',
+            'job_title',
+            'telephone',
+            'email',
+            'website',
+            'mailing_address',
         )
 
 class ResultSerializer(serializers.ModelSerializer):
@@ -431,7 +541,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     # TODO ; add contact-info serializer
     # note; contact info has a sequence we should use in the ContactInfoSerializer!
-    # contact_info = serializers.ContactInfoSerializer(many=True,source="?")
+    contact_info = ContactInfoSerializer(many=True,source="contactinfo_set")
 
     activity_scope = CodelistSerializer(source='scope')
     recipient_countries = RecipientCountrySerializer(
@@ -448,8 +558,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # TODO ; add country-budget-items serializer
     # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
 
-    # TODO ; add humanitarian-scope serializer
-    # humanitarian_scope = serializers.HumanitarianScopeSerializer(many=True,source="?")
+    humanitarian_scope = HumanitarianScopeSerializer(many=True, source='humanitarianscope_set')
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,
@@ -462,9 +571,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     budgets = BudgetSerializer(many=True, source='budget_set')
 
-    # TODO ; add planned-disbursement serializer
     # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
-    # planned_disbursement = serializers.PlannedDisbursementSerializer(many=True,source="?")
+    planned_disbursements = PlannedDisbursementSerializer(many=True, source='planneddisbursement_set')
 
     capital_spend = CapitalSpendSerializer()
 
@@ -500,7 +608,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     last_updated_datetime = serializers.DateTimeField()
     xml_lang = serializers.CharField(source='default_lang')
     default_currency = CodelistSerializer()
-    # TODO 2.02; humanitarian = serializers.BooleanField()
+
+    humanitarian = serializers.BooleanField()
 
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*")
@@ -518,21 +627,22 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             # 'other_identifier',
             'activity_status',
             'activity_dates',
-            # 'contact_info',
+            'contact_info',
             'activity_scope',
             'recipient_countries',
             'recipient_regions',
             'locations',
             'sectors',
             # 'country_budget_items',
-            # 'humanitarian_scope',
+            'humanitarian',
+            'humanitarian_scope',
             'policy_markers',
             'collaboration_type',
             'default_flow_type',
             'default_finance_type',
             'default_aid_type',
             'default_tied_status',
-            # 'planned_disbursement',
+            'planned_disbursements',
             'budgets',
             'capital_spend',
             'transactions',
@@ -546,7 +656,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'last_updated_datetime',
             'xml_lang',
             'default_currency',
-            # 'humanitarian',
+            'humanitarian',
             'hierarchy',
             'linked_data_uri',
             'aggregations',

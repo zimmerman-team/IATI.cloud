@@ -9,23 +9,26 @@ from iati_organisation.models import RecipientOrgBudget
 from iati_organisation.models import OrganisationReportingOrganisation
 from iati_organisation.models import Organisation
 from iati_codelists import models as codelist_models
+from iati.parser.exceptions import *
 
 
 class Parse(Parse_2_01):
-
-    VERSION = '1.05' # version of iati standard
+    
     organisation_identifier = None
 
     def __init__(self, *args, **kwargs):
         super(Parse_2_01, self).__init__(*args, **kwargs)
-        self.VERSION = codelist_models.Version.objects.get(code='1.05')
+        self.VERSION = '1.05'
 
     def iati_organisations__iati_organisation(self, element):
 
         org_id = element.xpath('iati-identifier/text()')[0]
 
         if not org_id:
-            raise self.RequiredFieldError("id", "1.05 organisation: must contain iati-identifier")
+            raise self.RequiredFieldError(
+                "iati-identifier",
+                "text", 
+                "Unspecified.")
 
         # add as organisation-identifier to be able to use in super of this def
         element.append(E("organisation-identifier", org_id))

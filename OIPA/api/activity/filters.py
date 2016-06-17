@@ -1,8 +1,6 @@
 from django.db.models.fields import FieldDoesNotExist
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.fields.related import OneToOneRel
-from django.db.models import Q
-from django.conf import settings
 
 from django_filters import FilterSet
 from django_filters import NumberFilter
@@ -10,10 +8,8 @@ from django_filters import DateFilter
 from django_filters import BooleanFilter
 
 from api.generics.filters import CommaSeparatedCharFilter
-from api.generics.filters import CommaSeparatedCharMultipleFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
-from api.generics.filters import NestedFilter
 
 from rest_framework import filters
 
@@ -233,16 +229,23 @@ class ActivityFilter(TogetherFilterSet):
     reporting_organisation = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_type='in',
-        name='organisation__organisation_identifier',
+        name='normalized_ref',
         fk='activity',
     )
 
     reporting_organisation_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_type='startswith',
-        name='organisation__organisation_identifier',
+        name='normalized_ref',
         fk='activity',
     )
+
+
+    indicator_title = ToManyFilter(
+        qs=ResultIndicatorTitle,
+        lookup_type='in',
+        name='primary_name',
+        fk='result_indicator__result__activity')
 
     #
     # Transaction filters
