@@ -1218,8 +1218,10 @@ class Parse(IatiParser):
         humanitarian_scope = models.HumanitarianScope()
         humanitarian_scope.activity = activity
         humanitarian_scope.type = scope_type
+        humanitarian_scope.code = code
         humanitarian_scope.vocabulary = vocabulary
         humanitarian_scope.vocabulary_uri = vocabulary_uri
+        self.register_model('HumanitarianScope', humanitarian_scope)
 
         return element
 
@@ -1687,6 +1689,7 @@ class Parse(IatiParser):
         tag:provider-org"""
         
         return provider_org(
+            self,
             self.get_model('PlannedDisbursement'),
             models.PlannedDisbursementProvider(),
             'planned_disbursement',
@@ -1696,9 +1699,9 @@ class Parse(IatiParser):
         """attributes:
 
         tag:narrative"""
-        planned_disbursement_provider = self.get_model('PlannedDisbursementProvider')
-        self.add_narrative(element, planned_disbursement_provider)
-
+        model = self.get_model('PlannedDisbursementProvider')
+        self.add_narrative(element, model)
+        model.primary_name = self.get_primary_name(element, model.primary_name)
         return element
 
     def iati_activities__iati_activity__planned_disbursement__receiver_org(self, element):
@@ -1709,6 +1712,7 @@ class Parse(IatiParser):
         tag:receiver-org"""
         # TODO fix/test higher order parser or do this in the old fashion
         return receiver_org(
+            self,
             self.get_model('PlannedDisbursement'),
             models.PlannedDisbursementReceiver(),
             'planned_disbursement',
@@ -1718,9 +1722,9 @@ class Parse(IatiParser):
         """attributes:
 
         tag:narrative"""
-        planned_disbursement_receiver = self.get_model('PlannedDisbursementReceiver')
-        self.add_narrative(element, planned_disbursement_receiver)
-
+        model = self.get_model('PlannedDisbursementReceiver')
+        self.add_narrative(element, model)
+        model.primary_name = self.get_primary_name(element, model.primary_name)
         return element
 
     def iati_activities__iati_activity__capital_spend(self, element):
@@ -1740,13 +1744,17 @@ class Parse(IatiParser):
 
         tag:transaction"""
         ref = element.attrib.get('ref')
-        humanitarian = element.attrib.get('hierarchy', False)
+        humanitarian = element.attrib.get('humanitarian')
 
         activity = self.get_model('Activity')
         transaction = transaction_models.Transaction()
         transaction.activity = activity
         transaction.ref = ref
         transaction.humanitarian = self.makeBoolNone(humanitarian)
+        transaction.flow_type = self.get_model('Activity').default_flow_type
+        transaction.finance_type = self.get_model('Activity').default_finance_type
+        transaction.aid_type = self.get_model('Activity').default_aid_type
+        transaction.tied_status = self.get_model('Activity').default_tied_status
 
         self.register_model('Transaction', transaction)
         return element
@@ -2080,9 +2088,6 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         flow_type = self.get_or_none(codelist_models.FlowType, code=code)
 
-        if not flow_type:
-            flow_type = self.get_model('Activity').default_flow_type
-        
         if not flow_type and not code:
             raise RequiredFieldError(
                 "transaction/flow-type",
@@ -2105,9 +2110,6 @@ class Parse(IatiParser):
         tag:finance-type"""
         code = element.attrib.get('code')
         finance_type = self.get_or_none(codelist_models.FinanceType, code=code)
-
-        if not finance_type:
-            finance_type = self.get_model('Activity').default_finance_type
 
         if not finance_type and not code:
             raise RequiredFieldError(
@@ -2133,9 +2135,6 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         aid_type = self.get_or_none(codelist_models.AidType, code=code)
 
-        if not aid_type:
-            aid_type = self.get_model('Activity').default_aid_type
-
         if not aid_type and not code:
             raise RequiredFieldError(
                 "transaction/aid-type",
@@ -2159,9 +2158,6 @@ class Parse(IatiParser):
         tag:tied-status"""
         code = element.attrib.get('code')
         tied_status = self.get_or_none(codelist_models.TiedStatus, code=code)
-
-        if not tied_status:
-            tied_status = self.get_model('Activity').default_tied_status
 
         if not tied_status and not code:
             raise RequiredFieldError(
@@ -2505,7 +2501,7 @@ class Parse(IatiParser):
         vocabulary_code = element.attrib.get('vocabulary')
         vocabulary = self.get_or_none(vocabulary_models.IndicatorVocabulary, code=vocabulary_code) 
         code = element.attrib.get('code')
-        indicator_uri = element.attrib.get('indicator_uri')
+        indicator_uri = element.attrib.get('indicator-uri')
 
         if not vocabulary_code:
             raise RequiredFieldError(
@@ -2530,7 +2526,7 @@ class Parse(IatiParser):
         result_indicator_reference.result_indicator = result_indicator
         result_indicator_reference.code = code
         result_indicator_reference.vocabulary = vocabulary
-        result_indicator_reference.indicatory_uri = indicator_uri
+        result_indicator_reference.indicator_uri = indicator_uri
 
         self.register_model('ResultIndicatorReference', result_indicator_reference)
         return element
@@ -2731,10 +2727,13 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = filter(lambda x: x.ref == ref, locations)
+        location = []
+
+        if locations:
+            location = filter(lambda x: x.ref == ref, locations)
 
         if not len(location): 
-            raise RequiredFieldError(
+            raise ValidationError(
                 "result/indicator/period/period/target/location",
                 "ref", 
                 "referenced location does not exist in a location element of this activity")
@@ -2830,7 +2829,7 @@ class Parse(IatiParser):
         location = filter(lambda x: x.ref == ref, locations)
 
         if not len(location): 
-            raise RequiredFieldError(
+            raise ValidationError(
                 "result/indicator/period/actual/location",
                 "ref",
                 "referenced location does not exist in a location element of this activity")
@@ -2880,9 +2879,6 @@ class Parse(IatiParser):
         self.register_model('ResultIndicatorPeriodActualComment', result_indicator_period_actual_comment)
         return element
 
-    # """attributes:
-
-    # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self, element):
         period_actual_comment = self.get_model('ResultIndicatorPeriodActualComment')
         self.add_narrative(element, period_actual_comment)

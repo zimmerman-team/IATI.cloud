@@ -7,7 +7,8 @@ from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.factory import iati_factory
 from iati.transaction.factories import TransactionFactory, TransactionTypeFactory
 from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
-from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, SectorVocabularyFactory
+from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory
+from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
 from iati.parser import post_save
 
 

@@ -31,6 +31,10 @@ from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_02 import Parse as Parser_202
 from iati.parser.exceptions import ValidationError
 
+from iati_codelists.factory import codelist_factory
+from iati_vocabulary.factory import vocabulary_factory
+
+
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
 # TODO: Setup parser classes per test, to isolate tests as much as possible (currently per class) - 2015-12-02
 # TODO: Refactor this file into multiple files - 2015-12-02
@@ -841,6 +845,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
             "ref": "GB-COH-03580586",
             "type": '40',
             "role": "1",
+            "activity-id": "BB-BBB-123456789-1234"
         }
         self.attrs_105 = copy.deepcopy(self.attrs_202)
         self.attrs_105['role'] = "Funding" 
@@ -865,6 +870,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(participating_organisation.activity, activity)
         self.assertEqual(participating_organisation.organisation, None)
         self.assertEqual(participating_organisation.role.code, self.attrs_202["role"])
+        self.assertEqual(participating_organisation.org_activity_id, self.attrs_202["activity-id"])
 
         self.parser_202.iati_activities__iati_activity__participating_org__narrative(self.narrative)
         narrative = self.parser_202.get_model('ActivityParticipatingOrganisationNarrative')
@@ -951,6 +957,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
 
         self.assertEqual(participating_organisation.primary_name, "some text")
+
 
 class ActivityDateTestCase(ParserSetupTestCase):
     """
@@ -1246,6 +1253,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
             "code": "89", # Europe, regional
             "vocabulary": "1", # OECD-DAC
             "percentage": "50.5",
+            "vocabulary-uri": "http://example.com/vocab.html"
         }
 
         self.recipient_region = E('recipient-region', **self.attrs)
@@ -1266,6 +1274,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
         self.assertEqual(recipient_region.region.code, self.attrs['code'])
         self.assertEqual(recipient_region.percentage, self.attrs['percentage'])
         self.assertEqual(recipient_region.vocabulary.code, self.attrs['vocabulary'])
+        self.assertEqual(recipient_region.vocabulary_uri, self.attrs['vocabulary-uri'])
 
         # TODO: needs narrative?
 
@@ -1535,6 +1544,7 @@ class SectorTestCase(ParserSetupTestCase):
             "code": "11110", # Education Policy and administrative management
             "vocabulary": "1", # OECD-DAC-5
             "percentage": "50.5",
+            "vocabulary-uri": "http://example.com/vocab.html"
         }
 
         self.sector = E('sector', **self.attrs)
@@ -1555,6 +1565,8 @@ class SectorTestCase(ParserSetupTestCase):
         self.assertEqual(sector.sector.code, self.attrs['code'])
         self.assertEqual(sector.percentage, self.attrs['percentage'])
         self.assertEqual(sector.vocabulary.code, self.attrs['vocabulary'])
+
+        self.assertEqual(sector.vocabulary_uri, self.attrs['vocabulary-uri'])
 
         # TODO: needs narrative?
 
@@ -1656,6 +1668,60 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('BudgetItemDescriptionNarrative')
         self.assertEqual(narrative.related_object, budget_item_description)
 
+
+class HumanitarianScopeTestCase(ParserSetupTestCase):
+    """
+    Newly added in 2.02. Classification of emergencies, appeals and other humanitarian events and actions.
+
+    <humanitarian-scope type="1" vocabulary="1-2" code="2015-000050" />
+    <humanitarian-scope type="1" vocabulary="99" vocabulary-uri="http://example.com/vocab.html" code="A1">
+        <narrative xml:lang="en">Syrian refugee crisis, Middle-east &amp; Europe (2011 onwards)</narrative>
+    </humanitarian-scope>
+    """
+
+    def setUp(self):
+        self.iati_202 = copy_xml_tree(self.iati_202)
+
+        self.attrs = {
+            "type": "1",
+            "vocabulary": "1-1",
+            "code": "2015-000050",
+            "vocabulary-uri": "http://example.com/vocab.html"
+        }
+
+        self.humanitarian_scope = E('humanitarian-scope', **self.attrs)
+        self.narrative = E('narrative', "Some description")
+
+        self.activity = build_activity(version="2.02")
+        self.parser_202.register_model('Activity', self.activity)
+
+        codelist_factory.HumanitarianScopeTypeFactory.create(
+            code='1',
+            name="Emergency")
+
+        vocabulary_factory.HumanitarianScopeVocabularyFactory.create(
+            code='1-1',
+            name="UN OCHA FTS")
+
+    def test_humanitarian_scope_202(self):
+        """
+        Along with its narrative(s)
+        """
+        self.parser_202.iati_activities__iati_activity__humanitarian_scope(self.humanitarian_scope)
+        humanitarian_scope = self.parser_202.get_model('HumanitarianScope')
+
+        self.assertEqual(humanitarian_scope.activity, self.activity)
+        self.assertEqual(humanitarian_scope.type.code, self.attrs['type'])
+        self.assertEqual(humanitarian_scope.vocabulary.code, self.attrs['vocabulary'])
+        self.assertEqual(humanitarian_scope.code, self.attrs['code'])
+        self.assertEqual(humanitarian_scope.vocabulary_uri, self.attrs['vocabulary-uri'])
+
+        self.parser_202.iati_activities__iati_activity__humanitarian_scope__narrative(self.narrative)
+        narrative = self.parser_202.get_model('HumanitarianScopeNarrative')
+        self.assertEqual(narrative.related_object, humanitarian_scope)
+        self.assertEqual(narrative.content, self.narrative.text)
+
+
 class PolicyMarkerTestCase(ParserSetupTestCase):
     """
     1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
@@ -1667,6 +1733,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         self.attrs = {
             "code": "1", # Gender Equality
             "vocabulary": "1", # OECD-DAC CRS
+            "vocabulary-uri": "http://example.com/vocab.html",
             "significance": "1", # Significant objective
         }
 
@@ -1688,6 +1755,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         self.assertEqual(activity_policy_marker.code.code, self.attrs['code'])
         self.assertEqual(activity_policy_marker.significance.code, self.attrs['significance'])
         self.assertEqual(activity_policy_marker.vocabulary.code, self.attrs['vocabulary'])
+        self.assertEqual(activity_policy_marker.vocabulary_uri, self.attrs['vocabulary-uri'])
 
         self.parser_202.iati_activities__iati_activity__policy_marker__narrative(self.narrative)
         narrative = self.parser_202.get_model('ActivityPolicyMarkerNarrative')
@@ -1705,6 +1773,29 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         activity_policy_marker = self.parser_202.get_model('ActivityPolicyMarker')
         self.assertEqual(activity_policy_marker.vocabulary.code, "1")
 
+    def test_activity_policy_marker_202_no_significance_on_oecd_dac(self):
+        """
+        No significance on oecd dac voc should raise ValidationError.
+        """
+        attrs = self.attrs
+        del attrs['significance']
+        activity_policy_marker = E('policy-marker', **attrs)
+        with self.assertRaises(RequiredFieldError):
+            self.parser_202.iati_activities__iati_activity__policy_marker(activity_policy_marker)
+
+    def test_activity_policy_marker_202_no_significance_on_other_voc(self):
+        """
+        No significance on other voc should be allowed. voc 99 = reporting org.
+        """
+        attrs = self.attrs
+        del attrs['significance']
+        attrs['vocabulary'] = '99'
+        activity_policy_marker = E('policy-marker', **attrs)
+        self.parser_202.iati_activities__iati_activity__policy_marker(activity_policy_marker)
+        activity_policy_marker = self.parser_202.get_model('ActivityPolicyMarker')
+        self.assertEqual(activity_policy_marker.significance, None)
+        self.assertEqual(activity_policy_marker.vocabulary.code, attrs['vocabulary'])
+        
     def test_activity_policy_marker_105(self):
         """
         Should perform the (less than ideal) mapping from 105 Vocabulary to 201 PolicyMarkerVocabulary
@@ -1735,6 +1826,7 @@ class BudgetTestCase(ParserSetupTestCase):
 
         self.attrs = {
             "type": "1", # Original
+            "status": "1"
         }
 
         self.budget = E('budget', **self.attrs)
@@ -1744,6 +1836,8 @@ class BudgetTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+        codelist_factory.BudgetStatusFactory.create(code='1')
+
     def test_budget_202(self):
         """
         """
@@ -1752,6 +1846,21 @@ class BudgetTestCase(ParserSetupTestCase):
 
         self.assertEqual(budget.activity, self.activity)
         self.assertEqual(budget.type.code, self.attrs['type'])
+        self.assertEqual(budget.status.code, self.attrs['status'])
+
+    def test_budget_202_status_omitted(self):
+        """
+        should default to 1
+        """
+        attrs = copy.deepcopy(self.attrs)
+        del attrs['status']
+        budget = E('budget', **attrs)
+        self.parser_202.iati_activities__iati_activity__budget(budget)
+        budget = self.parser_202.get_model('Budget')
+
+        self.assertEqual(budget.activity, self.activity)
+        self.assertEqual(budget.type.code, self.attrs['type'])
+        self.assertEqual(budget.status.code, self.attrs['status'])
 
     def test_budget_period_start_202(self):
         """
@@ -1931,6 +2040,94 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
             self.parser_202.iati_activities__iati_activity__planned_disbursement__value(value)
 
 
+class PlannedDisbursementProviderOrganisationTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.attrs = {
+            'ref': "BB-BBB-123456789",
+            'provider-activity-id': "BB-BBB-123456789-1234AA",
+            'type': '10'
+        }
+
+        self.provider_org = E('provider-org', **self.attrs)
+
+        self.iati_202 = copy_xml_tree(self.iati_202)
+
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.02")
+        self.parser_202.register_model('Activity', self.activity)
+
+        self.test_planned_disbursement = iati_factory.PlannedDisbursementFactory.build()
+        self.parser_202.register_model('PlannedDisbursement', self.test_planned_disbursement)
+
+    def test_provider_organisation_not_parsed_yet_202(self):
+        """
+        Check element is parsed correctly, excluding narratives, 
+        when organisation is not in the organisation API,
+        this results in the organisation field being empty.
+        """
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org(self.provider_org)
+        provider_organisation = self.parser_202.get_model('PlannedDisbursementProvider')
+
+        self.assertEqual(provider_organisation.ref, self.attrs['ref'])
+        self.assertEqual(provider_organisation.organisation, None)
+        self.assertEqual(provider_organisation.provider_activity_ref, self.attrs['provider-activity-id'])
+        self.assertEqual(provider_organisation.type.code, self.attrs['type'])
+        self.assertEqual(provider_organisation.planned_disbursement, self.test_planned_disbursement)
+
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org__narrative(self.narrative)
+        narrative = self.parser_202.get_model('PlannedDisbursementProviderNarrative')
+        self.assertEqual(narrative.related_object, provider_organisation)
+        self.assertEqual(provider_organisation.primary_name, 'random text')
+
+        # TODO: refactor so this isnt nescessary
+        provider_organisation = self.parser_202.pop_model('TransactionProvider')
+
+
+class PlannedDisbursementReceiverOrganisationTestCase(ParserSetupTestCase):
+    def setUp(self):
+        self.attrs = {
+            'ref': "AA-AAA-123456789",
+            'receiver-activity-id': "AA-AAA-123456789-1234",
+            'type': '23'
+        }
+
+        self.receiver_org = E('receiver-org', **self.attrs)
+
+        self.iati_202 = copy_xml_tree(self.iati_202)
+
+        self.narrative = E('narrative', "random text")
+
+        self.activity = build_activity(version="2.02")
+        self.parser_202.register_model('Activity', self.activity)
+
+        self.test_planned_disbursement = iati_factory.PlannedDisbursementFactory.build()
+        self.parser_202.register_model('PlannedDisbursement', self.test_planned_disbursement)
+
+    def test_receiver_organisation_not_parsed_yet_202(self):
+        """
+        Check element is parsed correctly, excluding narratives, 
+        when organisation is not in the organisation API,
+        this results in the organisation field being empty.
+        """
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org(self.receiver_org)
+        receiver_organisation = self.parser_202.get_model('PlannedDisbursementReceiver')
+
+        self.assertEqual(receiver_organisation.ref, self.attrs['ref'])
+        self.assertEqual(receiver_organisation.organisation, None)
+        self.assertEqual(receiver_organisation.receiver_activity_ref, self.attrs['receiver-activity-id'])
+        self.assertEqual(receiver_organisation.type.code, self.attrs['type'])
+        self.assertEqual(receiver_organisation.planned_disbursement, self.test_planned_disbursement)
+
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(self.narrative)
+        narrative = self.parser_202.get_model('PlannedDisbursementReceiverNarrative')
+        self.assertEqual(narrative.related_object, receiver_organisation)
+        self.assertEqual(receiver_organisation.primary_name, 'random text')
+
+        # TODO: refactor so this isnt nescessary
+        receiver_organisation = self.parser_202.pop_model('TransactionReceiver')
+
+
 class TransactionTestCase(ParserSetupTestCase):
     """
     2.02: The attribute @last-updated was removed.
@@ -1962,6 +2159,19 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertEqual(transaction.activity, self.activity)
         self.assertEqual(transaction.ref, self.attrs['ref'])
+        self.assertEqual(transaction.humanitarian, None)
+
+    def test_transaction_202_humanitarian_true(self):
+        transaction = E('transaction', **{"humanitarian": '1'})
+        self.parser_202.iati_activities__iati_activity__transaction(transaction)
+        transaction = self.parser_202.get_model('Transaction')
+        self.assertEqual(transaction.humanitarian, True)
+
+    def test_transaction_202_humanitarian_false(self):
+        transaction = E('transaction', **{"humanitarian": '0'})
+        self.parser_202.iati_activities__iati_activity__transaction(transaction)
+        transaction = self.parser_202.get_model('Transaction')
+        self.assertEqual(transaction.humanitarian, False)
 
     def test_transaction_transaction_type_105(self):
         transaction_type = E('transaction-type', code="1") # Incoming funds
@@ -2073,6 +2283,7 @@ class TransactionTestCase(ParserSetupTestCase):
         attrs = {
             "code": "11110", # Education Policy and administrative management
             "vocabulary": "1", # OECD-DAC-5
+            "vocabulary-uri": "http://example.com/vocab.html"
         }
 
         sector = E('sector', **attrs) 
@@ -2082,6 +2293,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertEqual(transaction_sector.transaction, self.test_transaction)
         self.assertEqual(transaction_sector.sector.code, attrs['code'])
         self.assertEqual(transaction_sector.vocabulary.code, attrs['vocabulary'])
+        self.assertEqual(transaction_sector.vocabulary_uri, attrs['vocabulary-uri'])
         self.assertEqual(transaction_sector.percentage, 100)
 
     def test_transaction_recipient_country_202(self):
@@ -2108,6 +2320,7 @@ class TransactionTestCase(ParserSetupTestCase):
             "code": "89", # Europe, regional
             "vocabulary": "1", # OECD-DAC
             "percentage": "50.5",
+            "vocabulary-uri": "http://example.com/vocab.html"
         }
 
         recipient_region = E('recipient_region', **attrs) 
@@ -2117,41 +2330,52 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertEqual(transaction_recipient_region.transaction, self.test_transaction)
         self.assertEqual(transaction_recipient_region.region.code, attrs['code'])
         self.assertEqual(transaction_recipient_region.vocabulary.code, attrs['vocabulary'])
+        self.assertEqual(transaction_recipient_region.vocabulary_uri, attrs['vocabulary-uri'])
         self.assertEqual(transaction_recipient_region.percentage, 100)
 
     def test_transaction_flow_type_202(self):
         """
         """
-
         flow_type = E('flow-type', code="10") # ODA
         self.parser_202.iati_activities__iati_activity__transaction__flow_type(flow_type)
         transaction = self.parser_202.get_model('Transaction')
 
         self.assertEqual(transaction.flow_type.code, "10")
 
-    @skip('NotImplemented')
     def test_transaction_flow_type_inherits_activity_202(self):
         """
         must inherit from the corresponding activity field
         """
+        attrs = {'code':'10'}
+        default_flow_type = E('default-flow-type', **attrs)
+        self.parser_202.iati_activities__iati_activity__default_flow_type(default_flow_type)
 
+        self.parser_202.iati_activities__iati_activity__transaction(self.transaction)
+        transaction = self.parser_202.get_model('Transaction')
+
+        self.assertEqual(transaction.flow_type.code, attrs['code'])
 
     def test_transaction_finance_type_activity_202(self):
         """
         """
-
         finance_type = E('finance-type', code="110") # Aid grant excl.
         self.parser_202.iati_activities__iati_activity__transaction__finance_type(finance_type)
         transaction = self.parser_202.get_model('Transaction')
 
         self.assertEqual(transaction.finance_type.code, "110")
 
-    @skip('NotImplemented')
     def test_transaction_finance_type_inherits_activity_202(self):
         """
         must inherit from the corresponding activity field
         """
-        raise NotImplementedError()
+        attrs = {'code':'310'}
+        default_finance_type = E('default-finance-type', **attrs)
+        self.parser_202.iati_activities__iati_activity__default_finance_type(default_finance_type)
+
+        self.parser_202.iati_activities__iati_activity__transaction(self.transaction)
+        transaction = self.parser_202.get_model('Transaction')
+
+        self.assertEqual(transaction.finance_type.code, attrs['code'])
 
     def test_transaction_aid_type_activity_202(self):
         aid_type = E('aid-type', code="A01") # General budget support
@@ -2160,12 +2384,18 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertEqual(transaction.aid_type.code, "A01")
 
-    @skip('NotImplemented')
     def test_transaction_aid_type_inherits_activity_202(self):
         """
         must inherit from the corresponding activity field
         """
-        raise NotImplementedError()
+        attrs = {'code':'A01'}
+        default_aid_type = E('default-aid-type', **attrs)
+        self.parser_202.iati_activities__iati_activity__default_aid_type(default_aid_type)
+
+        self.parser_202.iati_activities__iati_activity__transaction(self.transaction)
+        transaction = self.parser_202.get_model('Transaction')
+
+        self.assertEqual(transaction.aid_type.code, attrs['code'])
 
     def test_transaction_tied_status_activity_202(self):
         """
@@ -2176,13 +2406,18 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertEqual(transaction.tied_status.code, "4")
 
-    @skip('NotImplemented')
     def test_transaction_tied_status_inherits_activity_202(self):
         """
         must inherit from the corresponding activity field
         """
+        attrs = {'code':'4'}
+        default_tied_status = E('default-tied-status', **attrs)
+        self.parser_202.iati_activities__iati_activity__default_tied_status(default_tied_status)
 
-        raise NotImplementedError()
+        self.parser_202.iati_activities__iati_activity__transaction(self.transaction)
+        transaction = self.parser_202.get_model('Transaction')
+
+        self.assertEqual(transaction.tied_status.code, attrs['code'])
 
 
 class ProviderOrganisationTestCase(ParserSetupTestCase):
@@ -2414,6 +2649,22 @@ class DocumentLinkTestCase(ParserSetupTestCase):
         self.assertEqual(document_link_language.document_link, self.test_document_link)
         self.assertEqual(document_link_language.language.code, "en")
 
+    def test_document_link_document_date_202(self):
+        """
+        """
+        attrs = {
+            'iso-date': datetime.datetime.now().isoformat(' ')
+        }
+
+        document_date = E('document-date', **attrs)
+
+        self.parser_202.iati_activities__iati_activity__document_link(self.document_link)
+        self.parser_202.iati_activities__iati_activity__document_link__document_date(document_date)
+        document_link = self.parser_202.get_model('DocumentLink')
+
+        self.assertEqual(str(document_link.iso_date), attrs['iso-date'])
+
+
 class RelatedActivityTestCase(ParserSetupTestCase):
     """
     2.02: Freetext is no longer allowed within this element.
@@ -2495,6 +2746,11 @@ class ResultTestCase(ParserSetupTestCase):
 
         self.result = E('result', **self.attrs)
         self.narrative = E('narrative', "Some description")
+
+        # for indicator reference
+        vocabulary_factory.IndicatorVocabularyFactory.create(
+            code='99',
+            name="UN OCHA FTS")
 
         self.activity = build_activity(version="2.02")
         self.test_result = iati_factory.ResultFactory.build()
@@ -2683,6 +2939,33 @@ class ResultTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ResultIndicatorDescriptionNarrative')
         self.assertEquals(narrative.related_object, result_indicator_description)
 
+    def test_result_indicator_reference_202(self):
+        """
+        code, voc, indicator-uri
+        """
+        attrs = {
+            'measure': '1', # unit
+            'ascending': '1' # ascending           
+        }
+        result_indicator = E('indicator', **attrs) 
+        self.parser_202.iati_activities__iati_activity__result__indicator(result_indicator)
+        result_indicator = self.parser_202.get_model('ResultIndicator')
+
+        attrs = {
+            'code': 'B1',
+            'vocabulary': '99',
+            'indicator-uri': 'http://example.com/indicators.html'
+        }
+        reference = E('reference', **attrs) 
+
+        self.parser_202.iati_activities__iati_activity__result__indicator__reference(reference)
+        reference = self.parser_202.get_model('ResultIndicatorReference')
+        
+        self.assertEqual(reference.result_indicator, result_indicator)
+        self.assertEqual(reference.code, attrs['code'])
+        self.assertEqual(reference.vocabulary.code, attrs['vocabulary'])
+        self.assertEqual(reference.indicator_uri, attrs['indicator-uri'])
+
     def test_result_indicator_baseline(self):
         """
         test for result_indicator_baseline + accompanying narrative
@@ -2795,6 +3078,51 @@ class ResultTestCase(ParserSetupTestCase):
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.target), attrs['value'])
 
+    def test_result_indicator_period_target_location(self):
+        location = iati_factory.LocationFactory.build(ref='AF-KAN')
+        self.parser_202.register_model('Location', location)
+
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        loc_attrs = {'ref': 'AF-KAN'}
+        target_location = E('location', **loc_attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
+        target_location = self.parser_202.get_model('ResultIndicatorPeriodTargetLocation')
+
+        self.assertEquals(target_location.ref, loc_attrs['ref'])
+        self.assertEquals(target_location.location, location)
+
+    def test_result_indicator_period_target_non_existing_location(self):
+        """
+        should throw ValidationError
+        """
+        self.parser_202.pop_model('Location')
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        loc_attrs = {'ref': 'AF-KAN'}
+        target_location = E('location', **loc_attrs)
+
+        with self.assertRaises(ValidationError):
+            self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
+
+    def test_result_indicator_period_target_dimension(self):
+
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        attrs = {
+            'name': 'sex',
+            'value': 'female'
+        }
+        dimension = E('dimension', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__dimension(dimension)
+        dimension = self.parser_202.get_model('ResultIndicatorPeriodTargetDimension')
+
+        self.assertEquals(dimension.name, attrs['name'])
+        self.assertEquals(dimension.value, attrs['value'])
+
     def test_result_indicator_period_target_comment_202(self):
         """
         test for result_indicator_period_target_comment + accompanying narrative
@@ -2844,6 +3172,51 @@ class ResultTestCase(ParserSetupTestCase):
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.actual), attrs['value'])
+
+    def test_result_indicator_period_actual_location(self):
+        location = iati_factory.LocationFactory.build(ref='AF-KAN')
+        self.parser_202.register_model('Location', location)
+
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        loc_attrs = {'ref': 'AF-KAN'}
+        actual_location = E('location', **loc_attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
+        actual_location = self.parser_202.get_model('ResultIndicatorPeriodActualLocation')
+
+        self.assertEquals(actual_location.ref, loc_attrs['ref'])
+        self.assertEquals(actual_location.location, location)
+
+    def test_result_indicator_period_actual_non_existing_location(self):
+        """
+        should throw ValidationError
+        """
+        self.parser_202.pop_model('Location')
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        loc_attrs = {'ref': 'AF-KAN'}
+        actual_location = E('location', **loc_attrs)
+
+        with self.assertRaises(ValidationError):
+            self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
+
+    def test_result_indicator_period_actual_dimension(self):
+
+        test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
+        self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
+
+        attrs = {
+            'name': 'sex',
+            'value': 'female'
+        }
+        dimension = E('dimension', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__dimension(dimension)
+        dimension = self.parser_202.get_model('ResultIndicatorPeriodActualDimension')
+
+        self.assertEquals(dimension.name, attrs['name'])
+        self.assertEquals(dimension.value, attrs['value'])
 
     def test_result_indicator_period_actual_comment_202(self):
         """
