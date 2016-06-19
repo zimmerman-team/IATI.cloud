@@ -57,19 +57,24 @@ class IatiXmlSource(models.Model):
     def process(self, force_reparse=False):
         from iati.parser.parse_manager import ParseManager
         start_datetime = datetime.datetime.now()
+        
         parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
-
         self.is_parsed = True
+        
         self.date_updated = datetime.datetime.now()
 
         time_diff = self.date_updated - start_datetime
-        self.time_to_parse = ''.join([
-            str(time_diff.seconds//3600), 
-            ':',
-            str((time_diff.seconds//60)%60),
-            ':',
-            str(time_diff.seconds%60)])
+        hours, remainder = divmod(time_diff.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        def prepend_zero(time_period):
+            if time_period < 10:
+                return '0' + str(time_period)
+            return time_period
+
+        self.time_to_parse = '%s:%s:%s' % (prepend_zero(hours), prepend_zero(minutes), prepend_zero(seconds))
+
         self.save(process=False)
 
     def process_activity(self, activity_id):
