@@ -6,7 +6,7 @@ from django.contrib.contenttypes.management import update_contenttypes
 import django.db.models.deletion
 
 
-def replace_empty_pd_periods(apps, schema_editor):
+def remove_planned_disbursements(apps, schema_editor):
     """
     add budget status 1 as its used as default in iati migration 0036
     """
@@ -17,8 +17,7 @@ def replace_empty_pd_periods(apps, schema_editor):
     except:
         return
 
-    PlannedDisbursement.objects.filter(period_start='').update(period_start=None)
-    PlannedDisbursement.objects.filter(period_end='').update(period_end=None)
+    PlannedDisbursement.objects.all().delete()
 
 
 class Migration(migrations.Migration):
@@ -28,7 +27,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(replace_empty_pd_periods),
+        migrations.RunPython(remove_planned_disbursements),
         migrations.AddField(
             model_name='resultindicatortitle',
             name='primary_name',
