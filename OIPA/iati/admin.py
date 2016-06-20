@@ -210,7 +210,14 @@ class BudgetInline(nested_admin.NestedStackedInline):
     model = Budget
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    exclude = ('value_string',)
+    exclude = (
+        'value_string',
+        'xdr_value',
+        'usd_value',
+        'eur_value',
+        'gbp_value',
+        'jpy_value',
+        'cad_value',)
     extra = 2
 
 
@@ -424,6 +431,7 @@ class ActivityAdmin(nested_admin.NestedAdmin):
             activity.save()
 
         # save primary name on participating organisation to make querying work
+        # TODO FIX THIS, its broken on live
         if isinstance(formset.instance, ActivityParticipatingOrganisation):
             po = formset.instance
             if po.narratives.all().count() > 0:
@@ -440,7 +448,14 @@ class TransactionAdmin(nested_admin.NestedAdmin):
     search_fields = ['activity__id']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
-    exclude = ('value_string', 'xdr_value')
+    exclude = (
+        'value_string',
+        'xdr_value',
+        'usd_value',
+        'eur_value',
+        'gbp_value',
+        'jpy_value',
+        'cad_value',)
     inlines = [
         TransactionDescriptionInline,
         TransactionProviderInline,
@@ -517,6 +532,7 @@ class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
+    # TODO set primary_name of this and exclude field
 
     extra = 1
 
@@ -547,7 +563,7 @@ class ResultIndicatorPeriodInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorPeriod
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-
+    # TODO add comment fields
     extra = 4
 
 
