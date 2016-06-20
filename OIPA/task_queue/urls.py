@@ -1,4 +1,3 @@
-# Django specific
 from django.conf.urls import url
 from task_queue.views import *
 
@@ -20,4 +19,6 @@ urlpatterns = [
     #Failed task management
     url(r'^get_failed_tasks/', get_failed_tasks),
     url(r'^reschedule_all_failed/', reschedule_all_failed),
+    # Finished tasks
+    url(r'^get_finished_tasks/', finished_jobs)
 ]

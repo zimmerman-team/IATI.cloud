@@ -1,7 +1,6 @@
 from iati_synchroniser.models import IatiXmlSource
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
-from iati_synchroniser.codelist_importer import CodeListImporter
 import django_rq
 import datetime
 from rq import Queue, Connection, Worker, cancel_job
@@ -204,18 +203,28 @@ def force_update_exchange_rates():
 
 @job
 def update_region_data():
-    raise Exception("Not implemented yet")
+    from geodata.importer.region import RegionImport
+    ri = RegionImport()
+    ri.update_region_center()
 
 @job
 def update_country_data():
-    raise Exception("Not implemented yet")
+    from geodata.importer.country import CountryImport
+    ci = CountryImport()
+    ci.update_country_center()
+    ci.update_polygon()
+    ci.update_regions()
 
 @job
 def update_adm1_region_data():
-    raise Exception("Not implemented yet")
+    from geodata.importer.admin1region import Adm1RegionImport
+    ai = Adm1RegionImport()
+    ai.update_from_json()
 
 @job
-def update_country_data():
-    raise Exception("Not implemented yet")
+def update_city_data():
+    from geodata.importer.city import CityImport
+    ci = CityImport()
+    ci.update_cities()
 
 

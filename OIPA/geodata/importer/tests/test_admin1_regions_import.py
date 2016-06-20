@@ -1,49 +1,21 @@
 from mock import MagicMock
 
-from django.contrib.admin.sites import AdminSite
 from django.test import TestCase
 
 from geodata.factory.geodata_factory import CountryFactory
 from geodata.factory.geodata_factory import Adm1RegionFactory
 from geodata.models import Adm1Region
-from geodata.admin_models.admin1region_admin import Adm1RegionAdmin
-
-
-class MockRequest(object):
-    pass
-
-
-class MockSuperUser(object):
-    def has_perm(self, perm):
-        return True
-
-request = MockRequest()
-request.user = MockSuperUser()
+from geodata.importer.admin1region import Adm1RegionImport
 
 
 class Adm1RegionAdminTestCase(TestCase):
 
     def setUp(self):
-        self.site = AdminSite()
+        self.adm1_region_import = Adm1RegionImport()
         self.country = CountryFactory.create(code="AF")
         self.adm1_region = Adm1RegionFactory.build()
 
-    def test_get_urls(self):
-
-        region_admin = Adm1RegionAdmin(self.adm1_region, self.site)
-        patterns = []
-        for url in region_admin.get_urls():
-            patterns.append(url.regex.pattern)
-
-        added_patterns = [
-            '^update-adm1-regions/$',
-        ]
-
-        for pattern in added_patterns:
-            self.assertIn(pattern, patterns)
-
     def test_import_region_center(self):
-        region_admin = Adm1RegionAdmin(self.adm1_region, self.site)
         data = {
             "type": "FeatureCollection",
             "features": [
@@ -67,8 +39,8 @@ class Adm1RegionAdminTestCase(TestCase):
             }]
         }
 
-        region_admin.get_json_data = MagicMock(return_value=data)
-        region_admin.update_adm1_regions(request)
+        self.adm1_region_import.get_json_data = MagicMock(return_value=data)
+        self.adm1_region_import.update_from_json()
         adm1_region = Adm1Region.objects.all()[0]
         self.assertEqual(adm1_region.country.code, 'AF')
         self.assertEqual(adm1_region.name, "State in AF")

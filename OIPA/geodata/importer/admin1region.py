@@ -1,36 +1,18 @@
-from django.conf.urls import url
-from django.contrib import admin
-from django.http import HttpResponse
-
-from geodata.models import Adm1Region
 from django.contrib.gis.geos import fromstr
+
 from geodata.models import Country
-import ujson
-import os
-import os.path
+from geodata.models import Adm1Region
+from geodata.importer.common import get_json_data
 
 
-class Adm1RegionAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = ['__unicode__', 'adm1_code', 'country', 'type', 'admin']
+class Adm1RegionImport():
+    """
+    Wrapper class for all import methods used on the Adm1Region model
+    """
+    def __init__(self):
+        self.get_json_data = get_json_data
 
-    def get_urls(self):
-        urls = super(Adm1RegionAdmin, self).get_urls()
-
-        my_urls = [
-            url(r'^update-adm1-regions/$', self.admin_site.admin_view(self.update_adm1_regions))
-        ]
-        return my_urls + urls
-
-    def get_json_data(self, location_from_here):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + location_from_here
-        json_data = open(location)
-        data = ujson.load(json_data)
-        json_data.close()
-        return data
-
-    def update_adm1_regions(self, request):
+    def update_from_json(self):
         adm1_regions = self.get_json_data("/../data_backup/admin_1_regions.json")
 
         for r in adm1_regions['features']:
@@ -121,10 +103,3 @@ class Adm1RegionAdmin(admin.ModelAdmin):
             the_adm1_region.geometry_type = r["geometry"].get('type')
 
             the_adm1_region.save()
-
-        return HttpResponse('Success')
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.exclude = ('polygon', 'center_location', )
-        return super(Adm1RegionAdmin, self).change_view(request, object_id, form_url, extra_context)
-

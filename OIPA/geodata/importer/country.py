@@ -1,50 +1,19 @@
 import ujson
-import os
-import os.path
-
-from django.conf.urls import url
-from django.contrib import admin
-from django.http import HttpResponse
+from geodata.importer.common import get_json_data
 from django.contrib.gis.geos import fromstr
 
 from geodata.models import Country
 from geodata.models import Region
 
 
-class CountryAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = [
-        '__unicode__',
-        'alt_name',
-        'capital_city',
-        'region',
-        'un_region',
-        'unesco_region',
-        'dac_country_code',
-        'iso3',
-        'alpha3',
-        'fips10',
-        'data_source']
+class CountryImport():
+    """
+    Wrapper class for all import methods used on the Country model
+    """
+    def __init__(self):
+        self.get_json_data = get_json_data
 
-    def get_urls(self):
-        urls = super(CountryAdmin, self).get_urls()
-
-        my_urls = [
-            url(r'^update-polygon/$', self.admin_site.admin_view(self.update_polygon)),
-            url(r'^update-country-center/$', self.admin_site.admin_view(self.update_country_center)),
-            url(r'^update-regions/$', self.admin_site.admin_view(self.update_regions)),
-        ]
-        return my_urls + urls
-
-    def get_json_data(self, location_from_here):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + location_from_here
-        json_data = open(location)
-        data = ujson.load(json_data)
-        json_data.close()
-        return data
-
-    def update_polygon(self, request):
+    def update_polygon(self):
         admin_countries = self.get_json_data("/../data_backup/country_data.json")
 
         for k in admin_countries.get('features'):
@@ -55,9 +24,7 @@ class CountryAdmin(admin.ModelAdmin):
             the_country.polygon = ujson.dumps(k.get('geometry'))
             the_country.save()
 
-        return HttpResponse('Success')
-
-    def update_country_center(self, request):
+    def update_country_center(self):
         country_centers = self.get_json_data("/../data_backup/country_center.json")
 
         for c in country_centers:
@@ -74,9 +41,7 @@ class CountryAdmin(admin.ModelAdmin):
                 current_country.center_longlat = longlat
                 current_country.save()
 
-        return HttpResponse('Success')
-
-    def update_regions(self, request):
+    def update_regions(self):
         country_regions = self.get_json_data("/../data_backup/country_regions.json")
 
         for cr in country_regions:
@@ -92,6 +57,4 @@ class CountryAdmin(admin.ModelAdmin):
             if the_country.region is None and the_country is not None and the_region is not None:
                 the_country.region = the_region
                 the_country.save()
-
-        return HttpResponse('Success')
 

@@ -1,20 +1,20 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
-
 import json
-import redis
-from datetime import datetime
-
 import django_rq
 from django_rq import get_connection
-from rq import use_connection
 from rq import requeue_job
 from rq import get_failed_queue
-from rq import Worker, push_connection
+from rq import Worker
 from rq_scheduler import Scheduler
-
+from rq.registry import FinishedJobRegistry
 from task_queue import tasks
 from redis import Redis
+from rq.exceptions import NoSuchJobError
+from rq.job import Job
+
+from math import ceil
+
 
 redis_conn = Redis()
 
@@ -122,13 +122,7 @@ def add_scheduled_task(request):
     period = request.GET.get('period')
     queue = request.GET.get('queue')
     parameters = request.GET.get('parameters')
-
-    # Use RQ's default Redis connection
-    # use_connection()
-    # Get a scheduler for the "default" queue
-    # scheduler = Scheduler(queue)
-
-    scheduler = Scheduler(connection=Redis())
+    scheduler = Scheduler(queue_name=queue, connection=Redis())
 
     if parameters:
         scheduler.schedule(
@@ -199,17 +193,6 @@ def get_scheduled_tasks(request):
 
         jobdata.append(job_dict)
 
-    # scheduler = Scheduler('parser') # Get a scheduler for the "parser" queue
-    # list_of_job_instances = scheduler.get_jobs()
-    #
-    # for job in list_of_job_instances:
-    #     if "interval" in job.meta:
-    #         interval = job.meta["interval"]
-    #     else:
-    #         interval = 0
-    #     job_dict = { 'job_id': job._id, 'task': job.description, 'period': interval, 'queue': "parser" }
-    #     jobdata.append(job_dict)
-
     data = json.dumps(jobdata)
     return HttpResponse(data, content_type='application/json')
 
@@ -224,13 +207,50 @@ def cancel_scheduled_task(request):
     return HttpResponse('Success')
 
 
-# Failed tasks
+@staff_member_required
 def get_failed_tasks(request):
 
     queue = django_rq.get_failed_queue()
 
     jobdata = list()
     for job in queue.jobs:
+
+        job_dict = {
+            'job_id': job.id,
+            'func_name': job.func_name,
+            'error_message': job.exc_info,
+            'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000")}
+
+        jobdata.append(job_dict)
+
+    data = json.dumps(jobdata)
+    return HttpResponse(data, content_type='application/json')
+
+
+@staff_member_required
+def finished_jobs(request):
+
+    current_queue = request.GET.get('queue')
+    queue = django_rq.get_queue(current_queue)
+    registry = FinishedJobRegistry(queue.name, queue.connection)
+
+    items_per_page = 10
+    num_jobs = len(registry)
+    jobs = []
+
+    if num_jobs > 0:
+        offset = 0
+        job_ids = registry.get_job_ids(offset, items_per_page)
+
+        for job_id in job_ids:
+            try:
+                jobs.append(Job.fetch(job_id, connection=queue.connection))
+            except NoSuchJobError:
+                pass
+
+    jobdata = list()
+    for job in jobs:
 
         job_dict = {
             'job_id': job.id,

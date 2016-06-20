@@ -1,40 +1,21 @@
 import sys
-import ujson
-import os
-import os.path
-
-from django.conf.urls import url
-from django.contrib import admin
-from django.http import HttpResponse
 from django.contrib.gis.geos import fromstr
 
+from geodata.importer.common import get_json_data
 from geodata.models import City
 from geodata.models import Country
 
 
-class CityAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = ['geoname_id', '__unicode__', 'ascii_name', 'alt_name', 'namepar']
+class CityImport():
+    """
+    Wrapper class for all import methods used on the City model
+    """
+    def __init__(self):
+        self.get_json_data = get_json_data
 
-    def get_urls(self):
-        urls = super(CityAdmin, self).get_urls()
+    def update_cities(self):
 
-        my_urls = [
-            url(r'^update-cities/$', self.admin_site.admin_view(self.update_cities))
-        ]
-        return my_urls + urls
-
-    def get_cities_json_data(self):
-        base = os.path.dirname(os.path.abspath(__file__))
-        location = base + "/../data_backup/cities.json"
-        json_data = open(location)
-        city_locations = ujson.load(json_data)
-        json_data.close()
-        return city_locations
-
-    def update_cities(self, request):
-
-        city_locations = self.get_cities_json_data()
+        city_locations = self.get_json_data("/../data_backup/cities.json")
 
         for c in city_locations.get('features'):
             try:
@@ -76,5 +57,3 @@ class CityAdmin(admin.ModelAdmin):
             except AttributeError, e:
                 print "error in update_cities ", sys.exc_info()[0]
                 print e.message
-
-        return HttpResponse('Success')

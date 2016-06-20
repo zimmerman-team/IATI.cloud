@@ -10,33 +10,6 @@ class Region(models.Model):
     center_longlat = models.PointField(null=True, blank=True)
     objects = models.GeoManager()
 
-    def get_self_and_subregions(self):
-        regions = [self]
-        if self.region_set.exists():
-            sub_regions = self.region_set.all()
-            for sub_region in sub_regions:
-                regions.extend(sub_region.get_self_and_subregions())
-        return regions
-
-    def get_country_set(self):
-        if self.country_set.exists():
-            return self.country_set
-        elif self.un_countries.exists():
-            return self.un_countries
-        elif self.unesco_countries.exists():
-            return self.unesco_countries
-        else:
-            return Country.objects.none()
-
-    @property
-    def countries(self):
-        child_regions = self.region_set.all()
-        countries = list(self.get_country_set().all())
-        if child_regions.exists():
-            for region in child_regions:
-                countries.extend(region.countries)
-        return countries
-
     def __unicode__(self):
         return self.name
 
@@ -155,9 +128,5 @@ class Adm1Region(models.Model):
 
     class Meta:
         verbose_name_plural = "admin1 regions"
-
-
-
-
 
 
