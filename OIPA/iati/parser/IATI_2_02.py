@@ -3039,6 +3039,7 @@ class Parse(IatiParser):
         post_save.update_activity_search_index(activity)
         post_save.set_country_region_transaction(activity)
         post_save.set_sector_transaction(activity)
+        post_save.set_sector_budget(activity)
 
     def post_save_file(self, xml_source):
         """Perform all actions that need to happen after a single IATI source's been parsed.

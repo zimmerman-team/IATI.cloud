@@ -7,8 +7,9 @@ from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.factory import iati_factory
 from iati.transaction.factories import TransactionFactory, TransactionTypeFactory
 from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
-from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory
+from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, BudgetTypeFactory, BudgetStatusFactory
 from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
+from iati.models import BudgetSector
 from iati.parser import post_save
 
 
@@ -27,7 +28,7 @@ class PostSaveActivityTestCase(TestCase):
             iati_standard_version=version,
             xml_source_ref='source_reference')
 
-    def setUpTransactionModels(self):
+    def setUpCountriesRegionsSectors(self):
         self.sector_vocabulary = SectorVocabularyFactory()
 
         self.c1 = iati_factory.CountryFactory(code='AF', name='Afghanistan')
@@ -67,6 +68,35 @@ class PostSaveActivityTestCase(TestCase):
             percentage=None
         )
 
+    def setUpBudgetmodels(self):
+        self.setUpCountriesRegionsSectors()
+        self.bt = BudgetTypeFactory.create(code=1)
+        self.bstatus = BudgetStatusFactory.create(code=1)
+
+        self.budget1 = iati_factory.BudgetFactory.create(
+            activity=self.activity,
+            type=self.bt,
+            status=self.bstatus,
+            value=1234,
+            period_start='2016-01-01',
+            period_end='2018-01-01',
+            currency=self.currency,
+            xdr_value=Decimal(10000)
+        )
+
+        self.budget2 = iati_factory.BudgetFactory.create(
+            activity=self.activity,
+            type=self.bt,
+            status=self.bstatus,
+            value=2345,
+            period_start='2017-01-01',
+            period_end='2019-01-01',
+            currency=self.currency,
+            xdr_value=Decimal(20000)
+        )
+
+    def setUpTransactionModels(self):
+        self.setUpCountriesRegionsSectors()
         self.tt = TransactionTypeFactory.create(code=1)
 
         self.t1 = TransactionFactory.create(
@@ -208,3 +238,42 @@ class PostSaveActivityTestCase(TestCase):
         self.assertEqual(round(ts2.percentage), 50)
 
 
+    def test_set_sector_budget_with_percentages(self):
+        """
+        percentage of a transaction should be splitted according to the percentages given on the ActivitySector
+        """
+        self.setUpBudgetmodels()
+        self.rs1.percentage = 25
+        self.rs1.save()
+        self.rs2.percentage = 75
+        self.rs2.save()
+
+        post_save.set_sector_budget(self.activity)
+
+        self.assertEqual(BudgetSector.objects.count(), 4)
+
+        self.assertEqual(BudgetSector.objects.filter(
+            sector=self.s1,
+            budget=self.budget1,
+            percentage=25
+        ).count(), 1)
+        self.assertEqual(BudgetSector.objects.filter(
+            sector=self.s2,
+            budget=self.budget1,
+            percentage=75
+        ).count(), 1)
+
+    def test_set_sector_budget_without_percentages(self):
+        """
+        percentages should be split equally among the existing 2 sectors.
+        As a result percentages should then be split equally.
+        """
+        self.setUpBudgetmodels()
+        post_save.set_sector_budget(self.activity)
+        self.assertEqual(BudgetSector.objects.count(), 4)
+
+        ts1 = BudgetSector.objects.filter(sector=self.s1, budget=self.budget1)[0]
+        self.assertEqual(ts1.percentage, 50)
+
+        ts2 = BudgetSector.objects.filter(sector=self.s2, budget=self.budget2)[0]
+        self.assertEqual(round(ts2.percentage), 50)

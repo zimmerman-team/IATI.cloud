@@ -176,5 +176,34 @@ def set_sector_transaction(activity):
                     reported_on_transaction=False
                 ).save()
 
+def set_sector_budget(activity):
+    """
+    Purpose:
+    Store percentages per sector per budget.
+    Aggregations become less complex when doing so.
+    """
+    if not activity.budget_set.count():
+        return False
+
+    sectors = activity.activitysector_set.all()
+
+    # if percentages are not set divide percentages equally over amount of sectors
+    if len(sectors.filter(percentage=None)):
+        total_count = sectors.count()
+        percentage = Decimal(100) / Decimal(total_count)
+        for s in sectors:
+            s.percentage = percentage
+
+    # create BudgetSector for each sector for each budget
+    for b in activity.budget_set.all():
+        for recipient_sector in sectors:
+
+            models.BudgetSector(
+                budget=b,
+                sector=recipient_sector.sector,
+                percentage=recipient_sector.percentage
+            ).save()
+
+
 
 
