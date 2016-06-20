@@ -11,7 +11,7 @@ from api.transaction.filters import TransactionFilter
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
 
 from geodata.models import Country
 from geodata.models import Region
@@ -54,16 +54,7 @@ class ActivityAggregations(AggregationView):
     - `participating_organisation_ref`
     - `participating_organisation_name`
     - `activity_status`
-    - `policy_marker`
     - `collaboration_type`
-    - `default_flow_type`
-    - `default_aid_type`
-    - `default_finance_type`
-    - `default_tied_status`
-    - `budget_per_year`
-    - `budget_per_quarter`
-    - `transactions_per_quarter`
-    - `transaction_date_year`
 
     ## Aggregation options
 
@@ -73,7 +64,6 @@ class ActivityAggregations(AggregationView):
     can be one or more (comma separated values) of:
 
     - `count`
-    - `budget`
 
     ## Request parameters
 
@@ -91,16 +81,6 @@ class ActivityAggregations(AggregationView):
             query_param='count',
             field='count',
             annotate=Count('id'),
-        ),
-        Aggregation(
-            query_param='transaction_count',
-            field='transaction_count',
-            annotate=Count('transaction', distinct=True),
-        ),
-        Aggregation(
-            query_param='budget',
-            field='budget',
-            annotate=Sum('budget__value'),
         ),
     )
 
@@ -167,81 +147,11 @@ class ActivityAggregations(AggregationView):
             serializer=CodelistSerializer,
         ),
         GroupBy(
-            query_param="policy_marker",
-            fields="policy_marker",
-            queryset=PolicyMarker.objects.all(),
-            serializer=CodelistSerializer,
-        ),
-        GroupBy(
             query_param="collaboration_type",
             fields="activity__collaboration_type",
             renamed_fields="collaboration_type",
             queryset=CollaborationType.objects.all(),
             serializer=CodelistSerializer,
-        ),
-        GroupBy(
-            query_param="default_flow_type",
-            fields="default_flow_type",
-            queryset=FlowType.objects.all(),
-            serializer=CodelistSerializer,
-        ),
-        GroupBy(
-            query_param="default_finance_type",
-            fields="activity__default_finance_type",
-            renamed_fields="default_finance_type",
-            queryset=FinanceType.objects.all(),
-            serializer=CodelistSerializer,
-        ),
-        GroupBy(
-            query_param="default_aid_type",
-            fields="default_aid_type",
-            queryset=AidType.objects.all(),
-            serializer=CodelistSerializer,
-        ),
-        GroupBy(
-            query_param="default_tied_status",
-            fields="default_tied_status",
-            queryset=TiedStatus.objects.all(),
-            serializer=CodelistSerializer,
-        ),
-        # TODO: Make these a full date object instead - 2016-04-12
-        GroupBy(
-            query_param="budget_period_start_year",
-            extra={
-                'select': {
-                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                },
-                'where': [
-                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
-                ],
-            },
-            fields="budget_period_start_year",
-        ),
-        GroupBy(
-            query_param="budget_period_end_year",
-            extra={
-                'select': {
-                    'budget_period_end_year': 'EXTRACT(YEAR FROM "period_end")::integer',
-                },
-                'where': [
-                    'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',
-                ],
-            },
-            fields="budget_period_end_year",
-        ),
-        GroupBy(
-            query_param="budget_month",
-            extra={
-                'select': {
-                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                    'budget_month': 'EXTRACT(MONTH FROM "period_start")::integer',
-                },
-                'where': [
-                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
-                    'EXTRACT(MONTH FROM "period_start")::integer IS NOT NULL',
-                ],
-            },
-            fields=("budget_year", "budget_month")
         ),
     )
 
