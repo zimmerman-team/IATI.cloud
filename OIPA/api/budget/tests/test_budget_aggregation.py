@@ -1,6 +1,5 @@
 # from django.test import TestCase
 # from iati.factory import iati_factory
-# from iati.transaction import factories as transaction_factory
 # from rest_framework.test import APIClient
 # from decimal import Decimal
 
@@ -116,7 +115,7 @@
 #         iati_factory.BudgetFactory.create(activity=second_activity, value=80000)
 
 #         # transaction type = 1 (incoming funds), works the same for disbursements etc.
-#         first_transaction = transaction_factory.TransactionFactory.create(
+#         first_transaction = iati_factory.BudgetSectorFactory.create(
 #             activity=first_activity,
 #             value=50000)
 #         transaction_factory.TransactionFactory.create(

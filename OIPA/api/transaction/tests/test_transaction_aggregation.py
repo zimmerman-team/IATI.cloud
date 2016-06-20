@@ -98,15 +98,21 @@ class TransactionAggregationTestCase(TestCase):
 
         self.api_client = APIClient()
 
-    def get_results(self, group_by, aggregations, order_by):
-        url = ''.join([
+    def get_results(self, group_by, aggregations, order_by, filter_name=None, filter_value=None):
+
+        url_parts = [
             '/api/transactions/aggregations/?format=json&group_by=',
             group_by,
             '&aggregations=',
             aggregations,
             '&order_by=',
-            order_by
-        ])
+            order_by,
+        ]
+
+        if filter_name:
+            url_parts.extend(['&', filter_name, '=', filter_value])
+
+        url = ''.join(url_parts)
         response = self.api_client.get(url)
 
         return list(response.data['results'])
@@ -128,6 +134,30 @@ class TransactionAggregationTestCase(TestCase):
         self.assertEqual(results[0]['incoming_fund'], Decimal(67500))
         self.assertEqual(results[1]['incoming_fund'], Decimal(17500))
 
+    def test_sector_incoming_fund_group_by_with_recipient_country_filter(self):
+        """group incoming funds by sector (percentage weighted)
+
+        expected results:
+            sector 11000 = 67500 (t1 50000 + t2 5000 + t3 12500)
+            sector 11001 = 17500 (t2 5000 + t3 12500)
+            country KE = 17500 (t1 0% + t2 50% + t3 50%)
+            
+            so:
+            secor 11000 with filter KE = 8750 (t1 0 + t2 2500 + t3 6250)
+            secor 11001 with filter KE = 8750 (t1 0 + t2 2500 + t3 6250)
+        """
+        results = self.get_results(
+            group_by='sector',
+            aggregations='incoming_fund',
+            order_by='sector',
+            filter_name='recipient_country',
+            filter_value='KE')
+        
+        self.assertTrue(len(results) == 2)
+
+        self.assertEqual(results[0]['incoming_fund'], Decimal(8750))
+        self.assertEqual(results[1]['incoming_fund'], Decimal(8750))
+        
     def test_recipient_country_incoming_fund_group_by(self):
         """group incoming funds by recipient country (percentage weighted)
 
