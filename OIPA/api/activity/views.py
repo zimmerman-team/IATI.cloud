@@ -206,16 +206,28 @@ class ActivityAggregations(AggregationView):
         ),
         # TODO: Make these a full date object instead - 2016-04-12
         GroupBy(
-            query_param="budget_year",
+            query_param="budget_period_start_year",
             extra={
                 'select': {
-                    'budget_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
                 ],
             },
-            fields="budget_year",
+            fields="budget_period_start_year",
+        ),
+        GroupBy(
+            query_param="budget_period_end_year",
+            extra={
+                'select': {
+                    'budget_period_end_year': 'EXTRACT(YEAR FROM "period_end")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',
+                ],
+            },
+            fields="budget_period_end_year",
         ),
         GroupBy(
             query_param="budget_month",
@@ -408,104 +420,7 @@ class ActivityDetail(DynamicDetailView):
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
-
-class ActivitySectors(ListAPIView):
-    """
-    Returns a list of IATI Activity Sectors stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/activities/{activity_id}/sectors
-    ```
-
-    ### URI Parameters
-
-    - `activity_id`: Desired activity ID
-
-    ## Result details
-
-    Each result item contains:
-
-    - `sector`: Sector name
-    - `percentage`: The percentage of total commitments or total
-        activity budget to this activity sector.
-    - `vocabulary`: An IATI code for the vocabulary (see codelist) used
-        for sector classifications.
-
-    """
-    serializer_class = activitySerializers.ActivitySectorSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return Activity(pk=pk).activitysector_set.all()
-
-
-class ActivityParticipatingOrganisations(ListAPIView):
-    """
-    Returns a list of IATI Activity Participating Organizations stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/activities/{activity_id}/participating-orgs
-    ```
-
-    ### URI Parameters
-
-    - `activity_id`: Desired activity ID
-
-    """
-    serializer_class = activitySerializers.ParticipatingOrganisationSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return Activity(pk=pk).participating_organisations.all()
-
-
-class ActivityRecipientCountries(ListAPIView):
-    """
-    Returns a list of IATI Activity Recipient Countries stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/activities/{activity_id}/recipient-countries
-    ```
-
-    ### URI Parameters
-
-    - `activity_id`: Desired activity ID
-
-    """
-    serializer_class = activitySerializers.RecipientCountrySerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return Activity(pk=pk).activityrecipientcountry_set.all()
-
-
-class ActivityRecipientRegions(ListAPIView):
-    """
-    Returns a list of IATI Activity Recipient Regions stored in OIPA.
-
-    ## URI Format
-
-    ```
-    /api/activities/{activity_id}/recipient-regions
-    ```
-
-    ### URI Parameters
-
-    - `activity_id`: Desired activity ID
-
-    """
-    serializer_class = activitySerializers.ActivityRecipientRegionSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return Activity(pk=pk).activityrecipientregion_set.all()
-
+# TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults
 
 class ActivityTransactions(ListAPIView):
     """

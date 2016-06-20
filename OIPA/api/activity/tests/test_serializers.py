@@ -69,7 +69,7 @@ class ActivitySerializerTestCase(TestCase):
             the field 'categories' should be a DocumentCategorySerializer
             """
 
-        assert type(serializer.fields['title'].child) is serializers.\
+        assert type(serializer.fields['title']) is serializers.\
             NarrativeContainerSerializer,\
             """
             the field 'title' should be a TitleSerializer

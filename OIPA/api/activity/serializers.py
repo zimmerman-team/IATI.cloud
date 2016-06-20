@@ -46,7 +46,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
 
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
-    title = NarrativeContainerSerializer(source="documentlinktitle_set", many=True)
+    title = NarrativeContainerSerializer(source="documentlinktitle")
     document_date = DocumentDateSerializer(source="iso_date")
 
     class Meta:

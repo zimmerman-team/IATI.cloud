@@ -560,10 +560,8 @@ class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     language = models.ForeignKey(Language, null=True, blank=True, default=None)
 
-
-# TODO: enforce one-to-one
 class DocumentLinkTitle(models.Model):
-    document_link = models.ForeignKey(DocumentLink)
+    document_link = models.OneToOneField(DocumentLink)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -748,12 +746,32 @@ class Budget(models.Model):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
 
+# same as TransactionSector, to set percentages per budget item per sector
+# this makes calculations easier (no subqueries required).
+class BudgetSector(models.Model):
+    budget = models.ForeignKey(
+        Budget,
+        on_delete=models.CASCADE)
+    
+    sector = models.ForeignKey(
+        Sector,
+        on_delete=models.CASCADE)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
+
+    def __unicode__(self, ):
+        return "%s - %s" % (self.budget.id, self.sector.code)
+
+
+
 class PlannedDisbursement(models.Model):
 
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
     period_start = models.DateField(blank=True, default=None)
-    period_end = models.DateField(blank=True, default=None)
+    period_end = models.DateField(null=True, blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, blank=True, default=None)
