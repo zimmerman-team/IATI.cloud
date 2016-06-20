@@ -1,13 +1,9 @@
 import uuid
-import gc
-
 from django.conf import settings
-from django.utils import six
 from django.db.models.sql.constants import QUERY_TERMS
 from django.db.models import Q
 from django_filters import CharFilter
-from django_filters import Filter, FilterSet, NumberFilter, DateFilter, BooleanFilter
-from django_filters.filters import Lookup
+from django_filters import Filter, FilterSet, BooleanFilter
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from rest_framework import filters
@@ -43,6 +39,13 @@ class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
 
         query = request.query_params.get('q', None)
+        query_lookup = request.query_params.get('q_strategy', None)
+        lookup_type = 'ft'
+        if query_lookup:
+            if query_lookup == 'exact':
+                lookup_type = 'ft'
+            if query_lookup == 'startswith':
+                lookup_type = 'ft_startswith'
 
         if query:
             if settings.ROOT_ORGANISATIONS:
@@ -62,12 +65,10 @@ class SearchFilter(filters.BaseFilterBackend):
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{model_prefix + 'activitysearch__{}__ft'.format(field): dict_query_list}) for field in query_fields])
+                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_type): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
-
             else:
-
-                return queryset.filter(**{'{}activitysearch__text__ft'.format(model_prefix): dict_query_list})
+                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_type): dict_query_list})
 
         return queryset
 
@@ -103,24 +104,24 @@ class CommaSeparatedStickyCharFilter(CharFilter):
 
         return super(CommaSeparatedStickyCharFilter, self).filter(qs, value)
 
-
-class CommaSeparatedCharMultipleFilter(CharFilter):
-    """
-    Comma separated filter for lookups like 'exact', 'iexact', etc..
-    """
-    def filter(self, qs, value):
-        if not value: return qs
-
-        values = value.split(',')
-
-        lookup_type = self.lookup_type
-
-        filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
-        final_filters = reduce(lambda a, b: a | b, filters)
-
-        return qs.filter(final_filters)
-
-
+#
+# class CommaSeparatedCharMultipleFilter(CharFilter):
+#     """
+#     Comma separated filter for lookups like 'exact', 'iexact', etc..
+#     """
+#     def filter(self, qs, value):
+#         if not value: return qs
+#
+#         values = value.split(',')
+#
+#         lookup_type = self.lookup_type
+#
+#         filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
+#         final_filters = reduce(lambda a, b: a | b, filters)
+#
+#         return qs.filter(final_filters)
+#
+#
 
 class StickyBooleanFilter(BooleanFilter):
     """
