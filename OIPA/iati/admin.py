@@ -20,6 +20,8 @@ from iati.models import *
 from iati.transaction.models import *
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 
+from iati.parser import post_save
+
 
 class NarrativeInline(GenericTabularInline):
 
@@ -56,7 +58,7 @@ class TransactionProviderInline(nested_admin.NestedStackedInline):
     ]
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    exclude = ('normalized_ref', 'organisation', 'provider_activity')
+    exclude = ('normalized_ref', 'organisation', 'provider_activity', 'primary_name')
 
     form = autocomplete_forms.modelform_factory(TransactionProvider, fields='__all__')
     extra = 1
@@ -75,7 +77,7 @@ class TransactionReceiverInline(nested_admin.NestedStackedInline):
     ]
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    exclude = ('normalized_ref', 'organisation', 'receiver_activity')
+    exclude = ('normalized_ref', 'organisation', 'receiver_activity', 'primary_name')
 
     form = autocomplete_forms.modelform_factory(TransactionReceiver, fields='__all__')
 
@@ -101,7 +103,7 @@ class ActivityReportingOrganisationInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
-    extra = 2
+    extra = 1
     form = ActivityReportingOrganisationForm
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
@@ -128,7 +130,7 @@ class ActivityParticipatingOrganisationInline(nested_admin.NestedStackedInline):
         'normalized_ref',
         'primary_name')
 
-    extra = 8
+    extra = 6
 
 
 class TransactionInline(nested_admin.NestedStackedInline):
@@ -171,21 +173,21 @@ class TransactionInline(nested_admin.NestedStackedInline):
             return format_html(
                 'Please save the activity to edit receiver/provider details')
 
-    extra = 8
+    extra = 6
 
 
 class ActivityPolicyMarkerInline(nested_admin.NestedStackedInline):
     model = ActivityPolicyMarker
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 8
+    extra = 4
 
 
 class ActivityRecipientCountryInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientCountry
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 8
+    extra = 6
 
     form = autocomplete_forms.modelform_factory(ActivityRecipientCountry, fields='__all__')
 
@@ -194,7 +196,7 @@ class ActivitySectorInline(nested_admin.NestedStackedInline):
     model = ActivitySector
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 8
+    extra = 6
 
     form = autocomplete_forms.modelform_factory(Sector, fields='__all__')
 
@@ -203,7 +205,7 @@ class ActivityRecipientRegionInline(nested_admin.NestedStackedInline):
     model = ActivityRecipientRegion
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 8
+    extra = 4
 
 
 class BudgetInline(nested_admin.NestedStackedInline):
@@ -250,7 +252,7 @@ class DocumentLinkInline(nested_admin.NestedStackedInline):
     model = DocumentLink
     # classes = ('collapse open',)
     # inline_classes = ('collapse open',)
-    extra = 6
+    extra = 4
 
     form = DocumentLinkForm
 
@@ -291,7 +293,7 @@ class LocationInline(nested_admin.NestedStackedInline):
     model = Location
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 6
+    extra = 4
 
     form = LocationForm
 
@@ -325,7 +327,7 @@ class TitleInline(nested_admin.NestedStackedInline):
     model = Title
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    extra = 2
+    extra = 1
     inlines = [NarrativeInline, ]
 
 
@@ -345,7 +347,7 @@ class ActivityAdmin(nested_admin.NestedAdmin):
     inlines = [
         ActivityDateInline,
         ActivityReportingOrganisationInline,
-        # ActivityParticipatingOrganisationInline,
+        ActivityParticipatingOrganisationInline,
         ActivityPolicyMarkerInline,
         ActivityRecipientCountryInline,
         ActivitySectorInline,
@@ -393,7 +395,6 @@ class ActivityAdmin(nested_admin.NestedAdmin):
 
         self.act = obj
 
-
     def save_formset(self, request, form, formset, change):
         if formset.model == Narrative:
             for entry in formset.cleaned_data:
@@ -431,17 +432,26 @@ class ActivityAdmin(nested_admin.NestedAdmin):
             activity.save()
 
         # save primary name on participating organisation to make querying work
-        # TODO FIX THIS, its broken on live
         if isinstance(formset.instance, ActivityParticipatingOrganisation):
-            po = formset.instance
-            if po.narratives.all().count() > 0:
-                po.primary_name = po.narratives.all()[0].content.strip()
-                po.save()
+            if formset.cleaned_data[0]:
+                po = formset.instance
+                if po.narratives.all().count() > 0:
+                    po.primary_name = po.narratives.all()[0].content.strip()
+                    po.save()
 
         # update aggregations after save of last inline form
         if formset.model == Transaction:
             aggregation_calculator = ActivityAggregationCalculation()
             aggregation_calculator.parse_activity_aggregations(form.instance)
+
+    def save_related(self, request, form, formsets, change):
+        super(ActivityAdmin, self).save_related(request, form, formsets, change)
+        post_save.set_derived_activity_dates(self.act)
+        post_save.set_activity_aggregations(self.act)
+        post_save.update_activity_search_index(self.act)
+        post_save.set_country_region_transaction(self.act)
+        post_save.set_sector_transaction(self.act)
+        post_save.set_sector_budget(self.act)
 
 
 class TransactionAdmin(nested_admin.NestedAdmin):
@@ -509,10 +519,23 @@ class TransactionAdmin(nested_admin.NestedAdmin):
         if formset.model == TransactionProvider:
             try:
                 if formset.instance.provider_organisation.id is None:
-                    formset.instance.receiver_organisation.save()
+                    formset.instance.provider_organisation.save()
             except ObjectDoesNotExist:
                 pass
 
+        if isinstance(formset.instance, TransactionProvider):
+            if formset.cleaned_data[0]:
+                tp = formset.instance
+                if tp.narratives.all().count() > 0:
+                    tp.primary_name = tp.narratives.all()[0].content.strip()
+                    tp.save()
+
+        if isinstance(formset.instance, TransactionReceiver):
+            if formset.cleaned_data[0]:
+                tr = formset.instance
+                if tr.narratives.all().count() > 0:
+                    tr.primary_name = tr.narratives.all()[0].content.strip()
+                    tr.save()
 
         # update aggregations after save of last inline form
         if formset.model == TransactionReceiver:
@@ -525,6 +548,14 @@ class TransactionAdmin(nested_admin.NestedAdmin):
             aggregation_calculator = ActivityAggregationCalculation()
             aggregation_calculator.parse_activity_aggregations(form.instance.activity)
 
+    def save_related(self, request, form, formsets, change):
+        super(TransactionAdmin, self).save_related(request, form, formsets, change)
+        post_save.set_transaction_provider_receiver_activity(self.act)
+        post_save.set_activity_aggregations(self.act)
+        post_save.set_country_region_transaction(self.act)
+        post_save.set_sector_transaction(self.act)
+
+
 class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorTitle
     classes = ('collapse open',)
@@ -532,7 +563,9 @@ class ResultIndicatorTitleInline(nested_admin.NestedStackedInline):
     inlines = [
         NarrativeInline,
     ]
-    # TODO set primary_name of this and exclude field
+    exclude = (
+        'primary_name',
+    )
 
     extra = 1
 
@@ -558,12 +591,35 @@ class ResultIndicatorBaselineCommentInline(nested_admin.NestedStackedInline):
 
     extra = 1
 
+class ResultIndicatorPeriodTargetCommentInline(nested_admin.NestedStackedInline):
+    model = ResultIndicatorPeriodTargetComment
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 1
+
+class ResultIndicatorPeriodActualCommentInline(nested_admin.NestedStackedInline):
+    model = ResultIndicatorPeriodActualComment
+    classes = ('collapse open',)
+    inline_classes = ('collapse open',)
+    inlines = [
+        NarrativeInline,
+    ]
+
+    extra = 1
+
 
 class ResultIndicatorPeriodInline(nested_admin.NestedStackedInline):
     model = ResultIndicatorPeriod
     classes = ('collapse open',)
     inline_classes = ('collapse open',)
-    # TODO add comment fields
+    inlines = [
+        ResultIndicatorPeriodTargetCommentInline,
+        ResultIndicatorPeriodActualCommentInline,
+    ]
     extra = 4
 
 
@@ -574,6 +630,7 @@ class ResultIndicatorInline(nested_admin.NestedStackedInline):
     inlines = [
         ResultIndicatorTitleInline,
         ResultIndicatorDescriptionInline,
+        ResultIndicatorBaselineCommentInline,
         ResultIndicatorPeriodInline,
     ]
 
@@ -663,6 +720,32 @@ class ResultAdmin(nested_admin.NestedAdmin):
                     formset.instance.resultdescription.save()
             except ObjectDoesNotExist:
                 pass
+
+        if formset.model == ResultIndicatorPeriodActualComment:
+            try:
+                if formset.instance.resultindicatorperiodactualcomment.id is None:
+                    if formset.instance.resultindicatorperiodactualcomment.result_indicator_period_id is None:
+                        formset.instance.resultindicatorperiodactualcomment.result_indicator_period_id = formset.instance.resultindicatorperiodactualcomment.result_indicator_period.id
+                    formset.instance.resultindicatorperiodactualcomment.save()
+            except ObjectDoesNotExist:
+                pass
+
+        if formset.model == ResultIndicatorPeriodTargetComment:
+            try:
+                if formset.instance.resultindicatorperiodtargetcomment.id is None:
+                    if formset.instance.resultindicatorperiodtargetcomment.result_indicator_period_id is None:
+                        formset.instance.resultindicatorperiodtargetcomment.result_indicator_period_id = formset.instance.resultindicatorperiodtargetcomment.result_indicator_period.id
+                    formset.instance.resultindicatorperiodtargetcomment.save()
+            except ObjectDoesNotExist:
+                pass
+
+        # save primary name on result indicator title to make aggregations work
+        if isinstance(formset.instance, ResultIndicatorTitle):
+            if formset.cleaned_data[0]:
+                rit = formset.instance
+                if rit.narratives.all().count() > 0:
+                    rit.primary_name = rit.narratives.all()[0].content.strip()
+                    rit.save()
 
         if formset.model == ResultIndicatorDescription:
             try:
