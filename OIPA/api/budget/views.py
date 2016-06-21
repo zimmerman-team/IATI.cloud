@@ -95,15 +95,17 @@ class BudgetAggregations(AggregationView):
     - `recipient_country` Non percentage weighted
     - `recipient_region` Non percentage weighted
     - `sector` Percentage weighted
+    - `related_activity`
     - `reporting_organisation`
-    - `participating_organisation_ref`
-    - `participating_organisation_name`
+    - `participating_organisation`
+    - `participating_organisation_type`
+    - `document_link_category`
     - `activity_status`
     - `collaboration_type`
-    - `budget_per_year`
-    - `budget_per_quarter`
-    - `transactions_per_quarter`
-    - `transaction_date_year`
+    - `budget_period_start_year`
+    - `budget_period_end_year`
+    - `budget_period_start_month`
+    - `budget_period_end_month`
 
     ## Aggregation options
 

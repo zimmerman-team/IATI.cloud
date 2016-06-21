@@ -188,8 +188,11 @@ class TransactionAggregation(AggregationView):
     - `recipient_region`
     - `sector`
     - `related_activity`
+    - `transaction_type`
     - `reporting_organisation`
     - `participating_organisation`
+    - `receiver_org`
+    - `provider_org`
     - `document_link_category`
     - `activity_status`
     - `participating_organisation_type`
@@ -412,7 +415,6 @@ class TransactionAggregation(AggregationView):
             queryset=TiedStatus.objects.all(),
             serializer=CodelistSerializer,
         ),
-        # TODO: Make these a full date object instead - 2016-04-12
         GroupBy(
             query_param="transaction_date_year",
             extra={

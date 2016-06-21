@@ -213,7 +213,6 @@ class ActivityList(DynamicListView):
     To search on subset of these fields the `q_fields` parameter can be used, like so;
     `q_fields=iati_identifier,title,description`
 
-
     ## Ordering
 
     API request may include `ordering` parameter. This parameter controls the order in which
@@ -234,9 +233,7 @@ class ActivityList(DynamicListView):
     - `activity_expenditure_value`
     - `activity_plus_child_budget_value`
 
-
     The user may also specify reverse orderings by prefixing the field name with '-', like so: `-title`
-
 
     ## Aggregations
 
@@ -252,21 +249,6 @@ class ActivityList(DynamicListView):
     `fields=activity_id,title,country,any_field`.
 
     """
-    # note; This is removed from the docs as the aggregations are deactivated atm
-    # ## Available aggregations
-
-    # API request may include `aggregations` parameter.
-    # This parameter controls result aggregations and
-    # can be one or more (comma separated values) of:
-
-    # - `total_budget`: Calculate total budget of activities
-    #     presented in filtered activities list.
-    # - `disbursement`: Calculate total disbursement of activities presented in
-    #     filtered activities list.
-    # - `commitment`: Calculate total commitment of activities presented in
-    #     filtered activities list.
-
-    # For more advanced aggregations please use the /activities/aggregations endpoint.
 
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
