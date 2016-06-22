@@ -30,7 +30,9 @@ class DistanceFilter(filters.BaseFilterBackend):
             else:
                 model_prefix = ''
 
-            return queryset.filter(**{'{}point_pos__distance_lte'.format(model_prefix): (pnt, D(km=distance_km))})
+            loc_ids = Location.objects.filter(**{'point_pos__distance_lte': (pnt, D(km=distance_km))}).values('id')
+
+            return queryset.filter(**{"{}id__in".format(model_prefix): loc_ids})
 
         return queryset
 
