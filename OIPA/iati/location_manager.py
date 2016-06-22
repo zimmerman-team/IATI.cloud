@@ -17,8 +17,8 @@ class LocationQuerySet(models.QuerySet):
     # def prefetch_location_class(self):
     #     return self.select_related('location_class')
 
-    # def prefetch_feature_designation(self):
-    #     return self.select_related('feature_designation')
+    def prefetch_feature_designation(self):
+        return self.select_related('feature_designation__category')
 
     def prefetch_location_id(self):
         return self.select_related('location_id_vocabulary')

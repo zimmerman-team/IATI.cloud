@@ -23,13 +23,13 @@ class DistanceFilter(filters.BaseFilterBackend):
         distance_km = request.query_params.get('location_distance_km', None)
 
         if location_longitude and location_latitude and distance_km:
-            pnt = GEOSGeometry('POINT({0} {1})'.format(location_longitude, location_latitude))
+            pnt = GEOSGeometry('POINT({0} {1})'.format(location_longitude, location_latitude), srid=4326)
 
             if Location is not queryset.model:
                 model_prefix = 'location__'
             else:
                 model_prefix = ''
-
+                
             loc_ids = Location.objects.filter(**{'point_pos__distance_lte': (pnt, D(km=distance_km))}).values('id')
 
             return queryset.filter(**{"{}id__in".format(model_prefix): loc_ids})
