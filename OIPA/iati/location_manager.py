@@ -20,8 +20,8 @@ class LocationQuerySet(models.QuerySet):
     # def prefetch_feature_designation(self):
     #     return self.select_related('feature_designation')
 
-    # def prefetch_location_id(self):
-    #     return self.select_related('location_id_vocabulary')
+    def prefetch_location_id(self):
+        return self.select_related('location_id_vocabulary')
 
     def prefetch_administrative(self):
         from iati.models import LocationAdministrative
