@@ -217,7 +217,7 @@ def get_failed_tasks(request):
 
         job_dict = {
             'job_id': job.id,
-            'func_name': job.func_name,
+            'func_name': job.description,
             'error_message': job.exc_info,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
             'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000")}
@@ -254,7 +254,7 @@ def finished_jobs(request):
 
         job_dict = {
             'job_id': job.id,
-            'func_name': job.func_name,
+            'func_name': job.description,
             'error_message': job.exc_info,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
             'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000")}
