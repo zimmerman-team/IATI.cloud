@@ -6,7 +6,6 @@ import dateutil.parser
 import re
 from decimal import Decimal, InvalidOperation
 
-from django.contrib.auth.models import User
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
 from iati_synchroniser.models import IatiXmlSourceNote
@@ -109,11 +108,10 @@ class IatiParser(object):
             else:
                 return None
         except:
-            if not iso_date: 
-                raise RequiredFieldError(
-                    "TO DO",
-                    "iso-date", 
-                    "Unspecified or invalid. Date should be of type xml:date.")
+            raise RequiredFieldError(
+                "TO DO",
+                "iso-date",
+                "Unspecified or invalid. Date should be of type xml:date.")
 
     def get_primary_name(self, element, primary_name):
         if primary_name:
@@ -185,7 +183,7 @@ class IatiParser(object):
         self.errors.append(note)
 
     def parse(self, element):
-        if element == None:
+        if element is None:
             return
         if type(element).__name__ != '_Element':
             return
@@ -196,9 +194,9 @@ class IatiParser(object):
         function_name = self.generate_function_name(x_path)
 
         if hasattr(self, function_name) and callable(getattr(self, function_name)):
-            elementMethod = getattr(self, function_name)
+            element_method = getattr(self, function_name)
             try:
-                elementMethod(element)
+                element_method(element)
             except RequiredFieldError as e:
                 self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
                 return
