@@ -213,6 +213,12 @@ class ActivityList(DynamicListView):
     To search on subset of these fields the `q_fields` parameter can be used, like so;
     `q_fields=iati_identifier,title,description`
 
+    By default, search only return results if the hit resembles a full word. 
+    This can be altered through the `q_lookup` parameter. Options for this parameter are:
+
+    - `exact` (default): Only return results when the query hit is a full word.
+    - `starswith`: Also returns results when the word stars with the query. 
+
     ## Ordering
 
     API request may include `ordering` parameter. This parameter controls the order in which

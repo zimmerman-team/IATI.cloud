@@ -39,7 +39,7 @@ class SearchFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
 
         query = request.query_params.get('q', None)
-        query_lookup = request.query_params.get('q_strategy', None)
+        query_lookup = request.query_params.get('q_lookup', None)
         lookup_type = 'ft'
         if query_lookup:
             if query_lookup == 'exact':

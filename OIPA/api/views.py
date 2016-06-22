@@ -86,6 +86,10 @@ def welcome(request, format=None):
                 'results:result-aggregations',
                 request=request,
                 format=format),
+            'budgets': reverse(
+                'budgets:budget-aggregations',
+                request=request,
+                format=format),
         }
     })
 
