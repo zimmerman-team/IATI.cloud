@@ -954,7 +954,13 @@ class Location(models.Model):
         related_name="feature_designation")
 
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
-    point_pos = PointField(null=True, blank=True, spatial_index=True)
+    point_pos = PointField(
+        null=True, 
+        blank=False,
+        default=None,
+        spatial_index=True,
+        srid=4326,
+        geography=True)
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
 
     objects = LocationManager()
