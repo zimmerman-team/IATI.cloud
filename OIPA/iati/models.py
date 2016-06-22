@@ -1,5 +1,6 @@
 from geodata.models import Country, Region
 from activity_manager import ActivityManager
+from location_manager import LocationManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -955,6 +956,8 @@ class Location(models.Model):
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
     point_pos = PointField(null=True, blank=True, spatial_index=True)
     exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
+
+    objects = LocationManager()
 
     def __unicode__(self,):
         return "Location: %s" % self.point_pos
