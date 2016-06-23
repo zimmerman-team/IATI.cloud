@@ -50,9 +50,11 @@ class ActivityAggregations(AggregationView):
     - `recipient_country`
     - `recipient_region`
     - `sector`
+    - `related_activity`
     - `reporting_organisation`
-    - `participating_organisation_ref`
-    - `participating_organisation_name`
+    - `participating_organisation`
+    - `participating_organisation_type`
+    - `document_link_category`
     - `activity_status`
     - `collaboration_type`
 
@@ -91,6 +93,8 @@ class ActivityAggregations(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field='recipient_country__name',
+            renamed_name_search_field='recipient_country_name',
         ),  
         GroupBy(
             query_param="recipient_region",
@@ -98,6 +102,8 @@ class ActivityAggregations(AggregationView):
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="recipient_region__name",
+            renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
             query_param="sector",
@@ -105,6 +111,8 @@ class ActivityAggregations(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="sector__name",
+            renamed_name_search_field="sector_name",
         ),
         GroupBy(
             query_param="related_activity",
@@ -117,13 +125,17 @@ class ActivityAggregations(AggregationView):
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier'
+            serializer_main_field='organisation_identifier',
+            name_search_field="reporting_organisations__organisation__primary_name",
+            renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation",
             fields="participating_organisations__primary_name",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
+            name_search_field="participating_organisations__primary_name",
+            renamed_name_search_field="participating_organisation_name"
             # serializer=OrganisationSerializer,
         ),
         GroupBy(
@@ -132,6 +144,8 @@ class ActivityAggregations(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="participating_organisations__type__name",
+            renamed_name_search_field="participating_organisations_type_name"
         ),
         GroupBy(
             query_param="document_link_category",
@@ -139,19 +153,25 @@ class ActivityAggregations(AggregationView):
             renamed_fields="document_link_category",
             queryset=DocumentCategory.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="documentlink__categories__name",
+            renamed_name_search_field="document_link_category_name"
         ),
         GroupBy(
             query_param="activity_status",
             fields="activity_status",
             queryset=ActivityStatus.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity_status__name",
+            renamed_name_search_field="activity_status_name"
         ),
         GroupBy(
             query_param="collaboration_type",
-            fields="activity__collaboration_type",
+            fields="collaboration_type",
             renamed_fields="collaboration_type",
             queryset=CollaborationType.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="collaboration_type__name",
+            renamed_name_search_field="collaboration_type_name"
         ),
     )
 

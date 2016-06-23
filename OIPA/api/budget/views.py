@@ -155,6 +155,8 @@ class BudgetAggregations(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field='activity__recipient_country__name',
+            renamed_name_search_field='recipient_country_name',
         ),
         GroupBy(
             query_param="recipient_region",
@@ -163,6 +165,8 @@ class BudgetAggregations(AggregationView):
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="activity__recipient_region__name",
+            renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
             query_param="sector",
@@ -171,6 +175,8 @@ class BudgetAggregations(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name'),
+            name_search_field="budgetsector__sector__name",
+            renamed_name_search_field="sector_name",
         ),
         GroupBy(
             query_param="related_activity",
@@ -183,7 +189,9 @@ class BudgetAggregations(AggregationView):
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier'
+            serializer_main_field='organisation_identifier',
+            name_search_field="activity__reporting_organisations__organisation__primary_name",
+            renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation",
@@ -191,6 +199,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             # serializer=OrganisationSerializer,
+            name_search_field="activity__participating_organisations__primary_name",
+            renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation_type",
@@ -198,6 +208,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__participating_organisations__type__name",
+            renamed_name_search_field="participating_organisations_type_name"
         ),
         GroupBy(
             query_param="document_link_category",
@@ -205,6 +217,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="document_link_category",
             queryset=DocumentCategory.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__documentlink__categories__name",
+            renamed_name_search_field="document_link_category_name"
         ),
         GroupBy(
             query_param="activity_status",
@@ -212,6 +226,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="activity_status",
             queryset=ActivityStatus.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__activity_status__name",
+            renamed_name_search_field="activity_status_name"
         ),
         GroupBy(
             query_param="collaboration_type",
@@ -219,6 +235,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="collaboration_type",
             queryset=CollaborationType.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__collaboration_type__name",
+            renamed_name_search_field="collaboration_type_name"
         ),
         GroupBy(
             query_param="budget_period_start_year",

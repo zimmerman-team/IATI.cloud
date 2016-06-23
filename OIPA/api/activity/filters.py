@@ -184,6 +184,7 @@ class ActivityFilter(TogetherFilterSet):
         name='region__code',
         fk='activity',
     )
+    
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',

@@ -21,7 +21,8 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     # null filter should not be applied to:
     # - group by's that also has a filter on the group by
     # - group by's that have extra's (null filter would not be correct)
-    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (grouping.extra is None and grouping.query_param not in query_params) ])
+    # TODO: do this different or rewrite the if part, too complicated 23-06-2016 
+    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (grouping.extra is None and grouping.query_param not in query_params and grouping.renamed_name_search_field not in query_params) ])
     eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in nullable_group_fields}
 
     queryset = queryset \
@@ -34,6 +35,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     def get_aggregation_queryset(queryset, group_fields, aggregation):
 
         # TODO: Should queryset be copied here? - 2016-04-07
+        # ^ dont think so, it's lazy here and can be reused..
         next_result = queryset.all()
 
         # apply any extra aggregation filters if specified
@@ -44,7 +46,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
 
         # apply the aggregation annotation
         next_result = aggregation.apply_annotation(next_result, query_params, selected_groupings)
-        #print str(next_result.query)
+        # print str(next_result.query)
         return next_result
 
     aggregation_querysets = [ 
@@ -161,17 +163,32 @@ def apply_group_filters(queryset, selected_groupings, params):
         selected_groupings
     )
 
+    name_groupings = filter(
+        lambda x: x.renamed_name_search_field in params,
+        selected_groupings
+    )
+
     for group in groupings:
         if group.extra is not None:
             continue
 
-        main_field = group.fields[0] # the one giving the relation from activity to id of item
+        # the one giving the relation from activity to id of item
+        main_field = group.fields[0] 
         value = params[group.query_param]
 
         # TODO: We assume here all item filters are IN filters - 2016-03-07
         if isinstance(main_field, str):
             queryset._next_is_sticky()
             queryset = queryset.filter(**{"{}__in".format(main_field): value.split(',')})
+
+    # TODO combine with for loop above? - 23-06-2016
+    for group in name_groupings:
+        main_field = group.name_search_field
+        value = params[group.renamed_name_search_field]
+        if isinstance(main_field, str):
+            queryset._next_is_sticky()
+            queryset = queryset.filter(**{"{}__icontains".format(main_field): value})
+
 
     return queryset
 

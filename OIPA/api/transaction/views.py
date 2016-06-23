@@ -196,7 +196,6 @@ class TransactionAggregation(AggregationView):
     - `document_link_category`
     - `activity_status`
     - `participating_organisation_type`
-    - `policy_marker`
     - `collaboration_type`
     - `default_flow_type`
     - `default_finance_type`
@@ -299,6 +298,8 @@ class TransactionAggregation(AggregationView):
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field='transactionrecipientcountry__country__name',
+            renamed_name_search_field='recipient_country_name',
         ),
         GroupBy(
             query_param="recipient_region",
@@ -307,6 +308,8 @@ class TransactionAggregation(AggregationView):
             queryset=Region.objects.all(),
             serializer=RegionSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="transactionrecipientregion__region__name",
+            renamed_name_search_field="recipient_region_name",
         ),
         GroupBy(
             query_param="sector",
@@ -315,6 +318,8 @@ class TransactionAggregation(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
+            name_search_field="sector__name",
+            renamed_name_search_field="sector_name",
         ),
         GroupBy(
             query_param="related_activity",
@@ -333,7 +338,9 @@ class TransactionAggregation(AggregationView):
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier'
+            serializer_main_field='organisation_identifier',
+            name_search_field="activity__reporting_organisations__organisation__primary_name",
+            renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation",
@@ -341,16 +348,22 @@ class TransactionAggregation(AggregationView):
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             # serializer=OrganisationSerializer,
+            name_search_field="activity__participating_organisations__primary_name",
+            renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
             query_param="provider_org",
             fields=("provider_organisation__primary_name"),
             renamed_fields="provider_org",
+            name_search_field="provider_organisation__primary_name",
+            renamed_name_search_field="provider_org_name"
         ),
         GroupBy(
             query_param="receiver_org",
             fields=("receiver_organisation__primary_name"),
             renamed_fields="receiver_org",
+            name_search_field="receiver_organisation__primary_name",
+            renamed_name_search_field="receiver_org_name"
         ),
         GroupBy(
             query_param="document_link_category",
@@ -358,6 +371,8 @@ class TransactionAggregation(AggregationView):
             renamed_fields="document_link_category",
             queryset=DocumentCategory.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__documentlink__categories__name",
+            renamed_name_search_field="document_link_category_name"
         ),
         GroupBy(
             query_param="activity_status",
@@ -365,6 +380,8 @@ class TransactionAggregation(AggregationView):
             renamed_fields="activity_status",
             queryset=ActivityStatus.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__activity_status__name",
+            renamed_name_search_field="activity_status_name"
         ),
         GroupBy(
             query_param="participating_organisation_type",
@@ -372,13 +389,8 @@ class TransactionAggregation(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
-        ),
-        GroupBy(
-            query_param="policy_marker",
-            fields="activity__policy_marker",
-            renamed_fields="policy_marker",
-            queryset=PolicyMarker.objects.all(),
-            serializer=CodelistSerializer,
+            name_search_field="activity__participating_organisations__type__name",
+            renamed_name_search_field="participating_organisations_type_name"
         ),
         GroupBy(
             query_param="collaboration_type",
@@ -386,6 +398,8 @@ class TransactionAggregation(AggregationView):
             renamed_fields="collaboration_type",
             queryset=CollaborationType.objects.all(),
             serializer=CodelistSerializer,
+            name_search_field="activity__collaboration_type__name",
+            renamed_name_search_field="collaboration_type_name"
         ),
         GroupBy(
             query_param="default_flow_type",

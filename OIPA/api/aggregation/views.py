@@ -74,7 +74,7 @@ class AggregationView(GenericAPIView):
 
 
 class GroupBy():
-    def __init__(self, query_param=None, fields=None, queryset=None, serializer=None, serializer_main_field="code", serializer_fk="pk", serializer_fields=(), extra=None, renamed_fields=None):
+    def __init__(self, query_param=None, fields=None, queryset=None, serializer=None, serializer_main_field="code", serializer_fk="pk", serializer_fields=(), extra=None, renamed_fields=None, name_search_field='', renamed_name_search_field=''):
         """
         fields should be a dictionary of field: rendered_field_name
         """
@@ -83,6 +83,12 @@ class GroupBy():
             raise ValueError("not all required params were passed")
 
         self.query_param = query_param
+        self.name_search_field = name_search_field
+
+        if renamed_name_search_field:
+            self.renamed_name_search_field = renamed_name_search_field
+        else:
+            self.renamed_name_search_field = self.name_search_field
 
         if type(fields) is str:
             self.fields = (fields,)

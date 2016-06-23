@@ -1817,7 +1817,7 @@ class Parse(IatiParser):
         if decimal_value is None:
             raise RequiredFieldError(
                 "transaction/value",
-                "text", 
+                "text",
                 "Unspecified or invalid.")
 
         value_date = element.attrib.get('value-date')
