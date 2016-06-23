@@ -11,4 +11,4 @@ class LocationFilter(TogetherFilterSet):
 
     class Meta:
         model = Location
-
+        fields = ['activity_status']
