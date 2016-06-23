@@ -366,7 +366,7 @@ class Parse(IATI_201_Parser):
         vocabulary = self.policy_marker_vocabulary_mapping.get(element.attrib.get('vocabulary'))
 
         if not vocabulary:
-            vocabulary = vocabulary_models.PolicyMarkerVocabulary.objects.get(code='1')
+            vocabulary = '1'
 
         if vocabulary:
             element.attrib['vocabulary'] = vocabulary
