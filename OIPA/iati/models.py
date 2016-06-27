@@ -18,6 +18,7 @@ from iati_organisation.models import Organisation
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
 
+
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
     related_content_type = models.ForeignKey(ContentType, related_name='related_agent')

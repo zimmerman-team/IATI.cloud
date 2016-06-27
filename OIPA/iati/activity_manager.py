@@ -205,7 +205,13 @@ class ActivityQuerySet(SearchQuerySet):
             'resultindicatorperiod_set',
             queryset=ResultIndicatorPeriod.objects.all()
                 .select_related('result_indicator')
-                .prefetch_related(period_target_comment_prefetch, period_actual_comment_prefetch)
+                .prefetch_related(
+                    'resultindicatorperiodtargetlocation_set', 
+                    'resultindicatorperiodactuallocation_set', 
+                    'resultindicatorperiodtargetdimension_set',
+                    'resultindicatorperiodactualdimension_set',
+                    period_target_comment_prefetch, 
+                    period_actual_comment_prefetch)
         )
 
         indicator_baseline_comment_prefetch = Prefetch(
