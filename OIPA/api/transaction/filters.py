@@ -355,6 +355,89 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
+    # activity aggregation filters
+
+    total_budget_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__budget_value')
+
+    total_budget_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__budget_value')
+
+    total_disbursement_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__disbursement_value')
+
+    total_disbursement_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__disbursement_value')
+
+    total_incoming_funds_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__incoming_funds_value')
+
+    total_incoming_funds_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__incoming_funds_value')
+
+    total_expenditure_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__expenditure_value')
+
+    total_expenditure_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__expenditure_value')
+
+    total_commitment_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__commitment_value')
+
+    total_commitment_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__commitment_value')
+
+    total_hierarchy_budget_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_plus_child_aggregation__budget_value')
+
+    total_hierarchy_budget_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_plus_child_aggregation__budget_value')
+
+    total_hierarchy_disbursement_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_plus_child_aggregation__disbursement_value')
+
+    total_hierarchy_disbursement_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_plus_child_aggregation__disbursement_value')
+
+    total_hierarchy_incoming_funds_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_plus_child_aggregation__incoming_funds_value')
+
+    total_hierarchy_incoming_funds_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_plus_child_aggregation__incoming_funds_value')
+
+    total_hierarchy_expenditure_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_plus_child_aggregation__expenditure_value')
+
+    total_hierarchy_expenditure_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_plus_child_aggregation__expenditure_value')
+
+    total_hierarchy_commitment_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_plus_child_aggregation__commitment_value')
+
+    total_hierarchy_commitment_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_plus_child_aggregation__commitment_value')
+
+
     class Meta:
         model = Transaction
         fields = [

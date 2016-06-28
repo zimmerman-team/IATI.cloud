@@ -66,6 +66,7 @@ class ActivityAggregations(AggregationView):
     can be one or more (comma separated values) of:
 
     - `count`
+    - `count_distinct`
 
     ## Request parameters
 
@@ -83,6 +84,11 @@ class ActivityAggregations(AggregationView):
             query_param='count',
             field='count',
             annotate=Count('id'),
+        ),
+        Aggregation(
+            query_param='count_distinct',
+            field='count',
+            annotate=Count('id', distinct=True),
         ),
     )
 
@@ -237,7 +243,7 @@ class ActivityList(DynamicListView):
     This can be altered through the `q_lookup` parameter. Options for this parameter are:
 
     - `exact` (default): Only return results when the query hit is a full word.
-    - `starswith`: Also returns results when the word stars with the query. 
+    - `startswith`: Also returns results when the word stars with the query. 
 
     ## Ordering
 
