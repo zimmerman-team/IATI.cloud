@@ -12,57 +12,11 @@ class Migration(migrations.Migration):
     dependencies = [
         ('iati_codelists', '0003_auto_20160204_1305'),
         ('contenttypes', '0002_remove_content_type_name'),
-        ('iati_organisation', '0001_initial'),
+        ('iati_organisation', '0002_remove_organisations'),
         ('iati', '0001_initial'),
     ]
 
-    def remove_organisations(apps, schema_editor):
-        """
-        convert all transaction's xdr values
-        takes ~20 mins
-        """
-        update_contenttypes(apps.get_app_config('iati'), interactive=False) # make sure all content types exist   
-
-        try: # don't run on first migration
-            ActivityParticipatingOrganisation = apps.get_model('iati', 'ActivityParticipatingOrganisation')
-            ActivityParticipatingOrganisation.objects.filter(organisation__isnull=False).update(organisation=None)
-        except:
-            pass
-
-        try:
-            ActivityReportingOrganisation = apps.get_model('iati', 'ActivityReportingOrganisation')
-            ActivityReportingOrganisation.objects.filter(organisation__isnull=False).update(organisation=None)
-        except:
-            pass
-
-        try:
-            TransactionReceiver  = apps.get_model('iati', 'TransactionReceiver')
-            TransactionReceiver.objects.filter(organisation__isnull=False).update(organisation=None)
-        except:
-            pass
-
-        try:
-            TransactionProvider  = apps.get_model('iati', 'TransactionProvider')
-            TransactionProvider.objects.filter(organisation__isnull=False).update(organisation=None)
-        except:
-            pass
-
-        try: # don't run on first migration
-            Organisation = apps.get_model('iati_organisation', 'Organisation')
-            Organisation.objects.all().delete()
-        except:
-            pass
-
-        return
-
-    def reverse_remove_organisations(apps, schema_editor):
-        """
-        impossible, do nothing
-        """
-        return
-
     operations = [
-        migrations.RunPython(remove_organisations, reverse_remove_organisations),
         migrations.CreateModel(
             name='OrganisationNarrative',
             fields=[
