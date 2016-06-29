@@ -16,9 +16,11 @@ def remove_organisations(apps, schema_editor):
 
     try: # don't run on first migration
         Organisation = apps.get_model('iati_organisation', 'Organisation')
+        ActivityParticipatingOrganisation = apps.get_model('iati', 'ActivityParticipatingOrganisation')
     except:
         return
 
+    ActivityParticipatingOrganisation.objects.filter(organisation__isnull=False).update(organisation=None)
     Organisation.objects.all().delete()
 
 class Migration(migrations.Migration):
