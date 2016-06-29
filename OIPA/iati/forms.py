@@ -8,7 +8,7 @@ from iati.models import ActivityParticipatingOrganisation
 from iati.models import DocumentLink
 from iati.models import Location
 from iati.models import RelatedActivity
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import GEOSGeometry, Point
 
 
 class NarrativeForm(autocomplete_forms.ModelForm):
@@ -77,7 +77,6 @@ class DocumentLinkForm(autocomplete_forms.ModelForm):
         return instance
 
 
-
 class LocationForm(forms.ModelForm):
 
     latitude = forms.DecimalField(
@@ -104,8 +103,7 @@ class LocationForm(forms.ModelForm):
             if data['latitude'] and data['longitude']:
                 latitude = float(data['latitude'])
                 longitude = float(data['longitude'])
-                data['point_pos'] = Point(longitude, latitude)
-
+                data['point_pos'] = GEOSGeometry(Point(longitude, latitude), srid=4326)
         try:
             coordinates = kwargs['instance'].point_pos.tuple
             initial = kwargs.get('initial', {})
@@ -118,15 +116,17 @@ class LocationForm(forms.ModelForm):
 
     def clean(self):
         data = super(LocationForm, self).clean()
+        if 'point_pos' in self.errors:
+            del self.errors['point_pos']
         if "latitude" in self.changed_data or "longitude" in self.changed_data:
             try:
                 lat, lng = float(data.pop("latitude", None)), float(data.pop("longitude", None))
-                data['point_pos'] = Point(lng, lat)
+                data['point_pos'] = GEOSGeometry(Point(lng, lat), srid=4326)
             except (TypeError, ValueError):
                 data['point_pos'] = None
 
         if not (data.get("point_pos") or data.get("latitude")):
-            raise forms.ValidationError({"point_pos": "Coordinates is required"})
+            raise forms.ValidationError({"latitude": "Coordinates is required"})
         return data
 
 
