@@ -33,6 +33,12 @@ def make_result_values_decimals(apps, schema_editor):
         if changed:
             r.save()
 
+def reverse(apps, schema_editor):
+    """
+    Impossible
+    """
+    return
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -40,5 +46,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(make_result_values_decimals),
+        migrations.RunPython(make_result_values_decimals, reverse),
     ]

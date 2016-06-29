@@ -26,6 +26,12 @@ def remove_duplicate_documentlinktitles(apps, schema_editor):
                 dlt.delete()
             counter += 1
 
+def reverse(apps, schema_editor):
+    """
+    Impossible
+    """
+    return
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -33,7 +39,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(remove_duplicate_documentlinktitles),
+        migrations.RunPython(remove_duplicate_documentlinktitles, reverse),
         migrations.AlterField(
             model_name='documentlinktitle',
             name='document_link',
