@@ -70,9 +70,9 @@ def reindex_activity(activity):
             for category in document_link.categories.all():
                 document_link_text.append(category.name)
 
-            for title in document_link.documentlinktitle_set.all():
-                for narrative in title.narratives.all():
-                    document_link_text.append(narrative.content)
+            title = document_link.documentlinktitle
+            for narrative in title.narratives.all():
+                document_link_text.append(narrative.content)
 
         activity_search.document_link = " ".join(document_link_text)
 
