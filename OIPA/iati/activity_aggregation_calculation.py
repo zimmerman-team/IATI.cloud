@@ -6,6 +6,7 @@ from iati.models import ActivityAggregation
 from iati.models import ChildAggregation
 from iati.models import ActivityPlusChildAggregation
 from iati.transaction.models import Transaction
+from django.db import IntegrityError
 
 
 class ActivityAggregationCalculation():
@@ -113,7 +114,12 @@ class ActivityAggregationCalculation():
             'expenditure_value',
             expenditure_total)
 
-        activity_aggregation.save()
+        # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
+        # TODO find solution that's less ugly
+        try:
+            activity_aggregation.save()
+        except IntegrityError:
+            pass
 
     def calculate_child_budget_aggregation(
             self,
@@ -180,7 +186,12 @@ class ActivityAggregationCalculation():
             'expenditure_value',
             expenditure_total)
 
-        child_aggregation.save()
+        # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
+        # TODO find solution that's less ugly
+        try:
+            child_aggregation.save()
+        except IntegrityError:
+            pass
 
     def update_total_aggregation(
             self,
@@ -223,5 +234,11 @@ class ActivityAggregationCalculation():
         total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'disbursement')
         total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'expenditure')
 
-        total_aggregation.save()
+        # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
+        # TODO find solution that's less ugly
+        try:
+            total_aggregation.save()
+        except IntegrityError:
+            pass
+
 
