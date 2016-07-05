@@ -226,5 +226,14 @@ class ResultFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    related_activity_id = ToManyFilter(
+        main_fk='activity',
+        qs=RelatedActivity,
+        fk='current_activity',
+        lookup_type='in',
+        name='ref_activity__id',
+    )
+
+
     class Meta:
         model = Result
