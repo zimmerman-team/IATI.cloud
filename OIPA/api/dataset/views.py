@@ -157,8 +157,10 @@ class DatasetAggregations(AggregationView):
         GroupBy(
             query_param="publisher",
             fields=("publisher__id"),
+            renamed_fields="_publisher",
             queryset=Publisher.objects.all(),
             serializer=PublisherSerializer,
+            serializer_main_field='id'
         ),
         GroupBy(
             query_param="exception_type",
