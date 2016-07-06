@@ -6,7 +6,7 @@ from api.dataset.filters import DatasetFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
-from api.publisher.serializers import PublisherSerializer
+from api.publisher.serializers import SimplePublisherSerializer
 
 
 class DatasetList(DynamicListView):
@@ -159,7 +159,7 @@ class DatasetAggregations(AggregationView):
             fields=("publisher__id"),
             renamed_fields="_publisher",
             queryset=Publisher.objects.all(),
-            serializer=PublisherSerializer,
+            serializer=SimplePublisherSerializer,
             serializer_main_field='id'
         ),
         GroupBy(
