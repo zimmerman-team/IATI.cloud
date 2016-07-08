@@ -293,8 +293,7 @@ class ActivityList(DynamicListView):
         'title', 
         'descriptions', 
         'transactions', 
-        'reporting_organisations',
-    )
+        'reporting_organisations')
 
     always_ordering = 'id'
 
@@ -310,8 +309,7 @@ class ActivityList(DynamicListView):
         'activity_incoming_funds_value',
         'activity_disbursement_value',
         'activity_expenditure_value',
-        'activity_plus_child_budget_value',
-    )
+        'activity_plus_child_budget_value')
 
 
 class ActivityDetail(DynamicDetailView):
@@ -344,7 +342,8 @@ class ActivityDetail(DynamicDetailView):
     filter_class = filters.ActivityFilter
     serializer_class = activitySerializers.ActivitySerializer
 
-# TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults
+# TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
+
 
 class ActivityTransactions(ListAPIView):
     """

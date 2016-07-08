@@ -46,8 +46,11 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     type = SerializerMethodField()
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()
+    notes = HyperlinkedIdentityField(
+        view_name='datasets:dataset-notes',)
 
-    notes = DatasetNoteSerializer(many=True, source="iatixmlsourcenote_set")
+
+    DatasetNoteSerializer(many=True, source="iatixmlsourcenote_set")
 
     class Meta:
         model = IatiXmlSource

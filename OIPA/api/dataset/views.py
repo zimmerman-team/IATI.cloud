@@ -1,6 +1,7 @@
-from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer
+from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer
 from iati_synchroniser.models import IatiXmlSource, Publisher
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter, DjangoFilterBackend
 from api.dataset.filters import DatasetFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
@@ -183,4 +184,22 @@ class DatasetAggregations(AggregationView):
             renamed_fields=("message", "field", "model", "exception_type"),
         ),
     )
+
+
+class DatasetNotes(ListAPIView):
+    """
+    Returns a list of Dataset notes stored in OIPA.
+
+    ## URI Format
+
+    ```
+    /api/datasets/{dataset_id}/notes
+    ```
+    """
+
+    serializer_class = DatasetNoteSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return IatiXmlSource(pk=pk).iatixmlsourcenote_set.all()
 

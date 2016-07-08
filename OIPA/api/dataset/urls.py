@@ -11,5 +11,8 @@ urlpatterns = [
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.DatasetDetail.as_view(),
-        name='dataset-detail'),   
+        name='dataset-detail'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/notes/',
+        views.DatasetNotes.as_view(),
+        name='dataset-notes'),
 ]
