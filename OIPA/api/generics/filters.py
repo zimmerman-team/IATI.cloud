@@ -50,8 +50,6 @@ class SearchFilter(filters.BaseFilterBackend):
                 lookup_type = 'ft_startswith'
 
         if query:
-            if settings.ROOT_ORGANISATIONS:
-                queryset = queryset.filter(is_searchable=True)
 
             query_fields = request.query_params.get('q_fields')
             dict_query_list = [TSConfig('simple'), query]
@@ -62,6 +60,10 @@ class SearchFilter(filters.BaseFilterBackend):
             # add activity__ to the filter name
             if Activity is not queryset.model:
                 model_prefix = 'activity__'
+
+            # if root organisations set, only query searchable activities
+            if settings.ROOT_ORGANISATIONS:
+                queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
 
             if query_fields:
                 query_fields = query_fields.split(',')

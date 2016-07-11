@@ -3,6 +3,7 @@ from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Func, F, Count
 from iati.models import Result
 from rest_framework.filters import DjangoFilterBackend
+from api.generics.filters import SearchFilter
 
 
 class ResultAggregations(AggregationView):
@@ -17,12 +18,12 @@ class ResultAggregations(AggregationView):
     can be one or more (comma separated values) of:
 
     - `result_indicator_title`
-    
+
 
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -36,8 +37,7 @@ class ResultAggregations(AggregationView):
     """
 
     queryset = Result.objects.all()
-
-    filter_backends = ( DjangoFilterBackend,)
+    filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = ResultFilter
     
     allowed_aggregations = (
