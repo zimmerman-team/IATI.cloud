@@ -198,6 +198,8 @@ class DatasetNotes(ListAPIView):
     """
 
     serializer_class = DatasetNoteSerializer
+    filter_backends = (OrderingFilter, DjangoFilterBackend)
+    ordering_fields = '__all__'
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')

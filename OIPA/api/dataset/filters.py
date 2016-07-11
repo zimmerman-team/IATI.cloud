@@ -8,8 +8,13 @@ class DatasetFilter(FilterSet):
     Filter countries list
     """
 
-    ref = CommaSeparatedCharFilter(
-        lookup_type='in')
+    ref = CharFilter(
+        lookup_type='icontains',
+        name='ref')
+
+    title = CharFilter(
+        lookup_type='icontains',
+        name='title')
 
     source_type = CommaSeparatedCharFilter(
         lookup_type='in',
@@ -18,6 +23,10 @@ class DatasetFilter(FilterSet):
     publisher = CommaSeparatedCharFilter(
         lookup_type='in',
         name='publisher__org_id')
+
+    publisher__name = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='publisher__org_name')
 
     note_exception_type = ToManyFilter(
         qs=IatiXmlSourceNote,
