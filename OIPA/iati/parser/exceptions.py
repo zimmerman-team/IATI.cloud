@@ -47,7 +47,7 @@ class EmptyFieldError(Exception):
 
 
 class ValidationError(Exception):
-    def __init__(self, model, field, msg):
+    def __init__(self, model, field, msg, iati_id=None):
         """
 
 
@@ -57,6 +57,7 @@ class ValidationError(Exception):
         self.model = model
         self.field = field
         self.message = msg
+        self.iati_id = iati_id
 
     def __str__(self):
         return repr(self.field)

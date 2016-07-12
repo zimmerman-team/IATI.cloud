@@ -151,18 +151,25 @@ class IatiParser(object):
     def post_save_file(self, iati_source):
         print "override in children"
 
-    def append_error(self, error_type, model, field, message, sourceline):
+    def append_error(self, error_type, model, field, message, sourceline, iati_id=None):
         if not settings.ERROR_LOGS_ENABLED:
             return
 
+        # get iati identifier
         iati_identifier = None
-        if self.iati_source.type == 1:
+        if iati_id:
+            iati_identifier = iati_id
+        elif self.iati_source.type == 1:
             activity = self.get_model('Activity')
-            if activity:
+            if activity and activity.iati_identifier:
+                iati_identifier = activity.iati_identifier
+            elif activity:
                 iati_identifier = activity.id
         else:
             organisation = self.get_model('Organisation')
-            if organisation:
+            if organisation and organisation.organisation_identifier:
+                iati_identifier = organisation.organisation_identifier
+            elif organisation:
                 iati_identifier = organisation.id
         
         if not iati_identifier and hasattr(self, 'identifier'):
@@ -204,7 +211,7 @@ class IatiParser(object):
                 self.append_error('EmptyFieldError', e.model, e.field, e.message, element.sourceline)
                 return
             except ValidationError as e:
-                self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline)
+                self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
                 return
             except ValueError as e:
                 traceback.print_exc()

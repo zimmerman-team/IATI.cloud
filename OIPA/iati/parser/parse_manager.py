@@ -31,7 +31,7 @@ class ParseManager():
         self.force_reparse = force_reparse
         self.hash_changed = True
         self.valid_source = True
-        
+
         if root is not None:
             self.root = root
             self.parser = self._prepare_parser(self.root, source)

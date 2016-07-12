@@ -74,7 +74,15 @@ class Parse(IatiParser):
 
         tag:iati-activity"""
 
-        activity_id = self._normalize(element.xpath('iati-identifier/text()')[0])
+        iati_identifier = element.xpath('iati-identifier/text()')
+
+        if len(iati_identifier) < 1:
+            raise ValidationError(
+                "iati-activity",
+                "iati-identifier",
+                "no iati-identifier found")
+        
+        activity_id = self._normalize(iati_identifier[0])
 
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         hierarchy = element.attrib.get('hierarchy')
@@ -103,16 +111,18 @@ class Parse(IatiParser):
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
-                    "last-updated-time is less than existing activity")
+                    "last-updated-time is less than existing activity",
+                    iati_identifier)
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
-                    "last-updated-time is not present, but is present on existing activity")
+                    "last-updated-time is not present, but is present on existing activity",
+                    iati_identifier)
     
             # TODO: test activity is deleted along with related models
-            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm
+            # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm - 2015-10-01
             # TODO: do this after activity is parsed along with other saves?
 
         if old_activity:
@@ -122,6 +132,7 @@ class Parse(IatiParser):
 
         activity = models.Activity()
         activity.id = activity_id
+        activity.iati_identifier = iati_identifier
         activity.default_lang = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
