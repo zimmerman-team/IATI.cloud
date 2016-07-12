@@ -30,6 +30,9 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
+from api.pagination import CustomTransactionPagination
+
+
 class TransactionList(DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
@@ -63,6 +66,7 @@ class TransactionList(DynamicListView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
+    pagination_class = CustomTransactionPagination
 
     fields = (
         'url',
