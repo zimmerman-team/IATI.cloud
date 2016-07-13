@@ -1,25 +1,16 @@
 from rest_framework import serializers
 
 from iati import models as iati_models
-from api.generics.serializers import DynamicFieldsSerializer
-from api.generics.serializers import DynamicFieldsModelSerializer
-from api.generics.fields import PointField
-from api.sector.serializers import SectorSerializer
-from api.region.serializers import RegionSerializer
-from api.country.serializers import CountrySerializer
-from api.activity.filters import RelatedActivityFilter
+from api.activity.serializers import TitleSerializer
 
-from api.codelist.serializers import VocabularySerializer
-from api.codelist.serializers import CodelistSerializer
-from api.codelist.serializers import NarrativeContainerSerializer
-from api.codelist.serializers import NarrativeSerializer
-from api.codelist.serializers import CodelistCategorySerializer
 from rest_framework_recursive.fields import RecursiveField
+
 
 
 class ActivityProvidingActivitiesSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
+    title = TitleSerializer()
     providing_activities = RecursiveField(many=True, source='get_providing_activities')
 
     class Meta:
@@ -27,12 +18,14 @@ class ActivityProvidingActivitiesSerializer(serializers.ModelSerializer):
         fields = (
             'url',
             'iati_identifier',
+            'title',
             'providing_activities')
 
 
 class ActivityProvidedActivitiesSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
+    title = TitleSerializer()
     receiving_activities = RecursiveField(many=True, source='get_provided_activities')
 
     class Meta:
@@ -40,20 +33,23 @@ class ActivityProvidedActivitiesSerializer(serializers.ModelSerializer):
         fields = (
             'url',
             'iati_identifier',
+            'title',
             'receiving_activities')
 
 
 class ActivityTree(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
-    providing_activities = ActivityProvidingActivitiesSerializer(source='*')
-    receiving_activities = ActivityProvidedActivitiesSerializer(source='*')
+    title = TitleSerializer()
+    providing_activities = ActivityProvidingActivitiesSerializer(many=True, source='get_providing_activities')
+    receiving_activities = ActivityProvidedActivitiesSerializer(many=True, source='get_provided_activities')
 
     class Meta:
         model = iati_models.Activity
         fields = (
             'url',
             'iati_identifier',
+            'title',
             'providing_activities',
             'receiving_activities'
         )

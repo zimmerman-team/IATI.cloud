@@ -404,8 +404,8 @@ class ActivityProviderActivityTree(RetrieveAPIView):
     """
     Returns the upward and downward traceability tree of this activity. Field specificatiom:
     
-    `providing activities`: the upward three of all activities that are listed as provider-activity-id in this activity.
-    `receiving activities`: the downward tree of all activities that list this activity as provider-activity-id.
+    - `providing activities`: the upward three of all activities that are listed as provider-activity-id in this activity.
+    - `receiving activities`: the downward tree of all activities that list this activity as provider-activity-id.
 
     ## URI Format
 
