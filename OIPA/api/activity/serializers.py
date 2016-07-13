@@ -42,12 +42,12 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
     class DocumentDateSerializer(serializers.Serializer):
-        iso_date = serializers.DateField(source='iso_date')
+        iso_date = serializers.DateField()
 
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
     title = NarrativeContainerSerializer(source="documentlinktitle")
-    document_date = DocumentDateSerializer(source="iso_date")
+    document_date = DocumentDateSerializer(source="*")
 
     class Meta:
         model = iati_models.DocumentLink
