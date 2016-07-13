@@ -7,7 +7,7 @@ from api.generics.filters import DistanceFilter
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
-from api.activity.tree_serializers import ActivityProvidingActivitiesSerializer, ActivityProvidedActivitiesSerializer
+from api.activity.tree_serializers import ActivityTree
 from api.transaction.filters import TransactionFilter
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
@@ -333,10 +333,8 @@ class ActivityDetail(DynamicDetailView):
 
     - `/api/activities/{activity_id}/transactions/`:
         List of transactions.
-    - `/api/activities/{activity_id}/providing-activities/`:
-        The upward three of all activities that are listed as provider-activity-id in this activity.
-    - `/api/activities/{activity_id}/provided-activities/`:
-        List of transactions.
+    - `/api/activities/{activity_id}/provider-activity-tree/`:
+        The upward and downward provider-activity-id traceability tree of this activity.
 
     ## Request parameters
 
@@ -402,12 +400,12 @@ class ActivityTransactions(ListAPIView):
         return Activity(pk=pk).transaction_set.all()
 
 
-
-
-
-class ActivityProvidedActivities(RetrieveAPIView):
+class ActivityProviderActivityTree(RetrieveAPIView):
     """
-    Returns the downward tree of all activities that list this activity as provider-activity-id.
+    Returns the upward and downward traceability tree of this activity. Field specificatiom:
+    
+    `providing activities`: the upward three of all activities that are listed as provider-activity-id in this activity.
+    `receiving activities`: the downward tree of all activities that list this activity as provider-activity-id.
 
     ## URI Format
 
@@ -415,21 +413,7 @@ class ActivityProvidedActivities(RetrieveAPIView):
     /api/activities/{activity_id}/provided-activities
     ```
     """
-    serializer_class = ActivityProvidedActivitiesSerializer
-    queryset = Activity.objects.all()
-
-
-class ActivityProvidingActivities(RetrieveAPIView):
-    """
-    Returns the upward three of all activities that are listed as provider-activity-id in this activity.
-
-    ## URI Format
-
-    ```
-    /api/activities/{activity_id}/providing-activities
-    ```
-    """
-    serializer_class = ActivityProvidingActivitiesSerializer
+    serializer_class = ActivityTree
     queryset = Activity.objects.all()
 
 

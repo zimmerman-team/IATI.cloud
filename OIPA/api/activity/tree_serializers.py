@@ -17,16 +17,6 @@ from api.codelist.serializers import CodelistCategorySerializer
 from rest_framework_recursive.fields import RecursiveField
 
 
-class ActivitySer(serializers.ModelSerializer):
-    iati_identifier = serializers.CharField()
-
-    class Meta:
-        model = iati_models.Activity
-        fields = (
-            'iati_identifier',
-        )
-
-
 class ActivityProvidingActivitiesSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
@@ -43,13 +33,29 @@ class ActivityProvidingActivitiesSerializer(serializers.ModelSerializer):
 class ActivityProvidedActivitiesSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
-    provided_activities = RecursiveField(many=True, source='get_provided_activities')
+    receiving_activities = RecursiveField(many=True, source='get_provided_activities')
 
     class Meta:
         model = iati_models.Activity
         fields = (
             'url',
             'iati_identifier',
-            'provided_activities')
+            'receiving_activities')
+
+
+class ActivityTree(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
+    iati_identifier = serializers.CharField()
+    providing_activities = ActivityProvidingActivitiesSerializer(source='*')
+    receiving_activities = ActivityProvidedActivitiesSerializer(source='*')
+
+    class Meta:
+        model = iati_models.Activity
+        fields = (
+            'url',
+            'iati_identifier',
+            'providing_activities',
+            'receiving_activities'
+        )
 
 
