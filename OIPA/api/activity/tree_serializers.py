@@ -1,10 +1,9 @@
 from rest_framework import serializers
+from rest_framework_recursive.fields import RecursiveField
 
 from iati import models as iati_models
 from api.activity.serializers import TitleSerializer
-
-from rest_framework_recursive.fields import RecursiveField
-
+from api.generics.serializers import DynamicFieldsModelSerializer
 
 
 class ActivityProvidingActivitiesSerializer(serializers.ModelSerializer):
@@ -37,7 +36,7 @@ class ActivityProvidedActivitiesSerializer(serializers.ModelSerializer):
             'receiving_activities')
 
 
-class ActivityTree(serializers.ModelSerializer):
+class ActivityTree(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
     iati_identifier = serializers.CharField()
     title = TitleSerializer()

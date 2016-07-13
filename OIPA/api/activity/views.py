@@ -400,17 +400,17 @@ class ActivityTransactions(ListAPIView):
         return Activity(pk=pk).transaction_set.all()
 
 
-class ActivityProviderActivityTree(RetrieveAPIView):
+class ActivityProviderActivityTree(DynamicDetailView):
     """
-    Returns the upward and downward traceability tree of this activity. Field specificatiom:
+    Returns the upward and downward traceability tree of this activity. Field specification:
     
-    - `providing activities`: the upward three of all activities that are listed as provider-activity-id in this activity.
-    - `receiving activities`: the downward tree of all activities that list this activity as provider-activity-id.
+    - `providing activities`: The upward three of all activities that are listed as provider-activity-id in this activity.
+    - `receiving activities`: The downward tree of all activities that list this activity as provider-activity-id.
 
     ## URI Format
 
     ```
-    /api/activities/{activity_id}/provided-activities
+    /api/activities/{activity_id}/provider-activity-tree
     ```
     """
     serializer_class = ActivityTree
