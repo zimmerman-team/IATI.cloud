@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.filters import DjangoFilterBackend
 
 from api.activity import serializers as activitySerializers
@@ -7,6 +7,7 @@ from api.generics.filters import DistanceFilter
 from api.generics.filters import SearchFilter
 from api.generics.views import DynamicListView, DynamicDetailView
 from api.transaction.serializers import TransactionSerializer
+from api.activity.tree_serializers import ActivityProvidingActivitiesSerializer, ActivityProvidedActivitiesSerializer
 from api.transaction.filters import TransactionFilter
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
@@ -330,7 +331,11 @@ class ActivityDetail(DynamicDetailView):
 
     All information on activity transactions can be found on a separate page:
 
-    - `/api/activities/{activity_id}/transactions`:
+    - `/api/activities/{activity_id}/transactions/`:
+        List of transactions.
+    - `/api/activities/{activity_id}/providing-activities/`:
+        The upward three of all activities that are listed as provider-activity-id in this activity.
+    - `/api/activities/{activity_id}/provided-activities/`:
         List of transactions.
 
     ## Request parameters
@@ -395,3 +400,37 @@ class ActivityTransactions(ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).transaction_set.all()
+
+
+
+
+
+class ActivityProvidedActivities(RetrieveAPIView):
+    """
+    Returns the downward tree of all activities that list this activity as provider-activity-id.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/provided-activities
+    ```
+    """
+    serializer_class = ActivityProvidedActivitiesSerializer
+    queryset = Activity.objects.all()
+
+
+class ActivityProvidingActivities(RetrieveAPIView):
+    """
+    Returns the upward three of all activities that are listed as provider-activity-id in this activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}/providing-activities
+    ```
+    """
+    serializer_class = ActivityProvidingActivitiesSerializer
+    queryset = Activity.objects.all()
+
+
+
