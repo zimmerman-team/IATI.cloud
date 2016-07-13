@@ -151,6 +151,20 @@ class Activity(models.Model):
             ["end_date", "id"],
         ]
 
+    @property
+    def get_providing_activities(self):
+        providing_activities = []
+
+        for transaction in self.transaction_set.all():
+            if transaction.provider_organisation and transaction.provider_organisation.provider_activity:
+                providing_activities.append(transaction.provider_organisation.provider_activity.id)
+
+        return Activity.objects.filter(id__in=providing_activities).exclude(id=self.id).distinct()
+
+    @property
+    def get_provided_activities(self):
+        return Activity.objects.filter(transaction__provider_organisation__provider_activity=self.id).exclude(id=self.id).distinct()
+
 
 class AbstractActivityAggregation(models.Model):
     budget_value = models.DecimalField(
