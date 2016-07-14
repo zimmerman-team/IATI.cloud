@@ -449,6 +449,14 @@ class ActivityAdmin(nested_admin.NestedAdmin):
         post_save.set_derived_activity_dates(self.act)
         post_save.set_activity_aggregations(self.act)
         post_save.update_activity_search_index(self.act)
+
+        # remove old
+        BudgetSector.objects.filter(budget__activity=self.act).delete()
+        TransactionSector.objects.filter(transaction__activity=self.act).delete()
+        TransactionRecipientCountry.objects.filter(transaction__activity=self.act).delete()
+        TransactionRecipientRegion.objects.filter(transaction__activity=self.act).delete()
+
+        # add new
         post_save.set_country_region_transaction(self.act)
         post_save.set_sector_transaction(self.act)
         post_save.set_sector_budget(self.act)
@@ -550,6 +558,13 @@ class TransactionAdmin(nested_admin.NestedAdmin):
 
     def save_related(self, request, form, formsets, change):
         super(TransactionAdmin, self).save_related(request, form, formsets, change)
+
+        # remove old
+        TransactionSector.objects.filter(transaction__activity=self.act).delete()
+        TransactionRecipientCountry.objects.filter(transaction__activity=self.act).delete()
+        TransactionRecipientRegion.objects.filter(transaction__activity=self.act).delete()
+
+        # add new
         post_save.set_transaction_provider_receiver_activity(self.act)
         post_save.set_activity_aggregations(self.act)
         post_save.set_country_region_transaction(self.act)
