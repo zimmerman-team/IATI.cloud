@@ -17,8 +17,8 @@ class DatasetList(DynamicListView):
 
     - `ref` (*optional*): ref to search for.
     - `source_type` (*optional*): Filter datasets by type (activity or organisation).
-    - `publisher` (*optional*): List of publisher refs.
-    - `publisher_name` (*optional*): List of publisher names.
+    - `publisher` (*optional*): Publisher ref.
+    - `publisher_name` (*optional*): Publisher name.
     - `note_exception_type` (*optional*): Exact exception type name of notes.
     - `note_exception_type_contains` (*optional*): Word the exception type contains.
     - `note_model` (*optional*): Exact model content of notes.

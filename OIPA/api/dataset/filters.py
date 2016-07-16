@@ -20,11 +20,11 @@ class DatasetFilter(FilterSet):
         lookup_type='in',
         name='type')
 
-    publisher = CommaSeparatedCharFilter(
+    publisher = CharFilter(
         lookup_type='icontains',
         name='publisher__org_id')
 
-    publisher_name = CommaSeparatedCharFilter(
+    publisher_name = CharFilter(
         lookup_type='icontains',
         name='publisher__org_name')
 
