@@ -21,11 +21,11 @@ class DatasetFilter(FilterSet):
         name='type')
 
     publisher = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_type='icontains',
         name='publisher__org_id')
 
     publisher_name = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_type='icontains',
         name='publisher__org_name')
 
     note_exception_type = ToManyFilter(
