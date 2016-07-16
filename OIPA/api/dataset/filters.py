@@ -24,7 +24,7 @@ class DatasetFilter(FilterSet):
         lookup_type='in',
         name='publisher__org_id')
 
-    publisher__name = CommaSeparatedCharFilter(
+    publisher_name = CommaSeparatedCharFilter(
         lookup_type='in',
         name='publisher__org_name')
 

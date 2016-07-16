@@ -1,10 +1,10 @@
 from rest_framework.serializers import HyperlinkedIdentityField
 from rest_framework.serializers import HyperlinkedRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from iati_synchroniser.models import Publisher
 from iati_synchroniser.models import IatiXmlSource
 from iati_synchroniser.models import IatiXmlSourceNote
 from api.generics.serializers import DynamicFieldsModelSerializer
-
 from django.core.urlresolvers import reverse
 from iati.models import Activity
 
@@ -13,6 +13,20 @@ class DatasetNoteSerializer(ModelSerializer):
     class Meta:
         model = IatiXmlSourceNote
         fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'message', 'line_number')
+
+
+class SimplePublisherSerializer(DynamicFieldsModelSerializer):
+
+    url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
+
+    class Meta:
+        model = Publisher
+        fields = (
+            'id',
+            'url',
+            'org_id',
+            'org_abbreviate',
+            'org_name')
 
 
 class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
@@ -40,9 +54,7 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
-    publisher = HyperlinkedRelatedField(
-        view_name='publishers:publisher-detail',
-        read_only=True)
+    publisher = SimplePublisherSerializer()
     type = SerializerMethodField()
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()

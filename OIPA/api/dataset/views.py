@@ -1,4 +1,4 @@
-from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer
+from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
 from iati_synchroniser.models import IatiXmlSource, Publisher
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
@@ -7,7 +7,6 @@ from api.dataset.filters import DatasetFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
-from api.publisher.serializers import SimplePublisherSerializer
 
 
 class DatasetList(DynamicListView):
@@ -19,6 +18,7 @@ class DatasetList(DynamicListView):
     - `ref` (*optional*): ref to search for.
     - `source_type` (*optional*): Filter datasets by type (activity or organisation).
     - `publisher` (*optional*): List of publisher refs.
+    - `publisher_name` (*optional*): List of publisher names.
     - `note_exception_type` (*optional*): Exact exception type name of notes.
     - `note_exception_type_contains` (*optional*): Word the exception type contains.
     - `note_model` (*optional*): Exact model content of notes.

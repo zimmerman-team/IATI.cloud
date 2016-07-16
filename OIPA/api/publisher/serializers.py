@@ -8,20 +8,6 @@ from django.core.urlresolvers import reverse
 from iati.models import Activity
 
 
-class SimplePublisherSerializer(DynamicFieldsModelSerializer):
-
-    url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
-
-    class Meta:
-        model = Publisher
-        fields = (
-            'id',
-            'url',
-            'org_id',
-            'org_abbreviate',
-            'org_name')
-
-
 class PublisherSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')

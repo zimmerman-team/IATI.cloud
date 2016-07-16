@@ -19,8 +19,8 @@ class IatiXmlSource(models.Model):
     title = models.CharField(max_length=255, default="")
     type = models.IntegerField(
         choices=(
-            (1, 'Activity standard'),
-            (2, 'Organisation standard'),
+            (1, 'Activity'),
+            (2, 'Organisation'),
         ),
         default=1)
     publisher = models.ForeignKey(Publisher)

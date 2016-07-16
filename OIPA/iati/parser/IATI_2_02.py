@@ -132,7 +132,7 @@ class Parse(IatiParser):
 
         activity = models.Activity()
         activity.id = activity_id
-        activity.iati_identifier = iati_identifier
+        activity.iati_identifier = iati_identifier[0]
         activity.default_lang = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
