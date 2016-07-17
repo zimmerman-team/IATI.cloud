@@ -8,6 +8,10 @@ class DatasetFilter(FilterSet):
     Filter countries list
     """
 
+    id = CharFilter(
+        lookup_type='exact',
+        name='id')
+
     ref = CharFilter(
         lookup_type='icontains',
         name='ref')
