@@ -22,7 +22,7 @@ class TestDatasetSerializers(TestCase):
             """
             'dataset.title' should be serialized to a field called 'title'
             """
-        assert serializer.data['type'] == 'Activity standard',\
+        assert serializer.data['type'] == 'Activity',\
             """
             'dataset.type' should be serialized to a field called 'type'
             """
