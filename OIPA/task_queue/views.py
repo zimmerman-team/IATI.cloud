@@ -15,7 +15,6 @@ from rq.job import Job
 
 from math import ceil
 
-
 redis_conn = Redis()
 
 
@@ -26,11 +25,12 @@ def add_task(request):
     parameters = request.GET.get('parameters')
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
-
+    func = getattr(tasks, task)
+    
     if parameters:
-        queue.enqueue(getattr(tasks, task), args=(parameters,), timeout=7200)
+        queue.enqueue(func, args=(parameters,), timeout=7200)
     else:
-        queue.enqueue(getattr(tasks, task), timeout=7200)
+        queue.enqueue(func, timeout=7200)
     return HttpResponse('Success')
 
 
@@ -51,7 +51,7 @@ def start_worker_with_supervisor(request):
 @staff_member_required
 def get_workers(request):
 
-    workers = Worker.all(connection=redis_conn)
+    workers = Worker.all(connection=tasks.redis_conn)
 
     workerdata = list()
     # serialize workers
@@ -97,7 +97,7 @@ def get_current_job(request):
     from rq import get_current_job
     from rq import Queue
 
-    q = Queue(connection=redis_conn)
+    q = Queue(connection=tasks.redis_conn)
     job = get_current_job(q)
     import json
     data = json.dumps(job)
@@ -174,7 +174,7 @@ def get_scheduled_tasks(request):
     # Use RQ's default Redis connection
     # use_connection()
     # Get a scheduler for the "default" queue
-    scheduler = Scheduler(connection=redis_conn)
+    scheduler = Scheduler(connection=tasks.redis_conn)
     list_of_job_instances = scheduler.get_jobs()
 
     jobdata = list()

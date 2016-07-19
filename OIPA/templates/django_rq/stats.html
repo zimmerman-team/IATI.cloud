@@ -116,6 +116,10 @@
                                 <option value="update_exchange_rates">Update currency exchange rates</option>
                                 <option value="force_update_exchange_rates">Force update currency exchange rates</option>
                             </optgroup>
+
+                            <optgroup label="Root traceable activities tasks">
+                                <option value="update_searchable_activities">Update root (traceable) activities</option>
+                            </optgroup>
                         </select> <a target="_blank" href="http://docs.oipa.nl/en/latest/admin_interface/">The docs</a> provide more info on task functionality.
 
                         <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -203,6 +207,7 @@
                 <div class="row-fluid">
                     <div class="span6">
                         <h1>Scheduled tasks</h1>
+                        <p>Note: The Task Scheduler is unreliable at the moment and will get a re-work in the next OIPA release.</p>
                     </div>
 {#                    <div class="span6 django-rq-align-right">#}
 {#                        <a href="/admin/task_queue/start_scheduler/">Start scheduler</a>#}
@@ -921,7 +926,7 @@ $(document).ready(function (){
 
         $.ajax({
            type: "GET",
-           url: "/admin/task_queue/start_worker_with_supervisor/",
+           url: "/admin/task_queue/stop_worker/",
            data: {
                action: action,
                worker_program: worker_program
@@ -1167,7 +1172,7 @@ $(document).ready(function (){
         reload_task_queue_overview_table();
         fill_default_queue();
         fill_workers();
-    }, 5000);
+    }, 10000);
 
     setInterval(function (){
         fill_failed_tasks();

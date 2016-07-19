@@ -3,7 +3,8 @@ from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
 import django_rq
 import datetime
-from rq import Queue, Connection, Worker, cancel_job
+from rq import Queue, Connection, Worker
+from rq.job import Job
 from redis import Redis
 
 redis_conn = Redis()
@@ -13,23 +14,33 @@ redis_conn = Redis()
 ###############################
 
 @job
-def start_worker(queue_name, amount_of_workers):
+def start_worker(queue_name):
     queue = Queue(queue_name, connection=redis_conn)
-    amount_of_workers = int(amount_of_workers) + 1
+    amount_of_workers = 1
 
-    with Connection():
-        workername = "oipa-" + queue_name + "-" + str(amount_of_workers)
-        w = Worker(queue, workername)
-        w.work()
+    workers = Worker.all(connection=redis_conn)
+
+    for w in workers:
+        if w.queues[0].name == queue_name:
+            amount_of_workers += 1
+
+    workername = "oipa-" + queue_name + "-" + str(amount_of_workers)
+    w = Worker(queue, workername, connection=redis_conn)
+    w.work()
 
 
 @job
-def advanced_start_worker():
-    queue = Queue('default', connection=redis_conn)
+def stop_worker(queue_name):
+    print 'test'
+    # queue = Queue(queue_name, connection=redis_conn)
+    # amount_of_workers = 1
 
-    with Connection():
-        w = Worker(queue)
-        w.work()
+    # workers = Worker.all(connection=redis_conn)
+
+    # for w in workers:
+    #     if w.queues[0].name == queue_name:
+    #         w.request_stop()
+    #         break
 
 
 ###############################
@@ -41,9 +52,9 @@ def advanced_start_worker():
 def remove_duplicates_from_parser_queue():
     raise Exception("Not implemented yet")
 
+
 def delete_task_from_queue(job_id):
-    with Connection():
-        cancel_job(job_id)
+    Job.fetch(job_id, connection=redis_conn).delete()
 
 
 def delete_all_tasks_from_queue(queue_name):
@@ -82,7 +93,6 @@ def add_new_sources_from_registry_and_parse_all():
     queue = django_rq.get_queue("default")
     queue.enqueue(get_new_sources_from_iati_api, timeout=7200)
     queue.enqueue(parse_all_existing_sources, timeout=7200)
-
 
 @job
 def parse_all_existing_sources():
@@ -226,5 +236,18 @@ def update_city_data():
     from geodata.importer.city import CityImport
     ci = CityImport()
     ci.update_cities()
+
+
+###############################
+######## SEARCHABLE ACTIVITIES TASKS ########
+###############################
+
+
+@job
+def update_searchable_activities():
+    from django.core import management
+    management.call_command('set_searchable_activities', verbosity=0, interactive=False)
+
+
 
 
