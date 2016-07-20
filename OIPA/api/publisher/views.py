@@ -2,7 +2,7 @@ from api.publisher import serializers
 from iati_synchroniser.models import Publisher
 from api.publisher.filters import PublisherFilter
 from rest_framework.generics import RetrieveAPIView
-from api.generics.views import DynamicListView
+from api.generics.views import DynamicListView, DynamicDetailView
 
 
 class PublisherList(DynamicListView):
@@ -36,7 +36,7 @@ class PublisherList(DynamicListView):
         'activity_count')
 
 
-class PublisherDetail(RetrieveAPIView):
+class PublisherDetail(DynamicDetailView):
     """
     Returns detailed information about a publisher.
 

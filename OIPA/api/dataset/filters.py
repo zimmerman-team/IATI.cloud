@@ -24,7 +24,11 @@ class DatasetFilter(FilterSet):
         lookup_type='in',
         name='type')
 
-    publisher = CharFilter(
+    publisher_id = CharFilter(
+        lookup_type='exact',
+        name='publisher__id')
+
+    publisher_ref = CharFilter(
         lookup_type='icontains',
         name='publisher__org_id')
 
