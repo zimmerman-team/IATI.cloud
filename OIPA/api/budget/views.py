@@ -104,6 +104,8 @@ class BudgetAggregations(AggregationView):
     - `collaboration_type`
     - `budget_period_start_year`
     - `budget_period_end_year`
+    - `budget_period_start_quarter`
+    - `budget_period_end_quarter`
     - `budget_period_start_month`
     - `budget_period_end_month`
 
@@ -280,7 +282,7 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_end_quarter",
             extra={
                 'select': {
-                    'budget_period_end_yer': 'EXTRACT(YEAR FROM "period_end")::integer',
+                    'budget_period_end_year': 'EXTRACT(YEAR FROM "period_end")::integer',
                     'budget_period_end_quarter': 'EXTRACT(QUARTER FROM "period_end")::integer',
                 },
                 'where': [
