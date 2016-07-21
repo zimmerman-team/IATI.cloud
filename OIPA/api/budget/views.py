@@ -263,6 +263,34 @@ class BudgetAggregations(AggregationView):
             fields="budget_period_end_year",
         ),
         GroupBy(
+            query_param="budget_period_start_quarter",
+            extra={
+                'select': {
+                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_period_start_quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
+                    'EXTRACT(QUARTER FROM "period_start")::integer IS NOT NULL',
+                ],
+            },
+            fields=("budget_period_start_year", "budget_period_start_quarter")
+        ),
+        GroupBy(
+            query_param="budget_period_end_quarter",
+            extra={
+                'select': {
+                    'budget_period_end_yer': 'EXTRACT(YEAR FROM "period_end")::integer',
+                    'budget_period_end_quarter': 'EXTRACT(QUARTER FROM "period_end")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',
+                    'EXTRACT(QUARTER FROM "period_end")::integer IS NOT NULL',
+                ],
+            },
+            fields=("budget_period_end_year", "budget_period_end_quarter")
+        ),
+        GroupBy(
             query_param="budget_period_start_month",
             extra={
                 'select': {
