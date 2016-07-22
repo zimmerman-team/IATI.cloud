@@ -126,47 +126,54 @@ class BudgetFilter(TogetherFilterSet):
         lookup_type='lte',
         name='period_end')
 
-    related_activity_id = ToManyFilter(
-        qs=RelatedActivity,
-        fk='current_activity',
-        lookup_type='in',
-        name='ref_activity__id',
-    )
-
-    related_activity_type = ToManyFilter(
-        qs=RelatedActivity,
-        lookup_type='in',
-        name='type__code',
-        fk='current_activity__budget',
-    )
-
     related_activity_recipient_country = ToManyFilter(
+        main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__recipient_country',
-        fk='current_activity__budget',
-    )
+        fk='current_activity',)
+
+    related_activity_id = ToManyFilter(
+        main_fk='activity',
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__id',
+        fk='current_activity',)
+
+    related_activity_type = ToManyFilter(
+        main_fk='activity',
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='type__code',
+        fk='current_activity',)
+
+    related_activity_recipient_country = ToManyFilter(
+        main_fk='activity',
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__recipient_country',
+        fk='current_activity',)
 
     related_activity_recipient_region = ToManyFilter(
+        main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__recipient_region',
-        fk='current_activity__budget',
-    )
+        fk='current_activity',)
 
     related_activity_sector = ToManyFilter(
+        main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__sector',
-        fk='current_activity__budget',
-    )
+        fk='current_activity',)
 
     related_activity_sector_category = ToManyFilter(
+        main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
         name='ref_activity__sector__category',
-        fk='current_activity__budget',
-    )
+        fk='current_activity',)
 
     budget_currency = ToManyFilter(
         qs=Budget,
