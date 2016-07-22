@@ -138,12 +138,11 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields="participating_organisations__primary_name",
-            renamed_fields="participating_organisation",
+            fields=("participating_organisations__primary_name", "participating_organisations__normalized_ref"),
+            renamed_fields=("participating_organisation", "participating_organisation_ref"),
             queryset=ActivityParticipatingOrganisation.objects.all(),
             name_search_field="participating_organisations__primary_name",
             renamed_name_search_field="participating_organisation_name"
-            # serializer=OrganisationSerializer,
         ),
         GroupBy(
             query_param="participating_organisation_type",
