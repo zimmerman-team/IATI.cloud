@@ -32,8 +32,7 @@ class PublisherList(DynamicListView):
         'org_id',
         'org_abbreviate',
         'org_name',
-        'activities',
-        'activity_count')
+        'activities')
 
 
 class PublisherDetail(DynamicDetailView):
