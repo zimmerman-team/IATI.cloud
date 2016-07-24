@@ -301,6 +301,7 @@ class Sector(models.Model):
     description = models.TextField(default="")
     category = models.ForeignKey(SectorCategory, null=True, default=None)
     vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
+    # check why percentage is here, looks like an error - 2016-07-22
     percentage = models.DecimalField(
             max_digits=5,
             decimal_places=2,

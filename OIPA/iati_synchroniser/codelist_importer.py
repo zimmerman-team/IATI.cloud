@@ -11,6 +11,8 @@ from iati.models import *
 from geodata.models import Country, Region
 from iati_vocabulary.models import RegionVocabulary
 from iati_synchroniser.models import Codelist
+from iati_synchroniser.dac_sector_importer import DacSectorImporter
+
 
 logger = logging.getLogger(__name__)
 
@@ -236,4 +238,7 @@ class CodeListImporter():
         context = etree.iterparse(xml_file, tag='codelist')
         self.fast_iter(context, self.get_codelist_data)
         self.add_missing_items()
+
+        dsi = DacSectorImporter()
+        dsi.update()
 
