@@ -248,6 +248,12 @@ class ActivityFilter(TogetherFilterSet):
         name='primary_name',
         fk='result_indicator__result__activity')
 
+    indicator_period_end_year = ToManyFilter(
+        qs=ResultIndicatorPeriod,
+        lookup_type='year',
+        name='period_end',
+        fk='result_indicator__result__activity')
+
     #
     # Transaction filters
     #
