@@ -456,8 +456,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     default_tied_status = CodelistSerializer()
 
     budget = BudgetSerializer(many=True, source='budget_set')
-    planned_disbursement = PlannedDisbursementSerializer(many=True, source='planned_disbursement_set')
-
+    planned_disbursement = PlannedDisbursementSerializer(many=True, source='planneddisbursement_set')
+    
     capital_spend = CapitalSpendSerializer()
     transaction = TransactionSerializer(
         many=True,
