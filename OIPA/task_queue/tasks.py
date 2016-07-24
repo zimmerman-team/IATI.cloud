@@ -80,12 +80,8 @@ def delete_all_tasks_from_queue(queue_name):
 
 @job
 def force_parse_all_existing_sources():
-    for e in IatiXmlSource.objects.all().filter(type=2):
-        queue = django_rq.get_queue("parser")
-        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
-
-    for e in IatiXmlSource.objects.all().filter(type=1):
-        queue = django_rq.get_queue("parser")
+    queue = django_rq.get_queue("parser")
+    for e in IatiXmlSource.objects.all():
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 @job
@@ -99,27 +95,22 @@ def parse_all_existing_sources():
     """
     First parse all organisation sources, then all activity sources
     """
-
-    for e in IatiXmlSource.objects.all().filter(type=2):
-        queue = django_rq.get_queue("parser")
-        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
-
-    for e in IatiXmlSource.objects.all().filter(type=1):
-        queue = django_rq.get_queue("parser")
+    queue = django_rq.get_queue("parser")
+    for e in IatiXmlSource.objects.all():
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 
 @job
 def parse_all_sources_by_publisher_ref(org_ref):
+    queue = django_rq.get_queue("parser")
     for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
-        queue = django_rq.get_queue("parser")
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 
 @job
 def force_parse_by_publisher_ref(org_ref):
+    queue = django_rq.get_queue("parser")
     for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
-        queue = django_rq.get_queue("parser")
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=7200)
 
 
