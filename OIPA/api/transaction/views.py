@@ -205,7 +205,8 @@ class TransactionAggregation(AggregationView):
     - `default_finance_type`
     - `default_aid_type`
     - `default_tied_status`
-    - `transactions_per_quarter`
+    - `transaction_date_month`
+    - `transaction_date_quarter`
     - `transaction_date_year`
 
     ## Aggregation options
@@ -443,6 +444,20 @@ class TransactionAggregation(AggregationView):
                 ],
             },
             fields="transaction_date_year",
+        ),
+        GroupBy(
+            query_param="transaction_date_quarter",
+            extra={
+                'select': {
+                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                    'transaction_date_quarter': 'EXTRACT(QUARTER FROM "transaction_date")::integer',
+                },
+                'where': [
+                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
+                    'EXTRACT(QUARTER FROM "transaction_date")::integer IS NOT NULL',
+                ],
+            },
+            fields=("transaction_date_year", "transaction_date_quarter")
         ),
         GroupBy(
             query_param="transaction_date_month",
