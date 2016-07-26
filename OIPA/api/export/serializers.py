@@ -348,12 +348,13 @@ class LocationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Locat
         vocabulary = serializers.CharField(
             source='location_id_vocabulary.code')
 
+
     class PointSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.PointSerializer):
         xml_meta = {'attributes': ('srsName',)}
-
         
         pos = PointIATIField(source='point_pos')
 #         srsName = serializers.CharField(source="point_srs_name")
+
 
     class AdministrativeSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary', 'level')}
@@ -375,6 +376,7 @@ class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
     type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
+
     class Meta(transaction_serializers.TransactionProviderSerializer.Meta):
         fields = (
             'ref',
@@ -389,6 +391,7 @@ class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
 
     type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
+
 
     class Meta(transaction_serializers.TransactionReceiverSerializer.Meta):
         fields = (
@@ -416,6 +419,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     transaction_date = IsoDateSerializer()
     disbursement_channel = CodelistSerializer()
     humanitarian = serializers.BooleanField()
+
 
     class Meta(transaction_serializers.TransactionSerializer.Meta):
         fields = (
@@ -498,6 +502,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     humanitarian = serializers.BooleanField()
     
     default_currency = serializers.CharField(source='default_currency.code')
+
 
     class Meta(activity_serializers.ActivitySerializer.Meta):
         fields = (
