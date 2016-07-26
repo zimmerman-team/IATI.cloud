@@ -27,9 +27,12 @@ class ActivityFilter(TogetherFilterSet):
         name='scope__code',
         lookup_type='in',)
 
-    document_link_category = CommaSeparatedCharFilter(
+    document_link_category = ToManyFilter(
+        qs=DocumentLink,
         lookup_type='in',
-        name='documentlink__categories')
+        name='categories',
+        fk='activity',
+    )
 
     planned_start_date_lte = DateFilter(
         lookup_type='lte',
