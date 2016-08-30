@@ -106,7 +106,7 @@ def tearDownModule():
 
 class ParserSetupTestCase(TestCase):
 
-    # fixtures = ['test_publisher.json', 'test_codelists.json', 'test_vocabulary', 'test_geodata.json']
+    # fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     def _get_activity(self, iati_identifier):
         return iati_models.Activity.objects.get(id=iati_identifier)
