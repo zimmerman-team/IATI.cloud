@@ -1,12 +1,13 @@
 # Django settings for OIPA project.
 import sys
 import os
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django.core.urlresolvers import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 LOGIN_URL = reverse_lazy('two_factor:login')
+LOGOUT_URL = '/logout'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
 TEMPLATES = [
     {
@@ -126,11 +127,9 @@ INSTALLED_APPS = (
     'iati_organisation.apps.IatiOrganisationConfig',
     'iati_synchroniser.apps.IatiSynchroniserConfig',
     'geodata.apps.GeodataConfig',
-    'indicator',
     'currency_convert.apps.CurrencyConvertConfig',
     'api',
     'task_queue',
-    'multiupload',
     'djsupervisor',
     'rest_framework',
     'rest_framework_csv',
@@ -157,7 +156,6 @@ ADMIN_REORDER = (
     'iati_organisation',
     'geodata',
     'currency_convert',
-    'indicator',
     'auth',
 )
 

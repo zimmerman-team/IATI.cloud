@@ -9,7 +9,7 @@ from iati.models import DocumentLink
 from iati.models import Location
 from iati.models import RelatedActivity
 from django.contrib.gis.geos import GEOSGeometry, Point
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class NarrativeForm(autocomplete_forms.ModelForm):
     activity = forms.ModelChoiceField(Activity.objects.none(), required=False, empty_label='----')
@@ -17,6 +17,17 @@ class NarrativeForm(autocomplete_forms.ModelForm):
     class Meta(object):
         model = Narrative
         fields = ('activity', 'language', 'content')
+
+    def clean(self):
+        # Then call the clean() method of the super  class
+        cleaned_data = super(NarrativeForm, self).clean()
+        # activity somehow is invalidated here, so re-setting it to the correct activity
+        try:
+            cleaned_data['activity'] = self.instance.activity
+        except ObjectDoesNotExist:
+            pass
+        # Finally, return the cleaned_data
+        return cleaned_data
 
     def save(self, commit=True):
         if not self.instance.activity_id:

@@ -6,7 +6,7 @@ header#grp-header{
     top: 0;
 }
 
-.inline-group .inline-group .grp-td.activity, .inline-group .inline-group .grp-th.none{
+.inline-group .inline-group .grp-td.activity, .inline-group .inline-group .grp-th.activity, .inline-group .inline-group .grp-th.none{
     display: none;
 }
 

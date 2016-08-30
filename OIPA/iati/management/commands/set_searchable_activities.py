@@ -5,8 +5,7 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list
-
+    
     def update_searchable_activities(self):
         """
             Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
