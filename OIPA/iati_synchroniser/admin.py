@@ -51,7 +51,7 @@ def export_xml_by_source(request, source):
         else:
             return xml
 
-    xml = E('iati-activities', version="2.01")
+    xml = E('iati-activities', version="2.02")
 
     final_xml = get_result(xml, 1)
     final_xml.attrib['generated-datetime'] = datetime.datetime.now().isoformat()

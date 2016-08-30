@@ -92,7 +92,7 @@ class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.C
 
 
 class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetSerializer):
-    xml_meta = {'attributes': ('type',)}
+    xml_meta = {'attributes': ('type', 'status')}
 
     value = ValueSerializer(source='*')
     type = serializers.CharField(source='type.code')
@@ -290,7 +290,7 @@ class ResultIndicatorPeriodDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, a
     xml_meta = {'attributes': ('name', 'value')}
 
 
-class ResultIndicatorPeriodTargetXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
+class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
     xml_meta = {'attributes': ('value',)}
 
     location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
@@ -307,8 +307,8 @@ class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activit
 
 
 class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
-    target = ResultIndicatorPeriodTargetXMLSerializer(source="*")
-    actual = ResultIndicatorPeriodActualSerializer(source="*")
+    target = ResultIndicatorPeriodTargetSerializer(source="*", read_only=True)
+    actual = ResultIndicatorPeriodActualSerializer(source="*", read_only=True)
 
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()

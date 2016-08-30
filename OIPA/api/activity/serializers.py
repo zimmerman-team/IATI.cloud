@@ -379,13 +379,13 @@ class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
         )
 
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
-    value = serializers.CharField(source='target')
+    value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
     location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
     dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
-    value = serializers.CharField(source='actual')
+    value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
     location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set")
     dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set")
