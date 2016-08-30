@@ -7,6 +7,7 @@ from api.generics.filters import StickyCharFilter
 
 from django_filters import DateFilter
 from django_filters import BooleanFilter
+from django_filters import NumberFilter
 
 from iati.models import Result
 from iati.models import ResultTitle
@@ -233,6 +234,14 @@ class ResultFilter(TogetherFilterSet):
         lookup_type='in',
         name='ref_activity__id',
     )
+
+    total_incoming_funds_lte = NumberFilter(
+        lookup_type='lte',
+        name='activity__activity_aggregation__incoming_funds_value')
+
+    total_incoming_funds_gte = NumberFilter(
+        lookup_type='gte',
+        name='activity__activity_aggregation__incoming_funds_value')
 
 
     class Meta:
