@@ -1,4 +1,5 @@
 git+https://github.com/zimmerman-zimmerman/djorm-ext-pgfulltext.git
+git+https://github.com/gabber7/django-supervisor.git
 django-nested-admin==2.2.6
 django-autocomplete-light==2.3.3
 requests==2.10.0
@@ -14,7 +15,6 @@ django-grappelli==2.8.1
 django-otp==0.3.5
 django-otp-yubikey==0.3.4
 django-rq==0.9.2
-django-supervisor==0.3.4
 django-test-without-migrations==0.4
 djangorestframework==3.4.6
 factory-boy==2.7.0
