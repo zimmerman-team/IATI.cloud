@@ -461,7 +461,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         """
         components = field.split('__', 1)
         try:
-            field, parent_model, direct, m2m = model._meta.get_field_by_name(components[0])
+            field = model._meta.get_field(components[0])
 
             if isinstance(field, OneToOneRel):
                 return self.is_valid_field(field.related_model, components[1])
