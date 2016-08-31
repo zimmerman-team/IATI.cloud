@@ -69,7 +69,7 @@ class XMLRenderer(BaseRenderer):
                 else:
                     # TODO remove this ugly hack by adjusting the resultindicatorperiod actual / target models. 30-08-16
                     # currently actuals are stored on the resultindicatorperiod, hence we need to remove empty actuals here.
-                    if key == 'actual':
+                    if key in ['actual','target']:
                         if value.items()[0][0] != 'value':
                             continue
 
