@@ -16,7 +16,7 @@ server {
     }
 
     location /static {
-        alias /home/oipa/OIPA/OIPA/static; # amend as required
+        alias /home/oipa/OIPA/OIPA/static_served; # amend as required
     }
 
     # Send all non-media requests to the Django server.
