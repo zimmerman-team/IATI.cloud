@@ -7,6 +7,7 @@ from rest_framework.generics import RetrieveAPIView
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
+
 class SectorList(DynamicListView):
     """
     Returns a list of IATI Sectors stored in OIPA.
@@ -16,19 +17,6 @@ class SectorList(DynamicListView):
     - `fields` (*optional*): List of fields to display
     - `fields[aggregations]` (*optional*): Aggregate available information.
         See [Available aggregations]() section for details.
-
-    ## Available aggregations
-
-    API request may include `fields[aggregations]` parameter.
-    This parameter controls result aggregations and
-    can be one or more (comma separated values) of:
-
-    - `total_budget`: Calculate total budget of activities
-        presented in sector activities list.
-    - `disbursement`: Calculate total disbursement of activities
-        presented in sector activities list.
-    - `commitment`: Calculate total commitment of activities
-        presented in sector activities list.
 
     ## Result details
 
@@ -66,23 +54,3 @@ class SectorDetail(RetrieveAPIView):
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
 
-
-class SectorActivities(ActivityList):
-    """
-    Returns a list of IATI Activities within sector.
-
-    ## URI Format
-
-    ```
-    /api/sectors/{sector_id}/activities
-    ```
-
-    ### URI Parameters
-
-    - `sector_id`: Desired sector ID
-
-    """
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        sector = iati.models.Sector.objects.get(pk=pk)
-        return sector.activity_set.all()

@@ -14,8 +14,6 @@ class SectorCategorySerializer(serializers.ModelSerializer):
 class SectorSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='sectors:sector-detail')
     category = SectorCategorySerializer()
-    activities = serializers.HyperlinkedIdentityField(
-        view_name='sectors:sector-activities')
 
     class Meta:
         model = iati.models.Sector
@@ -25,5 +23,4 @@ class SectorSerializer(DynamicFieldsModelSerializer):
             'name',
             'description',
             'category',
-            'activities',
         )

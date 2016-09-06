@@ -31,7 +31,6 @@ class TestSectorSerializers(TestCase):
             """
         required_fields = (
             'url',
-            'activities',
             'category'
         )
         assertion_msg = "the field '{0}' should be in the serialized sector"
