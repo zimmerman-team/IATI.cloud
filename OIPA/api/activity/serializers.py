@@ -520,16 +520,98 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     children = ActivityAggregationSerializer(source='child_aggregation')
     activity_children = ActivityAggregationSerializer(source='activity_plus_child_aggregation')
 
-class ActivitySerializer(DynamicFieldsModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail')
+
+from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
+
+class NestedWriteMixin():
+    # def __init__(self, *args, **kwargs):
+    #     super(NestedWriteMixin, self).__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        print('calling update...')
+        model = getattr(self.Meta, 'model')
+
+        for field, data in validated_data.iteritems():
+
+            if (field in self.fields):
+
+                source_field = self.fields[field].source
+                model_field = model._meta.get_field(source_field)
+                field_model = model_field.model
+
+                instance_data = getattr(instance, source_field)
+
+                # # check if it is a related object serializer, handle accordingly
+                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
+                    if data is None:
+                        # remove all related objects
+                        instance_data.clear()
+                    else:
+                        # remove when i
+                        related_set = instance_data
+
+                        related_model_pk_field_name = field_model._meta.pk.name
+                        print(related_model_pk_field_name)
+
+                        print(related_set.all())
+                        print(data)
+                        print(set([ i[related_model_pk_field_name] for i in data ]))
+
+                        current_ids = set([ i.id for i in related_set.all() ])
+                        new_ids = set([ i.id for i in data ])
+
+                        to_remove = list(current_ids.difference(new_ids))
+                        to_add = list(new_ids.difference(current_ids))
+                        to_update = list(current_ids.intersection(new_ids))
+
+                        related_set.add()
+                        related_set.remove()
+                        related_set.update()
+
+                        for fk_id in to_remove:
+                            obj = field_model.objects.get(pk=fk_id)
+                            related_set.remove(obj)
+
+                        for fk_id in to_add:
+                            obj = field_model.objects.create(data)
+                            related_set.add(obj)
+
+                        for fk_id in to_update:
+                            pass
+
+                # check if it is a foreign key, handle accordingly
+                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
+                    if data is None:
+                        # delete the fk object and set to
+                        fk_id = instance_data
+                        field_model.objects.get(pk=fk_id).remove()
+                    else:
+                        # set new foreign key
+                        setattr(instance, field, data)
+
+                else:
+                    setattr(instance, field, data)
+
+        instance.save()
+        return instance
+
+class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail', read_only=True)
     iati_identifier = serializers.CharField()
     reporting_organisations = ReportingOrganisationSerializer(
-        many=True,)
+        many=True
+    )
     title = TitleSerializer()
     descriptions = DescriptionSerializer(
-        many=True, read_only=True, source='description_set')
+        many=True, 
+        source='description_set'
+    )
     participating_organisations = ParticipatingOrganisationSerializer(
-        many=True,)
+        many=True,
+    )
 
     # TODO ; add other-identifier serializer
     # other_identifier = serializers.OtherIdentifierSerializer(many=True,source="?")
@@ -541,7 +623,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     # TODO ; add contact-info serializer
     # note; contact info has a sequence we should use in the ContactInfoSerializer!
-    contact_info = ContactInfoSerializer(many=True,source="contactinfo_set")
+    contact_info = ContactInfoSerializer(many=True, source="contactinfo_set")
 
     activity_scope = CodelistSerializer(source='scope')
     recipient_countries = RecipientCountrySerializer(
@@ -612,7 +694,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     humanitarian = serializers.BooleanField()
 
     # other added data
-    aggregations = ActivityAggregationContainerSerializer(source="*")
+    aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
     class Meta:
         model = iati_models.Activity
@@ -662,4 +744,12 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'xml_source_ref',
         )
+
+    # def create(self, validated_data):
+    #     return Activity.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     print(validated_data)
+    #     return instance
+
 
