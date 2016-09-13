@@ -31,14 +31,16 @@ class ActivitySaveSerializerTestCase(TestCase):
 
     def test_nested_partial_update(self):
         activity = iati_factory.ActivityFactory.create()
+        participating_org = iati_factory.ParticipatingOrganisationFactory.create(activity=activity)
 
         data={ 'participating_organisations': [
-            {"ref":"GB","type":{"code":"10","name":"Government"},"role":{"code":"1","name":"Funding"}}
+            {"id": participating_org.id, "ref":"GB","type":{"code":"9","name":"Government"},"role":{"code":"1","name":"Funding"}}
             ]}
         activity_serializer = serializers.ActivitySerializer(activity, data=data, partial=True)
 
         self.assertTrue(activity_serializer.is_valid(raise_exception=True))
 
         activity_serializer.save()
-        pass
+
+        # print(activity.participating_organisations.all()[0].type)
 

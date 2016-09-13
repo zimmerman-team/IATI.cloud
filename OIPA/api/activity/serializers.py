@@ -16,6 +16,81 @@ from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
 
+from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
+
+class NestedWriteMixin():
+    # def __init__(self, *args, **kwargs):
+    #     super(NestedWriteMixin, self).__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        print(instance)
+        model = getattr(self.Meta, 'model')
+
+        for field, data in validated_data.iteritems():
+
+            if (field in self.fields):
+
+                source_field = self.fields[field].source
+                model_field = model._meta.get_field(source_field)
+                field_model = model_field.model
+
+                instance_data = getattr(instance, source_field)
+
+                # # check if it is a related object serializer, handle accordingly
+                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
+                    if data is None:
+                        # remove all related objects
+                        instance_data.clear()
+                    else:
+                        # remove when i
+                        related_set = instance_data
+
+                        related_model_pk_field_name = field_model._meta.pk.name
+                        # print(related_model_pk_field_name)
+
+                        # print(related_set.all())
+                        # print(data)
+                        # print(set([ i[related_model_pk_field_name] for i in data ]))
+
+                        current_ids = set([ i.id for i in related_set.all() ])
+                        new_ids = set([ i[related_model_pk_field_name] for i in data ])
+
+                        to_remove = list(current_ids.difference(new_ids))
+                        to_add = list(new_ids.difference(current_ids))
+                        to_update = list(current_ids.intersection(new_ids))
+
+                        # help(related_set)
+
+                        for fk_id in to_remove:
+                            obj = field_model.objects.get(pk=fk_id)
+                            related_set.remove(obj)
+
+                        for fk_id in to_add:
+                            obj = field_model.objects.create(data)
+                            related_set.add(obj)
+
+                        for fk_id in to_update:
+                            pass
+
+                # check if it is a foreign key, handle accordingly
+                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
+                    if data is None:
+                        # delete the fk object and set to
+                        fk_id = instance_data
+                        field_model.objects.get(pk=fk_id).remove()
+                    else:
+                        # set new foreign key
+                        setattr(instance, field, data)
+
+                else:
+                    setattr(instance, field, data)
+
+        instance.save()
+        return instance
+
 class ValueSerializer(serializers.Serializer):
     currency = CodelistSerializer()
     date = serializers.CharField(source='value_date')
@@ -36,8 +111,9 @@ class ValueSerializer(serializers.Serializer):
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.DocumentCategory
-        fields = ('code', 'name')
+        fields = ('id', 'code', 'name')
 
+        extra_kwargs = { "id": { "read_only": False }}
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
@@ -52,12 +128,15 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.DocumentLink
         fields = (
+            'id',
             'url',
             'format',
             'categories',
             'title',
             'document_date',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 class CapitalSpendSerializer(serializers.ModelSerializer):
@@ -83,12 +162,15 @@ class BudgetSerializer(serializers.ModelSerializer):
         model = iati_models.Budget
         # filter_class = BudgetFilter
         fields = (
+            'id',
             'type',
             'status',
             'period_start',
             'period_end',
             'value',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class PlannedDisbursementSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
@@ -98,11 +180,14 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
         model = iati_models.PlannedDisbursement
 
         fields = (
+            'id',
             'type',
             'period_start',
             'period_end',
             'value',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 class ActivityDateSerializer(serializers.Serializer):
@@ -111,7 +196,9 @@ class ActivityDateSerializer(serializers.Serializer):
 
     class Meta:
         model = iati_models.ActivityDate
-        fields = ('iso_date', 'type')
+        fields = ('id', 'iso_date', 'type')
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
@@ -154,6 +241,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = iati_models.ActivityReportingOrganisation
         fields = (
+            'id',
             'ref',
             'organisation',
             'type',
@@ -161,7 +249,9 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'narratives',
         )
 
-class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
+        extra_kwargs = { "id": { "read_only": False }}
+
+class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
@@ -172,12 +262,15 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ActivityParticipatingOrganisation
         fields = (
+            'id',
             'ref',
             'type',
             'role',
             'activity_id',
             'narratives',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     code = CodelistSerializer()
@@ -189,12 +282,15 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ActivityPolicyMarker
         fields = (
+            'id',
             'narratives',
             'vocabulary',
             'vocabulary_uri',
             'significance',
             'code',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 # TODO: change to NarrativeContainer
@@ -203,7 +299,7 @@ class TitleSerializer(serializers.Serializer):
 
     class Meta:
         model = iati_models.Title
-        fields = ('narratives',)
+        fields = ('id', 'narratives',)
 
 class DescriptionSerializer(serializers.ModelSerializer):
     type = CodelistSerializer()
@@ -212,17 +308,23 @@ class DescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.Description
         fields = (
+            'id',
             'type',
             'narratives'
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class RelatedActivityTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.RelatedActivityType
         fields = (
+            'id',
             'code',
             'name'
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class RelatedActivitySerializer(serializers.ModelSerializer):
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
@@ -232,30 +334,13 @@ class RelatedActivitySerializer(serializers.ModelSerializer):
         model = iati_models.RelatedActivity
         filter_class = RelatedActivityFilter
         fields = (
+            'id',
             'ref_activity',
             'ref',
             'type',
         )
 
-class ActivitySectorSerializer(serializers.ModelSerializer):
-    sector = SectorSerializer(fields=('url', 'code', 'name'))
-    percentage = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False
-    )
-    vocabulary = VocabularySerializer()
-    vocabulary_uri = serializers.URLField()
-
-    class Meta:
-        model = iati_models.ActivitySector
-        fields = (
-            'sector',
-            'percentage',
-            'vocabulary',
-            'vocabulary_uri',
-        )
-
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     sector = SectorSerializer(fields=('url', 'code', 'name'))
@@ -270,11 +355,37 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ActivitySector
         fields = (
+            'id',
             'sector',
             'percentage',
             'vocabulary',
             'vocabulary_uri',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
+
+
+class ActivitySectorSerializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('url', 'code', 'name'))
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False
+    )
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+
+    class Meta:
+        model = iati_models.ActivitySector
+        fields = (
+            'id',
+            'sector',
+            'percentage',
+            'vocabulary',
+            'vocabulary_uri',
+        )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(
@@ -291,11 +402,14 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = iati_models.ActivityRecipientRegion
         fields = (
+            'id',
             'region',
             'percentage',
             'vocabulary',
             'vocabulary_uri',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer() 
@@ -306,11 +420,14 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = iati_models.HumanitarianScope
         fields = (
+            'id',
             'type',
             'vocabulary',
             'vocabulary_uri',
             'code',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
@@ -324,18 +441,24 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = iati_models.ActivityRecipientCountry
         fields = (
+            'id',
             'country',
             'percentage',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 class ResultTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ResultType
         fields = (
+            'id',
             'code',
             'name',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(source="*")
@@ -343,8 +466,11 @@ class ResultDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ResultDescription
         fields = (
+            'id',
             'narratives',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultTitleSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(source="*")
@@ -352,8 +478,11 @@ class ResultTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ResultTitle
         fields = (
+            'id',
             'narratives',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 
@@ -364,6 +493,8 @@ class ResultIndicatorPeriodLocationSerializer(serializers.Serializer):
         fields = (
             'ref',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -377,6 +508,8 @@ class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
             'name',
             'value',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
@@ -397,11 +530,14 @@ class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ResultIndicatorPeriod
         fields = (
+            'id',
             'period_start',
             'period_end',
             'target',
             'actual',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultIndicatorBaselineSerializer(serializers.Serializer):
     year = serializers.CharField(source='baseline_year')
@@ -419,6 +555,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ResultIndicator
         fields = (
+            'id',
             'title',
             'description',
             'baseline',
@@ -426,6 +563,8 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'measure',
             'ascending'
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 
 class ContactInfoSerializer(serializers.ModelSerializer):
@@ -439,6 +578,7 @@ class ContactInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.ContactInfo
         fields = (
+            'id',
             'type',
             'organisation',
             'department',
@@ -450,6 +590,8 @@ class ContactInfoSerializer(serializers.ModelSerializer):
             'mailing_address',
         )
 
+        extra_kwargs = { "id": { "read_only": False }}
+
 class ResultSerializer(serializers.ModelSerializer):
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
@@ -459,12 +601,15 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.Result
         fields = (
+            'id',
             'title',
             'description',
             'indicator',
             'type',
             'aggregation_status',
         )
+
+        extra_kwargs = { "id": { "read_only": False }}
 
 class LocationSerializer(serializers.ModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
@@ -483,6 +628,7 @@ class LocationSerializer(serializers.ModelSerializer):
         class Meta:
             model = iati_models.LocationAdministrative
             fields = (
+                'id',
                 'code',
                 'vocabulary',
                 'level',
@@ -502,6 +648,7 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.Location
         fields = (
+            'id',
             'ref',
             'location_reach',
             'location_id',
@@ -515,88 +662,13 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
+        extra_kwargs = { "id": { "read_only": False }}
+
 class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     activity = ActivityAggregationSerializer(source='activity_aggregation')
     children = ActivityAggregationSerializer(source='child_aggregation')
     activity_children = ActivityAggregationSerializer(source='activity_plus_child_aggregation')
 
-
-from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
-
-class NestedWriteMixin():
-    # def __init__(self, *args, **kwargs):
-    #     super(NestedWriteMixin, self).__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        print('calling update...')
-        model = getattr(self.Meta, 'model')
-
-        for field, data in validated_data.iteritems():
-
-            if (field in self.fields):
-
-                source_field = self.fields[field].source
-                model_field = model._meta.get_field(source_field)
-                field_model = model_field.model
-
-                instance_data = getattr(instance, source_field)
-
-                # # check if it is a related object serializer, handle accordingly
-                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
-                    if data is None:
-                        # remove all related objects
-                        instance_data.clear()
-                    else:
-                        # remove when i
-                        related_set = instance_data
-
-                        related_model_pk_field_name = field_model._meta.pk.name
-                        print(related_model_pk_field_name)
-
-                        print(related_set.all())
-                        print(data)
-                        print(set([ i[related_model_pk_field_name] for i in data ]))
-
-                        current_ids = set([ i.id for i in related_set.all() ])
-                        new_ids = set([ i.id for i in data ])
-
-                        to_remove = list(current_ids.difference(new_ids))
-                        to_add = list(new_ids.difference(current_ids))
-                        to_update = list(current_ids.intersection(new_ids))
-
-                        related_set.add()
-                        related_set.remove()
-                        related_set.update()
-
-                        for fk_id in to_remove:
-                            obj = field_model.objects.get(pk=fk_id)
-                            related_set.remove(obj)
-
-                        for fk_id in to_add:
-                            obj = field_model.objects.create(data)
-                            related_set.add(obj)
-
-                        for fk_id in to_update:
-                            pass
-
-                # check if it is a foreign key, handle accordingly
-                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
-                    if data is None:
-                        # delete the fk object and set to
-                        fk_id = instance_data
-                        field_model.objects.get(pk=fk_id).remove()
-                    else:
-                        # set new foreign key
-                        setattr(instance, field, data)
-
-                else:
-                    setattr(instance, field, data)
-
-        instance.save()
-        return instance
 
 class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail', read_only=True)
