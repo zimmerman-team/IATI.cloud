@@ -26,16 +26,28 @@ class NestedWriteMixin():
         pass
 
     def update(self, instance, validated_data):
-        print(instance)
         model = getattr(self.Meta, 'model')
 
-        for field, data in validated_data.iteritems():
+        fk_fields = []
+        related_fields = []
 
+        for field, data in validated_data.copy().iteritems():
+            if (field in self.fields):
+                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
+                    related_fields[field] = validated_data.pop(field)
+                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
+                    fk_fields[field] = validated_data.pop(field)
+
+        # for field, data in related_fields.iteritems():
+
+
+        for field, data in validated_data.iteritems():
             if (field in self.fields):
 
+                source_serializer = self.fields[field]
                 source_field = self.fields[field].source
                 model_field = model._meta.get_field(source_field)
-                field_model = model_field.model
+                field_model = model_field.related_model
 
                 instance_data = getattr(instance, source_field)
 
@@ -49,11 +61,12 @@ class NestedWriteMixin():
                         related_set = instance_data
 
                         related_model_pk_field_name = field_model._meta.pk.name
-                        # print(related_model_pk_field_name)
+
+                        # TODO: how do we get the serializer model? - 2016-09-13
+                        serializer_model = None
 
                         # print(related_set.all())
                         # print(data)
-                        # print(set([ i[related_model_pk_field_name] for i in data ]))
 
                         current_ids = set([ i.id for i in related_set.all() ])
                         new_ids = set([ i[related_model_pk_field_name] for i in data ])
@@ -62,6 +75,10 @@ class NestedWriteMixin():
                         to_add = list(new_ids.difference(current_ids))
                         to_update = list(current_ids.intersection(new_ids))
 
+#                         print(to_remove)
+#                         print(to_add)
+#                         print(to_update)
+
                         # help(related_set)
 
                         for fk_id in to_remove:
@@ -69,10 +86,21 @@ class NestedWriteMixin():
                             related_set.remove(obj)
 
                         for fk_id in to_add:
+                            # TODO: instead call the serializer's create method - 2016-09-13
                             obj = field_model.objects.create(data)
                             related_set.add(obj)
 
                         for fk_id in to_update:
+                            # TODO: call the serializer's update method - 2016-09-13
+                            # needed for nested updating i guess
+                            print('called')
+                            fk_data = filter(lambda x: x[related_model_pk_field_name] is fk_id, data)[0]
+                            serializer_class  = source_serializer.child
+                            serializer.initial_data = fk_data
+                            print(fk_data)
+                            print(field_model.objects.get(pk=fk_id))
+                            serializer.is_valid()
+                            serializer.save()
                             pass
 
                 # check if it is a foreign key, handle accordingly
@@ -817,11 +845,125 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'xml_source_ref',
         )
 
-    # def create(self, validated_data):
-    #     return Activity.objects.create(**validated_data)
+#     def create(self, validated_data):
+#         participating_organisations = validated_data.pop('participating_organisations')
 
-    # def update(self, instance, validated_data):
-    #     print(validated_data)
-    #     return instance
+#         """
+#         activity
+#         """
+#         activity = iati_models.Activity.objects.create(**validated_data)
 
+#         """
+#         participating organisation
+#         """
+#         iati_models.ActivityParticipatingOrganisation.create(**participating_organisations)
+
+#         return activity
+
+    def get_or_none(self, model, *args, **kwargs):
+        try:
+            return model.objects.get(*args, **kwargs)
+        except model.DoesNotExist:
+            return None
+
+    def update(self, instance, validated_data):
+        participating_organisations = instance.participating_organisations
+        participating_organisations_data = validated_data.pop('participating_organisations')
+
+        """
+        activity
+        """
+
+        for field, data in validated_data.iteritems():
+            setattr(instance, field, data)
+        instance.save()
+
+        self.save_participating_orgs(participating_organisations, participating_organisations_data)
+
+        return instance
+
+
+    def save_participating_orgs(self, instances, data):
+        current_ids = set([ i.id for i in instances.all() ])
+        new_ids = set([ i['id'] for i in data ])
+
+        to_remove = list(current_ids.difference(new_ids))
+        to_add = list(new_ids.difference(current_ids))
+        to_update = list(current_ids.intersection(new_ids))
+
+        for fk_id in to_update:
+            # update the nested representation
+
+            participating_org = instances.get(pk=fk_id)
+            participating_org_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+            participating_org_type = participating_org_data.pop('type', None)
+            participating_org_role = participating_org_data.pop('role', None)
+            participating_org_org = participating_org_data.pop('organisation', None)
+            participating_org_narratives = participating_org_data.pop('narratives', None)
+
+            for field, data in participating_org_data.iteritems():
+                setattr(participating_org, field, data)
+
+            print(participating_org_type['code'])
+
+            if participating_org_type:
+                participating_org.type = iati_models.OrganisationType.objects.get(pk=participating_org_type['code'])
+            if participating_org_role:
+                participating_org.role = iati_models.OrganisationRole.objects.get(pk=participating_org_role['code'])
+            if participating_org_org:
+                participating_org.organisation = iati_models.Organisation.objects.get(pk=participating_org_org['id'])
+
+            participating_org.save()
+
+            # save narratives
+            if (participating_org_narratives):
+                self.save_narratives(participating_org, participating_org_narratives)
+
+        for fk_id in to_add: 
+            participating_org_type = participating_org_data.pop('type', None)
+            participating_org_role = participating_org_data.pop('role', None)
+            participating_org_org = participating_org_data.pop('organisation', None)
+            participating_org_narratives = participating_org_data.pop('narratives', None)
+
+            model = iati_models.ParticipatingOrganisation(**participating_org_data)
+            model.type = self.get_or_none(iati_models.OrganisationType, pk=participating_org_type)
+            model.role = self.get_or_none(iati_models.OrganisationRole, pk=participating_org_role)
+            model.organisation = self.get_or_none(iati_models.Organisation, pk=participating_org_org)
+            model.save()
+
+            if (participating_org_narratives):
+                self.save_narratives(model, participating_org_narratives)
+
+        for fk_id in to_remove: 
+            instance = instances.get(pk=fk_id)
+            instance.delete()
+
+    def save_narratives(self, instance, data):
+        current_narratives = instance.narratives.all()
+
+        current_ids = set([ i.id for i in current_narratives ])
+        new_ids = set([ i['id'] for i in data ])
+
+        to_remove = list(current_ids.difference(new_ids))
+        to_add = list(new_ids.difference(current_ids))
+        to_update = list(current_ids.intersection(new_ids))
+
+        for fk_id in to_update:
+            narrative = instances.get(pk=fk_id)
+            narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+            for field, data in narrative_data.iteritems():
+                setattr(narrative, field, data)
+            narrative.save()
+
+        for fk_id in to_add:
+            narrative = instances.get(pk=fk_id)
+            narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+            iati_models.Narrative.create(related_object=instance, **narrative_data)
+
+        for fk_id in to_remove:
+            instance = instances.get(pk=fk_id)
+            instance.delete()
 
