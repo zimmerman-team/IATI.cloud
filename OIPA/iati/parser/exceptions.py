@@ -15,7 +15,7 @@ class ParserError(Exception):
 
 
 class RequiredFieldError(Exception):
-    def __init__(self, model, field, msg):
+    def __init__(self, model, field, msg=None):
         """
         This error 
 
