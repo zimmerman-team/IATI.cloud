@@ -15,8 +15,61 @@ from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
+from iati.parser import validators
 
 from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
+
+def get_or_raise(model, validated_data, attr, default=None):
+    try:
+        pk = validated_data.pop(attr)
+    except KeyError:
+        raise RequiredFieldError(
+                model.__name__,
+                attr,
+                )
+
+    return model.objects.get(pk=pk)
+    # except model.DoesNotExist:
+    #     return default
+
+
+def get_or_none(model, validated_data, attr, default=None):
+    pk = validated_data.pop(attr, None)
+
+    if pk is None:
+        return default
+    try:
+        return model.objects.get(pk=pk)
+    except model.DoesNotExist:
+        return default
+
+def save_narratives(instance, data):
+    current_narratives = instance.narratives.all()
+
+    current_ids = set([ i.id for i in current_narratives ])
+    new_ids = set([ i['id'] for i in data ])
+
+    to_remove = list(current_ids.difference(new_ids))
+    to_add = list(new_ids.difference(current_ids))
+    to_update = list(current_ids.intersection(new_ids))
+
+    for fk_id in to_update:
+        narrative = instances.get(pk=fk_id)
+        narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+        for field, data in narrative_data.iteritems():
+            setattr(narrative, field, data)
+        narrative.save()
+
+    for fk_id in to_add:
+        narrative = instances.get(pk=fk_id)
+        narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+        iati_models.Narrative.create(related_object=instance, **narrative_data)
+
+    for fk_id in to_remove:
+        instance = instances.get(pk=fk_id)
+        instance.delete()
 
 class NestedWriteMixin():
     # def __init__(self, *args, **kwargs):
@@ -262,9 +315,10 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     ref = serializers.CharField(source="normalized_ref")
     type = CodelistSerializer()
     secondary_reporter = serializers.BooleanField()
-    narratives = NarrativeSerializer(many=True)
     # organisation = OrganisationSerializer()
     organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
+
+    narratives = NarrativeSerializer(many=True, required=False)
 
     class Meta:
         model = iati_models.ActivityReportingOrganisation
@@ -277,7 +331,73 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'narratives',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
+    # TODO: Link to organisation standard (hyperlinked)
+    ref = serializers.CharField(source="normalized_ref")
+    type = CodelistSerializer()
+    secondary_reporter = serializers.BooleanField()
+    # organisation = OrganisationSerializer()
+    organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
+
+    activity = serializers.CharField()
+
+    narratives = NarrativeSerializer(many=True, required=False)
+
+    class Meta:
+        model = iati_models.ActivityReportingOrganisation
+        fields = (
+            'id',
+            'ref',
+            'organisation',
+            'type',
+            'secondary_reporter',
+            'narratives',
+            'activity',
+        )
+
+    def create(self, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+
+        print(validated_data)
+
+        validated = validators.activity_reporting_org(
+            activity,
+            validated_data['normalized_ref'],
+            validated_data['type'],
+            validated_data['secondary_reporter']
+        )
+
+        if len(validated['errors']):
+            # render these errors
+            return
+
+        def handle_errors(errors):
+            pass
+            
+
+        instance.save()
+
+        save_narratives(instance, narratives)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+
+        update_instance = validators.activity_reporting_org(
+            activity,
+            validated_data['normalized_ref'],
+            validated_data['type'],
+            validated_data['secondary_reporter']
+        )
+
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives)
+
+        return update_instance
 
 class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
@@ -347,7 +467,6 @@ class RelatedActivityTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.RelatedActivityType
         fields = (
-            'id',
             'code',
             'name'
         )

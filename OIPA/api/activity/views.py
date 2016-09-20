@@ -1,7 +1,7 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView
 from rest_framework.filters import DjangoFilterBackend
 
-from api.activity import serializers as activitySerializers
+from api.activity import serializers as activity_serializers
 from api.activity import filters
 from api.generics.filters import DistanceFilter
 from api.generics.filters import SearchFilter
@@ -294,7 +294,7 @@ class ActivityList(DynamicListView):
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
-    serializer_class = activitySerializers.ActivitySerializer
+    serializer_class = activity_serializers.ActivitySerializer
 
     fields = (
         'url', 
@@ -352,7 +352,7 @@ class ActivityDetail(DynamicDetailView):
     """
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
-    serializer_class = activitySerializers.ActivitySerializer
+    serializer_class = activity_serializers.ActivitySerializer
 
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
@@ -407,6 +407,24 @@ class ActivityTransactions(ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).transaction_set.all()
+
+
+class ActivityReportingOrganisations(ListCreateAPIView):
+    serializer_class = activity_serializers.ReportingOrganisationSerializer
+    # filter_class = TransactionFilter
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).reporting_organisations.all()
+
+
+class ActivityDescriptions(ListCreateAPIView):
+    serializer_class = activity_serializers.DescriptionSerializer
+    # filter_class = TransactionFilter
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).description_set.all()
 
 
 class ActivityProviderActivityTree(DynamicDetailView):

@@ -18,6 +18,7 @@ from decimal import Decimal
 from iati.parser.exceptions import *
 # from iati.parser.higher_order_parser import compose, code
 
+from iati.parser import validators
 
 class Parse(IatiParser):
     
@@ -175,22 +176,16 @@ class Parse(IatiParser):
         secondary-reporter:0
 
         tag:reporting-org"""
-        ref = element.attrib.get('ref')
 
-        if not ref:
-            raise RequiredFieldError(
-                "reporting-org",
-                "ref",
-                "required attribute missing")
+        instance = validators.activity_reporting_org(
+            self.get_model('Activity')
+            element.attrib.get('ref'),
+            element.attrib.get('type'),
+            element.attrib.get('secondary_reporter'),
+        )
 
-        normalized_ref = self._normalize(ref)
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
-        secondary_reporter = element.attrib.get('secondary-reporter', '0')
-
-        organisation = self.get_or_none(models.Organisation, pk=ref)
-
-        # create an organisation
-        if not organisation:
+        if not instance.organisation:
+            # create an organisation
 
             organisation = organisation_models.Organisation()
             organisation.id = ref
@@ -215,16 +210,9 @@ class Parse(IatiParser):
             else:
                 organisation.primary_name = ref
 
-        activity = self.get_model('Activity')
-        reporting_organisation = models.ActivityReportingOrganisation()
-        reporting_organisation.ref = ref
-        reporting_organisation.normalized_ref = normalized_ref
-        reporting_organisation.type = org_type  
-        reporting_organisation.activity = activity
-        reporting_organisation.organisation = organisation
-        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
+            instance.organisation = organisation
 
-        self.register_model('ActivityReportingOrganisation', reporting_organisation)
+        self.register_model('ActivityReportingOrganisation', instance)
     
         return element
 

@@ -5,16 +5,58 @@ from django.test import TestCase # Runs each test in a transaction and flushes d
 from unittest import skip
 import datetime
 
-from django.test import RequestFactory
+from django.test import RequestFactory, Client
+from rest_framework.test import APIClient
 from iati.factory import iati_factory
 from iati_codelists.factory import codelist_factory
 from api.activity import serializers
 from iati import models as iati_models
 
+
 # TODO: separate into several test cases
 class ActivitySaveSerializerTestCase(TestCase):
 
     request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_reporting_org(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        iati_factory.OrganisationTypeFactory.create(code=9)
+        iati_factory.OrganisationRoleFactory.create(code=1)
+
+        data = {
+            "ref": 'a-ref',
+            "activity": activity.id,
+            "organisation": organisation.id,
+            "type": {
+                "code": 9,
+                "name": 'irrelevant',
+            },
+            "secondary_reporter": True,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/reporting_organisations/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201)
+
+        print(iati_models.ActivityReportingOrganisation.objects.all())
+        instance = iati_models.ActivityReportingOrganisation.objects.get(ref="a-ref")
+
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.secondary_reporter, data['secondary_reporter'])
+
+        # print(res)
+        # print(res.json())
+
 
     def test_partial_update(self):
         """
