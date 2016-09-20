@@ -1,3 +1,4 @@
+import re
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
@@ -36,10 +37,18 @@ def get_or_none(model, *args, **kwargs):
     except model.DoesNotExist:
         return None
 
-def _normalize(attr): 
+def normalize(attr): 
     attr = attr.strip(' \t\n\r').replace(" ", "")
     attr = re.sub("[/:',.+]", "-", attr)
     return attr
+
+def makeBool(text):
+    if type(text) == bool:
+        return text
+    if text == '1' or text == 'true':
+        return True
+    return False
+
 
 def activity_reporting_org(
         activity,
@@ -69,7 +78,7 @@ def activity_reporting_org(
                     ))
 
         if not secondary_reporter:
-            secondary_reporter = 0
+            secondary_reporter = False
 
         if not organisation:
             warnings.append(
@@ -80,7 +89,7 @@ def activity_reporting_org(
                     ))
 
 
-        print(warnings)
+        # print(warnings)
 
         if len(errors):
             return {
@@ -94,13 +103,13 @@ def activity_reporting_org(
         instance.type = org_type  
         instance.activity = activity
         instance.organisation = organisation
-        instance.secondary_reporter = self.makeBool(secondary_reporter)
+        instance.secondary_reporter = makeBool(secondary_reporter)
 
 
         return {
-            warnings: warnings,
-            errors: errors,
-            instance: instance,
+            "warnings": warnings,
+            "errors": errors,
+            "instance": instance,
         }
         
 

@@ -177,19 +177,21 @@ class Parse(IatiParser):
 
         tag:reporting-org"""
 
-        instance = validators.activity_reporting_org(
-            self.get_model('Activity')
+        validated = validators.activity_reporting_org(
+            self.get_model('Activity'),
             element.attrib.get('ref'),
             element.attrib.get('type'),
             element.attrib.get('secondary_reporter'),
         )
 
+        instance = validated['instance']
+
         if not instance.organisation:
             # create an organisation
 
             organisation = organisation_models.Organisation()
-            organisation.id = ref
-            organisation.organisation_identifier = ref
+            organisation.id = instance.normalized_ref
+            organisation.organisation_identifier = instance.normalized_ref
             organisation.last_updated_datetime = datetime.now()
             organisation.iati_standard_version_id = "2.02"
             organisation.reported_in_iati = False

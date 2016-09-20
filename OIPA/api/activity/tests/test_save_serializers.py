@@ -27,14 +27,14 @@ class ActivitySaveSerializerTestCase(TestCase):
         iati_factory.OrganisationRoleFactory.create(code=1)
 
         data = {
-            "ref": 'a-ref',
+            "ref": 'GB-COH-03580586',
             "activity": activity.id,
             "organisation": organisation.id,
             "type": {
-                "code": 9,
+                "code": '9',
                 "name": 'irrelevant',
             },
-            "secondary_reporter": True,
+            "secondary_reporter": 1,
         }
 
         res = self.c.post(
@@ -43,16 +43,16 @@ class ActivitySaveSerializerTestCase(TestCase):
                 format='json'
                 )
 
-        self.assertEquals(res.status_code, 201)
+        self.assertEquals(res.status_code, 201, res.json())
 
         print(iati_models.ActivityReportingOrganisation.objects.all())
-        instance = iati_models.ActivityReportingOrganisation.objects.get(ref="a-ref")
+        instance = iati_models.ActivityReportingOrganisation.objects.get(ref=data['ref'])
 
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.organisation.id, data['organisation'])
         self.assertEqual(instance.type.code, data['type']['code'])
-        self.assertEqual(instance.secondary_reporter, data['secondary_reporter'])
+        self.assertEqual(instance.secondary_reporter, bool(data['secondary_reporter']))
 
         # print(res)
         # print(res.json())
