@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from iati import models as iati_models
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
@@ -70,6 +73,12 @@ def save_narratives(instance, data):
     for fk_id in to_remove:
         instance = instances.get(pk=fk_id)
         instance.delete()
+
+def handle_errors(errors):
+    for error in errors:
+        raise ValidationError({
+            error.field: error.message
+            })
 
 class NestedWriteMixin():
     # def __init__(self, *args, **kwargs):
@@ -357,24 +366,24 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
     def create(self, validated_data):
         activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
 
         print(validated_data)
 
         validated = validators.activity_reporting_org(
             activity,
             validated_data['normalized_ref'],
-            validated_data['type'],
+            validated_data['type']['code'],
             validated_data['secondary_reporter']
         )
-
+            
         if len(validated['errors']):
             # render these errors
-            return
+            return handle_errors(validated['errors'])
 
-        def handle_errors(errors):
-            pass
-            
+        # TODO: raise on warnings as well - 2016-09-20
 
+        instance = validated['instance']
         instance.save()
 
         save_narratives(instance, narratives)

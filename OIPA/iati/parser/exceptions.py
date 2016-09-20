@@ -24,7 +24,10 @@ class RequiredFieldError(Exception):
         """
         self.model = model
         self.field = field
-        self.message = msg
+        if msg:
+            self.message = msg
+        else:
+            self.message = "field {} is required but not specified".format(field)
 
     def __str__(self):
         return repr(self.field)
