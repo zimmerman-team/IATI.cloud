@@ -70,5 +70,10 @@ class ResultAggregations(AggregationView):
             fields=("resultindicator__resultindicatortitle__primary_name"),
             renamed_fields="result_indicator_title"
         ),
+        GroupBy(
+            query_param="result_title",
+            fields=("resulttitle__narratives__content"),
+            renamed_fields="result_title"
+        ),
     )
 
