@@ -13,6 +13,99 @@ from api.activity import serializers
 from iati import models as iati_models
 from django.core.exceptions import ObjectDoesNotExist
 
+
+class ActivitySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_activity(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        org_type = iati_factory.OrganisationTypeFactory.create(code=9)
+        org_role = iati_factory.OrganisationRoleFactory.create(code=1)
+
+        data = {
+            "ref": 'GB-COH-03580586',
+            "activity": activity.id,
+            "organisation": organisation.id,
+            "type": {
+                "code": org_type.code,
+                "name": 'irrelevant',
+            },
+            "role": {
+                "code": org_role.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/activitys/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityActivity.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.role.code, str(data['role']['code']))
+
+    def test_update_activity(self):
+        participating_org = iati_factory.ActivityFactory.create()
+        
+        org_type = iati_factory.OrganisationTypeFactory.create(code=22)
+        org_role = iati_factory.OrganisationRoleFactory.create(code=22)
+
+        data = {
+            "ref": 'GB-COH-03580586',
+            "activity": participating_org.activity.id,
+            "organisation": participating_org.organisation.id,
+            "type": {
+                "code": org_type.code,
+                "name": 'irrelevant',
+            },
+            "role": {
+                "code": org_role.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/activitys/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityActivity.objects.get(ref=data['ref'])
+
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.role.code, str(data['role']['code']))
+
+
+    def test_delete_activity(self):
+        participating_org = iati_factory.ActivityFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/activitys/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityActivity.objects.get(pk=participating_org.id)
+
+
 class ReportingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()

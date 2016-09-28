@@ -143,6 +143,7 @@ class Parse(IatiParser):
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
+        activity.published = True
 
         # for later reference
         self.default_lang = default_lang
@@ -184,7 +185,7 @@ class Parse(IatiParser):
             element.attrib.get('secondary_reporter'),
         )
 
-        instance = validated['instance']
+        instance = handle_errors(element, validated)
 
         if not instance.organisation:
             # create an organisation
@@ -244,7 +245,7 @@ class Parse(IatiParser):
             element.attrib.get('activity-id'),
         )
 
-        instance = validated['instance']
+        instance = handle_errors(element, validated)
 
         self.register_model('ActivityParticipatingOrganisation', instance)
 
@@ -310,7 +311,7 @@ class Parse(IatiParser):
             element.attrib.get('type'),
         )
 
-        instance = validated['instance']
+        instance = handle_errors(element, validated)
 
         self.register_model('Description', instance)
         return element

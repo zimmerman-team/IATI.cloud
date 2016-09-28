@@ -127,6 +127,13 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
+    # is this valid IATI?
+    # this value should be updated on every O2M, M2M save and activity update
+    # is_valid_iati = models.BooleanField(default=False, db_index=True)
+
+    # is this activity published to the IATI registry?
+    published = models.BooleanField(default=False, db_index=True)
+
     objects = ActivityManager(
         ft_model = ActivitySearch, # model that contains the ft indexes
         fields = ('title', 'description'), # fields on the model 
@@ -150,6 +157,9 @@ class Activity(models.Model):
             ["actual_end", "id"],
             ["end_date", "id"],
         ]
+
+    def is_valid_iati(self):
+        return True
 
     @property
     def get_providing_activities(self):
