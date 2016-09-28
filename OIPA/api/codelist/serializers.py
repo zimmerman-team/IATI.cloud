@@ -20,7 +20,7 @@ class CodelistVocabularySerializer(CodelistSerializer):
 
 class NarrativeSerializer(serializers.ModelSerializer):
     text = serializers.CharField(source="content")
-    language = CodelistSerializer()
+    language = CodelistSerializer(required=False)
 
     class Meta:
         model = iati.models.Narrative

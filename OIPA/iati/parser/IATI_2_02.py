@@ -235,35 +235,18 @@ class Parse(IatiParser):
         type:40
     
         tag:participating-org"""
-        ref = element.attrib.get('ref', '')
-        activity_id = element.attrib.get('activity-id', None)
 
-        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
+        validated = validators.activity_participating_org(
+            self.get_model('Activity'),
+            element.attrib.get('ref'),
+            element.attrib.get('type'),
+            element.attrib.get('role'),
+            element.attrib.get('activity-id'),
+        )
 
-        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
-        # simply because they don't know the ref.
-        # if not ref: raise RequiredFieldError("ref", "participating-org: ref must be specified")
-        if not role:
-            raise RequiredFieldError(
-                "participating-org",
-                "role", 
-                "required attribute missing")
+        instance = validated['instance']
 
-        normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
-
-        activity = self.get_model('Activity')
-        participating_organisation = models.ActivityParticipatingOrganisation()
-        participating_organisation.ref = ref
-        participating_organisation.normalized_ref = normalized_ref
-        participating_organisation.type = org_type  
-        participating_organisation.activity = activity
-        participating_organisation.organisation = organisation
-        participating_organisation.role = role
-        participating_organisation.org_activity_id = activity_id
-
-        self.register_model('ActivityParticipatingOrganisation', participating_organisation)
+        self.register_model('ActivityParticipatingOrganisation', instance)
 
         return element
 
@@ -321,15 +304,15 @@ class Parse(IatiParser):
     
         tag:description"""
 
-        description_type_code = element.attrib.get('type', 1)
-        description_type = self.get_or_none(codelist_models.Language, code=description_type_code)
 
-        activity = self.get_model('Activity')
-        description = models.Description()
-        description.activity = activity
-        description.type = description_type
+        validated = validators.activity_description(
+            self.get_model('Activity'),
+            element.attrib.get('type'),
+        )
 
-        self.register_model('Description', description)
+        instance = validated['instance']
+
+        self.register_model('Description', instance)
         return element
 
     def iati_activities__iati_activity__description__narrative(self, element):

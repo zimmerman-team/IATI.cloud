@@ -19,6 +19,7 @@ from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
 from iati.parser import validators
+from iati.parser import exceptions
 
 from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
 
@@ -26,7 +27,7 @@ def get_or_raise(model, validated_data, attr, default=None):
     try:
         pk = validated_data.pop(attr)
     except KeyError:
-        raise RequiredFieldError(
+        raise exceptions.RequiredFieldError(
                 model.__name__,
                 attr,
                 )
@@ -75,11 +76,19 @@ def save_narratives(instance, data):
         # instance = instances.get(pk=fk_id)
         instance.delete()
 
-def handle_errors(errors):
-    for error in errors:
-        raise ValidationError({
-            error.field: error.message
-            })
+def handle_errors(validated):
+    warnings = validated['warnings'] 
+    errors = validated['errors'] 
+    instance = validated['instance']
+
+    if len(errors):
+        for error in errors:
+            raise ValidationError({
+                error.field: error.message
+                })
+
+    return instance
+
 
 class NestedWriteMixin():
     # def __init__(self, *args, **kwargs):
@@ -349,7 +358,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # organisation = OrganisationSerializer()
     organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
 
-    activity = serializers.CharField()
+    activity = serializers.CharField(write_only=True)
 
     narratives = NarrativeSerializer(many=True, required=False)
 
@@ -371,18 +380,12 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
         validated = validators.activity_reporting_org(
             activity,
-            validated_data['normalized_ref'],
-            validated_data['type']['code'],
-            validated_data['secondary_reporter']
+            validated_data.get('normalized_ref'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('secondary_reporter')
         )
             
-        if len(validated['errors']):
-            # render these errors
-            return handle_errors(validated['errors'])
-
-        # TODO: raise on warnings as well - 2016-09-20
-
-        instance = validated['instance']
+        instance = handle_errors(validated)
         instance.save()
 
         save_narratives(instance, narratives)
@@ -396,17 +399,12 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
         validated = validators.activity_reporting_org(
             activity,
-            validated_data['normalized_ref'],
-            validated_data['type']['code'],
-            validated_data['secondary_reporter']
+            validated_data.get('normalized_ref'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('secondary_reporter')
         )
 
-        if len(validated['errors']):
-            # render these errors
-            return handle_errors(validated['errors'])
-
-        update_instance = validated['instance']
-
+        update_instance = handle_errors(validated)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -420,8 +418,50 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
     role = CodelistSerializer()
-    activity_id = serializers.CharField(source='org_activity_id')
-    narratives = NarrativeSerializer(many=True)
+    activity_id = serializers.CharField(source='org_activity_id', required=False)
+    narratives = NarrativeSerializer(many=True, required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+
+        validated = validators.activity_participating_org(
+            activity,
+            validated_data.get('normalized_ref'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('role', {}).get('code'),
+            validated_data.get('activity_id')
+        )
+            
+        instance = handle_errors(validated)
+        instance.save()
+
+        save_narratives(instance, narratives)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+
+        validated = validators.activity_participating_org(
+            activity,
+            validated_data.get('normalized_ref'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('role', {}).get('code'),
+            validated_data.get('activity_id')
+        )
+
+        update_instance = handle_errors(validated)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives)
+
+        return update_instance
 
     class Meta:
         model = iati_models.ActivityParticipatingOrganisation
@@ -431,10 +471,9 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
             'type',
             'role',
             'activity_id',
+            'activity',
             'narratives',
         )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     code = CodelistSerializer()
@@ -469,15 +508,50 @@ class DescriptionSerializer(serializers.ModelSerializer):
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
+    activity = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+
+        validated = validators.activity_description(
+            activity,
+            validated_data.get('type', {}).get('code'),
+        )
+            
+        instance = handle_errors(validated)
+        instance.save()
+
+        save_narratives(instance, narratives)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+
+        validated = validators.activity_description(
+            activity,
+            validated_data.get('type', {}).get('code'),
+        )
+
+        update_instance = handle_errors(validated)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives)
+
+        return update_instance
+
     class Meta:
         model = iati_models.Description
         fields = (
             'id',
             'type',
-            'narratives'
+            'narratives',
+            'activity',
         )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 class RelatedActivityTypeSerializer(serializers.ModelSerializer):
     class Meta:
