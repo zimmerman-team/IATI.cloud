@@ -244,6 +244,12 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    result_title = ToManyFilter(
+        qs=Result,
+        lookup_type='in',
+        name='resulttitle__narratives__content',
+        fk='activity',
+    )
 
     indicator_title = ToManyFilter(
         qs=ResultIndicatorTitle,
