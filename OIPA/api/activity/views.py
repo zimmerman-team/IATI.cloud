@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.filters import DjangoFilterBackend
 
 from api.activity import serializers as activity_serializers
@@ -16,7 +16,7 @@ from django.db.models import Count, Sum, F
 
 from geodata.models import Country
 from geodata.models import Region
-from iati.models import Activity
+from iati.models import Activity, ActivityReportingOrganisation
 from iati.models import Sector
 from iati.models import ActivityStatus
 from iati.models import PolicyMarker
@@ -399,23 +399,203 @@ class ActivityTransactions(ListAPIView):
         return Activity(pk=pk).transaction_set.all()
 
 
-class ActivityReportingOrganisations(ListCreateAPIView):
+class ActivityReportingOrganisationList(ListCreateAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
-    # filter_class = TransactionFilter
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).reporting_organisations.all()
 
+class ActivityReportingOrganisationDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ReportingOrganisationSerializer
 
-class ActivityDescriptions(ListCreateAPIView):
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityReportingOrganisation.objects.get(pk=pk)
+
+class ActivityDescriptionList(ListCreateAPIView):
     serializer_class = activity_serializers.DescriptionSerializer
-    # filter_class = TransactionFilter
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity(pk=pk).description_set.all()
+        return Activity(pk=pk).descriptions.all()
 
+class ActivityDescriptionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.DescriptionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return Description.objects.get(pk=pk)
+
+class ActivityParticipatingOrganisationList(ListCreateAPIView):
+    serializer_class = activity_serializers.ParticipatingOrganisationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).participating_organisations.all()
+
+class ActivityParticipatingOrganisationDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ParticipatingOrganisationSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityParticipatingOrganisation.objects.get(pk=pk)
+
+class ActivityRecipientCountryList(ListCreateAPIView):
+    serializer_class = activity_serializers.RecipientCountrySerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).recipient_countries.all()
+
+class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.RecipientCountrySerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return RecipientCountry.objects.get(pk=pk)
+
+class ActivitySectorList(ListCreateAPIView):
+    serializer_class = activity_serializers.SectorSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).recipient_sectors.all()
+
+class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.SectorSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return Sector.objects.get(pk=pk)
+
+class ActivityLocationList(ListCreateAPIView):
+    serializer_class = activity_serializers.LocationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).locations.all()
+
+class ActivityLocationDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.LocationSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return Location.objects.get(pk=pk)
+
+class ActivitySectorList(ListCreateAPIView):
+    serializer_class = activity_serializers.SectorSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).sectors.all()
+
+class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.SectorSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivitySector.objects.get(pk=pk)
+
+class ActivityHumanitarianScopeList(ListCreateAPIView):
+    serializer_class = activity_serializers.HumanitarianScopeSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).humanitarian_scopes.all()
+
+class ActivityHumanitarianScopeDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.HumanitarianScopeSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityHumanitarianScope.objects.get(pk=pk)
+
+
+class ActivityPolicyMarkerList(ListCreateAPIView):
+    serializer_class = activity_serializers.ActivityPolicyMarkerSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).policy_markers.all()
+
+class ActivityPolicyMarkerDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ActivityPolicyMarkerSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityPolicyMarker.objects.get(pk=pk)
+
+class ActivityBudgetList(ListCreateAPIView):
+    serializer_class = activity_serializers.BudgetSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).budgets.all()
+
+class ActivityBudgetDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.BudgetSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityBudget.objects.get(pk=pk)
+
+
+class ActivityPlannedDisbursementList(ListCreateAPIView):
+    serializer_class = activity_serializers.PlannedDisbursementSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).planned_disbursements.all()
+
+class ActivityPlannedDisbursementDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.PlannedDisbursementSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityPlannedDisbursement.objects.get(pk=pk)
+
+class ActivityDocumentLinkList(ListCreateAPIView):
+    serializer_class = activity_serializers.DocumentLinkSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).document_links.all()
+
+class ActivityDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.DocumentLinkSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityDocumentLink.objects.get(pk=pk)
+
+class ActivityRelatedActivityList(ListCreateAPIView):
+    serializer_class = activity_serializers.RelatedActivitySerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).related_activities.all()
+
+class ActivityRelatedActivityDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.RelatedActivitySerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityRelatedActivity.objects.get(pk=pk)
+
+class ActivityResultList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).results.all()
+
+class ActivityResultDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return ActivityResult.objects.get(pk=pk)
 
 class ActivityProviderActivityTree(DynamicDetailView):
     """
