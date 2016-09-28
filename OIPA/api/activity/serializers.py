@@ -1005,6 +1005,42 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
+    def create(self, validated_data):
+        validated = validators.activity(
+            validated_data.get('iati_identifier'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('role', {}).get('code'),
+            validated_data.get('activity_id')
+        )
+            
+        instance = handle_errors(validated)
+        instance.save()
+
+        save_narratives(instance, narratives)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+
+        validated = validators.activity_participating_org(
+            activity,
+            validated_data.get('normalized_ref'),
+            validated_data.get('type', {}).get('code'),
+            validated_data.get('role', {}).get('code'),
+            validated_data.get('activity_id')
+        )
+
+        update_instance = handle_errors(validated)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives)
+
+        return update_instance
+
     class Meta:
         model = iati_models.Activity
         fields = (
@@ -1054,123 +1090,22 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'xml_source_ref',
         )
 
-#     def create(self, validated_data):
-#         participating_organisations = validated_data.pop('participating_organisations')
 
-#         """
-#         activity
-#         """
-#         activity = iati_models.Activity.objects.create(**validated_data)
+class CheckValidIATIMixin():
 
-#         """
-#         participating organisation
-#         """
-#         iati_models.ActivityParticipatingOrganisation.create(**participating_organisations)
+    def save(self, *args, **kwargs):
+        instance = super(CheckValidIATIMixin, self).save(*args, **kwargs)
 
-#         return activity
+        # query activity and check if it is valid or not
 
-    def get_or_none(self, model, *args, **kwargs):
-        try:
-            return model.objects.get(*args, **kwargs)
-        except model.DoesNotExist:
-            return None
+        activity = instance.activity
 
-    def update(self, instance, validated_data):
-        participating_organisations = instance.participating_organisations
-        participating_organisations_data = validated_data.pop('participating_organisations')
+        if (activity.is_valid_iati)
 
-        """
-        activity
-        """
+        activity.is_valid_iati = True
+        activity.save()
 
-        for field, data in validated_data.iteritems():
-            setattr(instance, field, data)
-        instance.save()
-
-        self.save_participating_orgs(participating_organisations, participating_organisations_data)
-
-        return instance
+        # check if activity has the required fields set
 
 
-    def save_participating_orgs(self, instances, data):
-        current_ids = set([ i.id for i in instances.all() ])
-        new_ids = set([ i['id'] for i in data ])
-
-        to_remove = list(current_ids.difference(new_ids))
-        to_add = list(new_ids.difference(current_ids))
-        to_update = list(current_ids.intersection(new_ids))
-
-        for fk_id in to_update:
-            # update the nested representation
-
-            participating_org = instances.get(pk=fk_id)
-            participating_org_data = filter(lambda x: x['id'] is fk_id, data)[0]
-
-            participating_org_type = participating_org_data.pop('type', None)
-            participating_org_role = participating_org_data.pop('role', None)
-            participating_org_org = participating_org_data.pop('organisation', None)
-            participating_org_narratives = participating_org_data.pop('narratives', None)
-
-            for field, data in participating_org_data.iteritems():
-                setattr(participating_org, field, data)
-
-            if participating_org_type:
-                participating_org.type = iati_models.OrganisationType.objects.get(pk=participating_org_type['code'])
-            if participating_org_role:
-                participating_org.role = iati_models.OrganisationRole.objects.get(pk=participating_org_role['code'])
-            if participating_org_org:
-                participating_org.organisation = iati_models.Organisation.objects.get(pk=participating_org_org['id'])
-
-            participating_org.save()
-
-            # save narratives
-            if (participating_org_narratives):
-                self.save_narratives(participating_org, participating_org_narratives)
-
-        for fk_id in to_add: 
-            participating_org_type = participating_org_data.pop('type', None)
-            participating_org_role = participating_org_data.pop('role', None)
-            participating_org_org = participating_org_data.pop('organisation', None)
-            participating_org_narratives = participating_org_data.pop('narratives', None)
-
-            model = iati_models.ParticipatingOrganisation(**participating_org_data)
-            model.type = self.get_or_none(iati_models.OrganisationType, pk=participating_org_type)
-            model.role = self.get_or_none(iati_models.OrganisationRole, pk=participating_org_role)
-            model.organisation = self.get_or_none(iati_models.Organisation, pk=participating_org_org)
-            model.save()
-
-            if (participating_org_narratives):
-                self.save_narratives(model, participating_org_narratives)
-
-        for fk_id in to_remove: 
-            instance = instances.get(pk=fk_id)
-            instance.delete()
-
-    def save_narratives(self, instance, data):
-        current_narratives = instance.narratives.all()
-
-        current_ids = set([ i.id for i in current_narratives ])
-        new_ids = set([ i['id'] for i in data ])
-
-        to_remove = list(current_ids.difference(new_ids))
-        to_add = list(new_ids.difference(current_ids))
-        to_update = list(current_ids.intersection(new_ids))
-
-        for fk_id in to_update:
-            narrative = instances.get(pk=fk_id)
-            narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
-
-            for field, data in narrative_data.iteritems():
-                setattr(narrative, field, data)
-            narrative.save()
-
-        for fk_id in to_add:
-            narrative = instances.get(pk=fk_id)
-            narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
-
-            iati_models.Narrative.create(related_object=instance, **narrative_data)
-
-        for fk_id in to_remove:
-            instance = instances.get(pk=fk_id)
-            instance.delete()
-
+        

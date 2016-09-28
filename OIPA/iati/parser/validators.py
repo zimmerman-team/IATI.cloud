@@ -50,6 +50,66 @@ def makeBool(text):
     return False
 
 
+def activity(
+        iati_identifier,
+        org_type,
+        secondary_reporter,
+        ):
+
+        organisation = get_or_none(models.Organisation, pk=ref)
+        org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
+
+        warnings = []
+        errors = []
+
+        if not ref:
+            errors.append(
+                RequiredFieldError(
+                    "reporting-org",
+                    "ref",
+                    ))
+
+        if not org_type:
+            errors.append(
+                RequiredFieldError(
+                    "reporting-org",
+                    "type",
+                    ))
+
+        if not secondary_reporter:
+            secondary_reporter = False
+
+        if not organisation:
+            warnings.append(
+                RequiredFieldError(
+                    "reporting-org",
+                    "organisation",
+                    "organisation with ref {} does not exist in organisation standard".format(ref)
+                    ))
+
+
+        if len(errors):
+            return {
+                "warnings": warnings,
+                "errors": errors,
+            }
+
+        instance = models.ActivityReportingOrganisation()
+        instance.ref = ref
+        instance.normalized_ref = normalize(ref)
+        instance.type = org_type  
+        instance.activity = activity
+        instance.organisation = organisation
+        instance.secondary_reporter = makeBool(secondary_reporter)
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "instance": instance,
+        }
+
+
 def activity_reporting_org(
         activity,
         ref,
@@ -165,7 +225,6 @@ def activity_participating_org(
                     "ref",
                     ))
 
-        # TODO: required? - 2016-09-28
         if not org_type:
             warnings.append(
                 RequiredFieldError(
