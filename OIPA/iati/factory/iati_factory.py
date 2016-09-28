@@ -220,20 +220,6 @@ class CityFactory(NoDatabaseFactory):
     geoname_id = 3443013
 
 
-class ParticipatingOrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.ActivityParticipatingOrganisation
-
-    activity = SubFactory(ActivityFactory)
-    ref = "some-ref"
-    normalized_ref = "some_ref"
-    type = SubFactory(OrganisationTypeFactory)
-    role = SubFactory(OrganisationRoleFactory)
-
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
-
-
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.Organisation
@@ -242,6 +228,21 @@ class OrganisationFactory(NoDatabaseFactory):
     id = 'GB-COH-03580586'
     organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
+
+
+class ParticipatingOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityParticipatingOrganisation
+
+    activity = SubFactory(ActivityFactory)
+    organisation = SubFactory(OrganisationFactory)
+    ref = "some-ref"
+    normalized_ref = "some_ref"
+    type = SubFactory(OrganisationTypeFactory)
+    role = SubFactory(OrganisationRoleFactory)
+
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
 
 
 class ReportingOrganisationFactory(NoDatabaseFactory):

@@ -13,13 +13,11 @@ from api.activity import serializers
 from iati import models as iati_models
 from django.core.exceptions import ObjectDoesNotExist
 
-# TODO: separate into several test cases
-class ActivitySaveSerializerTestCase(TestCase):
-
+class ReportingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
-    def test_create_reporting_org(self):
+    def test_create_reporting_organisation(self):
 
         activity = iati_factory.ActivityFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
@@ -53,7 +51,7 @@ class ActivitySaveSerializerTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
         self.assertEqual(instance.secondary_reporter, bool(data['secondary_reporter']))
 
-    def test_update_reporting_org(self):
+    def test_update_reporting_organisation(self):
         reporting_org = iati_factory.ReportingOrganisationFactory.create()
         iati_factory.OrganisationTypeFactory.create(code=9)
 
@@ -74,7 +72,7 @@ class ActivitySaveSerializerTestCase(TestCase):
                 format='json'
                 )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEquals(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityReportingOrganisation.objects.get(ref=data['ref'])
 
@@ -85,7 +83,7 @@ class ActivitySaveSerializerTestCase(TestCase):
         self.assertEqual(instance.secondary_reporter, bool(data['secondary_reporter']))
 
 
-    def test_delete_reporting_org(self):
+    def test_delete_reporting_organisation(self):
         reporting_org = iati_factory.ReportingOrganisationFactory.create()
 
         res = self.c.delete(
@@ -93,9 +91,182 @@ class ActivitySaveSerializerTestCase(TestCase):
                 format='json'
                 )
 
-        print(res.status_code)
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityReportingOrganisation.objects.get(ref=reporting_org.ref)
 
+
+class DescriptionSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_description(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.DescriptionTypeFactory.create()
+        # type = iati_factory.DescriptionTypeFactory.create(code=2)
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "text123"
+                }
+            ]
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/descriptions/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Description.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+    def test_update_description(self):
+        description = iati_factory.DescriptionFactory.create()
+        type = iati_factory.DescriptionTypeFactory.create()
+        type2 = iati_factory.DescriptionTypeFactory.create(code=2)
+
+        data = {
+            "activity": description.activity.id,
+            "type": {
+                "code": type2.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "text123"
+                }
+            ]
+        }
+
+        print("/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id))
+        res = self.c.put(
+                "/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Description.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+
+
+    def test_delete_description(self):
+        description = iati_factory.DescriptionFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Description.objects.get(pk=description.id)
+
+
+class ParticipatingOrganisationSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_participating_organisation(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        org_type = iati_factory.OrganisationTypeFactory.create(code=9)
+        org_role = iati_factory.OrganisationRoleFactory.create(code=1)
+
+        data = {
+            "ref": 'GB-COH-03580586',
+            "activity": activity.id,
+            "organisation": organisation.id,
+            "type": {
+                "code": org_type.code,
+                "name": 'irrelevant',
+            },
+            "role": {
+                "code": org_role.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/participating_organisations/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityParticipatingOrganisation.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.role.code, str(data['role']['code']))
+
+    def test_update_participating_organisation(self):
+        participating_org = iati_factory.ParticipatingOrganisationFactory.create()
+        
+        org_type = iati_factory.OrganisationTypeFactory.create(code=22)
+        org_role = iati_factory.OrganisationRoleFactory.create(code=22)
+
+        data = {
+            "ref": 'GB-COH-03580586',
+            "activity": participating_org.activity.id,
+            "organisation": participating_org.organisation.id,
+            "type": {
+                "code": org_type.code,
+                "name": 'irrelevant',
+            },
+            "role": {
+                "code": org_role.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/participating_organisations/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityParticipatingOrganisation.objects.get(ref=data['ref'])
+
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.role.code, str(data['role']['code']))
+
+
+    def test_delete_participating_organisation(self):
+        participating_org = iati_factory.ParticipatingOrganisationFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/participating_organisations/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityParticipatingOrganisation.objects.get(pk=participating_org.id)
