@@ -57,7 +57,7 @@ def save_narratives(instance, data):
     to_update = list(current_ids.intersection(new_ids))
 
     for fk_id in to_update:
-        narrative = instances.get(pk=fk_id)
+        narrative = iati_models.Narrative.objects.get(pk=fk_id)
         narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         for field, data in narrative_data.iteritems():
@@ -65,13 +65,14 @@ def save_narratives(instance, data):
         narrative.save()
 
     for fk_id in to_add:
-        narrative = instances.get(pk=fk_id)
+        narrative = iati_models.Narrative.objects.get(pk=fk_id)
         narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         iati_models.Narrative.create(related_object=instance, **narrative_data)
 
     for fk_id in to_remove:
-        instance = instances.get(pk=fk_id)
+        instance = iati_models.Narrative.objects.get(pk=fk_id)
+        # instance = instances.get(pk=fk_id)
         instance.delete()
 
 def handle_errors(errors):
@@ -368,8 +369,6 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
         narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
 
-        print(validated_data)
-
         validated = validators.activity_reporting_org(
             activity,
             validated_data['normalized_ref'],
@@ -393,13 +392,20 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
     def update(self, instance, validated_data):
         activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
+        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
 
-        update_instance = validators.activity_reporting_org(
+        validated = validators.activity_reporting_org(
             activity,
             validated_data['normalized_ref'],
-            validated_data['type'],
+            validated_data['type']['code'],
             validated_data['secondary_reporter']
         )
+
+        if len(validated['errors']):
+            # render these errors
+            return handle_errors(validated['errors'])
+
+        update_instance = validated['instance']
 
         update_instance.id = instance.id
         update_instance.save()
@@ -407,6 +413,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         save_narratives(instance, narratives)
 
         return update_instance
+
 
 class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
@@ -1032,8 +1039,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
             for field, data in participating_org_data.iteritems():
                 setattr(participating_org, field, data)
-
-            print(participating_org_type['code'])
 
             if participating_org_type:
                 participating_org.type = iati_models.OrganisationType.objects.get(pk=participating_org_type['code'])
