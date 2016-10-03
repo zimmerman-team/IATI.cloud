@@ -909,65 +909,111 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
 
 class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail', read_only=True)
+
+    id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
     reporting_organisations = ReportingOrganisationSerializer(
-        many=True
+        many=True,
+        read_only=True,
     )
-    title = TitleSerializer()
+    title = TitleSerializer(required=False)
+
     descriptions = DescriptionSerializer(
         many=True, 
-        source='description_set'
+        source='description_set',
+        read_only=True,
     )
     participating_organisations = ParticipatingOrganisationSerializer(
         many=True,
+        read_only=True,
     )
 
     # TODO ; add other-identifier serializer
     # other_identifier = serializers.OtherIdentifierSerializer(many=True,source="?")
 
-    activity_status = CodelistSerializer()
+    activity_status = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
         many=True,
-        source='activitydate_set')
+        source='activitydate_set',
+        read_only=True,
+        required=False,
+        )
 
     # TODO ; add contact-info serializer
     # note; contact info has a sequence we should use in the ContactInfoSerializer!
-    contact_info = ContactInfoSerializer(many=True, source="contactinfo_set")
+    contact_info = ContactInfoSerializer(
+            many=True, 
+            source="contactinfo_set",
+            read_only=True,
+            required=False,
+            )
 
-    activity_scope = CodelistSerializer(source='scope')
+    activity_scope = CodelistSerializer(source='scope', required=False)
     recipient_countries = RecipientCountrySerializer(
         many=True,
-        source='activityrecipientcountry_set')
+        source='activityrecipientcountry_set',
+        read_only=True,
+        required=False,
+        )
     recipient_regions = ActivityRecipientRegionSerializer(
         many=True,
-        source='activityrecipientregion_set')
-    locations = LocationSerializer(many=True, source='location_set')
+        source='activityrecipientregion_set',
+        read_only=True,
+        required=False,
+        )
+    locations = LocationSerializer(
+            many=True, 
+            source='location_set',
+            read_only=True,
+            required=False,
+            )
     sectors = ActivitySectorSerializer(
         many=True,
-        source='activitysector_set')
+        source='activitysector_set',
+        read_only=True,
+        required=False,
+        )
 
     # TODO ; add country-budget-items serializer
     # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
 
-    humanitarian_scope = HumanitarianScopeSerializer(many=True, source='humanitarianscope_set')
+    humanitarian_scope = HumanitarianScopeSerializer(
+            many=True, 
+            source='humanitarianscope_set',
+            read_only=True,
+            required=False,
+            )
 
     policy_markers = ActivityPolicyMarkerSerializer(
         many=True,
-        source='activitypolicymarker_set')
-    collaboration_type = CodelistSerializer()
-    default_flow_type = CodelistSerializer()
-    default_finance_type = CodelistSerializer()
-    default_aid_type = CodelistSerializer()
-    default_tied_status = CodelistSerializer()
+        source='activitypolicymarker_set',
+        read_only=True,
+        required=False,
+        )
 
-    budgets = BudgetSerializer(many=True, source='budget_set')
+    collaboration_type = CodelistSerializer(required=False)
+    default_flow_type = CodelistSerializer(required=False)
+    default_finance_type = CodelistSerializer(required=False)
+    default_aid_type = CodelistSerializer(required=False)
+    default_tied_status = CodelistSerializer(required=False)
+
+    budgets = BudgetSerializer(
+            many=True, 
+            source='budget_set',
+            read_only=True,
+            )
 
     # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
-    planned_disbursements = PlannedDisbursementSerializer(many=True, source='planneddisbursement_set')
+    planned_disbursements = PlannedDisbursementSerializer(
+            many=True, 
+            source='planneddisbursement_set',
+            read_only=True,
+            )
 
-    capital_spend = CapitalSpendSerializer()
+    capital_spend = CapitalSpendSerializer(required=False)
 
     transactions = serializers.HyperlinkedIdentityField(
+        read_only=True,
         view_name='activities:activity-transactions',)
     # transactions = TransactionSerializer(
     #     many=True,
@@ -975,9 +1021,11 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
     document_links = DocumentLinkSerializer(
         many=True,
+        read_only=True,
         source='documentlink_set')
     related_activities = RelatedActivitySerializer(
         many=True, 
+        read_only=True,
         source='relatedactivity_set')
 
     # TODO ; add legacy-data serializer? note: we dont parse legacy data atm.
@@ -986,7 +1034,10 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # TODO ; add conditions serializer
     # conditions = serializers.ConditionsSerializer(many=True,source="?")
 
-    results = ResultSerializer(many=True, source="result_set")
+    results = ResultSerializer(
+            many=True, 
+            read_only=True,
+            source="result_set")
     
     # TODO ; add crs-add serializer
     # note; crs-add has a sequence in CrsAddSerializer
@@ -996,11 +1047,11 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # fss = serializers.FssSerializer(many=True, source="?") 
     
     # activity attributes
-    last_updated_datetime = serializers.DateTimeField()
-    xml_lang = serializers.CharField(source='default_lang')
-    default_currency = CodelistSerializer()
+    last_updated_datetime = serializers.DateTimeField(required=False)
+    xml_lang = serializers.CharField(source='default_lang', required=False)
+    default_currency = CodelistSerializer(required=False)
 
-    humanitarian = serializers.BooleanField()
+    humanitarian = serializers.BooleanField(required=False)
 
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
@@ -1008,36 +1059,36 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     def create(self, validated_data):
         validated = validators.activity(
             validated_data.get('iati_identifier'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('role', {}).get('code'),
-            validated_data.get('activity_id')
+            validated_data.get('default_lang'),
+            validated_data.get('hierarchy'),
+            validated_data.get('humanitarian'),
+            validated_data.get('last_updated_datetime'),
+            validated_data.get('linked_data_uri'),
+            validated_data.get('default_currency'),
+            validated_data.get('xml_source_ref'),
         )
             
         instance = handle_errors(validated)
         instance.save()
 
-        save_narratives(instance, narratives)
-
         return instance
 
 
     def update(self, instance, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
-
-        validated = validators.activity_participating_org(
-            activity,
-            validated_data.get('normalized_ref'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('role', {}).get('code'),
-            validated_data.get('activity_id')
+        validated = validators.activity(
+            validated_data.get('iati_identifier'),
+            validated_data.get('default_lang'),
+            validated_data.get('hierarchy'),
+            validated_data.get('humanitarian'),
+            validated_data.get('last_updated_datetime'),
+            validated_data.get('linked_data_uri'),
+            validated_data.get('default_currency'),
+            validated_data.get('xml_source_ref'),
         )
 
         update_instance = handle_errors(validated)
         update_instance.id = instance.id
         update_instance.save()
-
-        save_narratives(instance, narratives)
 
         return update_instance
 
@@ -1091,21 +1142,21 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         )
 
 
-class CheckValidIATIMixin():
+# class CheckValidIATIMixin():
 
-    def save(self, *args, **kwargs):
-        instance = super(CheckValidIATIMixin, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         instance = super(CheckValidIATIMixin, self).save(*args, **kwargs)
 
-        # query activity and check if it is valid or not
+#         # query activity and check if it is valid or not
 
-        activity = instance.activity
+#         activity = instance.activity
 
-        if (activity.is_valid_iati)
+#         if (activity.is_valid_iati)
 
-        activity.is_valid_iati = True
-        activity.save()
+#         activity.is_valid_iati = True
+#         activity.save()
 
-        # check if activity has the required fields set
+#         # check if activity has the required fields set
 
 
         

@@ -159,6 +159,10 @@ class Activity(models.Model):
         ]
 
     def is_valid_iati(self):
+        """
+        Check if all required foreign objects are created
+        """
+        # TODO: create this method - 2016-10-03
         return True
 
     @property

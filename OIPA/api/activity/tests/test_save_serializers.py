@@ -20,90 +20,74 @@ class ActivitySaveTestCase(TestCase):
 
     def test_create_activity(self):
 
-        activity = iati_factory.ActivityFactory.create()
-        organisation = iati_factory.OrganisationFactory.create()
-        org_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        org_role = iati_factory.OrganisationRoleFactory.create(code=1)
+        iati_version = codelist_factory.VersionFactory.create(code="2.02")
 
         data = {
-            "ref": 'GB-COH-03580586',
-            "activity": activity.id,
-            "organisation": organisation.id,
-            "type": {
-                "code": org_type.code,
+            "iati_identifier": 'IATI-0001',
+            'iati_standard_version': {
+                "code": iati_version.code, # should be ignored
                 "name": 'irrelevant',
             },
-            "role": {
-                "code": org_role.code,
-                "name": 'irrelevant',
-            },
+            "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
         }
 
         res = self.c.post(
-                "/api/activities/{}/activitys/?format=json".format(activity.id), 
+                "/api/activities/?format=json", 
                 data,
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 201, res.json())
 
-        instance = iati_models.ActivityActivity.objects.get(pk=res.json()['id'])
+        instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.id, data['organisation'])
-        self.assertEqual(instance.type.code, str(data['type']['code']))
-        self.assertEqual(instance.role.code, str(data['role']['code']))
+        self.assertEqual(instance.iati_identifier, data['iati_identifier'])
+        self.assertEqual(instance.id, data['iati_identifier'])
+        self.assertEqual(instance.iati_standard_version.code, "2.02")
 
     def test_update_activity(self):
-        participating_org = iati_factory.ActivityFactory.create()
-        
-        org_type = iati_factory.OrganisationTypeFactory.create(code=22)
-        org_role = iati_factory.OrganisationRoleFactory.create(code=22)
+        activity = iati_factory.ActivityFactory.create()
+        iati_version = codelist_factory.VersionFactory.create(code="2.02")
 
         data = {
-            "ref": 'GB-COH-03580586',
-            "activity": participating_org.activity.id,
-            "organisation": participating_org.organisation.id,
-            "type": {
-                "code": org_type.code,
+            "iati_identifier": 'IATI-0001',
+            'iati_standard_version': {
+                "code": iati_version.code, # should be ignored
                 "name": 'irrelevant',
             },
-            "role": {
-                "code": org_role.code,
-                "name": 'irrelevant',
-            },
+            "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
+            "humanitarian": "1", 
+
         }
 
         res = self.c.put(
-                "/api/activities/{}/activitys/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                "/api/activities/{}/?format=json".format(activity.id), 
                 data,
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 200, res.json())
 
-        instance = iati_models.ActivityActivity.objects.get(ref=data['ref'])
+        instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.id, data['organisation'])
-        self.assertEqual(instance.type.code, str(data['type']['code']))
-        self.assertEqual(instance.role.code, str(data['role']['code']))
+        self.assertEqual(instance.iati_identifier, data['iati_identifier'])
+        self.assertEqual(instance.id, data['iati_identifier'])
+        self.assertEqual(instance.iati_standard_version.code, "2.02")
+        self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
 
 
     def test_delete_activity(self):
-        participating_org = iati_factory.ActivityFactory.create()
+        activity = iati_factory.ActivityFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/activitys/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                "/api/activities/{}/?format=json".format(activity.id), 
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ActivityActivity.objects.get(pk=participating_org.id)
+            instance = iati_models.Activity.objects.get(pk=activity.id)
 
 
 class ReportingOrganisationSaveTestCase(TestCase):

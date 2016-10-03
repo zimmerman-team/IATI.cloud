@@ -92,30 +92,25 @@ class Parse(IatiParser):
         linked_data_uri = element.attrib.get('linked-data-uri')
         default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
 
-        if not activity_id:
-            raise RequiredFieldError(
-                "iati-identifier",
-                "text", 
-                "required element empty")
+        old_activity = self.get_or_none(models.Activity, id=instance.iati_identifier)
 
-        old_activity = self.get_or_none(models.Activity, id=activity_id)
-
+        # TODO: how do we handle this in IATI studio? - 2016-10-03
         if old_activity and not self.force_reparse:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
             old_activity.save()
 
-            if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
+            if instance.last_updated_datetime and instance.last_updated_datetime == old_activity.last_updated_datetime:
                 raise NoUpdateRequired('activity', 'already up to date')
 
-            if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
+            if instance.last_updated_datetime and (instance.last_updated_datetime < old_activity.last_updated_datetime):
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is less than existing activity",
                     iati_identifier)
 
-            if not last_updated_datetime and old_activity.last_updated_datetime:
+            if not instance.last_updated_datetime and old_activity.last_updated_datetime:
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
@@ -130,20 +125,6 @@ class Parse(IatiParser):
             old_activity.delete()
 
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
-
-        activity = models.Activity()
-        activity.id = activity_id
-        activity.iati_identifier = iati_identifier[0]
-        activity.default_lang = default_lang
-        if hierarchy:
-            activity.hierarchy = hierarchy
-        activity.humanitarian = self.makeBoolNone(humanitarian)
-        activity.xml_source_ref = self.iati_source.ref
-        activity.last_updated_datetime = last_updated_datetime
-        activity.linked_data_uri = linked_data_uri
-        activity.default_currency = default_currency
-        activity.iati_standard_version_id = self.VERSION
-        activity.published = True
 
         # for later reference
         self.default_lang = default_lang
@@ -236,18 +217,35 @@ class Parse(IatiParser):
         type:40
     
         tag:participating-org"""
+        ref = element.attrib.get('ref', '')
+        activity_id = element.attrib.get('activity-id', None)
 
-        validated = validators.activity_participating_org(
-            self.get_model('Activity'),
-            element.attrib.get('ref'),
-            element.attrib.get('type'),
-            element.attrib.get('role'),
-            element.attrib.get('activity-id'),
-        )
+        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
-        instance = handle_errors(element, validated)
+        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
+        # simply because they don't know the ref.
+        # if not ref: raise RequiredFieldError("ref", "participating-org: ref must be specified")
+        if not role:
+            raise RequiredFieldError(
+                "participating-org",
+                "role", 
+                "required attribute missing")
 
-        self.register_model('ActivityParticipatingOrganisation', instance)
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+
+        activity = self.get_model('Activity')
+        participating_organisation = models.ActivityParticipatingOrganisation()
+        participating_organisation.ref = ref
+        participating_organisation.normalized_ref = normalized_ref
+        participating_organisation.type = org_type  
+        participating_organisation.activity = activity
+        participating_organisation.organisation = organisation
+        participating_organisation.role = role
+        participating_organisation.org_activity_id = activity_id
+
+        self.register_model('ActivityParticipatingOrganisation', participating_organisation)
 
         return element
 
