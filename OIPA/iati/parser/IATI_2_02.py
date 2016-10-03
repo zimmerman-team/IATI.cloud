@@ -75,47 +75,40 @@ class Parse(IatiParser):
 
         tag:iati-activity"""
 
-        iati_identifier = element.xpath('iati-identifier/text()')
+        validated = validators.activity(
+            element.xpath('iati-identifier/text()')
+            element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+            element.attrib.get('hierarchy')
+            element.attrib.get('humanitarian')
+            element.attrib.get('last-updated-datetime')
+            element.attrib.get('linked-data-uri')
+            element.attrib.get('default-currency'),
+            self.iati_source_ref,
+            self.VERSION,
+            published=True,
+        )
 
-        if len(iati_identifier) < 1:
-            raise ValidationError(
-                "iati-activity",
-                "iati-identifier",
-                "no iati-identifier found")
-        
-        activity_id = self._normalize(iati_identifier[0])
+        instance = handle_errors(element, validated)
 
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
-        hierarchy = element.attrib.get('hierarchy')
-        humanitarian = element.attrib.get('humanitarian')
-        last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        linked_data_uri = element.attrib.get('linked-data-uri')
-        default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
+        old_activity = self.get_or_none(models.Activity, id=instance.iati_identifier)
 
-        if not activity_id:
-            raise RequiredFieldError(
-                "iati-identifier",
-                "text", 
-                "required element empty")
-
-        old_activity = self.get_or_none(models.Activity, id=activity_id)
-
+        # TODO: how do we handle this in IATI studio? - 2016-10-03
         if old_activity and not self.force_reparse:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
             old_activity.save()
 
-            if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
+            if instance.last_updated_datetime and instance.last_updated_datetime == old_activity.last_updated_datetime:
                 raise NoUpdateRequired('activity', 'already up to date')
 
-            if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
+            if instance.last_updated_datetime and (instance.last_updated_datetime < old_activity.last_updated_datetime):
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is less than existing activity",
                     iati_identifier)
 
-            if not last_updated_datetime and old_activity.last_updated_datetime:
+            if not instance.last_updated_datetime and old_activity.last_updated_datetime:
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
@@ -130,20 +123,6 @@ class Parse(IatiParser):
             old_activity.delete()
 
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
-
-        activity = models.Activity()
-        activity.id = activity_id
-        activity.iati_identifier = iati_identifier[0]
-        activity.default_lang = default_lang
-        if hierarchy:
-            activity.hierarchy = hierarchy
-        activity.humanitarian = self.makeBoolNone(humanitarian)
-        activity.xml_source_ref = self.iati_source.ref
-        activity.last_updated_datetime = last_updated_datetime
-        activity.linked_data_uri = linked_data_uri
-        activity.default_currency = default_currency
-        activity.iati_standard_version_id = self.VERSION
-        activity.published = True
 
         # for later reference
         self.default_lang = default_lang

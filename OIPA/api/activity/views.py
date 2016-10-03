@@ -5,7 +5,7 @@ from api.activity import serializers as activity_serializers
 from api.activity import filters
 from api.generics.filters import DistanceFilter
 from api.generics.filters import SearchFilter
-from api.generics.views import DynamicListView, DynamicDetailView
+from api.generics.views import DynamicListView, DynamicDetailView, DynamicListCRUDView, DynamicDetailCRUDView
 from api.transaction.serializers import TransactionSerializer
 from api.activity.tree_serializers import ActivityTree
 from api.transaction.filters import TransactionFilter
@@ -184,7 +184,7 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(DynamicListView):
+class ActivityList(DynamicListCRUDView):
     """
     Returns a list of IATI Activities stored in OIPA.
 
@@ -289,13 +289,13 @@ class ActivityList(DynamicListView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-    fields = (
-        'url', 
-        'iati_identifier', 
-        'title', 
-        'descriptions', 
-        'transactions', 
-        'reporting_organisations')
+#     fields = (
+#         'url', 
+#         'iati_identifier', 
+#         'title', 
+#         'descriptions', 
+#         'transactions', 
+#         'reporting_organisations')
 
     always_ordering = 'id'
 
@@ -314,7 +314,7 @@ class ActivityList(DynamicListView):
         'activity_plus_child_budget_value')
 
 
-class ActivityDetail(DynamicDetailView):
+class ActivityDetail(DynamicDetailCRUDView):
     """
     Returns detailed information about Activity.
 

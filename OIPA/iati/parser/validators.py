@@ -49,42 +49,106 @@ def makeBool(text):
         return True
     return False
 
+def makeBoolNone(text):
+    if type(text) == bool:
+        return text
+    if text == '1':
+        return True
+    elif text == '0':
+        return False
+
+    return None
+
+def validate_date(unvalidated_date):
+
+    if unvalidated_date:
+        unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
+    else:
+        return None
+
+    #check if standard data parser works
+        try:
+            date = dateutil.parser.parse(unvalidated_date, ignoretz=True)
+            if date.year >= 1900 and date.year <= 2100:
+                return date
+            else:
+                return None
+        except:
+            raise RequiredFieldError(
+                    "TO DO",
+                    "iso-date",
+                    "Unspecified or invalid. Date should be of type xml:date.")
+
+
+def codelist(iati_name, model, code):
+    warnings = []
+    errors = []
+
+    if not code:
+        errors.append(
+            RequiredFieldError(
+                iati_name,
+                "ref",
+                ))
+        return {
+            errors: errors,
+            warnings: warnings,
+        }
+
+    instance = get_or_none(model, code)
+
+    if not instance:
+        errors.append(
+            RequiredFieldError(
+                iati_name,
+                "ref",
+                "not found on the accompanying code list"
+                ))
+
+    if len(errors):
+        return {
+            "warnings": warnings,
+            "errors": errors,
+        }
+
+    return instance
 
 def activity(
         iati_identifier,
-        org_type,
-        secondary_reporter,
+        default_lang,
+        hierarchy,
+        humanitarian,
+        last_updated_datetime,
+        linked_data_uri,
+        default_currency,
+        xml_source_ref=None, # if parsed
+        iati_standard_version="2.02",
+        published=False,
         ):
-
-        organisation = get_or_none(models.Organisation, pk=ref)
-        org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
 
         warnings = []
         errors = []
 
-        if not ref:
+        if not hierarchy: hierarchy = 1
+
+        try:
+            last_updated_datetime = validate_date(last_updated_datetime)
+        except RequiredFieldError:
             errors.append(
                 RequiredFieldError(
-                    "reporting-org",
-                    "ref",
+                    "activity",
+                    "last-updated-datetime",
+                    "invalid date",
                     ))
 
-        if not org_type:
+
+        activity_id = normalize(iati_identifier)
+
+        if not activity_id:
             errors.append(
                 RequiredFieldError(
-                    "reporting-org",
-                    "type",
-                    ))
-
-        if not secondary_reporter:
-            secondary_reporter = False
-
-        if not organisation:
-            warnings.append(
-                RequiredFieldError(
-                    "reporting-org",
-                    "organisation",
-                    "organisation with ref {} does not exist in organisation standard".format(ref)
+                    "activity",
+                    "iati-identifier",
                     ))
 
 
@@ -94,14 +158,20 @@ def activity(
                 "errors": errors,
             }
 
-        instance = models.ActivityReportingOrganisation()
-        instance.ref = ref
-        instance.normalized_ref = normalize(ref)
-        instance.type = org_type  
-        instance.activity = activity
-        instance.organisation = organisation
-        instance.secondary_reporter = makeBool(secondary_reporter)
+        print(humanitarian)
 
+        instance = models.Activity()
+        instance.id = activity_id
+        instance.iati_identifier = iati_identifier
+        instance.default_lang = default_lang
+        instance.hierarchy = hierarchy
+        instance.humanitarian = makeBoolNone(humanitarian)
+        instance.xml_source_ref = xml_source_ref
+        instance.last_updated_datetime = last_updated_datetime
+        instance.linked_data_uri = linked_data_uri
+        instance.default_currency = default_currency
+        instance.iati_standard_version_id = iati_standard_version
+        instance.published = published
 
         return {
             "warnings": warnings,

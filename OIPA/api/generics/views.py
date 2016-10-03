@@ -1,4 +1,4 @@
-from rest_framework.generics import RetrieveAPIView, GenericAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.generics.serializers import DynamicFieldsModelSerializer
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
@@ -77,6 +77,17 @@ class DynamicListView(DynamicView, ListAPIView):
     """
 
 class DynamicDetailView(DynamicView, RetrieveAPIView):
+    """
+    List view with dynamic properties
+    """
+
+
+class DynamicListCRUDView(DynamicView, ListCreateAPIView):
+    """
+    List view with dynamic properties
+    """
+
+class DynamicDetailCRUDView(DynamicView, RetrieveUpdateDestroyAPIView):
     """
     List view with dynamic properties
     """
