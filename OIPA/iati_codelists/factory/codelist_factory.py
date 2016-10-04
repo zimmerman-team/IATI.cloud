@@ -95,7 +95,7 @@ class ActivityStatusFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.ActivityStatus
 
-    code = 1
+    code = "1"
     name = 'Pipeline/identification'
 
 

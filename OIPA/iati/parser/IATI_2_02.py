@@ -127,29 +127,29 @@ class Parse(IatiParser):
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
 
         # for later reference
-        self.default_lang = default_lang
+        self.default_lang = instance.default_lang
 
-        self.register_model('Activity', activity)
+        self.register_model('Activity', instance)
         return element
 
-    def iati_activities__iati_activity__iati_identifier(self, element):
-        """
-        attributes:
+    # def iati_activities__iati_activity__iati_identifier(self, element):
+    #     """
+    #     attributes:
 
-        tag:iati-identifier
-        """
-        iati_identifier = element.text
+    #     tag:iati-identifier
+    #     """
+    #     iati_identifier = element.text
             
-        if not iati_identifier: 
-            raise RequiredFieldError(
-                "iati-identifier",
-                "text",
-                "required element empty")
+    #     if not iati_identifier: 
+    #         raise RequiredFieldError(
+    #             "iati-identifier",
+    #             "text",
+    #             "required element empty")
 
-        activity = self.get_model('Activity')
-        activity.iati_identifier = iati_identifier
+    #     activity = self.get_model('Activity')
+    #     activity.iati_identifier = iati_identifier
 
-        return element
+    #     return element
 
     def iati_activities__iati_activity__reporting_org(self, element):
         """attributes:
@@ -166,7 +166,7 @@ class Parse(IatiParser):
             element.attrib.get('secondary_reporter'),
         )
 
-        instance = handle_errors(element, validated)
+        instance = self.handle_errors(element, validated)
 
         if not instance.organisation:
             # create an organisation
@@ -309,7 +309,7 @@ class Parse(IatiParser):
             element.attrib.get('type'),
         )
 
-        instance = handle_errors(element, validated)
+        instance = self.handle_errors(element, validated)
 
         self.register_model('Description', instance)
         return element
@@ -379,22 +379,13 @@ class Parse(IatiParser):
 
         tag:activity-status"""
 
-        code = element.attrib.get('code')
-        activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
-
-        if not code: 
-            raise RequiredFieldError(
-                "activity-status",
-                "code", 
-                "required attribute missing")
-
-        if not activity_status:
-            raise ValidationError(
-                "activity-status",
-                "code",
-                "not found on the accompanying code list")
-
         activity = self.get_model('Activity')
+
+        validated = validators.activity_status(
+                element.attrib.get('code'),
+                )
+
+        activity_status = self.handle_errors(element, validated)
         activity.activity_status = activity_status
 
         return element

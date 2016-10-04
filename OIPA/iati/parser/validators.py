@@ -4,6 +4,7 @@ from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
+import dateutil.parser
 
 from iati.parser.exceptions import *
 
@@ -67,17 +68,17 @@ def validate_date(unvalidated_date):
         return None
 
     #check if standard data parser works
-        try:
-            date = dateutil.parser.parse(unvalidated_date, ignoretz=True)
-            if date.year >= 1900 and date.year <= 2100:
-                return date
-            else:
-                return None
-        except:
-            raise RequiredFieldError(
-                    "TO DO",
-                    "iso-date",
-                    "Unspecified or invalid. Date should be of type xml:date.")
+    try:
+        date = dateutil.parser.parse(unvalidated_date, ignoretz=True)
+        if date.year >= 1900 and date.year <= 2100:
+            return date
+        else:
+            return None
+    except:
+        raise RequiredFieldError(
+                "TO DO",
+                "iso-date",
+                "Unspecified or invalid. Date should be of type xml:date.")
 
 
 def codelist(iati_name, model, code):
@@ -95,23 +96,23 @@ def codelist(iati_name, model, code):
             warnings: warnings,
         }
 
-    instance = get_or_none(model, code)
+    
+    instance = get_or_none(model, pk=code)
 
     if not instance:
         errors.append(
             RequiredFieldError(
                 iati_name,
-                "ref",
+                "code",
                 "not found on the accompanying code list"
                 ))
 
-    if len(errors):
-        return {
-            "warnings": warnings,
-            "errors": errors,
-        }
+    return {
+        "warnings": warnings,
+        "errors": errors,
+        "instance": instance,
+    }
 
-    return instance
 
 def activity(
         iati_identifier,
@@ -131,6 +132,9 @@ def activity(
 
         if not hierarchy: hierarchy = 1
 
+        default_currency = get_or_none(models.Currency, pk=default_currency)
+        iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
+
         try:
             last_updated_datetime = validate_date(last_updated_datetime)
         except RequiredFieldError:
@@ -140,6 +144,7 @@ def activity(
                     "last-updated-datetime",
                     "invalid date",
                     ))
+            last_updated_datetime = None
 
 
         activity_id = normalize(iati_identifier)
@@ -150,15 +155,6 @@ def activity(
                     "activity",
                     "iati-identifier",
                     ))
-
-
-        if len(errors):
-            return {
-                "warnings": warnings,
-                "errors": errors,
-            }
-
-        print(humanitarian)
 
         instance = models.Activity()
         instance.id = activity_id
@@ -178,6 +174,10 @@ def activity(
             "errors": errors,
             "instance": instance,
         }
+
+def activity_status(code):
+    return codelist('activity-status', codelist_models.ActivityStatus, code)
+
 
 
 def activity_reporting_org(
@@ -217,15 +217,6 @@ def activity_reporting_org(
                     "organisation",
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
-
-
-        # print(warnings)
-
-        if len(errors):
-            return {
-                "warnings": warnings,
-                "errors": errors,
-            }
 
         instance = models.ActivityReportingOrganisation()
         instance.ref = ref

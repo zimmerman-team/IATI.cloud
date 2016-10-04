@@ -1075,6 +1075,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
 
     def update(self, instance, validated_data):
+        print(validated_data)
         validated = validators.activity(
             validated_data.get('iati_identifier'),
             validated_data.get('default_lang'),
@@ -1088,6 +1089,18 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
         update_instance = handle_errors(validated)
         update_instance.id = instance.id
+
+        if 'activity_status' in validated_data:
+            activity_status_validated = validators.activity_status(
+                    validated_data.get('activity_status', {}).get('code')
+                    )
+            activity_status = handle_errors(activity_status_validated)
+            update_instance.activity_status = activity_status
+        
+
+
+
+
         update_instance.save()
 
         return update_instance

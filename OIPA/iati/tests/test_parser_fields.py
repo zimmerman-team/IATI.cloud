@@ -338,24 +338,24 @@ class ActivityTestCase(ParserSetupTestCase):
 
         self.assertEqual(activity.linked_data_uri, linked_data_default)
 
-    def test_iati_identifier(self):
-        """
-        iati_activities__iati_activity__iati_identifier
-        should raise exception if not present
-        """
-        iati_202 = copy_xml_tree(self.iati_202)
-        iati_identifier = iati_202.find('iati-activity').find('iati-identifier')
+    # def test_iati_identifier(self):
+    #     """
+    #     iati_activities__iati_activity__iati_identifier
+    #     should raise exception if not present
+    #     """
+    #     iati_202 = copy_xml_tree(self.iati_202)
+    #     iati_identifier = iati_202.find('iati-activity').find('iati-identifier')
 
-        self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
-        activity = self.parser_202.get_model('Activity')
+    #     self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
+    #     activity = self.parser_202.get_model('Activity')
 
-        self.assertEqual(activity.iati_identifier, iati_identifier.text)
+    #     self.assertEqual(activity.iati_identifier, iati_identifier.text)
 
-        # empty iati-idenifier should throw exception
-        iati_identifier.text = ""
+    #     # empty iati-idenifier should throw exception
+    #     iati_identifier.text = ""
 
-        with self.assertRaises(Exception):
-            self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
+    #     with self.assertRaises(Exception):
+    #         self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
 
     def test_humanitarian_flag_true(self):
         """
