@@ -76,18 +76,65 @@ def save_narratives(instance, data):
         # instance = instances.get(pk=fk_id)
         instance.delete()
 
-def handle_errors(validated):
-    warnings = validated['warnings'] 
-    errors = validated['errors'] 
-    instance = validated['instance']
+def handle_errors(validated, **rest_validated):
+    warnings = validated['warnings'] # a list
+    errors = validated['errors']
+    validated_data = validated['validated_data'] # a dict
+
+    error_dict = {}
+
+    for error in errors:
+        error_dict[error.field] = error.message
+
+
+    for key, vals in rest_validated.iteritems():
+
+        validated_data.update({
+            key: vals['validated_data']
+        })
+        print(key)
+        print('updating validated_data...')
+        print(vals['errors'])
+        print('updatingggggg')
+
+        if len(vals['errors']):
+            error_dict[key] = vals['errors']
+            # for error in vals['errors']:
+            #     error_dict[error.field] = error.message
+
+    if len(error_dict):
+        raise ValidationError(error_dict)
+        
+    return validated_data
+
+#     validated_data.update({ "narratives": narrative_validated_data })
+
+def handle_errors(validated, validated_narratives=None):
+    warnings = validated['warnings'] # a list
+    errors = validated['errors']
+    validated_data = validated['validated_data'] # a dict
+
+    error_dict = {}
 
     if len(errors):
         for error in errors:
-            raise ValidationError({
-                error.field: error.message
-                })
+            error_dict[error.field] = error.message
 
-    return instance
+    if validated_narratives:
+        narrative_warnings = validated_narratives['warnings']
+        narrative_errors = validated_narratives['errors']
+        narrative_validated_data = validated_narratives['validated_data']
+
+        if len(narrative_errors):
+            for error in narrative_errors:
+                error_dict[error.field] = error.message
+
+        if len(error_dict):
+            raise ValidationError(error_dict)
+
+        validated_data.update({ "narratives": narrative_validated_data })
+
+    return validated_data
 
 
 class NestedWriteMixin():
@@ -374,41 +421,40 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'activity',
         )
 
-    def create(self, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+        narratives = data.pop('narratives', [])
 
         validated = validators.activity_reporting_org(
             activity,
-            validated_data.get('normalized_ref'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('secondary_reporter')
+            data.get('normalized_ref'),
+            data.get('type', {}).get('code'),
+            data.get('secondary_reporter')
         )
-            
-        instance = handle_errors(validated)
-        instance.save()
 
-        save_narratives(instance, narratives)
+        validated_narratives = validators.narratives(activity, narratives)
+
+        return handle_errors(validated, validated_narratives)
+
+
+    def create(self, validated_data):
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.ActivityReportingOrganisation.objects.create(**validated_data)
+
+        # save_narratives(instance, narratives)
 
         return instance
 
 
     def update(self, instance, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+        narratives = validated_data.pop('narratives', [])
 
-        validated = validators.activity_reporting_org(
-            activity,
-            validated_data.get('normalized_ref'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('secondary_reporter')
-        )
-
-        update_instance = handle_errors(validated)
+        update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        save_narratives(instance, narratives)
+        # save_narratives(instance, narratives)
 
         return update_instance
 
@@ -442,24 +488,40 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
 
         return instance
 
-
-    def update(self, instance, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+        narratives = data.pop('narratives', [])
 
         validated = validators.activity_participating_org(
             activity,
-            validated_data.get('normalized_ref'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('role', {}).get('code'),
-            validated_data.get('activity_id')
+            data.get('normalized_ref'),
+            data.get('type', {}).get('code'),
+            data.get('role', {}).get('code'),
+            data.get('activity_id')
         )
 
-        update_instance = handle_errors(validated)
+        validated_narratives = validators.narratives(activity, narratives)
+
+        return handle_errors(validated, validated_narratives)
+
+    def create(self, validated_data):
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.ActivityParticipatingOrganisation.objects.create(**validated_data)
+
+        # save_narratives(instance, narratives)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        narratives = validated_data.pop('narratives', [])
+
+        update_instance = iati_models.ActivityParticipatingOrganisation(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        save_narratives(instance, narratives)
+        # save_narratives(instance, narratives)
 
         return update_instance
 
@@ -510,37 +572,37 @@ class DescriptionSerializer(serializers.ModelSerializer):
 
     activity = serializers.CharField(write_only=True)
 
-    def create(self, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+        narratives = data.pop('narratives', [])
 
         validated = validators.activity_description(
             activity,
-            validated_data.get('type', {}).get('code'),
+            data.get('type', {}).get('code'),
         )
-            
-        instance = handle_errors(validated)
-        instance.save()
 
-        save_narratives(instance, narratives)
+        validated_narratives = validators.narratives(activity, narratives)
+
+        return handle_errors(validated, validated_narratives)
+
+    def create(self, validated_data):
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.Description.objects.create(**validated_data)
+
+        # save_narratives(instance, narratives)
 
         return instance
 
 
     def update(self, instance, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
+        narratives = validated_data.pop('narratives', [])
 
-        validated = validators.activity_description(
-            activity,
-            validated_data.get('type', {}).get('code'),
-        )
-
-        update_instance = handle_errors(validated)
+        update_instance = iati_models.Description(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        save_narratives(instance, narratives)
+        # save_narratives(instance, narratives)
 
         return update_instance
 
@@ -1056,52 +1118,40 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
-    def create(self, validated_data):
+    def validate(self, data):
         validated = validators.activity(
-            validated_data.get('iati_identifier'),
-            validated_data.get('default_lang'),
-            validated_data.get('hierarchy'),
-            validated_data.get('humanitarian'),
-            validated_data.get('last_updated_datetime'),
-            validated_data.get('linked_data_uri'),
-            validated_data.get('default_currency'),
-            validated_data.get('xml_source_ref'),
+            data.get('iati_identifier'),
+            data.get('default_lang'),
+            data.get('hierarchy'),
+            data.get('humanitarian'),
+            data.get('last_updated_datetime'),
+            data.get('linked_data_uri'),
+            data.get('default_currency'),
+            data.get('xml_source_ref'),
+            data.get('activity_status', {}).get('code'),
         )
-            
-        instance = handle_errors(validated)
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        instance = iati_models.Activity(**validated_data)
         instance.save()
 
         return instance
 
 
     def update(self, instance, validated_data):
-        print(validated_data)
-        validated = validators.activity(
-            validated_data.get('iati_identifier'),
-            validated_data.get('default_lang'),
-            validated_data.get('hierarchy'),
-            validated_data.get('humanitarian'),
-            validated_data.get('last_updated_datetime'),
-            validated_data.get('linked_data_uri'),
-            validated_data.get('default_currency'),
-            validated_data.get('xml_source_ref'),
-        )
+        activity_status = validated_data.pop('activity_status', None)
 
-        update_instance = handle_errors(validated)
+        update_instance = iati_models.Activity(**validated_data)
         update_instance.id = instance.id
 
-        if 'activity_status' in validated_data:
-            activity_status_validated = validators.activity_status(
-                    validated_data.get('activity_status', {}).get('code')
-                    )
-            activity_status = handle_errors(activity_status_validated)
+        if activity_status:
             update_instance.activity_status = activity_status
-        
-
-
-
 
         update_instance.save()
+
+        # save_narratives(instance, narratives)
 
         return update_instance
 
