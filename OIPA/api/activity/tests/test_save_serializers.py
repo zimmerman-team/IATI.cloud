@@ -47,7 +47,9 @@ class ActivitySaveTestCase(TestCase):
 
     def test_update_activity(self):
         activity = iati_factory.ActivityFactory.create()
+
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
+        activity_status = codelist_factory.ActivityStatusFactory.create()
 
         data = {
             "iati_identifier": 'IATI-0001',
@@ -57,6 +59,10 @@ class ActivitySaveTestCase(TestCase):
             },
             "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
             "humanitarian": "1", 
+            'activity_status': {
+                "code": activity_status.code, # should be ignored
+                "name": 'irrelevant',
+            },
 
         }
 
@@ -70,11 +76,13 @@ class ActivitySaveTestCase(TestCase):
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
+        print(instance.activity_status)
+
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
         self.assertEqual(instance.id, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
-
+        self.assertEqual(instance.activity_status.code, data['activity_status']['code'])
 
     def test_delete_activity(self):
         activity = iati_factory.ActivityFactory.create()
