@@ -118,6 +118,11 @@ class ReportingOrganisationSaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "secondary_reporter": 1,
+            "narratives": [
+                {
+                    "text": "text123"
+                }
+            ]
         }
 
         res = self.c.post(

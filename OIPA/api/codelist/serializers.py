@@ -10,7 +10,7 @@ class VocabularySerializer(serializers.Serializer):
 
 class CodelistSerializer(DynamicFieldsSerializer):
     code = serializers.CharField()
-    name = serializers.CharField()
+    name = serializers.CharField(required=False)
 
 class CodelistCategorySerializer(CodelistSerializer):
     category = CodelistSerializer()
@@ -28,6 +28,9 @@ class NarrativeSerializer(serializers.ModelSerializer):
             'text',
             'language',
         )
+
+    # def validate(self, data):
+    #     print('called validate...')
 
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)

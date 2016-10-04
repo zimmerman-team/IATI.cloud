@@ -30,39 +30,19 @@ class Parse(IatiParser):
         # set on activity (if set)
 
         default_lang = self.default_lang
-        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         text = element.text
 
-        if lang:
-            lang = lang.lower()
-
-        language = self.get_or_none(codelist_models.Language, code=lang)
-
-        if not parent:
-            raise ParserError(
-                "Unknown", 
-                "narrative", 
-                "parent object must be passed")
+        validated = validators.narrative(
+                parent,
+                self.get_model('Activity'),
+                default_lang,
+                lang,
+                text
+                )
+        narrative = self.handle_errors(element, validated)
 
         register_name = parent.__class__.__name__ + "Narrative"
-
-        if not language:
-            raise RequiredFieldError(
-                register_name,
-                "xml:lang",
-                "must specify xml:lang on iati-activity or xml:lang on the element itself")
-        if not text:
-            raise EmptyFieldError(
-                register_name,
-                "text", 
-                "empty narrative")
-
-        narrative = models.Narrative()
-        narrative.language = language
-        narrative.content = element.text
-        narrative.related_object = parent
-        narrative.activity = self.get_model('Activity')
-
         self.register_model(register_name, narrative)
 
     def iati_activities__iati_activity(self, element):
@@ -206,6 +186,15 @@ class Parse(IatiParser):
         tag:narrative
         """
         model = self.get_model('ActivityReportingOrganisation')
+
+        validated = validators.narrative(
+            self.get_model('Activity'),
+            element.attrib.get('ref'),
+            element.attrib.get('type'),
+            element.attrib.get('role'),
+            element.attrib.get('activity-id'),
+        )
+
         self.add_narrative(element, model)
 
         return element

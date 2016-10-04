@@ -55,6 +55,7 @@ class ActivityFactory(NoDatabaseFactory):
     iati_identifier = 'IATI-0001'
 
     iati_standard_version = SubFactory(VersionFactory)
+    default_lang = SubFactory(LanguageFactory)
     # iati_standard_version = VersionFactory()
 
 

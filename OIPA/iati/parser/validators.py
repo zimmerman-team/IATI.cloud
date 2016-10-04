@@ -81,6 +81,63 @@ def validate_date(unvalidated_date):
                 "Unspecified or invalid. Date should be of type xml:date.")
 
 
+def narrative(activity, default_lang, lang, text):
+    warnings = []
+    errors = []
+
+    if lang:
+        lang = lang.lower()
+
+    language = get_or_none(codelist_models.Language, code=lang)
+
+    if not language:
+        language = default_lang
+
+    if not language:
+        errors.append(
+            RequiredFieldError(
+                "narrative",
+                "xml:lang",
+                "must specify xml:lang on iati-activity or xml:lang on the element itself",
+                ))
+
+    if not text:
+        errors.append(
+            RequiredFieldError(
+                'narrative',
+                "text", 
+                "empty narrative",
+                ))
+    
+    return {
+        "warnings": warnings,
+        "errors": errors,
+        "validated_data": {
+            "language": language,
+            "content": text,
+        }
+    }
+
+def narratives(activity, narratives):
+    warnings = []
+    errors = []
+    validated_data = []
+
+    default_lang = activity.default_lang
+
+    for n in narratives:
+        print(n)
+        validated = narrative(activity, default_lang, n.get('language', {}).get('code'), n.get('content'))
+        warnings = warnings + validated['warnings']
+        errors = errors + validated['errors']
+        validated_data.append(validated['validated_data'])
+
+    return {
+        "warnings": warnings,
+        "errors": errors,
+        "validated_data": validated_data,
+    }
+
 def codelist(iati_name, model, code):
     warnings = []
     errors = []
@@ -91,11 +148,6 @@ def codelist(iati_name, model, code):
                 iati_name,
                 "ref",
                 ))
-        return {
-            errors: errors,
-            warnings: warnings,
-        }
-
     
     instance = get_or_none(model, pk=code)
 
@@ -110,7 +162,7 @@ def codelist(iati_name, model, code):
     return {
         "warnings": warnings,
         "errors": errors,
-        "instance": instance,
+        "validated_data": instance,
     }
 
 
@@ -123,6 +175,7 @@ def activity(
         linked_data_uri,
         default_currency,
         xml_source_ref=None, # if parsed
+        activity_status=None,
         iati_standard_version="2.02",
         published=False,
         ):
@@ -134,6 +187,7 @@ def activity(
 
         default_currency = get_or_none(models.Currency, pk=default_currency)
         iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
+        activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
 
         try:
             last_updated_datetime = validate_date(last_updated_datetime)
@@ -172,7 +226,20 @@ def activity(
         return {
             "warnings": warnings,
             "errors": errors,
-            "instance": instance,
+            "validated_data": {
+                "id": activity_id,
+                "iati_identifier": iati_identifier,
+                "default_lang": default_lang,
+                "hierarchy": hierarchy,
+                "humanitarian": humanitarian,
+                "xml_source_ref": xml_source_ref,
+                "last_updated_datetime": last_updated_datetime,
+                "linked_data_uri": linked_data_uri,
+                "default_currency": default_currency,
+                "activity_status": activity_status,
+                "iati_standard_version_id": iati_standard_version,
+                "published": published,
+            },
         }
 
 def activity_status(code):
@@ -218,19 +285,26 @@ def activity_reporting_org(
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
 
-        instance = models.ActivityReportingOrganisation()
-        instance.ref = ref
-        instance.normalized_ref = normalize(ref)
-        instance.type = org_type  
-        instance.activity = activity
-        instance.organisation = organisation
-        instance.secondary_reporter = makeBool(secondary_reporter)
+        # instance = models.ActivityReportingOrganisation()
+        # instance.ref = ref
+        # instance.normalized_ref = normalize(ref)
+        # instance.type = org_type  
+        # instance.activity = activity
+        # instance.organisation = organisation
+        # instance.secondary_reporter = makeBool(secondary_reporter)
 
 
         return {
             "warnings": warnings,
             "errors": errors,
-            "instance": instance,
+            "validated_data": { # maps to model fields
+                "activity": activity,
+                "ref": ref,
+                "normalized_ref": normalize(ref),
+                "type": org_type,
+                "secondary_reporter": secondary_reporter,
+                "organisation": organisation,
+            }
         }
         
 
@@ -245,20 +319,13 @@ def activity_description(
         warnings = []
         errors = []
 
-        if len(errors):
-            return {
-                "warnings": warnings,
-                "errors": errors,
-            }
-
-        instance = models.Description()
-        instance.type = description_type
-        instance.activity = activity
-
         return {
             "warnings": warnings,
             "errors": errors,
-            "instance": instance,
+            "validated_data": {
+                "activity": activity,
+                "type": description_type
+            },
         }
 
 
@@ -308,25 +375,17 @@ def activity_participating_org(
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
 
-        if len(errors):
-            return {
-                "warnings": warnings,
-                "errors": errors,
-            }
-
-        instance = models.ActivityParticipatingOrganisation()
-        instance.ref = ref
-        instance.normalized_ref = normalize(ref)
-        instance.type = org_type  
-        instance.role = org_role  
-        instance.activity = activity
-        instance.organisation = organisation
-        instance.org_activity_id = org_activity_id
-
-
         return {
             "warnings": warnings,
             "errors": errors,
-            "instance": instance,
+            "validated_data": {
+                "ref": ref,
+                "normalized_ref": normalize(ref),
+                "type": org_type,
+                "role": org_role,
+                "activity": activity,
+                "organisation": organisation,
+                "org_activity_id": org_activity_id,
+            },
         }
  
