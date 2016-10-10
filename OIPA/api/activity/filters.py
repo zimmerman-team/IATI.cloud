@@ -202,6 +202,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    policy_marker = ToManyFilter(
+        qs=ActivityPolicyMarker,
+        lookup_type='in',
+        name='code',
+        fk='activity',
+    )
+
     participating_organisation = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',

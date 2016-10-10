@@ -492,3 +492,14 @@ class TransactionAggregationFilter(TransactionFilter):
         name='transactionsector__sector__code',
         lookup_type='in',
     )
+
+    policy_marker = CommaSeparatedStickyCharFilter(
+        name='activity__activitypolicymarker__code',
+        lookup_type='in',
+    )
+
+    policy_marker_significance = CommaSeparatedStickyCharFilter(
+        name='activity__activitypolicymarker__significance',
+        lookup_type='in',
+    )
+
