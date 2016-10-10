@@ -432,38 +432,41 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
 
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
-        narratives = data.pop('narratives', [])
+        # narratives = data.pop('narratives', [])
 
         validated = validators.activity_reporting_org(
             activity,
             data.get('normalized_ref'),
             data.get('type', {}).get('code'),
-            data.get('secondary_reporter')
+            data.get('secondary_reporter'),
+            data.get('narratives')
         )
 
-        validated_narratives = validators.narratives(activity, narratives)
+        # validated_narratives = validators.narratives(activity, narratives)
 
-        return handle_errors(validated, validated_narratives)
+        return handle_errors(validated)
 
 
     def create(self, validated_data):
+        activity = validated_data.get('activity')
         narratives = validated_data.pop('narratives', [])
 
         instance = iati_models.ActivityReportingOrganisation.objects.create(**validated_data)
 
-        # save_narratives(instance, narratives)
+        save_narratives(instance, narratives, activity)
 
         return instance
 
 
     def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
         narratives = validated_data.pop('narratives', [])
 
         update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        # save_narratives(instance, narratives)
+        save_narratives(instance, narratives, activity)
 
         return update_instance
 
@@ -1178,7 +1181,13 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('default_finance_type', {}).get('code'),
             data.get('default_aid_type', {}).get('code'),
             data.get('default_tied_status', {}).get('code'),
-            data.get('title', {}),
+            data.get('planned_start'),
+            data.get('actual_start'),
+            data.get('start_date'),
+            data.get('planned_end'),
+            data.get('actual_end'),
+            data.get('end_date'),
+            data.get('title', {})
         )
 
         return handle_errors(validated)
@@ -1203,7 +1212,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         instance.default_finance_type = default_finance_type
         instance.default_aid_type = default_aid_type
         instance.default_tied_status = default_tied_status
-
 
         instance.save()
 

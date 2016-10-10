@@ -232,7 +232,10 @@ class ReportingOrganisationSaveTestCase(TestCase):
             "secondary_reporter": 1,
             "narratives": [
                 {
-                    "text": "text123"
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
                 }
             ]
         }
@@ -266,6 +269,14 @@ class ReportingOrganisationSaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "secondary_reporter": 1,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.put(
