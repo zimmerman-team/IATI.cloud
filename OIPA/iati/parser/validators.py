@@ -60,7 +60,24 @@ def makeBoolNone(text):
 
     return None
 
+def combine_validation(validations=[]):
+    warnings = []
+    errors = []
+    validated_data = {}
+
+    for validation in validations:
+        warnings.append(validation['warnings'])
+        errors.append(validation['errors'])
+        validated_data.update(validation['validated_data'])
+
+    return {
+        "warnings": warnings,
+        "errors": errors,
+        "validated_data": validated_data,
+    }
+
 def validate_date(unvalidated_date):
+    # datetime
 
     if unvalidated_date:
         unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
@@ -79,6 +96,13 @@ def validate_date(unvalidated_date):
                 "TO DO",
                 "iso-date",
                 "Unspecified or invalid. Date should be of type xml:date.")
+
+def validate_dates(*dates):
+    return combine_validation([ validate_date(date) for date in dates ])
+
+    # for date in dates:
+    #     validate_date()
+
 
 
 def narrative(activity_id, default_lang, lang, text):
@@ -180,6 +204,12 @@ def activity(
         default_finance_type=None,
         default_aid_type=None,
         default_tied_status=None,
+        planned_start=None,
+        actual_start=None,
+        start_date=None,
+        planned_end=None,
+        actual_end=None,
+        end_date=None,
         title={}, # important arg
         iati_standard_version="2.02",
         published=False,
@@ -212,6 +242,85 @@ def activity(
                     ))
             last_updated_datetime = None
 
+        try:
+            planned_start = validate_date(planned_start)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            planned_start = None
+
+
+        try:
+            actual_start = validate_date(actual_start)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            actual_start = None
+
+
+        try:
+            start_date = validate_date(start_date)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            start_date = None
+
+        try:
+            planned_end = validate_date(planned_end)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            planned_end = None
+
+        try:
+            actual_end = validate_date(actual_end)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            actual_end = None
+
+        try:
+            end_date = validate_date(end_date)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "planned-start",
+                    "invalid date",
+                    ))
+            end_date = None
+
+            # validate_dates(
+            #     last_updated_datetime,
+            #     planned_start,
+            #     actual_start,
+            #     start_date,
+            #     planned_end,
+            #     actual_end,
+            #     end_date
+            # ),
+
+
         if not default_lang:
             warnings.append(
                 RequiredFieldError(
@@ -243,6 +352,8 @@ def activity(
                     "activity",
                     "title__narratives",
                     ))
+
+        validate_dates()
 
         title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors)
         errors = errors + title_narratives['errors']
@@ -278,96 +389,12 @@ def activity(
             },
         }
 
-
-def transaction(
-        activity,
-
-        iati_identifier,
-        default_lang,
-        hierarchy,
-        humanitarian,
-        last_updated_datetime,
-        linked_data_uri,
-        default_currency,
-        xml_source_ref=None, # if parsed
-        activity_status=None,
-        activity_scope=None,
-        iati_standard_version="2.02",
-        published=False,
-        ):
-
-        warnings = []
-        errors = []
-
-        if not hierarchy: hierarchy = 1
-
-        default_currency = get_or_none(models.Currency, pk=default_currency)
-        iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
-        activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
-        activity_scope = get_or_none(models.ActivityScope, pk=activity_scope)
-
-        try:
-            last_updated_datetime = validate_date(last_updated_datetime)
-        except RequiredFieldError:
-            errors.append(
-                RequiredFieldError(
-                    "activity",
-                    "last-updated-datetime",
-                    "invalid date",
-                    ))
-            last_updated_datetime = None
-
-
-        activity_id = normalize(iati_identifier)
-
-        if not activity_id:
-            errors.append(
-                RequiredFieldError(
-                    "activity",
-                    "iati-identifier",
-                    ))
-
-        instance = models.Activity()
-        instance.id = activity_id
-        instance.iati_identifier = iati_identifier
-        instance.default_lang = default_lang
-        instance.hierarchy = hierarchy
-        instance.humanitarian = makeBoolNone(humanitarian)
-        instance.xml_source_ref = xml_source_ref
-        instance.last_updated_datetime = last_updated_datetime
-        instance.linked_data_uri = linked_data_uri
-        instance.default_currency = default_currency
-        instance.iati_standard_version_id = iati_standard_version
-        instance.published = published
-
-        return {
-            "warnings": warnings,
-            "errors": errors,
-            "validated_data": {
-                "id": activity_id,
-                "iati_identifier": iati_identifier,
-                "default_lang": default_lang,
-                "hierarchy": hierarchy,
-                "humanitarian": humanitarian,
-                "xml_source_ref": xml_source_ref,
-                "last_updated_datetime": last_updated_datetime,
-                "linked_data_uri": linked_data_uri,
-                "default_currency": default_currency,
-                "activity_status": activity_status,
-                "iati_standard_version_id": iati_standard_version,
-                "published": published,
-            },
-        }
-
-def activity_status(code):
-    return codelist('activity-status', codelist_models.ActivityStatus, code)
-
-
 def activity_reporting_org(
         activity,
         ref,
         org_type,
         secondary_reporter,
+        narratives_data=[],
         ):
 
         organisation = get_or_none(models.Organisation, pk=ref)
@@ -401,14 +428,10 @@ def activity_reporting_org(
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
 
-        # instance = models.ActivityReportingOrganisation()
-        # instance.ref = ref
-        # instance.normalized_ref = normalize(ref)
-        # instance.type = org_type  
-        # instance.activity = activity
-        # instance.organisation = organisation
-        # instance.secondary_reporter = makeBool(secondary_reporter)
-
+        print(narratives_data)
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -420,6 +443,7 @@ def activity_reporting_org(
                 "type": org_type,
                 "secondary_reporter": secondary_reporter,
                 "organisation": organisation,
+                "narratives": validated_narratives['validated_data'],
             }
         }
         
