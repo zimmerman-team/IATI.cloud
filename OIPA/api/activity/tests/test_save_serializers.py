@@ -21,6 +21,14 @@ class ActivitySaveTestCase(TestCase):
     def test_create_activity(self):
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
+        language = codelist_factory.LanguageFactory.create()
+        activity_status = codelist_factory.ActivityStatusFactory.create()
+        activity_scope = codelist_factory.ActivityScopeFactory.create()
+        collaboration_type = codelist_factory.CollaborationTypeFactory.create()
+        default_flow_type = codelist_factory.FlowTypeFactory.create()
+        default_finance_type = codelist_factory.FinanceTypeFactory.create()
+        default_aid_type = codelist_factory.AidTypeFactory.create()
+        default_tied_status = codelist_factory.TiedStatusFactory.create()
 
         data = {
             "iati_identifier": 'IATI-0001',
@@ -29,6 +37,47 @@ class ActivitySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
+            "humanitarian": "1", 
+            "xml_lang": "en",
+            'activity_status': {
+                "code": activity_status.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'activity_scope': {
+                "code": activity_scope.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'collaboration_type': {
+                "code": collaboration_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_flow_type': {
+                "code": default_flow_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_finance_type': {
+                "code": default_finance_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_aid_type': {
+                "code": default_aid_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_tied_status': {
+                "code": default_tied_status.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+
         }
 
         res = self.c.post(
@@ -44,12 +93,31 @@ class ActivitySaveTestCase(TestCase):
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
         self.assertEqual(instance.id, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
+        self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
+        self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
+        self.assertEqual(instance.scope.code, str(data['activity_scope']['code']))
+        self.assertEqual(instance.collaboration_type.code, str(data['collaboration_type']['code']))
+        self.assertEqual(instance.default_flow_type.code, str(data['default_flow_type']['code']))
+        self.assertEqual(instance.default_finance_type.code, str(data['default_finance_type']['code']))
+        self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
+        self.assertEqual(instance.default_tied_status.code, str(data['default_tied_status']['code']))
+
+        title = instance.title
+        title_narratives = title.narratives.all()
+        self.assertEqual(title_narratives[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(title_narratives[1].content, data['title']['narratives'][1]['text'])
 
     def test_update_activity(self):
         activity = iati_factory.ActivityFactory.create()
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
         activity_status = codelist_factory.ActivityStatusFactory.create()
+        activity_scope = codelist_factory.ActivityScopeFactory.create()
+        collaboration_type = codelist_factory.CollaborationTypeFactory.create()
+        default_flow_type = codelist_factory.FlowTypeFactory.create()
+        default_finance_type = codelist_factory.FinanceTypeFactory.create()
+        default_aid_type = codelist_factory.AidTypeFactory.create()
+        default_tied_status = codelist_factory.TiedStatusFactory.create()
 
         data = {
             "iati_identifier": 'IATI-0001',
@@ -62,6 +130,41 @@ class ActivitySaveTestCase(TestCase):
             'activity_status': {
                 "code": activity_status.code, # should be ignored
                 "name": 'irrelevant',
+            },
+            'activity_scope': {
+                "code": activity_scope.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'collaboration_type': {
+                "code": collaboration_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_flow_type': {
+                "code": default_flow_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_finance_type': {
+                "code": default_finance_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_aid_type': {
+                "code": default_aid_type.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            'default_tied_status': {
+                "code": default_tied_status.code, # should be ignored
+                "name": 'irrelevant',
+            },
+            "xml_lang": "en",
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
             },
 
         }
@@ -76,13 +179,22 @@ class ActivitySaveTestCase(TestCase):
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
-        print(instance.activity_status)
-
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
         self.assertEqual(instance.id, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
-        self.assertEqual(instance.activity_status.code, data['activity_status']['code'])
+        self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
+        self.assertEqual(instance.scope.code, str(data['activity_scope']['code']))
+        self.assertEqual(instance.collaboration_type.code, str(data['collaboration_type']['code']))
+        self.assertEqual(instance.default_flow_type.code, str(data['default_flow_type']['code']))
+        self.assertEqual(instance.default_finance_type.code, str(data['default_finance_type']['code']))
+        self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
+        self.assertEqual(instance.default_tied_status.code, str(data['default_tied_status']['code']))
+
+        title = instance.title
+        title_narratives = title.narratives.all()
+        self.assertEqual(title_narratives[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(title_narratives[1].content, data['title']['narratives'][1]['text'])
 
     def test_delete_activity(self):
         activity = iati_factory.ActivityFactory.create()
@@ -185,6 +297,92 @@ class ReportingOrganisationSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityReportingOrganisation.objects.get(ref=reporting_org.ref)
+
+class TitleSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_title(self):
+
+        activity = iati_factory.ActivityFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/titles/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Title.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+
+        narratives = instance.narratives()
+        self.assertEqual(narratives[0].content, data['narratives'][0])
+        self.assertEqual(narratives[1].content, data['narratives'][1])
+
+
+        instance = iati_models.Title.objects.get(pk=res.json()['id'])
+        # self.assertEqual(instance.type.code, data['type']['code'])
+
+    def test_update_title(self):
+        title = iati_factory.TitleFactory.create()
+
+        data = {
+            "activity": title.activity.id,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/titles/{}?format=json".format(title.activity.id, title.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Title.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+
+        narratives = instance.narratives()
+        self.assertEqual(narratives[0].content, data['narratives'][0])
+        self.assertEqual(narratives[1].content, data['narratives'][1])
+
+
+    def test_delete_title(self):
+        title = iati_factory.TitleFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/titles/{}?format=json".format(title.activity.id, title.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Title.objects.get(pk=title.id)
+
 
 
 class DescriptionSaveTestCase(TestCase):

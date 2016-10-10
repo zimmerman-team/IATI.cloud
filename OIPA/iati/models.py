@@ -73,7 +73,8 @@ class Activity(models.Model):
 
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
 
-    default_lang = models.CharField(max_length=2, blank=True, null=True)
+    # default_lang = models.CharField(max_length=2, blank=True, null=True)
+    default_lang = models.ForeignKey(Language, null=True, blank=True, default=None)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
     planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)

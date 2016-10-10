@@ -359,7 +359,7 @@ class ActivityDetail(DynamicDetailCRUDView):
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
 
-class ActivityTransactions(ListAPIView):
+class ActivityTransactions(ListCreateAPIView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
 

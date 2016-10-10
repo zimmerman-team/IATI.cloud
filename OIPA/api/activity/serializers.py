@@ -47,15 +47,21 @@ def get_or_none(model, validated_data, attr, default=None):
     except model.DoesNotExist:
         return default
 
-def save_narratives(instance, data):
+def save_narratives(instance, data, activity_instance):
     current_narratives = instance.narratives.all()
 
     current_ids = set([ i.id for i in current_narratives ])
-    new_ids = set([ i['id'] for i in data ])
+    old_ids = set(filter(lambda x: x is not None, [ i.get('id') for i in data ]))
+    new_data = filter(lambda x: x.get('id') is None, data)
 
-    to_remove = list(current_ids.difference(new_ids))
-    to_add = list(new_ids.difference(current_ids))
-    to_update = list(current_ids.intersection(new_ids))
+    # print(current_ids)
+    # print(old_ids)
+    # print(new_data)
+
+    to_remove = list(current_ids.difference(old_ids))
+    # to_add = list(new_ids.difference(current_ids))
+    to_add = new_data
+    to_update = list(current_ids.intersection(old_ids))
 
     for fk_id in to_update:
         narrative = iati_models.Narrative.objects.get(pk=fk_id)
@@ -65,16 +71,19 @@ def save_narratives(instance, data):
             setattr(narrative, field, data)
         narrative.save()
 
-    for fk_id in to_add:
-        narrative = iati_models.Narrative.objects.get(pk=fk_id)
-        narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
-
-        iati_models.Narrative.create(related_object=instance, **narrative_data)
-
     for fk_id in to_remove:
         instance = iati_models.Narrative.objects.get(pk=fk_id)
         # instance = instances.get(pk=fk_id)
         instance.delete()
+
+    for narrative_data in to_add:
+        # narrative = iati_models.Narrative.objects.get(pk=fk_id)
+        # narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+        iati_models.Narrative.objects.create(
+                related_object=instance, 
+                activity=activity_instance,
+                **narrative_data)
 
 def handle_errors(validated, **rest_validated):
     warnings = validated['warnings'] # a list
@@ -109,32 +118,32 @@ def handle_errors(validated, **rest_validated):
 
 #     validated_data.update({ "narratives": narrative_validated_data })
 
-def handle_errors(validated, validated_narratives=None):
-    warnings = validated['warnings'] # a list
-    errors = validated['errors']
-    validated_data = validated['validated_data'] # a dict
+# def handle_errors(validated, validated_narratives=None):
+#     warnings = validated['warnings'] # a list
+#     errors = validated['errors']
+#     validated_data = validated['validated_data'] # a dict
 
-    error_dict = {}
+#     error_dict = {}
 
-    if len(errors):
-        for error in errors:
-            error_dict[error.field] = error.message
+#     if len(errors):
+#         for error in errors:
+#             error_dict[error.field] = error.message
 
-    if validated_narratives:
-        narrative_warnings = validated_narratives['warnings']
-        narrative_errors = validated_narratives['errors']
-        narrative_validated_data = validated_narratives['validated_data']
+#     if validated_narratives:
+#         narrative_warnings = validated_narratives['warnings']
+#         narrative_errors = validated_narratives['errors']
+#         narrative_validated_data = validated_narratives['validated_data']
 
-        if len(narrative_errors):
-            for error in narrative_errors:
-                error_dict[error.field] = error.message
+#         if len(narrative_errors):
+#             for error in narrative_errors:
+#                 error_dict[error.field] = error.message
 
-        if len(error_dict):
-            raise ValidationError(error_dict)
+#         if len(error_dict):
+#             raise ValidationError(error_dict)
 
-        validated_data.update({ "narratives": narrative_validated_data })
+#         validated_data.update({ "narratives": narrative_validated_data })
 
-    return validated_data
+#     return validated_data
 
 
 class NestedWriteMixin():
@@ -561,6 +570,40 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
 # TODO: change to NarrativeContainer
 class TitleSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
+
+    # def validate(self, data):
+    #     activity = get_or_raise(iati_models.Activity, data, 'activity')
+    #     narratives = data.pop('narratives', [])
+
+    #     print('goggo')
+
+    #     validated = validators.activity_title(
+    #         activity,
+    #         narratives,
+    #     )
+
+    #     return handle_errors(validated)
+
+    # def create(self, validated_data):
+    #     narratives = validated_data.pop('narratives', [])
+
+    #     instance = iati_models.Title.objects.create(**validated_data)
+
+    #     save_narratives(instance, narratives)
+
+    #     return instance
+
+
+    # def update(self, instance, validated_data):
+    #     narratives = validated_data.pop('narratives', [])
+
+    #     update_instance = iati_models.Title(**validated_data)
+    #     update_instance.id = instance.id
+    #     update_instance.save()
+
+    #     save_narratives(instance, narratives)
+
+    #     return update_instance
 
     class Meta:
         model = iati_models.Title
@@ -1129,29 +1172,83 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('default_currency'),
             data.get('xml_source_ref'),
             data.get('activity_status', {}).get('code'),
+            data.get('scope', {}).get('code'),
+            data.get('collaboration_type', {}).get('code'),
+            data.get('default_flow_type', {}).get('code'),
+            data.get('default_finance_type', {}).get('code'),
+            data.get('default_aid_type', {}).get('code'),
+            data.get('default_tied_status', {}).get('code'),
+            data.get('title', {}),
         )
 
         return handle_errors(validated)
 
     def create(self, validated_data):
+        title_data = validated_data.pop('title', None)
+        title_narratives_data = validated_data.pop('title_narratives', None)
+        activity_status = validated_data.pop('activity_status', None)
+        activity_scope = validated_data.pop('activity_scope', None)
+        collaboration_type = validated_data.pop('collaboration_type', None)
+        default_flow_type = validated_data.pop('default_flow_type', None)
+        default_finance_type = validated_data.pop('default_finance_type', None)
+        default_aid_type = validated_data.pop('default_aid_type', None)
+        default_tied_status = validated_data.pop('default_tied_status', None)
+
         instance = iati_models.Activity(**validated_data)
+
+        instance.activity_status = activity_status
+        instance.scope = activity_scope
+        instance.collaboration_type = collaboration_type
+        instance.default_flow_type = default_flow_type
+        instance.default_finance_type = default_finance_type
+        instance.default_aid_type = default_aid_type
+        instance.default_tied_status = default_tied_status
+
+
         instance.save()
+
+        if title_data:
+            title = iati_models.Title.objects.create(**title_data)
+            instance.title = title
+
+            if title_narratives_data:
+                save_narratives(title, title_narratives_data, instance)
 
         return instance
 
 
     def update(self, instance, validated_data):
+        title_data = validated_data.pop('title', None)
+        title_narratives_data = validated_data.pop('title_narratives', None)
         activity_status = validated_data.pop('activity_status', None)
+        activity_scope = validated_data.pop('activity_scope', None)
+        collaboration_type = validated_data.pop('collaboration_type', None)
+        default_flow_type = validated_data.pop('default_flow_type', None)
+        default_finance_type = validated_data.pop('default_finance_type', None)
+        default_aid_type = validated_data.pop('default_aid_type', None)
+        default_tied_status = validated_data.pop('default_tied_status', None)
 
         update_instance = iati_models.Activity(**validated_data)
         update_instance.id = instance.id
 
-        if activity_status:
-            update_instance.activity_status = activity_status
+        if title_data:
+            title = iati_models.Title.objects.create(**title_data)
+            instance.title = title
+
+        print(activity_scope)
+
+        update_instance.activity_status = activity_status
+        update_instance.scope = activity_scope
+        update_instance.collaboration_type = collaboration_type
+        update_instance.default_flow_type = default_flow_type
+        update_instance.default_finance_type = default_finance_type
+        update_instance.default_aid_type = default_aid_type
+        update_instance.default_tied_status = default_tied_status
 
         update_instance.save()
 
-        # save_narratives(instance, narratives)
+        if title_narratives_data:
+            save_narratives(title, title_narratives_data, instance)
 
         return update_instance
 

@@ -81,7 +81,7 @@ def validate_date(unvalidated_date):
                 "Unspecified or invalid. Date should be of type xml:date.")
 
 
-def narrative(activity, default_lang, lang, text):
+def narrative(activity_id, default_lang, lang, text):
     warnings = []
     errors = []
 
@@ -108,26 +108,24 @@ def narrative(activity, default_lang, lang, text):
                 "text", 
                 "empty narrative",
                 ))
-    
+
     return {
         "warnings": warnings,
         "errors": errors,
         "validated_data": {
+            # "activity_id": activity_id,
             "language": language,
             "content": text,
         }
     }
 
-def narratives(activity, narratives):
-    warnings = []
-    errors = []
+def narratives(narratives, default_lang, activity_id, warnings=[], errors=[]):
+    # warnings = []
+    # errors = []
     validated_data = []
 
-    default_lang = activity.default_lang
-
     for n in narratives:
-        print(n)
-        validated = narrative(activity, default_lang, n.get('language', {}).get('code'), n.get('content'))
+        validated = narrative(activity_id, default_lang, n.get('language', {}).get('code'), n.get('content'))
         warnings = warnings + validated['warnings']
         errors = errors + validated['errors']
         validated_data.append(validated['validated_data'])
@@ -176,6 +174,13 @@ def activity(
         default_currency,
         xml_source_ref=None, # if parsed
         activity_status=None,
+        activity_scope=None,
+        collaboration_type=None,
+        default_flow_type=None,
+        default_finance_type=None,
+        default_aid_type=None,
+        default_tied_status=None,
+        title={}, # important arg
         iati_standard_version="2.02",
         published=False,
         ):
@@ -188,6 +193,118 @@ def activity(
         default_currency = get_or_none(models.Currency, pk=default_currency)
         iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
         activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
+        activity_scope = get_or_none(models.ActivityScope, pk=activity_scope)
+        collaboration_type = get_or_none(models.CollaborationType, pk=collaboration_type)
+        default_flow_type = get_or_none(models.FlowType, pk=default_flow_type)
+        default_finance_type = get_or_none(models.FinanceType, pk=default_finance_type)
+        default_aid_type = get_or_none(models.AidType, pk=default_aid_type)
+        default_tied_status = get_or_none(models.TiedStatus, pk=default_tied_status)
+        default_lang = get_or_none(models.Language, pk=default_lang)
+
+        try:
+            last_updated_datetime = validate_date(last_updated_datetime)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "last-updated-datetime",
+                    "invalid date",
+                    ))
+            last_updated_datetime = None
+
+        if not default_lang:
+            warnings.append(
+                RequiredFieldError(
+                    "activity",
+                    "default-lang",
+                    ))
+
+
+        activity_id = normalize(iati_identifier)
+
+        if not activity_id:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "iati-identifier",
+                    ))
+
+        if not len(title):
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "title",
+                    ))
+
+        title_narratives = title.get('narratives', [])
+        if not len(title_narratives):
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "title__narratives",
+                    ))
+
+        title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors)
+        errors = errors + title_narratives['errors']
+        warnings = warnings + title_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "id": activity_id,
+                "iati_identifier": iati_identifier,
+                "default_lang": default_lang,
+                "hierarchy": hierarchy,
+                "humanitarian": humanitarian,
+                "xml_source_ref": xml_source_ref,
+                "last_updated_datetime": last_updated_datetime,
+                "linked_data_uri": linked_data_uri,
+                "default_currency": default_currency,
+                "activity_status": activity_status,
+                "activity_scope": activity_scope,
+                "collaboration_type": collaboration_type,
+                "default_flow_type": default_flow_type,
+                "default_finance_type": default_finance_type,
+                "default_aid_type": default_aid_type,
+                "default_tied_status": default_tied_status,
+                "default_lang": default_lang,
+                "iati_standard_version_id": iati_standard_version,
+                "published": published,
+                "title": {
+                    "activity_id": activity_id,
+                },
+                "title_narratives": title_narratives['validated_data'],
+            },
+        }
+
+
+def transaction(
+        activity,
+
+        iati_identifier,
+        default_lang,
+        hierarchy,
+        humanitarian,
+        last_updated_datetime,
+        linked_data_uri,
+        default_currency,
+        xml_source_ref=None, # if parsed
+        activity_status=None,
+        activity_scope=None,
+        iati_standard_version="2.02",
+        published=False,
+        ):
+
+        warnings = []
+        errors = []
+
+        if not hierarchy: hierarchy = 1
+
+        default_currency = get_or_none(models.Currency, pk=default_currency)
+        iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
+        activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
+        activity_scope = get_or_none(models.ActivityScope, pk=activity_scope)
 
         try:
             last_updated_datetime = validate_date(last_updated_datetime)
@@ -244,7 +361,6 @@ def activity(
 
 def activity_status(code):
     return codelist('activity-status', codelist_models.ActivityStatus, code)
-
 
 
 def activity_reporting_org(
@@ -307,6 +423,27 @@ def activity_reporting_org(
             }
         }
         
+
+def activity_title(
+        activity,
+        narratives,
+        ):
+
+        warnings = []
+        errors = []
+
+        print('validating title...')
+
+        validate_narratives(narratives, warnings, errors)
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "narratives": narratives,
+            },
+        }
 
 
 def activity_description(
