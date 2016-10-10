@@ -26,8 +26,8 @@ class LanguageFactory(NoDatabaseFactory):
         model = iati.models.Language
         django_get_or_create = ('code',)
 
-    code = 'fr'
-    name = 'french'
+    code = 'en'
+    name = 'english'
 
 class FileFormatFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -204,12 +204,20 @@ class PolicySignificanceFactory(NoDatabaseFactory):
     description = 'test description'
 
 
+class FinanceTypeCategoryFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.FinanceTypeCategory
+
+    code = "100"
+    name = "GRANT"
+
 class FinanceTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FinanceType
 
     code = "110"
     name = 'Aid grant excluding debt reorganisation'
+    category = SubFactory(FinanceTypeCategoryFactory)
 
 
 class TiedStatusFactory(NoDatabaseFactory):

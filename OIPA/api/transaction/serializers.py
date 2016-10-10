@@ -60,7 +60,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     url = serializers.HyperlinkedIdentityField(
         view_name='transactions:transaction-detail',
-        lookup_field='pk')
+        lookup_field='pk',
+        read_only=True
+        )
 
     activity = ActivitySerializer(read_only=True, fields=('id', 'url'))
 
