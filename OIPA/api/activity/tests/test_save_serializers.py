@@ -527,3 +527,77 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityParticipatingOrganisation.objects.get(pk=participating_org.id)
+
+
+class ActivityDateSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_activity_date(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.ActivityDateTypeFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "iso_date": datetime.datetime.now().isoformat(' '),
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/activity_dates/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+    def test_update_activity_date(self):
+        activity_date = iati_factory.ActivityDateFactory.create()
+        type = iati_factory.ActivityDateTypeFactory.create()
+        type2 = iati_factory.ActivityDateTypeFactory.create(code=2)
+
+        data = {
+            "activity": activity_date.activity.id,
+            "type": {
+                "code": type2.code,
+                "name": 'irrelevant',
+            },
+            "iso_date": datetime.datetime.now().isoformat(' '),
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/activity_dates/{}?format=json".format(activity_date.activity.id, activity_date.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+
+    def test_delete_activity_dates(self):
+        activity_dates = iati_factory.ActivityDateFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/activity_dates/{}?format=json".format(activity_dates.activity.id, activity_dates.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityDate.objects.get(pk=activity_dates.id)
+
+

@@ -443,6 +443,20 @@ class ActivityParticipatingOrganisationDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityParticipatingOrganisation.objects.get(pk=pk)
 
+class ActivityActivityDateList(ListCreateAPIView):
+    serializer_class = activity_serializers.ActivityDateSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).activity_date_set.all()
+
+class ActivityActivityDateDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ActivityDateSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.ActivityDate.objects.get(pk=pk)
+
 class ActivityRecipientCountryList(ListCreateAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
 
