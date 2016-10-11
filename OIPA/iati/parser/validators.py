@@ -448,44 +448,32 @@ def activity_reporting_org(
         }
         
 
-def activity_title(
-        activity,
-        narratives,
-        ):
-
-        warnings = []
-        errors = []
-
-        print('validating title...')
-
-        validate_narratives(narratives, warnings, errors)
-
-        return {
-            "warnings": warnings,
-            "errors": errors,
-            "validated_data": {
-                "activity": activity,
-                "narratives": narratives,
-            },
-        }
-
-
 def activity_description(
         activity,
         type_code=0,
+        narratives_data=[]
         ):
+        warnings = []
+        errors = []
 
         description_type = get_or_none(models.DescriptionType, code=type_code)
 
-        warnings = []
-        errors = []
+        if not len(narratives_data):
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "description__narratives",
+                    ))
+
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
 
         return {
             "warnings": warnings,
             "errors": errors,
             "validated_data": {
                 "activity": activity,
-                "type": description_type
+                "type": description_type,
+                "narratives": validated_narratives['validated_data'],
             },
         }
 

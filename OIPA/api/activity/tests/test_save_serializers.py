@@ -256,6 +256,10 @@ class ReportingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
         self.assertEqual(instance.secondary_reporter, bool(data['secondary_reporter']))
 
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
     def test_update_reporting_organisation(self):
         reporting_org = iati_factory.ReportingOrganisationFactory.create()
         iati_factory.OrganisationTypeFactory.create(code=9)
@@ -295,6 +299,9 @@ class ReportingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.type.code, data['type']['code'])
         self.assertEqual(instance.secondary_reporter, bool(data['secondary_reporter']))
 
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_delete_reporting_organisation(self):
         reporting_org = iati_factory.ReportingOrganisationFactory.create()
@@ -308,93 +315,6 @@ class ReportingOrganisationSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityReportingOrganisation.objects.get(ref=reporting_org.ref)
-
-class TitleSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def test_create_title(self):
-
-        activity = iati_factory.ActivityFactory.create()
-
-        data = {
-            "activity": activity.id,
-            "narratives": [
-                {
-                    "text": "test1"
-                },
-                {
-                    "text": "test2"
-                }
-            ]
-        }
-
-        res = self.c.post(
-                "/api/activities/{}/titles/?format=json".format(activity.id), 
-                data,
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.Title.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.activity.id, data['activity'])
-
-        narratives = instance.narratives()
-        self.assertEqual(narratives[0].content, data['narratives'][0])
-        self.assertEqual(narratives[1].content, data['narratives'][1])
-
-
-        instance = iati_models.Title.objects.get(pk=res.json()['id'])
-        # self.assertEqual(instance.type.code, data['type']['code'])
-
-    def test_update_title(self):
-        title = iati_factory.TitleFactory.create()
-
-        data = {
-            "activity": title.activity.id,
-            "narratives": [
-                {
-                    "text": "test1"
-                },
-                {
-                    "text": "test2"
-                }
-            ]
-        }
-
-        res = self.c.put(
-                "/api/activities/{}/titles/{}?format=json".format(title.activity.id, title.id), 
-                data,
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.Title.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.activity.id, data['activity'])
-
-        narratives = instance.narratives()
-        self.assertEqual(narratives[0].content, data['narratives'][0])
-        self.assertEqual(narratives[1].content, data['narratives'][1])
-
-
-    def test_delete_title(self):
-        title = iati_factory.TitleFactory.create()
-
-        res = self.c.delete(
-                "/api/activities/{}/titles/{}?format=json".format(title.activity.id, title.id), 
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Title.objects.get(pk=title.id)
-
-
 
 class DescriptionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -414,7 +334,10 @@ class DescriptionSaveTestCase(TestCase):
             },
             "narratives": [
                 {
-                    "text": "text123"
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
                 }
             ]
         }
@@ -432,6 +355,11 @@ class DescriptionSaveTestCase(TestCase):
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
+
     def test_update_description(self):
         description = iati_factory.DescriptionFactory.create()
         type = iati_factory.DescriptionTypeFactory.create()
@@ -445,12 +373,14 @@ class DescriptionSaveTestCase(TestCase):
             },
             "narratives": [
                 {
-                    "text": "text123"
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
                 }
             ]
         }
 
-        print("/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id))
         res = self.c.put(
                 "/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id), 
                 data,
@@ -463,6 +393,10 @@ class DescriptionSaveTestCase(TestCase):
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
 
     def test_delete_description(self):
