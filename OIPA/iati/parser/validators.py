@@ -5,6 +5,7 @@ from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 import dateutil.parser
+from datetime import datetime
 
 from iati.parser.exceptions import *
 
@@ -78,6 +79,9 @@ def combine_validation(validations=[]):
 
 def validate_date(unvalidated_date):
     # datetime
+
+    if isinstance(unvalidated_date, datetime):
+        return unvalidated_date
 
     if unvalidated_date:
         unvalidated_date = unvalidated_date.strip(' \t\n\rZ')
@@ -542,3 +546,35 @@ def activity_participating_org(
             },
         }
  
+
+def activity_activity_date(
+        activity,
+        type_code=0,
+        iso_date=None,
+        ):
+        warnings = []
+        errors = []
+
+        activity_date_type = get_or_none(models.ActivityDateType, code=type_code)
+
+        try:
+            iso_date = validate_date(iso_date)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity",
+                    "iso-date",
+                    "invalid date",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": activity_date_type,
+                "iso_date": iso_date,
+            },
+        }
+
+

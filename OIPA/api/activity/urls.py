@@ -41,6 +41,12 @@ urlpatterns = [
         api.activity.views.ActivityParticipatingOrganisationDetail.as_view(),
         name='activity-participating_organisations'),
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/activity_dates/$',
+        api.activity.views.ActivityActivityDateList.as_view(),
+        name='activity-activity_dates'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/activity_dates/(?P<id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityActivityDateDetail.as_view(),
+        name='activity-activity_dates'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_countries/$',
         api.activity.views.ActivityRecipientCountryList.as_view(),

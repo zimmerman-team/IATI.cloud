@@ -332,6 +332,7 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
 
+    activity = serializers.CharField(write_only=True)
     class Meta:
         model = iati_models.PlannedDisbursement
 
@@ -346,15 +347,43 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
         extra_kwargs = { "id": { "read_only": False }}
 
 
-class ActivityDateSerializer(serializers.Serializer):
+class ActivityDateSerializer(serializers.ModelSerializer):
     type = CodelistSerializer()
     iso_date = serializers.DateTimeField()
 
+    activity = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_activity_date(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('iso_date'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.ActivityDate.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+
+        update_instance = iati_models.ActivityDate(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
     class Meta:
         model = iati_models.ActivityDate
-        fields = ('id', 'iso_date', 'type')
-
-        extra_kwargs = { "id": { "read_only": False }}
+        fields = ('id', 'activity', 'iso_date', 'type')
 
 
 class ActivityAggregationSerializer(DynamicFieldsSerializer):
