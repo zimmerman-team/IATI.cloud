@@ -457,6 +457,20 @@ class ActivityActivityDateDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityDate.objects.get(pk=pk)
 
+class ActivityContactInfoList(ListCreateAPIView):
+    serializer_class = activity_serializers.ContactInfoSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).contact_info_set.all()
+
+class ActivityContactInfoDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ContactInfoSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.ContactInfo.objects.get(pk=pk)
+
 class ActivityRecipientCountryList(ListCreateAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
 

@@ -601,3 +601,227 @@ class ActivityDateSaveTestCase(TestCase):
             instance = iati_models.ActivityDate.objects.get(pk=activity_dates.id)
 
 
+class ContactInfoSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_contact_info(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        contact_type = iati_factory.ContactTypeFactory.create()
+        # organisation = iati_factory.ContactInfoOrganisationFactory.create()
+        # department = iati_factory.ContactInfoDepartmentFactory.create()
+        # person_name = iati_factory.ContactInfoPersonNameFactory.create()
+        # job_title = iati_factory.ContactInfoJobTitleFactory.create()
+        # telephone = iati_factory.ContactInfoTelephoneFactory.create()
+        # email = iati_factory.ContactInfoEmailFactory.create()
+        # website = iati_factory.ContactInfoWebsiteFactory.create()
+        # mailing_address = iati_factory.ContactInfoMailingAddressFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": contact_type.code,
+                "name": "irrelevant"
+            },
+            "organisation": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "department": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "person_name": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "job_title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "telephone": "0631942897",
+            "email": "test@zz.com",
+            "website": "https://zimmermanzimmerman.com",
+            "mailing_address": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            }
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/contact_info/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        organisation_narratives = instance.organisation.narratives.all()
+        self.assertEqual(organisation_narratives[0].content, data['organisation']['narratives'][0]['text'])
+        self.assertEqual(organisation_narratives[1].content, data['organisation']['narratives'][1]['text'])
+
+        department_narratives = instance.department.narratives.all()
+        self.assertEqual(department_narratives[0].content, data['department']['narratives'][0]['text'])
+        self.assertEqual(department_narratives[1].content, data['department']['narratives'][1]['text'])
+
+        person_name_narratives = instance.person_name.narratives.all()
+        self.assertEqual(person_name_narratives[0].content, data['person_name']['narratives'][0]['text'])
+        self.assertEqual(person_name_narratives[1].content, data['person_name']['narratives'][1]['text'])
+
+        job_title_narratives = instance.job_title.narratives.all()
+        self.assertEqual(job_title_narratives[0].content, data['job_title']['narratives'][0]['text'])
+        self.assertEqual(job_title_narratives[1].content, data['job_title']['narratives'][1]['text'])
+
+        mailing_address_narratives = instance.mailing_address.narratives.all()
+        self.assertEqual(mailing_address_narratives[0].content, data['mailing_address']['narratives'][0]['text'])
+        self.assertEqual(mailing_address_narratives[1].content, data['mailing_address']['narratives'][1]['text'])
+
+    def test_update_contact_info(self):
+        contact_info = iati_factory.ContactInfoFactory.create()
+        contact_type = iati_factory.ContactTypeFactory.create()
+
+        data = {
+            "activity": contact_info.activity.id,
+            "type": {
+                "code": contact_type.code,
+                "name": "irrelevant"
+            },
+            "organisation": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "department": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "person_name": {
+                "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+            },
+            "job_title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "telephone": "0631942897",
+            "email": "test@zz.com",
+            "website": "https://zimmermanzimmerman.com",
+            "mailing_address": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/contact_info/{}?format=json".format(contact_info.activity.id, contact_info.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        organisation_narratives = instance.organisation.narratives.all()
+        self.assertEqual(organisation_narratives[0].content, data['organisation']['narratives'][0]['text'])
+        self.assertEqual(organisation_narratives[1].content, data['organisation']['narratives'][1]['text'])
+
+        department_narratives = instance.department.narratives.all()
+        self.assertEqual(department_narratives[0].content, data['department']['narratives'][0]['text'])
+        self.assertEqual(department_narratives[1].content, data['department']['narratives'][1]['text'])
+
+        person_name_narratives = instance.person_name.narratives.all()
+        self.assertEqual(person_name_narratives[0].content, data['person_name']['narratives'][0]['text'])
+        self.assertEqual(person_name_narratives[1].content, data['person_name']['narratives'][1]['text'])
+
+        job_title_narratives = instance.job_title.narratives.all()
+        self.assertEqual(job_title_narratives[0].content, data['job_title']['narratives'][0]['text'])
+        self.assertEqual(job_title_narratives[1].content, data['job_title']['narratives'][1]['text'])
+
+        mailing_address_narratives = instance.mailing_address.narratives.all()
+        self.assertEqual(mailing_address_narratives[0].content, data['mailing_address']['narratives'][0]['text'])
+        self.assertEqual(mailing_address_narratives[1].content, data['mailing_address']['narratives'][1]['text'])
+
+
+    def test_delete_contact_info(self):
+        contact_infos = iati_factory.ContactInfoFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/contact_info/{}?format=json".format(contact_infos.activity.id, contact_infos.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ContactInfo.objects.get(pk=contact_infos.id)
+
+

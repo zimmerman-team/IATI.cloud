@@ -48,6 +48,13 @@ urlpatterns = [
         api.activity.views.ActivityActivityDateDetail.as_view(),
         name='activity-activity_dates'),
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/contact_info/$',
+        api.activity.views.ActivityContactInfoList.as_view(),
+        name='activity-contact_info'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/contact_info/(?P<id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityContactInfoDetail.as_view(),
+        name='activity-contact_info'),
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_countries/$',
         api.activity.views.ActivityRecipientCountryList.as_view(),
         name='activity-recipient_countrys'),
