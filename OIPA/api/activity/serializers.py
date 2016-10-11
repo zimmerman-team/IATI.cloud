@@ -933,10 +933,159 @@ class ContactInfoSerializer(serializers.ModelSerializer):
     job_title = NarrativeContainerSerializer()
     mailing_address = NarrativeContainerSerializer()
 
+    activity = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_contact_info(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('organisation'),
+            data.get('department'),
+            data.get('person_name'),
+            data.get('job_title'),
+            data.get('telephone'), # text
+            data.get('email'), # text
+            data.get('website'), # text
+            data.get('mailing_address'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        organisation_data = validated_data.pop('organisation', None)
+        organisation_narratives_data = validated_data.pop('organisation_narratives', None)
+        department_data = validated_data.pop('department', None)
+        department_narratives_data = validated_data.pop('department_narratives', None)
+        person_name_data = validated_data.pop('person_name', None)
+        person_name_narratives_data = validated_data.pop('person_name_narratives', None)
+        job_title_data = validated_data.pop('job_title', None)
+        job_title_narratives_data = validated_data.pop('job_title_narratives', None)
+        mailing_address_data = validated_data.pop('mailing_address', None)
+        mailing_address_narratives_data = validated_data.pop('mailing_address_narratives', None)
+
+        instance = iati_models.ContactInfo.objects.create(**validated_data)
+
+        if organisation_data is not None:
+            organisation = iati_models.ContactInfoOrganisation.objects.create(
+                    contact_info=instance,
+                    **organisation_data)
+            instance.organisation = organisation
+
+            if organisation_narratives_data:
+                save_narratives(organisation, organisation_narratives_data, activity)
+
+        if department_data is not None:
+            department = iati_models.ContactInfoDepartment.objects.create(
+                    contact_info=instance,
+                    **department_data)
+            instance.department = department
+
+            if department_narratives_data:
+                save_narratives(department, department_narratives_data, activity)
+
+        if person_name_data is not None:
+            person_name = iati_models.ContactInfoPersonName.objects.create(
+                    contact_info=instance,
+                    **person_name_data)
+            instance.person_name = person_name
+
+            if person_name_narratives_data:
+                save_narratives(person_name, person_name_narratives_data, activity)
+
+        if job_title_data is not None:
+            job_title = iati_models.ContactInfoJobTitle.objects.create(
+                    contact_info=instance,
+                    **job_title_data)
+            instance.job_title = job_title
+
+            if job_title_narratives_data:
+                save_narratives(job_title, job_title_narratives_data, activity)
+
+        if mailing_address_data is not None:
+            mailing_address = iati_models.ContactInfoMailingAddress.objects.create(
+                    contact_info=instance,
+                    **mailing_address_data)
+            instance.mailing_address = mailing_address
+
+            if mailing_address_narratives_data:
+                save_narratives(mailing_address, mailing_address_narratives_data, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        organisation_data = validated_data.pop('organisation', None)
+        organisation_narratives_data = validated_data.pop('organisation_narratives', None)
+        department_data = validated_data.pop('department', None)
+        department_narratives_data = validated_data.pop('department_narratives', None)
+        person_name_data = validated_data.pop('person_name', None)
+        person_name_narratives_data = validated_data.pop('person_name_narratives', None)
+        job_title_data = validated_data.pop('job_title', None)
+        job_title_narratives_data = validated_data.pop('job_title_narratives', None)
+        mailing_address_data = validated_data.pop('mailing_address', None)
+        mailing_address_narratives_data = validated_data.pop('mailing_address_narratives', None)
+
+        update_instance = iati_models.ContactInfo(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        if organisation_data is not None:
+            organisation = iati_models.ContactInfoOrganisation.objects.create(
+                    contact_info=instance,
+                    **organisation_data)
+            update_instance.organisation = organisation
+
+            if organisation_narratives_data:
+                save_narratives(organisation, organisation_narratives_data, activity)
+
+        if department_data is not None:
+            department = iati_models.ContactInfoDepartment.objects.create(
+                    contact_info=instance,
+                    **department_data)
+            update_instance.department = department
+
+            if department_narratives_data:
+                save_narratives(department, department_narratives_data, activity)
+
+        if person_name_data is not None:
+            person_name = iati_models.ContactInfoPersonName.objects.create(
+                    contact_info=instance,
+                    **person_name_data)
+            update_instance.person_name = person_name
+
+            if person_name_narratives_data:
+                save_narratives(person_name, person_name_narratives_data, activity)
+
+        if job_title_data is not None:
+            job_title = iati_models.ContactInfoJobTitle.objects.create(
+                    contact_info=instance,
+                    **job_title_data)
+            update_instance.job_title = job_title
+
+            if job_title_narratives_data:
+                save_narratives(job_title, job_title_narratives_data, activity)
+
+        if mailing_address_data is not None:
+            mailing_address = iati_models.ContactInfoMailingAddress.objects.create(
+                    contact_info=instance,
+                    **mailing_address_data)
+            update_instance.mailing_address = mailing_address
+
+            if mailing_address_narratives_data:
+                save_narratives(mailing_address, mailing_address_narratives_data, activity)
+
+        return update_instance
+
     class Meta:
         model = iati_models.ContactInfo
         fields = (
             'id',
+            'activity',
             'type',
             'organisation',
             'department',
@@ -947,8 +1096,6 @@ class ContactInfoSerializer(serializers.ModelSerializer):
             'website',
             'mailing_address',
         )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 class ResultSerializer(serializers.ModelSerializer):
     type = CodelistSerializer() 

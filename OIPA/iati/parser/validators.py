@@ -577,4 +577,80 @@ def activity_activity_date(
             },
         }
 
+def activity_contact_info(
+        activity,
+        type_code,
+        organisation,
+        department,
+        person_name,
+        job_title,
+        telephone,
+        email,
+        website,
+        mailing_address,
+        ):
+
+        warnings = []
+        errors = []
+
+        contact_type = get_or_none(models.ContactType, code=type_code)
+
+        organisation_narratives_data = organisation.get('narratives', [])
+        organisation_narratives = narratives(organisation_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + organisation_narratives['errors']
+        warnings = warnings + organisation_narratives['warnings']
+
+        department_narratives_data = department.get('narratives', [])
+        department_narratives = narratives(department_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + department_narratives['errors']
+        warnings = warnings + department_narratives['warnings']
+
+        person_name_narratives_data = person_name.get('narratives', [])
+        person_name_narratives = narratives(person_name_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + person_name_narratives['errors']
+        warnings = warnings + person_name_narratives['warnings']
+
+        job_title_narratives_data = job_title.get('narratives', [])
+        job_title_narratives = narratives(job_title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + job_title_narratives['errors']
+        warnings = warnings + job_title_narratives['warnings']
+
+        mailing_address_narratives_data = mailing_address.get('narratives', [])
+        mailing_address_narratives = narratives(mailing_address_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + mailing_address_narratives['errors']
+        warnings = warnings + mailing_address_narratives['warnings']
+
+        # TODO: test email, telephone, website for form - 2016-10-11
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": contact_type,
+                "organisation": {
+                    # "contact_info_id": contact_info.id,
+                },
+                "organisation_narratives": organisation_narratives['validated_data'],
+                "department": {
+                    # "contact_info_id": contact_info.id,
+                },
+                "department_narratives": department_narratives['validated_data'],
+                "person_name": {
+                    # "contact_info_id": contact_info.id,
+                },
+                "person_name_narratives": person_name_narratives['validated_data'],
+                "job_title": {
+                    # "contact_info_id": contact_info.id,
+                },
+                "job_title_narratives": job_title_narratives['validated_data'],
+                "telephone": telephone,
+                "email": email,
+                "website": website,
+                "mailing_address": {
+                    # "contact_info_id": contact_info.id,
+                },
+                "mailing_address_narratives": mailing_address_narratives['validated_data'],
+            },
+        }
+
 
