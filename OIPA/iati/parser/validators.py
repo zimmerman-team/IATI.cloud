@@ -484,6 +484,7 @@ def activity_participating_org(
         org_type,
         org_role,
         org_activity_id=None,
+        narratives_data=[],
         ):
 
         organisation = get_or_none(models.Organisation, pk=ref)
@@ -524,6 +525,8 @@ def activity_participating_org(
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
 
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+
         return {
             "warnings": warnings,
             "errors": errors,
@@ -535,6 +538,7 @@ def activity_participating_org(
                 "activity": activity,
                 "organisation": organisation,
                 "org_activity_id": org_activity_id,
+                "narratives": validated_narratives['validated_data'],
             },
         }
  

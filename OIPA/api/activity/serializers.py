@@ -484,59 +484,40 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
 
     activity = serializers.CharField(write_only=True)
 
-    def create(self, validated_data):
-        activity = get_or_raise(iati_models.Activity, validated_data, 'activity')
-        narratives = get_or_none(iati_models.Activity, validated_data, 'narratives', [])
-
-        validated = validators.activity_participating_org(
-            activity,
-            validated_data.get('normalized_ref'),
-            validated_data.get('type', {}).get('code'),
-            validated_data.get('role', {}).get('code'),
-            validated_data.get('activity_id')
-        )
-            
-        instance = handle_errors(validated)
-        instance.save()
-
-        save_narratives(instance, narratives)
-
-        return instance
-
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
-        narratives = data.pop('narratives', [])
 
         validated = validators.activity_participating_org(
             activity,
             data.get('normalized_ref'),
             data.get('type', {}).get('code'),
             data.get('role', {}).get('code'),
-            data.get('activity_id')
+            data.get('activity_id'),
+            data.get('narratives')
         )
 
-        validated_narratives = validators.narratives(activity, narratives)
-
-        return handle_errors(validated, validated_narratives)
+        return handle_errors(validated)
 
     def create(self, validated_data):
+        activity = validated_data.get('activity')
         narratives = validated_data.pop('narratives', [])
 
         instance = iati_models.ActivityParticipatingOrganisation.objects.create(**validated_data)
 
-        # save_narratives(instance, narratives)
+        save_narratives(instance, narratives, activity)
 
         return instance
 
 
     def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
         narratives = validated_data.pop('narratives', [])
 
         update_instance = iati_models.ActivityParticipatingOrganisation(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        # save_narratives(instance, narratives)
+        save_narratives(instance, narratives, activity)
 
         return update_instance
 

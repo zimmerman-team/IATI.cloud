@@ -436,6 +436,14 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
                 "code": org_role.code,
                 "name": 'irrelevant',
             },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.post(
@@ -453,6 +461,10 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.organisation.id, data['organisation'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
     def test_update_participating_organisation(self):
         participating_org = iati_factory.ParticipatingOrganisationFactory.create()
@@ -472,6 +484,14 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
                 "code": org_role.code,
                 "name": 'irrelevant',
             },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
         }
 
         res = self.c.put(
@@ -489,6 +509,10 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.organisation.id, data['organisation'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
 
 
     def test_delete_participating_organisation(self):
