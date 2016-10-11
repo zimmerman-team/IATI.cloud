@@ -6,6 +6,9 @@ from django_filters import FilterSet
 from django_filters import NumberFilter
 from django_filters import DateFilter
 from django_filters import BooleanFilter
+from django_filters import TypedChoiceFilter
+
+from distutils.util import strtobool
 
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
@@ -124,6 +127,18 @@ class ActivityFilter(TogetherFilterSet):
     budget_period_end = DateFilter(
         lookup_type='lte',
         name='budget__period_end')
+
+
+    humanitarian = TypedChoiceFilter(
+        choices=(('0', 'False'), ('1', 'True')),
+        coerce=strtobool)
+
+    humanitarian_scope_type = ToManyFilter(
+        qs=HumanitarianScope,
+        lookup_type='in',
+        name='type__code',
+        fk='activity',
+    )
 
     related_activity_id = ToManyFilter(
         qs=RelatedActivity,
@@ -496,6 +511,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
             'title': 'title__narratives__content',
             'activity_budget_value': 'activity_aggregation__budget_value',
             'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',
+            'activity_commitment_value': 'activity_aggregation__commitment_value',
             'activity_disbursement_value': 'activity_aggregation__disbursement_value',
             'activity_expenditure_value': 'activity_aggregation__expenditure_value',
             'activity_plus_child_budget_value': 'activity_plus_child_aggregation__budget_value',
