@@ -825,3 +825,91 @@ class ContactInfoSaveTestCase(TestCase):
             instance = iati_models.ContactInfo.objects.get(pk=contact_infos.id)
 
 
+class ActivityRecipientCountrySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_recipient_country(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        country = iati_factory.CountryFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "country": {
+                "code": country.code,
+                "name": 'irrelevant',
+            },
+            "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/recipient_countries/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityRecipientCountry.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.country.code, data['country']['code'])
+        self.assertEqual(instance.percentage, data['percentage'])
+
+    def test_update_recipient_country(self):
+        recipient_country = iati_factory.ActivityRecipientCountryFactory.create()
+        country = iati_factory.CountryFactory.create(code='AF')
+
+        data = {
+            "activity": recipient_country.activity.id,
+            "country": {
+                "code": country.code,
+                "name": 'irrelevant',
+            },
+            "percentage": 100,
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_country.activity.id, recipient_country.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityRecipientCountry.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.country.code, str(data['country']['code']))
+
+    def test_delete_recipient_country(self):
+        recipient_country = iati_factory.ActivityRecipientCountryFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_country.activity.id, recipient_country.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityRecipientCountry.objects.get(pk=recipient_country.id)
+
+

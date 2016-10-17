@@ -483,7 +483,7 @@ class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.RecipientCountry.objects.get(pk=pk)
+        return iati_models.ActivityRecipientCountry.objects.get(pk=pk)
 
 class ActivitySectorList(ListCreateAPIView):
     serializer_class = activity_serializers.SectorSerializer
