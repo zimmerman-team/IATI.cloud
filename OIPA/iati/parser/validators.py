@@ -6,6 +6,7 @@ from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 import dateutil.parser
 from datetime import datetime
+from decimal import Decimal
 
 from iati.parser.exceptions import *
 
@@ -653,4 +654,47 @@ def activity_contact_info(
             },
         }
 
+
+def activity_recipient_country(
+        activity,
+        country_code,
+        percentage=0,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        recipient_country = get_or_none(models.Country, code=country_code)
+
+        if not recipient_country:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-country",
+                    "code",
+                    ))
+
+        recipient_countries = activity.activityrecipientcountry_set.all()
+        # TODO: we need the update instance here ideally - 2016-10-17
+        if instance:
+            sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.exclude(pk=instance.id).values_list('percentage'), 0) + percentage
+        else:
+            sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.values_list('percentage'), 0) + percentage
+
+        if sum_percentage != Decimal(100):
+            errors.append(
+                ValidationError(
+                    "recipient-country",
+                    "percentage",
+                    "The recipient-country percentage doesn't add up to 100"
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "country": recipient_country,
+                "percentage": percentage,
+            },
+        }
 

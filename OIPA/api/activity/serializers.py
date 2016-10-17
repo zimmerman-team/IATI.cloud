@@ -794,17 +794,45 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
         decimal_places=2,
         coerce_to_string=False
     )
-    # vocabulary = VocabularySerializer()
+    activity = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_recipient_country(
+            activity,
+            data.get('country', {}).get('code'),
+            data.get('percentage'),
+            getattr(self, 'instance', None), # only on update
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.ActivityRecipientCountry.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+
+        update_instance = iati_models.ActivityRecipientCountry(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
     class Meta:
         model = iati_models.ActivityRecipientCountry
         fields = (
             'id',
+            'activity',
             'country',
             'percentage',
         )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 
 class ResultTypeSerializer(serializers.ModelSerializer):
@@ -1402,8 +1430,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         if title_data:
             title = iati_models.Title.objects.create(**title_data)
             instance.title = title
-
-        print(activity_scope)
 
         update_instance.activity_status = activity_status
         update_instance.scope = activity_scope
