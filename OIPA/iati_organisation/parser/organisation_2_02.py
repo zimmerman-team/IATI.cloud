@@ -746,13 +746,14 @@ class Parse(IatiParser):
         return element
 
     def post_save_models(self):
-        """Perform all actions that need to happen after a single activity's been parsed."""
+        """Perform all actions that need to happen after a single organisation's been parsed."""
         organisation = self.get_model('Organisation')
 
         if not organisation:
             return False
 
         post_save.set_activity_reporting_organisation(organisation)
+        post_save.set_publisher_fk(organisation)
 
     def post_save_file(self, xml_source):
         pass

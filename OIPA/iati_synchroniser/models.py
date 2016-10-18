@@ -3,11 +3,15 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from iati_organisation.models import Organisation
+
 
 class Publisher(models.Model):
     org_id = models.CharField(max_length=100)
     org_abbreviate = models.CharField(max_length=55, default="")
     org_name = models.CharField(max_length=255)
+
+    organisation = models.ForeignKey(Organisation, default=None, null=True)
 
     def __unicode__(self):
         return self.org_id

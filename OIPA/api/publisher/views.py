@@ -4,6 +4,18 @@ from api.publisher.filters import PublisherFilter
 from rest_framework.generics import RetrieveAPIView
 from api.generics.views import DynamicListView, DynamicDetailView
 
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from common.util import get_or_none
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+
+from api.publisher.permissions import AdminGroupPermissions
+
+from iati_synchroniser.models import Publisher
+from iati.permissions.models import AdminGroup
+from django.contrib.auth.models import Group, User
 
 class PublisherList(DynamicListView):
     """
@@ -53,4 +65,35 @@ class PublisherDetail(DynamicDetailView):
     """
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
+
+class AdminGroupView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (AdminGroupPermissions, )
+
+    def get(self, request, pk):
+        users = AdminGroup.objects.get(publisher_id=pk).user_set.all()
+
+        return Response(users)
+
+    def post(self, request, pk):
+        admin_group = AdminGroup.objects.get(publisher_id=pk)
+
+        user_id = request.data.get('user_id', None)
+        user = get_or_none(User, pk=user_id)
+
+        if not user:
+            return Response(status=401)
+
+        if user.id == request.user.id:
+            return Response(status=401)
+
+        if user.id == admin_group.owner.id:
+            return Response(status=401)
+
+        admin_group.user_set.add(user)
+
+        return Response()
+
+            
+
 
