@@ -39,3 +39,4 @@ djangorestframework-xml==1.3.0
 djangorestframework-csv==1.4.1
 django-modeladmin-reorder==0.1.3
 djangorestframework-recursive==0.1.1
+django-rest-auth[with_social]
