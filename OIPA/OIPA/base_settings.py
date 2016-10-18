@@ -145,7 +145,12 @@ INSTALLED_APPS = [
     'nested_admin',
     'djorm_pgfulltext',
     'admin_reorder',
-]
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+)
 
 ADMIN_REORDER = (
     'iati',
@@ -209,3 +214,4 @@ ROOT_ORGANISATIONS = []
 ERROR_LOGS_ENABLED = True
 
 DEFAULT_LANG = None
+ACCOUNT_EMAIL_VERIFICATION = "none"
