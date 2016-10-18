@@ -433,7 +433,6 @@ def activity_reporting_org(
                     "organisation with ref {} does not exist in organisation standard".format(ref)
                     ))
 
-        print(narratives_data)
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
         errors = errors + validated_narratives['errors']
         warnings = warnings + validated_narratives['warnings']
