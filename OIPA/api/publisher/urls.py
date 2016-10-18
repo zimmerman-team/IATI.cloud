@@ -8,4 +8,10 @@ urlpatterns = [
         r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.PublisherDetail.as_view(),
         name='publisher-detail'
-    )]
+    ),
+    url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/admin-group/$',
+        views.AdminGroupView.as_view(),
+        name='publisher-admingroup'
+    ),
+]

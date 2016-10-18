@@ -45,3 +45,14 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         sum_queryset = IatiXmlSource.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
         return sum_queryset.get('note_count__sum')
 
+
+# class AdminGroupUser(DynamicFieldsModelSerializer):
+
+#     class Meta:
+#         model = User
+#         fields = ('name', )
+
+#     def create(self, validated_data):
+
+
+

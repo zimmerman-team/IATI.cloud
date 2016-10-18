@@ -4,6 +4,8 @@ from iati_synchroniser.models import IatiXmlSource
 from iati_synchroniser.models import Publisher
 from datetime import datetime
 
+from iati.factory.iati_factory import OrganisationFactory
+
 
 class NoDatabaseFactory(DjangoModelFactory):
     @classmethod
@@ -15,10 +17,10 @@ class PublisherFactory(NoDatabaseFactory):
     class Meta:
         model = Publisher
 
+    organisation = SubFactory(OrganisationFactory)
     org_id = 'NL-1'
     org_abbreviate = 'Minbuza'
     org_name = 'Ministry of Foreign Affairs (Netherlands)'
-
 
 class DatasetFactory(NoDatabaseFactory):
     class Meta:
