@@ -89,7 +89,7 @@ class ActivitySerializerTestCase(TestCase):
         doc_category = iati_factory.DocumentCategoryFactory.build()
         serializer = serializers.DocumentCategorySerializer(doc_category)
 
-        assert serializer.data['code'] == doc_category.code,\
+        self.assertEquals(serializer.data['code'], doc_category.code),\
             """
             'document_category.code' should be serialized to a field called
             'code'

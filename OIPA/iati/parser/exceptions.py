@@ -15,7 +15,7 @@ class ParserError(Exception):
 
 
 class RequiredFieldError(Exception):
-    def __init__(self, model, field, msg=None):
+    def __init__(self, model, field, msg):
         """
         This error 
 
@@ -24,10 +24,7 @@ class RequiredFieldError(Exception):
         """
         self.model = model
         self.field = field
-        if msg:
-            self.message = msg
-        else:
-            self.message = "field {} is required but not specified".format(field)
+        self.message = msg
 
     def __str__(self):
         return repr(self.field)

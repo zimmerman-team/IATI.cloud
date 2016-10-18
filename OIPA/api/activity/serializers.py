@@ -267,7 +267,7 @@ class ValueSerializer(serializers.Serializer):
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = iati_models.DocumentCategory
-        fields = ('id', 'code', 'name')
+        fields = ('code', 'name')
 
         extra_kwargs = { "id": { "read_only": False }}
 

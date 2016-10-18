@@ -151,25 +151,6 @@ class IatiParser(object):
     def post_save_file(self, iati_source):
         print "override in children"
 
-    def handle_errors(self, element, validated):
-        """
-        Here validated is returned by the validation methods defined in iati/parser/validation.py
-        it is of the following form:
-        {
-            instance: ModelInstance,
-            errors: [ errors ],
-            warnings: [ warnings ],
-        }
-        """
-
-        for e in validated['errors']:
-            self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
-
-        return validated['instance']
-
-        # TODO: handle warnings - 2016-09-28
-
-
     def append_error(self, error_type, model, field, message, sourceline, iati_id=None):
         if not settings.ERROR_LOGS_ENABLED:
             return
