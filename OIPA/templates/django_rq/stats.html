@@ -550,7 +550,8 @@ $(document).ready(function (){
                jobname: jobname,
                task: task,
                period: period,
-               parameters: parameters
+               parameters: parameters,
+               queue: 'default'
            },
            success: function (data) {
                fill_scheduled_tasks();

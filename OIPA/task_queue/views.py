@@ -15,8 +15,6 @@ from rq.job import Job
 
 from math import ceil
 
-redis_conn = Redis()
-
 
 # PARSE TASKS
 @staff_member_required
@@ -35,19 +33,6 @@ def add_task(request):
 
 
 # TASK QUEUE MANAGEMENT
-@staff_member_required
-def start_worker_with_supervisor(request):
-    from django.core.management import call_command
-
-    action = request.GET.get('action')
-    worker_program = request.GET.get('worker_program')
-
-    list = [action, worker_program]
-    call_command('supervisor', *list)
-
-    return HttpResponse('Success')
-
-
 @staff_member_required
 def get_workers(request):
 
@@ -104,17 +89,9 @@ def get_current_job(request):
     return HttpResponse(data, content_type='application/json')
 
 
-# Schedule management
-@staff_member_required
-def start_scheduler(request):
-    from rq_scheduler.scripts import rqscheduler
-    rqscheduler.main()
-    return HttpResponse('Success')
-
 
 @staff_member_required
 def add_scheduled_task(request):
-    from redis import Redis
     from rq_scheduler import Scheduler
     from datetime import datetime
 
@@ -122,7 +99,7 @@ def add_scheduled_task(request):
     period = request.GET.get('period')
     queue = request.GET.get('queue')
     parameters = request.GET.get('parameters')
-    scheduler = Scheduler(queue_name=queue, connection=Redis())
+    scheduler = Scheduler(queue_name=queue, connection=tasks.redis_conn)
 
     if parameters:
         scheduler.schedule(
@@ -199,10 +176,11 @@ def get_scheduled_tasks(request):
 
 @staff_member_required
 def cancel_scheduled_task(request):
-    job_id = request.GET.get('job_id')
-    from rq_scheduler import Scheduler
 
-    scheduler = Scheduler('parser')
+    from rq_scheduler import Scheduler
+    job_id = request.GET.get('job_id')
+
+    scheduler = Scheduler('default', connection=tasks.redis_conn)
     scheduler.cancel(job_id)
     return HttpResponse('Success')
 
