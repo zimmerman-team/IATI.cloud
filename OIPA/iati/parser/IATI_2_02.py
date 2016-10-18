@@ -18,7 +18,6 @@ from decimal import Decimal
 from iati.parser.exceptions import *
 # from iati.parser.higher_order_parser import compose, code
 
-from iati.parser import validators
 
 class Parse(IatiParser):
     
@@ -30,19 +29,39 @@ class Parse(IatiParser):
         # set on activity (if set)
 
         default_lang = self.default_lang
-        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
 
-        validated = validators.narrative(
-                parent,
-                self.get_model('Activity'),
-                default_lang,
-                lang,
-                text
-                )
-        narrative = self.handle_errors(element, validated)
+        if lang:
+            lang = lang.lower()
+
+        language = self.get_or_none(codelist_models.Language, code=lang)
+
+        if not parent:
+            raise ParserError(
+                "Unknown", 
+                "narrative", 
+                "parent object must be passed")
 
         register_name = parent.__class__.__name__ + "Narrative"
+
+        if not language:
+            raise RequiredFieldError(
+                register_name,
+                "xml:lang",
+                "must specify xml:lang on iati-activity or xml:lang on the element itself")
+        if not text:
+            raise EmptyFieldError(
+                register_name,
+                "text", 
+                "empty narrative")
+
+        narrative = models.Narrative()
+        narrative.language = language
+        narrative.content = element.text
+        narrative.related_object = parent
+        narrative.activity = self.get_model('Activity')
+
         self.register_model(register_name, narrative)
 
     def iati_activities__iati_activity(self, element):
@@ -55,40 +74,47 @@ class Parse(IatiParser):
 
         tag:iati-activity"""
 
-        validated = validators.activity(
-            element.xpath('iati-identifier/text()')[0],
-            element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang'),
-            element.attrib.get('hierarchy'),
-            element.attrib.get('humanitarian'),
-            element.attrib.get('last-updated-datetime'),
-            element.attrib.get('linked-data-uri'),
-            element.attrib.get('default-currency'),
-            self.iati_source.ref,
-            self.VERSION,
-            published=True,
-        )
+        iati_identifier = element.xpath('iati-identifier/text()')
 
-        instance = self.handle_errors(element, validated)
+        if len(iati_identifier) < 1:
+            raise ValidationError(
+                "iati-activity",
+                "iati-identifier",
+                "no iati-identifier found")
+        
+        activity_id = self._normalize(iati_identifier[0])
 
-        old_activity = self.get_or_none(models.Activity, id=instance.iati_identifier)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        hierarchy = element.attrib.get('hierarchy')
+        humanitarian = element.attrib.get('humanitarian')
+        last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
+        linked_data_uri = element.attrib.get('linked-data-uri')
+        default_currency = self.get_or_none(models.Currency, code=element.attrib.get('default-currency'))
 
-        # TODO: how do we handle this in IATI studio? - 2016-10-03
+        if not activity_id:
+            raise RequiredFieldError(
+                "iati-identifier",
+                "text", 
+                "required element empty")
+
+        old_activity = self.get_or_none(models.Activity, id=activity_id)
+
         if old_activity and not self.force_reparse:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the source)
             old_activity.save()
 
-            if instance.last_updated_datetime and instance.last_updated_datetime == old_activity.last_updated_datetime:
+            if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
                 raise NoUpdateRequired('activity', 'already up to date')
 
-            if instance.last_updated_datetime and (instance.last_updated_datetime < old_activity.last_updated_datetime):
+            if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is less than existing activity",
                     iati_identifier)
 
-            if not instance.last_updated_datetime and old_activity.last_updated_datetime:
+            if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise ValidationError(
                     "iati-activity",
                     "last-updated-datetime",
@@ -104,30 +130,43 @@ class Parse(IatiParser):
 
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
 
-        # for later reference
-        self.default_lang = instance.default_lang
+        activity = models.Activity()
+        activity.id = activity_id
+        activity.iati_identifier = iati_identifier[0]
+        activity.default_lang = default_lang
+        if hierarchy:
+            activity.hierarchy = hierarchy
+        activity.humanitarian = self.makeBoolNone(humanitarian)
+        activity.xml_source_ref = self.iati_source.ref
+        activity.last_updated_datetime = last_updated_datetime
+        activity.linked_data_uri = linked_data_uri
+        activity.default_currency = default_currency
+        activity.iati_standard_version_id = self.VERSION
 
-        self.register_model('Activity', instance)
+        # for later reference
+        self.default_lang = default_lang
+
+        self.register_model('Activity', activity)
         return element
 
-    # def iati_activities__iati_activity__iati_identifier(self, element):
-    #     """
-    #     attributes:
+    def iati_activities__iati_activity__iati_identifier(self, element):
+        """
+        attributes:
 
-    #     tag:iati-identifier
-    #     """
-    #     iati_identifier = element.text
+        tag:iati-identifier
+        """
+        iati_identifier = element.text
             
-    #     if not iati_identifier: 
-    #         raise RequiredFieldError(
-    #             "iati-identifier",
-    #             "text",
-    #             "required element empty")
+        if not iati_identifier: 
+            raise RequiredFieldError(
+                "iati-identifier",
+                "text",
+                "required element empty")
 
-    #     activity = self.get_model('Activity')
-    #     activity.iati_identifier = iati_identifier
+        activity = self.get_model('Activity')
+        activity.iati_identifier = iati_identifier
 
-    #     return element
+        return element
 
     def iati_activities__iati_activity__reporting_org(self, element):
         """attributes:
@@ -136,22 +175,26 @@ class Parse(IatiParser):
         secondary-reporter:0
 
         tag:reporting-org"""
+        ref = element.attrib.get('ref')
 
-        validated = validators.activity_reporting_org(
-            self.get_model('Activity'),
-            element.attrib.get('ref'),
-            element.attrib.get('type'),
-            element.attrib.get('secondary_reporter'),
-        )
+        if not ref:
+            raise RequiredFieldError(
+                "reporting-org",
+                "ref",
+                "required attribute missing")
 
-        instance = self.handle_errors(element, validated)
+        normalized_ref = self._normalize(ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+        secondary_reporter = element.attrib.get('secondary-reporter', '0')
 
-        if not instance.organisation:
-            # create an organisation
+        organisation = self.get_or_none(models.Organisation, pk=ref)
+
+        # create an organisation
+        if not organisation:
 
             organisation = organisation_models.Organisation()
-            organisation.id = instance.normalized_ref
-            organisation.organisation_identifier = instance.normalized_ref
+            organisation.id = ref
+            organisation.organisation_identifier = ref
             organisation.last_updated_datetime = datetime.now()
             organisation.iati_standard_version_id = "2.02"
             organisation.reported_in_iati = False
@@ -172,9 +215,16 @@ class Parse(IatiParser):
             else:
                 organisation.primary_name = ref
 
-            instance.organisation = organisation
+        activity = self.get_model('Activity')
+        reporting_organisation = models.ActivityReportingOrganisation()
+        reporting_organisation.ref = ref
+        reporting_organisation.normalized_ref = normalized_ref
+        reporting_organisation.type = org_type  
+        reporting_organisation.activity = activity
+        reporting_organisation.organisation = organisation
+        reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
 
-        self.register_model('ActivityReportingOrganisation', instance)
+        self.register_model('ActivityReportingOrganisation', reporting_organisation)
     
         return element
 
@@ -184,15 +234,6 @@ class Parse(IatiParser):
         tag:narrative
         """
         model = self.get_model('ActivityReportingOrganisation')
-
-        validated = validators.narrative(
-            self.get_model('Activity'),
-            element.attrib.get('ref'),
-            element.attrib.get('type'),
-            element.attrib.get('role'),
-            element.attrib.get('activity-id'),
-        )
-
         self.add_narrative(element, model)
 
         return element
@@ -204,18 +245,35 @@ class Parse(IatiParser):
         type:40
     
         tag:participating-org"""
+        ref = element.attrib.get('ref', '')
+        activity_id = element.attrib.get('activity-id', None)
 
-        validated = validators.activity_participating_org(
-            self.get_model('Activity'),
-            element.attrib.get('ref'),
-            element.attrib.get('type'),
-            element.attrib.get('role'),
-            element.attrib.get('activity-id'),
-        )
+        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
 
-        instance = self.handle_errors(element, validated)
+        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
+        # simply because they don't know the ref.
+        # if not ref: raise RequiredFieldError("ref", "participating-org: ref must be specified")
+        if not role:
+            raise RequiredFieldError(
+                "participating-org",
+                "role", 
+                "required attribute missing")
 
-        self.register_model('ActivityParticipatingOrganisation', instance)
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, pk=ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+
+        activity = self.get_model('Activity')
+        participating_organisation = models.ActivityParticipatingOrganisation()
+        participating_organisation.ref = ref
+        participating_organisation.normalized_ref = normalized_ref
+        participating_organisation.type = org_type  
+        participating_organisation.activity = activity
+        participating_organisation.organisation = organisation
+        participating_organisation.role = role
+        participating_organisation.org_activity_id = activity_id
+
+        self.register_model('ActivityParticipatingOrganisation', participating_organisation)
 
         return element
 
@@ -273,15 +331,15 @@ class Parse(IatiParser):
     
         tag:description"""
 
+        description_type_code = element.attrib.get('type', 1)
+        description_type = self.get_or_none(codelist_models.Language, code=description_type_code)
 
-        validated = validators.activity_description(
-            self.get_model('Activity'),
-            element.attrib.get('type'),
-        )
+        activity = self.get_model('Activity')
+        description = models.Description()
+        description.activity = activity
+        description.type = description_type
 
-        instance = self.handle_errors(element, validated)
-
-        self.register_model('Description', instance)
+        self.register_model('Description', description)
         return element
 
     def iati_activities__iati_activity__description__narrative(self, element):
@@ -349,13 +407,22 @@ class Parse(IatiParser):
 
         tag:activity-status"""
 
+        code = element.attrib.get('code')
+        activity_status = self.get_or_none(codelist_models.ActivityStatus, code=code)
+
+        if not code: 
+            raise RequiredFieldError(
+                "activity-status",
+                "code", 
+                "required attribute missing")
+
+        if not activity_status:
+            raise ValidationError(
+                "activity-status",
+                "code",
+                "not found on the accompanying code list")
+
         activity = self.get_model('Activity')
-
-        validated = validators.activity_status(
-                element.attrib.get('code'),
-                )
-
-        activity_status = self.handle_errors(element, validated)
         activity.activity_status = activity_status
 
         return element
