@@ -509,6 +509,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         mapped_fields = {
             'title': 'title__narratives__content',
+            'recipient_country': 'recipient_country__name',
             'activity_budget_value': 'activity_aggregation__budget_value',
             'activity_incoming_funds_value': 'activity_aggregation__incoming_funds_value',
             'activity_commitment_value': 'activity_aggregation__commitment_value',
