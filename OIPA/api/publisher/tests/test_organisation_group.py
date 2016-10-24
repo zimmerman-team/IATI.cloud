@@ -1,5 +1,5 @@
 
-
+from collections import OrderedDict
 from django.core.urlresolvers import reverse
 
 from rest_framework import status
@@ -16,6 +16,28 @@ from iati.permissions.models import OrganisationGroup
 class TestOrganisationGroupAPI(APITestCase):
     rf = RequestFactory()
     c = APIClient()
+
+    def test_get_organisation_users(self):
+        """
+        get a list of users within this organisation
+        """
+        organisation_group = OrganisationGroupFactory.create()
+        user = UserFactory.create(username='test1')
+        new_user = UserFactory.create(username='test2')
+
+        organisation_group.user_set.add(user)
+        organisation_group.user_set.add(new_user)
+
+        self.c.force_authenticate(user)
+
+        res = self.c.get(
+                "/api/publishers/{}/group/?format=json".format(organisation_group.publisher.id), 
+                )
+
+        self.assertEquals(res.data, [
+            OrderedDict([('username', u'test1'), ('email', u'')]),
+            OrderedDict([('username', u'test2'), ('email', u'')]),
+        ])
 
     def test_add_user_to_organisation_group_fail(self):
         """

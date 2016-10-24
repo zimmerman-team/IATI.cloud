@@ -12,6 +12,11 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
         """
         Check if the user is in
         """
+
+        # TODO: this might be dangerous - 2016-10-24
+        if request.method == 'GET':
+            return True
+
         user = request.user
 
         if not request.user or not request.user.is_authenticated:
