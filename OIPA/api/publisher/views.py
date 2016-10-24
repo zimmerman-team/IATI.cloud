@@ -1,4 +1,5 @@
 from api.publisher import serializers
+from api.permissions.serializers import OrganisationUserSerializer
 from iati_synchroniser.models import Publisher
 from api.publisher.filters import PublisherFilter
 from rest_framework.generics import RetrieveAPIView
@@ -72,9 +73,9 @@ class OrganisationAdminGroupView(APIView):
     def get(self, request, pk):
         users = OrganisationAdminGroup.objects.get(publisher_id=pk).user_set.all()
 
-        # TODO: serialize here - 2016-10-24
+        serializer = OrganisationUserSerializer(users, many=True)
 
-        return Response(users)
+        return Response(serializer.data)
 
     def post(self, request, pk):
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=pk)
@@ -92,13 +93,6 @@ class OrganisationAdminGroupView(APIView):
 class OrganisationAdminGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
-
-    def get(self, request, pk, id):
-        user = OrganisationAdminGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
-
-        # TODO: serialize here - 2016-10-24
-
-        return Response(user)
 
     def delete(self, request, pk, id):
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=pk)
@@ -129,9 +123,9 @@ class OrganisationGroupView(APIView):
     def get(self, request, pk):
         users = OrganisationGroup.objects.get(publisher_id=pk).user_set.all()
 
-        # TODO: serialize here - 2016-10-24
+        serializer = OrganisationUserSerializer(users, many=True)
 
-        return Response(users)
+        return Response(serializer.data)
 
     def post(self, request, pk):
         group = OrganisationGroup.objects.get(publisher_id=pk)
@@ -149,13 +143,6 @@ class OrganisationGroupView(APIView):
 class OrganisationGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
-
-    def get(self, request, pk, id):
-        user = OrganisationGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
-
-        # TODO: serialize here - 2016-10-24
-
-        return Response(user)
 
     def delete(self, request, pk, id):
         publisher = Publisher.objects.get(pk=pk)
