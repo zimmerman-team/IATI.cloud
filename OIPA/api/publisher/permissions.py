@@ -3,10 +3,10 @@ from rest_framework import permissions
 from common.util import get_or_none
 
 from iati_synchroniser.models import Publisher
-from iati.permissions.models import AdminGroup
+from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 
-class AdminGroupPermissions(permissions.BasePermission):
-    message = 'Adding customers not allowed.'
+class OrganisationAdminGroupPermissions(permissions.BasePermission):
+    message = 'You have no admin priviledges for this organisation'
 
     def has_permission(self, request, view):
         """
@@ -25,9 +25,9 @@ class AdminGroupPermissions(permissions.BasePermission):
             return False
 
         try:
-            admin_group = AdminGroup.objects.get(publisher=publisher)
-        except AdminGroup.DoesNotExist:
+            admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
+        except OrganisationAdminGroup.DoesNotExist:
             return False
 
-        return user.groups.filter(admingroup__publisher=publisher).exists()
+        return user.groups.filter(organisationadmingroup__publisher=publisher).exists()
 

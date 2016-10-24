@@ -16,6 +16,7 @@ class NoDatabaseFactory(DjangoModelFactory):
 class PublisherFactory(NoDatabaseFactory):
     class Meta:
         model = Publisher
+        django_get_or_create = [ 'org_id' ]
 
     organisation = SubFactory(OrganisationFactory)
     org_id = 'NL-1'

@@ -7,11 +7,11 @@ from iati_organisation.models import Organisation
 
 
 class Publisher(models.Model):
-    org_id = models.CharField(max_length=100)
+    org_id = models.CharField(max_length=100, unique=True)
     org_abbreviate = models.CharField(max_length=55, default="")
     org_name = models.CharField(max_length=255)
 
-    organisation = models.ForeignKey(Organisation, default=None, null=True)
+    organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
 
     def __unicode__(self):
         return self.org_id
