@@ -12,6 +12,11 @@ urlpatterns = [
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/admin-group/$',
         views.AdminGroupView.as_view(),
-        name='publisher-admingroup'
+        name='publisher-admingroup-list'
+    ),
+    url(
+        r'^(?P<pk>[^@$&+,/:;=?]+)/admin-group/(?P<id>[^@$&+,/:;=?]+)$',
+        views.AdminGroupDetailView.as_view(),
+        name='publisher-admingroup-detail'
     ),
 ]

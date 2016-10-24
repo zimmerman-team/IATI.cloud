@@ -73,6 +73,8 @@ class AdminGroupView(APIView):
     def get(self, request, pk):
         users = AdminGroup.objects.get(publisher_id=pk).user_set.all()
 
+        # TODO: serialize here - 2016-10-24
+
         return Response(users)
 
     def post(self, request, pk):
@@ -84,16 +86,37 @@ class AdminGroupView(APIView):
         if not user:
             return Response(status=401)
 
-        if user.id == request.user.id:
-            return Response(status=401)
-
-        if user.id == admin_group.owner.id:
-            return Response(status=401)
-
         admin_group.user_set.add(user)
 
         return Response()
 
-            
+class AdminGroupDetailView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (AdminGroupPermissions, )
 
+    def get(self, request, pk, id):
+        user = AdminGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
 
+        # TODO: serialize here - 2016-10-24
+
+        return Response(user)
+
+    def delete(self, request, pk, id):
+        admin_group = AdminGroup.objects.get(publisher_id=pk)
+
+        user_id = id
+        user = get_or_none(User, pk=user_id)
+
+        if not user:
+            return Response(status=401)
+
+        # TODO: user can remove himself from admin group? - 2016-10-24
+        # if user.id == request.user.id:
+        #     return Response(status=401)
+
+        if user.id == admin_group.owner.id:
+            return Response(status=401)
+
+        admin_group.user_set.remove(user)
+
+        return Response()

@@ -66,6 +66,58 @@ class TestAdminGroupAPI(APITestCase):
         self.assertEquals(res.status_code, 200)
         self.assertEquals(len(AdminGroup.objects.get(pk=admin_group.id).user_set.all()), 2)
 
+    def test_remove_user_from_admin_group_fail(self):
+        """
+        Make sure a normal user can't remove users from an admin group
+        """
+        admin_group = AdminGroupFactory.create()
+        user = UserFactory.create(username='test1')
+        new_user = UserFactory.create(username='test2')
+
+        # admin_group.user_set.add(user)
+        admin_group.user_set.add(new_user)
+
+        admin_group.save()
+
+        self.c.force_authenticate(user)
+
+        data = {
+            "user_id": new_user.id,
+        }
+
+        res = self.c.delete(
+                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 403)
+
+    def test_remove_user_from_admin_group_success(self):
+        """
+        Make sure a normal user can't remove users from an admin group
+        """
+        admin_group = AdminGroupFactory.create()
+        user = UserFactory.create(username='test1')
+        new_user = UserFactory.create(username='test2')
+
+        admin_group.user_set.add(user)
+        admin_group.user_set.add(new_user)
+
+        admin_group.save()
+
+        self.c.force_authenticate(user)
+
+        data = {
+            "user_id": new_user.id,
+        }
+
+        res = self.c.delete(
+                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200)
+
     def test_user_cant_remove_owner(self):
         """
         Make sure the initial creator of the admin group can't be removed from the admin group
@@ -85,9 +137,8 @@ class TestAdminGroupAPI(APITestCase):
             "user_id": new_user.id,
         }
 
-        res = self.c.post(
-                "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id), 
-                data,
+        res = self.c.delete(
+                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
                 format='json'
                 )
 
