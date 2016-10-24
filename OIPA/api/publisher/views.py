@@ -11,10 +11,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 
-from api.publisher.permissions import AdminGroupPermissions
+from api.publisher.permissions import OrganisationAdminGroupPermissions
 
 from iati_synchroniser.models import Publisher
-from iati.permissions.models import AdminGroup
+from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 from django.contrib.auth.models import Group, User
 
 class PublisherList(DynamicListView):
@@ -65,19 +65,19 @@ class PublisherDetail(DynamicDetailView):
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
 
-class AdminGroupView(APIView):
+class OrganisationAdminGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (AdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, pk):
-        users = AdminGroup.objects.get(publisher_id=pk).user_set.all()
+        users = OrganisationAdminGroup.objects.get(publisher_id=pk).user_set.all()
 
         # TODO: serialize here - 2016-10-24
 
         return Response(users)
 
     def post(self, request, pk):
-        admin_group = AdminGroup.objects.get(publisher_id=pk)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=pk)
 
         user_id = request.data.get('user_id', None)
         user = get_or_none(User, pk=user_id)
@@ -89,19 +89,19 @@ class AdminGroupView(APIView):
 
         return Response()
 
-class AdminGroupDetailView(APIView):
+class OrganisationAdminGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (AdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, pk, id):
-        user = AdminGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
+        user = OrganisationAdminGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
 
         # TODO: serialize here - 2016-10-24
 
         return Response(user)
 
     def delete(self, request, pk, id):
-        admin_group = AdminGroup.objects.get(publisher_id=pk)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=pk)
 
         user_id = id
         user = get_or_none(User, pk=user_id)
@@ -117,5 +117,64 @@ class AdminGroupDetailView(APIView):
             return Response(status=401)
 
         admin_group.user_set.remove(user)
+
+        return Response()
+
+
+
+class OrganisationGroupView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def get(self, request, pk):
+        users = OrganisationGroup.objects.get(publisher_id=pk).user_set.all()
+
+        # TODO: serialize here - 2016-10-24
+
+        return Response(users)
+
+    def post(self, request, pk):
+        group = OrganisationGroup.objects.get(publisher_id=pk)
+
+        user_id = request.data.get('user_id', None)
+        user = get_or_none(User, pk=user_id)
+
+        if not user:
+            return Response(status=401)
+
+        group.user_set.add(user)
+
+        return Response()
+
+class OrganisationGroupDetailView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def get(self, request, pk, id):
+        user = OrganisationGroup.objects.get(publisher_id=pk).user_set.get(pk=id)
+
+        # TODO: serialize here - 2016-10-24
+
+        return Response(user)
+
+    def delete(self, request, pk, id):
+        publisher = Publisher.objects.get(pk=pk)
+        group = OrganisationGroup.objects.get(publisher_id=pk)
+
+        user_id = id
+        user = get_or_none(User, pk=user_id)
+
+        if not user:
+            return Response(status=401)
+
+        # TODO: user can remove himself from  group? - 2016-10-24
+        # if user.id == request.user.id:
+        #     return Response(status=401)
+
+        # The user to remove is an admin
+        if user.groups.filter(organisationadmingroup__publisher=publisher).exists():
+            return Response(status=401)
+
+        group.user_set.remove(user)
 
         return Response()

@@ -2,7 +2,7 @@ import datetime
 import md5
 
 
-from iati.permissions.models import AdminGroup
+from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup
 from django.contrib.auth.models import User
 
 from factory.django import DjangoModelFactory
@@ -18,11 +18,18 @@ class UserFactory(DjangoModelFactory):
         model = User  # Equivalent to ``model = myapp.models.User``
         django_get_or_create = ('username',)
 
-class AdminGroupFactory(DjangoModelFactory):
-    name = "DFID Admin Group"
+class OrganisationAdminGroupFactory(DjangoModelFactory):
+    name = "DFID Organisation Admin Group"
     publisher = SubFactory(synchroniser_factory.PublisherFactory)
     owner = SubFactory(UserFactory)
 
     class Meta:
-        model = AdminGroup
+        model = OrganisationAdminGroup
+
+class OrganisationGroupFactory(DjangoModelFactory):
+    name = "DFID Organisation Organisation Group"
+    publisher = SubFactory(synchroniser_factory.PublisherFactory)
+
+    class Meta:
+        model = OrganisationGroup
 
