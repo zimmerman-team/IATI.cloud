@@ -18,7 +18,7 @@ class DatasetSyncer():
         source_url_tuples = models.IatiXmlSource.objects.values_list('source_url')
         self.source_urls = [url[0] for url in source_url_tuples]
 
-        publisher_id_tuples = models.Publisher.objects.values_list('org_id')
+        publisher_id_tuples = models.Publisher.objects.values_list('publisher_iati_id')
         self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
         self.source_count = 10000
@@ -53,7 +53,7 @@ class DatasetSyncer():
         for line in json_objects['results']:
             self.parse_json_line(line)
 
-    def remove_publisher_duplicates(self, org_id):
+    def remove_publisher_duplicates(self, publisher_iati_id):
         """
         Previous versions of the dataset syncer code caused duplicate publishers.
         This definition removes them to provide backward compatibility.
@@ -61,32 +61,32 @@ class DatasetSyncer():
         """
 
         # check if multiple publishers under same ref
-        publisher_count = models.Publisher.objects.filter(org_id=org_id).count()
+        publisher_count = models.Publisher.objects.filter(publisher_iati_id=publisher_iati_id).count()
         if publisher_count > 1:
-            # set all iati sources to first found publisher with the org_id
-            duplicate_publishers = models.Publisher.objects.filter(org_id=org_id)
-            models.IatiXmlSource.objects.filter(publisher__org_id=org_id).update(publisher=duplicate_publishers[0])
+            # set all iati sources to first found publisher with the publisher_iati_id
+            duplicate_publishers = models.Publisher.objects.filter(publisher_iati_id=publisher_iati_id)
+            models.IatiXmlSource.objects.filter(publisher__publisher_iati_id=publisher_iati_id).update(publisher=duplicate_publishers[0])
 
             # remove other org_id's
             models.Publisher.objects.filter(
-                org_id=org_id
+                publisher_iati_id=publisher_iati_id
             ).annotate(
                 source_count=Count("iatixmlsource")
             ).filter(
                 source_count=0
             ).delete()
 
-    def get_or_create_publisher(self, org_id, abbreviation, name):
+    def get_or_create_publisher(self, publisher_iati_id, abbreviation, name):
 
-        if org_id in self.publisher_ids:
-            return models.Publisher.objects.get(org_id=org_id)
+        if publisher_iati_id in self.publisher_ids:
+            return models.Publisher.objects.get(publisher_iati_id=publisher_iati_id)
 
         current_publisher = models.Publisher(
-        org_id=org_id,
-        org_abbreviate=abbreviation,
-        org_name=name)
+        publisher_iati_id=publisher_iati_id,
+        display_name=abbreviation,
+        name=name)
         current_publisher.save()
-        self.publisher_ids.append(org_id)
+        self.publisher_ids.append(publisher_iati_id)
 
         return current_publisher
 

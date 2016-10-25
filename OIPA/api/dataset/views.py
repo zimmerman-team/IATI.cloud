@@ -8,6 +8,10 @@ from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
 
+from rest_framework.views import APIView
+from rest_framework import authentication, permissions
+
+from api.publisher.permissions import OrganisationAdminGroupPermissions
 
 class DatasetList(DynamicListView):
     """
@@ -204,4 +208,24 @@ class DatasetNotes(ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return IatiXmlSource(pk=pk).iatixmlsourcenote_set.all()
+
+from api.export.views import IATIActivityList
+export_view = IATIActivityList.as_view()
+
+from ckanapi import RemoteCKAN
+
+class DatasetPublish(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def post(self, request, publisher_id):
+        publisher = Publisher.objects.get(pk=publisher_id)
+        group = OrganisationGroup.objects.get(publisher_id=publisher_id)
+
+        # TODO: create a dataset - 2016-10-25
+        # export = export_view(request).content
+
+        print(export)
+
+        return Response()
 

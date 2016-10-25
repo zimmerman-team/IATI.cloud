@@ -1,9 +1,9 @@
 [
     {
         "fields": {
-            "org_abbreviate": "znz test",
-            "org_id": "znz_test",
-            "org_name": "ZNZ test"
+            "display_name": "znz test",
+            "publisher_iati_id": "znz_test",
+            "name": "ZNZ test"
         },
         "model": "iati_synchroniser.publisher",
         "pk": 1

@@ -44,9 +44,9 @@ class DatasetSyncerTestCase(TestCase):
             syncer.parse_json_line(data)
 
         publisher = Publisher.objects.all()[0]
-        self.assertEqual("GB-CHC-1020488", publisher.org_id)
-        self.assertEqual("cic", publisher.org_abbreviate)
-        self.assertEqual("Children in Crisis", publisher.org_name)
+        self.assertEqual("GB-CHC-1020488", publisher.publisher_iati_id)
+        self.assertEqual("cic", publisher.display_name)
+        self.assertEqual("Children in Crisis", publisher.name)
 
     def test_parsed_xml_source_data_integrity(self):
         """
@@ -80,14 +80,14 @@ class DatasetSyncerTestCase(TestCase):
             syncer.parse_json_line(data)
 
         source = IatiXmlSource.objects.get(ref="cic-sl")
-        publisher = Publisher.objects.get(org_id="GB-CHC-1020488")
+        publisher = Publisher.objects.get(publisher_iati_id="GB-CHC-1020488")
         self.assertEqual(publisher, source.publisher,
             "IatiXmlSource should have correct publisher")
 
     def test_remove_publisher_duplicates(self):
 
-        publisher = synchroniser_factory.PublisherFactory.create(org_id='NL-1')
-        publisher_duplicate = synchroniser_factory.PublisherFactory.create(org_id='NL-1')
+        publisher = synchroniser_factory.PublisherFactory.create(publisher_iati_id='NL-1')
+        publisher_duplicate = synchroniser_factory.PublisherFactory.create(publisher_iati_id='NL-1')
         synchroniser_factory.DatasetFactory.create(
             ref='first_set',
             source_url='http://www.nourl.com/test1.xml',
@@ -104,7 +104,7 @@ class DatasetSyncerTestCase(TestCase):
         # publisher duplicate should be removed, all datasets should be under the first publisher
 
         self.assertEqual(publisher,
-                         Publisher.objects.filter(org_id='NL-1')[0],
+                         Publisher.objects.filter(publisher_iati_id='NL-1')[0],
                         "first publisher should still be in the database")
 
         self.assertEqual(1,

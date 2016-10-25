@@ -22,7 +22,7 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
         if not request.user or not request.user.is_authenticated:
             return False
 
-        publisher_id = view.kwargs.get('pk')
+        publisher_id = view.kwargs.get('publisher_id')
         
         try:
             publisher = Publisher.objects.get(pk=publisher_id)

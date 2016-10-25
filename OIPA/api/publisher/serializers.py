@@ -25,9 +25,9 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         model = Publisher
         fields = (
             'url',
-            'org_id',
-            'org_abbreviate',
-            'org_name',
+            'publisher_iati_id',
+            'display_name',
+            'name',
             'activities',
             'activity_count',
             'note_count',
@@ -36,10 +36,10 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?reporting_organisation=' + obj.org_id
+        return url + '?reporting_organisation=' + obj.publisher_iati_id
 
     def get_activity_count(self, obj):
-        return Activity.objects.filter(reporting_organisations__normalized_ref=obj.org_id).count()
+        return Activity.objects.filter(reporting_organisations__normalized_ref=obj.publisher_iati_id).count()
 
     def get_note_count(self, obj):
         sum_queryset = IatiXmlSource.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
