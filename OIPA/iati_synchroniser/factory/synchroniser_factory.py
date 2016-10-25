@@ -1,6 +1,6 @@
 from factory.django import DjangoModelFactory
 from factory import SubFactory
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
 from datetime import datetime
 
@@ -26,7 +26,7 @@ class PublisherFactory(NoDatabaseFactory):
 
 class DatasetFactory(NoDatabaseFactory):
     class Meta:
-        model = IatiXmlSource
+        model = Dataset
 
     ref = 'nl-1'
     title = '1998-2008 Activities'

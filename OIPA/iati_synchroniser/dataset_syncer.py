@@ -15,7 +15,7 @@ class DatasetSyncer():
         """
         Prefetch data, to minify amount of DB queries
         """
-        source_url_tuples = models.IatiXmlSource.objects.values_list('source_url')
+        source_url_tuples = models.Dataset.objects.values_list('source_url')
         self.source_urls = [url[0] for url in source_url_tuples]
 
         publisher_id_tuples = models.Publisher.objects.values_list('publisher_iati_id')
@@ -65,13 +65,13 @@ class DatasetSyncer():
         if publisher_count > 1:
             # set all iati sources to first found publisher with the publisher_iati_id
             duplicate_publishers = models.Publisher.objects.filter(publisher_iati_id=publisher_iati_id)
-            models.IatiXmlSource.objects.filter(publisher__publisher_iati_id=publisher_iati_id).update(publisher=duplicate_publishers[0])
+            models.Dataset.objects.filter(publisher__publisher_iati_id=publisher_iati_id).update(publisher=duplicate_publishers[0])
 
             # remove other org_id's
             models.Publisher.objects.filter(
                 publisher_iati_id=publisher_iati_id
             ).annotate(
-                source_count=Count("iatixmlsource")
+                source_count=Count("dataset")
             ).filter(
                 source_count=0
             ).delete()
@@ -104,7 +104,7 @@ class DatasetSyncer():
         else:
             cur_type = 1
 
-        new_source = models.IatiXmlSource(
+        new_source = models.Dataset(
             ref=name,
             title=title,
             publisher=current_publisher,
@@ -168,7 +168,7 @@ class DatasetSyncer():
 
         else:
             # update iati source last found
-            source = models.IatiXmlSource.objects.get(source_url=source_url)
+            source = models.Dataset.objects.get(source_url=source_url)
             source.iati_standard_version = iati_version
             source.last_found_in_registry = datetime.datetime.now()
             source.save(process=False, added_manually=False)

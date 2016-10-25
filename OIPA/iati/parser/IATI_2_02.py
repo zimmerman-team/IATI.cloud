@@ -3056,7 +3056,7 @@ class Parse(IatiParser):
         """Perform all actions that need to happen after a single IATI source's been parsed.
 
         Keyword arguments:
-        xml_source -- the IatiXmlSource object of the current source
+        xml_source -- the Dataset object of the current source
         """
         self.delete_removed_activities(xml_source.ref)
 
@@ -3064,7 +3064,7 @@ class Parse(IatiParser):
         """ Delete activities that were not found in the XML source any longer
 
         Keyword arguments:
-        xml_source_ref -- the IatiXmlSource object PK (ref) of the current source
+        xml_source_ref -- the Dataset object PK (ref) of the current source
 
         Used variables:
         activity.last_updated_model -- the datetime at which this activity was last saved

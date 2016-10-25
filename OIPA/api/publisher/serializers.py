@@ -1,6 +1,6 @@
 from rest_framework.serializers import HyperlinkedIdentityField
 from iati_synchroniser.models import Publisher
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.dataset.serializers import DatasetSerializer
 from rest_framework.serializers import SerializerMethodField
@@ -15,7 +15,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
     datasets = DatasetSerializer(
         many=True, 
-        source="iatixmlsource_set",
+        source="dataset_set",
         fields=('url', 'ref', 'title', 'type', 'source_url'))
     activity_count = SerializerMethodField()
     note_count = SerializerMethodField()
@@ -42,7 +42,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         return Activity.objects.filter(reporting_organisations__normalized_ref=obj.publisher_iati_id).count()
 
     def get_note_count(self, obj):
-        sum_queryset = IatiXmlSource.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
+        sum_queryset = Dataset.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
         return sum_queryset.get('note_count__sum')
 
 

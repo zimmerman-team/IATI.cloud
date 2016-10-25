@@ -14,7 +14,7 @@ from lxml.builder import E
 
 from iati.parser.parse_manager import ParseManager
 
-from iati_synchroniser.models import IatiXmlSource, Publisher
+from iati_synchroniser.models import Dataset, Publisher
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 import iati_organisation.models as org_models
@@ -66,7 +66,7 @@ class ParserSetupTestCase(DjangoTestCase):
 
         self.iati_105 = build_xml("1.05", self.iati_identifier)
 
-        dummy_source = IatiXmlSource.objects.get(id=2)
+        dummy_source = Dataset.objects.get(id=2)
 
         self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
 
