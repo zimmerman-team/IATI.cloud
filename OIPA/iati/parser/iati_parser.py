@@ -8,7 +8,7 @@ from decimal import Decimal, InvalidOperation
 
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
-from iati_synchroniser.models import IatiXmlSourceNote
+from iati_synchroniser.models import DatasetNote
 from django.conf import settings
 from iati.parser.exceptions import *
 
@@ -142,8 +142,8 @@ class IatiParser(object):
         if settings.ERROR_LOGS_ENABLED:
             self.iati_source.note_count = len(self.errors)
             self.iati_source.save()
-            IatiXmlSourceNote.objects.filter(source=self.iati_source).delete()
-            IatiXmlSourceNote.objects.bulk_create(self.errors)
+            DatasetNote.objects.filter(source=self.iati_source).delete()
+            DatasetNote.objects.bulk_create(self.errors)
     
     def post_save_models(self):
         print "override in children"
@@ -177,7 +177,7 @@ class IatiParser(object):
         elif not iati_identifier:
             iati_identifier = 'no-identifier'
 
-        note = IatiXmlSourceNote(
+        note = DatasetNote(
             source=self.iati_source,
             iati_identifier=iati_identifier,
             model=model,

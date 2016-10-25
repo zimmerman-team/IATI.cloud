@@ -126,20 +126,20 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
             force = False
         else:
             force = True
-        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj = get_object_or_404(Dataset, id=xml_id)
         obj.process(force_reparse=force)
         return HttpResponse('<html><body>Success</body></html>', content_type='text/html')
 
     def add_to_parse_queue(self, request):
         xml_id = request.GET.get('xml_id')
-        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj = get_object_or_404(Dataset, id=xml_id)
         queue = django_rq.get_queue("parser")
         queue.enqueue(force_parse_source_by_url, args=(obj.source_url,), timeout=7200)
         return HttpResponse('Success')
 
     def parse_activity_view(self, request, activity_id):
         xml_id = request.GET.get('xml_id')
-        obj = get_object_or_404(IatiXmlSource, id=xml_id)
+        obj = get_object_or_404(Dataset, id=xml_id)
         obj.process_activity(activity_id)
         return HttpResponse('Success')
 
@@ -165,7 +165,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
 
 
 class IATIXMLSourceInline(admin.TabularInline):
-    model = IatiXmlSource
+    model = Dataset
     extra = 0
 
 
@@ -195,11 +195,11 @@ class PublisherAdmin(admin.ModelAdmin):
 
     def parse_view(self, request):
         publisher_id = request.GET.get('publisher_id')
-        for obj in IatiXmlSource.objects.filter(publisher__id=publisher_id):
+        for obj in Dataset.objects.filter(publisher__id=publisher_id):
             obj.process()
         return HttpResponse('Success')
 
 
 admin.site.register(Codelist,CodeListAdmin)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(IatiXmlSource, IATIXMLSourceAdmin)
+admin.site.register(Dataset, IATIXMLSourceAdmin)

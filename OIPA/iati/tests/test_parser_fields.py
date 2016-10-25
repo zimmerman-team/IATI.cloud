@@ -19,7 +19,7 @@ from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 from iati.parser.parse_manager import ParseManager
 
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
@@ -56,7 +56,7 @@ def build_xml(version, iati_identifier):
     return activity
 
 # def create_dummy_source(url, title, name, current_publisher, cur_type):
-#     source = IatiXmlSource(
+#     source = Dataset(
 #         ref=name,
 #         title=title,
 #         publisher=current_publisher,
@@ -84,7 +84,7 @@ def create_parser(self, version="2.02"):
     iati_identifier = "NL-KVK-51018586-0666"
 
     iati_activities = build_xml(version, iati_identifier)
-    dummy_source = IatiXmlSource.objects.get(id=1)
+    dummy_source = Dataset.objects.get(id=1)
 
     return ParseManager(dummy_source, iati_activities).get_parser()
 
@@ -125,7 +125,7 @@ class ParserSetupTestCase(TestCase):
 
         # publisher = Publisher.objects.get(id=1) # from fixture
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
-        dummy_source = IatiXmlSource.objects.get(id=1)
+        dummy_source = Dataset.objects.get(id=1)
 
         self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
         self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()

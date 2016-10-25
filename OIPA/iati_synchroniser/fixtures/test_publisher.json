@@ -22,7 +22,7 @@
             "title": "znz_test",
             "type": 1
         },
-        "model": "iati_synchroniser.iatixmlsource",
+        "model": "iati_synchroniser.dataset",
         "pk": 1
     },
     {
@@ -39,7 +39,7 @@
             "title": "znz_test",
             "type": 2
         },
-        "model": "iati_synchroniser.iatixmlsource",
+        "model": "iati_synchroniser.dataset",
         "pk": 2
     }
 ]

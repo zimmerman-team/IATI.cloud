@@ -1,4 +1,4 @@
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 import datetime
 
 
@@ -9,7 +9,7 @@ class ParseAdmin():
         def parse(source):
             source.save()
 
-        [parse(source) for source in IatiXmlSource.objects.all()]
+        [parse(source) for source in Dataset.objects.all()]
 
     def parseXDays(self, days):
 
@@ -23,7 +23,7 @@ class ParseAdmin():
                 print "Now updating " + source.source_url
                 source.save()
 
-        [parse(source) for source in IatiXmlSource.objects.all()]
+        [parse(source) for source in Dataset.objects.all()]
 
 
 

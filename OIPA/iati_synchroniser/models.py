@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from iati_organisation.models import Organisation
 
+
 class Publisher(models.Model):
 
     # The IR publisher id
@@ -14,7 +15,7 @@ class Publisher(models.Model):
     publisher_iati_id = models.CharField(max_length=100, unique=True)
 
     # name given in the IR API
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
 
     organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
@@ -25,7 +26,7 @@ class Publisher(models.Model):
         return self.publisher_iati_id
 
 
-class IatiXmlSource(models.Model):
+class Dataset(models.Model):
     ref = models.CharField(
         max_length=255)
     title = models.CharField(max_length=255, default="")
@@ -99,19 +100,14 @@ class IatiXmlSource(models.Model):
 
     def save(self, process=False, added_manually=True, *args, **kwargs):
         self.added_manually = added_manually
-        super(IatiXmlSource, self).save()
+        super(Dataset, self).save()
 
         if process:
             self.process()
 
-    def delete(self, *args, **kwargs):
-        from iati.models import Activity
-        Activity.objects.filter(xml_source_ref=self.ref).delete()
-        super(IatiXmlSource, self).delete()
 
-
-class IatiXmlSourceNote(models.Model):
-    source = models.ForeignKey(IatiXmlSource)
+class DatasetNote(models.Model):
+    source = models.ForeignKey(Dataset)
     iati_identifier = models.CharField(max_length=140, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)

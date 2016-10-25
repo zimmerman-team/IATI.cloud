@@ -1,4 +1,4 @@
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
 import django_rq
@@ -81,10 +81,10 @@ def force_parse_all_existing_sources():
     """
     queue = django_rq.get_queue("parser")
 
-    for e in IatiXmlSource.objects.all().filter(type=2):
+    for e in Dataset.objects.all().filter(type=2):
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
-    for e in IatiXmlSource.objects.all().filter(type=1):
+    for e in Dataset.objects.all().filter(type=1):
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
@@ -105,10 +105,10 @@ def parse_all_existing_sources():
     """
     queue = django_rq.get_queue("parser")
 
-    for e in IatiXmlSource.objects.all().filter(type=2):
+    for e in Dataset.objects.all().filter(type=2):
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
-    for e in IatiXmlSource.objects.all().filter(type=1):
+    for e in Dataset.objects.all().filter(type=1):
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
@@ -118,7 +118,7 @@ def parse_all_existing_sources():
 @job
 def parse_all_sources_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
-    for e in IatiXmlSource.objects.filter(publisher__publisher_iati_id=org_ref):
+    for e in Dataset.objects.filter(publisher__publisher_iati_id=org_ref):
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
@@ -128,7 +128,7 @@ def parse_all_sources_by_publisher_ref(org_ref):
 @job
 def force_parse_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
-    for e in IatiXmlSource.objects.filter(publisher__publisher_iati_id=org_ref):
+    for e in Dataset.objects.filter(publisher__publisher_iati_id=org_ref):
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
@@ -143,15 +143,15 @@ def get_new_sources_from_iati_api():
 
 @job
 def force_parse_source_by_url(url):
-    if IatiXmlSource.objects.filter(source_url=url).exists():
-        xml_source = IatiXmlSource.objects.get(source_url=url)
+    if Dataset.objects.filter(source_url=url).exists():
+        xml_source = Dataset.objects.get(source_url=url)
         xml_source.process(force_reparse=True)
 
 
 @job
 def parse_source_by_url(url):
-    if IatiXmlSource.objects.filter(source_url=url).exists():
-        xml_source = IatiXmlSource.objects.get(source_url=url)
+    if Dataset.objects.filter(source_url=url).exists():
+        xml_source = Dataset.objects.get(source_url=url)
         xml_source.process()
 
 
@@ -164,8 +164,8 @@ def calculate_activity_aggregations_per_source(source_ref):
 @job
 def delete_source_by_id(source_id):
     try:
-        IatiXmlSource.objects.get(id=source_id).delete()
-    except IatiXmlSource.DoesNotExist:
+        Dataset.objects.get(id=source_id).delete()
+    except Dataset.DoesNotExist:
         return False
 
 
@@ -175,7 +175,7 @@ def delete_sources_not_found_in_registry_in_x_days(days):
     if int(days) < 6:
         raise Exception("The task queue only allows deletion of sources when not found for +5 days")
 
-    for source in IatiXmlSource.objects.all():
+    for source in Dataset.objects.all():
         current_date = float(datetime.datetime.now().strftime('%s'))
         if source.last_found_in_registry:
             last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))

@@ -1,7 +1,7 @@
 import json
 from django.test import TestCase
 from iati_synchroniser.dataset_syncer import DatasetSyncer
-from iati_synchroniser.models import IatiXmlSource
+from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
 from iati_synchroniser.factory import synchroniser_factory
 from django.core import management
@@ -21,7 +21,7 @@ class DatasetSyncerTestCase(TestCase):
         syncer = DatasetSyncer()
 
         publishers_count = Publisher.objects.count()
-        sources_count = IatiXmlSource.objects.count()
+        sources_count = Dataset.objects.count()
 
         with open('iati_synchroniser/fixtures/test_activity.json') as fixture:
             data = json.load(fixture).get('results', [{}, ])[0]
@@ -30,8 +30,8 @@ class DatasetSyncerTestCase(TestCase):
         self.assertNotEqual(publishers_count, Publisher.objects.count(),
             "New publisher should be added into database")
 
-        self.assertNotEqual(sources_count, IatiXmlSource.objects.count(),
-            "New IatiXmlSource should be added into database")
+        self.assertNotEqual(sources_count, Dataset.objects.count(),
+            "New Dataset should be added into database")
 
     def test_parsed_published_data_integrity(self):
         """
@@ -58,7 +58,7 @@ class DatasetSyncerTestCase(TestCase):
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
-        source = IatiXmlSource.objects.all()[0]
+        source = Dataset.objects.all()[0]
 
         self.assertEqual("cic-sl", source.ref)
         self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml",
@@ -67,11 +67,11 @@ class DatasetSyncerTestCase(TestCase):
                          source.title)
 
         self.assertFalse(source.is_parsed,
-            "New IatiXmlSource should not be marked as parsed")
+            "New Dataset should not be marked as parsed")
 
     def test_if_publisher_assigned_to_source(self):
         """
-        Test if correct publisher assigned to IatiXmlSource
+        Test if correct publisher assigned to Dataset
         """
         syncer = DatasetSyncer()
 
@@ -79,10 +79,10 @@ class DatasetSyncerTestCase(TestCase):
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
-        source = IatiXmlSource.objects.get(ref="cic-sl")
+        source = Dataset.objects.get(ref="cic-sl")
         publisher = Publisher.objects.get(publisher_iati_id="GB-CHC-1020488")
         self.assertEqual(publisher, source.publisher,
-            "IatiXmlSource should have correct publisher")
+            "Dataset should have correct publisher")
 
     def test_remove_publisher_duplicates(self):
 
@@ -112,10 +112,10 @@ class DatasetSyncerTestCase(TestCase):
                          "publisher duplicate should be removed from the database")
 
         self.assertEqual(2,
-                         publisher.iatixmlsource_set.all().count(),
+                         publisher.dataset_set.all().count(),
                          "Both XML sources should still be in the database")
 
         self.assertEqual(2,
-                         IatiXmlSource.objects.count(),
+                         Dataset.objects.count(),
                          "Both XML sources should still be in the database")
 

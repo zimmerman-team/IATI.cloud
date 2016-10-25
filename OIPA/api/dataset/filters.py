@@ -1,5 +1,5 @@
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
-from iati_synchroniser.models import IatiXmlSource, IatiXmlSourceNote
+from iati_synchroniser.models import Dataset, DatasetNote
 from django_filters import FilterSet, CharFilter, NumberFilter, DateTimeFilter
 
 
@@ -37,49 +37,49 @@ class DatasetFilter(FilterSet):
         name='publisher__name')
 
     note_exception_type = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='in',
         name='exception_type',
         fk='source')
 
     note_exception_type_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='icontains',
         name='exception_type',
         fk='source')
 
     note_model = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='in',
         name='model',
         fk='source')
 
     note_model_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='icontains',
         name='model',
         fk='source')
 
     note_field = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='in',
         name='field',
         fk='source')
 
     note_field_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='icontains',
         name='field',
         fk='source')
 
     note_message = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='in',
         name='field',
         fk='source')
 
     note_message_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
+        qs=DatasetNote,
         lookup_type='icontains',
         name='field',
         fk='source')
@@ -94,4 +94,4 @@ class DatasetFilter(FilterSet):
 
 
     class Meta:
-        model = IatiXmlSource
+        model = Dataset

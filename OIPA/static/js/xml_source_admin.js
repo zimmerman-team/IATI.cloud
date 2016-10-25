@@ -7,7 +7,7 @@ $(document).ready(function (){
        $.ajax({
            type: "GET",
            data: ({'xml_id': xml_id}),
-           url: "/admin/iati_synchroniser/iatixmlsource/add-to-parse-queue/",
+           url: "/admin/iati_synchroniser/dataset/add-to-parse-queue/",
            beforeSend: function() {
                btn.removeClass("btn-success");
                btn.addClass("btn-warning");
@@ -39,7 +39,7 @@ $(document).ready(function (){
       $.ajax({
          type: "GET",
          data: ({'xml_id': xml_id }),
-         url: "/admin/iati_synchroniser/iatixmlsource/parse-xml/" + activity_id,
+         url: "/admin/iati_synchroniser/dataset/parse-xml/" + activity_id,
          beforeSend: function() {
             btn.removeClass("btn-success");
             btn.addClass("btn-warning");

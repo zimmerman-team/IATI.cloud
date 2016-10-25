@@ -39,11 +39,11 @@ class ParseManager():
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
-        from iati_synchroniser.models import IatiXmlSourceNote
+        from iati_synchroniser.models import DatasetNote
         if not response or response.code != 200:
             self.valid_source = False
-            IatiXmlSourceNote.objects.filter(source=self.source).delete()
-            note = IatiXmlSourceNote(
+            DatasetNote.objects.filter(source=self.source).delete()
+            note = DatasetNote(
                 source=self.source,
                 iati_identifier="n/a",
                 model="n/a",
@@ -75,8 +75,8 @@ class ParseManager():
             self.parser = self._prepare_parser(self.root, source)
         except etree.XMLSyntaxError as e:
             self.valid_source = False
-            IatiXmlSourceNote.objects.filter(source=self.source).delete()
-            note = IatiXmlSourceNote(
+            DatasetNote.objects.filter(source=self.source).delete()
+            note = DatasetNote(
                 source=self.source,
                 iati_identifier="n/a",
                 model="n/a",
