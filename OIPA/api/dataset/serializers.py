@@ -24,9 +24,9 @@ class SimplePublisherSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'url',
-            'org_id',
-            'org_abbreviate',
-            'org_name')
+            'publisher_iati_id',
+            'display_name',
+            'name')
 
 
 class SimpleDatasetSerializer(DynamicFieldsModelSerializer):

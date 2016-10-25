@@ -97,8 +97,8 @@ def parse_all_existing_sources():
 @job
 def parse_all_sources_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
-    for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
-        queue.enqueue(parse_source_by_url, args=(e.source_url,))
+    for e in IatiXmlSource.objects.filter(publisher__publisher_iati_id=org_ref):
+        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
@@ -107,8 +107,8 @@ def parse_all_sources_by_publisher_ref(org_ref):
 @job
 def force_parse_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
-    for e in IatiXmlSource.objects.filter(publisher__org_id=org_ref):
-        queue.enqueue(force_parse_source_by_url, args=(e.source_url,))
+    for e in IatiXmlSource.objects.filter(publisher__publisher_iati_id=org_ref):
+        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)

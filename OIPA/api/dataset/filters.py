@@ -30,11 +30,11 @@ class DatasetFilter(FilterSet):
 
     publisher_ref = CharFilter(
         lookup_type='icontains',
-        name='publisher__org_id')
+        name='publisher__publisher_iati_id')
 
     publisher_name = CharFilter(
         lookup_type='icontains',
-        name='publisher__org_name')
+        name='publisher__name')
 
     note_exception_type = ToManyFilter(
         qs=IatiXmlSourceNote,

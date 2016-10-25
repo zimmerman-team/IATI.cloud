@@ -1,4 +1,4 @@
-from django.test import TestCase
+fro django.test import TestCase
 from django.test import RequestFactory
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 from api.publisher.serializers import PublisherSerializer
@@ -14,17 +14,17 @@ class TestPublisherSerializers(TestCase):
             context={'request': self.request_dummy}
         )
 
-        assert serializer.data['org_id'] == publisher.org_id,\
+        assert serializer.data['publisher_iati_id'] == publisher.publisher_iati_id,\
             """
             'publisher.type' should be serialized to a field called 'type'
             """
-        assert serializer.data['org_abbreviate'] == publisher.org_abbreviate,\
+        assert serializer.data['display_name'] == publisher.display_name,\
             """
             'publisher.source_url' should be serialized to a field called 'source_url'
             """
-        assert serializer.data['org_name'] == publisher.org_name,\
+        assert serializer.data['name'] == publisher.name,\
             """
-            'publisher.org_name' should be serialized to a field called 'org_name'
+            'publisher.name' should be serialized to a field called 'name'
             """
         assert serializer.data['datasets'] == [],\
             """
@@ -37,9 +37,9 @@ class TestPublisherSerializers(TestCase):
 
         required_fields = (
             'url',
-            'org_id',
-            'org_abbreviate',
-            'org_name',
+            'publisher_iati_id',
+            'display_name',
+            'name',
             'datasets',
             'activities',
             'activity_count')

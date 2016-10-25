@@ -5,16 +5,24 @@ from django.utils.translation import ugettext_lazy as _
 
 from iati_organisation.models import Organisation
 
-
 class Publisher(models.Model):
-    org_id = models.CharField(max_length=100, unique=True)
-    org_abbreviate = models.CharField(max_length=55, default="")
-    org_name = models.CharField(max_length=255)
+
+    # The IR publisher id
+    id = models.CharField(max_length=255, primary_key=True)
+
+    # the IATI Organisation id
+    publisher_iati_id = models.CharField(max_length=100, unique=True)
+
+    # name given in the IR API
+    name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
 
     organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
 
+    image_url = models.URLField(default=None, null=True, blank=True)
+
     def __unicode__(self):
-        return self.org_id
+        return self.publisher_iati_id
 
 
 class IatiXmlSource(models.Model):
