@@ -150,7 +150,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
+    'iati.permissions'
 )
+
+AUTH_USER_MODEL = 'permissions.OrganisationUser'
 
 ADMIN_REORDER = (
     'iati',
