@@ -3,9 +3,12 @@ from api.publisher import views
 
 
 urlpatterns = [
-    url(r'^$', views.PublisherList.as_view(), name='publisher-list'),
+    url(r'^$', 
+        views.PublisherList.as_view(), 
+        name='publisher-list'
+    ),
     url(
-        r'^(?P<publisher_id>[^@$&+,/:;=?]+)/$',
+        r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.PublisherDetail.as_view(),
         name='publisher-detail'
     ),
@@ -32,6 +35,6 @@ urlpatterns = [
     url(
         r'^(?P<publisher_id>[^@$&+,/:;=?]+)/verify-api-key/$',
         views.OrganisationVerifyApiKey.as_view(),
-        name='publisher-detail'
+        name='publisher-verify-api-key'
     ),
 ]

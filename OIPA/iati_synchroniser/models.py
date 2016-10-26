@@ -25,26 +25,27 @@ class Publisher(models.Model):
     def __unicode__(self):
         return self.publisher_iati_id
 
+filetype_choices = (
+    (1, 'Activity'),
+    (2, 'Organisation'),
+)
 
 class Dataset(models.Model):
-    ref = models.CharField(
-        max_length=255)
+    
+    # IR fields
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
-    type = models.IntegerField(
-        choices=(
-            (1, 'Activity'),
-            (2, 'Organisation'),
-        ),
-        default=1)
-    publisher = models.ForeignKey(Publisher)
-    source_url = models.URLField(
-        max_length=255,
-        unique=True)
+    filetype = models.IntegerField(choices=filetype_choices, default=1)
+    publisher = models.ForeignKey(Publisher) # organization.id
+    source_url = models.URLField(max_length=255, unique=True) # resource.url
+    iati_version = models.CharField(max_length=10, default="")
+    
+    # OIPA related fields
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
-    iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
@@ -52,10 +53,10 @@ class Dataset(models.Model):
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
-        ordering = ["ref"]
+        ordering = ["name"]
 
     def __unicode__(self):
-        return self.ref
+        return self.name
 
     def get_parse_status(self):
         return mark_safe("<a data-xml='xml_%i' class='admin-btn parse-btn'>Add to parser queue</a>") % self.id

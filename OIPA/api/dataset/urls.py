@@ -19,6 +19,6 @@ urlpatterns = [
     url(
         r'^(?P<publisher_id>[^@$&+,/:;=?]+)/publish$',
         views.DatasetPublish.as_view(),
-        name='dataset-notes'
+        name='dataset-publish'
     ),
 ]

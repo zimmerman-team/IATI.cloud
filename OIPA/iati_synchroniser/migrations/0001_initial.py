@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('org_id', models.CharField(max_length=100)),
-                ('name', models.CharField(default=b'', max_length=55)),
+                ('org_abbreviate', models.CharField(default=b'', max_length=55)),
                 ('org_name', models.CharField(max_length=255)),
                 ('default_interval', models.CharField(default=b'MONTHLY', max_length=55, choices=[(b'YEARLY', b'Parse yearly'), (b'MONTHLY', b'Parse monthly'), (b'WEEKLY', b'Parse weekly'), (b'DAILY', b'Parse daily')])),
                 ('XML_total_activity_count', models.IntegerField(default=None, null=True)),

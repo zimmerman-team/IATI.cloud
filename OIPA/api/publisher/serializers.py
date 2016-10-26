@@ -16,7 +16,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     datasets = DatasetSerializer(
         many=True, 
         source="dataset_set",
-        fields=('url', 'ref', 'title', 'type', 'source_url'))
+        fields=('url', 'name', 'title', 'filetype', 'source_url'))
     activity_count = SerializerMethodField()
     note_count = SerializerMethodField()
     activities = SerializerMethodField()
@@ -24,6 +24,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Publisher
         fields = (
+            'id',
             'url',
             'publisher_iati_id',
             'display_name',
@@ -31,7 +32,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
             'activities',
             'activity_count',
             'note_count',
-            'datasets')
+            'datasets',)
 
     def get_activities(self, obj):
         request = self.context.get('request')
