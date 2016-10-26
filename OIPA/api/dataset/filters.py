@@ -12,29 +12,29 @@ class DatasetFilter(FilterSet):
         lookup_type='exact',
         name='id')
 
-    ref = CharFilter(
+    name = CharFilter(
         lookup_type='icontains',
-        name='ref')
+        name='name')
 
     title = CharFilter(
         lookup_type='icontains',
         name='title')
 
-    source_type = CommaSeparatedCharFilter(
+    filetype = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='type')
+        name='filetype')
 
     publisher_id = CharFilter(
         lookup_type='exact',
         name='publisher__id')
 
-    publisher_ref = CharFilter(
+    publisher_name = CharFilter(
         lookup_type='icontains',
         name='publisher__publisher_iati_id')
 
-    publisher_name = CharFilter(
+    publisher_title = CharFilter(
         lookup_type='icontains',
-        name='publisher__name')
+        name='publisher__title')
 
     note_exception_type = ToManyFilter(
         qs=DatasetNote,
@@ -88,9 +88,9 @@ class DatasetFilter(FilterSet):
         lookup_type='gte',
         name='note_count')
 
-    date_updated_gte = DateTimeFilter(
+    metadata_modified_gte = DateTimeFilter(
         lookup_type='gte',
-        name='date_updated')
+        name='metadata_modified')
 
 
     class Meta:

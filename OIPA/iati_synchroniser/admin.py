@@ -72,9 +72,9 @@ def export_xml_by_source(request, source):
 
 class IATIXMLSourceAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
-    search_fields = ['ref', 'title', 'publisher__name', 'publisher__publisher_iati_id']
+    search_fields = ['name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
     list_display = [
-        'ref',
+        'name',
         'publisher',
         'title',
         'show_source_url',

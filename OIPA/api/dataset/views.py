@@ -19,7 +19,7 @@ class DatasetList(DynamicListView):
 
     ## Request parameters
 
-    - `ref` (*optional*): ref to search for.
+    - `name` (*optional*): name to search for.
     - `source_type` (*optional*): Filter datasets by type (activity or organisation).
     - `publisher` (*optional*): Publisher ref.
     - `publisher_name` (*optional*): Publisher name.
@@ -48,7 +48,7 @@ class DatasetList(DynamicListView):
     Each result item contains full information about datasets including URI
     to dataset details.
 
-    URI is constructed as follows: `/api/datasets/{ref}`
+    URI is constructed as follows: `/api/datasets/{name}`
 
     """
     queryset = Dataset.objects.all()
@@ -58,9 +58,9 @@ class DatasetList(DynamicListView):
     ordering_fields = '__all__'
 
     fields = (
-        'ref',
+        'name',
         'title',
-        'type',
+        'filetype',
         'publisher',
         'url',
         'source_url',
@@ -69,7 +69,7 @@ class DatasetList(DynamicListView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version',
+        'iati_version',
         'note_count')
 
 
@@ -80,7 +80,7 @@ class DatasetDetail(RetrieveAPIView):
     ## URI Format
 
     ```
-    /api/datasets/{ref}
+    /api/datasets/{name}
     ```
 
     """
@@ -88,7 +88,7 @@ class DatasetDetail(RetrieveAPIView):
     serializer_class = DatasetSerializer
 
     fields = (
-        'ref',
+        'name',
         'title',
         'type',
         'publisher',
@@ -98,7 +98,7 @@ class DatasetDetail(RetrieveAPIView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version',
+        'iati_version',
         'note_count',
         'notes')
 

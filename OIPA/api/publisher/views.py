@@ -19,6 +19,7 @@ from iati_synchroniser.models import Publisher
 from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 from django.contrib.auth.models import Group, User
 
+
 class PublisherList(DynamicListView):
     """
     Returns a list of IATI Publishers stored in OIPA.

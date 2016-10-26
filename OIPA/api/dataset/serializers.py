@@ -41,21 +41,21 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'url',
-            'ref',
+            'name',
             'title',
-            'type',
+            'filetype',
             'publisher',
             'source_url',
-            'iati_standard_version')
+            'iati_version')
 
     def get_type(self, obj):
-        return obj.get_type_display()
+        return obj.get_filetype_display()
 
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
     publisher = SimplePublisherSerializer()
-    type = SerializerMethodField()
+    filetype = SerializerMethodField()
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()
     notes = HyperlinkedIdentityField(
@@ -69,9 +69,9 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'url',
-            'ref',
+            'name',
             'title',
-            'type',
+            'filetype',
             'publisher',
             'source_url',
             'activities',
@@ -79,18 +79,18 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'date_created',
             'date_updated',
             'last_found_in_registry',
-            'iati_standard_version',
+            'iati_version',
             'sha1',
             'note_count',
             'notes')
 
-    def get_type(self, obj):
-        return obj.get_type_display()
+    def get_filetype(self, obj):
+        return obj.get_filetype_display()
 
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?xml_source_ref=' + obj.ref
+        return url + '?xml_source_ref=' + obj.name
 
     def get_activity_count(self, obj):
-        return Activity.objects.filter(xml_source_ref=obj.ref).count()
+        return Activity.objects.filter(xml_source_ref=obj.name).count()

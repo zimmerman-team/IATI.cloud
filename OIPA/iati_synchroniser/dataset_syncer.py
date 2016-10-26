@@ -6,7 +6,7 @@ import datetime
 from django.db.models import Count
 
 
-IATI_URL = 'http://www.iatiregistry.org/api/search/dataset?{options}'
+IATI_URL = 'https://iatiregistry.org/api/3/action/package_search?{options}'
 
 
 class DatasetSyncer():
@@ -15,10 +15,10 @@ class DatasetSyncer():
         """
         Prefetch data, to minify amount of DB queries
         """
-        source_url_tuples = models.Dataset.objects.values_list('source_url')
+        source_url_tuples = models.Dataset.objects.values_list('id')
         self.source_urls = [url[0] for url in source_url_tuples]
 
-        publisher_id_tuples = models.Publisher.objects.values_list('publisher_iati_id')
+        publisher_id_tuples = models.Publisher.objects.values_list('id')
         self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
         self.source_count = 10000
@@ -27,14 +27,11 @@ class DatasetSyncer():
         """
         Start looping through the datasets
         """
-        url_options = [
-            'all_fields=1',
-            'limit=200',
-        ]
+        url_options = ['rows=200']
 
         offset = 0
         while self.source_count >= offset:
-            options = '&'.join(url_options + ['offset={}'.format(offset)])
+            options = '&'.join(url_options + ['start={}'.format(offset)])
             page_url = IATI_URL.format(options=options)
             self.synchronize_with_iati_api_by_page(page_url)
             offset += 200
@@ -51,30 +48,7 @@ class DatasetSyncer():
         self.source_count = json_objects['count']
 
         for line in json_objects['results']:
-            self.parse_json_line(line)
-
-    def remove_publisher_duplicates(self, publisher_iati_id):
-        """
-        Previous versions of the dataset syncer code caused duplicate publishers.
-        This definition removes them to provide backward compatibility.
-        This definition can be removed after half a year (text added on 13-01-16)
-        """
-
-        # check if multiple publishers under same ref
-        publisher_count = models.Publisher.objects.filter(publisher_iati_id=publisher_iati_id).count()
-        if publisher_count > 1:
-            # set all iati sources to first found publisher with the publisher_iati_id
-            duplicate_publishers = models.Publisher.objects.filter(publisher_iati_id=publisher_iati_id)
-            models.Dataset.objects.filter(publisher__publisher_iati_id=publisher_iati_id).update(publisher=duplicate_publishers[0])
-
-            # remove other org_id's
-            models.Publisher.objects.filter(
-                publisher_iati_id=publisher_iati_id
-            ).annotate(
-                source_count=Count("dataset")
-            ).filter(
-                source_count=0
-            ).delete()
+            self.parse_package(line)
 
     def get_or_create_publisher(self, publisher_iati_id, abbreviation, name):
 
@@ -116,7 +90,7 @@ class DatasetSyncer():
 
         return new_source
 
-    def parse_json_line(self, line):
+    def parse_package(self, line):
         """
         Parse line from IATI response
         """
