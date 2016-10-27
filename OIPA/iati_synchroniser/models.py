@@ -12,15 +12,13 @@ class Publisher(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
 
     # the IATI Organisation id
-    publisher_iati_id = models.CharField(max_length=100, unique=True)
+    publisher_iati_id = models.CharField(max_length=100)
 
     # name given in the IR API
     name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
 
     organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
-
-    image_url = models.URLField(default=None, null=True, blank=True)
 
     def __unicode__(self):
         return self.publisher_iati_id
@@ -38,7 +36,7 @@ class Dataset(models.Model):
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher) # organization.id
-    source_url = models.URLField(max_length=255, unique=True) # resource.url
+    source_url = models.URLField(max_length=255) # resource.url
     iati_version = models.CharField(max_length=10, default="")
     
     # OIPA related fields
@@ -57,16 +55,6 @@ class Dataset(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    def get_parse_status(self):
-        return mark_safe("<a data-xml='xml_%i' class='admin-btn parse-btn'>Add to parser queue</a>") % self.id
-    get_parse_status.allow_tags = True
-    get_parse_status.short_description = _(u"Parse")
-
-    def get_parse_activity(self):
-        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='admin-btn parse-activity-btn'>Parse Activity</a>") % self.id
-    get_parse_activity.allow_tags = True
-    get_parse_activity.short_description = _(u"Parse Activity")
 
     def process(self, force_reparse=False):
         from iati.parser.parse_manager import ParseManager
@@ -108,7 +96,7 @@ class Dataset(models.Model):
 
 
 class DatasetNote(models.Model):
-    source = models.ForeignKey(Dataset)
+    dataset = models.ForeignKey(Dataset)
     iati_identifier = models.CharField(max_length=140, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)

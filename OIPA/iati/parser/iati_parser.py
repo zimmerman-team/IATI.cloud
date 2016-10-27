@@ -22,7 +22,7 @@ class IatiParser(object):
         self.hints = []
         self.errors = []
         self.parse_start_datetime = datetime.datetime.now()
-        self.iati_source = None
+        self.dataset = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
 
@@ -137,18 +137,18 @@ class IatiParser(object):
                 self.save_all_models()
                 self.post_save_models()
 
-        self.post_save_file(self.iati_source)
+        self.post_save_file(self.dataset)
         
         if settings.ERROR_LOGS_ENABLED:
-            self.iati_source.note_count = len(self.errors)
-            self.iati_source.save()
-            DatasetNote.objects.filter(source=self.iati_source).delete()
+            self.dataset.note_count = len(self.errors)
+            self.dataset.save()
+            DatasetNote.objects.filter(dataset=self.dataset).delete()
             DatasetNote.objects.bulk_create(self.errors)
     
     def post_save_models(self):
         print "override in children"
 
-    def post_save_file(self, iati_source):
+    def post_save_file(self, dataset):
         print "override in children"
 
     def append_error(self, error_type, model, field, message, sourceline, iati_id=None):
@@ -159,7 +159,7 @@ class IatiParser(object):
         iati_identifier = None
         if iati_id:
             iati_identifier = iati_id
-        elif self.iati_source.type == 1:
+        elif self.dataset.filetype == 1:
             activity = self.get_model('Activity')
             if activity and activity.iati_identifier:
                 iati_identifier = activity.iati_identifier
@@ -178,7 +178,7 @@ class IatiParser(object):
             iati_identifier = 'no-identifier'
 
         note = DatasetNote(
-            source=self.iati_source,
+            dataset=self.dataset,
             iati_identifier=iati_identifier,
             model=model,
             field=field,

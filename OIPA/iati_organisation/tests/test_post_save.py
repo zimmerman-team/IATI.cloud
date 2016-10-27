@@ -33,7 +33,7 @@ class PostSaveOrganisationTestCase(TestCase):
             id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=self.version,
-            xml_source_ref='source_reference')
+            name='source_reference')
 
         activity_reporting_organisation = ReportingOrganisationFactory.create(
             activity=activity,

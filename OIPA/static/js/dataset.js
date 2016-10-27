@@ -2,11 +2,11 @@ $(document).ready(function (){
    $('.parse-btn').click(function(){
 
        var btn = $(this);
-       var xml_id = $(this).data('xml').replace('xml_', '');
+       var id = $(this).data('id');
 
        $.ajax({
            type: "GET",
-           data: ({'xml_id': xml_id}),
+           data: ({'xml_id': id}),
            url: "/admin/iati_synchroniser/dataset/add-to-parse-queue/",
            beforeSend: function() {
                btn.removeClass("btn-success");
@@ -33,12 +33,12 @@ $(document).ready(function (){
    $('.parse-activity-btn').click(function(){
 
       var btn = $(this);
-      var xml_id = $(this).data('xml').replace('xml_', '');
+      var id = $(this).data('id');
       var activity_id = $(this).prev().val();
 
       $.ajax({
          type: "GET",
-         data: ({'xml_id': xml_id }),
+         data: ({'xml_id': id }),
          url: "/admin/iati_synchroniser/dataset/parse-xml/" + activity_id,
          beforeSend: function() {
             btn.removeClass("btn-success");
@@ -65,11 +65,11 @@ $(document).ready(function (){
    $('.export-btn').click(function(){
 
        var btn = $(this);
-       var ref = $(this).data('ref');
-
+       var id = $(this).data('id');
+       
        $.ajax({
            type: "GET",
-           url: 'export-xml/' + ref,
+           url: 'export-xml/' + id,
            beforeSend: function() {
                btn.removeClass("btn-success");
                btn.addClass("btn-warning");

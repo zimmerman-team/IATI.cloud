@@ -13,6 +13,7 @@ from rest_framework import authentication, permissions
 
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 
+
 class DatasetList(DynamicListView):
     """
     Returns a list of IATI datasets stored in OIPA.
@@ -58,6 +59,7 @@ class DatasetList(DynamicListView):
     ordering_fields = '__all__'
 
     fields = (
+        'id',
         'name',
         'title',
         'filetype',

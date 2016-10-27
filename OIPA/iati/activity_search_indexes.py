@@ -109,7 +109,7 @@ def reindex_all_activities():
         progress['offset'] += 1
 
 
-def reindex_activity_by_source(source_ref):
-    activities = Activity.objects.all().filter(xml_source_ref=source_ref)
+def reindex_activity_by_source(dataset_id):
+    activities = Activity.objects.all().filter(dataset__id=dataset_id)
     for activity in activities:
         reindex_activity(activity)
