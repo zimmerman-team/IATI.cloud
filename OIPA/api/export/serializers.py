@@ -545,5 +545,4 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'humanitarian',
             'hierarchy',
             'linked_data_uri',
-            # 'xml_source_ref',
         )

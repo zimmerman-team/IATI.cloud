@@ -23,7 +23,7 @@ class Command(BaseCommand):
             action='store',
             dest='source',
             default=None,
-            help='Reindex only activities with this xml_source_ref')
+            help='Reindex only activities with this dataset_id')
 
 
     def handle(self, *args, **options):
@@ -34,6 +34,4 @@ class Command(BaseCommand):
             reindex_activity_by_source(options['source'])
         else:
             reindex_all_activities()
-
-
 

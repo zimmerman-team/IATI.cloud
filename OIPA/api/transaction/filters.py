@@ -144,10 +144,6 @@ class TransactionFilter(FilterSet):
     end_date_isnull = BooleanFilter(name='activity__end_date__isnull')
     start_date_isnull = BooleanFilter(name='activity__start_date__isnull')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity__xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)

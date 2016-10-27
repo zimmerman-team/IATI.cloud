@@ -15,8 +15,8 @@ class ActivityAggregationCalculation():
         for activity in Activity.objects.all():
             self.parse_activity_aggregations(activity)
 
-    def parse_activity_aggregations_by_source(self, source_ref):
-        for activity in Activity.objects.filter(xml_source_ref=source_ref):
+    def parse_activity_aggregations_by_source(self, dataset_id):
+        for activity in Activity.objects.filter(dataset__id=dataset_id):
             self.parse_activity_aggregations(activity)
 
     def parse_activity_aggregations(self, activity):

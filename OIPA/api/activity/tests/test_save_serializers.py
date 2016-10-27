@@ -36,7 +36,6 @@ class ActivitySaveTestCase(TestCase):
                 "code": iati_version.code, # should be ignored
                 "name": 'irrelevant',
             },
-            "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
             "humanitarian": "1", 
             "xml_lang": "en",
             'activity_status': {
@@ -125,7 +124,6 @@ class ActivitySaveTestCase(TestCase):
                 "code": iati_version.code, # should be ignored
                 "name": 'irrelevant',
             },
-            "xml_source_ref": "test", # TODO: temporarily, until we separate drafts - 2016-10-03
             "humanitarian": "1", 
             'activity_status': {
                 "code": activity_status.code, # should be ignored

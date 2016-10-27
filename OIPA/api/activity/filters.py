@@ -85,10 +85,6 @@ class ActivityFilter(TogetherFilterSet):
     end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
     start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity_status',)

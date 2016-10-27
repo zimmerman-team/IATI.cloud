@@ -22,13 +22,13 @@ from lxml.builder import E
 
 
 # TODO: Make this a celery task - 2016-01-21
-def export_xml_by_source(request, source):
-    """Call export API with this xml_source_ref, combine paginated responses"""
+def export_xml_by_source(request, dataset_id):
+    """Call export API with this dataset_id, combine paginated responses"""
 
-    if not source:
-        return None
-
-    base_url = request.build_absolute_uri(reverse('export:activity-export')) + "?xml_source_ref={source}&format=xml&page_size=100&page={page}".format(source=source, page="{page}")
+    if not dataset_id:
+        return
+        
+    base_url = request.build_absolute_uri(reverse('export:activity-export')) + "?dataset={dataset_id}&format=xml&page_size=100&page={page}".format(dataset_id=dataset_id, page="{page}")
 
     def get_result(xml, page_num):
         print('making request, page: ' + str(page_num))
@@ -70,10 +70,11 @@ def export_xml_by_source(request, source):
     return file_name
     
 
-class IATIXMLSourceAdmin(admin.ModelAdmin):
+class DatasetAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
     search_fields = ['name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
     list_display = [
+        'id',
         'name',
         'publisher',
         'title',
@@ -93,15 +94,22 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     show_source_url.short_description = "URL"
 
     def export_btn(self, obj):
-        return format_html(
-            '<a data-ref="{ref}" class="admin-btn export-btn" target="_blank">Export</a>',
-            url='export-xml/' + obj.ref,
-            ref=obj.ref)
+        return format_html('<a data-id="{id}" class="admin-btn export-btn" target="_blank">Export</a>', id=obj.id)
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 
+    def get_parse_status(self, obj):
+        return format_html('<a data-id="{id}" class="admin-btn parse-btn">Add to parser queue</a>', id=obj.id)
+    get_parse_status.allow_tags = True
+    get_parse_status.short_description = "Parse"
+
+    def get_parse_activity(self, obj):
+        return format_html("<input type='text' name='activity-id' placeholder='activity id'><a data-id='{id}' class='admin-btn parse-activity-btn'>Parse Activity</a>", id=obj.id)
+    get_parse_activity.allow_tags = True
+    get_parse_activity.short_description = "Parse Activity"
+
     def get_urls(self):
-        urls = super(IATIXMLSourceAdmin, self).get_urls()
+        urls = super(DatasetAdmin, self).get_urls()
         extra_urls = [
             url(
                 r'^parse-source/$',
@@ -113,7 +121,7 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
                 r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', 
                 self.admin_site.admin_view(self.parse_activity_view)),
             url(
-                r'^export-xml/(?P<xml_source_ref>[^@$&+,/:;=?]+)$', 
+                r'^export-xml/(?P<id>[^@$&+,/:;=?]+)$', 
                 self.admin_site.admin_view(self.export_xml),
                 name='export-xml'),
         ]
@@ -143,12 +151,13 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
         obj.process_activity(activity_id)
         return HttpResponse('Success')
 
-    def export_xml(self, request, xml_source_ref):
-        xml_response = export_xml_by_source(request, xml_source_ref)
+    def export_xml(self, request, id):
+        xml_response = export_xml_by_source(request, id)
+        print xml_response
         return HttpResponse(xml_response, content_type='application/xml')
 
     def get_actions(self, request):
-        actions = super(IATIXMLSourceAdmin, self).get_actions(request)
+        actions = super(DatasetAdmin, self).get_actions(request)
         del actions['delete_selected']
         return actions
 
@@ -164,13 +173,13 @@ class IATIXMLSourceAdmin(admin.ModelAdmin):
     really_delete_selected.short_description = "Delete selected IATI data sources"
 
 
-class IATIXMLSourceInline(admin.TabularInline):
+class DatasetInline(admin.TabularInline):
     model = Dataset
     extra = 0
 
 
 class PublisherAdmin(admin.ModelAdmin):
-    inlines = [IATIXMLSourceInline]
+    inlines = [DatasetInline]
 
     list_display = (
         'publisher_iati_id', 
@@ -202,4 +211,4 @@ class PublisherAdmin(admin.ModelAdmin):
 
 admin.site.register(Codelist,CodeListAdmin)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(Dataset, IATIXMLSourceAdmin)
+admin.site.register(Dataset, DatasetAdmin)

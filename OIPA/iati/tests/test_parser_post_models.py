@@ -26,7 +26,7 @@ class PostSaveActivityTestCase(TestCase):
             id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
-            xml_source_ref='source_reference')
+            name='source_reference')
 
     def setUpCountriesRegionsSectors(self):
         self.sector_vocabulary = SectorVocabularyFactory()

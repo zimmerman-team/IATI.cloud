@@ -1361,7 +1361,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('last_updated_datetime'),
             data.get('linked_data_uri'),
             data.get('default_currency'),
-            data.get('xml_source_ref'),
+            data.get('dataset'),
             data.get('activity_status', {}).get('code'),
             data.get('scope', {}).get('code'),
             data.get('collaboration_type', {}).get('code'),
@@ -1492,7 +1492,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'hierarchy',
             'linked_data_uri',
             'aggregations',
-            'xml_source_ref',
+            'dataset',
         )
 
 

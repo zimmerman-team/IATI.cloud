@@ -201,7 +201,7 @@ def activity(
         last_updated_datetime,
         linked_data_uri,
         default_currency,
-        xml_source_ref=None, # if parsed
+        dataset=None, # if parsed
         activity_status=None,
         activity_scope=None,
         collaboration_type=None,
@@ -373,7 +373,7 @@ def activity(
                 "default_lang": default_lang,
                 "hierarchy": hierarchy,
                 "humanitarian": humanitarian,
-                "xml_source_ref": xml_source_ref,
+                "dataset": dataset,
                 "last_updated_datetime": last_updated_datetime,
                 "linked_data_uri": linked_data_uri,
                 "default_currency": default_currency,

@@ -21,12 +21,12 @@ class PostSaveFileTestCase(TestCase):
             id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
-            xml_source_ref='source_reference')
+            name='source_reference')
         self.second_activity = iati_factory.ActivityFactory.create(
             id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=self.first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
+            name='source_reference')
 
     def test_post_save_file(self):
         """

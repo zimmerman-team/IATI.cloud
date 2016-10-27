@@ -17,6 +17,7 @@ from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
+from iati_synchroniser.models import Dataset
 
 
 class Narrative(models.Model):
@@ -65,7 +66,7 @@ class Activity(models.Model):
     iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
-    xml_source_ref = models.CharField(max_length=200, default="", db_index=True)
+    dataset = models.ForeignKey(Dataset, null=True, default=None)
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)
