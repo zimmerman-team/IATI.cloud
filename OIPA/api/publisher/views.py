@@ -17,7 +17,8 @@ from api.publisher.permissions import OrganisationAdminGroupPermissions
 
 from iati_synchroniser.models import Publisher
 from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group 
+from iati.permissions.models import OrganisationUser
 
 
 class PublisherList(DynamicListView):
@@ -76,6 +77,8 @@ class OrganisationAdminGroupView(APIView):
     def get(self, request, publisher_id):
         users = OrganisationAdminGroup.objects.get(publisher_id=publisher_id).user_set.all()
 
+        print(users)
+
         serializer = OrganisationUserSerializer(users, many=True)
 
         return Response(serializer.data)
@@ -84,7 +87,7 @@ class OrganisationAdminGroupView(APIView):
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
         user_id = request.data.get('user_id', None)
-        user = get_or_none(User, pk=user_id)
+        user = get_or_none(OrganisationUser, pk=user_id)
 
         if not user:
             return Response(status=401)
@@ -101,7 +104,7 @@ class OrganisationAdminGroupDetailView(APIView):
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
         user_id = id
-        user = get_or_none(User, pk=user_id)
+        user = get_or_none(OrganisationUser, pk=user_id)
 
         if not user:
             return Response(status=401)
@@ -134,7 +137,7 @@ class OrganisationGroupView(APIView):
         group = OrganisationGroup.objects.get(publisher_id=publisher_id)
 
         user_id = request.data.get('user_id', None)
-        user = get_or_none(User, pk=user_id)
+        user = get_or_none(OrganisationUser, pk=user_id)
 
         if not user:
             return Response(status=401)
@@ -152,7 +155,7 @@ class OrganisationGroupDetailView(APIView):
         group = OrganisationGroup.objects.get(publisher_id=publisher_id)
 
         user_id = id
-        user = get_or_none(User, pk=user_id)
+        user = get_or_none(OrganisationUser, pk=user_id)
 
         if not user:
             return Response(status=401)
