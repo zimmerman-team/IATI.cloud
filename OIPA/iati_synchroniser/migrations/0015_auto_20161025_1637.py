@@ -35,9 +35,39 @@ class Migration(migrations.Migration):
             name='image_url',
             field=models.URLField(blank=True, default=None, null=True),
         ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_synchroniser_dataset" DROP CONSTRAINT iati_sy_publisher_id_a9a601c5_fk_iati_synchroniser_publisher_id',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationadmingroup" DROP CONSTRAINT iati_or_publisher_id_cd8614db_fk_iati_synchroniser_publisher_id',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationgroup" DROP CONSTRAINT iati_or_publisher_id_094c4618_fk_iati_synchroniser_publisher_id',
+        ),
         migrations.AlterField(
             model_name='publisher',
             name='id',
             field=models.CharField(max_length=255, primary_key=True, serialize=False),
+        ),
+        # migrations.RunSQL(
+        #     'ALTER TABLE "iati_synchroniser_publisher" ALTER COLUMN "id" type varchar(255) USING CAST(id AS varchar(255));',
+        # ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_synchroniser_dataset" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_synchroniser_dataset" ADD CONSTRAINT iati_sy_publisher_id_a9a601c5_fk_iati_synchroniser_publisher_id FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationadmingroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationadmingroup" ADD CONSTRAINT iati_or_publisher_id_cd8614db_fk_iati_synchroniser_publisher_id FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationgroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_organisationgroup" ADD CONSTRAINT iati_or_publisher_id_094c4618_fk_iati_synchroniser_publisher_id FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
         ),
     ]
