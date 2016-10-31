@@ -13,17 +13,54 @@ class DatasetSyncerTestCase(TestCase):
     """
     def setUp(self):
         management.call_command('flush', interactive=False, verbosity=0)
+        self.datasetSyncer = DatasetSyncer()
+
+    def test_get_val_in_list_of_dicts(self):
+        """
+        test if returns correct key's data
+        """
+        input_list = [
+            {"key": "filetype", "value": "organisation"},
+            {"key": "version", "value": "2.02"},
+        ]
+        keyval = self.datasetSyncer.get_val_in_list_of_dicts("filetype", input_list)
+
+        self.assertEqual(keyval, input_list[0])
+
+    def test_synchronize_with_iati_api(self):
+        """
+
+        """
+        #TODO
+
+    def test_update_or_create_publisher(self):
+        """
+
+        """
+
+    def test_update_or_create_dataset(self):
+        """
+
+        """
+
+    def test_remove_deprecated(self):
+        """
+
+        """
+
+
+
 
     def test_line_parser(self):
         """
         Test if activity source data parsed
         """
-        syncer = DatasetSyncer()
+        
 
         publishers_count = Publisher.objects.count()
         sources_count = Dataset.objects.count()
 
-        with open('iati_synchroniser/fixtures/test_activity.json') as fixture:
+        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
@@ -39,7 +76,7 @@ class DatasetSyncerTestCase(TestCase):
         """
         syncer = DatasetSyncer()
 
-        with open('iati_synchroniser/fixtures/test_activity.json') as fixture:
+        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
@@ -54,13 +91,13 @@ class DatasetSyncerTestCase(TestCase):
         """
         syncer = DatasetSyncer()
 
-        with open('iati_synchroniser/fixtures/test_activity.json') as fixture:
+        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
-        source = Dataset.objects.all()[0]
+        dataset = Dataset.objects.all()[0]
 
-        self.assertEqual("cic-sl", source.ref)
+        self.assertEqual("cic-sl", dataset.name)
         self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml",
                          source.source_url)
         self.assertEqual("Children in Crisis  Activity File for Sierra leone",
@@ -75,11 +112,11 @@ class DatasetSyncerTestCase(TestCase):
         """
         syncer = DatasetSyncer()
 
-        with open('iati_synchroniser/fixtures/test_activity.json') as fixture:
+        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture).get('results', [{}, ])[0]
             syncer.parse_json_line(data)
 
-        source = Dataset.objects.get(ref="cic-sl")
+        source = Dataset.objects.get(name="cic-sl")
         publisher = Publisher.objects.get(publisher_iati_id="GB-CHC-1020488")
         self.assertEqual(publisher, source.publisher,
             "Dataset should have correct publisher")
@@ -89,11 +126,13 @@ class DatasetSyncerTestCase(TestCase):
         publisher = synchroniser_factory.PublisherFactory.create(publisher_iati_id='NL-1')
         publisher_duplicate = synchroniser_factory.PublisherFactory.create(publisher_iati_id='NL-1')
         synchroniser_factory.DatasetFactory.create(
-            ref='first_set',
+            id='1',
+            name='first_set',
             source_url='http://www.nourl.com/test1.xml',
             publisher=publisher)
         synchroniser_factory.DatasetFactory.create(
-            ref='second_set',
+            id='2',
+            name='second_set',
             source_url='http://www.nourl.com/test2.xml',
             publisher=publisher_duplicate)
 

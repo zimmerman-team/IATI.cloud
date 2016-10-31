@@ -1,4 +1,4 @@
-fro django.test import TestCase
+from django.test import TestCase
 from django.test import RequestFactory
 from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 from api.publisher.serializers import PublisherSerializer

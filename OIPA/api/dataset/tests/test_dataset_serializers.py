@@ -14,9 +14,13 @@ class TestDatasetSerializers(TestCase):
             context={'request': self.request_dummy}
         )
 
-        assert serializer.data['ref'] == dataset.ref,\
+        assert serializer.data['id'] == dataset.id,\
             """
-            'dataset.ref' should be serialized to a field called 'ref'
+            'dataset.id' should be serialized to a field called 'id'
+            """
+        assert serializer.data['name'] == dataset.name,\
+            """
+            'dataset.name' should be serialized to a field called 'name'
             """
         assert serializer.data['title'] == dataset.title,\
             """
@@ -35,7 +39,7 @@ class TestDatasetSerializers(TestCase):
         #     'dataset.date_created' should be serialized to a field called 'date_created'
         #     """
         # assert serializer.data['date_updated'] == dataset.date_updated,\
-        #     """
+        #     """   
         #     'dataset.date_updated' should be serialized to a field called 'date_updated'
         #     """
         # assert serializer.data['last_found_in_registry'] == dataset.last_found_in_registry,\
@@ -48,7 +52,8 @@ class TestDatasetSerializers(TestCase):
             """
 
         required_fields = (
-            'ref',
+            'id',
+            'name',
             'title',
             'type',
             'publisher',

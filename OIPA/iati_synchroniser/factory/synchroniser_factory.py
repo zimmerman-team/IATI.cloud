@@ -28,14 +28,15 @@ class DatasetFactory(NoDatabaseFactory):
     class Meta:
         model = Dataset
 
-    ref = 'nl-1'
+    id = '31403-42090-13011-13003'
+    name = 'nl-1'
     title = '1998-2008 Activities'
-    type = 1
+    filetype = 1
     publisher = SubFactory(PublisherFactory)
     source_url = 'http://nourl.com/NL-1.xml'
     date_created = datetime(2016, 1, 1)
     date_updated = datetime(2016, 1, 2)
     last_found_in_registry = datetime(2016, 1, 3)
-    iati_standard_version = '2.02'
+    iati_version = '2.02'
     is_parsed = True
     added_manually = False
