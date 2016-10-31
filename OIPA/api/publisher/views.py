@@ -185,6 +185,7 @@ class OrganisationVerifyApiKey(APIView):
         # publisher = Publisher.objects.get(pk=publisher_id)
         # group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
+        user = request.user
         api_key = request.data.get('apiKey')
         user_id = request.data.get('userId')
 
@@ -237,21 +238,35 @@ class OrganisationVerifyApiKey(APIView):
             defaults={
                 "name": primary_org.get('name'),
                 "display_name": primary_org.get('display_name'),
-                "image_url": primary_org.get('display_name'),
             }
         )
 
-        print(publisher)
+        organisation_group = OrganisationGroup.objects.get_or_create(
+            publisher=publisher[0],
+            defaults={
+                "name": "{} Organisation Group".format(primary_org.get('name'))
+            }
+        )
+        organisation_group[0].user_set.add(user)
 
-        # publisher = {
-        #     "apiKey": api_key,
-        #     "userId": user_id,
-        #     "validationStatus": True,
-        #     "ownerOrg": orgList.result[0].id,
-        #     "datasets": 
-        # }
+        if publisher[1]: # has been created
+            organisation_admin_group = OrganisationAdminGroup.objects.get_or_create(
+                publisher=publisher[0],
+                defaults={
+                    "owner": user,
+                    "name": "{} Organisation Admin Group".format(primary_org.get('name')),
+                }
+            )
+        else: # already exists
+            organisation_admin_group = OrganisationAdminGroup.objects.get_or_create(
+                publisher=publisher[0],
+                defaults={
+                    "name": "{} Organisation Admin Group".format(primary_org.get('name')),
+                }
+            )
+        organisation_admin_group[0].user_set.add(user)
 
-        # TODO: now update the user - 2016-10-25
-
+        user.iati_api_key = api_key
+        user.save()
 
         return Response()
