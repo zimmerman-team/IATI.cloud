@@ -202,16 +202,16 @@ class OrganisationVerifyApiKey(APIView):
         except NotAuthorized:
             return Response(status=401)
 
-        # print('got user')
-        # print(result)
+        print('got user')
+        print(result)
 
         try:
             orgList = client.call_action('organization_list_for_user', {})
         except NotAuthorized:
             return Response(status=401)
 
-        # print('got orgList')
-        # print(orgList)
+        print('got orgList')
+        print(orgList)
 
         if not len(orgList):
             return Response(status=401)
@@ -222,6 +222,9 @@ class OrganisationVerifyApiKey(APIView):
             primary_org = client.call_action('organization_show', { "id": primary_org_id })
         except NotAuthorized:
             return Response(status=401)
+
+        print('got primary_org')
+        print(primary_org)
 
         if not primary_org:
             return Response(status=401)
