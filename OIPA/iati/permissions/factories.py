@@ -3,7 +3,7 @@ import md5
 
 
 from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup
-from django.contrib.auth.models import User
+from iati.permissions.models import OrganisationUser
 
 from factory.django import DjangoModelFactory
 import factory
@@ -15,7 +15,7 @@ class UserFactory(DjangoModelFactory):
     username = 'john'
 
     class Meta:
-        model = User  # Equivalent to ``model = myapp.models.User``
+        model = OrganisationUser  # Equivalent to ``model = myapp.models.User``
         django_get_or_create = ('username',)
 
 class OrganisationAdminGroupFactory(DjangoModelFactory):
