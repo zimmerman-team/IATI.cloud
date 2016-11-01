@@ -7,6 +7,7 @@ class OrganisationUserSerializer(serializers.ModelSerializer):
 
     admin_groups = serializers.SerializerMethodField()
     organisation_groups = serializers.SerializerMethodField()
+    is_validated = serializers.SerializerMethodField()
 
     def get_admin_groups(self, user):
         qs = OrganisationAdminGroup.objects.filter(user=user)
@@ -18,9 +19,12 @@ class OrganisationUserSerializer(serializers.ModelSerializer):
         serializer = OrganisationGroupSerializer(instance=qs, many=True)
         return serializer.data
 
+    def get_is_validated(self, user):
+        return bool(user.iati_api_key)
+
     class Meta:
         model = OrganisationUser
-        fields = ('username', 'email', 'organisation_groups', 'admin_groups')
+        fields = ('username', 'email', 'organisation_groups', 'admin_groups', 'is_validated')
 
 class OrganisationGroupSerializer(serializers.ModelSerializer):
     publisher = PublisherSerializer()
