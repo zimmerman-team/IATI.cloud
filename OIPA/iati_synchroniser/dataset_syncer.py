@@ -106,12 +106,11 @@ class DatasetSyncer():
         # trololo edge cases
         if not len(dataset['resources']) or not dataset['organization']:
             return
-
         obj, created = Dataset.objects.update_or_create(
             id=dataset['id'],
             defaults={
                 'name': dataset['name'],
-                'title': dataset['title'],
+                'title': dataset['title'][0:254],
                 'filetype': filetype,
                 'publisher_id': dataset['organization']['id'],
                 'source_url': dataset['resources'][0]['url'],
