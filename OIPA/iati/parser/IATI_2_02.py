@@ -84,7 +84,7 @@ class Parse(IatiParser):
         
         activity_id = self._normalize(iati_identifier[0])
 
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', self.default_lang)
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
