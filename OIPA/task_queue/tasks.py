@@ -261,22 +261,31 @@ def update_searchable_activities():
     from django.core import management
 
     counter = 0
+
     workers = Worker.all(connection=redis_conn)
 
-    while True:
+    in_loop = True
+
+    while in_loop:
         has_other_jobs = False
+        
         for w in workers:
-            if w.queues[0].name == "parser":
-                current_job = w.get_current_job()
-                if current_job and current_job.description != 'task_queue.tasks.update_searchable_activities()':
-                    has_other_jobs = True
+            if len(w.queues):
+                if w.queues[0].name == "parser":
+                    current_job = w.get_current_job()
+                    if current_job and current_job.description != 'task_queue.tasks.update_searchable_activities()':
+                        has_other_jobs = True
         
         if not has_other_jobs:
             management.call_command('set_searchable_activities', verbosity=0, interactive=False)
+            in_loop = False
         elif counter > 2:
-            # if waited for over half an hour, fail
-            raise ValueError('Waited for 30 min, still other jobs running on parser queue so failing the update_searchable_activities task')
+            # add new task to prevent timeout
+            queue = django_rq.get_queue('parser')
+            queue.enqueue(update_searchable_activities, timeout=14400)
+            in_loop = False
+
         else:
             counter += 1
-            time.sleep(30)
+            time.sleep(180)
 
