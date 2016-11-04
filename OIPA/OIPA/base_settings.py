@@ -104,6 +104,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
@@ -138,7 +139,6 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_totp',
     'otp_yubikey',
     'two_factor',
-    'debug_toolbar',
     'django_extensions',
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'nested_admin',
     'djorm_pgfulltext',
     'admin_reorder',
+    'debug_toolbar',
 )
 
 ADMIN_REORDER = (
@@ -185,11 +186,13 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
+        'DEFAULT_TIMEOUT': 3600,
     },
     'parser': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
+        'DEFAULT_TIMEOUT': 5400,
     }
 }
 
@@ -206,3 +209,5 @@ CONVERT_CURRENCIES = True
 ROOT_ORGANISATIONS = []
 
 ERROR_LOGS_ENABLED = True
+
+DEFAULT_LANG = None
