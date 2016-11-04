@@ -3,13 +3,13 @@ git+https://github.com/gabber7/django-supervisor.git
 django-nested-admin==2.2.6
 django-autocomplete-light==2.3.3
 requests==2.11.1
-Django==1.9.10
+Django==1.10.3
 django-two-factor-auth==1.4.0
 django-cors-headers==1.2.2
 django-debug-toolbar==1.6
 sqlparse==0.2.2
 django-extensions==1.7.4
-django-filter==0.14.0
+django-filter==0.15.3
 django-formtools==1.0
 django-grappelli==2.8.2
 django-otp==0.3.7
