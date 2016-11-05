@@ -104,12 +104,11 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'OIPA.urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django_rq',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -146,8 +145,7 @@ INSTALLED_APPS = (
     'nested_admin',
     'djorm_pgfulltext',
     'admin_reorder',
-    'debug_toolbar',
-)
+]
 
 ADMIN_REORDER = (
     'iati',

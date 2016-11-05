@@ -32,6 +32,3 @@ class Command(BaseCommand):
             reindex_activity_by_source(options['source'])
         else:
             reindex_all_activities()
-
-
-
