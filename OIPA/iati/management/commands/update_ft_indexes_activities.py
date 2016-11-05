@@ -6,8 +6,6 @@ from iati.models import Activity
 from iati.activity_search_indexes import reindex_all_activities, reindex_activity, reindex_activity_by_source
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list
-
     """
         Reindex full text search values for all activities
     """
