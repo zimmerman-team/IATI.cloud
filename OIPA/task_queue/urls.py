@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^get_failed_tasks/', get_failed_tasks),
     url(r'^reschedule_all_failed/', reschedule_all_failed),
     # Finished tasks
-    url(r'^get_finished_tasks/', finished_jobs)
+    url(r'^get_finished_tasks/', get_finished_tasks)
 ]

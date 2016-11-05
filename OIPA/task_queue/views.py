@@ -26,9 +26,9 @@ def add_task(request):
     func = getattr(tasks, task)
     
     if parameters:
-        queue.enqueue(func, args=(parameters,), timeout=7200)
+        queue.enqueue(func, args=(parameters,))
     else:
-        queue.enqueue(func, timeout=7200)
+        queue.enqueue(func)
     return HttpResponse('Success')
 
 
@@ -129,7 +129,7 @@ def get_queue(request):
     count_jobs = 0
     for job in queue.jobs:
         count_jobs += 1
-        if count_jobs == 20:
+        if count_jobs == 6:
             break
 
         job_dict = {
@@ -198,7 +198,9 @@ def get_failed_tasks(request):
             'func_name': job.description,
             'error_message': job.exc_info,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
-            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000")}
+            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'args': job.args
+        }
 
         jobdata.append(job_dict)
 
@@ -207,7 +209,7 @@ def get_failed_tasks(request):
 
 
 @staff_member_required
-def finished_jobs(request):
+def get_finished_tasks(request):
 
     current_queue = request.GET.get('queue')
     queue = django_rq.get_queue(current_queue)
@@ -232,10 +234,10 @@ def finished_jobs(request):
 
         job_dict = {
             'job_id': job.id,
-            'func_name': job.description,
-            'error_message': job.exc_info,
+            'func_name': job.func_name,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
-            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000")}
+            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'args': job.args}
 
         jobdata.append(job_dict)
 

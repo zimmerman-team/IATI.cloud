@@ -158,7 +158,6 @@ a{
 
 #add-task-input-parameters, #add-task-button-parser, #add-task-button-default{
     display: block;
-    margin: 2em 0;
 }
 
 #add-task-input-parameters, #add-scheduled-task-input-parameters-wrapper{
