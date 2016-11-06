@@ -800,8 +800,6 @@ $(document).ready(function (){
                beforeSend: btnBeforeSend(btn)
             })
             .done(function() {
-                console.log(btn)
-                console.log(btn.parent('tr'))
                 btn.parent('td').parent('tr').hide()
             })
             .fail(function() {
@@ -850,6 +848,7 @@ $(document).ready(function (){
 
     var secondsLabel = document.getElementById("seconds");
     var totalSeconds = 0;
+    var interval;
     setInterval(setTime, 1000);
 
     function setTime(){
@@ -858,10 +857,7 @@ $(document).ready(function (){
     }
 
     function refreshTables(){
-        clearInterval(refreshTables);
-        totalSeconds = 0;
-        secondsLabel.innerHTML = totalSeconds;
-        setInterval(refreshTables, 120000);
+        clearInterval(interval);
 
         reload_task_queue_overview_table();
         fill_default_queue();
@@ -871,6 +867,10 @@ $(document).ready(function (){
         fill_scheduled_tasks();
         fill_finished_parser_tasks();
         fill_finished_default_tasks();
+
+        totalSeconds = 0;
+        secondsLabel.innerHTML = totalSeconds;
+        interval = setInterval(refreshTables, 60000);
     }
 
     refreshTables();
