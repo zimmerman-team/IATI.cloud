@@ -82,11 +82,20 @@ class XMLRenderer(BaseRenderer):
             xml.text = six.text_type(data)
             pass
 
+import csv
 from rest_framework_csv.renderers import CSVRenderer
 
-class PaginatedCSVRenderer (CSVRenderer):
+class PaginatedCSVRenderer(CSVRenderer):
     results_field = 'results'
     header = []
+
+    def __init__(self, *args, **kwargs):
+        super(PaginatedCSVRenderer, self).__init__(*args, **kwargs)
+        self.writer_opts = {
+          'quoting': csv.QUOTE_ALL,
+          'quotechar': '"'.encode('utf-8'),
+          'delimiter': ';'.encode('utf-8')
+        }
 
     def render(self, data, *args, **kwargs):
         if not isinstance(data, list):

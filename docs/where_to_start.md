@@ -1,3 +1,16 @@
-TODO: narrative for general use. Provide some scenario's to use OIPA based on use cases. 
+## Which data to load and where to do this
 
-This chapter is yet to be written: it will contain guidance on general use and provide some scenario's to use OIPA based on use cases. 
+All data loading happens from the task queue at `/admin/task_queue/`. 
+
+Minimum required tasks to get all IATI datasets loaded in:
+
+-`Update codelists from IATI registry`
+-`Add new sources from IATI registry and parse all sources`
+-`Add/update country data` (To also get country center points / polygons from the API)
+
+
+For more information on the specific tasks (some of which cover additional use cases) see [Task queue -> Available tasks](http://docs.oipa.nl/en/latest/admin_interface/#available-tasks)
+
+
+
+TODO: This chapter is still very limited. it should provide more guidance on general use and provide some scenario's to use OIPA based on use cases. 

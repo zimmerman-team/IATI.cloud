@@ -346,6 +346,14 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
+    result_title = ToManyFilter(
+        main_fk='activity',
+        qs=Result,
+        lookup_type='in',
+        name='resulttitle__narratives__content',
+        fk='activity',
+    )
+
     # TODO: degrades performance very badly, should probably remove this - 2016-03-02
     reporting_organisation_startswith = ToManyFilter(
         main_fk='activity',
@@ -484,3 +492,14 @@ class TransactionAggregationFilter(TransactionFilter):
         name='transactionsector__sector__code',
         lookup_type='in',
     )
+
+    policy_marker = CommaSeparatedStickyCharFilter(
+        name='activity__activitypolicymarker__code',
+        lookup_type='in',
+    )
+
+    policy_marker_significance = CommaSeparatedStickyCharFilter(
+        name='activity__activitypolicymarker__significance',
+        lookup_type='in',
+    )
+

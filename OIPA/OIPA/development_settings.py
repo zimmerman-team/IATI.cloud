@@ -4,10 +4,18 @@ from OIPA.base_settings import *
 
 DEBUG = True
 
-SECRET_KEY = '__DEV_SECRET_KEY__'
+MIDDLEWARE_CLASSES += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+INSTALLED_APPS += {
+    'debug_toolbar',
+}
 
 def custom_show_toolbar(self):
     return True
+
+SECRET_KEY = '__DEV_SECRET_KEY__'
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,

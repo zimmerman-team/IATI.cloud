@@ -5,13 +5,8 @@ from api.sector import views
 urlpatterns = [
     url(r'^$', views.SectorList.as_view(), name='sector-list'),
     url(
-        r'^(?P<pk>[0-9]+)/$',
+        r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.SectorDetail.as_view(),
         name='sector-detail'
-    ),
-    url(
-        r'^(?P<pk>[0-9]+)/activities/$',
-        views.SectorActivities.as_view(),
-        name='sector-activities'
     ),
 ]

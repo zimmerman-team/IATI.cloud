@@ -132,6 +132,7 @@ class DatasetSyncer():
         source_url = str(res_url[0]).replace(' ', '%20')
         source_name = line.get('name', '')
         source_title = line.get('title', '')
+        source_title = source_title[0:254]
         filetype = line['extras'].get('filetype')
         iati_version = line['extras'].get('iati_version', '')
 

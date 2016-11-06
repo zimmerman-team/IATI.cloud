@@ -154,5 +154,6 @@ class ParseManager():
             raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
 
         self.parser.parse(activity.getparent())
-        self.parser.save_all_models()
+        self.save_all_models()
+        self.post_save_models()
 

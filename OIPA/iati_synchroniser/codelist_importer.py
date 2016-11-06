@@ -12,6 +12,7 @@ from geodata.models import Country, Region
 from iati_vocabulary.models import RegionVocabulary
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
+from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 
 
 logger = logging.getLogger(__name__)
@@ -241,4 +242,7 @@ class CodeListImporter():
 
         dsi = DacSectorImporter()
         dsi.update()
+
+        ssi = SdgSectorImporter()
+        ssi.update()
 

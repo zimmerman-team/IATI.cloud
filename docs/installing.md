@@ -55,7 +55,14 @@ This setup includes supervisor runnning on background, log is stored at `/vagran
 To prevent the documentation on installing on Ubuntu to be deprecated and incomplete, we would like to point you to the scripts that Vagrant uses to build OIPA on a Ubuntu VM. We keep the Vagrant install up-to-date so running these scripts manually should also install OIPA correctly. 
 
 
-The scripts can be found in the `bin/setup` folder and the order in which they are executed can be found in the file `Vagrantfile` in the repository root.  
+The scripts can be found in the `bin/setup` folder and the order in which they are executed can be found in the file `Vagrantfile` in the repository root. 
+
+--------
+## Upstart / Systemd scripts for Ubuntu
+-------- 
+Upstart scripts for Ubuntu 14.04 can be found in /etc/init.
+Systemd scripts for Ubuntu 16.04 can be found in /etc/systemd.
+
 
 
 

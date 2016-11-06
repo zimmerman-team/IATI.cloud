@@ -24,7 +24,7 @@ class IatiParser(object):
         self.parse_start_datetime = datetime.datetime.now()
         self.iati_source = None
         self.force_reparse = False
-        self.default_lang = None
+        self.default_lang = settings.DEFAULT_LANG
 
         # TODO: find a way to simply save in parser functions, and actually commit to db on exit
         self.model_store = OrderedDict()

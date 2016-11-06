@@ -2,7 +2,7 @@
 ## API
 --------
 
-The OIPA API is currently based on IATI 2.01 output. 
+The OIPA API is currently based on IATI 2.02 output. 
 
 
 --------
@@ -21,11 +21,34 @@ URL: `http://<oipa_url>/api/activities/`.
 
 TODO
 
+
+--------
+## Organisations endpoint
+--------
+
+URL: `http://<oipa_url>/api/organisations/`.
+
+
+--------
+## Results endpoint
+--------
+
+URL: `http://<oipa_url>/api/results/`.
+
+
+--------
+## Transactions endpoint
+--------
+
+URL: `http://<oipa_url>/api/transactions/`.
+
+
+TODO add info on other endpoints.
+
+
 --------
 ## Aggregation endpoint
 --------
-
-Disclaimer: the aggregation endpoint is subject to change. We are still working on a better setup and therefore these docs might become outdated quickly. We are still waiting 
 
 URL: `http://<oipa_url>/api/activities/aggregations/`.
 
@@ -34,43 +57,9 @@ The following GET paramaters *have* to be specified in order to get an aggregati
 * group_by
 * aggregations
 
-The following fields are available for use with the group_by parameter:
+For up-to-date information on the group_by / aggregations options, see the docs on top of the API URL at `http://<oipa_url>/api/activities/aggregations/`.
 
-* recipient_country
-* recipient_region
-* sector
-* reporting_organisation
-* participating_organisation_ref
-* participating_organisation_name
-* activity_status
-* policy_marker
-* collaboration_type
-* default_flow_type
-* default_aid_type
-* default_finance_type
-* default_tied_status
-* budget_per_year
-* budget_per_quarter
-* transactions_per_quarter
-* transaction_date_year
-
-The following fields are available with the *aggregations* parameter:
-
-* count
-* budget
-* disbursement
-* expenditure
-* commitment
-* incoming_fund
-* transaction_value
-* recipient_country_percentage_weighted_incoming_fund (only in combination with recipient_country group_by)
-* recipient_country_percentage_weighted_disbursement (only in combination with transaction based group_by's)
-* recipient_country_percentage_weighted_expenditure (only in combination with transaction based group_by's)
-* sector_percentage_weighted_budget (only in combination with budget based group_by's)
-* sector_percentage_weighted_incoming_fund (only in combination with transaction based group_by's)
-* sector_percentage_weighted_disbursement (only in combination with transaction based group_by's)
-* sector_percentage_weighted_expenditure (only in combination with transaction based group_by's)
-* sector_percentage_weighted_budget (only in combination with budget based group_by's)
+TODO add info on other aggregation endpoints.
 
 ### Percentage based aggregations
 

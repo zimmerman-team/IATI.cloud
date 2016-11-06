@@ -29,12 +29,14 @@ from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import OrganisationType
 from iati.models import Organisation
+from iati.models import PolicySignificance
 
 from api.activity.serializers import CodelistSerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
+
 
 
 class ActivityAggregations(AggregationView):
@@ -179,6 +181,13 @@ class ActivityAggregations(AggregationView):
             name_search_field="collaboration_type__name",
             renamed_name_search_field="collaboration_type_name"
         ),
+        GroupBy(
+            query_param="policy_marker_significance",
+            fields="activitypolicymarker__significance",
+            renamed_fields="significance",
+            queryset=PolicySignificance.objects.all(),
+            serializer=CodelistSerializer,
+        ),
     )
 
 
@@ -299,6 +308,7 @@ class ActivityList(DynamicListView):
 
     ordering_fields = (
         'title',
+        'recipient_country',
         'planned_start_date',
         'actual_start_date',
         'planned_end_date',

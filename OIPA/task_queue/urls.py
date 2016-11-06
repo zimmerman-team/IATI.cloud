@@ -3,7 +3,6 @@ from task_queue.views import *
 
 urlpatterns = [
     # Task queue management
-    url(r'^start_worker_with_supervisor/', start_worker_with_supervisor),
     url(r'^get_workers/', get_workers),
     url(r'^delete_task_from_queue/', delete_task_from_queue),
     url(r'^delete_all_tasks_from_queue/', delete_all_tasks_from_queue),
@@ -12,7 +11,6 @@ urlpatterns = [
     # Callable tasks
     url(r'^add_task/', add_task),
     # Schedule management
-    url(r'^start_scheduler/', start_scheduler),
     url(r'^add_scheduled_task/', add_scheduled_task),
     url(r'^cancel_scheduled_task/', cancel_scheduled_task),
     url(r'^get_scheduled_tasks/', get_scheduled_tasks),
@@ -20,5 +18,5 @@ urlpatterns = [
     url(r'^get_failed_tasks/', get_failed_tasks),
     url(r'^reschedule_all_failed/', reschedule_all_failed),
     # Finished tasks
-    url(r'^get_finished_tasks/', finished_jobs)
+    url(r'^get_finished_tasks/', get_finished_tasks)
 ]
