@@ -26,7 +26,7 @@ header#grp-header{
 }
 
 .oipa-admin-button{
-    transition: background-color 0.5s ease;
+    transition: background-color 0.2s ease;
     background-color: #999;
     color: #fff;
     border: 0;
@@ -37,7 +37,7 @@ header#grp-header{
     margin: 0 2px;
 }
 
-.oipa-admin-button:hover{
+.oipa-admin-button:hover, .oipa-admin-button:focus{
     background-color: #999;
     color: #fff;
     border: 0;
@@ -50,9 +50,13 @@ header#grp-header{
     background-color: #5bc0de;
 }
 
-.admin-btn.btn-info, .parse-activity-btn.btn-info, .oipa-admin-button.btn-info,
-.admin-btn.btn-info:hover, .parse-activity-btn.btn-info:hover, .oipa-admin-button.btn-info:hover{
+.admin-btn.btn-info, .parse-activity-btn.btn-info, .oipa-admin-button.btn-info{
     background-color: #5cb85c;
+}
+
+
+.admin-btn.btn-info:hover, .parse-activity-btn.btn-info:hover, .oipa-admin-button.btn-info:hover{
+    background-color: #417f41;
 }
 
 .admin-btn.btn-danger, .parse-activity-btn.btn-danger, .oipa-admin-button.btn-danger{
@@ -174,7 +178,7 @@ a{
 
 #add-task-parser-notification, #add-task-default-notification{
     opacity: 0;
-    color: #51a351;
+    color: #666;
 }
 
 .nested-caption{
@@ -198,6 +202,7 @@ a{
 .task-btn{
     margin: 10px 10px 10px 0;
     display: inline-block;
+    font-size: 12px;
 }
 
 .autocomplete-light-widget .deck [data-value] .remove{
