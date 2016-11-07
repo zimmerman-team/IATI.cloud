@@ -11,12 +11,12 @@ class OrganisationUserSerializer(serializers.ModelSerializer):
 
     def get_admin_groups(self, user):
         qs = OrganisationAdminGroup.objects.filter(user=user)
-        serializer = OrganisationAdminGroupSerializer(instance=qs, many=True)
+        serializer = OrganisationAdminGroupSerializer(instance=qs, many=True, context={'request': self.context['request']})
         return serializer.data
 
     def get_organisation_groups(self, user):
         qs = OrganisationGroup.objects.filter(user=user)
-        serializer = OrganisationGroupSerializer(instance=qs, many=True)
+        serializer = OrganisationGroupSerializer(instance=qs, many=True, context={'request': self.context['request']})
         return serializer.data
 
     def get_is_validated(self, user):
