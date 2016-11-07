@@ -33,8 +33,13 @@ urlpatterns = [
         name='publisher-group-detail'
     ),
     url(
-        r'^(?P<publisher_id>[^@$&+,/:;=?]+)/verify-api-key/$',
+        r'^api_key/verify/$',
         views.OrganisationVerifyApiKey.as_view(),
+        name='publisher-verify-api-key'
+    ),
+    url(
+        r'^api_key/remove/$',
+        views.OrganisationRemoveApiKey.as_view(),
         name='publisher-verify-api-key'
     ),
 ]

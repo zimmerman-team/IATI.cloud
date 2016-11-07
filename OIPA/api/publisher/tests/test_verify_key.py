@@ -46,10 +46,11 @@ class TestVerifyApiKey(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/verify-api-key/?format=json".format(admin_group.publisher.id), 
+                "/api/publishers/api_key/verify", 
                 data=data,
-                format='json'
                 )
+
+        print(res.status_code)
 
         # test api key has been set on user
         updated_user = OrganisationUser.objects.get(pk=user.pk)

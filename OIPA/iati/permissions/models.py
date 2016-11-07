@@ -14,7 +14,7 @@ class OrganisationUser(AbstractUser):
 class OrganisationAdminGroup(Group):
     # every group is associated with exactly one publisher
     publisher = models.ForeignKey(Publisher, unique=True)
-    owner = models.ForeignKey(OrganisationUser)
+    owner = models.ForeignKey(OrganisationUser, null=True)
 
     class Meta:
         verbose_name_plural = "Organisation admin groups"
