@@ -3,16 +3,25 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-
+import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('iati_synchroniser', '0014_auto_20161024_1451'),
-        ('permissions', '0002_auto_20161031_1551'),
+        ('permissions', '0003_temp_turn_off_constraints'),   
     ]
 
     operations = [
+        # migrations.RunSQL(
+        #     'ALTER TABLE "iati_synchroniser_iatixmlsource" DROP CONSTRAINT iati_synchr_iatixmlsource_id_c6e8fcc4_fk_iati_synchroniser_iatixmlsource_id',
+        # ),
+        # migrations.RunSQL(
+        #     'ALTER TABLE "permissions_organisationadmingroup" DROP CONSTRAINT permissions_organisationadmingroup_publisher_id_f12aebbd_fk',
+        # ),
+        # migrations.RunSQL(
+        #     'ALTER TABLE "permissions_organisationgroup" DROP CONSTRAINT permissions_organisationgroup_publisher_id_840beca0_fk',
+        # ),
         migrations.RenameModel(
             old_name='IatiXmlSource',
             new_name='Dataset',
@@ -36,40 +45,21 @@ class Migration(migrations.Migration):
             name='image_url',
             field=models.URLField(blank=True, default=None, null=True),
         ),
-        # TODO: not working on empty table :( - 2016-11-01
-        # migrations.RunSQL(
-        #     'ALTER TABLE "iati_synchroniser_dataset" DROP CONSTRAINT iati_synchr_dataset_id_c6e8fcc4_fk_iati_synchroniser_dataset_id',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationadmingroup" DROP CONSTRAINT permissions_organisationadmingroup_publisher_id_f12aebbd_fk',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationgroup" DROP CONSTRAINT permissions_organisationgroup_publisher_id_840beca0_fk',
-        # ),
         migrations.AlterField(
             model_name='publisher',
             name='id',
             field=models.CharField(max_length=255, primary_key=True, serialize=False),
         ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "iati_synchroniser_publisher" ALTER COLUMN "id" type varchar(255) USING CAST(id AS varchar(255));',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "iati_synchroniser_dataset" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "iati_synchroniser_dataset" ADD CONSTRAINT iati_synchr_dataset_id_c6e8fcc4_fk_iati_synchroniser_dataset_id FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationadmingroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationadmingroup" ADD CONSTRAINT permissions_organisationadmingroup_publisher_id_f12aebbd_fk FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationgroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationgroup" ADD CONSTRAINT permissions_organisationgroup_publisher_id_840beca0_fk FOREIGN KEY (publisher_id) REFERENCES iati_synchroniser_publisher (id)',
-        # ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_synchroniser_publisher" ALTER COLUMN "id" type varchar(255) USING CAST(id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "iati_synchroniser_dataset" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "permissions_organisationadmingroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
+        migrations.RunSQL(
+            'ALTER TABLE "permissions_organisationgroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
+        ),
     ]
