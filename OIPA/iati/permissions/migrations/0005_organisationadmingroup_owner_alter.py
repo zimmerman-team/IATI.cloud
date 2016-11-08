@@ -10,7 +10,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('permissions', '0002_auto_20161031_1551'),
+        ('permissions', '0004_turn_on_publisher_constraints'),
     ]
 
     operations = [
