@@ -109,7 +109,6 @@ def validate_dates(*dates):
     #     validate_date()
 
 
-
 def narrative(activity_id, default_lang, lang, text):
     warnings = []
     errors = []
@@ -672,20 +671,37 @@ def activity_recipient_country(
                     "code",
                     ))
 
-        recipient_countries = activity.activityrecipientcountry_set.all()
-        # TODO: we need the update instance here ideally - 2016-10-17
-        if instance:
-            sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.exclude(pk=instance.id).values_list('percentage'), 0) + percentage
-        else:
-            sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.values_list('percentage'), 0) + percentage
+        print(percentage, type(percentage))
 
-        if sum_percentage != Decimal(100):
+        if type(percentage) is not int and type(percentage) is not Decimal:
             errors.append(
-                ValidationError(
+                RequiredFieldError(
                     "recipient-country",
                     "percentage",
-                    "The recipient-country percentage doesn't add up to 100"
                     ))
+
+        if percentage < 0 or percentage > 100:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-country",
+                    "percentage",
+                    "percentage must be a value between 0 and 100"
+                    ))
+
+        # recipient_countries = activity.activityrecipientcountry_set.all()
+        # # TODO: we need the update instance here ideally - 2016-10-17
+        # if instance:
+        #     sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.exclude(pk=instance.id).values_list('percentage'), 0) + percentage
+        # else:
+        #     sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.values_list('percentage'), 0) + percentage
+
+        # if sum_percentage != Decimal(100):
+        #     errors.append(
+        #         ValidationError(
+        #             "recipient-country",
+        #             "percentage",
+        #             "The recipient-country percentage doesn't add up to 100"
+        #             ))
 
         return {
             "warnings": warnings,
@@ -696,4 +712,165 @@ def activity_recipient_country(
                 "percentage": percentage,
             },
         }
+
+def activity_recipient_region(
+        activity,
+        region_code,
+        vocabulary_code,
+        vocabulary_uri,
+        percentage=0,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        recipient_region = get_or_none(models.Region, code=region_code)
+        vocabulary = get_or_none(models.RegionVocabulary, code=vocabulary_code)
+
+        print(percentage)
+        print(region_code)
+
+        if not region_code:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "code",
+                    ))
+        elif not recipient_region:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "code",
+                    "recipient-region not found for code {}".format(region_code)
+                    ))
+
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "vocabulary",
+                    ))
+        elif not vocabulary: 
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "vocabulary",
+                    "vocabulary not found for code {}".format(vocabulary_code)
+                    ))
+
+        if vocabulary_code == "99" and not vocabulary_uri:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "vocabulary_uri",
+                    "vocabulary_uri is required when vocabulary code is 99"
+                    ))
+
+        if type(percentage) is not int and type(percentage) is not Decimal:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "percentage",
+                    ))
+
+        if percentage < 0 or percentage > 100:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-region",
+                    "percentage",
+                    "percentage must be a value between 0 and 100"
+                    ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "region": recipient_region,
+                "vocabulary": vocabulary,
+                "vocabulary_uri": vocabulary_uri,
+                "percentage": percentage,
+            },
+        }
+
+
+def activity_location(
+        activity,
+        ref,
+        location_reach_code,
+        location_id_code,
+        location_id_vocabulary_code,
+        name_narratives_data,
+        description_narratives_data,
+        activity_description_narratives_data,
+        point_srs_name,
+        point_pos,
+        exactness_code,
+        location_class_code,
+        feature_designation_code,
+        ):
+
+        warnings = []
+        errors = []
+
+        location_reach = get_or_none(models.GeographicLocationReach, pk=location_reach_code)
+        location_id_vocabulary = get_or_none(models.GeographicVocabulary, pk=location_id_vocabulary_code)
+        exactness = get_or_none(models.GeographicExactness, pk=exactness_code)
+        location_class = get_or_none(models.GeographicLocationClass, pk=location_class_code)
+        feature_designation = get_or_none(models.LocationType, pk=feature_designation_code)
+
+        if not ref:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "ref",
+                    ))
+
+        if not exactness_code:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "exactness",
+                    ))
+        elif not exactness: 
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "exactness",
+                    "codelist entry not found for {}".format(exactness_code)
+                    ))
+
+        name_narratives = narratives(name_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + name_narratives['errors']
+        warnings = warnings + name_narratives['warnings']
+
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + description_narratives['errors']
+        warnings = warnings + description_narratives['warnings']
+
+        activity_description_narratives = narratives(activity_description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + activity_description_narratives['errors']
+        warnings = warnings + activity_description_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "ref": ref,
+                "location_reach": location_reach,
+                "location_id_code": location_id_code,
+                "location_id_vocabulary": location_id_vocabulary,
+                "name_narratives": name_narratives_data,
+                "description_narratives": description_narratives_data,
+                "activity_description_narratives": activity_description_narratives_data,
+                "point_srs_name": point_srs_name,
+                "point_pos": point_pos,
+                "exactness": exactness,
+                "location_class": location_class,
+                "feature_designation": feature_designation,
+            },
+        }
+ 
 

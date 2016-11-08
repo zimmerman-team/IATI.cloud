@@ -101,10 +101,6 @@ def handle_errors(validated, **rest_validated):
         validated_data.update({
             key: vals['validated_data']
         })
-        print(key)
-        print('updating validated_data...')
-        print(vals['errors'])
-        print('updatingggggg')
 
         if len(vals['errors']):
             error_dict[key] = vals['errors']
@@ -720,34 +716,9 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
             'vocabulary_uri',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
-
-
-class ActivitySectorSerializer(serializers.ModelSerializer):
-    sector = SectorSerializer(fields=('url', 'code', 'name'))
-    percentage = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        coerce_to_string=False
-    )
-    vocabulary = VocabularySerializer()
-    vocabulary_uri = serializers.URLField()
-
-    class Meta:
-        model = iati_models.ActivitySector
-        fields = (
-            'id',
-            'sector',
-            'percentage',
-            'vocabulary',
-            'vocabulary_uri',
-        )
-
-        extra_kwargs = { "id": { "read_only": False }}
-
-class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
+class ActivityRecipientRegionSerializer(DynamicFieldsSerializer):
     region = RegionSerializer(
-        fields=('url', 'code', 'name')
+        fields=('url', 'code', 'name'),
     )
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -755,19 +726,52 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
         coerce_to_string=False
     )
     vocabulary = VocabularySerializer()
-    vocabulary_uri = serializers.URLField()
+    vocabulary_uri = serializers.URLField(required=False)
+
+    activity = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.ActivityRecipientRegion
         fields = (
             'id',
+            'activity',
             'region',
             'percentage',
             'vocabulary',
             'vocabulary_uri',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        print(data)
+        validated = validators.activity_recipient_region(
+            activity,
+            data.get('region', {}).get('code'),
+            data.get('vocabulary', {}).get('code'),
+            data.get('vocabulary_uri'),
+            data.get('percentage'),
+            getattr(self, 'instance', None), # only on update
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.ActivityRecipientCountry.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+
+        update_instance = iati_models.ActivityRecipientCountry(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer() 
@@ -787,7 +791,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
-class RecipientCountrySerializer(DynamicFieldsModelSerializer):
+class RecipientCountrySerializer(DynamicFieldsSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -1144,7 +1148,7 @@ class ResultSerializer(serializers.ModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
-class LocationSerializer(serializers.ModelSerializer):
+class LocationSerializer(DynamicFieldsModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
         vocabulary = VocabularySerializer(
             source='location_id_vocabulary')
@@ -1169,19 +1173,92 @@ class LocationSerializer(serializers.ModelSerializer):
 
     location_reach = CodelistSerializer()
     location_id = LocationIdSerializer(source='*')
-    name = NarrativeContainerSerializer(many=True, source="locationname_set")
-    description = NarrativeContainerSerializer(many=True, source="locationdescription_set")
-    activity_description = NarrativeContainerSerializer(many=True, source="locationactivitydescription_set")
-    administrative = AdministrativeSerializer(many=True, source="locationadministrative_set")
+    name = NarrativeContainerSerializer()
+    description = NarrativeContainerSerializer()
+    activity_description = NarrativeContainerSerializer()
+
+    # administrative has its own view
+    administrative = AdministrativeSerializer(
+            many=True,
+            source="locationadministrative_set",
+            read_only=True
+        )
+
     point = PointSerializer(source="*")
     exactness = CodelistSerializer()
     location_class = CodelistSerializer()
-    feature_designation = CodelistCategorySerializer()
-    
+    feature_designation = CodelistSerializer()
+
+    activity = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        print(data)
+        validated = validators.activity_location(
+            activity,
+            data.get('ref'),
+            data.get('location_reach', {}).get('code'),
+            data.get('location_id_code', {}),
+            data.get('location_id_vocabulary', {}).get('code'),
+            data.get('name', {}).get('narratives'),
+            data.get('description', {}).get('narratives'),
+            data.get('activity_description', {}).get('narratives'),
+            data.get('point_pos', {}),
+            data.get('point_srs_name', {}),
+            data.get('exactness', {}).get('code'),
+            data.get('location_class', {}).get('code'),
+            data.get('feature_designation', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        name_narratives = validated_data.pop('name_narratives', [])
+        description_narratives = validated_data.pop('description_narratives', [])
+        activity_description_narratives = validated_data.pop('activity_description_narratives', [])
+
+        print(validated_data)
+
+        instance = iati_models.Location.objects.create(**validated_data)
+
+        location_name = iati_models.LocationName.objects.create(location=instance)
+        location_description = iati_models.LocationDescription.objects.create(location=instance)
+        location_activity_description = iati_models.LocationActivityDescription.objects.create(location=instance)
+
+        save_narratives(location_name, name_narratives, activity)
+        save_narratives(location_description, description_narratives, activity)
+        save_narratives(location_activity_description, activity_description_narratives, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        name_narratives = validated_data.pop('name_narratives', [])
+        description_narratives = validated_data.pop('description_narratives', [])
+        activity_description_narratives = validated_data.pop('activity_description_narratives', [])
+
+        update_instance = iati_models.Location(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        location_name = iati_models.LocationName.objects.get(location=instance)
+        location_description = iati_models.LocationDescription.objects.get(location=instance)
+        location_activity_description = iati_models.LocationActivityDescription.objects.get(location=instance)
+
+        save_narratives(location_name, name_narratives, activity)
+        save_narratives(location_description, description_narratives, activity)
+        save_narratives(location_activity_description, activity_description_narratives, activity)
+
+        return update_instance
+
     class Meta:
         model = iati_models.Location
         fields = (
             'id',
+            'activity',
             'ref',
             'location_reach',
             'location_id',
@@ -1195,7 +1272,6 @@ class LocationSerializer(serializers.ModelSerializer):
             'feature_designation',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
 
 class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     activity = ActivityAggregationSerializer(source='activity_aggregation')

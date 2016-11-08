@@ -62,6 +62,13 @@ urlpatterns = [
         api.activity.views.ActivityRecipientCountryDetail.as_view(),
         name='activity-recipient_countries'),
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_regions/$',
+        api.activity.views.ActivityRecipientRegionList.as_view(),
+        name='activity-recipient_regions'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_regions/(?P<id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityRecipientRegionDetail.as_view(),
+        name='activity-recipient_regions'),
+
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_sectors/$',
         api.activity.views.ActivitySectorList.as_view(),
