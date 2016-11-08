@@ -839,14 +839,6 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "percentage": 100,
-            "narratives": [
-                {
-                    "text": "test1"
-                },
-                {
-                    "text": "test2"
-                }
-            ]
         }
 
         res = self.c.post(
@@ -874,14 +866,6 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "percentage": 100,
-            "narratives": [
-                {
-                    "text": "test1"
-                },
-                {
-                    "text": "test2"
-                }
-            ]
         }
 
         res = self.c.put(
@@ -910,4 +894,249 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityRecipientCountry.objects.get(pk=recipient_country.id)
 
+
+
+
+class ActivityRecipientRegionSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_recipient_region(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        region = iati_factory.RegionFactory.create()
+        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "region": {
+                "code": region.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": region_vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "percentage": 100,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/recipient_regions/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityRecipientRegion.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.country.code, data['country']['code'])
+        self.assertEqual(instance.percentage, data['percentage'])
+
+    def test_update_recipient_region(self):
+        recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
+        region = iati_factory.RegionFactory.create(code="380")
+        region_vocabulary = iati_factory.RegionVocabularyFactory.create(code="2")
+
+        data = {
+            "activity": recipient_region.activity.id,
+            "region": {
+                "code": region.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": region_vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "percentage": 100,
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityRecipientRegion.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.region.code, str(data['region']['code']))
+        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+
+    def test_delete_recipient_region(self):
+        recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityRecipientRegion.objects.get(pk=recipient_region.id)
+
+
+
+class LocationSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_location(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        location_reach = iati_factory.GeographicLocationReachFactory.create()
+        location_id_vocabulary = iati_factory.GeographicVocabularyFactory.create()
+        exactness = iati_factory.GeographicExactnessFactory.create()
+        location_class = iati_factory.GeographicLocationClassFactory.create()
+        feature_designation = iati_factory.LocationTypeFactory.create()
+
+        type = iati_factory.LocationTypeFactory.create()
+        # type = iati_factory.LocationTypeFactory.create(code=2)
+
+        data = {
+            "activity": activity.id,
+            "ref": "AF-KAN",
+            "location_reach": {
+                "code": location_reach.code,
+                "name": "irrelevant",
+            },
+            "location_id": {
+                "code": "1453782",
+                "vocabulary": {
+                    "code": location_id_vocabulary.code,
+                    "name": "irrelevant"
+                },
+            },
+            "name": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "activity_description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "point": {
+                "pos": {
+                    "latitude": "31.616944",
+                    "longitude": "65.716944",
+                },
+                "srsName": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            },
+            "exactness": {
+                "code": exactness.code,
+                "name": "irrelevant",
+            },
+            "location_class": {
+                "code": location_class.code,
+                "name": "irrelevant",
+            },
+            "feature_designation": {
+                "code": feature_designation.code,
+                "name": "irrelevant",
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/locations/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Location.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.location_reach.code, data['location_reach']['code'])
+        self.assertEqual(instance.location_id_code, data['location_id']['code'])
+        self.assertEqual(instance.location_id_vocabulary.code, data['location_id']['vocabulary'])
+        self.assertEqual(instance.exactness.code, data['exactness']['code'])
+        self.assertEqual(instance.location_class.code, data['location_class']['code'])
+        self.assertEqual(instance.feature_designation.code, data['feature_designation']['code'])
+
+        name_narratives = instance.location_name.narratives.all()
+        self.assertEqual(name_narratives[0].content, data['name_narratives'][0]['text'])
+        self.assertEqual(name_narratives[1].content, data['name_narratives'][1]['text'])
+
+
+    def test_update_location(self):
+        location = iati_factory.LocationFactory.create()
+        type = iati_factory.LocationTypeFactory.create()
+        type2 = iati_factory.LocationTypeFactory.create(code=2)
+
+        data = {
+            "activity": location.activity.id,
+            "type": {
+                "code": type2.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/locations/{}?format=json".format(location.activity.id, location.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Location.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
+
+    def test_delete_location(self):
+        location = iati_factory.LocationFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/locations/{}?format=json".format(location.activity.id, location.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Location.objects.get(pk=location.id)
 

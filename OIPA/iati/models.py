@@ -1011,7 +1011,7 @@ class LocationAdministrative(models.Model):
 
 
 class LocationName(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="name")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1019,7 +1019,7 @@ class LocationName(models.Model):
 
 
 class LocationDescription(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1027,7 +1027,7 @@ class LocationDescription(models.Model):
 
 
 class LocationActivityDescription(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="activity_description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',

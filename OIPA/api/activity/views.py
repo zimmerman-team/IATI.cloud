@@ -485,6 +485,21 @@ class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityRecipientCountry.objects.get(pk=pk)
 
+class ActivityRecipientRegionList(ListCreateAPIView):
+    serializer_class = activity_serializers.ActivityRecipientRegionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).recipient_regions.all()
+
+class ActivityRecipientRegionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ActivityRecipientRegionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.ActivityRecipientRegion.objects.get(pk=pk)
+
+
 class ActivitySectorList(ListCreateAPIView):
     serializer_class = activity_serializers.SectorSerializer
 
