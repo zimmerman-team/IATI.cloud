@@ -310,6 +310,20 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    transaction_provider_organisation = ToManyFilter(
+        qs=Transaction,
+        lookup_type='in',
+        name='provider_organisation__ref',
+        fk='activity',
+    )
+
+    transaction_receiver_organisation = ToManyFilter(
+        qs=Transaction,
+        lookup_type='in',
+        name='receiver_organisation__ref',
+        fk='activity',
+    )
+
     transaction_provider_organisation_name = ToManyFilter(
         qs=Transaction,
         lookup_type='in',
