@@ -933,13 +933,12 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         instance = iati_models.ActivityRecipientRegion.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.country.code, data['country']['code'])
+        self.assertEqual(instance.region.code, str(data['region']['code']))
         self.assertEqual(instance.percentage, data['percentage'])
 
     def test_update_recipient_region(self):
         recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
-        region = iati_factory.RegionFactory.create(code="380")
-        region_vocabulary = iati_factory.RegionVocabularyFactory.create(code="2")
+        region = iati_factory.RegionFactory.create(code=89)
 
         data = {
             "activity": recipient_region.activity.id,
@@ -948,7 +947,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
                 "name": 'irrelevant',
             },
             "vocabulary": {
-                "code": region_vocabulary.code,
+                "code": recipient_region.vocabulary.code,
                 "name": 'irrelevant',
             },
             "vocabulary_uri": "https://twitter.com/",
@@ -956,7 +955,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                "/api/activities/{}/recipient_regions/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
                 data,
                 format='json'
                 )
@@ -973,7 +972,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                "/api/activities/{}/recipient_regions/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
                 format='json'
                 )
 
