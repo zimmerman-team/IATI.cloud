@@ -880,6 +880,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.country.code, str(data['country']['code']))
+        self.assertEqual(instance.percentage, data['percentage'])
 
     def test_delete_recipient_country(self):
         recipient_country = iati_factory.ActivityRecipientCountryFactory.create()

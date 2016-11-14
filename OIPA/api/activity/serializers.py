@@ -716,7 +716,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
             'vocabulary_uri',
         )
 
-class ActivityRecipientRegionSerializer(DynamicFieldsSerializer):
+class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = RegionSerializer(
         fields=('url', 'code', 'name'),
     )
@@ -759,7 +759,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsSerializer):
     def create(self, validated_data):
         activity = validated_data.get('activity')
 
-        instance = iati_models.ActivityRecipientCountry.objects.create(**validated_data)
+        instance = iati_models.ActivityRecipientRegion.objects.create(**validated_data)
 
         return instance
 
@@ -767,7 +767,7 @@ class ActivityRecipientRegionSerializer(DynamicFieldsSerializer):
     def update(self, instance, validated_data):
         activity = validated_data.get('activity')
 
-        update_instance = iati_models.ActivityRecipientCountry(**validated_data)
+        update_instance = iati_models.ActivityRecipientRegion(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -791,7 +791,7 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
-class RecipientCountrySerializer(DynamicFieldsSerializer):
+class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
