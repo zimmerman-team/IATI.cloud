@@ -292,4 +292,3 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
     code = "1"
     name = 'Emergency'
 
-

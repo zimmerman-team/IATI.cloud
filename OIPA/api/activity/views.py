@@ -554,7 +554,7 @@ class ActivityHumanitarianScopeDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.ActivityHumanitarianScope.objects.get(pk=pk)
+        return iati_models.HumanitarianScope.objects.get(pk=pk)
 
 
 class ActivityPolicyMarkerList(ListCreateAPIView):

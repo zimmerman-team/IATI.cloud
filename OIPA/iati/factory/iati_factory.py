@@ -419,6 +419,15 @@ class LocationAdministrativeFactory(NoDatabaseFactory):
     vocabulary = SubFactory(GeographicVocabularyFactory)
     level = 1
 
+class HumanitarianScopeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.HumanitarianScope
+
+    activity = SubFactory(ActivityFactory)
+    code = "code"
+    type = SubFactory(HumanitarianScopeTypeFactory)
+    vocabulary = SubFactory(HumanitarianScopeVocabularyFactory)
+    vocabulary_uri = "http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/humanitarian-scope/"
 
 class ActivitySearchFactory(ActivityFactory):
     """A complete search field factory for testing search"""

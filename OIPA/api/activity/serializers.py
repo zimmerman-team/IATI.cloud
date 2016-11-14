@@ -770,11 +770,15 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
     type = CodelistSerializer() 
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
-    code = CodelistSerializer()
+    # code = CodelistSerializer()
+    code = serializers.CharField()
+
+    activity = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.HumanitarianScope
         fields = (
+            'activity',
             'id',
             'type',
             'vocabulary',
@@ -782,7 +786,33 @@ class HumanitarianScopeSerializer(DynamicFieldsModelSerializer):
             'code',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_humanitarian_scope(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('vocabulary', {}).get('code'),
+            data.get('vocabulary_uri'),
+            data.get('code'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.HumanitarianScope.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.HumanitarianScope(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class RecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))

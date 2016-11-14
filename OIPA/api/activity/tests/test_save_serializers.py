@@ -1227,3 +1227,92 @@ class LocationSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.Location.objects.get(pk=location.id)
 
+class HumanitarianScopeSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_humanitarian_scope(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.HumanitarianScopeTypeFactory.create()
+        vocabulary = iati_factory.HumanitarianScopeVocabularyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "code": "1",
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://github.com/zimmerman-zimmerman",
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/humanitarian_scopes/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        print(res.json())
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+        self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
+
+    def test_update_humanitarian_scope(self):
+        humanitarian_scope = iati_factory.HumanitarianScopeFactory.create()
+        type = iati_factory.HumanitarianScopeTypeFactory.create(code="2")
+        vocabulary = iati_factory.HumanitarianScopeVocabularyFactory.create(code="2")
+
+        data = {
+            "activity": humanitarian_scope.activity.id,
+            "code": "1",
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://github.com/zimmerman-zimmerman",
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/humanitarian_scopes/{}?format=json".format(humanitarian_scope.activity.id, humanitarian_scope.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.HumanitarianScope.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+        self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
+
+    def test_delete_humanitarian_scope(self):
+        humanitarian_scopes = iati_factory.HumanitarianScopeFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/humanitarian_scopes/{}?format=json".format(humanitarian_scopes.activity.id, humanitarian_scopes.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.HumanitarianScope.objects.get(pk=humanitarian_scopes.id)
+
+

@@ -869,3 +869,60 @@ def activity_location(
         }
  
 
+def activity_humanitarian_scope(
+        activity,
+        type_code,
+        vocabulary_code,
+        vocabulary_uri,
+        code,
+        ):
+        warnings = []
+        errors = []
+
+        type = get_or_none(models.HumanitarianScopeType, code=type_code)
+        vocabulary = get_or_none(models.HumanitarianScopeVocabulary, code=vocabulary_code)
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "type",
+                    ))
+        if not type:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "type",
+                    "codelist entry not found for {}".format(type_code)
+                    ))
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "vocabulary",
+                    ))
+        if not vocabulary:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "vocabulary",
+                    "codelist entry not found for {}".format(vocabulary_code)
+                    ))
+        if not code:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "code",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": type,
+                "vocabulary": vocabulary,
+                "vocabulary_uri": vocabulary_uri,
+                "code": code,
+            },
+        }
