@@ -292,9 +292,10 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
         model = iati.models.ActivityRecipientRegion
 
     percentage = 100
+    region = SubFactory(RegionFactory)
     region = RegionFactory.build()
-    vocabulary = RegionVocabularyFactory.build()
-    activity = ActivityFactory.build()
+    vocabulary = SubFactory(RegionVocabularyFactory)
+    activity = SubFactory(ActivityFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")

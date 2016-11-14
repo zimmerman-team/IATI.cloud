@@ -8,7 +8,7 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
-from api.region.serializers import RegionSerializer
+from api.region.serializers import RegionSerializer, BasicRegionSerializer
 from api.country.serializers import CountrySerializer
 from api.activity.filters import RelatedActivityFilter
 
@@ -717,7 +717,7 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
         )
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
-    region = RegionSerializer(
+    region = BasicRegionSerializer(
         fields=('url', 'code', 'name'),
     )
     percentage = serializers.DecimalField(
@@ -744,7 +744,6 @@ class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
 
-        print(data)
         validated = validators.activity_recipient_region(
             activity,
             data.get('region', {}).get('code'),

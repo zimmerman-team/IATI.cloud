@@ -727,9 +727,6 @@ def activity_recipient_region(
         recipient_region = get_or_none(models.Region, code=region_code)
         vocabulary = get_or_none(models.RegionVocabulary, code=vocabulary_code)
 
-        print(percentage)
-        print(region_code)
-
         if not region_code:
             errors.append(
                 RequiredFieldError(
