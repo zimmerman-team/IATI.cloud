@@ -289,7 +289,7 @@ class IatiParser(object):
         Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
-            model.related_object = model.related_object
+            model.related_object = model._related_object_cache
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
