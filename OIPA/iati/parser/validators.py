@@ -671,8 +671,6 @@ def activity_recipient_country(
                     "code",
                     ))
 
-        print(percentage, type(percentage))
-
         if type(percentage) is not int and type(percentage) is not Decimal:
             errors.append(
                 RequiredFieldError(
@@ -859,9 +857,9 @@ def activity_location(
                 "location_reach": location_reach,
                 "location_id_code": location_id_code,
                 "location_id_vocabulary": location_id_vocabulary,
-                "name_narratives": name_narratives_data,
-                "description_narratives": description_narratives_data,
-                "activity_description_narratives": activity_description_narratives_data,
+                "name_narratives": name_narratives['validated_data'],
+                "description_narratives": description_narratives['validated_data'],
+                "activity_description_narratives": activity_description_narratives['validated_data'],
                 "point_srs_name": point_srs_name,
                 "point_pos": point_pos,
                 "exactness": exactness,

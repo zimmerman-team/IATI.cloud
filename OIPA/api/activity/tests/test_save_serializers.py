@@ -1078,35 +1078,102 @@ class LocationSaveTestCase(TestCase):
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.location_reach.code, data['location_reach']['code'])
         self.assertEqual(instance.location_id_code, data['location_id']['code'])
-        self.assertEqual(instance.location_id_vocabulary.code, data['location_id']['vocabulary'])
+        self.assertEqual(instance.location_id_vocabulary.code, data['location_id']['vocabulary']['code'])
         self.assertEqual(instance.exactness.code, data['exactness']['code'])
         self.assertEqual(instance.location_class.code, data['location_class']['code'])
         self.assertEqual(instance.feature_designation.code, data['feature_designation']['code'])
 
-        name_narratives = instance.location_name.narratives.all()
-        self.assertEqual(name_narratives[0].content, data['name_narratives'][0]['text'])
-        self.assertEqual(name_narratives[1].content, data['name_narratives'][1]['text'])
+        self.assertEqual(instance.point_srs_name, data['point']['srsName'])
+        self.assertEqual(str(instance.point_pos[0]), data['point']['pos']['longitude'])
+        self.assertEqual(str(instance.point_pos[1]), data['point']['pos']['latitude'])
 
+        name_narratives = instance.name.narratives.all()
+        self.assertEqual(name_narratives[0].content, data['name']['narratives'][0]['text'])
+        self.assertEqual(name_narratives[1].content, data['name']['narratives'][1]['text'])
+
+        description_narratives = instance.description.narratives.all()
+        self.assertEqual(description_narratives[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(description_narratives[1].content, data['description']['narratives'][1]['text'])
+
+        activity_description_narratives = instance.activity_description.narratives.all()
+        self.assertEqual(activity_description_narratives[0].content, data['activity_description']['narratives'][0]['text'])
+        self.assertEqual(activity_description_narratives[1].content, data['activity_description']['narratives'][1]['text'])
 
     def test_update_location(self):
         location = iati_factory.LocationFactory.create()
+
+        location_reach = iati_factory.GeographicLocationReachFactory.create(code='123')
+        location_id_vocabulary = iati_factory.GeographicVocabularyFactory.create(code='A4')
+        exactness = iati_factory.GeographicExactnessFactory.create(code=2)
+        location_class = iati_factory.GeographicLocationClassFactory.create(code=2)
+        feature_designation = iati_factory.LocationTypeFactory.create(code='PPLQ')
+
         type = iati_factory.LocationTypeFactory.create()
-        type2 = iati_factory.LocationTypeFactory.create(code=2)
+        # type = iati_factory.LocationTypeFactory.create(code=2)
 
         data = {
             "activity": location.activity.id,
-            "type": {
-                "code": type2.code,
-                "name": 'irrelevant',
+            "ref": "AF-KAN",
+            "location_reach": {
+                "code": location_reach.code,
+                "name": "irrelevant",
             },
-            "narratives": [
-                {
-                    "text": "test1"
+            "location_id": {
+                "code": "1453782",
+                "vocabulary": {
+                    "code": location_id_vocabulary.code,
+                    "name": "irrelevant"
                 },
-                {
-                    "text": "test2"
-                }
-            ]
+            },
+            "name": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "activity_description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+            "point": {
+                "pos": {
+                    "latitude": "31.616944",
+                    "longitude": "65.716944",
+                },
+                "srsName": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            },
+            "exactness": {
+                "code": exactness.code,
+                "name": "irrelevant",
+            },
+            "location_class": {
+                "code": location_class.code,
+                "name": "irrelevant",
+            },
+            "feature_designation": {
+                "code": feature_designation.code,
+                "name": "irrelevant",
+            },
         }
 
         res = self.c.put(
@@ -1120,11 +1187,31 @@ class LocationSaveTestCase(TestCase):
         instance = iati_models.Location.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.location_reach.code, data['location_reach']['code'])
+        self.assertEqual(instance.location_id_code, data['location_id']['code'])
+        self.assertEqual(instance.location_id_vocabulary.code, data['location_id']['vocabulary']['code'])
+        self.assertEqual(instance.exactness.code, str(data['exactness']['code']))
+        self.assertEqual(instance.location_class.code, data['location_class']['code'])
+        self.assertEqual(instance.feature_designation.code, data['feature_designation']['code'])
 
-        narratives = instance.narratives.all()
-        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
-        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+        self.assertEqual(instance.point_srs_name, data['point']['srsName'])
+        self.assertEqual(str(instance.point_pos[0]), data['point']['pos']['longitude'])
+        self.assertEqual(str(instance.point_pos[1]), data['point']['pos']['latitude'])
+
+        name_narratives = instance.name.narratives.all()
+        self.assertEqual(name_narratives[0].content, data['name']['narratives'][0]['text'])
+        self.assertEqual(name_narratives[1].content, data['name']['narratives'][1]['text'])
+
+        description_narratives = instance.description.narratives.all()
+        self.assertEqual(description_narratives[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(description_narratives[1].content, data['description']['narratives'][1]['text'])
+
+        activity_description_narratives = instance.activity_description.narratives.all()
+        self.assertEqual(activity_description_narratives[0].content, data['activity_description']['narratives'][0]['text'])
+        self.assertEqual(activity_description_narratives[1].content, data['activity_description']['narratives'][1]['text'])
+
+
 
 
     def test_delete_location(self):

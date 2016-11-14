@@ -217,12 +217,9 @@ class NestedWriteMixin():
                         for fk_id in to_update:
                             # TODO: call the serializer's update method - 2016-09-13
                             # needed for nested updating i guess
-                            print('called')
                             fk_data = filter(lambda x: x[related_model_pk_field_name] is fk_id, data)[0]
                             serializer_class  = source_serializer.child
                             serializer.initial_data = fk_data
-                            print(fk_data)
-                            print(field_model.objects.get(pk=fk_id))
                             serializer.is_valid()
                             serializer.save()
                             pass
@@ -490,9 +487,6 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
-
-        print('called')
-        print(update_instance)
 
         save_narratives(update_instance, narratives, activity)
 
@@ -1193,7 +1187,10 @@ class LocationSerializer(DynamicFieldsModelSerializer):
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
 
-        print(data)
+        # print(data)
+        # print('called...')
+        # print(data.get('point'))
+
         validated = validators.activity_location(
             activity,
             data.get('ref'),
@@ -1203,8 +1200,8 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             data.get('name', {}).get('narratives'),
             data.get('description', {}).get('narratives'),
             data.get('activity_description', {}).get('narratives'),
-            data.get('point_pos', {}),
             data.get('point_srs_name', {}),
+            data.get('point_pos', {}),
             data.get('exactness', {}).get('code'),
             data.get('location_class', {}).get('code'),
             data.get('feature_designation', {}).get('code'),
@@ -1217,8 +1214,6 @@ class LocationSerializer(DynamicFieldsModelSerializer):
         name_narratives = validated_data.pop('name_narratives', [])
         description_narratives = validated_data.pop('description_narratives', [])
         activity_description_narratives = validated_data.pop('activity_description_narratives', [])
-
-        print(validated_data)
 
         instance = iati_models.Location.objects.create(**validated_data)
 
