@@ -373,12 +373,29 @@ class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
 
     result_period = ResultIndicatorPeriodFactory.build()
 
+class LocationNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationName
+
+    # location = SubFactory(LocationFactory)
+
+class LocationDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationDescription
+
+    # location = SubFactory(LocationFactory)
+
+class LocationActivityDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationActivityDescription
+
+    # location = SubFactory(LocationFactory)
 
 class LocationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Location
 
-    activity = ActivityFactory.build()
+    activity = SubFactory(ActivityFactory)
     ref = 'AF-KAN'
     location_reach = SubFactory(GeographicLocationReachFactory)
     location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
@@ -389,6 +406,9 @@ class LocationFactory(NoDatabaseFactory):
     location_class = SubFactory(GeographicLocationClassFactory)
     feature_designation = SubFactory(LocationTypeFactory)
 
+    name = RelatedFactory(LocationNameFactory, 'location')
+    description = RelatedFactory(LocationDescriptionFactory, 'location')
+    activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
 
 class LocationAdministrativeFactory(NoDatabaseFactory):
     class Meta:

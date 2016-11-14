@@ -59,6 +59,8 @@ class PointField(serializers.Field):
             except ValueError:
                 self.fail('invalid')
 
+        print('in to_internal_value')
+        print(value)
         if value and isinstance(value, dict):
             try:
                 latitude = value.get("latitude")
