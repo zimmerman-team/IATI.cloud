@@ -67,10 +67,10 @@ def force_parse_all_existing_sources():
     """
     queue = django_rq.get_queue("parser")
 
-    for e in Dataset.objects.all().filter(type=2):
+    for e in Dataset.objects.all().filter(filetype=2):
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
-    for e in Dataset.objects.all().filter(type=1):
+    for e in Dataset.objects.all().filter(filetype=1):
         queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
@@ -84,10 +84,10 @@ def parse_all_existing_sources():
     """
     queue = django_rq.get_queue("parser")
 
-    for e in Dataset.objects.all().filter(type=2):
+    for e in Dataset.objects.all().filter(filetype=2):
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
-    for e in Dataset.objects.all().filter(type=1):
+    for e in Dataset.objects.all().filter(filetype=1):
         queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
