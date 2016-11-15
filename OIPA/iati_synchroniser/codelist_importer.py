@@ -114,6 +114,9 @@ class CodeListImporter():
         elif tag == "CRSAddOtherFlags":
             model_name = 'OtherFlags'
 
+        elif tag == "CRSChannelCode":
+            name = name[:255]
+
         elif tag == "Version":
             if url is None:
                 url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
