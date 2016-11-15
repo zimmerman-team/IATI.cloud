@@ -324,11 +324,11 @@ class ActivityPolicyMarkerFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityPolicyMarker
 
-    activity = ActivityFactory.build()
-    code = PolicyMarkerFactory.build()
+    activity = SubFactory(ActivityFactory)
+    code = SubFactory(PolicyMarkerFactory)
     # alt_policy_marker = 'alt_policy_marker' # ?
-    vocabulary = PolicyMarkerVocabularyFactory.build()
-    significance = PolicySignificanceFactory.build()
+    vocabulary = SubFactory(PolicyMarkerVocabularyFactory)
+    significance = SubFactory(PolicySignificanceFactory)
 
 
 class ResultFactory(NoDatabaseFactory):
