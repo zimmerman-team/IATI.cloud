@@ -307,10 +307,17 @@ class BudgetSerializer(serializers.ModelSerializer):
     type = CodelistSerializer()
     status = CodelistSerializer()
 
+    activity = serializers.CharField(write_only=True)
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
     class Meta:
         model = iati_models.Budget
         # filter_class = BudgetFilter
         fields = (
+            'activity',
             'id',
             'type',
             'status',
@@ -319,7 +326,37 @@ class BudgetSerializer(serializers.ModelSerializer):
             'value',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_budget(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('status', {}).get('code'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.Budget.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.Budget(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class PlannedDisbursementSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')

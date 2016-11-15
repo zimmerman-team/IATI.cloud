@@ -926,3 +926,136 @@ def activity_humanitarian_scope(
                 "code": code,
             },
         }
+
+
+def activity_budget(
+        activity,
+        type_code,
+        status_code,
+        period_start_raw,
+        period_end_raw,
+        value,
+        currency_code,
+        value_date_raw,
+        ):
+        warnings = []
+        errors = []
+
+        type = get_or_none(models.BudgetType, code=type_code)
+        status = get_or_none(models.BudgetStatus, code=status_code)
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "type",
+                    ))
+        if not type:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "type",
+                    "codelist entry not found for {}".format(type_code)
+                    ))
+        if not status_code:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "status",
+                    ))
+        if not status:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "status",
+                    "codelist entry not found for {}".format(status_code)
+                    ))
+
+        if not period_start_raw:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "period-start",
+                    ))
+            period_start = None
+        else:
+            try:
+                period_start = validate_date(period_start_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "budget",
+                        "period-start",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_start = None
+
+        if not period_end_raw:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "period-end",
+                    ))
+            period_end = None
+        else:
+            try:
+                period_end = validate_date(period_end_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "budget",
+                        "period-end",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_end = None
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "location",
+                    "value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "value-date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "budget",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        ))
+                value_date = None
+
+        if not currency and not activity.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "budget",
+                    "currency",
+                    "currency not specified and no default specified on activity"
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": type,
+                "status": status,
+                "period_start": period_start,
+                "period_end": period_end,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+            },
+        }
