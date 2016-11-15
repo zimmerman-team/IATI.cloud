@@ -590,24 +590,66 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
         )
 
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
-    code = CodelistSerializer()
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
+    policy_marker = CodelistSerializer(source="code")
     significance = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
+
+    activity = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+        # narratives = data.pop('narratives', [])
+
+        validated = validators.activity_policy_marker(
+            activity,
+            data.get('vocabulary', {}).get('code'),
+            data.get('vocabulary_uri'),
+            data.get('code', {}).get('code'),
+            data.get('significance', {}).get('code'),
+            data.get('narratives')
+        )
+
+        # validated_narratives = validators.narratives(activity, narratives)
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.ActivityPolicyMarker.objects.create(**validated_data)
+
+        save_narratives(instance, narratives, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        narratives = validated_data.pop('narratives', [])
+
+        update_instance = iati_models.ActivityPolicyMarker(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(update_instance, narratives, activity)
+
+        return update_instance
 
     class Meta:
         model = iati_models.ActivityPolicyMarker
         fields = (
+            'activity',
             'id',
-            'narratives',
             'vocabulary',
             'vocabulary_uri',
+            'policy_marker',
             'significance',
-            'code',
+            'narratives',
         )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 
 # TODO: change to NarrativeContainer

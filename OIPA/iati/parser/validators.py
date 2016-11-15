@@ -927,6 +927,73 @@ def activity_humanitarian_scope(
             },
         }
 
+def activity_policy_marker(
+        activity,
+        vocabulary_code,
+        vocabulary_uri,
+        policy_marker_code,
+        significance_code,
+        narratives_data=[]
+        ):
+        warnings = []
+        errors = []
+
+        vocabulary = get_or_none(models.PolicyMarkerVocabulary, code=vocabulary_code)
+        policy_marker = get_or_none(models.PolicyMarker, code=policy_marker_code)
+        significance = get_or_none(models.PolicySignificance, code=significance_code)
+
+        if not policy_marker_code:
+            errors.append(
+                RequiredFieldError(
+                    "policy-marker",
+                    "code",
+                    ))
+        if not policy_marker:
+            errors.append(
+                RequiredFieldError(
+                    "policy-marker",
+                    "code",
+                    "codelist entry not found for {}".format(policy_marker_code)
+                    ))
+
+        if not significance_code:
+            errors.append(
+                RequiredFieldError(
+                    "policy-marker",
+                    "significance",
+                    ))
+        if not significance:
+            errors.append(
+                RequiredFieldError(
+                    "policy-marker",
+                    "significance",
+                    "codelist entry not found for {}".format(significance_code)
+                    ))
+
+
+        if not len(narratives_data):
+            errors.append(
+                RequiredFieldError(
+                    "policy-marker",
+                    "narratives",
+                    ))
+
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "vocabulary": vocabulary,
+                "vocabulary_uri": vocabulary_uri,
+                "code": policy_marker,
+                "significance": significance,
+                "narratives": validated_narratives['validated_data'],
+            },
+        }
+
+
 
 def activity_budget(
         activity,

@@ -1316,6 +1316,126 @@ class HumanitarianScopeSaveTestCase(TestCase):
             instance = iati_models.HumanitarianScope.objects.get(pk=humanitarian_scopes.id)
 
 
+class PolicyMarkerSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_policy_marker(self):
+        activity = iati_factory.ActivityFactory.create()
+        vocabulary = iati_factory.PolicyMarkerVocabularyFactory.create()
+        significance = iati_factory.PolicySignificanceFactory.create()
+        policy_marker = iati_factory.PolicyMarkerFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "policy_marker": {
+                "code": policy_marker.code,
+                "name": 'irrelevant',
+            },
+            "significance": {
+                "code": significance.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/policy_markers/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+        self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
+        self.assertEqual(instance.code.code, str(data['policy_marker']['code']))
+        self.assertEqual(instance.significance.code, str(data['significance']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
+    def test_update_policy_marker(self):
+        activity_policy_marker = iati_factory.ActivityPolicyMarkerFactory.create()
+        vocabulary = iati_factory.PolicyMarkerVocabularyFactory.create(code=2)
+        policy_marker = iati_factory.PolicyMarkerFactory.create(code=2)
+        significance = iati_factory.PolicySignificanceFactory.create(code=2)
+
+        data = {
+            "activity": activity_policy_marker.activity.id,
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "policy_marker": {
+                "code": policy_marker.code,
+                "name": 'irrelevant',
+            },
+            "significance": {
+                "code": significance.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/policy_markers/{}?format=json".format(activity_policy_marker.activity.id, activity_policy_marker.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+        self.assertEqual(instance.vocabulary_uri, data['vocabulary_uri'])
+        self.assertEqual(instance.code.code, str(data['policy_marker']['code']))
+        self.assertEqual(instance.significance.code, str(data['significance']['code']))
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
+
+    def test_delete_policy_marker(self):
+        participating_org = iati_factory.ActivityPolicyMarkerFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/policy_markers/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivityPolicyMarker.objects.get(pk=participating_org.id)
+
 
 class BudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
