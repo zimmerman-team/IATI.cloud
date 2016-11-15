@@ -994,7 +994,6 @@ def activity_policy_marker(
         }
 
 
-
 def activity_budget(
         activity,
         type_code,
@@ -1124,5 +1123,170 @@ def activity_budget(
                 "value": value,
                 "currency": currency,
                 "value_date": value_date,
+            },
+        }
+
+
+def activity_planned_disbursement(
+        activity,
+        type_code,
+        period_start_raw,
+        period_end_raw,
+        currency_code,
+        value_date_raw,
+        value,
+        provider_org_ref,
+        provider_org_activity_id,
+        provider_org_type_code,
+        provider_org_narratives_data,
+        receiver_org_ref,
+        receiver_org_activity_id,
+        receiver_org_type_code,
+        receiver_org_narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not provider_org_narratives_data:
+            provider_org_narratives_data = []
+        if not receiver_org_narratives_data:
+            receiver_org_narratives_data = []
+
+        type = get_or_none(models.BudgetType, pk=type_code)
+        currency = get_or_none(models.Currency, pk=currency_code)
+        provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
+        provider_org_organisation = get_or_none(models.Organisation, pk=provider_org_ref)
+        provider_org_activity = get_or_none(models.Activity, pk=provider_org_activity_id)
+        receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
+        receiver_org_organisation = get_or_none(models.Organisation, pk=receiver_org_ref)
+        receiver_org_activity = get_or_none(models.Activity, pk=receiver_org_activity_id)
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "type",
+                    ))
+        if not type:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "type",
+                    "codelist entry not found for {}".format(type_code)
+                    ))
+
+        if not period_start_raw:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "period-start",
+                    ))
+            period_start = None
+        else:
+            try:
+                period_start = validate_date(period_start_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "planned_disbursement",
+                        "period-start",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_start = None
+
+        if not period_end_raw:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "period-end",
+                    ))
+            period_end = None
+        else:
+            try:
+                period_end = validate_date(period_end_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "planned_disbursement",
+                        "period-end",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_end = None
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "planned-disbursement",
+                    "value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "value-date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "planned_disbursement",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        ))
+                value_date = None
+
+        if not currency and not activity.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "planned_disbursement",
+                    "currency",
+                    "currency not specified and no default specified on activity"
+                    ))
+
+        # provider-org-ref is set so assume user wants to report it
+        if provider_org_ref:
+            if not provider_org_activity:
+                provider_org_activity = activity
+
+        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + provider_org_narratives['errors']
+        warnings = warnings + provider_org_narratives['warnings']
+
+        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + receiver_org_narratives['errors']
+        warnings = warnings + receiver_org_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": type,
+                "period_start": period_start,
+                "period_end": period_end,
+                "currency": currency,
+                "value_date": value_date,
+                "value": value,
+                "provider_org": {
+                    "ref": provider_org_ref,
+                    "normalized_ref": provider_org_ref,
+                    "organisation": provider_org_organisation,
+                    "provider_activity": provider_org_activity,
+                    "type": provider_org_type,
+                },
+                "provider_org_narratives": provider_org_narratives['validated_data'],
+                "receiver_org": {
+                    "ref": receiver_org_ref,
+                    "normalized_ref": receiver_org_ref,
+                    "organisation": receiver_org_organisation,
+                    "receiver_activity": receiver_org_activity,
+                    "type": receiver_org_type,
+                },
+                "receiver_org_narratives": receiver_org_narratives['validated_data'],
             },
         }

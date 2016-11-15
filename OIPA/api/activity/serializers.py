@@ -358,23 +358,139 @@ class BudgetSerializer(serializers.ModelSerializer):
 
         return update_instance
 
+class PlannedDisbursementProviderSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField(source="normalized_ref")
+    organisation = serializers.PrimaryKeyRelatedField(queryset=iati_models.Organisation.objects.all(), required=False)
+    type = CodelistSerializer()
+    provider_activity = serializers.PrimaryKeyRelatedField(queryset=iati_models.Activity.objects.all(), required=False)
+    narratives = NarrativeSerializer(many=True, required=False)
+
+    class Meta:
+        model = iati_models.PlannedDisbursementProvider
+
+        fields = (
+                'ref',
+                'organisation',
+                'type',
+                'provider_activity',
+                'narratives',
+                )
+
+        validators = []
+
+class PlannedDisbursementReceiverSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField(source="normalized_ref")
+    organisation = serializers.PrimaryKeyRelatedField(queryset=iati_models.Organisation.objects.all(), required=False)
+    type = CodelistSerializer()
+    receiver_activity = serializers.PrimaryKeyRelatedField(queryset=iati_models.Activity.objects.all(), required=False)
+    narratives = NarrativeSerializer(many=True, required=False)
+
+    class Meta:
+        model = iati_models.PlannedDisbursementReceiver
+
+        fields = (
+                'ref',
+                'organisation',
+                'type',
+                'receiver_activity',
+                'narratives',
+                )
+
+        validators = []
+
 class PlannedDisbursementSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
 
     activity = serializers.CharField(write_only=True)
+
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    provider_organisation = PlannedDisbursementProviderSerializer(required=False)
+    receiver_organisation = PlannedDisbursementReceiverSerializer(required=False)
+
     class Meta:
         model = iati_models.PlannedDisbursement
 
         fields = (
+            'activity',
             'id',
             'type',
             'period_start',
             'period_end',
             'value',
+            'provider_organisation',
+            'receiver_organisation',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+        validators = []
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_planned_disbursement(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('currency', {}).get('code'),
+            data.get('value_date'),
+            data.get('value'),
+            data.get('provider_organisation', {}).get('normalized_ref'),
+            data.get('provider_organisation', {}).get('provider_activity'),
+            data.get('provider_organisation', {}).get('type', {}).get('code'),
+            data.get('provider_organisation', {}).get('narratives'),
+            data.get('receiver_organisation', {}).get('normalized_ref'),
+            data.get('receiver_organisation', {}).get('receiver_activity'),
+            data.get('receiver_organisation', {}).get('type', {}).get('code'),
+            data.get('receiver_organisation', {}).get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        provider_data = validated_data.pop('provider_org')
+        provider_narratives_data = validated_data.pop('provider_org_narratives', [])
+        receiver_data = validated_data.pop('receiver_org')
+        receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
+
+        # print(provider_data)
+
+        instance = iati_models.PlannedDisbursement.objects.create(**validated_data)
+
+        if provider_data['ref']:
+            provider_org = iati_models.PlannedDisbursementProvider.objects.create(
+                    planned_disbursement=instance,
+                    **provider_data)
+            save_narratives(provider_org, provider_narratives_data, activity)
+            validated_data['provider_organisation'] = provider_org
+        if receiver_data['ref']:
+            receiver_org = iati_models.PlannedDisbursementReceiver.objects.create(
+                    planned_disbursement=instance,
+                    **receiver_data)
+            save_narratives(receiver_org, receiver_narratives_data, activity)
+            validated_data['receiver_organisation'] = receiver_org
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        provider_organisation_data = validated_data.pop('provider_org')
+        provider_organisation_narratives_data = validated_data.pop('provider_org_narratives')
+        receiver_organisation_data = validated_data.pop('receiver_org')
+        receiver_organisation_narratives_data = validated_data.pop('receiver_org_narratives')
+
+        update_instance = iati_models.PlannedDisbursement(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        # save_narratives(update_instance, narratives, activity)
+
+        return update_instance
 
 
 class ActivityDateSerializer(serializers.ModelSerializer):
@@ -600,7 +716,6 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
-        # narratives = data.pop('narratives', [])
 
         validated = validators.activity_policy_marker(
             activity,
@@ -610,8 +725,6 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
             data.get('significance', {}).get('code'),
             data.get('narratives')
         )
-
-        # validated_narratives = validators.narratives(activity, narratives)
 
         return handle_errors(validated)
 
