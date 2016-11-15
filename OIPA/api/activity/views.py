@@ -583,7 +583,7 @@ class ActivityBudgetDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.ActivityBudget.objects.get(pk=pk)
+        return iati_models.Budget.objects.get(pk=pk)
 
 
 class ActivityPlannedDisbursementList(ListCreateAPIView):

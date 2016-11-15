@@ -1316,3 +1316,116 @@ class HumanitarianScopeSaveTestCase(TestCase):
             instance = iati_models.HumanitarianScope.objects.get(pk=humanitarian_scopes.id)
 
 
+
+class BudgetSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_budget(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.BudgetTypeFactory.create()
+        status = iati_factory.BudgetStatusFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/budgets/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Budget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_update_budget(self):
+        budget = iati_factory.BudgetFactory.create()
+        type = iati_factory.BudgetTypeFactory.create(code="2")
+        status = iati_factory.BudgetStatusFactory.create(code="2")
+        currency = iati_factory.CurrencyFactory.create(code='af')
+
+        data = {
+            "activity": budget.activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/budgets/{}?format=json".format(budget.activity.id, budget.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Budget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_delete_budget(self):
+        budgets = iati_factory.BudgetFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/budgets/{}?format=json".format(budgets.activity.id, budgets.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Budget.objects.get(pk=budgets.id)
+
