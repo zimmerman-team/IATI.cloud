@@ -1549,3 +1549,167 @@ class BudgetSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.Budget.objects.get(pk=budgets.id)
 
+class PlannedDisbursementSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_planned_disbursement(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.BudgetTypeFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
+        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+            "provider_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "receiver_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "receiver_activity": activity2.id,
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/planned_disbursements/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+        instance2 = iati_models.PlannedDisbursementProvider.objects.get(planned_disbursement_id=res.json()['id'])
+        self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.provider_activity.id, activity.id)
+
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['provider_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['provider_organisation']['narratives'][1]['text'])
+
+        instance3 = iati_models.PlannedDisbursementReceiver.objects.get(planned_disbursement_id=res.json()['id'])
+        self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity'])
+
+        narratives3 = instance3.narratives.all()
+        self.assertEqual(narratives3[0].content, data['receiver_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives3[1].content, data['receiver_organisation']['narratives'][1]['text'])
+
+
+    def test_update_planned_disbursement(self):
+        planned_disbursement = iati_factory.PlannedDisbursementFactory.create()
+        type = iati_factory.PlannedDisbursementTypeFactory.create(code="2")
+        status = iati_factory.PlannedDisbursementStatusFactory.create(code="2")
+        currency = iati_factory.CurrencyFactory.create(code='af')
+
+        data = {
+            "activity": planned_disbursement.activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/planned_disbursements/{}?format=json".format(planned_disbursement.activity.id, planned_disbursement.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_delete_planned_disbursement(self):
+        planned_disbursements = iati_factory.PlannedDisbursementFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/planned_disbursements/{}?format=json".format(planned_disbursements.activity.id, planned_disbursements.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.PlannedDisbursement.objects.get(pk=planned_disbursements.id)
+
