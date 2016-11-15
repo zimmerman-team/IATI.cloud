@@ -5,6 +5,8 @@ from api.activity.views import ActivityList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 
+from rest_framework import viewsets
+
 from api.generics.views import DynamicListView, DynamicDetailView
 
 
@@ -54,3 +56,11 @@ class SectorDetail(RetrieveAPIView):
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
 
+
+class SectorViewSet(viewsets.ModelViewSet):
+    queryset = iati.models.Sector.objects.all()
+    serializer_class = serializers.SectorV2Serializer
+
+class SectorCategoryViewSet(viewsets.ModelViewSet):
+    queryset = iati.models.SectorCategory.objects.all()
+    serializer_class = serializers.SectorCategoryV2Serializer

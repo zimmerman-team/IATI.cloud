@@ -5,9 +5,20 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from django.views.generic import TemplateView
+
+from rest_framework import routers
+
 from OIPA import views
+from api.sector import views as sector_views
 
 admin.autodiscover()
+
+
+router = routers.SimpleRouter()
+router.register(r'sectors', sector_views.SectorViewSet)
+router.register(r'sectorcategories', sector_views.SectorCategoryViewSet)
+
+
 
 urlpatterns = [
     url(r'^grappelli/', include('grappelli.urls')),
@@ -18,6 +29,7 @@ urlpatterns = [
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^api/v2/', include(router.urls, namespace='apiv2')),
     url(r'^home$', TemplateView.as_view(template_name='home/home.html')),
     url(r'^404$', views.error404),
     url(r'^500$', views.error500),
