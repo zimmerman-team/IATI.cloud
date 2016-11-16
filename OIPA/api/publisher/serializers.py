@@ -25,6 +25,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         model = Publisher
         fields = (
             'url',
+            'id',
             'org_id',
             'org_abbreviate',
             'org_name',
