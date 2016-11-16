@@ -352,6 +352,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    transaction_provider_activity_reporting_org = ToManyFilter(
+        qs=Transaction,
+        lookup_type='in',
+        name='provider_organisation__provider_activity__reporting_organisations__ref',
+        fk='activity',
+    )
+
     transaction_currency = ToManyFilter(
         qs=Transaction,
         lookup_type='in',
