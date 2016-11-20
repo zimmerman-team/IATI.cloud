@@ -154,6 +154,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='current_activity',
     )
 
+    related_activity_transaction_receiver_organisation_name = ToManyFilter(
+        qs=RelatedActivity,
+        lookup_type='in',
+        name='ref_activity__transaction__receiver_organisation__narratives__content',
+        fk='current_activity',
+    )
+
     related_activity_recipient_country = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
@@ -543,6 +550,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
             'actual_end_date': 'actual_end',
             'start_date': 'start_date',
             'end_date': 'end_date',
+            'xml_source_ref': 'xml_source_ref'
         }
 
         for i, term in enumerate(ordering):

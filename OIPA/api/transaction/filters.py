@@ -53,6 +53,13 @@ class TransactionFilter(FilterSet):
         fk='transaction',
     )
 
+    provider_activity_reporting_org = ToManyFilter(
+        qs=TransactionProvider,
+        lookup_type='in',
+        name='provider_activity__reporting_organisations__ref',
+        fk='transaction',
+    )
+
     provider_organisation_primary_name = ToManyFilter(
         qs=TransactionProvider,
         lookup_type='in',
