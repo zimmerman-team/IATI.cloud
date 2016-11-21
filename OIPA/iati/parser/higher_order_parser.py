@@ -15,7 +15,7 @@ def provider_org(self, parent_model, provider_model, fk_name):
     def func(element):
         ref = element.attrib.get('ref', '')
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
-        provider_activity_id = element.attrib.get('provider-activity-id')
+        provider_activity_id = element.attrib.get('provider-activity-id', '').strip()
         provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity_id)
 
         normalized_ref = self._normalize(ref)
@@ -45,7 +45,7 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
     def func(element):
         ref = element.attrib.get('ref', '')
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
-        receiver_activity_id = element.attrib.get('receiver-activity-id')
+        receiver_activity_id = element.attrib.get('receiver-activity-id', '').strip()
         receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity_id)
 
         normalized_ref = self._normalize(ref)
