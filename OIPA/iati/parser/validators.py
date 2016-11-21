@@ -1290,3 +1290,242 @@ def activity_planned_disbursement(
                 "receiver_org_narratives": receiver_org_narratives['validated_data'],
             },
         }
+
+
+
+
+def activity_transaction(
+        activity,
+        ref,
+        humanitarian,
+        transaction_type_code,
+        transaction_date_raw,
+        value,
+        value_date_raw,
+        currency_code,
+        description_narratives_data,
+        provider_org_ref,
+        provider_org_activity_id,
+        provider_org_type_code,
+        provider_org_narratives_data,
+        receiver_org_ref,
+        receiver_org_activity_id,
+        receiver_org_type_code,
+        receiver_org_narratives_data,
+        disbursement_channel_code,
+        # sector_code,
+        # sector_vocabulary_code,
+        # sector_vocabulary_uri,
+        recipient_country_code,
+        recipient_region_code,
+        recipient_region_vocabulary_code,
+        recipient_region_vocabulary_uri,
+        flow_type_code,
+        finance_type_code,
+        aid_type_code,
+        tied_status_code,
+        ):
+        warnings = []
+        errors = []
+
+        if not description_narratives_data:
+            description_narratives_data = []
+        if not provider_org_narratives_data:
+            provider_org_narratives_data = []
+        if not receiver_org_narratives_data:
+            receiver_org_narratives_data = []
+
+        transaction_type = get_or_none(models.TransactionType, pk=transaction_type_code)
+        currency = get_or_none(models.Currency, pk=currency_code)
+        provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
+        provider_org_organisation = get_or_none(models.Organisation, pk=provider_org_ref)
+        provider_org_activity = get_or_none(models.Activity, pk=provider_org_activity_id)
+        receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
+        receiver_org_organisation = get_or_none(models.Organisation, pk=receiver_org_ref)
+        receiver_org_activity = get_or_none(models.Activity, pk=receiver_org_activity_id)
+        disbursement_channel = get_or_none(models.DisbursementChannel, pk=disbursement_channel_code)
+        # sector = get_or_none(models.Sector, pk=sector_code)
+        # sector_vocabulary = get_or_none(models.SectorVocabulary, pk=sector_vocabulary)
+        recipient_country = get_or_none(models.Country, pk=recipient_country_code)
+        recipient_region = get_or_none(models.Region, pk=recipient_region_code)
+        recipient_region_vocabulary = get_or_none(models.RegionVocabulary, pk=recipient_region_vocabulary_code)
+        flow_type = get_or_none(models.FlowType, pk=flow_type_code)
+        finance_type = get_or_none(models.FinanceType, pk=finance_type_code)
+        aid_type = get_or_none(models.AidType, pk=aid_type_code)
+        tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
+
+
+        print(receiver_org_activity_id)
+        print('called')
+
+        if not transaction_type_code:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "transaction-type",
+                    ))
+        if not transaction_type:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "transaction-type",
+                    "codelist entry not found for {}".format(transaction_type_code)
+                    ))
+
+        if not transaction_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "transaction-date",
+                    ))
+            transaction_date = None
+        else:
+            try:
+                transaction_date = validate_date(transaction_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "transaction-date",
+                        "iso-date not of type xsd:date",
+                        ))
+                transaction_date = None
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "value",
+                    ))
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "value-date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        ))
+                value_date = None
+
+        if not currency and not activity.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "currency",
+                    "currency not specified and no default specified on activity"
+                    ))
+
+
+        # if sector_code:
+        #     # check if activity is using sector-strategy or transaction-sector strategy
+        #     has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
+
+        #     if has_existing_sectors:
+        #         errors.append(
+        #             RequiredFieldError(
+        #                 "transaction",
+        #                 "sector",
+        #                 "Already provided a sector on activity"
+        #                 ))
+
+        if recipient_country_code:
+            # check if activity is using recipient_country-strategy or transaction-recipient_country strategy
+            has_existing_recipient_countries = len(models.ActivityRecipientCountry.objects.filter(activity=activity))
+
+
+            if has_existing_recipient_countries:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "recipient_country",
+                        "Already provided a recipient_country on activity"
+                        ))
+
+        if recipient_region_code:
+            # check if activity is using recipient_region-strategy or transaction-recipient_region strategy
+            has_existing_recipient_regions = len(models.ActivityRecipientRegion.objects.filter(activity=activity))
+
+            if has_existing_recipient_regions:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "recipient_region",
+                        "Already provided a recipient_region on activity"
+                        ))
+
+
+
+        # provider-org-ref is set so assume user wants to report it
+        if provider_org_ref:
+            if not provider_org_activity:
+                provider_org_activity = activity
+
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + description_narratives['errors']
+        warnings = warnings + description_narratives['warnings']
+
+        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + provider_org_narratives['errors']
+        warnings = warnings + provider_org_narratives['warnings']
+
+        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + receiver_org_narratives['errors']
+        warnings = warnings + receiver_org_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "ref": ref,
+                "transaction_type": transaction_type,
+                "transaction_date": transaction_date,
+                "value": value,
+                "value_date": value_date,
+                "currency": currency,
+                "description_narratives": description_narratives['validated_data'],
+                "provider_org": {
+                    "ref": provider_org_ref,
+                    "normalized_ref": provider_org_ref,
+                    "organisation": provider_org_organisation,
+                    "provider_activity": provider_org_activity,
+                    "type": provider_org_type,
+                },
+                "provider_org_narratives": provider_org_narratives['validated_data'],
+                "receiver_org": {
+                    "ref": receiver_org_ref,
+                    "normalized_ref": receiver_org_ref,
+                    "organisation": receiver_org_organisation,
+                    "receiver_activity": receiver_org_activity,
+                    "type": receiver_org_type,
+                },
+                "receiver_org_narratives": receiver_org_narratives['validated_data'],
+                # "sector": {
+                #     "sector": sector,
+                #     "vocabulary": sector_vocabulary,
+                #     "vocabulary_uri": sector_vocabulary
+                # },
+                "recipient_country": {
+                    "country": recipient_country,
+                },
+                "recipient_region": {
+                    "recipient_region": recipient_region,
+                    "vocabulary": recipient_region_vocabulary,
+                    "vocabulary_uri": recipient_region_vocabulary
+                },
+                "flow_type": flow_type,
+                "finance_type": finance_type,
+                "aid_type": aid_type,
+                "tied_status": tied_status,
+            },
+        }

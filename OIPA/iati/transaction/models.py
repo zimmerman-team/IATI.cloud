@@ -189,7 +189,8 @@ class TransactionDescription(models.Model):
 class TransactionSector(models.Model):
     transaction = models.ForeignKey(
         Transaction,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE
+        )
     
     sector = models.ForeignKey(
         Sector,
@@ -215,9 +216,11 @@ class TransactionSector(models.Model):
 
 
 class TransactionRecipientCountry(models.Model):
-    transaction = models.ForeignKey(
+    transaction = models.OneToOneField(
         Transaction,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name="recipient_country"
+        )
     
     country = models.ForeignKey(
         Country,
@@ -234,9 +237,11 @@ class TransactionRecipientCountry(models.Model):
 
 
 class TransactionRecipientRegion(models.Model):
-    transaction = models.ForeignKey(
+    transaction = models.OneToOneField(
         Transaction,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name="recipient_region"
+        )
 
     region = models.ForeignKey(
         Region,

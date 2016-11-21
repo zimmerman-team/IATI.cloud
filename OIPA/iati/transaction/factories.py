@@ -25,6 +25,7 @@ class TransactionTypeFactory(NoDatabaseFactory):
 
     class Meta:
         model = TransactionType
+        django_get_or_create = ('code',)
 
 
 class TransactionProviderFactory(NoDatabaseFactory):
@@ -48,7 +49,7 @@ class TransactionFactory(NoDatabaseFactory):
 
     activity = SubFactory(ActivityFactory)
 
-    transaction_type = SubFactory(TransactionTypeFactory, code=1)
+    transaction_type = SubFactory(TransactionTypeFactory)
     transaction_date = date.today()
 
     value = 200

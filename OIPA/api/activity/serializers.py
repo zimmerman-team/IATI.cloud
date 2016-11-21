@@ -23,29 +23,7 @@ from iati.parser import exceptions
 
 from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
 
-def get_or_raise(model, validated_data, attr, default=None):
-    try:
-        pk = validated_data.pop(attr)
-    except KeyError:
-        raise exceptions.RequiredFieldError(
-                model.__name__,
-                attr,
-                )
-
-    return model.objects.get(pk=pk)
-    # except model.DoesNotExist:
-    #     return default
-
-
-def get_or_none(model, validated_data, attr, default=None):
-    pk = validated_data.pop(attr, None)
-
-    if pk is None:
-        return default
-    try:
-        return model.objects.get(pk=pk)
-    except model.DoesNotExist:
-        return default
+from api.generics.utils import get_or_raise, get_or_none
 
 def save_narratives(instance, data, activity_instance):
     current_narratives = instance.narratives.all()
@@ -1602,7 +1580,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
-        view_name='activities:activity-transactions',)
+        view_name='activities:activity-transactions',
+        )
     # transactions = TransactionSerializer(
     #     many=True,
     #     source='transaction_set')
