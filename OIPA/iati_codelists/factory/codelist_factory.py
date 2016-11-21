@@ -292,3 +292,20 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
     code = "1"
     name = 'Emergency'
 
+from iati.transaction.models import TransactionType
+
+class TransactionTypeFactory(NoDatabaseFactory):
+    code = "1"
+    name = "Incoming Funds"
+    description = ""
+
+    class Meta:
+        model = TransactionType
+
+class DisbursementChannelFactory(NoDatabaseFactory):
+    code = "1"
+    name = "Money is disbursed through central Ministry of Finance or Treasury"
+    description = ""
+
+    class Meta:
+        model = codelist_models.DisbursementChannel

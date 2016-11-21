@@ -1,10 +1,10 @@
-from api.transaction.serializers import TransactionSerializer
+from api.transaction.serializers import TransactionSerializer, TransactionSectorSerializer
 from api.transaction.filters import TransactionFilter, TransactionAggregationFilter
 from iati.transaction.models import Transaction
 from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.activity.serializers import ActivitySerializer
 
 from geodata.models import Country
@@ -32,6 +32,20 @@ from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
 from api.pagination import CustomTransactionPagination
+
+from django.db.models import Count, Sum, Q, F
+
+from api.generics.filters import SearchFilter
+from api.aggregation.views import AggregationView, Aggregation, GroupBy
+
+from geodata.models import Country, Region
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
+
+from iati.models import Activity, RelatedActivity, Sector
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
 
 
 class TransactionList(DynamicListView):
@@ -109,19 +123,32 @@ class TransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
 
 
-from django.db.models import Count, Sum, Q, F
+class TransactionSectors(ListCreateAPIView):
+    """
+    Returns detailed information about Transaction.
 
-from api.generics.filters import SearchFilter
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
+    ## URI Format
 
-from geodata.models import Country, Region
-from api.country.serializers import CountrySerializer
-from api.region.serializers import RegionSerializer
-from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
+    ```
+    /api/transactions/{transaction_id}/sectors
+    ```
 
-from iati.models import Activity, RelatedActivity, Sector
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import ActivityReportingOrganisation
+    ### URI Parameters
+
+    - `transaction_id`: Numerical ID of desired Transaction
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSectorSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).sectors.all()
+
 
 # These are the accepted currencies
 currencies = [

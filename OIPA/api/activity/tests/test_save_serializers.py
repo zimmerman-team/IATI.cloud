@@ -8,9 +8,11 @@ import datetime
 from django.test import RequestFactory, Client
 from rest_framework.test import APIClient
 from iati.factory import iati_factory
+from iati.transaction import factories as transaction_factory
 from iati_codelists.factory import codelist_factory
 from api.activity import serializers
 from iati import models as iati_models
+from iati.transaction import models as transaction_models
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -1257,8 +1259,6 @@ class HumanitarianScopeSaveTestCase(TestCase):
                 format='json'
                 )
 
-        print(res.json())
-
         self.assertEquals(res.status_code, 201, res.json())
 
         instance = iati_models.HumanitarianScope.objects.get(pk=res.json()['id'])
@@ -1712,4 +1712,383 @@ class PlannedDisbursementSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.PlannedDisbursement.objects.get(pk=planned_disbursements.id)
+
+
+
+class TransactionSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_transaction(self):
+        activity = iati_factory.ActivityFactory.create()
+        transaction_type = iati_factory.TransactionTypeFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+        organisation_type = iati_factory.OrganisationTypeFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        # sector = iati_factory.SectorFactory.create()
+        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
+        # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
+        country = iati_factory.CountryFactory.create()
+        region = iati_factory.RegionFactory.create()
+        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
+        disbursement_channel = iati_factory.DisbursementChannelFactory.create()
+        flow_type = iati_factory.FlowTypeFactory.create()
+        finance_type = iati_factory.FinanceTypeFactory.create()
+        aid_type = iati_factory.AidTypeFactory.create()
+        tied_status = iati_factory.TiedStatusFactory.create()
+
+        data = {
+            "activity_id": activity.id,
+            "ref": "test-ref",
+            "humanitarian": 1,
+            "transaction_type": {
+                "code": transaction_type.code,
+                "name": 'irrelevant',
+            },
+            "transaction_date": datetime.date.today().isoformat(),
+            "value": 123456,
+            "value_date": datetime.date.today().isoformat(),
+            "currency": {
+                "code": currency.code,
+                "name": 'irrelevant',
+            },
+            "date": datetime.date.today().isoformat(),
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "provider_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "receiver_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "receiver_activity_id": activity2.id,
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "disbursement_channel": {
+                "code": disbursement_channel.code,
+                "name": 'irrelevant',
+            },
+            "transaction_type": {
+                "code": transaction_type.code,
+                "name": 'irrelevant',
+            },
+            "recipient_country": {
+                "country": {
+                    "code": country.code,
+                    "name": 'irrelevant',
+                },
+            },
+            "recipient_region": {
+                "region": {
+                    "code": region.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": region_vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
+            # "sector": {
+            #     "sector": {
+            #         "code": sector.code,
+            #         "name": 'irrelevant',
+            #     },
+            #     "vocabulary": {
+            #         "code": sector_vocabulary.code,
+            #         "name": 'irrelevant',
+            #     },
+            #     "vocabulary_uri": "https://twitter.com/",
+            # },
+            "flow_type": {
+                "code": flow_type.code,
+                "name": 'irrelevant',
+            },
+            "finance_type": {
+                "code": finance_type.code,
+                "name": 'irrelevant',
+            },
+            "aid_type": {
+                "code": aid_type.code,
+                "name": 'irrelevant',
+            },
+            "tied_status": {
+                "code": tied_status.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/transactions/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        result = res.json()
+
+        self.assertEquals(res.status_code, 201, result)
+
+        instance = transaction_models.Transaction.objects.get(pk=result['id'])
+
+        self.assertEqual(instance.activity.id, data['activity_id'])
+        self.assertEqual(instance.finance_type.code, data['finance_type']['code'])
+        self.assertEqual(instance.transaction_date.isoformat(), data['transaction_date'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.currency.code, data['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['date'])
+        self.assertEqual(instance.flow_type.code, str(data['flow_type']['code']))
+        self.assertEqual(instance.finance_type.code, str(data['finance_type']['code']))
+        self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
+        self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
+
+        instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
+        self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.provider_activity.id, activity.id)
+
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['provider_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['provider_organisation']['narratives'][1]['text'])
+
+        instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
+        self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity_id'])
+
+        narratives3 = instance3.narratives.all()
+        self.assertEqual(narratives3[0].content, data['receiver_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives3[1].content, data['receiver_organisation']['narratives'][1]['text'])
+
+        # transaction_sector = iati_models.TransactionSector.objects.filter(transaction_id=result['id'])[0]
+
+
+    def test_update_transaction(self):
+        transaction = transaction_factory.TransactionFactory.create()
+        transaction_type = iati_factory.TransactionTypeFactory.create(code="2")
+        currency = iati_factory.CurrencyFactory.create(code="af")
+        organisation_type = iati_factory.OrganisationTypeFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        # sector = iati_factory.SectorFactory.create()
+        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
+        # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
+        country = iati_factory.CountryFactory.create()
+        region = iati_factory.RegionFactory.create()
+        region_vocabulary = iati_factory.RegionVocabularyFactory.create()
+        disbursement_channel = iati_factory.DisbursementChannelFactory.create()
+        flow_type = iati_factory.FlowTypeFactory.create()
+        finance_type = iati_factory.FinanceTypeFactory.create()
+        aid_type = iati_factory.AidTypeFactory.create()
+        tied_status = iati_factory.TiedStatusFactory.create()
+
+        data = {
+            "activity_id": transaction.activity.id,
+            "ref": "test-ref",
+            "humanitarian": 1,
+            "transaction_type": {
+                "code": transaction_type.code,
+                "name": 'irrelevant',
+            },
+            "transaction_date": datetime.date.today().isoformat(),
+            "value": 123456,
+            "value_date": datetime.date.today().isoformat(),
+            "currency": {
+                "code": currency.code,
+                "name": 'irrelevant',
+            },
+            "date": datetime.date.today().isoformat(),
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "provider_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "receiver_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "receiver_activity_id": activity2.id,
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "disbursement_channel": {
+                "code": disbursement_channel.code,
+                "name": 'irrelevant',
+            },
+            "transaction_type": {
+                "code": transaction_type.code,
+                "name": 'irrelevant',
+            },
+            "recipient_country": {
+                "country": {
+                    "code": country.code,
+                    "name": 'irrelevant',
+                },
+            },
+            "recipient_region": {
+                "region": {
+                    "code": region.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": region_vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
+            # "sector": {
+            #     "sector": {
+            #         "code": sector.code,
+            #         "name": 'irrelevant',
+            #     },
+            #     "vocabulary": {
+            #         "code": sector_vocabulary.code,
+            #         "name": 'irrelevant',
+            #     },
+            #     "vocabulary_uri": "https://twitter.com/",
+            # },
+            "flow_type": {
+                "code": flow_type.code,
+                "name": 'irrelevant',
+            },
+            "finance_type": {
+                "code": finance_type.code,
+                "name": 'irrelevant',
+            },
+            "aid_type": {
+                "code": aid_type.code,
+                "name": 'irrelevant',
+            },
+            "tied_status": {
+                "code": tied_status.code,
+                "name": 'irrelevant',
+            },
+        }
+
+
+        res = self.c.put(
+                "/api/activities/{}/transactions/{}?format=json".format(transaction.activity.id, transaction.id), 
+                data,
+                format='json'
+                )
+
+
+        self.assertEquals(res.status_code, 200, res.json())
+        result = res.json()
+
+        instance = transaction_models.Transaction.objects.get(pk=result['id'])
+
+        self.assertEqual(instance.activity.id, data['activity_id'])
+        self.assertEqual(instance.finance_type.code, data['finance_type']['code'])
+        self.assertEqual(instance.transaction_date.isoformat(), data['transaction_date'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.currency.code, data['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['date'])
+        self.assertEqual(instance.flow_type.code, str(data['flow_type']['code']))
+        self.assertEqual(instance.finance_type.code, str(data['finance_type']['code']))
+        self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
+        self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
+
+        instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
+        self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.provider_activity.id, activity.id)
+
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['provider_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['provider_organisation']['narratives'][1]['text'])
+
+        instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
+        self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity_id'])
+
+        narratives3 = instance3.narratives.all()
+        self.assertEqual(narratives3[0].content, data['receiver_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives3[1].content, data['receiver_organisation']['narratives'][1]['text'])
+
+        # transaction_sector = iati_models.TransactionSector.objects.filter(transaction_id=result['id'])[0]
+
+
+
+    def test_delete_transaction(self):
+        transactions = iati_factory.TransactionFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/transactions/{}?format=json".format(transactions.activity.id, transactions.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Transaction.objects.get(pk=transactions.id)
 
