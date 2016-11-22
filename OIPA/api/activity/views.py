@@ -701,6 +701,20 @@ class ResultIndicatorPeriodDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('period_id')
         return iati_models.ResultIndicatorPeriod.objects.get(pk=pk)
 
+class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodActualLocationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('resultindicator_id')
+        return iati_models.Activity(pk=pk).result_indicator_period_actual_locations.all()
+
+class ResultIndicatorPeriodActualLocationDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodActualLocationSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('actual_location_id')
+        return iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=pk)
+
 class ActivityProviderActivityTree(DynamicDetailView):
     """
     Returns the upward and downward traceability tree of this activity. Field specification:

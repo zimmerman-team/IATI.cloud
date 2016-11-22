@@ -1899,3 +1899,21 @@ def activity_result_indicator_period(
                 "actual_comment_narratives": actual_comment_narratives['validated_data'],
             },
         }
+
+
+
+def activity_result_indicator_period_location(
+        result_indicator_period,
+        ref,
+        ):
+        warnings = []
+        errors = []
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "result_indicator_period": result_indicator_period,
+                "ref": ref,
+            },
+        }

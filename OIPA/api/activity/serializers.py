@@ -1069,15 +1069,49 @@ class ResultTitleSerializer(serializers.ModelSerializer):
 
 
 
-class ResultIndicatorPeriodLocationSerializer(serializers.Serializer):
+class ResultIndicatorPeriodActualLocationSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
+    result_indicator_period = serializers.CharField(write_only=True)
 
     class Meta:
+        model = iati_models.ResultIndicatorPeriodActualLocation
         fields = (
+            'result_indicator_period',
             'ref',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        result_indicator_period = get_or_raise(iati_models.ResultIndicatorPeriod, data, 'result_indicator_period')
+
+        validated = validators.activity_result_indicator_period_location(
+            result_indicator_period,
+            data.get('ref'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.ResultIndicatorPeriodActualLocation(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+class ResultIndicatorPeriodTargetLocationSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodTargetLocation
+        fields = (
+            'ref',
+        )
 
 class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -1097,13 +1131,13 @@ class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
+    location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
     dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
+    location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
     dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
 
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
