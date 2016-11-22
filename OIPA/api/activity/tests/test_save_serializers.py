@@ -2686,3 +2686,107 @@ class ResultIndicatorPeriodSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ResultIndicatorPeriod.objects.get(pk=result_indicator_period.id)
 
+
+class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_result_indicator_period_actual_location(self):
+        result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
+
+        data = {
+            "result_indicator_period": result_indicator_period.id,
+            "ref": "test123"
+        }
+
+
+        res = self.c.post(
+                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
+        self.assertEqual(instance.ref, data['ref'])
+
+
+    def test_update_result_indicator_period_actual_location(self):
+        result_indicator_period_actual_location = iati_factory.ResultIndicatorPeriodActualLocationFactory.create()
+        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create(code="2")
+
+        data = {
+            "result_indicator": result_indicator_period_actual_location.result_indicator.id,
+            "period_actual_location_start": datetime.date.today().isoformat(),
+            "period_actual_location_end": (datetime.date.today() + datetime.timedelta(days=5)).isoformat(),
+            "target": {
+                "value": 300,
+                "comment": {
+                    "narratives": [
+                        {
+                            "text": "test1"
+                            },
+                        {
+                            "text": "test2"
+                            }
+                        ],
+                }
+            },
+            "actual": {
+                "value": 200,
+                "comment": {
+                    "narratives": [
+                        {
+                            "text": "test1"
+                            },
+                        {
+                            "text": "test2"
+                            }
+                        ],
+                }
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/results/{}/indicators/{}/period_actual_locations/{}?format=json".format(result_indicator_period_actual_location.result_indicator.result.activity.id, result_indicator_period_actual_location.result_indicator.result.id, result_indicator_period_actual_location.result_indicator.id, result_indicator_period_actual_location.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
+        self.assertEqual(instance.period_actual_location_start.isoformat(), data['period_actual_location_start'])
+        self.assertEqual(instance.period_actual_location_end.isoformat(), data['period_actual_location_end'])
+        self.assertEqual(instance.target, data['target']['value'])
+        self.assertEqual(instance.actual, data['actual']['value'])
+
+        instance2 = iati_models.ResultIndicatorPeriodActualLocationTargetComment.objects.get(result_indicator_period_actual_location_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['target']['comment']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['target']['comment']['narratives'][1]['text'])
+
+        instance2 = iati_models.ResultIndicatorPeriodActualLocationActualComment.objects.get(result_indicator_period_actual_location_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['actual']['comment']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['actual']['comment']['narratives'][1]['text'])
+
+
+    def test_delete_result_indicator_period_actual_location(self):
+        result_indicator_period_actual_location = iati_factory.ResultIndicatorPeriodActualLocationFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/results/{}/indicators/{}/period_actual_locations/{}?format=json".format(result_indicator_period_actual_location.result_indicator.result.activity.id, result_indicator_period_actual_location.result_indicator.result.id, result_indicator_period_actual_location.result_indicator.id, result_indicator_period_actual_location.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=result_indicator_period_actual_location.id)
+

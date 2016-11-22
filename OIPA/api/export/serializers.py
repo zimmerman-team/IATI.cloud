@@ -282,7 +282,9 @@ class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serialize
         )
 
 
-class ResultIndicatorPeriodLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodLocationSerializer):
+class ResultIndicatorPeriodActualLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualLocationSerializer):
+    xml_meta = {'attributes': ('ref',)}
+class ResultIndicatorPeriodTargetLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
 
@@ -293,7 +295,7 @@ class ResultIndicatorPeriodDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, a
 class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
+    location = ResultIndicatorPeriodTargetLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
     dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
 
@@ -301,7 +303,7 @@ class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activit
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
+    location = ResultIndicatorPeriodActualLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
     dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
 
