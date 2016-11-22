@@ -1525,3 +1525,77 @@ def activity_transaction(
                 "tied_status": tied_status,
             },
         }
+
+def transaction_sector(
+        transaction,
+        sector_code,
+        vocabulary_code,
+        vocabulary_uri,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        sector = get_or_none(models.Sector, code=sector_code)
+        vocabulary = get_or_none(models.SectorVocabulary, code=vocabulary_code)
+
+        if not sector_code:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-sector",
+                    "code",
+                    ))
+        elif not sector:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-sector",
+                    "code",
+                    "recipient-sector not found for code {}".format(sector_code)
+                    ))
+
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-sector",
+                    "vocabulary",
+                    ))
+        elif not vocabulary: 
+            errors.append(
+                RequiredFieldError(
+                    "recipient-sector",
+                    "vocabulary",
+                    "vocabulary not found for code {}".format(vocabulary_code)
+                    ))
+
+        if vocabulary_code == "99" and not vocabulary_uri:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-sector",
+                    "vocabulary_uri",
+                    "vocabulary_uri is required when vocabulary code is 99"
+                    ))
+
+        if sector_code:
+            # check if activity is using sector-strategy or transaction-sector strategy
+            has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
+
+            if has_existing_sectors:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "sector",
+                        "Already provided a sector on activity"
+                        ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "transaction": transaction,
+                "sector": sector,
+                "vocabulary": vocabulary,
+                "vocabulary_uri": vocabulary_uri,
+            },
+        }
+

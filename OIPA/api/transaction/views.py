@@ -1,6 +1,6 @@
 from api.transaction.serializers import TransactionSerializer, TransactionSectorSerializer
 from api.transaction.filters import TransactionFilter, TransactionAggregationFilter
-from iati.transaction.models import Transaction
+from iati.transaction.models import Transaction, TransactionSector
 from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend
@@ -123,31 +123,19 @@ class TransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
 
 
-class TransactionSectors(ListCreateAPIView):
-    """
-    Returns detailed information about Transaction.
-
-    ## URI Format
-
-    ```
-    /api/transactions/{transaction_id}/sectors
-    ```
-
-    ### URI Parameters
-
-    - `transaction_id`: Numerical ID of desired Transaction
-
-    ## Request parameters
-
-    - `fields` (*optional*): List of fields to display
-
-    """
-    queryset = Transaction.objects.all()
+class TransactionSectorList(ListCreateAPIView):
     serializer_class = TransactionSectorSerializer
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).sectors.all()
+        return Transaction(pk=pk).sectors.all()
+
+class TransactionSectorDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionSectorSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return TransactionSector.objects.get(pk=pk)
 
 
 # These are the accepted currencies
