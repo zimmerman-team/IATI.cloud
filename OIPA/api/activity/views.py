@@ -1,6 +1,8 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.filters import DjangoFilterBackend
 
+from rest_framework.viewsets import ModelViewSet
+
 from api.activity import serializers as activitySerializers
 from api.activity import filters
 from api.generics.filters import DistanceFilter
@@ -14,8 +16,10 @@ from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
 from django.db.models import Count, Sum, F
 
+
 from geodata.models import Country
 from geodata.models import Region
+import iati.models as iati_models
 from iati.models import Activity
 from iati.models import Sector
 from iati.models import ActivityStatus
@@ -424,6 +428,16 @@ class ActivityProviderActivityTree(DynamicDetailView):
     """
     serializer_class = ActivityTree
     queryset = Activity.objects.all()
+
+
+
+class SectorCrudModelViewSet(ModelViewSet):
+    serializer_class = activitySerializers.SectorCrudAssociateSerializer
+    queryset = iati_models.Activity.objects.all()
+
+
+
+
 
 
 
