@@ -331,47 +331,77 @@ class ActivityPolicyMarkerFactory(NoDatabaseFactory):
     significance = SubFactory(PolicySignificanceFactory)
 
 
+class ResultTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ResultTitle
+
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
+
+class ResultDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ResultDescription
+
+    narrative1 = NarrativeRelatedFactory(content="description test")
+    narrative2 = NarrativeRelatedFactory(content="description test2")
+
 class ResultFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Result
 
-    activity = ActivityFactory.build()
-    type = ResultTypeFactory.build()
+    activity = SubFactory(ActivityFactory)
+    type = SubFactory(ResultTypeFactory)
     aggregation_status = False
 
-
-class ResultIndicatorFactory(NoDatabaseFactory):
-    class Meta: model = iati.models.ResultIndicator
-
-    result = ResultFactory.build()
+    resulttitle = RelatedFactory(ResultTitleFactory, 'result')
+    resultdescription = RelatedFactory(ResultDescriptionFactory, 'result')
 
 
 class ResultIndicatorTitleFactory(NoDatabaseFactory):
     class Meta: model = iati.models.ResultIndicatorTitle
 
-    result_indicator = ResultIndicatorFactory.build()
-    primary_name = 'title'
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorDescription
+
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorBaselineCommentFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorBaselineComment
+
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicator
+
+    result = SubFactory(ResultFactory)
+    resultindicatortitle = RelatedFactory(ResultIndicatorTitleFactory, 'result_indicator')
+    resultindicatordescription = RelatedFactory(ResultIndicatorDescriptionFactory, 'result_indicator')
+    resultindicatorbaselinecomment = RelatedFactory(ResultIndicatorBaselineCommentFactory, 'result_indicator')
+
 
 
 class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriod
 
-    result_indicator = ResultIndicatorFactory.build()
+    result_indicator = SubFactory(ResultIndicatorFactory)
 
 
 class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriodTargetComment
 
-    result_period = ResultIndicatorPeriodFactory.build()
+    result_period = SubFactory(ResultIndicatorPeriodFactory)
 
 
 class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriodActualComment
 
-    result_period = ResultIndicatorPeriodFactory.build()
+    result_period = SubFactory(ResultIndicatorPeriodFactory)
 
 class LocationNameFactory(NoDatabaseFactory):
     class Meta:

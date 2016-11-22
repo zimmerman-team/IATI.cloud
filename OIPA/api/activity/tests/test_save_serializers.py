@@ -2173,3 +2173,304 @@ class TransactionSectorSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = transaction_models.TransactionSector.objects.get(pk=transaction_sector.id)
 
+
+
+class ResultSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_result(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        type = iati_factory.ResultTypeFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "aggregation_status": 1,
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/results/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Result.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        instance2 = iati_models.ResultTitle.objects.get(result_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+        instance2 = iati_models.ResultDescription.objects.get(result_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+
+    def test_update_result(self):
+        result = iati_factory.ResultFactory.create()
+        type = iati_factory.ResultTypeFactory.create(code="2")
+
+        data = {
+            "activity": result.activity.id,
+            "type": {
+                "code": type.code,
+                "name": 'irrelevant',
+            },
+            "aggregation_status": 0,
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/results/{}?format=json".format(result.activity.id, result.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Result.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        instance2 = iati_models.ResultTitle.objects.get(result_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+        instance2 = iati_models.ResultDescription.objects.get(result_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+
+    def test_delete_result(self):
+        results = iati_factory.ResultFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/results/{}?format=json".format(results.activity.id, results.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Result.objects.get(pk=results.id)
+
+
+
+class ResultIndicatorSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_result_indicator(self):
+
+        result = iati_factory.ResultFactory.create()
+        measure = iati_factory.IndicatorMeasureFactory.create()
+
+        data = {
+            "result": result.id,
+            "measure": {
+                "code": measure.code,
+                "name": 'irrelevant',
+            },
+            "ascending": 1,
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "baseline": {
+                "year": 2012,
+                "value": "10",
+                "comment": {
+                    "narratives": [
+                        {
+                            "text": "test1"
+                        },
+                        {
+                            "text": "test2"
+                        }
+                    ],
+                }
+            }
+        }
+
+        print("/api/activities/{}/results/{}/result_indicators/?format=json".format(result.activity.id, result.id))
+        res = self.c.post(
+                "/api/activities/{}/results/{}/result_indicators/?format=json".format(result.activity.id, result.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.result.id, data['result'])
+        self.assertEqual(instance.measure.code, data['measure']['code'])
+        self.assertEqual(instance.ascending, data['ascending'])
+        self.assertEqual(instance.baseline_year, data['baseline']['year'])
+        self.assertEqual(instance.baseline_value, data['baseline']['value'])
+
+        instance2 = iati_models.ResultIndicatorTitle.objects.get(result_indicator_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+        instance2 = iati_models.ResultIndicatorDescription.objects.get(result_indicator_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+
+    def test_update_result_indicator(self):
+        result_indicator = iati_factory.ResultIndicatorFactory.create()
+        measure = iati_factory.IndicatorMeasureFactory.create(code="2")
+
+        data = {
+            "result": result_indicator.result.id,
+            "measure": {
+                "code": measure.code,
+                "name": 'irrelevant',
+            },
+            "ascending": 1,
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "baseline": {
+                "year": 2012,
+                "value": "10",
+                "comment": {
+                    "narratives": [
+                        {
+                            "text": "test1"
+                        },
+                        {
+                            "text": "test2"
+                        }
+                    ],
+                }
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/results/{}/result_indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.result.id, data['result'])
+        self.assertEqual(instance.measure.code, data['measure']['code'])
+        self.assertEqual(instance.ascending, data['ascending'])
+        self.assertEqual(instance.baseline_year, data['baseline']['year'])
+        self.assertEqual(instance.baseline_value, data['baseline']['value'])
+
+        instance2 = iati_models.ResultIndicatorTitle.objects.get(result_indicator_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+        instance2 = iati_models.ResultIndicatorDescription.objects.get(result_indicator_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
+
+
+
+    def test_delete_result_indicator(self):
+        result_indicators = iati_factory.ResultIndicatorFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/results/{}/result_indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ResultIndicator.objects.get(pk=result_indicators.id)
+

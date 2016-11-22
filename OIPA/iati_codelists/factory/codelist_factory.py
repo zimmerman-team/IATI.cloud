@@ -309,3 +309,10 @@ class DisbursementChannelFactory(NoDatabaseFactory):
 
     class Meta:
         model = codelist_models.DisbursementChannel
+
+class IndicatorMeasureFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.IndicatorMeasure
+
+    code = "1"
+    name = "Unit"
