@@ -2029,7 +2029,6 @@ class TransactionSaveTestCase(TestCase):
             },
         }
 
-
         res = self.c.put(
                 "/api/activities/{}/transactions/{}?format=json".format(transaction.activity.id, transaction.id), 
                 data,
@@ -2058,7 +2057,7 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
         self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
         self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
-        self.assertEqual(instance2.provider_activity.id, activity.id)
+        self.assertEqual(instance2.provider_activity.id, instance.activity.id)
 
         narratives2 = instance2.narratives.all()
         self.assertEqual(narratives2[0].content, data['provider_organisation']['narratives'][0]['text'])
@@ -2080,15 +2079,15 @@ class TransactionSaveTestCase(TestCase):
 
 
     def test_delete_transaction(self):
-        transactions = iati_factory.TransactionFactory.create()
+        transaction = transaction_factory.TransactionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/transactions/{}?format=json".format(transactions.activity.id, transactions.id), 
+                "/api/activities/{}/transactions/{}?format=json".format(transaction.activity.id, transaction.id), 
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.Transaction.objects.get(pk=transactions.id)
+            instance = transaction_models.Transaction.objects.get(pk=transaction.id)
 
