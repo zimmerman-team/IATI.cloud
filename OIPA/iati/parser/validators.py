@@ -1796,3 +1796,106 @@ def activity_result_indicator_reference(
             },
         }
 
+
+def activity_result_indicator_period(
+        result_indicator,
+        target,
+        actual,
+        period_start_raw,
+        period_end_raw,
+        target_comment_narratives_data,
+        actual_comment_narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not target_comment_narratives_data:
+            target_comment_narratives_data = []
+        if not actual_comment_narratives_data:
+            actual_comment_narratives_data = []
+
+        # vocabulary = get_or_none(models.IndicatorVocabulary, code=vocabulary_code)
+
+        if not period_start_raw:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-period",
+                    "period-start",
+                    ))
+            period_start = None
+        else:
+            try:
+                period_start = validate_date(period_start_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "result-indicator-period",
+                        "period-start",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_start = None
+
+        if not period_end_raw:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-period",
+                    "period-end",
+                    ))
+            period_end = None
+        else:
+            try:
+                period_end = validate_date(period_end_raw)
+            except RequiredFieldError:
+                errors.append(
+                    RequiredFieldError(
+                        "result-indicator-period",
+                        "period-end",
+                        "iso-date not of type xsd:date",
+                        ))
+                period_end = None
+
+        if period_start and period_end:
+            if period_start >= period_end:
+                errors.append(
+                    RequiredFieldError(
+                        "result-indicator-period",
+                        "period-start",
+                        "period-start must be before period-end",
+                        ))
+
+        if not target:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-period-target",
+                    "value",
+                    ))
+        if not actual:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-period-actual",
+                    "value",
+                    ))
+
+        activity = result_indicator.result.activity
+
+        target_comment_narratives = narratives(target_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + target_comment_narratives['errors']
+        warnings = warnings + target_comment_narratives['warnings']
+
+        actual_comment_narratives = narratives(actual_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + actual_comment_narratives['errors']
+        warnings = warnings + actual_comment_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "result_indicator": result_indicator,
+                "target": target,
+                "actual": actual,
+                "period_start": period_start,
+                "period_end": period_end,
+                "target_comment_narratives": target_comment_narratives['validated_data'],
+                "actual_comment_narratives": actual_comment_narratives['validated_data'],
+            },
+        }
