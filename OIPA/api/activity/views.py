@@ -664,7 +664,7 @@ class ResultIndicatorList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('activity_id')
-        return iati_models.Activity(pk=activity_id).result_indicators.all()
+        return iati_models.Activity(pk=pk).result_indicators.all()
 
 class ResultIndicatorDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorSerializer
@@ -672,6 +672,20 @@ class ResultIndicatorDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('resultindicator_id')
         return iati_models.ResultIndicator.objects.get(pk=pk)
+
+class ResultIndicatorReferenceList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultIndicatorReferenceSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('resultindicator_id')
+        return iati_models.Activity(pk=pk).result_indicator_references.all()
+
+class ResultIndicatorReferenceDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultIndicatorReferenceSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('reference_id')
+        return iati_models.ResultIndicatorReference.objects.get(pk=pk)
 
 class ActivityProviderActivityTree(DynamicDetailView):
     """

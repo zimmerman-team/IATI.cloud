@@ -10,6 +10,7 @@ from rest_framework.test import APIClient
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 from iati_codelists.factory import codelist_factory
+from iati_vocabulary.factory import vocabulary_factory
 from api.activity import serializers
 from iati import models as iati_models
 from iati.transaction import models as transaction_models
@@ -2359,9 +2360,9 @@ class ResultIndicatorSaveTestCase(TestCase):
             }
         }
 
-        print("/api/activities/{}/results/{}/result_indicators/?format=json".format(result.activity.id, result.id))
+        print("/api/activities/{}/results/{}/indicators/?format=json".format(result.activity.id, result.id))
         res = self.c.post(
-                "/api/activities/{}/results/{}/result_indicators/?format=json".format(result.activity.id, result.id), 
+                "/api/activities/{}/results/{}/indicators/?format=json".format(result.activity.id, result.id), 
                 data,
                 format='json'
                 )
@@ -2434,7 +2435,7 @@ class ResultIndicatorSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/result_indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/activities/{}/results/{}/indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 data,
                 format='json'
                 )
@@ -2459,18 +2460,86 @@ class ResultIndicatorSaveTestCase(TestCase):
         self.assertEqual(narratives2[0].content, data['description']['narratives'][0]['text'])
         self.assertEqual(narratives2[1].content, data['description']['narratives'][1]['text'])
 
-
-
     def test_delete_result_indicator(self):
-        result_indicators = iati_factory.ResultIndicatorFactory.create()
+        result_indicator = iati_factory.ResultIndicatorFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/result_indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/activities/{}/results/{}/indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = iati_models.ResultIndicator.objects.get(pk=result_indicators.id)
+            instance = iati_models.ResultIndicator.objects.get(pk=result_indicator.id)
+
+
+
+class ResultIndicatorReferenceSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_result_indicator_reference(self):
+        result_indicator = iati_factory.ResultIndicatorFactory.create()
+        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create()
+
+        data = {
+            "result_indicator": result_indicator.id,
+            "vocabulary": {
+                "code": indicator_vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "code": "1",
+            "indicator_uri": "https://twitter.com/",
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/results/{}/indicators/{}/references/?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ResultIndicatorReference.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.result_indicator.id, data['result_indicator'])
+        self.assertEqual(instance.code, data['code'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+        self.assertEqual(instance.indicator_uri, data['indicator_uri'])
+
+    def test_update_result_indicator_reference(self):
+        result_indicator_reference = iati_factory.ResultIndicatorReferenceFactory.create()
+        indicator_vocabulary = vocabulary_factory.IndicatorVocabularyFactory.create(code="2")
+
+        data = {
+            "result_indicator": result_indicator_reference.result_indicator.id,
+            "vocabulary": {
+                "code": indicator_vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "code": "2",
+            "indicator_uri": "https://twitter.com/",
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+    def test_delete_result_indicator_reference(self):
+        result_indicator_reference = iati_factory.ResultIndicatorReferenceFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ResultIndicatorReference.objects.get(pk=result_indicator_reference.id)
 
