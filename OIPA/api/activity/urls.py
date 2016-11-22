@@ -146,12 +146,19 @@ urlpatterns = [
         api.activity.views.ActivityResultDetail.as_view(),
         name='activity-result-detail'),
 
-    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/result_indicators/$',
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/$',
         api.activity.views.ResultIndicatorList.as_view(),
         name='activity-result_indicator-list'),
-    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/result_indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)$',
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)$',
         api.activity.views.ResultIndicatorDetail.as_view(),
         name='activity-result_indicator-detail'),
+
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/references/$',
+        api.activity.views.ResultIndicatorReferenceList.as_view(),
+        name='activity-result_indicator_reference-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/references/(?P<reference_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorReferenceDetail.as_view(),
+        name='activity-result_indicator_reference-detail'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),

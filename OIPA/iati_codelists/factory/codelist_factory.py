@@ -316,3 +316,4 @@ class IndicatorMeasureFactory(NoDatabaseFactory):
 
     code = "1"
     name = "Unit"
+

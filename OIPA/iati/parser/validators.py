@@ -1743,3 +1743,56 @@ def activity_result_indicator(
             },
         }
 
+def activity_result_indicator_reference(
+        result_indicator,
+        indicator_code,
+        vocabulary_code,
+        indicator_uri,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        vocabulary = get_or_none(models.IndicatorVocabulary, code=vocabulary_code)
+
+        if not indicator_code:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-reference",
+                    "code",
+                    ))
+
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-reference",
+                    "vocabulary",
+                    ))
+        elif not vocabulary: 
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-reference",
+                    "vocabulary",
+                    "vocabulary not found for code {}".format(vocabulary_code)
+                    ))
+
+        if vocabulary_code == "99" and not indicator_uri:
+            errors.append(
+                RequiredFieldError(
+                    "result-indicator-reference",
+                    "indicator_uri",
+                    "indicator_uri is required when vocabulary code is 99"
+                    ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "result_indicator": result_indicator,
+                "code": indicator_code,
+                "vocabulary": vocabulary,
+                "indicator_uri": indicator_uri,
+            },
+        }
+

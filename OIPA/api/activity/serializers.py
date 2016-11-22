@@ -1120,18 +1120,58 @@ class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
             'actual',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
-
 class ResultIndicatorBaselineSerializer(serializers.Serializer):
     year = serializers.CharField(source='baseline_year')
     value = serializers.CharField(source='baseline_value')
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
+class ResultIndicatorReferenceSerializer(serializers.ModelSerializer):
+    vocabulary = VocabularySerializer()
+    code = serializers.CharField()
+
+    result_indicator = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.ResultIndicatorReference
+        fields = (
+            'result_indicator',
+            'id',
+            'vocabulary',
+            'code',
+            'indicator_uri',
+        )
+
+    def validate(self, data):
+        result_indicator = get_or_raise(iati_models.ResultIndicator, data, 'result_indicator')
+
+        validated = validators.activity_result_indicator_reference(
+            result_indicator,
+            data.get('vocabulary', {}).get('code'),
+            data.get('code'),
+            data.get('indicator_uri'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.ResultIndicatorReference.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.ResultIndicatorReference(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class ResultIndicatorSerializer(serializers.ModelSerializer):
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(source="resultindicatordescription")
     #  TODO 2.02 reference = ? 
+    reference = ResultIndicatorReferenceSerializer(source='resultindicatorreference_set', many=True, required=False)
     baseline = ResultIndicatorBaselineSerializer(source="*")
     period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True, required=False)
     measure = CodelistSerializer()
@@ -1145,6 +1185,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'description',
+            'reference',
             'baseline',
             'period',
             'measure',

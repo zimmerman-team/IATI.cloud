@@ -7,13 +7,7 @@ import datetime
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 
-from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import BudgetIdentifierVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import PolicyMarkerVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import GeographicVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import HumanitarianScopeVocabularyFactory
-
+from iati_vocabulary.factory.vocabulary_factory import *
 from iati_codelists.factory.codelist_factory import *
 
 import geodata
@@ -381,7 +375,14 @@ class ResultIndicatorFactory(NoDatabaseFactory):
     resultindicatordescription = RelatedFactory(ResultIndicatorDescriptionFactory, 'result_indicator')
     resultindicatorbaselinecomment = RelatedFactory(ResultIndicatorBaselineCommentFactory, 'result_indicator')
 
+class ResultIndicatorReferenceFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorReference
 
+    result_indicator = SubFactory(ResultIndicatorFactory)
+    code = "1"
+    vocabulary = SubFactory(IndicatorVocabularyFactory)
+    indicator_uri = "https://twitter.com"
 
 class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     class Meta: 
