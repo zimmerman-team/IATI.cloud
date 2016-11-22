@@ -1599,3 +1599,147 @@ def transaction_sector(
             },
         }
 
+
+
+def activity_result(
+        activity,
+        type_code,
+        aggregation_status,
+        title_narratives_data,
+        description_narratives_data,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        if not title_narratives_data:
+            title_narratives_data = []
+        if not description_narratives_data:
+            description_narratives_data = []
+
+        type = get_or_none(models.ResultType, code=type_code)
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "result",
+                    "type",
+                    ))
+        elif not type:
+            errors.append(
+                RequiredFieldError(
+                    "result",
+                    "type",
+                    "type not found for code {}".format(type_code)
+                    ))
+
+        aggregation_status = makeBool(aggregation_status)
+
+        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + title_narratives['errors']
+        warnings = warnings + title_narratives['warnings']
+
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + description_narratives['errors']
+        warnings = warnings + description_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "type": type,
+                "aggregation_status": aggregation_status,
+                "title_narratives": title_narratives['validated_data'],
+                "description_narratives": description_narratives['validated_data'],
+            },
+        }
+
+
+def activity_result_indicator(
+        result,
+        measure_code,
+        ascending,
+        title_narratives_data,
+        description_narratives_data,
+        baseline_year,
+        baseline_value,
+        baseline_comment_narratives_data,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        if not title_narratives_data:
+            title_narratives_data = []
+        if not description_narratives_data:
+            description_narratives_data = []
+        if not baseline_comment_narratives_data:
+            baseline_comment_narratives_data = []
+
+        measure = get_or_none(models.IndicatorMeasure, code=measure_code)
+
+        if not measure_code:
+            errors.append(
+                RequiredFieldError(
+                    "indicator",
+                    "measure",
+                    ))
+        elif not measure:
+            errors.append(
+                RequiredFieldError(
+                    "indicator",
+                    "measure",
+                    "measure not found for code {}".format(measure_code)
+                    ))
+
+        if not len(title_narratives_data):
+            errors.append(
+                RequiredFieldError(
+                    "indicator",
+                    "title",
+                    ))
+
+        if baseline_year or baseline_value:
+            if not baseline_year:
+                errors.append(
+                    RequiredFieldError(
+                        "baseline",
+                        "year",
+                    ))
+            if not baseline_value:
+                errors.append(
+                    RequiredFieldError(
+                        "baseline",
+                        "value",
+                    ))
+
+        ascending = makeBool(ascending)
+
+        title_narratives = narratives(title_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        errors = errors + title_narratives['errors']
+        warnings = warnings + title_narratives['warnings']
+
+        description_narratives = narratives(description_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        errors = errors + description_narratives['errors']
+        warnings = warnings + description_narratives['warnings']
+
+        baseline_comment_narratives = narratives(baseline_comment_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        errors = errors + baseline_comment_narratives['errors']
+        warnings = warnings + baseline_comment_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "result": result,
+                "measure": measure,
+                "ascending": ascending,
+                "title_narratives": title_narratives['validated_data'],
+                "description_narratives": description_narratives['validated_data'],
+                "baseline_year": baseline_year,
+                "baseline_value": baseline_value,
+                "baseline_comment_narratives": baseline_comment_narratives['validated_data']
+            },
+        }
+

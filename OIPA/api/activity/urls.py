@@ -141,10 +141,17 @@ urlpatterns = [
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/results/$',
         api.activity.views.ActivityResultList.as_view(),
-        name='activity-results'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/results/(?P<id>[^@$&+,/:;=?]+)',
+        name='activity-result-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/results/(?P<id>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityResultDetail.as_view(),
-        name='activity-results'),
+        name='activity-result-detail'),
+
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/result_indicators/$',
+        api.activity.views.ResultIndicatorList.as_view(),
+        name='activity-result_indicator-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/result_indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorDetail.as_view(),
+        name='activity-result_indicator-detail'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),

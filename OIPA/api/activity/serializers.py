@@ -1127,17 +1127,21 @@ class ResultIndicatorBaselineSerializer(serializers.Serializer):
     value = serializers.CharField(source='baseline_value')
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
+
 class ResultIndicatorSerializer(serializers.ModelSerializer):
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(source="resultindicatordescription")
     #  TODO 2.02 reference = ? 
     baseline = ResultIndicatorBaselineSerializer(source="*")
-    period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True)
+    period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True, required=False)
     measure = CodelistSerializer()
+
+    result = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.ResultIndicator
         fields = (
+            'result',
             'id',
             'title',
             'description',
@@ -1147,7 +1151,59 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
             'ascending'
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        result = get_or_raise(iati_models.Result, data, 'result')
+
+        validated = validators.activity_result_indicator(
+            result,
+            data.get('measure', {}).get('code'),
+            data.get('ascending'),
+            data.get('resultindicatortitle', {}).get('narratives'),
+            data.get('resultindicatordescription', {}).get('narratives'),
+            data.get('baseline_year'),
+            data.get('baseline_value'),
+            data.get('resultindicatorbaselinecomment', {}).get('narratives'),
+            # data.get('baseline', {}).get('year'),
+            # data.get('baseline', {}).get('value'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        result = validated_data.get('result')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+        description_narratives_data = validated_data.pop('description_narratives', [])
+        baseline_comment_narratives_data = validated_data.pop('baseline_comment_narratives', [])
+
+        instance = iati_models.ResultIndicator.objects.create(**validated_data)
+
+        result_indicator_title = iati_models.ResultIndicatorTitle.objects.create(result_indicator=instance)
+        result_indicator_description = iati_models.ResultIndicatorDescription.objects.create(result_indicator=instance)
+        result_indicator_baseline_comment = iati_models.ResultIndicatorBaselineComment.objects.create(result_indicator=instance)
+
+        save_narratives(result_indicator_title, title_narratives_data, result.activity)
+        save_narratives(result_indicator_description, description_narratives_data, result.activity)
+        save_narratives(result_indicator_baseline_comment, baseline_comment_narratives_data, result.activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        result = validated_data.get('result')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+        description_narratives_data = validated_data.pop('description_narratives', [])
+        baseline_comment_narratives_data = validated_data.pop('baseline_comment_narratives', [])
+
+        update_instance = iati_models.ResultIndicator(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance.resultindicatortitle, title_narratives_data, result.activity)
+        save_narratives(instance.resultindicatordescription, description_narratives_data, result.activity)
+        save_narratives(instance.resultindicatorbaselinecomment, baseline_comment_narratives_data, result.activity)
+
+        return update_instance
 
 
 class ContactInfoSerializer(serializers.ModelSerializer):
@@ -1326,11 +1382,14 @@ class ResultSerializer(serializers.ModelSerializer):
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
-    indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True)
+    indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True, required=False)
+
+    activity = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.Result
         fields = (
+            'activity',
             'id',
             'title',
             'description',
@@ -1339,7 +1398,50 @@ class ResultSerializer(serializers.ModelSerializer):
             'aggregation_status',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_result(
+            activity,
+            data.get('type', {}).get('code'),
+            data.get('aggregation_status'),
+            data.get('resulttitle', {}).get('narratives'),
+            data.get('resultdescription', {}).get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+        description_narratives_data = validated_data.pop('description_narratives', [])
+
+        instance = iati_models.Result.objects.create(**validated_data)
+
+        result_title = iati_models.ResultTitle.objects.create(result=instance)
+        result_description = iati_models.ResultDescription.objects.create(result=instance)
+
+        save_narratives(result_title, title_narratives_data, activity)
+        save_narratives(result_description, description_narratives_data, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+        description_narratives_data = validated_data.pop('description_narratives', [])
+
+        update_instance = iati_models.Result(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(update_instance.resulttitle, title_narratives_data, activity)
+        save_narratives(update_instance.resultdescription, description_narratives_data, activity)
+
+        return update_instance
+
 
 class LocationSerializer(DynamicFieldsModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
