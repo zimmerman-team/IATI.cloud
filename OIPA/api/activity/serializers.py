@@ -1097,28 +1097,79 @@ class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
-    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set")
-    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set")
+    location = ResultIndicatorPeriodLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
+    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
 
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    result_indicator = serializers.CharField(write_only=True)
+
     class Meta:
         model = iati_models.ResultIndicatorPeriod
         fields = (
+            'result_indicator',
             'id',
             'period_start',
             'period_end',
             'target',
             'actual',
         )
+
+    def validate(self, data):
+        result_indicator = get_or_raise(iati_models.ResultIndicator, data, 'result_indicator')
+
+        validated = validators.activity_result_indicator_period(
+            result_indicator,
+            data.get('target'),
+            data.get('actual'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('resultindicatorperiodtargetcomment').get('narratives'),
+            data.get('resultindicatorperiodactualcomment').get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        result_indicator = validated_data.get('result_indicator')
+        target_comment_narratives_data = validated_data.pop('target_comment_narratives', [])
+        actual_comment_narratives_data = validated_data.pop('actual_comment_narratives', [])
+
+        instance = iati_models.ResultIndicatorPeriod.objects.create(**validated_data)
+
+        target_comment_narratives = iati_models.ResultIndicatorPeriodTargetComment.objects.create(result_indicator_period=instance)
+        actual_comment_narratives = iati_models.ResultIndicatorPeriodActualComment.objects.create(result_indicator_period=instance)
+
+        save_narratives(target_comment_narratives, target_comment_narratives_data, result_indicator.result.activity)
+        save_narratives(actual_comment_narratives, actual_comment_narratives_data, result_indicator.result.activity)
+
+        return instance
+
+    def update(self, instance, validated_data):
+        result_indicator = validated_data.get('result_indicator')
+        target_comment_narratives_data = validated_data.pop('target_comment_narratives', [])
+        actual_comment_narratives_data = validated_data.pop('actual_comment_narratives', [])
+
+        update_instance = iati_models.ResultIndicatorPeriod(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(update_instance.resultindicatorperiodtargetcomment, target_comment_narratives_data, result_indicator.result.activity)
+        save_narratives(update_instance.resultindicatorperiodactualcomment, actual_comment_narratives_data, result_indicator.result.activity)
+
+        return update_instance
 
 class ResultIndicatorBaselineSerializer(serializers.Serializer):
     year = serializers.CharField(source='baseline_year')

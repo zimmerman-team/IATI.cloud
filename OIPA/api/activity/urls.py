@@ -160,6 +160,13 @@ urlpatterns = [
         api.activity.views.ResultIndicatorReferenceDetail.as_view(),
         name='activity-result_indicator_reference-detail'),
 
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/$',
+        api.activity.views.ResultIndicatorPeriodList.as_view(),
+        name='activity-result_indicator_period-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorPeriodDetail.as_view(),
+        name='activity-result_indicator_period-detail'),
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),
         name='provider-activity-tree'),]

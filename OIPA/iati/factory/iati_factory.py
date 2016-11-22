@@ -384,25 +384,28 @@ class ResultIndicatorReferenceFactory(NoDatabaseFactory):
     vocabulary = SubFactory(IndicatorVocabularyFactory)
     indicator_uri = "https://twitter.com"
 
+
+class ResultIndicatorPeriodTargetCommentFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetComment
+
+    # result_period = SubFactory(ResultIndicatorPeriodFactory)
+
+
+class ResultIndicatorPeriodActualCommentFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualComment
+
+    # result_period = SubFactory(ResultIndicatorPeriodFactory)
+
 class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriod
 
     result_indicator = SubFactory(ResultIndicatorFactory)
+    resultindicatorperiodactualcomment = RelatedFactory(ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
+    resultindicatorperiodtargetcomment = RelatedFactory(ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
 
-
-class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
-    class Meta: 
-        model = iati.models.ResultIndicatorPeriodTargetComment
-
-    result_period = SubFactory(ResultIndicatorPeriodFactory)
-
-
-class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
-    class Meta: 
-        model = iati.models.ResultIndicatorPeriodActualComment
-
-    result_period = SubFactory(ResultIndicatorPeriodFactory)
 
 class LocationNameFactory(NoDatabaseFactory):
     class Meta:
