@@ -67,7 +67,6 @@ class TransactionSectorFactory(NoDatabaseFactory):
     sector = SubFactory(SectorFactory)
     vocabulary = SubFactory(SectorVocabularyFactory)
 
-    percentage = 100
     reported_on_transaction = False
 
     class Meta:
@@ -79,7 +78,6 @@ class TransactionRecipientCountryFactory(NoDatabaseFactory):
     transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
 
-    percentage = 100
     reported_on_transaction = False
 
     class Meta:
@@ -91,7 +89,6 @@ class TransactionRecipientRegionFactory(NoDatabaseFactory):
     transaction = SubFactory(TransactionFactory)
     region = SubFactory(RegionFactory)
 
-    percentage = 100
     reported_on_transaction = False
 
     class Meta:

@@ -72,6 +72,11 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
 
     transaction = serializers.CharField(write_only=True)
 
+    def full_clean(self): # super(MyForm, self).clean() #if necessary
+        # if self.cleaned_data.get('film') and 'director' in self._errors:
+        #     del self._errors['director']
+        return self.cleaned_data    
+
     class Meta:
         model = models.TransactionSector
         fields = (
@@ -83,14 +88,13 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        transaction = get_or_raise(iati_models.Transaction, data, 'transaction')
+        transaction = get_or_raise(models.Transaction, data, 'transaction')
 
         validated = validators.transaction_sector(
             transaction,
             data.get('sector', {}).get('code'),
             data.get('vocabulary', {}).get('code'),
             data.get('vocabulary_uri'),
-            data.get('percentage'),
         )
 
         return handle_errors(validated)
@@ -98,7 +102,7 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         transaction = validated_data.get('transaction')
 
-        instance = iati_models.TransactionSector.objects.create(**validated_data)
+        instance = models.TransactionSector.objects.create(**validated_data)
 
         return instance
 
@@ -106,7 +110,7 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         transaction = validated_data.get('transaction')
 
-        update_instance = iati_models.TransactionSector(**validated_data)
+        update_instance = models.TransactionSector(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
