@@ -18,6 +18,7 @@ from geodata.models import Country
 from geodata.models import Region
 
 import iati.models as iati_models
+from iati.transaction.models import Transaction
 from iati.models import Activity, ActivityReportingOrganisation
 from iati.models import Sector
 from iati.models import ActivityStatus
@@ -405,10 +406,16 @@ class ActivityTransactions(ListCreateAPIView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).transaction_set.all()
+
+class ActivityTransactionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return Transaction.objects.get(pk=pk)
 
 
 class ActivityReportingOrganisationList(ListCreateAPIView):

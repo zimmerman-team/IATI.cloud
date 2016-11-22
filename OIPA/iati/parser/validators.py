@@ -1354,10 +1354,6 @@ def activity_transaction(
         aid_type = get_or_none(models.AidType, pk=aid_type_code)
         tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
 
-
-        print(receiver_org_activity_id)
-        print('called')
-
         if not transaction_type_code:
             errors.append(
                 RequiredFieldError(

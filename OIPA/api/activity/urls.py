@@ -16,9 +16,13 @@ urlpatterns = [
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'),
 
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/',
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/$',
         api.activity.views.ActivityTransactions.as_view(),
         name='activity-transactions'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityTransactionDetail.as_view(),
+        name='activity-transaction-detail'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/reporting_organisations/$',
         api.activity.views.ActivityReportingOrganisationList.as_view(),

@@ -297,7 +297,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         recipient_country_data = validated_data.pop('recipient_country')
         recipient_region_data = validated_data.pop('recipient_region')
 
-        update_instance = iati_models.PlannedDisbursement(**validated_data)
+        update_instance = models.Transaction(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
