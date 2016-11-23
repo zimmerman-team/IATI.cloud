@@ -6,12 +6,10 @@ DEBUG = True
 
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'silk.middleware.SilkyMiddleware',
 ]
 
 INSTALLED_APPS += {
     'debug_toolbar',
-    'silk',
 }
 
 def custom_show_toolbar(self):

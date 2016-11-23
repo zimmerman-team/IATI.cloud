@@ -16,6 +16,7 @@ from iati.filegrabber import FileGrabber
 import gzip
 import tarfile
 import StringIO
+from random import randint
 
 from email.utils import parsedate
 
@@ -23,7 +24,6 @@ def _parse_http_datetime(s):
         return time.mktime(parsedate(s))
 
 
-file_grabber = FileGrabber()
 source_count = IatiXmlSource.objects.count()
 
 if source_count is 0:
@@ -40,18 +40,17 @@ if os.path.exists(directory):
 os.makedirs(directory)
 
 def handle_response(tar, source):
+        file_grabber = FileGrabber()
         response = file_grabber.get_the_file(source.source_url)
-
         if not response or response.code != 200:
             print("source url {} down or doesn't exist".format(source.source_url))
             return
-
         modified_time = response.info().get('Last-Modified')
 
         iati_file = StringIO.StringIO(response.read())
 
         info = tarfile.TarInfo(
-                name="{}_{}.xml".format(source.publisher, source.ref)
+                name="{}.xml".format(source.ref)
                 )
 
         info.size = len(iati_file.buf)

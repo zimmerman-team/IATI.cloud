@@ -25,8 +25,8 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 2. Run ```vagrant up```
 3. Find your way into the machine: ```vagrant ssh```
 4. Start the server: ```./manage.py runserver 0.0.0.0:8000```
+4. Start the process control centre (supervisor): ```./manage.py supervisor```
 5. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
-
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
 
