@@ -9,9 +9,11 @@ urlpatterns = [
     url(r'^$',
         api.activity.views.ActivityList.as_view(),
         name='activity-list'),
+
     url(r'^aggregations/',
         cache_page(API_CACHE_SECONDS)(api.activity.views.ActivityAggregations.as_view()),
         name='activity-aggregations'),
+    
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'),

@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.filters import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
 
 from api.activity import serializers as activity_serializers
 from api.activity import filters
@@ -492,6 +493,7 @@ class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityRecipientCountry.objects.get(pk=pk)
 
+
 class ActivityRecipientRegionList(ListCreateAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
 
@@ -722,4 +724,9 @@ class ActivityProviderActivityTree(DynamicDetailView):
     queryset = Activity.objects.all()
 
 
+
+
+class ActivitySectorModelViewSet(ModelViewSet):
+    serializer_class = activity_serializers.SectorCrudAssociateSerializer
+    queryset = iati_models.Activity.objects.all()
 

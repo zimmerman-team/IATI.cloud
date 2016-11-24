@@ -205,6 +205,14 @@ class CountryFactory(NoDatabaseFactory):
     name = 'andorra'
     iso3 = 'and'
 
+class SectorFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.Sector
+        django_get_or_create = ('code', )
+
+    code = 200
+    name = 'advice'
+    description = ''
 
 class CityFactory(NoDatabaseFactory):
     class Meta:
