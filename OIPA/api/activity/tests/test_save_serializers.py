@@ -210,6 +210,28 @@ class ActivitySaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.Activity.objects.get(pk=activity.id)
 
+class ActivitySectorSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_update_sector_activity(self):
+        activity = iati_factory.ActivityFactory.create()
+        sector = iati_factory.SectorFactory.create()
+
+        data = {
+            "id": activity.id,
+            "sectors": [{ "sector" :  sector.code}]
+                }
+
+        res = self.c.put(
+                "/api/activities/activitysector/{}/?format=json".format(activity.id), 
+                data, 
+                format='json'
+                )
+
+
+        self.assertEquals(res.status_code, 200)
+
 
 class ReportingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
