@@ -7,6 +7,12 @@ from django.views.generic.base import RedirectView
 from django.views.generic import TemplateView
 from OIPA import views
 
+from rest_framework import routers
+from api.activity import views as api_views
+
+router = routers.SimpleRouter()
+router.register(r'countrybudget', api_views.CountryBudgetModelViewSet)
+
 admin.autodiscover()
 
 urlpatterns = [
@@ -24,7 +30,8 @@ urlpatterns = [
     url(r'^about$', TemplateView.as_view(template_name='home/about.html')),
     url(r'', include('two_factor.urls', 'two_factor')),
     url(r'^accounts/profile/', RedirectView.as_view(url='/admin')),
-    url(r'^$', RedirectView.as_view(url='/home', permanent=True))
+    url(r'^$', RedirectView.as_view(url='/home', permanent=True)),
+    url(r'^api/v2/', include(router.urls, namespace='apiv2'))
 ]
 
 handler404 = views.error404

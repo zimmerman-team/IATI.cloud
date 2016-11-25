@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.filters import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
 
 from api.activity import serializers as activity_serializers
 from api.activity import filters
@@ -722,4 +723,6 @@ class ActivityProviderActivityTree(DynamicDetailView):
     queryset = Activity.objects.all()
 
 
-
+class CountryBudgetModelViewSet(ModelViewSet):
+    serializer_class = activity_serializers.CountryBudgetItemSerializer
+    queryset = iati_models.CountryBudgetItem.objects.all()

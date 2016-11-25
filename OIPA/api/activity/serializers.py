@@ -2013,3 +2013,13 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
 
         
+class CountryBudgetItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati_models.CountryBudgetItem
+        fields = '__all__'
+
+    def validate_percentage(self, value):
+        if 0 <= value <= 100:
+            return value
+        else:
+            raise serializers.ValidationError("percentage value is between 0 and 100")
