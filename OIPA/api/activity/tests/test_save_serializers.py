@@ -8,6 +8,7 @@ import datetime
 from django.test import RequestFactory, Client
 from rest_framework.test import APIClient
 from iati.factory import iati_factory
+from iati_vocabulary.factory import vocabulary_factory
 from iati.transaction import factories as transaction_factory
 from iati_codelists.factory import codelist_factory
 from iati_vocabulary.factory import vocabulary_factory
@@ -15,6 +16,7 @@ from api.activity import serializers
 from iati import models as iati_models
 from iati.transaction import models as transaction_models
 from django.core.exceptions import ObjectDoesNotExist
+
 
 
 class ActivitySaveTestCase(TestCase):
@@ -824,6 +826,74 @@ class ContactInfoSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ContactInfo.objects.get(pk=contact_infos.id)
+
+
+
+class CountryBudgetItemSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_country_budget_item(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "vocabulary": vocabulary.code,
+            "percentage": 100,
+        }
+
+        res = self.c.post(
+                "/api/v2/countrybudget/?format=json", 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary'])
+        self.assertEqual(instance.percentage, data['percentage'])
+
+    def test_update_country_budget_item(self):
+
+        country_budget_item = iati_factory.CountryBudgetItemFactory.create()
+
+        data = {
+            "id": country_budget_item.id,
+            "activity": country_budget_item.activity.id,
+            "vocabulary": country_budget_item.vocabulary.code,
+            "percentage": 80
+                }
+
+        res = self.c.put(
+                "/api/v2/countrybudget/{}/?format=json".format(country_budget_item.id), 
+                data, 
+                format='json'
+                )
+
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+
+        self.assertEquals(instance.percentage, data['percentage'])
+
+
+    def test_delete_country_budget_item(self):
+
+        country_budget_item = iati_factory.CountryBudgetItemFactory.create()
+
+        res = self.c.delete(
+                "/api/v2/countrybudget/{}/?format=json".format(country_budget_item.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.CountryBudgetItem.objects.get(pk=country_budget_item.id)
+
 
 
 class ActivityRecipientCountrySaveTestCase(TestCase):
