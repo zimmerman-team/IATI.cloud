@@ -91,10 +91,10 @@ urlpatterns = [
 
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/sectors/$',
-        api.activity.views.ActivitySectorList.as_view(),
+        api.activity.views.ActivitySectorsList.as_view(),
         name='activity-sectors'),
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/sectors/(?P<id>[^@$&+,/:;=?]+)',
-        api.activity.views.ActivitySectorDetail.as_view(),
+        api.activity.views.ActivitySectorsDetail.as_view(),
         name='activity-sectors'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/humanitarian_scopes/$',

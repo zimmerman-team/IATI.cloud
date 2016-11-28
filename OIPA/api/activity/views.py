@@ -535,19 +535,19 @@ class ActivityLocationDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.Location.objects.get(pk=pk)
 
-class ActivitySectorList(ListCreateAPIView):
+class ActivitySectorsList(ListCreateAPIView):
     serializer_class = activity_serializers.SectorSerializer
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).sectors.all()
+        return iati_models.Activity(pk=pk).sector.all()
 
-class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
+class ActivitySectorsDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.SectorSerializer
 
     def get_object(self):
-        pk = self.kwargs.get('id')
-        return iati_models.ActivitySector.objects.get(pk=pk)
+        code = self.kwargs.get('id')
+        return iati_models.ActivitySector.objects.get(code=code)
 
 class ActivityHumanitarianScopeList(ListCreateAPIView):
     serializer_class = activity_serializers.HumanitarianScopeSerializer
