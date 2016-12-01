@@ -316,8 +316,7 @@ class ActivityParticipatingOrganisation(models.Model):
 
     activity = models.ForeignKey(
         Activity,
-        related_name="participating_organisations",
-        on_delete=models.CASCADE)
+        related_name="participating_organisations")
 
     # if in organisation standard
     organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None, on_delete=models.SET_NULL)
@@ -326,13 +325,6 @@ class ActivityParticipatingOrganisation(models.Model):
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
 
     # when organisation is not mentioned in transactions
-    org_activity = models.ForeignKey(
-        Activity,
-        related_name="org_activity",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL)
-
     org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
 
     narratives = GenericRelation(
