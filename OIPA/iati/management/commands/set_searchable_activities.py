@@ -20,7 +20,7 @@ class Command(BaseCommand):
         # loop through root activities and set children as searchable
         activities = Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS)
 
-        for activity in activities:
+        for activity in activities.iterator():
             self.set_children_searchable(activity.iati_identifier)
 
     def set_children_searchable(self, iati_identifier):
