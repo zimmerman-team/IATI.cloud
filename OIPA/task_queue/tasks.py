@@ -270,7 +270,6 @@ def start_searchable_activities_task(counter=0):
 
     has_other_jobs = False
     already_running_update = False
-    has_other_start_searchable_activities_task = False
     
     for w in workers:
         if len(w.queues):
@@ -279,12 +278,9 @@ def start_searchable_activities_task(counter=0):
                 if current_job:
                     if ('start_searchable_activities_task' not in current_job.description):
                         has_other_jobs = True
-                    else:
-                        has_other_start_searchable_activities_task = True
                     if ('update_searchable_activities' in current_job.description):
                         already_running_update = True
-
-    if already_running_update or has_other_start_searchable_activities_task:
+    if already_running_update:
         # update_searchable_activities already running, invalidate task
         pass
     elif not has_other_jobs:
