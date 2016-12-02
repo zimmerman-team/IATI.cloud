@@ -269,15 +269,21 @@ def start_searchable_activities_task(counter=0):
     queue = django_rq.get_queue("parser")
 
     has_other_jobs = False
+    already_running_update = False
     
     for w in workers:
         if len(w.queues):
             if w.queues[0].name == "parser":
                 current_job = w.get_current_job()
-                if current_job and ('start_searchable_activities_task' not in current_job.description):
-                    has_other_jobs = True
-
-    if not has_other_jobs:
+                if current_job:
+                    if ('start_searchable_activities_task' not in current_job.description):
+                        has_other_jobs = True
+                    if ('update_searchable_activities' in current_job.description):
+                        already_running_update = True
+    if already_running_update:
+        # update_searchable_activities already running, invalidate task
+        pass
+    elif not has_other_jobs:
         queue.enqueue(update_searchable_activities)
     elif counter > 10:
         raise Exception("Waited for 30 min, still jobs runnings so invalidating this task. If this happens please contact OIPA devs!")

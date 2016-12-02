@@ -27,3 +27,6 @@ sudo apt-get install -y redis-server
 
 # pip dependencies
 sudo pip install ipython
+
+#Unittest dependencies
+sudo apt-get install libsqlite3-mod-spatialite
