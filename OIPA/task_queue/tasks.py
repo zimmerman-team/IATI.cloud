@@ -115,13 +115,12 @@ def force_parse_by_publisher_ref(org_ref):
 
 
 @job
-def force_parse_source_by_url(url):
+def force_parse_source_by_url(url, update_searchable=False):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process(force_reparse=True)
 
-    if settings.ROOT_ORGANISATIONS:
-        queue = django_rq.get_queue("parser")
+    if update_searchable and settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
 
@@ -130,10 +129,6 @@ def parse_source_by_url(url):
     if IatiXmlSource.objects.filter(source_url=url).exists():
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process()
-
-    if settings.ROOT_ORGANISATIONS:
-        queue = django_rq.get_queue("parser")
-        queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
 
 @job
@@ -253,6 +248,7 @@ def update_city_data():
 def wait_10():
     time.sleep(10)
 
+
 @job
 def wait_120():
     time.sleep(120)
@@ -276,20 +272,21 @@ def start_searchable_activities_task(counter=0):
             if w.queues[0].name == "parser":
                 current_job = w.get_current_job()
                 if current_job:
-                    if ('start_searchable_activities_task' not in current_job.description):
+                    if 'start_searchable_activities_task' not in current_job.description:
                         has_other_jobs = True
-                    if ('update_searchable_activities' in current_job.description):
+                    if 'update_searchable_activities' in current_job.description:
                         already_running_update = True
+
     if already_running_update:
-        # update_searchable_activities already running, invalidate task
+        # update_searchable_activities already running or other start_searchable_activities_task running, invalidate task
         pass
     elif not has_other_jobs:
         queue.enqueue(update_searchable_activities)
-    elif counter > 10:
+    elif counter > 180:
         raise Exception("Waited for 30 min, still jobs runnings so invalidating this task. If this happens please contact OIPA devs!")
     else:
         counter += 1
-        time.sleep(180)
+        time.sleep(120)
         queue.enqueue(start_searchable_activities_task, args=(counter,), timeout=300)
 
 

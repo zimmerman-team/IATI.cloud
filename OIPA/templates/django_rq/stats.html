@@ -101,22 +101,42 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Number of Jobs</th>
+                            <th>Queued Jobs</th>
+                            <th>Active Jobs</th>
+                            <th>Finished Jobs</th>
                             <th>Number of Workers</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for queue in queues %}
-                            <tr class = "{% cycle 'row1' 'row2' %}">
-                                <th>
-                                    <a href = "{% url 'rq_jobs' queue.index %}">
-                                        {{ queue.name }}
+                        <tr class = "{% cycle 'row1' 'row2' %}">
+                            <th>
+                                <a href = "{% url 'rq_jobs' queue.index %}">
+                                    {{ queue.name }}
+                                </a>
+                            </th>
+                            <td>{{ queue.jobs }}</td>
+                            <td>
+                                {% if queue.name != 'failed' %}
+                                    <a href = "{% url 'rq_started_jobs' queue.index %}">
+                                        {{ queue.started_jobs }}
                                     </a>
-                                </th>
-                                <td>{{ queue.jobs }}</td>
-                                <td id="{{ queue.name }}-amount-workers">{{ queue.workers }}</td>
-                            </tr>
-                        {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if queue.name != 'failed' %}
+                                    <a href = "{% url 'rq_finished_jobs' queue.index %}">
+                                        {{ queue.finished_jobs }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ queue.workers }}</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
