@@ -683,6 +683,66 @@ class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSer
             'narratives',
         )
 
+class OtherIdentifierSerializer(serializers.ModelSerializer):
+    class OwnerOrgSerializer(serializers.Serializer):
+        ref = serializers.CharField(source='owner_ref')
+        narratives = NarrativeSerializer(many=True, required=False)
+
+    ref = serializers.CharField(source="identifier")
+    type = CodelistSerializer()
+
+    owner_org = OwnerOrgSerializer(source="*")
+
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.OtherIdentifier
+        fields = (
+            'id',
+            'activity',
+            'ref',
+            'type',
+            'owner_org'
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.other_identifier(
+            activity,
+            data.get('identifier'),
+            data.get('type', {}).get('code'),
+            data.get('owner_ref'),
+            data.get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.OtherIdentifier.objects.create(**validated_data)
+
+        save_narratives(instance, narratives, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        narratives = validated_data.pop('narratives', [])
+
+        update_instance = iati_models.OtherIdentifier(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives, activity)
+
+        return update_instance
+
+
 class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
@@ -1706,10 +1766,6 @@ class LocationSerializer(DynamicFieldsModelSerializer):
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
 
-        # print(data)
-        # print('called...')
-        # print(data.get('point'))
-
         validated = validators.activity_location(
             activity,
             data.get('ref'),
@@ -1814,7 +1870,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     )
 
     # TODO ; add other-identifier serializer
-    # other_identifier = serializers.OtherIdentifierSerializer(many=True,source="?")
+    other_identifier = OtherIdentifierSerializer(many=True,source="otheridentifier_set")
 
     activity_status = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
@@ -2046,7 +2102,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'title',
             'descriptions',
             'participating_organisations',
-            # 'other_identifier',
+            'other_identifier',
             'activity_status',
             'activity_dates',
             'contact_info',

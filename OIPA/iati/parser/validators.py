@@ -1968,3 +1968,55 @@ def activity_result_indicator_period_dimension(
                 "value": value,
             },
         }
+
+
+
+def other_identifier(
+        activity,
+        ref,
+        type_code,
+        owner_ref,
+        narratives_data=[],
+        ):
+        warnings = []
+        errors = []
+
+        type = get_or_none(codelist_models.OtherIdentifierType, code=type_code)
+
+        if not ref:
+            errors.append(
+                RequiredFieldError(
+                    "activity/other-identifier",
+                    "ref",
+                    ))
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/other-identifier",
+                    "type",
+                    ))
+        elif not type:
+            errors.append(
+                RequiredFieldError(
+                    "activity/other-identifier",
+                    "type with code {} not found".format(type.code),
+                    ))
+
+        if owner_ref:
+            pass
+            # TODO:  check for valid org id http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/owner-org/ - 2016-12-07
+
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "identifier": ref,
+                "type": type,
+                "owner_ref": owner_ref,
+                "narratives": validated_narratives['validated_data'],
+            },
+        }

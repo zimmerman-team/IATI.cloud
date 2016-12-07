@@ -460,6 +460,20 @@ class ActivityParticipatingOrganisationDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityParticipatingOrganisation.objects.get(pk=pk)
 
+class ActivityOtherIdentifierList(ListCreateAPIView):
+    serializer_class = activity_serializers.OtherIdentifierSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).other_identifier_set.all()
+
+class ActivityOtherIdentifierDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.OtherIdentifierSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.OtherIdentifier.objects.get(pk=pk)
+
 class ActivityActivityDateList(ListCreateAPIView):
     serializer_class = activity_serializers.ActivityDateSerializer
 

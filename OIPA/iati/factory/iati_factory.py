@@ -239,6 +239,14 @@ class ParticipatingOrganisationFactory(NoDatabaseFactory):
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
 
+class OtherIdentifierFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.OtherIdentifier
+
+    identifier = "some-id"
+    owner_ref = "123"
+    type = SubFactory(OtherIdentifierTypeFactory)
+    activity = SubFactory(ActivityFactory)
 
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:

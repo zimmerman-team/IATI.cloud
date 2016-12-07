@@ -317,3 +317,10 @@ class IndicatorMeasureFactory(NoDatabaseFactory):
     code = "1"
     name = "Unit"
 
+class OtherIdentifierTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.OtherIdentifierType
+
+    code = 'A1'
+    name = 'Reporting Organisations internal activity identifier'
+

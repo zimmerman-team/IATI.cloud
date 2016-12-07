@@ -2860,8 +2860,6 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
                 format='json'
                 )
 
-        print(res.json())
-
         self.assertEquals(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicatorPeriodActualDimension.objects.get(pk=res.json()['id'])
@@ -2887,8 +2885,6 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
                 data,
                 format='json'
                 )
-
-        print(res.json())
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -2988,5 +2984,113 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=result_indicator_period_target_dimension.id)
+
+
+
+
+
+class OtherIdentifierSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_other_identifier(self):
+        activity = iati_factory.ActivityFactory.create()
+        other_identifier_type = codelist_factory.OtherIdentifierTypeFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "ref": "some-ref",
+            "type": {
+                "code": other_identifier_type.code,
+                "name": 'irrelevant',
+            },
+            "owner_org": {
+                "ref": "org-id",
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            }
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/other_identifiers/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.identifier, data['ref'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['owner_org']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['owner_org']['narratives'][1]['text'])
+
+    def test_update_other_identifier(self):
+        other_identifier = iati_factory.OtherIdentifierFactory.create()
+        other_identifier_type = codelist_factory.OtherIdentifierTypeFactory.create(code="A100")
+
+        data = {
+            "activity": other_identifier.activity.id,
+            "ref": "some-other-ref",
+            "type": {
+                "code": other_identifier_type.code,
+                "name": 'irrelevant',
+            },
+            "owner_org": {
+                "ref": "org-id",
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/other_identifiers/{}?format=json".format(other_identifier.activity.id, other_identifier.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.identifier, data['ref'])
+        self.assertEqual(instance.type.code, str(data['type']['code']))
+        self.assertEqual(instance.owner_ref, data['owner_org']['ref'])
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['owner_org']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['owner_org']['narratives'][1]['text'])
+
+
+    def test_delete_other_identifier(self):
+        other_identifier = iati_factory.OtherIdentifierFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/other_identifiers/{}?format=json".format(other_identifier.activity.id, other_identifier.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.OtherIdentifier.objects.get(pk=other_identifier.id)
 
 
