@@ -43,7 +43,7 @@ class NarrativeMixin(NoDatabaseFactory):
 class ActivityFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
-        # django_get_or_create = ('iati_standard_version')
+        django_get_or_create = ('id',)
 
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
@@ -339,6 +339,53 @@ class ResultDescriptionFactory(NoDatabaseFactory):
     narrative1 = NarrativeRelatedFactory(content="description test")
     narrative2 = NarrativeRelatedFactory(content="description test2")
 
+class LocationNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationName
+
+    # location = SubFactory(LocationFactory)
+
+class LocationDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationDescription
+
+    # location = SubFactory(LocationFactory)
+
+class LocationActivityDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationActivityDescription
+
+    # location = SubFactory(LocationFactory)
+
+class LocationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Location
+
+    activity = SubFactory(ActivityFactory)
+    ref = 'AF-KAN'
+    location_reach = SubFactory(GeographicLocationReachFactory)
+    location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
+    location_id_code = '23213'
+    point_pos = GEOSGeometry(Point(20.22, 45.22), srid=4326)
+    point_srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
+    exactness = SubFactory(GeographicExactnessFactory)
+    location_class = SubFactory(GeographicLocationClassFactory)
+    feature_designation = SubFactory(LocationTypeFactory)
+
+    name = RelatedFactory(LocationNameFactory, 'location')
+    description = RelatedFactory(LocationDescriptionFactory, 'location')
+    activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
+
+
+class LocationAdministrativeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationAdministrative
+
+    location = SubFactory(LocationFactory)
+    code = "code"
+    vocabulary = SubFactory(GeographicVocabularyFactory)
+    level = 1
+
 class ResultFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Result
@@ -397,7 +444,6 @@ class ResultIndicatorPeriodActualCommentFactory(NoDatabaseFactory):
         model = iati.models.ResultIndicatorPeriodActualComment
 
     # result_period = SubFactory(ResultIndicatorPeriodFactory)
-
 class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorPeriod
@@ -407,51 +453,39 @@ class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     resultindicatorperiodtargetcomment = RelatedFactory(ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
 
 
-class LocationNameFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.LocationName
+class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualLocation
 
-    # location = SubFactory(LocationFactory)
-
-class LocationDescriptionFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.LocationDescription
-
-    # location = SubFactory(LocationFactory)
-
-class LocationActivityDescriptionFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.LocationActivityDescription
-
-    # location = SubFactory(LocationFactory)
-
-class LocationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.Location
-
-    activity = SubFactory(ActivityFactory)
-    ref = 'AF-KAN'
-    location_reach = SubFactory(GeographicLocationReachFactory)
-    location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
-    location_id_code = '23213'
-    point_pos = GEOSGeometry(Point(20.22, 45.22), srid=4326)
-    point_srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
-    exactness = SubFactory(GeographicExactnessFactory)
-    location_class = SubFactory(GeographicLocationClassFactory)
-    feature_designation = SubFactory(LocationTypeFactory)
-
-    name = RelatedFactory(LocationNameFactory, 'location')
-    description = RelatedFactory(LocationDescriptionFactory, 'location')
-    activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
-
-class LocationAdministrativeFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.LocationAdministrative
-
+    ref = "AF-KAN"
     location = SubFactory(LocationFactory)
-    code = "code"
-    vocabulary = SubFactory(GeographicVocabularyFactory)
-    level = 1
+
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodTargetLocationFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetLocation
+
+    ref = "AF-KAN"
+    location = SubFactory(LocationFactory)
+
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodActualDimensionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualDimension
+
+    name = "gender"
+    value = "female"
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodTargetDimensionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetDimension
+
+    name = "gender"
+    value = "female"
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
 
 class HumanitarianScopeFactory(NoDatabaseFactory):
     class Meta:

@@ -715,6 +715,48 @@ class ResultIndicatorPeriodActualLocationDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('actual_location_id')
         return iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=pk)
 
+class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodTargetLocationSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('resultindicator_id')
+        return iati_models.Activity(pk=pk).result_indicator_period_target_locations.all()
+
+class ResultIndicatorPeriodTargetLocationDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodTargetLocationSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('target_location_id')
+        return iati_models.ResultIndicatorPeriodTargetLocation.objects.get(pk=pk)
+
+class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodActualDimensionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('resultindicator_id')
+        return iati_models.Activity(pk=pk).result_indicator_period_actual_dimensions.all()
+
+class ResultIndicatorPeriodActualDimensionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodActualDimensionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('actual_dimension_id')
+        return iati_models.ResultIndicatorPeriodActualDimension.objects.get(pk=pk)
+
+class ResultIndicatorPeriodTargetDimensionList(ListCreateAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('resultindicator_id')
+        return iati_models.Activity(pk=pk).result_indicator_period_target_dimensions.all()
+
+class ResultIndicatorPeriodTargetDimensionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('target_dimension_id')
+        return iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=pk)
+
 class ActivityProviderActivityTree(DynamicDetailView):
     """
     Returns the upward and downward traceability tree of this activity. Field specification:

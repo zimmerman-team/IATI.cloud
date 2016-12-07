@@ -174,6 +174,28 @@ urlpatterns = [
         api.activity.views.ResultIndicatorPeriodActualLocationDetail.as_view(),
         name='activity-result_indicator_period_actual_location-detail'),
 
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/location/$',
+        api.activity.views.ResultIndicatorPeriodTargetLocationList.as_view(),
+        name='activity-result_indicator_period_target_location-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/location/(?P<target_location_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorPeriodTargetLocationDetail.as_view(),
+        name='activity-result_indicator_period_target_location-detail'),
+
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/actual/dimension/$',
+        api.activity.views.ResultIndicatorPeriodActualDimensionList.as_view(),
+        name='activity-result_indicator_period_actual_dimension-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/actual/dimension/(?P<actual_dimension_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorPeriodActualDimensionDetail.as_view(),
+        name='activity-result_indicator_period_actual_dimension-detail'),
+
+
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/dimension/$',
+        api.activity.views.ResultIndicatorPeriodTargetDimensionList.as_view(),
+        name='activity-result_indicator_period_target_dimension-list'),
+    url(r'^(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/dimension/(?P<target_dimension_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ResultIndicatorPeriodTargetDimensionDetail.as_view(),
+        name='activity-result_indicator_period_target_dimension-detail'),
+    
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),
         name='provider-activity-tree'),]

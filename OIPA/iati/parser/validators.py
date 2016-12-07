@@ -1909,11 +1909,62 @@ def activity_result_indicator_period_location(
         warnings = []
         errors = []
 
+        location = get_or_none(models.Location, ref=ref)
+
+        if not ref:
+            errors.append(
+                RequiredFieldError(
+                    "result/indicator/period/actual/location",
+                    "ref",
+                    ))
+
+        if not location:
+            errors.append(
+                RequiredFieldError(
+                    "result/indicator/period/actual/location",
+                    "location with ref {} not found".format(ref),
+                    ))
+
         return {
             "warnings": warnings,
             "errors": errors,
             "validated_data": {
                 "result_indicator_period": result_indicator_period,
                 "ref": ref,
+                "location": location,
+            },
+        }
+
+
+
+def activity_result_indicator_period_dimension(
+        result_indicator_period,
+        name,
+        value,
+        ):
+        warnings = []
+        errors = []
+
+        if not name:
+            errors.append(
+                RequiredFieldError(
+                    "result/indicator/period/actual/dimension",
+                    "name",
+                    ))
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "result/indicator/period/actual/dimension",
+                    "value",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "result_indicator_period": result_indicator_period,
+                "name": name,
+                "value": value,
             },
         }

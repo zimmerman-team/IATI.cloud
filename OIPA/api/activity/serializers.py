@@ -1076,6 +1076,7 @@ class ResultIndicatorPeriodActualLocationSerializer(serializers.ModelSerializer)
     class Meta:
         model = iati_models.ResultIndicatorPeriodActualLocation
         fields = (
+            'id',
             'result_indicator_period',
             'ref',
         )
@@ -1106,39 +1107,129 @@ class ResultIndicatorPeriodActualLocationSerializer(serializers.ModelSerializer)
 
 class ResultIndicatorPeriodTargetLocationSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
+    result_indicator_period = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.ResultIndicatorPeriodTargetLocation
         fields = (
+            'id',
+            'result_indicator_period',
             'ref',
         )
 
-class ResultIndicatorPeriodDimensionSerializer(serializers.Serializer):
+    def validate(self, data):
+        result_indicator_period = get_or_raise(iati_models.ResultIndicatorPeriod, data, 'result_indicator_period')
+
+        validated = validators.activity_result_indicator_period_location(
+            result_indicator_period,
+            data.get('ref'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.ResultIndicatorPeriodTargetLocation(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+class ResultIndicatorPeriodActualDimensionSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
-    value = serializers.DecimalField(
-        max_digits=25,
-        decimal_places=10,
-        coerce_to_string=False)
+    value = serializers.CharField()
+    result_indicator_period = serializers.CharField(write_only=True)
 
     class Meta:
+        model = iati_models.ResultIndicatorPeriodActualDimension
         fields = (
+            'result_indicator_period',
+            'id',
             'name',
             'value',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        result_indicator_period = get_or_raise(iati_models.ResultIndicatorPeriod, data, 'result_indicator_period')
+
+        validated = validators.activity_result_indicator_period_dimension(
+            result_indicator_period,
+            data.get('name'),
+            data.get('value'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.ResultIndicatorPeriodActualDimension.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.ResultIndicatorPeriodActualDimension(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+class ResultIndicatorPeriodTargetDimensionSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    value = serializers.CharField()
+    result_indicator_period = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodTargetDimension
+        fields = (
+            'result_indicator_period',
+            'id',
+            'name',
+            'value',
+        )
+
+    def validate(self, data):
+        result_indicator_period = get_or_raise(iati_models.ResultIndicatorPeriod, data, 'result_indicator_period')
+
+        validated = validators.activity_result_indicator_period_dimension(
+            result_indicator_period,
+            data.get('name'),
+            data.get('value'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.ResultIndicatorPeriodTargetDimension(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
     location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
-    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
+    dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
 
 class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
     location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
-    dimension = ResultIndicatorPeriodDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
+    dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
 
 class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
