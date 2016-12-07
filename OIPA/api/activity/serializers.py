@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from iati import models as iati_models
+from iati_codelists import models as iati_codelists_models
+from iati_vocabulary import models as iati_vocabulary_models
+
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.fields import PointField
@@ -662,4 +665,82 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'aggregations',
             'xml_source_ref',
         )
+#CRUD Serializers
 
+class SectorCrudSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati_codelists_models.Sector
+        fields = '__all__'
+
+
+class ActivityCrudSerializer(serializers.ModelSerializer):
+    sectors = SectorCrudSerializer(many=True)
+
+    def create(self, validated_data):
+        sectors = validated_data.pop('sectors')
+        activity = iati_models.Activity.objects.create(**validated_data)
+        if sectors: # Bombs without this check
+            iati_models.Sector.objects.create(activity=activity, **sectors)  # Errors here
+        return activity
+    class Meta:
+        model = iati_models.Activity
+        #ields = '__all__'
+        fields = (
+            'id',
+            'sectors',
+            'policymarkers',
+        )
+
+
+class ActivitySectorCrudSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = iati_models.ActivitySector
+        #fields = '__all__'
+        fields = (
+            #'id',
+            'sector',
+            #'percentage',
+            #'vocabulary',
+            #'vocabulary_uri',
+        )
+
+
+class SectorCrudAssociateSerializer(serializers.ModelSerializer):
+    sectors = ActivitySectorCrudSerializer(many=True, required=False)
+    
+    def create(self, validated_data):
+        sectors_data = validated_data.pop('sectors')
+        activity = iati_models.Activity.objects.create(**validated_data)
+        for sector in sectors_data:
+            d=dict(sector)
+            iati_models.ActivitySector.objects.create(activity=activity, sector=d['sector'])
+        return activity
+
+    def update(self, instance, validated_data):
+        sectors_data = validated_data.pop('sectors')
+        for item in validated_data:
+            if iati_models.Activity._meta.get_field(item):
+                setattr(instance, item, validated_data[item])
+        iati_models.ActivitySector.objects.filter(activity=instance).delete()
+        for sector in sectors_data:
+            d=dict(sector)
+            iati_models.ActivitySector.objects.create(activity=instance, sector=d['sector'])
+        instance.save()
+        return instance
+    class Meta:
+        model = iati_models.Activity
+        # fields = '__all__'
+        fields = (
+            'id',
+            'sectors',
+            'sector',
+            )
+    
+    class Meta:
+        model = iati_models.Activity
+        # fields = '__all__'
+        fields = (
+            'id',
+            'sectors',
+            'sector',
+            )
