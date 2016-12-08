@@ -18,6 +18,8 @@ from decimal import Decimal
 from iati.parser.exceptions import *
 # from iati.parser.higher_order_parser import compose, code
 
+import iati.parser.validators
+
 
 class Parse(IatiParser):
     
@@ -2374,15 +2376,17 @@ class Parse(IatiParser):
     # iati-equivalent:activity-status
 
     # tag:legacy-data"""
-    # def iati_activities__iati_activity__legacy_data(self, element):
-    #     model = self.get_func_parent_model()
-    #     legacy_data = models.LegacyData()
-    #     legacy_data.activity = model
-    #     legacy_data.name = element.attrib.get('name')
-    #     legacy_data.value = element.attrib.get('value')
-    #     legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
-    #     legacy_data.save()
-    #     return element
+    def iati_activities__iati_activity__legacy_data(self, element):
+        activity = self.get_model('Activity')
+        legacy_data = models.LegacyData()
+        legacy_data.activity = activity
+        legacy_data.name = element.attrib.get('name')
+        legacy_data.value = element.attrib.get('value')
+        legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
+
+        self.register_model('LegacyData', legacy_data)
+
+        return element
 
     # """attributes:
     # attached:1

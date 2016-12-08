@@ -959,9 +959,6 @@ class LegacyDataSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-    def destroy(self, *args, **kwargs):
-        activity = Activity.objects.get(pk=kwargs.get('pk'))
-        activity.legacy_data.delete()
 
 class ActivitySectorSerializer(serializers.ModelSerializer):
     sector = SectorSerializer(fields=('url', 'code', 'name'))
