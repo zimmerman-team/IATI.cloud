@@ -3092,10 +3092,6 @@ class OtherIdentifierSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.OtherIdentifier.objects.get(pk=other_identifier.id)
 
-
-
-
-
 class CountryBudgetItemsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3256,4 +3252,72 @@ class BudgetItemSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.BudgetItem.objects.get(pk=budget_item.id)
+
+
+class LegacyDataSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_legacy_data(self):
+        activity = iati_factory.ActivityFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "name": "old",
+            "value": "old",
+            "iati_equivalent": "activity-super-type",
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/legacy_data/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.name, data['name'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+
+    def test_update_legacy_data(self):
+        legacy_data = iati_factory.LegacyDataFactory.create()
+
+        data = {
+            "activity": legacy_data.activity.id,
+            "name": "old",
+            "value": "old",
+            "iati_equivalent": "activity-super-type",
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/legacy_data/{}?format=json".format(legacy_data.activity.id, legacy_data.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.name, data['name'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+
+    def test_delete_legacy_data(self):
+        legacy_data = iati_factory.LegacyDataFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/legacy_data/{}?format=json".format(legacy_data.activity.id, legacy_data.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.LegacyData.objects.get(pk=legacy_data.id)
+
+
 

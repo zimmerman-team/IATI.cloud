@@ -700,6 +700,20 @@ class ActivityRelatedActivityDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityRelatedActivity.objects.get(pk=pk)
 
+class ActivityLegacyDataList(ListCreateAPIView):
+    serializer_class = activity_serializers.LegacyDataSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).legacydata_set.all()
+
+class ActivityLegacyDataDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.LegacyDataSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.LegacyData.objects.get(pk=pk)
+
 class ActivityResultList(ListCreateAPIView):
     serializer_class = activity_serializers.ResultSerializer
 

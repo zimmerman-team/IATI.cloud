@@ -127,6 +127,15 @@ class RelatedActivityFactory(NoDatabaseFactory):
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
 
+class LegacyDataFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LegacyData
+
+    activity = SubFactory(ActivityFactory)
+    name = "value"
+    value = "value"
+    iati_equivalent = "activity-id"
+
 
 class DocumentLinkFactory(NoDatabaseFactory):
     class Meta:

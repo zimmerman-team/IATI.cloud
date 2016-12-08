@@ -2090,3 +2090,36 @@ def budget_item(
                 "narratives": validated_narratives['validated_data'],
             },
         }
+
+def legacy_data(
+        activity,
+        name,
+        value,
+        iati_equivalent
+        ):
+        warnings = []
+        errors = []
+
+        if not name:
+            errors.append(
+                RequiredFieldError(
+                    "activity/legacy-data",
+                    "name",
+                    ))
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "activity/legacy-data",
+                    "value",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "name": name,
+                "value": value,
+                "iati_equivalent": iati_equivalent,
+            },
+        }

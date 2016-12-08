@@ -152,6 +152,13 @@ urlpatterns = [
         api.activity.views.ActivityRelatedActivityDetail.as_view(),
         name='activity-related_activities'),
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/legacy_data/$',
+        api.activity.views.ActivityLegacyDataList.as_view(),
+        name='activity-legacy_data-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/legacy_data/(?P<id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityLegacyDataDetail.as_view(),
+        name='activity-legacy_data-detail'),
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/results/$',
         api.activity.views.ActivityResultList.as_view(),
         name='activity-result-list'),

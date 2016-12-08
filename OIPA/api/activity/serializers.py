@@ -920,6 +920,49 @@ class RelatedActivitySerializer(serializers.ModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
+class LegacyDataSerializer(serializers.ModelSerializer):
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.LegacyData
+        fields = (
+            'id',
+            'activity',
+            'name',
+            'value',
+            'iati_equivalent',
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.legacy_data(
+            activity,
+            data.get('name'),
+            data.get('value'),
+            data.get('iati_equivalent'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.LegacyData.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.LegacyData(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+    def destroy(self, *args, **kwargs):
+        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        activity.legacy_data.delete()
+
 class ActivitySectorSerializer(serializers.ModelSerializer):
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
@@ -2071,7 +2114,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         source='relatedactivity_set')
 
     # TODO ; add legacy-data serializer? note: we dont parse legacy data atm.
-    # legacy_data = LegacyDataSerializer(many=True, source="?")
+    legacy_data = LegacyDataSerializer(many=True, source="legacydata_set")
 
     # TODO ; add conditions serializer
     # conditions = serializers.ConditionsSerializer(many=True,source="?")
@@ -2226,7 +2269,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'transactions',
             'document_links',
             'related_activities',
-            # 'legacy_data',
+            'legacy_data',
             # 'conditions',
             'results',
             # 'crs_add',
