@@ -80,15 +80,6 @@ urlpatterns = [
         api.activity.views.ActivityRecipientRegionDetail.as_view(),
         name='activity-recipient_regions'),
 
-
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_sectors/$',
-        api.activity.views.ActivitySectorList.as_view(),
-        name='activity-recipient_sectors'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/recipient_sectors/(?P<id>[^@$&+,/:;=?]+)',
-        api.activity.views.ActivitySectorDetail.as_view(),
-        name='activity-recipient_sectors'),
-
-
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/locations/$',
         api.activity.views.ActivityLocationList.as_view(),
         name='activity-locations'),
@@ -103,6 +94,21 @@ urlpatterns = [
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/sectors/(?P<id>[^@$&+,/:;=?]+)',
         api.activity.views.ActivitySectorDetail.as_view(),
         name='activity-sectors'),
+
+    # url(r'^(?P<pk>[^@$&+,/:;=?]+)/country_budget_items/(?P<id>[^@$&+,/:;=?]+)',
+    #     api.activity.views.ActivityCountryBudgetItemDetail.as_view(),
+    #     name='activity-country_budget_items'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/country_budget_items/$',
+        api.activity.views.ActivityCountryBudgetItemDetail.as_view(),
+        name='activity-country_budget_items'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/country_budget_items/budget_items/$',
+        api.activity.views.ActivityBudgetItemList.as_view(),
+        name='activity-budget_items-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/country_budget_items/budget_items/(?P<budget_item_id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityBudgetItemDetail.as_view(),
+        name='activity-budget_items-detail'),
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/humanitarian_scopes/$',
         api.activity.views.ActivityHumanitarianScopeList.as_view(),

@@ -421,9 +421,8 @@ class ActivityRecipientCountry(models.Model):
 
 
 class CountryBudgetItem(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.OneToOneField(Activity, related_name="country_budget_items")
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
-    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
 class HumanitarianScope(models.Model):
     activity = models.ForeignKey(Activity)
@@ -439,7 +438,7 @@ class BudgetItem(models.Model):
 
 
 class BudgetItemDescription(models.Model):
-    budget_item = models.ForeignKey(BudgetItem)
+    budget_item = models.OneToOneField(BudgetItem, related_name="description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',

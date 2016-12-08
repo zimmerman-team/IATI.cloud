@@ -2020,3 +2020,73 @@ def other_identifier(
                 "narratives": validated_narratives['validated_data'],
             },
         }
+
+
+def country_budget_items(
+        activity,
+        vocabulary_code,
+        ):
+        warnings = []
+        errors = []
+
+        vocabulary = get_or_none(codelist_models.BudgetIdentifierVocabulary, code=vocabulary_code)
+
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/country-budget-items",
+                    "vocabulary",
+                    ))
+        elif not vocabulary:
+            errors.append(
+                RequiredFieldError(
+                    "activity/country-budget-items",
+                    "vocabulary",
+                    "vocabulary with code {} not found".format(vocabulary_code)
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "vocabulary": vocabulary,
+            },
+        }
+
+def budget_item(
+        country_budget_item,
+        budget_identifier_code,
+        narratives_data=[],
+        ):
+        warnings = []
+        errors = []
+
+        budget_identifier = get_or_none(codelist_models.BudgetIdentifier, code=budget_identifier_code)
+
+        if not budget_identifier_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/country-budget-items/budget-item",
+                    "code",
+                    ))
+        elif not budget_identifier:
+            errors.append(
+                RequiredFieldError(
+                    "activity/country-budget-items/budget-item",
+                    "code {} not found on BudgetIdentifier codelist".format(budget_identifier_code),
+                    ))
+
+        # TODO: validate something with percentage here? - 2016-12-08
+
+        validated_narratives = narratives(narratives_data, country_budget_item.activity.default_lang, country_budget_item.activity.id,  warnings, errors)
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "country_budget_item": country_budget_item,
+                "code": budget_identifier,
+                "narratives": validated_narratives['validated_data'],
+            },
+        }

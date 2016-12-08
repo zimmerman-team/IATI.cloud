@@ -3079,7 +3079,6 @@ class OtherIdentifierSaveTestCase(TestCase):
         self.assertEqual(narratives[0].content, data['owner_org']['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['owner_org']['narratives'][1]['text'])
 
-
     def test_delete_other_identifier(self):
         other_identifier = iati_factory.OtherIdentifierFactory.create()
 
@@ -3093,4 +3092,168 @@ class OtherIdentifierSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.OtherIdentifier.objects.get(pk=other_identifier.id)
 
+
+
+
+
+class CountryBudgetItemsSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_country_budget_items(self):
+        activity = iati_factory.ActivityFactory.create()
+        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "ref": "some-ref",
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/country_budget_items/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+
+    def test_update_country_budget_items(self):
+        country_budget_items = iati_factory.CountryBudgetItemFactory.create()
+        vocabulary = vocabulary_factory.BudgetIdentifierVocabularyFactory.create(code="A0")
+
+        data = {
+            "activity": country_budget_items.activity.id,
+            "vocabulary": {
+                "code": vocabulary.code,
+                "name": 'irrelevant',
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/country_budget_items/?format=json".format(country_budget_items.activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.vocabulary.code, data['vocabulary']['code'])
+
+    def test_delete_country_budget_items(self):
+        country_budget_items = iati_factory.CountryBudgetItemFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/country_budget_items/?format=json".format(country_budget_items.activity.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.CountryBudgetItem.objects.get(pk=country_budget_items.id)
+
+
+
+class BudgetItemSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_budget_item(self):
+        country_budget_item = iati_factory.CountryBudgetItemFactory.create()
+        budget_identifier = codelist_factory.BudgetIdentifierFactory.create()
+        
+        data = {
+            "country_budget_item": country_budget_item.id,
+            "budget_identifier": {
+                "code": budget_identifier.code,
+                "name": 'irrelevant',
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/country_budget_items/budget_items/?format=json".format(country_budget_item.activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.country_budget_item.id, data['country_budget_item'])
+        self.assertEqual(instance.code.code, data['budget_identifier']['code'])
+
+        narratives = instance.description.narratives.all()
+        self.assertEqual(narratives[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['description']['narratives'][1]['text'])
+
+    def test_update_budget_item(self):
+        budget_item = iati_factory.BudgetItemFactory.create()
+        budget_identifier = codelist_factory.BudgetIdentifierFactory.create(code="1.3.2")
+
+        data = {
+            "country_budget_item": budget_item.country_budget_item.id,
+            "budget_identifier": {
+                "code": budget_identifier.code,
+                "name": 'irrelevant',
+            },
+            "description": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ]
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/country_budget_items/budget_items/{}?format=json".format(budget_item.country_budget_item.activity.id, budget_item.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.country_budget_item.id, data['country_budget_item'])
+        self.assertEqual(instance.code.code, data['budget_identifier']['code'])
+
+        narratives = instance.description.narratives.all()
+        self.assertEqual(narratives[0].content, data['description']['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['description']['narratives'][1]['text'])
+
+    def test_delete_budget_item(self):
+        budget_item = iati_factory.BudgetItemFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/country_budget_items/budget_items/{}?format=json".format(budget_item.country_budget_item.activity.id, budget_item.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.BudgetItem.objects.get(pk=budget_item.id)
 

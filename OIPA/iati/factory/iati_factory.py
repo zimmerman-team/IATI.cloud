@@ -310,8 +310,15 @@ class CountryBudgetItemFactory(NoDatabaseFactory):
     id = 1
     activity = SubFactory(ActivityFactory)
     vocabulary = SubFactory(BudgetIdentifierVocabularyFactory)
-    percentage = 50.2
 
+
+class BudgetItemDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.BudgetItemDescription
+
+    
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class BudgetItemFactory(NoDatabaseFactory):
     class Meta:
@@ -319,6 +326,8 @@ class BudgetItemFactory(NoDatabaseFactory):
 
     code = SubFactory(BudgetIdentifierFactory) # Executive - executive
     country_budget_item = SubFactory(CountryBudgetItemFactory)
+    description = RelatedFactory(BudgetItemDescriptionFactory, 'budget_item')
+
     percentage = 50.2
 
 

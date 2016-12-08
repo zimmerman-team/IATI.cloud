@@ -179,12 +179,29 @@ class OrganisationRoleFactory(NoDatabaseFactory):
     name = 'Funding'
 
 
+class BudgetIdentifierSectorCategoryFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.BudgetIdentifierSectorCategory
+
+    code = "1"
+    name = "General Public Service"
+
+
+class BudgetIdentifierSectorFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.BudgetIdentifierSector
+
+    code = "1.1"
+    name = "Executive"
+    category = SubFactory(BudgetIdentifierSectorCategoryFactory)
+
 class BudgetIdentifierFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.BudgetIdentifier
 
     code = "1"
     name = "IATI"
+    category = SubFactory(BudgetIdentifierSectorFactory)
 
 
 class PolicyMarkerFactory(NoDatabaseFactory):

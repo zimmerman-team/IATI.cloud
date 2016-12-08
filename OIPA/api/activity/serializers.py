@@ -940,6 +940,106 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
             'vocabulary_uri',
         )
 
+class BudgetItemSerializer(serializers.ModelSerializer):
+
+    class BudgetItemDescriptionSerializer(serializers.Serializer):
+        narratives = NarrativeSerializer(many=True, required=False)
+
+    budget_identifier = CodelistSerializer(source="code")
+    description = BudgetItemDescriptionSerializer(required=False)
+
+    country_budget_item = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.BudgetItem
+        fields = (
+            'id',
+            'country_budget_item',
+            'budget_identifier',
+            'description',
+        )
+
+    def validate(self, data):
+        country_budget_item = get_or_raise(iati_models.CountryBudgetItem, data, 'country_budget_item')
+
+        validated = validators.budget_item(
+            country_budget_item,
+            data.get('code', {}).get('code'),
+            data.get('description', {}).get('narratives', [])
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        country_budget_item = validated_data.get('country_budget_item')
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.BudgetItem.objects.create(**validated_data)
+
+        description = iati_models.BudgetItemDescription.objects.create(budget_item=instance)
+
+        save_narratives(description, narratives, country_budget_item.activity)
+        return instance
+
+
+    def update(self, instance, validated_data):
+        country_budget_item = validated_data.get('country_budget_item', [])
+        narratives = validated_data.pop('narratives', [])
+
+        update_instance = iati_models.BudgetItem(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance.description, narratives, country_budget_item.activity)
+
+        return update_instance
+
+class CountryBudgetItemsSerializer(serializers.ModelSerializer):
+
+    vocabulary = VocabularySerializer()
+    budget_items = BudgetItemSerializer(source="budgetitem_set", required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.CountryBudgetItem
+        fields = (
+            'id',
+            'activity',
+            'vocabulary',
+            'budget_items',
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.country_budget_items(
+            activity,
+            data.get('vocabulary', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.CountryBudgetItem.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.CountryBudgetItem(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+    def destroy(self, *args, **kwargs):
+        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        activity.country_budget_items.delete()
+
+
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = BasicRegionSerializer(
         fields=('url', 'code', 'name'),
@@ -1916,7 +2016,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         )
 
     # TODO ; add country-budget-items serializer
-    # country_budget_items = serializers.CountryBudgetItemsSerializer(many=True,source="?")
+    country_budget_items = CountryBudgetItemsSerializer(required=False)
 
     humanitarian_scope = HumanitarianScopeSerializer(
             many=True, 
@@ -2111,7 +2211,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'recipient_regions',
             'locations',
             'sectors',
-            # 'country_budget_items',
+            'country_budget_items',
             'humanitarian',
             'humanitarian_scope',
             'policy_markers',
