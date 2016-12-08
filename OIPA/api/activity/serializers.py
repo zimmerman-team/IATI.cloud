@@ -1079,6 +1079,99 @@ class CountryBudgetItemsSerializer(serializers.ModelSerializer):
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         activity.country_budget_items.delete()
 
+class ConditionSerializer(serializers.ModelSerializer):
+
+    type = CodelistSerializer()
+    narratives = NarrativeSerializer(many=True, required=False)
+
+    conditions = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.Condition
+        fields = (
+            'id',
+            'conditions',
+            'type',
+            'narratives',
+        )
+
+    def validate(self, data):
+        conditions = get_or_raise(iati_models.Conditions, data, 'conditions')
+
+        validated = validators.condition(
+            conditions,
+            data.get('type', {}).get('code'),
+            data.get('narratives', [])
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        conditions = validated_data.get('conditions')
+        narratives = validated_data.pop('narratives', [])
+
+        instance = iati_models.Condition.objects.create(**validated_data)
+
+        save_narratives(instance, narratives, conditions.activity)
+        return instance
+
+
+    def update(self, instance, validated_data):
+        conditions = validated_data.get('conditions', [])
+        narratives = validated_data.pop('narratives', [])
+
+        update_instance = iati_models.Condition(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(instance, narratives, conditions.activity)
+
+        return update_instance
+
+
+class ConditionsSerializer(serializers.ModelSerializer):
+    # conditions = ConditionSerializer(source="condition_set", required=False)
+    attached = serializers.CharField()
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.Conditions
+        fields = (
+            'id',
+            'activity',
+            'attached',
+            # 'conditions',
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.conditions(
+            activity,
+            data.get('attached')
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.Conditions.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.Conditions(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+    def destroy(self, *args, **kwargs):
+        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        activity.condition.delete()
+
 
 class ActivityRecipientRegionSerializer(DynamicFieldsModelSerializer):
     region = BasicRegionSerializer(
@@ -2114,7 +2207,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     legacy_data = LegacyDataSerializer(many=True, source="legacydata_set")
 
     # TODO ; add conditions serializer
-    # conditions = serializers.ConditionsSerializer(many=True,source="?")
+    conditions = ConditionsSerializer(required=False)
 
     results = ResultSerializer(
             many=True, 
@@ -2267,7 +2360,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'document_links',
             'related_activities',
             'legacy_data',
-            # 'conditions',
+            'conditions',
             'results',
             # 'crs_add',
             # 'fss',

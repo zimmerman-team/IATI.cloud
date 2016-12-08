@@ -538,3 +538,17 @@ class ActivitySearchFactory(ActivityFactory):
     sector = RelatedFactory(ActivitySectorFactory, 'activity')
     document_link = RelatedFactory(DocumentLinkFactory, 'activity')
 
+class ConditionsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Conditions
+
+    activity = SubFactory(ActivityFactory)
+    attached = False
+
+class ConditionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Condition
+
+    conditions = SubFactory(ConditionsFactory)
+    type = SubFactory(ConditionTypeFactory)
+

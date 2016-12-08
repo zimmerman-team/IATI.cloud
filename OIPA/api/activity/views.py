@@ -2,6 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIV
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework import mixins
 
+from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
 from api.activity import filters
 from api.generics.filters import DistanceFilter
@@ -825,6 +826,28 @@ class ResultIndicatorPeriodTargetDimensionDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('target_dimension_id')
         return iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=pk)
+
+class ActivityConditionsDetail(SaveAllSerializer):
+    serializer_class = activity_serializers.ConditionsSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Conditions.objects.get(activity=pk)
+
+class ActivityConditionList(ListCreateAPIView):
+    serializer_class = activity_serializers.ConditionSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).country_conditions.budgetitem_set.all()
+
+class ActivityConditionDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.ConditionSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('condition_id')
+        return iati_models.Condition.objects.get(pk=pk)
+
 
 class ActivityProviderActivityTree(DynamicDetailView):
     """

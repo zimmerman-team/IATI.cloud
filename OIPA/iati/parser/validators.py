@@ -2123,3 +2123,61 @@ def legacy_data(
                 "iati_equivalent": iati_equivalent,
             },
         }
+
+def conditions(
+        activity,
+        attached,
+        ):
+        warnings = []
+        errors = []
+
+        if not attached:
+            errors.append(
+                RequiredFieldError(
+                    "activity/conditions",
+                    "attached",
+                    ))
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "attached": attached,
+            },
+        }
+
+
+def condition(
+        conditions,
+        type_code,
+        narratives_data=[],
+        ):
+        warnings = []
+        errors = []
+
+        type = get_or_none(codelist_models.ConditionType, code=type_code)
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/conditions/condition",
+                    "type",
+                    ))
+        elif not type:
+            errors.append(
+                RequiredFieldError(
+                    "activity/conditions/condition",
+                    "code {} not found on ConditionType codelist".format(type_code),
+                    ))
+
+        validated_narratives = narratives(narratives_data, conditions.activity.default_lang, conditions.activity.id,  warnings, errors)
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "conditions": conditions,
+                "type": type,
+                "narratives": validated_narratives['validated_data'],
+            },
+        }

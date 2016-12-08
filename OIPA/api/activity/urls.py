@@ -216,6 +216,19 @@ urlpatterns = [
         api.activity.views.ResultIndicatorPeriodTargetDimensionDetail.as_view(),
         name='activity-result_indicator_period_target_dimension-detail'),
     
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/conditions/$',
+        api.activity.views.ActivityConditionsDetail.as_view(),
+        name='activity-conditions'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/conditions/condition/$',
+        api.activity.views.ActivityConditionList.as_view(),
+        name='activity-conditions-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/conditions/condition/(?P<condition_id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityConditionDetail.as_view(),
+        name='activity-conditions-detail'),
+
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),
         name='provider-activity-tree'),]

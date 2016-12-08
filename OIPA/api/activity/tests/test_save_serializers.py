@@ -3320,4 +3320,150 @@ class LegacyDataSaveTestCase(TestCase):
             instance = iati_models.LegacyData.objects.get(pk=legacy_data.id)
 
 
+class ConditionsSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
 
+    def test_create_conditions(self):
+        activity = iati_factory.ActivityFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "attached": "1",
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/conditions/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.attached, bool(data['attached']))
+
+    def test_update_conditions(self):
+        conditions = iati_factory.ConditionsFactory.create()
+
+        data = {
+            "activity": conditions.activity.id,
+            "attached": "1",
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/conditions/?format=json".format(conditions.activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.attached, bool(data['attached']))
+
+    def test_delete_conditions(self):
+        conditions = iati_factory.ConditionsFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/conditions/?format=json".format(conditions.activity.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Conditions.objects.get(pk=conditions.id)
+
+
+
+class ConditionSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_condition(self):
+        conditions = iati_factory.ConditionsFactory.create()
+        condition_type = codelist_factory.ConditionTypeFactory.create()
+        
+        data = {
+            "conditions": conditions.id,
+            "type": {
+                "code": condition_type.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "test1"
+                },
+                {
+                    "text": "test2"
+                }
+            ]
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/conditions/condition/?format=json".format(conditions.activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Condition.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.conditions.id, data['conditions'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
+    def test_update_condition(self):
+        condition = iati_factory.ConditionFactory.create()
+        condition_type = codelist_factory.ConditionTypeFactory.create(code="1.3.2")
+
+        data = {
+            "conditions": condition.conditions.id,
+            "type": {
+                "code": condition_type.code,
+                "name": 'irrelevant',
+            },
+            "narratives": [
+                {
+                    "text": "test1"
+                    },
+                {
+                    "text": "test2"
+                    }
+                ]
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/conditions/condition/{}?format=json".format(condition.conditions.activity.id, condition.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+
+        instance = iati_models.Condition.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.conditions.id, data['conditions'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+        narratives = instance.narratives.all()
+        self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
+        self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+    def test_delete_condition(self):
+        condition = iati_factory.ConditionFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/conditions/condition/{}?format=json".format(condition.conditions.activity.id, condition.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Condition.objects.get(pk=condition.id)

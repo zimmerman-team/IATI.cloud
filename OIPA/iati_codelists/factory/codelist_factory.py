@@ -341,3 +341,10 @@ class OtherIdentifierTypeFactory(NoDatabaseFactory):
     code = 'A1'
     name = 'Reporting Organisations internal activity identifier'
 
+
+class ConditionTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.ConditionType
+
+    code = '1'
+    name = 'Policy'

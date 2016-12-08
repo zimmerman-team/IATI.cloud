@@ -1,3 +1,4 @@
+from rest_framework import mixins
 from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.generics.serializers import DynamicFieldsModelSerializer
 from django.db.models.fields.related import ForeignKey, OneToOneField
@@ -91,3 +92,25 @@ class DynamicDetailCRUDView(DynamicView, RetrieveUpdateDestroyAPIView):
     """
     List view with dynamic properties
     """
+
+class SaveAllSerializer(mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          mixins.DestroyModelMixin,
+                          mixins.CreateModelMixin,
+                          GenericAPIView):
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+

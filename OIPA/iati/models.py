@@ -942,13 +942,23 @@ class PlannedDisbursementReceiver(models.Model):
         return "%s - %s" % (self.ref,
                             self.receiver_activity_ref,)
 
-class Condition(models.Model):
+class Conditions(models.Model):
     activity = models.ForeignKey(Activity)
-    text = models.TextField(default="")
-    type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
+    attached = models.BooleanField()
 
-    def __unicode__(self,):
-        return "text: %s - type: %s" % (self.text[:30], self.type)
+    # def __unicode__(self,):
+    #     return "text: %s - type: %s" % (self.text[:30], self.type)
+
+class Condition(models.Model):
+    conditions = models.ForeignKey(Conditions)
+    type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+    # def __unicode__(self,):
+    #     return "text: %s - type: %s" % (self.text[:30], self.type)
 
 
 class Location(models.Model):
