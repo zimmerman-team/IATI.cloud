@@ -534,18 +534,18 @@ class ActivityRecipientRegionDetail(RetrieveUpdateDestroyAPIView):
 
 
 class ActivitySectorList(ListCreateAPIView):
-    serializer_class = activity_serializers.SectorSerializer
+    serializer_class = activity_serializers.ActivitySectorSerializer
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).recipient_sectors.all()
+        return iati_models.Activity(pk=pk).sectors.all()
 
 class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.SectorSerializer
+    serializer_class = activity_serializers.ActivitySectorSerializer
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.Sector.objects.get(pk=pk)
+        return iati_models.ActivitySector.objects.get(pk=pk)
 
 class ActivityCountryBudgetItemDetail(mixins.RetrieveModelMixin,
                                       mixins.UpdateModelMixin,
@@ -600,20 +600,6 @@ class ActivityLocationDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return iati_models.Location.objects.get(pk=pk)
-
-class ActivitySectorList(ListCreateAPIView):
-    serializer_class = activity_serializers.SectorSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).sectors.all()
-
-class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.SectorSerializer
-
-    def get_object(self):
-        pk = self.kwargs.get('id')
-        return iati_models.ActivitySector.objects.get(pk=pk)
 
 class ActivityHumanitarianScopeList(ListCreateAPIView):
     serializer_class = activity_serializers.HumanitarianScopeSerializer

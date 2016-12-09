@@ -790,6 +790,84 @@ def activity_recipient_region(
         }
 
 
+def activity__sector(
+        activity,
+        sector_code,
+        vocabulary_code,
+        vocabulary_uri,
+        percentage=0,
+        instance=None, # only set on update
+        ):
+        warnings = []
+        errors = []
+
+        sector = get_or_none(models.Sector, code=sector_code)
+        vocabulary = get_or_none(models.SectorVocabulary, code=vocabulary_code)
+
+        if not sector_code:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "code",
+                    ))
+        elif not sector:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "code",
+                    "-sector not found for code {}".format(sector_code)
+                    ))
+
+        if not vocabulary_code:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "vocabulary",
+                    ))
+        elif not vocabulary: 
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "vocabulary",
+                    "vocabulary not found for code {}".format(vocabulary_code)
+                    ))
+
+        if vocabulary_code == "99" and not vocabulary_uri:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "vocabulary_uri",
+                    "vocabulary_uri is required when vocabulary code is 99"
+                    ))
+
+        if type(percentage) is not int and type(percentage) is not Decimal:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "percentage",
+                    ))
+
+        if percentage < 0 or percentage > 100:
+            errors.append(
+                RequiredFieldError(
+                    "-sector",
+                    "percentage",
+                    "percentage must be a value between 0 and 100"
+                    ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "sector": sector,
+                "vocabulary": vocabulary,
+                "vocabulary_uri": vocabulary_uri,
+                "percentage": percentage,
+            },
+        }
+
 def activity_location(
         activity,
         ref,

@@ -988,15 +988,49 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
 
+    activity = serializers.CharField(write_only=True)
+
     class Meta:
         model = iati_models.ActivitySector
         fields = (
+            'activity',
             'id',
             'sector',
             'percentage',
             'vocabulary',
             'vocabulary_uri',
         )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+        
+        validated = validators.activity__sector(
+            activity,
+            data.get('sector', {}).get('code'),
+            data.get('vocabulary', {}).get('code'),
+            data.get('vocabulary_uri'),
+            data.get('percentage'),
+            getattr(self, 'instance', None), # only on update
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+
+        instance = iati_models.ActivitySector.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+
+        update_instance = iati_models.ActivitySector(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class BudgetItemSerializer(serializers.ModelSerializer):
 

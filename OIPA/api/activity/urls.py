@@ -80,20 +80,19 @@ urlpatterns = [
         api.activity.views.ActivityRecipientRegionDetail.as_view(),
         name='activity-recipient_regions'),
 
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/locations/$',
-        api.activity.views.ActivityLocationList.as_view(),
-        name='activity-locations'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/locations/(?P<id>[^@$&+,/:;=?]+)',
-        api.activity.views.ActivityLocationDetail.as_view(),
-        name='activity-locations'),
-
-
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/sectors/$',
         api.activity.views.ActivitySectorList.as_view(),
         name='activity-sectors'),
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/sectors/(?P<id>[^@$&+,/:;=?]+)',
         api.activity.views.ActivitySectorDetail.as_view(),
         name='activity-sectors'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/locations/$',
+        api.activity.views.ActivityLocationList.as_view(),
+        name='activity-locations'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/locations/(?P<id>[^@$&+,/:;=?]+)',
+        api.activity.views.ActivityLocationDetail.as_view(),
+        name='activity-locations'),
 
     # url(r'^(?P<pk>[^@$&+,/:;=?]+)/country_budget_items/(?P<id>[^@$&+,/:;=?]+)',
     #     api.activity.views.ActivityCountryBudgetItemDetail.as_view(),

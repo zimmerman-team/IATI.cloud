@@ -986,6 +986,89 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.ActivityRecipientRegion.objects.get(pk=recipient_region.id)
 
+class ActivitySectorSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create__sector(self):
+
+        activity = iati_factory.ActivityFactory.create()
+        sector = iati_factory.SectorFactory.create()
+        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "sector": {
+                "code": sector.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": sector_vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "percentage": 100,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/sectors/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.sector.code, str(data['sector']['code']))
+        self.assertEqual(instance.percentage, data['percentage'])
+
+    def test_update__sector(self):
+        _sector = iati_factory.ActivitySectorFactory.create()
+        sector = iati_factory.SectorFactory.create(code=89)
+
+        data = {
+            "activity": _sector.activity.id,
+            "sector": {
+                "code": sector.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary": {
+                "code": _sector.vocabulary.code,
+                "name": 'irrelevant',
+            },
+            "vocabulary_uri": "https://twitter.com/",
+            "percentage": 100,
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/sectors/{}?format=json".format(_sector.activity.id, _sector.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.sector.code, str(data['sector']['code']))
+        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
+
+    def test_delete__sector(self):
+        _sector = iati_factory.ActivitySectorFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/sectors/{}?format=json".format(_sector.activity.id, _sector.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.ActivitySector.objects.get(pk=_sector.id)
+
 
 
 class LocationSaveTestCase(TestCase):
