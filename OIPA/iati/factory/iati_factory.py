@@ -552,3 +552,35 @@ class ConditionFactory(NoDatabaseFactory):
     conditions = SubFactory(ConditionsFactory)
     type = SubFactory(ConditionTypeFactory)
 
+class CrsAddLoanTermsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddLoanTerms
+
+    rate_1 = 20.0
+    rate_2 = 30.0
+    repayment_type = SubFactory(LoanRepaymentTypeFactory)
+    repayment_plan = SubFactory(LoanRepaymentPeriodFactory)
+    commitment_date = '2014-01-01'
+    repayment_first_date = '2014-01-02'
+    repayment_final_date = '2015-01-01'
+
+class CrsAddLoanStatusFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddLoanStatus
+    
+    year = 2014
+    currency = SubFactory(CurrencyFactory)
+    value_date = '2014-01-01'
+    interest_received = 2000
+    principal_outstanding = 1000
+    principal_arrears = 1000
+    interest_arrears = 100
+
+class CrsAddFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAdd
+
+    activity = SubFactory(ActivityFactory)
+    channel_code = "21039"
+    loan_terms = RelatedFactory(CrsAddLoanTermsFactory, 'crs_add')
+    loan_status = RelatedFactory(CrsAddLoanStatusFactory, 'crs_add')

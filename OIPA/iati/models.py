@@ -1066,24 +1066,35 @@ class FssForecast(models.Model):
 
 class CrsAdd(models.Model):
     activity = models.ForeignKey(Activity)
+    channel_code = models.CharField(max_length=50, null=True, blank=True)
 
     def __unicode__(self,):
         return "%s" % self.id
 
 
 class CrsAddOtherFlags(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
+    crs_add = models.ForeignKey(CrsAdd, related_name="other_flags")
     other_flags = models.ForeignKey(OtherFlags)
-    other_flags_significance = models.BooleanField(default=True)
+    significance = models.BooleanField()
 
     def __unicode__(self,):
         return "%s" % self.id
 
 
 class CrsAddLoanTerms(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
-    rate_1 = models.IntegerField(null=True, blank=True, default=None)
-    rate_2 = models.IntegerField(null=True, blank=True, default=None)
+    crs_add = models.OneToOneField(CrsAdd, related_name="loan_terms")
+    rate_1 = models.DecimalField(
+        null=True,
+        blank=True,
+        default=None,
+        max_digits=5,
+        decimal_places=2)
+    rate_2 = models.DecimalField(
+        null=True,
+        blank=True,
+        default=None,
+        max_digits=5,
+        decimal_places=2)
     repayment_type = models.ForeignKey(
         LoanRepaymentType,
         null=True,
@@ -1104,7 +1115,7 @@ class CrsAddLoanTerms(models.Model):
 
 
 class CrsAddLoanStatus(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
+    crs_add = models.OneToOneField(CrsAdd, related_name="loan_status")
     year = models.IntegerField(null=True, blank=True, default=None)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)

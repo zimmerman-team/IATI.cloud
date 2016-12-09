@@ -848,6 +848,20 @@ class ActivityConditionDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('condition_id')
         return iati_models.Condition.objects.get(pk=pk)
 
+class ActivityCrsAddList(ListCreateAPIView):
+    serializer_class = activity_serializers.CrsAddSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).crsadd_set.all()
+
+class ActivityCrsAddDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.CrsAddSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.CrsAdd.objects.get(pk=pk)
+
 
 class ActivityProviderActivityTree(DynamicDetailView):
     """

@@ -348,3 +348,17 @@ class ConditionTypeFactory(NoDatabaseFactory):
 
     code = '1'
     name = 'Policy'
+
+class LoanRepaymentTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.LoanRepaymentType
+
+    code = '1'
+    name = 'Equal Principal Payments'
+
+class LoanRepaymentPeriodFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.LoanRepaymentPeriod
+
+    code = '1'
+    name = 'Annual'

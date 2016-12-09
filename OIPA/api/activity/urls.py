@@ -217,6 +217,14 @@ urlpatterns = [
         name='activity-result_indicator_period_target_dimension-detail'),
     
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/crs_add/$',
+        api.activity.views.ActivityCrsAddList.as_view(),
+        name='activity-crs_add-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/crs_add/(?P<id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityCrsAddDetail.as_view(),
+        name='activity-crs_add-detail'),
+
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/conditions/$',
         api.activity.views.ActivityConditionsDetail.as_view(),
         name='activity-conditions'),

@@ -2181,3 +2181,178 @@ def condition(
                 "narratives": validated_narratives['validated_data'],
             },
         }
+
+
+
+def crs_add(
+        activity,
+        channel_code,
+        ):
+        warnings = []
+        errors = []
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "channel_code": channel_code,
+            },
+        }
+
+
+def crs_add_loan_terms(
+        activity,
+        rate_1,
+        rate_2,
+        repayment_type_code,
+        repayment_period_code,
+        commitment_date_raw,
+        repayment_first_date_raw,
+        repayment_final_date_raw,
+        ):
+        warnings = []
+        errors = []
+
+        repayment_type = get_or_none(codelist_models.LoanRepaymentType, code=repayment_type_code)
+        repayment_period = get_or_none(codelist_models.LoanRepaymentPeriod, code=repayment_period_code)
+
+        if not rate_1:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_terms",
+                    "rate_1",
+                    ))
+        if not rate_2:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_terms",
+                    "rate_2",
+                    ))
+
+        # if not repayment_type_code:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity/crs_add/loan_terms",
+        #             "repayment_type",
+        #             ))
+        # elif not repayment_type:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity/crs_add/loan_terms",
+        #             "code {} not found on LoanRepaymentType codelist".format(repayment_type),
+        #             ))
+
+
+        # if not repayment_period_code:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity/crs_add/loan_terms",
+        #             "repayment_period",
+        #             ))
+        # elif not repayment_period:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity/crs_add/loan_terms",
+        #             "code {} not found on LoanRepaymentPeriod codelist".format(repayment_period),
+        #             ))
+
+        try:
+            commitment_date = validate_date(commitment_date_raw)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_terms",
+                    "commitment_date",
+                    "invalid date",
+                    ))
+            commitment_date = None
+
+        try:
+            repayment_first_date = validate_date(repayment_first_date_raw)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_terms",
+                    "repayment_first_date",
+                    "invalid date",
+                    ))
+            repayment_first_date = None
+
+        try:
+            repayment_final_date = validate_date(repayment_final_date_raw)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_terms",
+                    "repayment_final_date",
+                    "invalid date",
+                    ))
+            repayment_final_date = None
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "loan_terms": {
+                    "rate_1": rate_1,
+                    "rate_2": rate_2,
+                    "repayment_type": repayment_type,
+                    "repayment_plan": repayment_period,
+                    "commitment_date": commitment_date,
+                    "repayment_first_date": repayment_first_date,
+                    "repayment_final_date": repayment_final_date,
+                }
+            },
+        }
+
+
+def crs_add_loan_status(
+        activity,
+        year,
+        currency_code,
+        value_date_raw,
+        interest_received,
+        principal_outstanding,
+        principal_arrears,
+        interest_arrears,
+        ):
+        warnings = []
+        errors = []
+
+        print(currency_code)
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not year:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_status",
+                    "year",
+                    ))
+
+        try:
+            value_date = validate_date(value_date_raw)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/loan_status",
+                    "value_date",
+                    "invalid date",
+                    ))
+            value_date = None
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "loan_status": {
+                    "year": year,
+                    "currency": currency,
+                    "value_date": value_date,
+                    "interest_received": interest_received,
+                    "principal_outstanding": principal_outstanding,
+                    "principal_arrears": principal_arrears,
+                    "interest_arrears": interest_arrears,
+                }
+            },
+        }

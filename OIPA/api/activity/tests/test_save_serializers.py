@@ -16,6 +16,8 @@ from iati import models as iati_models
 from iati.transaction import models as transaction_models
 from django.core.exceptions import ObjectDoesNotExist
 
+from decimal import Decimal
+
 
 class ActivitySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -3455,6 +3457,7 @@ class ConditionSaveTestCase(TestCase):
         narratives = instance.narratives.all()
         self.assertEqual(narratives[0].content, data['narratives'][0]['text'])
         self.assertEqual(narratives[1].content, data['narratives'][1]['text'])
+
     def test_delete_condition(self):
         condition = iati_factory.ConditionFactory.create()
 
@@ -3467,3 +3470,159 @@ class ConditionSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.Condition.objects.get(pk=condition.id)
+
+
+
+
+class CrsAddSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_crs_add(self):
+        activity = iati_factory.ActivityFactory.create()
+        repayment_type = iati_factory.LoanRepaymentTypeFactory.create()
+        repayment_period = iati_factory.LoanRepaymentPeriodFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "loan_terms": {
+                "rate_1": Decimal('20.1'),
+                "rate_2": Decimal('20.2'),
+                "repayment_type": {
+                    "code": repayment_type.code,
+                    "name": 'irrelevant',
+                },
+                "repayment_plan": {
+                    "code": repayment_period.code,
+                    "name": 'irrelevant',
+                },
+                "commitment_date": datetime.date.today().isoformat(),
+                "repayment_first_date": datetime.date.today().isoformat(),
+                "repayment_final_date": datetime.date.today().isoformat(),
+            },
+            "loan_status": {
+                "year": 2015,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "value_date": datetime.date.today().isoformat(),
+                "interest_received": 200000,
+                "principal_outstanding": 1500000,
+                "principal_arrears": 0,
+                "interest_arrears": 0,
+            },
+            "channel_code": 21039,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/crs_add/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+
+        loan_terms = iati_models.CrsAddLoanTerms.objects.get(crs_add=instance)
+
+        self.assertEqual(loan_terms.rate_1, data['loan_terms']['rate_1'])
+        self.assertEqual(loan_terms.rate_2, data['loan_terms']['rate_2'])
+        self.assertEqual(loan_terms.repayment_type.code, data['loan_terms']['repayment_type']['code'])
+        self.assertEqual(loan_terms.repayment_plan.code, data['loan_terms']['repayment_plan']['code'])
+        self.assertEqual(loan_terms.commitment_date.isoformat(), data['loan_terms']['commitment_date'])
+        self.assertEqual(loan_terms.repayment_first_date.isoformat(), data['loan_terms']['repayment_first_date'])
+        self.assertEqual(loan_terms.repayment_final_date.isoformat(), data['loan_terms']['repayment_final_date'])
+
+        loan_status = iati_models.CrsAddLoanStatus.objects.get(crs_add=instance)
+
+        self.assertEqual(loan_status.year, data['loan_status']['year'])
+        self.assertEqual(loan_status.currency.code, data['loan_status']['currency']['code'])
+        self.assertEqual(loan_status.interest_received, data['loan_status']['interest_received'])
+        self.assertEqual(loan_status.principal_outstanding, data['loan_status']['principal_outstanding'])
+        self.assertEqual(loan_status.principal_arrears, data['loan_status']['principal_arrears'])
+        self.assertEqual(loan_status.interest_arrears, data['loan_status']['interest_arrears'])
+
+    def test_update_crs_add(self):
+        crs_add = iati_factory.CrsAddFactory.create()
+        repayment_type = iati_factory.LoanRepaymentTypeFactory.create()
+        repayment_period = iati_factory.LoanRepaymentPeriodFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "activity": crs_add.activity.id,
+            "loan_terms": {
+                "rate_1": Decimal('20.1'),
+                "rate_2": Decimal('20.2'),
+                "repayment_type": {
+                    "code": repayment_type.code,
+                    "name": 'irrelevant',
+                },
+                "repayment_plan": {
+                    "code": repayment_period.code,
+                    "name": 'irrelevant',
+                },
+                "commitment_date": datetime.date.today().isoformat(),
+                "repayment_first_date": datetime.date.today().isoformat(),
+                "repayment_final_date": datetime.date.today().isoformat(),
+            },
+            "loan_status": {
+                "year": 2015,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "value_date": datetime.date.today().isoformat(),
+                "interest_received": 200000,
+                "principal_outstanding": 1500000,
+                "principal_arrears": 0,
+                "interest_arrears": 0,
+            },
+            "channel_code": 21039,
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/crs_add/{}?format=json".format(crs_add.activity.id, crs_add.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+
+        loan_terms = iati_models.CrsAddLoanTerms.objects.get(crs_add=instance)
+
+        self.assertEqual(loan_terms.rate_1, data['loan_terms']['rate_1'])
+        self.assertEqual(loan_terms.rate_2, data['loan_terms']['rate_2'])
+        self.assertEqual(loan_terms.repayment_type.code, data['loan_terms']['repayment_type']['code'])
+        self.assertEqual(loan_terms.repayment_plan.code, data['loan_terms']['repayment_plan']['code'])
+        self.assertEqual(loan_terms.commitment_date.isoformat(), data['loan_terms']['commitment_date'])
+        self.assertEqual(loan_terms.repayment_first_date.isoformat(), data['loan_terms']['repayment_first_date'])
+        self.assertEqual(loan_terms.repayment_final_date.isoformat(), data['loan_terms']['repayment_final_date'])
+
+        loan_status = iati_models.CrsAddLoanStatus.objects.get(crs_add=instance)
+
+        self.assertEqual(loan_status.year, data['loan_status']['year'])
+        self.assertEqual(loan_status.currency.code, data['loan_status']['currency']['code'])
+        self.assertEqual(loan_status.interest_received, data['loan_status']['interest_received'])
+        self.assertEqual(loan_status.principal_outstanding, data['loan_status']['principal_outstanding'])
+        self.assertEqual(loan_status.principal_arrears, data['loan_status']['principal_arrears'])
+        self.assertEqual(loan_status.interest_arrears, data['loan_status']['interest_arrears'])
+
+    def test_delete_crs_add(self):
+        crs_add = iati_factory.CrsAddFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/crs_add/{}?format=json".format(crs_add.activity.id, crs_add.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.CrsAdd.objects.get(pk=crs_add.id)

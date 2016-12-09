@@ -63,27 +63,45 @@ def save_narratives(instance, data, activity_instance):
                 activity=activity_instance,
                 **narrative_data)
 
-def handle_errors(validated, **rest_validated):
-    warnings = validated['warnings'] # a list
-    errors = validated['errors']
-    validated_data = validated['validated_data'] # a dict
+# def handle_errors(validated, **rest_validated):
+#     warnings = validated['warnings'] # a list
+#     errors = validated['errors']
+#     validated_data = validated['validated_data'] # a dict
 
+#     error_dict = {}
+
+#     for error in errors:
+#         error_dict[error.field] = error.message
+
+
+#     for key, vals in rest_validated.iteritems():
+
+#         validated_data.update({
+#             key: vals['validated_data']
+#         })
+
+#         if len(vals['errors']):
+#             error_dict[key] = vals['errors']
+#             # for error in vals['errors']:
+#             #     error_dict[error.field] = error.message
+
+#     if len(error_dict):
+#         raise ValidationError(error_dict)
+        
+#     return validated_data
+
+def handle_errors(*validated):
+    validated_data = {}
     error_dict = {}
 
-    for error in errors:
-        error_dict[error.field] = error.message
+    for vali in validated:
+        for error in vali['errors']:
+            error_dict[error.field] = error.message
 
-
-    for key, vals in rest_validated.iteritems():
-
-        validated_data.update({
-            key: vals['validated_data']
-        })
-
-        if len(vals['errors']):
-            error_dict[key] = vals['errors']
-            # for error in vals['errors']:
-            #     error_dict[error.field] = error.message
+        for key, val in vali['validated_data'].iteritems():
+            validated_data.update({
+                key: val
+            })
 
     if len(error_dict):
         raise ValidationError(error_dict)
@@ -1953,6 +1971,142 @@ class ResultSerializer(serializers.ModelSerializer):
         return update_instance
 
 
+
+class CrsAddLoanTermsSerializer(serializers.ModelSerializer):
+    repayment_type = CodelistSerializer()
+    repayment_plan = CodelistSerializer()
+    commitment_date = serializers.CharField()
+    repayment_first_date = serializers.CharField()
+    repayment_final_date = serializers.CharField()
+
+    class Meta:
+        model = iati_models.CrsAddLoanTerms
+        fields = (
+            'rate_1',
+            'rate_2',
+            'repayment_type',
+            'repayment_plan',
+            'commitment_date',
+            'repayment_first_date',
+            'repayment_final_date',
+        )
+
+
+class CrsAddLoanStatusSerializer(serializers.ModelSerializer):
+    value_date = serializers.CharField()
+    currency = CodelistSerializer()
+
+    class Meta:
+        model = iati_models.CrsAddLoanStatus
+        fields = (
+            'year',
+            'currency',
+            'value_date',
+            'interest_received',
+            'principal_outstanding',
+            'principal_arrears',
+            'interest_arrears',
+        )
+
+class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
+    other_flags = CodelistSerializer() 
+    significance = serializers.CharField()
+
+    class Meta:
+        model = iati_models.CrsAddOtherFlags
+        fields = (
+            'other_flags',
+            'significance',
+        )
+
+class CrsAddSerializer(serializers.ModelSerializer):
+    other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
+    loan_terms = CrsAddLoanTermsSerializer(required=False)
+    loan_status = CrsAddLoanStatusSerializer(required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.CrsAdd
+        fields = (
+            'activity',
+            'id',
+            'other_flags',
+            'loan_terms',
+            'loan_status',
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        crs_add = validators.crs_add(
+            activity,
+            data.get('channel_code')
+                )
+
+        loan_terms = validators.crs_add_loan_terms(
+            activity,
+            data.get('loan_terms', {}).get('rate_1'),
+            data.get('loan_terms', {}).get('rate_2'),
+            data.get('loan_terms', {}).get('repayment_type', {}).get('code'),
+            data.get('loan_terms', {}).get('repayment_plan', {}).get('code'),
+            data.get('loan_terms', {}).get('commitment_date'),
+            data.get('loan_terms', {}).get('repayment_first_date'),
+            data.get('loan_terms', {}).get('repayment_final_date'),
+        )
+
+        loan_status = validators.crs_add_loan_status(
+            activity,
+            data.get('loan_status', {}).get('year'),
+            data.get('loan_status', {}).get('currency').get('code'),
+            data.get('loan_status', {}).get('value_date'),
+            data.get('loan_status', {}).get('interest_received'),
+            data.get('loan_status', {}).get('principal_outstanding'),
+            data.get('loan_status', {}).get('principal_arrears'),
+            data.get('loan_status', {}).get('interest_arrears'),
+        )
+
+        return handle_errors(crs_add, loan_terms, loan_status)
+
+
+    def create(self, validated_data):
+        loan_terms = validated_data.pop('loan_terms', {})
+        loan_status = validated_data.pop('loan_status', {})
+
+        instance = iati_models.CrsAdd.objects.create(**validated_data)
+
+        loan_terms = iati_models.CrsAddLoanTerms.objects.create(
+                crs_add=instance,
+                **loan_terms)
+
+        loan_status = iati_models.CrsAddLoanStatus.objects.create(
+                crs_add=instance,
+                **loan_status)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        loan_terms = validated_data.pop('loan_terms')
+        loan_status = validated_data.pop('loan_status')
+
+        update_instance = iati_models.CrsAdd(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        updated_loan_terms = iati_models.CrsAddLoanTerms(**loan_terms)
+        updated_loan_terms.crs_add = update_instance
+        updated_loan_terms.id = instance.loan_terms.id
+        updated_loan_terms.save()
+
+        updated_loan_status = iati_models.CrsAddLoanStatus(**loan_status)
+        updated_loan_status.crs_add = update_instance
+        updated_loan_status.id = instance.loan_status.id
+        updated_loan_status.save()
+
+        return update_instance
+
+
 class LocationSerializer(DynamicFieldsModelSerializer):
     class LocationIdSerializer(serializers.Serializer):
         vocabulary = VocabularySerializer(
@@ -2216,7 +2370,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     
     # TODO ; add crs-add serializer
     # note; crs-add has a sequence in CrsAddSerializer
-    # crs_add = serializers.CrsAddSerializer(many=True, source="?")
+    crs_add = CrsAddSerializer(many=True, source="crsadd_set")
 
     # TODO ; add fss serializer
     # fss = serializers.FssSerializer(many=True, source="?") 
@@ -2362,7 +2516,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'legacy_data',
             'conditions',
             'results',
-            # 'crs_add',
+            'crs_add',
             # 'fss',
             'last_updated_datetime',
             'xml_lang',
