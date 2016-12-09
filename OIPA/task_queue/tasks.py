@@ -1,5 +1,5 @@
 from iati_synchroniser.models import IatiXmlSource
-from iati.models import DocumentLink
+from iati.models import DocumentLink, Document
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
 import django_rq
@@ -12,7 +12,7 @@ import time
 import requests
 import os
 
-
+import fulltext
 
 redis_conn = Redis()
 
@@ -306,48 +306,57 @@ def update_searchable_activities():
 #############################################
 
 
+
 @job
 def collect_pdf_files():
-    queue = django_rq.get_queue("default")
-    queue.enqueue(get_new_pdf_files_from_iati_sources)
-
-
-@job
-def get_new_pdf_files_from_iati_sources():
     queue = django_rq.get_queue("collector")
     for d in DocumentLink.objects.all().filter(file_format_id="application/pdf"):
-        queue.enqueue(download_file_by_url, args=(d, d.url,))
+        queue.enqueue(download_file, args=(d,))
 
 
 
 @job
-def download_file_by_url(d, url):
+def download_file(d):
 
     document_link = DocumentLink.objects.get(pk=d.pk)
 
-    if url:
+    if d.url:
         '''Define the working Directory and saving Path'''
         wk_dir = os.path.dirname(os.path.realpath('__file__'))
         save_path = wk_dir + "/docstore/"
 
         '''Unshort URLs and get file name'''
-        r = requests.head(url, allow_redirects=True)
-        if url != r.url:
+        r = requests.head(d.url, allow_redirects=True)
+        if d.url != r.url:
             long_url = r.url
         else:
-            long_url = url
-        local_filename = url.split('/')[-1]
+            long_url = d.url
+        local_filename = long_url.split('/')[-1]
 
-        '''Verify if the the URL is containing a file'''
+        '''Verify if the the URL is containing a file and authorize download'''
+        is_downloaded = False
+        url_is_valid = False
         if r.headers["content-type"] == 'application/pdf':
+            url_is_valid = True
             r = requests.get(long_url, stream=True)
             with open(local_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
+                is_downloaded = True
             save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
             os.rename(local_filename, save_path + save_name)
-            #fulltext.get(save_path + save_name, '< no content >')
+
+            '''Get Text from file and save document'''
+            document_content=fulltext.get(save_path + save_name, '< no content >')
+            doc, created = Document.objects.get_or_create(document_link=document_link)
+            doc.long_url = long_url
+            doc.document_name = local_filename
+            doc.is_downloaded = is_downloaded
+            doc.url_is_valid = url_is_valid
+            doc.document_content=document_content
+            doc.save()
+        
 
 
 

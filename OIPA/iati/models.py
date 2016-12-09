@@ -583,6 +583,15 @@ class DocumentLinkTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+class Document(models.Model):
+    document_link = models.OneToOneField(DocumentLink)
+    long_url = models.URLField()
+    url_is_valid = models.BooleanField(default=False)
+    document_name = models.CharField(max_length=255)
+    is_downloaded = models.BooleanField(default=False)
+    document_content = models.TextField(default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now_add=True)
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
