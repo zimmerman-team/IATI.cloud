@@ -322,24 +322,32 @@ def get_new_pdf_files_from_iati_sources():
 
 @job
 def download_file_by_url(d, url):
+
     document_link = DocumentLink.objects.get(pk=d.pk)
+
     if url:
+        '''Define the working Directory and saving Path'''
         wk_dir = os.path.dirname(os.path.realpath('__file__'))
         save_path = wk_dir + "/docstore/"
+
+        '''Unshort URLs and get file name'''
         r = requests.head(url, allow_redirects=True)
         if url != r.url:
             long_url = r.url
         else:
             long_url = url
         local_filename = url.split('/')[-1]
-        r = requests.get(url, stream=True)
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-        save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
-        os.rename(local_filename, save_path + save_name)
-        #fulltext.get(save_path + save_name, '< no content >')
+
+        '''Verify if the the URL is containing a file'''
+        if r.headers["content-type"] == 'application/pdf':
+            r = requests.get(long_url, stream=True)
+            with open(local_filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+            save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
+            os.rename(local_filename, save_path + save_name)
+            #fulltext.get(save_path + save_name, '< no content >')
 
 
 
