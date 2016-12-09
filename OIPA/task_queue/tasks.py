@@ -308,7 +308,7 @@ def update_searchable_activities():
 
 @job
 def collect_pdf_files():
-    queue = django_rq.get_queue("collector")
+    queue = django_rq.get_queue("default")
     queue.enqueue(get_new_pdf_files_from_iati_sources)
 
 

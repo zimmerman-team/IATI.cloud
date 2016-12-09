@@ -30,3 +30,6 @@ sudo pip install ipython
 
 #Unittest dependencies
 sudo apt-get install libsqlite3-mod-spatialite
+
+# fulltext Python library for extracting text from various file formats (for indexing).
+sudo apt-get install catdoc odt2txt antiword poppler-utils unrtf perl libimage-exiftool-perl html2text binutils unrar gzip bzip2 unzip docx2txt

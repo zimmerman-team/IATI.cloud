@@ -14,7 +14,7 @@ OIPA/OIPA/local_settings.pyc
 
 OIPA/static_served/*
 
-
+OIPA/docstore/*
 
 *.pyc
 *.swp
