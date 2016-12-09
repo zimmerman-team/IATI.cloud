@@ -862,6 +862,47 @@ class ActivityCrsAddDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.CrsAdd.objects.get(pk=pk)
 
+class ActivityCrsAddOtherFlagsList(ListCreateAPIView):
+    serializer_class = activity_serializers.CrsAddOtherFlagsSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).crsadd_set.all()
+
+class ActivityCrsAddOtherFlagsDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.CrsAddOtherFlagsSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.CrsAddOtherFlags.objects.get(pk=pk)
+
+class ActivityFssList(ListCreateAPIView):
+    serializer_class = activity_serializers.FssSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return iati_models.Activity(pk=pk).crsadd_set.all()
+
+class ActivityFssDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.FssSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return iati_models.Fss.objects.get(pk=pk)
+
+class ActivityFssForecastList(ListCreateAPIView):
+    serializer_class = activity_serializers.FssForecastSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('id')
+        return iati_models.Fss(pk=pk).fssforecast_set.all()
+
+class ActivityFssForecastDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.FssForecastSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('forecast_id')
+        return iati_models.FssForecast.objects.get(pk=pk)
 
 class ActivityProviderActivityTree(DynamicDetailView):
     """

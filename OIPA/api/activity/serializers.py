@@ -2019,6 +2019,31 @@ class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
             'significance',
         )
 
+    def validate(self, data):
+        crs_add = get_or_raise(iati_models.CrsAdd, data, 'crs_add')
+
+        validated = validators.activity_crs_add_other_flags(
+            crs_add,
+            data.get('other_flags', {}).get('code'),
+            data.get('significance'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.CrsAddOtherFlags.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.CrsAddOtherFlags(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
 class CrsAddSerializer(serializers.ModelSerializer):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
@@ -2103,6 +2128,93 @@ class CrsAddSerializer(serializers.ModelSerializer):
         updated_loan_status.crs_add = update_instance
         updated_loan_status.id = instance.loan_status.id
         updated_loan_status.save()
+
+        return update_instance
+
+class FssForecastSerializer(serializers.ModelSerializer):
+    value_date = serializers.CharField()
+    currency = CodelistSerializer()
+
+    fss = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.FssForecast
+        fields = (
+            'id',
+            'fss',
+            'year',
+            'value_date',
+            'currency',
+            'value',
+        )
+
+    def validate(self, data):
+        fss = get_or_raise(iati_models.Fss, data, 'fss')
+
+        validated = validators.fss_forecast(
+            fss,
+            data.get('year'),
+            data.get('value_date'),
+            data.get('currency', {}).get('code'),
+            data.get('value'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.FssForecast.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.FssForecast(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+class FssSerializer(serializers.ModelSerializer):
+    extraction_date = serializers.CharField()
+    forecasts = FssForecastSerializer(many=True, required=False)
+
+    activity = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.Fss
+        fields = (
+            'id',
+            'activity',
+            'extraction_date',
+            'priority',
+            'phaseout_year',
+            'forecasts',
+        )
+
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.fss(
+            activity,
+            data.get('extraction_date'),
+            data.get('priority'),
+            data.get('phaseout_year'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.Fss.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.Fss(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
 
         return update_instance
 
@@ -2357,10 +2469,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         read_only=True,
         source='relatedactivity_set')
 
-    # TODO ; add legacy-data serializer? note: we dont parse legacy data atm.
     legacy_data = LegacyDataSerializer(many=True, source="legacydata_set")
 
-    # TODO ; add conditions serializer
     conditions = ConditionsSerializer(required=False)
 
     results = ResultSerializer(
@@ -2368,12 +2478,10 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             read_only=True,
             source="result_set")
     
-    # TODO ; add crs-add serializer
     # note; crs-add has a sequence in CrsAddSerializer
     crs_add = CrsAddSerializer(many=True, source="crsadd_set")
 
-    # TODO ; add fss serializer
-    # fss = serializers.FssSerializer(many=True, source="?") 
+    fss = FssSerializer(many=True, source="fss_set") 
     
     # activity attributes
     last_updated_datetime = serializers.DateTimeField(required=False)
@@ -2517,7 +2625,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'conditions',
             'results',
             'crs_add',
-            # 'fss',
+            'fss',
             'last_updated_datetime',
             'xml_lang',
             'default_currency',

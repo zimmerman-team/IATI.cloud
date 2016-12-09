@@ -2356,3 +2356,138 @@ def crs_add_loan_status(
                 }
             },
         }
+
+
+def crs_add_other_flags(
+        crs_add,
+        other_flags_code,
+        significance,
+        ):
+        warnings = []
+        errors = []
+
+        other_flags = get_or_none(models.OtherFlags, code=other_flags_code)
+
+        if not other_flags_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/other_flags",
+                    "other_flags",
+                    ))
+        elif not other_flags:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/other_flags",
+                    "code {} not found on OtherFlags codelist".format(other_flags),
+                    ))
+
+
+        if not significance:
+            errors.append(
+                RequiredFieldError(
+                    "activity/crs_add/other_flags",
+                    "significance",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "other_flags": {
+                    "crs_add": crs_add,
+                    "other_flags": year,
+                    "significance": significance,
+                }
+            },
+        }
+
+def fss(
+        activity,
+        extraction_date_raw,
+        priority,
+        phaseout_year
+        ):
+        warnings = []
+        errors = []
+
+        try:
+            extraction_date = validate_date(extraction_date_raw)
+        except RequiredFieldError:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss",
+                    "extraction_date",
+                    "invalid date",
+                    ))
+            extraction_date = None
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "extraction_date": extraction_date,
+                "priority": priority,
+                "phaseout_year": phaseout_year,
+            },
+        }
+
+def fss_forecast(
+        fss,
+        year,
+        value_date_raw,
+        currency_code,
+        value,
+        ):
+        warnings = []
+        errors = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        try:
+            value_date = validate_date(value_date_raw)
+        except RequiredFieldError:
+            if not value:
+                errors.append(
+                        RequiredFieldError(
+                            "activity/fss/forecast",
+                            "value",
+                            ))
+
+            value_date = None
+
+        if not currency and not fss.activity.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "currency",
+                    "currency not specified and no default specified on activity"
+                    ))
+
+        if not year:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "year",
+                    ))
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "value",
+                    ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "fss": fss,
+                "year": year,
+                "value_date": value_date,
+                "currency": currency,
+                "value": value,
+            },
+        }
+

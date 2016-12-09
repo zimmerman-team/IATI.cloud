@@ -584,3 +584,31 @@ class CrsAddFactory(NoDatabaseFactory):
     channel_code = "21039"
     loan_terms = RelatedFactory(CrsAddLoanTermsFactory, 'crs_add')
     loan_status = RelatedFactory(CrsAddLoanStatusFactory, 'crs_add')
+
+class CrsAddOtherFlagsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddOtherFlags
+
+    crs_add = SubFactory(CrsAddFactory)
+    other_flags = SubFactory(OtherFlagsFactory)
+    significance = True
+
+
+class FssFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Fss
+
+    activity = SubFactory(ActivityFactory)
+    extraction_date = '2014-01-01'
+    priority = True
+    phaseout_year="2016"
+
+class FssForecastFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.FssForecast
+
+    fss = SubFactory(FssFactory)
+    year= "2016"
+    value_date = '2014-01-01'
+    currency = SubFactory(CurrencyFactory)
+    value = 10000

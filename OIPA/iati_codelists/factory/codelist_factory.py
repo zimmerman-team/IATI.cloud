@@ -362,3 +362,10 @@ class LoanRepaymentPeriodFactory(NoDatabaseFactory):
 
     code = '1'
     name = 'Annual'
+
+class OtherFlagsFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.OtherFlags
+
+    code = '1'
+    significance = True

@@ -1045,7 +1045,7 @@ class LocationActivityDescription(models.Model):
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)
-    extraction_date = models.DateField(null=True, blank=True, default=None)
+    extraction_date = models.DateField()
     priority = models.BooleanField(default=False)
     phaseout_year = models.IntegerField(null=True, blank=True)
 
@@ -1055,9 +1055,9 @@ class Fss(models.Model):
 
 class FssForecast(models.Model):
     fss = models.ForeignKey(Fss)
-    year = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField()
     currency = models.ForeignKey(Currency)
-    value_date = models.DateField(null=True, blank=True, default=None)
+    value_date = models.DateField()
     value = models.DecimalField(max_digits=15, decimal_places=2)
 
     def __unicode__(self,):

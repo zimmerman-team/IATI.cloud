@@ -225,6 +225,29 @@ urlpatterns = [
         name='activity-crs_add-detail'),
 
 
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/crs_add/(?P<id>[^@$&+,/:;=?]+)/other_flags/$',
+        api.activity.views.ActivityCrsAddOtherFlagsList.as_view(),
+        name='activity-other_flags-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/crs_add/(?P<id>[^@$&+,/:;=?]+)/other_flags/(?P<other_flags_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityCrsAddOtherFlagsDetail.as_view(),
+        name='activity-other_flags-detail'),
+
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/fss/$',
+        api.activity.views.ActivityFssList.as_view(),
+        name='activity-fss-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/fss/(?P<id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityFssDetail.as_view(),
+        name='activity-fss-detail'),
+
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/fss/(?P<id>[^@$&+,/:;=?]+)/forecast/$',
+        api.activity.views.ActivityFssForecastList.as_view(),
+        name='activity-fss-list'),
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/fss/(?P<id>[^@$&+,/:;=?]+)/forecast/(?P<forecast_id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityFssForecastDetail.as_view(),
+        name='activity-fss-detail'),
+
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/conditions/$',
         api.activity.views.ActivityConditionsDetail.as_view(),
         name='activity-conditions'),

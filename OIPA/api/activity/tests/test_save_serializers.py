@@ -3626,3 +3626,219 @@ class CrsAddSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.CrsAdd.objects.get(pk=crs_add.id)
+
+
+
+class CrsAddOtherFlagsSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_crs_add_other_flags(self):
+        crs_add = iati_factory.CrsAddFactory.create()
+
+        data = {
+            "crs_add": crs_add.id,
+            "other_flags": {
+                "code": other_flags.code,
+                "name": 'irrelevant',
+            },
+            "significance": 1,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/crs_add_other_flags/?format=json".format(crs_add.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.crs_add.id, data['crs_add'])
+        self.assertEqual(instance.name, data['name'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+
+    def test_update_crs_add_other_flags(self):
+        crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
+
+
+        data = {
+            "crs_add": crs_add.id,
+            "other_flags": {
+                "code": other_flags.code,
+                "name": 'irrelevant',
+            },
+            "significance": 1,
+        }
+        res = self.c.put(
+                "/api/activities/{}/crs_add_other_flags/{}?format=json".format(crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.crs_add.id, data['crs_add'])
+        self.assertEqual(instance.name, data['name'])
+        self.assertEqual(instance.value, data['value'])
+        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+
+    def test_delete_crs_add_other_flags(self):
+        crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/crs_add_other_flags/{}?format=json".format(crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.CrsAddOtherFlags.objects.get(pk=crs_add_other_flags.id)
+
+
+class FssSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_fss(self):
+        activity = iati_factory.ActivityFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "extraction_date": datetime.date.today().isoformat(),
+            "priority": "1",
+            "phaseout_year": 2016,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/fss/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.Fss.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.priority, bool(data['priority']))
+        self.assertEqual(instance.phaseout_year, data['phaseout_year'])
+
+    def test_update_fss(self):
+        fss = iati_factory.FssFactory.create()
+
+        data = {
+            "activity": fss.activity.id,
+            "extraction_date": datetime.date.today().isoformat(),
+            "priority": "1",
+            "phaseout_year": 2016,
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/fss/{}?format=json".format(fss.activity.id, fss.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.Fss.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.priority, bool(data['priority']))
+        self.assertEqual(instance.phaseout_year, data['phaseout_year'])
+
+    def test_delete_fss(self):
+        fss = iati_factory.FssFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/fss/{}?format=json".format(fss.activity.id, fss.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.Fss.objects.get(pk=fss.id)
+
+
+class FssForecastSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_fss_forecast(self):
+        fss = iati_factory.FssFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "fss": fss.id,
+            "year": 2014,
+            "value_date": datetime.date.today().isoformat(),
+            "currency": {
+                "code": currency.code,
+                "name": 'irrelevant',
+                },
+            "value": 10000,
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/fss/{}/forecast/?format=json".format(fss.activity.id, fss.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+
+        instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.fss.id, data['fss'])
+        self.assertEqual(instance.year, data['year'])
+        self.assertEqual(instance.value_date.isoformat(), data['value_date'])
+        self.assertEqual(instance.currency.code, data['currency']['code'])
+        self.assertEqual(instance.value, data['value'])
+
+    def test_update_fss_forecast(self):
+        fss_forecast = iati_factory.FssForecastFactory.create()
+        currency = iati_factory.CurrencyFactory.create(code="eur")
+
+        data = {
+            "fss": fss_forecast.fss.id,
+            "year": 2014,
+            "value_date": datetime.date.today().isoformat(),
+            "currency": {
+                "code": currency.code,
+                "name": 'irrelevant',
+                },
+            "value": 10000,
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/fss/{}/forecast/{}?format=json".format(fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.fss.id, data['fss'])
+        self.assertEqual(instance.year, data['year'])
+        self.assertEqual(instance.value_date.isoformat(), data['value_date'])
+        self.assertEqual(instance.currency.code, data['currency']['code'])
+        self.assertEqual(instance.value, data['value'])
+
+    def test_delete_fss_forecast(self):
+        fss_forecast = iati_factory.FssForecastFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/fss/{}/forecast/{}?format=json".format(fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.FssForecast.objects.get(pk=fss_forecast.id)
+
+
