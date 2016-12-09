@@ -1,4 +1,5 @@
 from iati_synchroniser.models import IatiXmlSource
+from iati.models import DocumentLink
 from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from django_rq import job
 import django_rq
@@ -8,6 +9,9 @@ from rq.job import Job
 from redis import Redis
 from django.conf import settings
 import time
+import requests
+import os
+
 
 
 redis_conn = Redis()
@@ -294,5 +298,48 @@ def start_searchable_activities_task(counter=0):
 def update_searchable_activities():
     from django.core import management
     management.call_command('set_searchable_activities', verbosity=0, interactive=False)
+
+
+
+#############################################
+############# Docstore TASKS ################
+#############################################
+
+
+@job
+def collect_pdf_files():
+    queue = django_rq.get_queue("collector")
+    queue.enqueue(get_new_pdf_files_from_iati_sources)
+
+
+@job
+def get_new_pdf_files_from_iati_sources():
+    queue = django_rq.get_queue("collector")
+    for d in DocumentLink.objects.all().filter(file_format_id="application/pdf"):
+        queue.enqueue(download_file_by_url, args=(d, d.url,))
+
+
+
+@job
+def download_file_by_url(d, url):
+    document_link = DocumentLink.objects.get(pk=d.pk)
+    if url:
+        wk_dir = os.path.dirname(os.path.realpath('__file__'))
+        save_path = wk_dir + "/docstore/"
+        r = requests.head(url, allow_redirects=True)
+        if url != r.url:
+            long_url = r.url
+        else:
+            long_url = url
+        local_filename = url.split('/')[-1]
+        r = requests.get(url, stream=True)
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+        save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
+        os.rename(local_filename, save_path + save_name)
+        #fulltext.get(save_path + save_name, '< no content >')
+
 
 

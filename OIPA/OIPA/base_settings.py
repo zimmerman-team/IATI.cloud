@@ -191,6 +191,12 @@ RQ_QUEUES = {
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 5400,
+    },
+        'collector': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 5400,
     }
 }
 
