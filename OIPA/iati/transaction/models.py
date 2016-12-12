@@ -219,7 +219,7 @@ class TransactionRecipientCountry(models.Model):
     transaction = models.ForeignKey(
         Transaction,
         on_delete=models.CASCADE,
-        related_name="recipient_country"
+        # related_name="recipient_country"
         )
     
     country = models.ForeignKey(
@@ -240,7 +240,7 @@ class TransactionRecipientRegion(models.Model):
     transaction = models.OneToOneField(
         Transaction,
         on_delete=models.CASCADE,
-        related_name="recipient_region"
+        # related_name="recipient_region"
         )
 
     region = models.ForeignKey(
