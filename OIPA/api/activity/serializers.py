@@ -475,16 +475,28 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         activity = validated_data.get('activity')
-        provider_organisation_data = validated_data.pop('provider_org')
-        provider_organisation_narratives_data = validated_data.pop('provider_org_narratives')
-        receiver_organisation_data = validated_data.pop('receiver_org')
-        receiver_organisation_narratives_data = validated_data.pop('receiver_org_narratives')
+        provider_data = validated_data.pop('provider_org')
+        provider_narratives_data = validated_data.pop('provider_org_narratives', [])
+        receiver_data = validated_data.pop('receiver_org')
+        receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
 
         update_instance = iati_models.PlannedDisbursement(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
-        # save_narratives(update_instance, narratives, activity)
+        # TODO: don't create here, but update? - 2016-12-12
+        if provider_data['ref']:
+            provider_org = iati_models.PlannedDisbursementProvider.objects.create(
+                    planned_disbursement=instance,
+                    **provider_data)
+            save_narratives(provider_org, provider_narratives_data, activity)
+            validated_data['provider_organisation'] = provider_org
+        if receiver_data['ref']:
+            receiver_org = iati_models.PlannedDisbursementReceiver.objects.create(
+                    planned_disbursement=instance,
+                    **receiver_data)
+            save_narratives(receiver_org, receiver_narratives_data, activity)
+            validated_data['receiver_organisation'] = receiver_org
 
         return update_instance
 
@@ -1108,7 +1120,8 @@ class BudgetItemSerializer(serializers.ModelSerializer):
 class CountryBudgetItemsSerializer(serializers.ModelSerializer):
 
     vocabulary = VocabularySerializer()
-    budget_items = BudgetItemSerializer(source="budgetitem_set", required=False)
+    # TODO: gives errors, why? - 2016-12-12
+    # budget_items = BudgetItemSerializer(source="budgetitem_set", required=False)
 
     activity = serializers.CharField(write_only=True)
 
@@ -1118,7 +1131,7 @@ class CountryBudgetItemsSerializer(serializers.ModelSerializer):
             'id',
             'activity',
             'vocabulary',
-            'budget_items',
+            # 'budget_items',
         )
 
     def validate(self, data):
@@ -2064,9 +2077,13 @@ class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
     other_flags = CodelistSerializer() 
     significance = serializers.CharField()
 
+    crs_add = serializers.CharField(write_only=True)
+
     class Meta:
         model = iati_models.CrsAddOtherFlags
         fields = (
+            'crs_add',
+            'id',
             'other_flags',
             'significance',
         )
@@ -2074,7 +2091,7 @@ class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
     def validate(self, data):
         crs_add = get_or_raise(iati_models.CrsAdd, data, 'crs_add')
 
-        validated = validators.activity_crs_add_other_flags(
+        validated = validators.crs_add_other_flags(
             crs_add,
             data.get('other_flags', {}).get('code'),
             data.get('significance'),
@@ -2421,7 +2438,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     )
 
     # TODO ; add other-identifier serializer
-    other_identifier = OtherIdentifierSerializer(many=True,source="otheridentifier_set")
+    other_identifier = OtherIdentifierSerializer(many=True,source="otheridentifier_set", required=False)
 
     activity_status = CodelistSerializer(required=False)
     activity_dates = ActivityDateSerializer(
@@ -2521,7 +2538,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         read_only=True,
         source='relatedactivity_set')
 
-    legacy_data = LegacyDataSerializer(many=True, source="legacydata_set")
+    legacy_data = LegacyDataSerializer(many=True, source="legacydata_set", required=False)
 
     conditions = ConditionsSerializer(required=False)
 
@@ -2531,9 +2548,9 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             source="result_set")
     
     # note; crs-add has a sequence in CrsAddSerializer
-    crs_add = CrsAddSerializer(many=True, source="crsadd_set")
+    crs_add = CrsAddSerializer(many=True, source="crsadd_set", required=False)
 
-    fss = FssSerializer(many=True, source="fss_set") 
+    fss = FssSerializer(many=True, source="fss_set", required=False) 
     
     # activity attributes
     last_updated_datetime = serializers.DateTimeField(required=False)

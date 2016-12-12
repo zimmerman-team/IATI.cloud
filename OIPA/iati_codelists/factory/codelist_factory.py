@@ -368,7 +368,6 @@ class OtherFlagsFactory(NoDatabaseFactory):
         model = codelist_models.OtherFlags
 
     code = '1'
-    significance = True
 
 class RelatedActivityTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):

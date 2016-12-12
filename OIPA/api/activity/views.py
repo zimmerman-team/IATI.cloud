@@ -657,7 +657,7 @@ class ActivityPlannedDisbursementDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.ActivityPlannedDisbursement.objects.get(pk=pk)
+        return iati_models.PlannedDisbursement.objects.get(pk=pk)
 
 class ActivityDocumentLinkList(ListCreateAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer

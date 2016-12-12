@@ -1741,18 +1741,16 @@ class PlannedDisbursementSaveTestCase(TestCase):
 
     def test_update_planned_disbursement(self):
         planned_disbursement = iati_factory.PlannedDisbursementFactory.create()
-        type = iati_factory.PlannedDisbursementTypeFactory.create(code="2")
-        status = iati_factory.PlannedDisbursementStatusFactory.create(code="2")
-        currency = iati_factory.CurrencyFactory.create(code='af')
+        type = iati_factory.BudgetTypeFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+        organisation = iati_factory.OrganisationFactory.create()
+        organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
+        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
 
         data = {
             "activity": planned_disbursement.activity.id,
             "type": {
                 "code": type.code,
-                "name": 'irrelevant',
-            },
-            "status": {
-                "code": status.code,
                 "name": 'irrelevant',
             },
             "period_start": datetime.date.today().isoformat(),
@@ -1764,6 +1762,37 @@ class PlannedDisbursementSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 },
                 "date": datetime.date.today().isoformat(),
+            },
+            "provider_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "receiver_organisation": {
+                "ref": organisation.id,
+                "type": {
+                    "code": organisation_type.code,
+                    "name": 'irrelevant',
+                },
+                "receiver_activity": activity2.id,
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
             },
         }
 
@@ -1779,13 +1808,34 @@ class PlannedDisbursementSaveTestCase(TestCase):
 
         self.assertEqual(instance.activity.id, data['activity'])
         self.assertEqual(instance.type.code, data['type']['code'])
-        self.assertEqual(instance.status.code, data['status']['code'])
         self.assertEqual(instance.period_start.isoformat(), data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
         self.assertEqual(instance.currency.code, data['value']['currency']['code'])
         self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
 
+        instance2 = iati_models.PlannedDisbursementProvider.objects.get(planned_disbursement_id=res.json()['id'])
+        self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
+        self.assertEqual(instance2.provider_activity.id, planned_disbursement.activity.id)
+
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['provider_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['provider_organisation']['narratives'][1]['text'])
+
+        instance3 = iati_models.PlannedDisbursementReceiver.objects.get(planned_disbursement_id=res.json()['id'])
+        self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
+        self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity'])
+
+        narratives3 = instance3.narratives.all()
+        self.assertEqual(narratives3[0].content, data['receiver_organisation']['narratives'][0]['text'])
+        self.assertEqual(narratives3[1].content, data['receiver_organisation']['narratives'][1]['text'])
+        
     def test_delete_planned_disbursement(self):
         planned_disbursements = iati_factory.PlannedDisbursementFactory.create()
 
@@ -2445,7 +2495,6 @@ class ResultIndicatorSaveTestCase(TestCase):
             }
         }
 
-        print("/api/activities/{}/results/{}/indicators/?format=json".format(result.activity.id, result.id))
         res = self.c.post(
                 "/api/activities/{}/results/{}/indicators/?format=json".format(result.activity.id, result.id), 
                 data,
@@ -3017,8 +3066,6 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
                 format='json'
                 )
 
-        print(res.json())
-
         self.assertEquals(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=res.json()['id'])
@@ -3212,6 +3259,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
 
         data = {
             "activity": country_budget_items.activity.id,
+            "ref": "some-ref",
             "vocabulary": {
                 "code": vocabulary.code,
                 "name": 'irrelevant',
@@ -3718,6 +3766,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
 
     def test_create_crs_add_other_flags(self):
         crs_add = iati_factory.CrsAddFactory.create()
+        other_flags = codelist_factory.OtherFlagsFactory.create()
 
         data = {
             "crs_add": crs_add.id,
@@ -3729,7 +3778,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/crs_add_other_flags/?format=json".format(crs_add.id), 
+                "/api/activities/{}/crs_add/{}/other_flags/?format=json".format(crs_add.activity.id, crs_add.id), 
                 data,
                 format='json'
                 )
@@ -3738,41 +3787,41 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
 
         instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.crs_add.id, data['crs_add'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+        self.assertEqual(instance.other_flags.code, data['other_flags']['code'])
+        self.assertEqual(instance.significance, bool(data['significance']))
 
     def test_update_crs_add_other_flags(self):
         crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
-
+        other_flags = codelist_factory.OtherFlagsFactory.create()
 
         data = {
-            "crs_add": crs_add.id,
+            "crs_add": crs_add_other_flags.crs_add.id,
             "other_flags": {
                 "code": other_flags.code,
                 "name": 'irrelevant',
             },
             "significance": 1,
         }
+
         res = self.c.put(
-                "/api/activities/{}/crs_add_other_flags/{}?format=json".format(crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                "/api/activities/{}/crs_add/{}/other_flags/{}?format=json".format(crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
                 data,
                 format='json'
                 )
 
         self.assertEquals(res.status_code, 200, res.json())
 
+
         instance = iati_models.CrsAddOtherFlags.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.crs_add.id, data['crs_add'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-        self.assertEqual(instance.iati_equivalent, data['iati_equivalent'])
+        self.assertEqual(instance.other_flags.code, data['other_flags']['code'])
+        self.assertEqual(instance.significance, bool(data['significance']))
 
     def test_delete_crs_add_other_flags(self):
         crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/crs_add_other_flags/{}?format=json".format(crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                "/api/activities/{}/crs_add/{}/other_flags/{}?format=json".format(crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
                 format='json'
                 )
 

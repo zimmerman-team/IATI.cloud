@@ -2471,11 +2471,9 @@ def crs_add_other_flags(
             "warnings": warnings,
             "errors": errors,
             "validated_data": {
-                "other_flags": {
-                    "crs_add": crs_add,
-                    "other_flags": year,
-                    "significance": significance,
-                }
+                "crs_add": crs_add,
+                "other_flags": other_flags,
+                "significance": significance,
             },
         }
 
@@ -2507,6 +2505,65 @@ def fss(
                 "extraction_date": extraction_date,
                 "priority": priority,
                 "phaseout_year": phaseout_year,
+            },
+        }
+
+def fss_forecast(
+        fss,
+        year,
+        value_date_raw,
+        currency_code,
+        value,
+        ):
+        warnings = []
+        errors = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        try:
+            value_date = validate_date(value_date_raw)
+        except RequiredFieldError:
+            if not value:
+                errors.append(
+                        RequiredFieldError(
+                            "activity/fss/forecast",
+                            "value",
+                            ))
+
+            value_date = None
+
+        if not currency and not fss.activity.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "currency",
+                    "currency not specified and no default specified on activity"
+                    ))
+
+        if not year:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "year",
+                    ))
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "activity/fss/forecast",
+                    "value",
+                    ))
+
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "fss": fss,
+                "year": year,
+                "value_date": value_date,
+                "currency": currency,
+                "value": value,
             },
         }
 
