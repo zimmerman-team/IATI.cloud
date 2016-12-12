@@ -44,8 +44,3 @@ def reindex_all_documents():
         reindex_document(docuement)
         progress['offset'] += 1
 
-
-# def reindex_activity_by_source(source_ref):
-#     activities = Activity.objects.all().filter(xml_source_ref=source_ref)
-#     for activity in activities:
-#         reindex_activity(activity)
