@@ -13,6 +13,7 @@ class TestDatasetPublish(TestCase):
         """
         Publish a publisher's activities in one file when the user is in the corresponding admin group
         """
+        pass
         admin_group = OrganisationAdminGroupFactory.create()
         user = UserFactory.create(username='test1')
         new_user = UserFactory.create(username='test2')

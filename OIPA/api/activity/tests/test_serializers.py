@@ -257,8 +257,8 @@ class ActivitySerializerTestCase(TestCase):
             'serializer.data should contain an object called vocabulary'
         assert 'significance' in data,\
             'serializer.data should contain an object called significance'
-        assert 'code' in data,\
-            'serializer.data should contain an object called code'
+        assert 'policy_marker' in data,\
+            'serializer.data should contain an object called policy_marker'
 
     def test_PolicyMarkerSerializer(self):
         policy_marker = iati_factory.PolicyMarkerFactory.build()

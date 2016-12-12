@@ -30,11 +30,6 @@ class ResultAggregationTestCase(TestCase):
             result_indicator=first_result_indicator,
             primary_name='a')
 
-        second_result_indicator_title = iati_factory.ResultIndicatorTitleFactory.create(
-            result_indicator=second_result_indicator,
-            primary_name='a')
-
-
         date_now = datetime.datetime.now()
 
         first_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create(
