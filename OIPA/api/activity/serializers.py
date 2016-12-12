@@ -912,31 +912,49 @@ class DescriptionSerializer(serializers.ModelSerializer):
             'activity',
         )
 
-class RelatedActivityTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati_models.RelatedActivityType
-        fields = (
-            'code',
-            'name'
-        )
-
-        extra_kwargs = { "id": { "read_only": False }}
 
 class RelatedActivitySerializer(serializers.ModelSerializer):
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
-    type = RelatedActivityTypeSerializer()
+    type = CodelistSerializer()
+
+    activity = serializers.CharField(write_only=True, source="current_activity")
 
     class Meta:
         model = iati_models.RelatedActivity
         filter_class = RelatedActivityFilter
         fields = (
+            'activity',
             'id',
             'ref_activity',
             'ref',
             'type',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'current_activity')
+
+        validated = validators.related_activity(
+            activity,
+            data.get('ref'),
+            data.get('type', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.RelatedActivity.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.RelatedActivity(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
 
 class LegacyDataSerializer(serializers.ModelSerializer):
     activity = serializers.CharField(write_only=True)

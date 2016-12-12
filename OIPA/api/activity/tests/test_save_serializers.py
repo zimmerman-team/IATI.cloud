@@ -3924,4 +3924,77 @@ class FssForecastSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.FssForecast.objects.get(pk=fss_forecast.id)
 
+class RelatedActivitySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_related_activity(self):
+        activity = iati_factory.ActivityFactory.create()
+        activity2 = iati_factory.ActivityFactory.create(id="another-activity")
+        type = codelist_factory.RelatedActivityTypeFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "ref": activity2.id,
+            "type": {
+                "code": '1',
+                "name": 'Parent',
+            },
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/related_activities/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.current_activity.id, data['activity'])
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.ref_activity.pk, data['ref'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+    def test_update_related_activity(self):
+        related_activity = iati_factory.RelatedActivityFactory.create()
+        activity2 = iati_factory.ActivityFactory.create(id="another-activity")
+        type = codelist_factory.RelatedActivityTypeFactory.create(code="2")
+
+        data = {
+            "activity": related_activity.current_activity.id,
+            "ref": activity2.id,
+            "type": {
+                "code": type.code,
+                "name": 'Parent',
+            },
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/related_activities/{}?format=json".format(related_activity.current_activity.id, related_activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
+        self.assertEqual(instance.current_activity.id, data['activity'])
+        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.ref_activity.id, data['ref'])
+        self.assertEqual(instance.type.code, data['type']['code'])
+
+    def test_delete_related_activity(self):
+        related_activity = iati_factory.RelatedActivityFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/related_activities/{}?format=json".format(related_activity.current_activity.id, related_activity.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.RelatedActivity.objects.get(pk=related_activity.id)
+
 

@@ -369,3 +369,10 @@ class OtherFlagsFactory(NoDatabaseFactory):
 
     code = '1'
     significance = True
+
+class RelatedActivityTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.RelatedActivityType
+
+    code = '1'
+    name = 'Parent'

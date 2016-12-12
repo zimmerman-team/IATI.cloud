@@ -123,6 +123,7 @@ class RelatedActivityFactory(NoDatabaseFactory):
     ref_activity = SubFactory(ActivityFactory)
     current_activity = SubFactory(ActivityFactory, id="IATI-0002", iati_identifier="IATI-0002")
     ref = "IATI-0001"
+    type = SubFactory(RelatedActivityTypeFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")

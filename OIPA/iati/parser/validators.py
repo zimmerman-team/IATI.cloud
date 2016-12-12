@@ -1095,7 +1095,7 @@ def activity_budget(
                     "budget",
                     "type",
                     ))
-        if not type:
+        elif not type:
             errors.append(
                 RequiredFieldError(
                     "budget",
@@ -2510,7 +2510,7 @@ def fss(
             },
         }
 
-def fss_forecast(
+def related_activity(
         fss,
         year,
         value_date_raw,
@@ -2566,6 +2566,57 @@ def fss_forecast(
                 "value_date": value_date,
                 "currency": currency,
                 "value": value,
+            },
+        }
+
+
+def related_activity(
+        activity,
+        ref,
+        type_code,
+        ):
+        warnings = []
+        errors = []
+
+        type = get_or_none(models.RelatedActivityType, code=type_code)
+        ref_activity = get_or_none(models.Activity, pk=ref)
+
+        if not ref:
+            errors.append(
+                RequiredFieldError(
+                    "related-activity",
+                    "ref",
+                    ))
+        elif not ref_activity:
+            errors.append(
+                RequiredFieldError(
+                    "related-activity",
+                    "ref",
+                    "activity not found for {}".format(type_code)
+                    ))
+
+        if not type_code:
+            errors.append(
+                RequiredFieldError(
+                    "related-activity",
+                    "type",
+                    ))
+        elif not type:
+            errors.append(
+                RequiredFieldError(
+                    "related-activity",
+                    "type",
+                    "codelist entry not found for {}".format(type_code)
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "current_activity": activity,
+                "ref_activity": ref_activity,
+                "ref": ref,
+                "type": type,
             },
         }
 

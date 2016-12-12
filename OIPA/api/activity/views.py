@@ -685,7 +685,7 @@ class ActivityRelatedActivityDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.ActivityRelatedActivity.objects.get(pk=pk)
+        return iati_models.RelatedActivity.objects.get(pk=pk)
 
 class ActivityLegacyDataList(ListCreateAPIView):
     serializer_class = activity_serializers.LegacyDataSerializer
