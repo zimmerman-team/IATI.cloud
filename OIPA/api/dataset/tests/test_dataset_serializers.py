@@ -14,26 +14,11 @@ class TestDatasetSerializers(TestCase):
             context={'request': self.request_dummy}
         )
 
-        assert serializer.data['id'] == dataset.id,\
-            """
-            'dataset.id' should be serialized to a field called 'id'
-            """
-        assert serializer.data['name'] == dataset.name,\
-            """
-            'dataset.name' should be serialized to a field called 'name'
-            """
-        assert serializer.data['title'] == dataset.title,\
-            """
-            'dataset.title' should be serialized to a field called 'title'
-            """
-        assert serializer.data['type'] == 'Activity',\
-            """
-            'dataset.type' should be serialized to a field called 'type'
-            """
-        assert serializer.data['source_url'] == dataset.source_url,\
-            """
-            'dataset.source_url' should be serialized to a field called 'source_url'
-            """
+        self.assertEqual(serializer.data.get('id'), dataset.id)
+        self.assertEqual(serializer.data.get('name'), dataset.name)
+        self.assertEqual(serializer.data.get('title'), dataset.title)
+        self.assertEqual(serializer.data.get('filetype'), 'Activity')
+        self.assertEqual(serializer.data.get('source_url'), dataset.source_url)
         # assert serializer.data['date_created'] == dataset.date_created,\
         #     """
         #     'dataset.date_created' should be serialized to a field called 'date_created'
@@ -46,23 +31,25 @@ class TestDatasetSerializers(TestCase):
         #     """
         #     'dataset.last_found_in_registry' should be serialized to a field called 'last_found_in_registry'
         #     """
-        assert serializer.data['iati_standard_version'] == dataset.iati_standard_version,\
-            """
-            'dataset.iati_standard_version' should be serialized to a field called 'iati_standard_version'
-            """
+        self.assertEqual(serializer.data.get('iati_version'), dataset.iati_version)
 
         required_fields = (
             'id',
+            'url',
             'name',
             'title',
-            'type',
+            'filetype',
             'publisher',
-            'url',
             'source_url',
+            'activities',
+            'activity_count',
             'date_created',
             'date_updated',
             'last_found_in_registry',
-            'iati_standard_version'
+            'iati_version',
+            'sha1',
+            'note_count',
+            'notes'
         )
 
         assertion_msg = "the field '{0}' should be in the serialized dataset"

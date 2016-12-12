@@ -17,18 +17,6 @@ class Migration(migrations.Migration):
             model_name='countrybudgetitem',
             name='percentage',
         ),
-        migrations.RemoveField(
-            model_name='transactionrecipientcountry',
-            name='percentage',
-        ),
-        migrations.RemoveField(
-            model_name='transactionrecipientregion',
-            name='percentage',
-        ),
-        migrations.RemoveField(
-            model_name='transactionsector',
-            name='percentage',
-        ),
         migrations.AlterField(
             model_name='budgetitemdescription',
             name='budget_item',

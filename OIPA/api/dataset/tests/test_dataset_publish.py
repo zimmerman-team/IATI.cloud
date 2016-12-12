@@ -1,4 +1,5 @@
 
+import unittest
 from django.test import TestCase
 from django.test import RequestFactory
 from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
@@ -9,11 +10,11 @@ from iati.permissions.factories import OrganisationAdminGroupFactory, UserFactor
 class TestDatasetPublish(TestCase):
     request_dummy = RequestFactory().get('/')
 
+    @unittest.skip("Not implemented")
     def test_publish_dataset_success(self):
         """
         Publish a publisher's activities in one file when the user is in the corresponding admin group
         """
-        pass
         admin_group = OrganisationAdminGroupFactory.create()
         user = UserFactory.create(username='test1')
         new_user = UserFactory.create(username='test2')

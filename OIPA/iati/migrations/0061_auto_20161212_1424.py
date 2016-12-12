@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='crsaddotherflags',
             name='significance',
-            field=models.BooleanField(default=datetime.datetime(2016, 12, 12, 14, 24, 8, 650550)),
+            field=models.BooleanField(),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -207,12 +207,16 @@ class TransactionSector(models.Model):
 
     reported_on_transaction = models.BooleanField(default=True)
 
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
+
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.sector)
 
 
 class TransactionRecipientCountry(models.Model):
-    transaction = models.OneToOneField(
+    transaction = models.ForeignKey(
         Transaction,
         on_delete=models.CASCADE,
         related_name="recipient_country"
@@ -223,6 +227,10 @@ class TransactionRecipientCountry(models.Model):
         on_delete=models.CASCADE)
 
     reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
@@ -249,6 +257,10 @@ class TransactionRecipientRegion(models.Model):
     vocabulary_uri = models.URLField(null=True, blank=True)
 
     reported_on_transaction = models.BooleanField(default=True)
+
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2)
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)

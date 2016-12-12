@@ -36,7 +36,7 @@ class PostSaveFileTestCase(TestCase):
         self.parser.dataset = self.dataset
         self.parser.delete_removed_activities = MagicMock()
         self.parser.post_save_file(self.parser.dataset)
-        self.parser.delete_removed_activities.assert_called_once_with('source_reference')
+        self.parser.delete_removed_activities.assert_called_once_with(self.parser.dataset)
 
     def test_delete_removed_activities(self):
         """The parser should remove activities that are not in the source any longer

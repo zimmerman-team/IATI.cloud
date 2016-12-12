@@ -13,14 +13,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='transactionrecipientcountry',
-            name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction'),
-        ),
-        migrations.AlterField(
-            model_name='transactionrecipientregion',
-            name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction'),
-        ),
     ]
