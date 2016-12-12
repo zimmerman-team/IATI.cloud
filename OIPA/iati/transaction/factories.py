@@ -66,6 +66,7 @@ class TransactionSectorFactory(NoDatabaseFactory):
     transaction = SubFactory(TransactionFactory)
     sector = SubFactory(SectorFactory)
     vocabulary = SubFactory(SectorVocabularyFactory)
+    percentage = 100
 
     reported_on_transaction = False
 
@@ -77,6 +78,7 @@ class TransactionRecipientCountryFactory(NoDatabaseFactory):
     
     transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
+    percentage = 100
 
     reported_on_transaction = False
 
@@ -88,6 +90,7 @@ class TransactionRecipientRegionFactory(NoDatabaseFactory):
 
     transaction = SubFactory(TransactionFactory)
     region = SubFactory(RegionFactory)
+    percentage = 100
 
     reported_on_transaction = False
 

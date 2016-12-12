@@ -1674,6 +1674,7 @@ def transaction_sector(
                 "sector": sector,
                 "vocabulary": vocabulary,
                 "vocabulary_uri": vocabulary_uri,
+                "percentage": 100,
             },
         }
 

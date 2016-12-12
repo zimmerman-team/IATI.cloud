@@ -1940,13 +1940,13 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_country": {
+            "recipient_countries": [{
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
                 },
-            },
-            "recipient_region": {
+            }],
+            "recipient_regions": [{
                 "region": {
                     "code": region.code,
                     "name": 'irrelevant',
@@ -1956,7 +1956,7 @@ class TransactionSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 },
                 "vocabulary_uri": "https://twitter.com/",
-            },
+            }],
             # "sector": {
             #     "sector": {
             #         "code": sector.code,

@@ -165,8 +165,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     receiver_organisation = TransactionReceiverSerializer()
     disbursement_channel = CodelistSerializer()
     sector = TransactionSectorSerializer(required=False)
-    recipient_country = TransactionRecipientCountrySerializer()
-    recipient_region = TransactionRecipientRegionSerializer()
+    recipient_countries = TransactionRecipientCountrySerializer(many=True, required=False)
+    recipient_regions = TransactionRecipientRegionSerializer(many=True, required=False)
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
@@ -195,8 +195,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'receiver_organisation',
             'disbursement_channel',
             'sector',
-            'recipient_country',
-            'recipient_region',
+            'recipient_countries',
+            'recipient_regions',
             'flow_type',
             'finance_type',
             'aid_type',
@@ -278,12 +278,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
                 transaction=instance,
+                percentage=100,
                 **recipient_country_data
                 )
 
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
                 transaction=instance,
+                percentage=100,
                 **recipient_region
                 )
 
@@ -328,12 +330,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
                 transaction=instance,
+                percentage=100,
                 **recipient_country_data
                 )
 
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
                 transaction=instance,
+                percentage=100,
                 **recipient_region
                 )
 
