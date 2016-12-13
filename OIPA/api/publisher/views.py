@@ -10,6 +10,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from common.util import get_or_none
 
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, exceptions
 
@@ -70,7 +71,7 @@ class PublisherDetail(DynamicDetailView):
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
 
-class OrganisationAdminGroupView(APIView):
+class OrganisationAdminGroupView(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -79,7 +80,7 @@ class OrganisationAdminGroupView(APIView):
 
         print(users)
 
-        serializer = OrganisationUserSerializer(users, many=True)
+        serializer = OrganisationUserSerializer(users, many=True, context=self.get_serializer_context())
 
         return Response(serializer.data)
 
@@ -96,7 +97,7 @@ class OrganisationAdminGroupView(APIView):
 
         return Response()
 
-class OrganisationAdminGroupDetailView(APIView):
+class OrganisationAdminGroupDetailView(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -122,14 +123,14 @@ class OrganisationAdminGroupDetailView(APIView):
 
 
 
-class OrganisationGroupView(APIView):
+class OrganisationGroupView(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, publisher_id):
         users = OrganisationGroup.objects.get(publisher_id=publisher_id).user_set.all()
 
-        serializer = OrganisationUserSerializer(users, many=True)
+        serializer = OrganisationUserSerializer(users, many=True, context=self.get_serializer_context())
 
         return Response(serializer.data)
 
@@ -146,7 +147,7 @@ class OrganisationGroupView(APIView):
 
         return Response()
 
-class OrganisationGroupDetailView(APIView):
+class OrganisationGroupDetailView(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -174,7 +175,7 @@ class OrganisationGroupDetailView(APIView):
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class OrganisationVerifyApiKey(APIView):
+class OrganisationVerifyApiKey(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -275,7 +276,7 @@ class OrganisationVerifyApiKey(APIView):
 
         return Response("{}")
 
-class OrganisationRemoveApiKey(APIView):
+class OrganisationRemoveApiKey(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
