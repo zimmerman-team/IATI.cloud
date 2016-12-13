@@ -27,14 +27,4 @@ class Migration(migrations.Migration):
             name='activity',
             field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='country_budget_items', to='iati.Activity'),
         ),
-        migrations.AlterField(
-            model_name='transactionrecipientcountry',
-            name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='recipient_country', to='iati.Transaction'),
-        ),
-        migrations.AlterField(
-            model_name='transactionrecipientregion',
-            name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='recipient_region', to='iati.Transaction'),
-        ),
     ]
