@@ -12,6 +12,31 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='OrganisationAdminGroup',
+            fields=[
+                ('group_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.Group')),
+                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('publisher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher', unique=True)),
+            ],
+            options={
+                'ordering': ['name'],
+                'verbose_name_plural': 'Organisation admin groups',
+            },
+            bases=('auth.group',),
+        ),
+        migrations.CreateModel(
+            name='OrganisationGroup',
+            fields=[
+                ('group_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.Group')),
+                ('publisher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher', unique=True)),
+            ],
+            options={
+                'ordering': ['name'],
+                'verbose_name_plural': 'Organisation groups',
+            },
+            bases=('auth.group',),
+        ),
         migrations.AlterField(
             model_name='organisationuser',
             name='iati_api_key',

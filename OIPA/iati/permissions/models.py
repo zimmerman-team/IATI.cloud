@@ -9,6 +9,7 @@ class OrganisationUser(AbstractUser):
 
     class Meta:
         verbose_name_plural = "Organisation users"
+        db_table = 'auth_user'
 
 
 class OrganisationAdminGroup(Group):
