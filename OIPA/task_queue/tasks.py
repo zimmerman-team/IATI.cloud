@@ -319,6 +319,7 @@ def collect_pdf_files():
 def download_file(d):
 
     document_link = DocumentLink.objects.get(pk=d.pk)
+    doc, created = Document.objects.get_or_create(document_link=document_link)
 
     if d.url:
         '''Define the working Directory and saving Path'''
@@ -349,7 +350,7 @@ def download_file(d):
 
             '''Get Text from file and save document'''
             document_content=fulltext.get(save_path + save_name, '< no content >')
-            doc, created = Document.objects.get_or_create(document_link=document_link)
+            
             doc.long_url = long_url
             doc.document_name = local_filename
             doc.is_downloaded = is_downloaded

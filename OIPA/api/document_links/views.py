@@ -3,7 +3,7 @@ from rest_framework.filters import DjangoFilterBackend
 
 from api.document_links import serializers as documentSerializers
 from api.document_links import filters
-from api.generics.filters import SearchFilter
+from api.generics.filters import DocumentSearchFilter
 from api.generics.views import DynamicListView
 
 
@@ -17,7 +17,7 @@ class DocumentList(DynamicListView):
 
     ## Text search
 
-    API request may include `q` parameter. This parameter controls text search
+    API request may include `document_q` parameter. This parameter controls text search
     and contains expected value.
 
     By default, searching is performed on `document_content` the document content
@@ -32,7 +32,7 @@ class DocumentList(DynamicListView):
     """
 
     queryset = Document.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend,)
+    filter_backends = (DocumentSearchFilter, DjangoFilterBackend,)
     filter_class = filters.DocumentFilter
     serializer_class = documentSerializers.DocumentSerializer
 
