@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('iati_synchroniser', '0014_auto_20161024_1451'),
-        ('permissions', '0003_temp_turn_off_constraints'),   
+        ('permissions', '0001_initial'),   
     ]
 
     operations = [

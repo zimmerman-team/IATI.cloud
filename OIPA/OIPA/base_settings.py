@@ -9,7 +9,7 @@ LOGIN_URL = reverse_lazy('two_factor:login')
 LOGOUT_URL = '/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
-AUTH_USER_MODEL = 'permissions.OrganisationUser'
+# AUTH_USER_MODEL = 'permissions.OrganisationUser'
 
 SECRET_KEY = 'REPLACE_THIS'
 

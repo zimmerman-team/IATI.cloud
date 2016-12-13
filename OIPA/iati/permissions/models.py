@@ -3,13 +3,16 @@ from django.contrib.auth.models import Group, User, AbstractUser
 
 from iati_synchroniser.models import Publisher
 
-class OrganisationUser(AbstractUser):
+class OrganisationUser(models.Model):
+
     # the IR API key
     iati_api_key = models.CharField(max_length=255, null=True, blank=True)
 
+    user = models.ForeignKey(User)
+
     class Meta:
         verbose_name_plural = "Organisation users"
-        db_table = 'auth_user'
+        # db_table = 'auth_user'
 
 
 class OrganisationAdminGroup(Group):
@@ -33,5 +36,4 @@ class OrganisationGroup(Group):
     class Meta:
         verbose_name_plural = "Organisation groups"
         ordering = ['name']
-
 
