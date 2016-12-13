@@ -9,20 +9,10 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iati', '0059_auto_20161121_1613'),
+        ('iati', '0060_remove_country_budget_items'),
     ]
 
-    def remove_all_wopa(apps, schema_editor):
-        try: # don't run on first migration
-            CountryBudgetItem = apps.get_model('iati', 'CountryBudgetItem')
-        except:
-            return
-
-        CountryBudgetItem.objects.all().delete()
-
-
     operations = [
-        migrations.RunPython(remove_all_wopa),
         migrations.RemoveField(
             model_name='countrybudgetitem',
             name='percentage',
