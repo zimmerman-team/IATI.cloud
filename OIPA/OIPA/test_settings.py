@@ -8,3 +8,5 @@ DATABASES = {
         'NAME': ':memory:',
     },
 }
+
+FTS = False
