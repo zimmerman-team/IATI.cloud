@@ -46,8 +46,8 @@ class SearchFilter(filters.BaseFilterBackend):
         if query_lookup:
             if query_lookup == 'exact':
                 lookup_type = 'ft'
-            if query_lookup == 'containso':
-                lookup_type = 'ft_containso'
+            if query_lookup == 'startswith':
+                lookup_type = 'ft_startswith'
 
         if query:
 
