@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('auth', '0008_alter_user_username_max_length'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('iati_synchroniser', '0020_auto_20161027_0115'),
+        # ('iati_synchroniser', '0020_auto_20161027_0115'),
     ]
 
     operations = [
