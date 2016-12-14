@@ -42,7 +42,7 @@ def _create_test_activity(
     """
 
     activity = ActivityFactory.create(
-        id=id,
+        id=iati_identifier,
         iati_identifier=iati_identifier
     )
 
@@ -106,12 +106,16 @@ def _create_test_activity(
         activity=activity,
     )
 
-    document_link_title = DocumentLinkTitleFactory.create(
+    document_link_category = DocumentLinkCategoryFactory.create(
+        document_link=document_link,
+    )
+    document_link_language = DocumentLinkLanguageFactory.create(
         document_link=document_link,
     )
 
-    _create_test_narrative(activity, document_link_title, sector1)
-    _create_test_narrative(activity, document_link_title, sector2)
+    other_identifier1 = OtherIdentifierFactory.create(
+        activity=activity,
+        )
 
     return activity
 

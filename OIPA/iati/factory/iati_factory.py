@@ -80,8 +80,6 @@ class NarrativeRelatedFactory(RelatedFactory):
     def __init__(self, related_factory=NarrativeFactory, factory_related_name='related_object', 
             activity_dummy=factory.LazyAttribute(lambda obj: ActivityDummyFactory()), **defaults):
 
-        
-
         super(NarrativeRelatedFactory, self).__init__(related_factory,
                 factory_related_name,
                 activity=activity_dummy,
@@ -102,7 +100,7 @@ class DescriptionFactory(NoDatabaseFactory):
         model = iati.models.Description
 
     activity = SubFactory(ActivityFactory)
-    type = DescriptionTypeFactory.build()
+    type = SubFactory(DescriptionTypeFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
@@ -156,6 +154,7 @@ class DocumentLinkFactory(NoDatabaseFactory):
     file_format = SubFactory(FileFormatFactory)
 
     documentlinktitle = RelatedFactory(DocumentLinkTitleFactory, 'document_link')
+    iso_date = datetime.datetime.now()
     # title = 'some title'
 
 class DocumentLinkCategoryFactory(NoDatabaseFactory):
@@ -267,6 +266,9 @@ class OtherIdentifierFactory(NoDatabaseFactory):
     type = SubFactory(OtherIdentifierTypeFactory)
     activity = SubFactory(ActivityFactory)
 
+    narrative1 = NarrativeRelatedFactory(content="other_identifier test")
+    narrative2 = NarrativeRelatedFactory(content="other_identifier test2")
+
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityReportingOrganisation
@@ -290,6 +292,7 @@ class ActivitySectorFactory(NoDatabaseFactory):
     sector = SubFactory(SectorFactory)
     activity = SubFactory(ActivityFactory)
     vocabulary = SubFactory(SectorVocabularyFactory)
+    vocabulary_uri = "https://twitter.com"
     percentage = 100
 
     narrative1 = NarrativeRelatedFactory(content="title test")
@@ -314,8 +317,8 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
 
     percentage = 100
     region = SubFactory(RegionFactory)
-    region = RegionFactory.build()
     vocabulary = SubFactory(RegionVocabularyFactory)
+    vocabulary_uri = "https://twitter.com"
     activity = SubFactory(ActivityFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")

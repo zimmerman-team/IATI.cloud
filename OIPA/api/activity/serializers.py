@@ -335,8 +335,8 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-    categories = DocumentLinkCategorySerializer(many=True, required=False)
-    languages = DocumentLinkLanguageSerializer(many=True, required=False)
+    categories = DocumentLinkCategorySerializer(many=True, required=False, source="documentlinkcategory_set")
+    languages = DocumentLinkLanguageSerializer(many=True, required=False, source="documentlinklanguage_set")
     title = NarrativeContainerSerializer(source="documentlinktitle")
     document_date = DocumentDateSerializer(source="*")
 
