@@ -166,6 +166,13 @@ class DocumentLinkCategoryFactory(NoDatabaseFactory):
     document_link = SubFactory(DocumentLinkFactory)
     category = SubFactory(DocumentCategoryFactory)
 
+class DocumentLinkLanguageFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentLinkLanguage
+
+    document_link = SubFactory(DocumentLinkFactory)
+    language = SubFactory(LanguageFactory)
+
 
 class BudgetFactory(NoDatabaseFactory):
     class Meta:

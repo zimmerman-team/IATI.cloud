@@ -63,10 +63,10 @@ class NarrativeContainerXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.S
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
 
-class DocumentCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentCategorySerializer):
+class DocumentLinkCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkCategorySerializer):
     xml_meta = {'attributes': ('code',)}
 
-    class Meta(activity_serializers.DocumentCategorySerializer.Meta):
+    class Meta(activity_serializers.DocumentLinkCategorySerializer.Meta):
         fields = ('code',)
 
 
@@ -74,7 +74,7 @@ class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.D
     xml_meta = {'attributes': ('url', 'format',)}
 
     format = serializers.CharField(source='file_format.code')
-    category = DocumentCategorySerializer(many=True, source='categories')
+    category = DocumentLinkCategorySerializer(many=True, source='categories')
     title = NarrativeContainerXMLSerializer(source='documentlinktitle')
     document_date = IsoDateSerializer()
 

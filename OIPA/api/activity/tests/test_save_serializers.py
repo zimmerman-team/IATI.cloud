@@ -4158,3 +4158,139 @@ class DocumentLinkSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.DocumentLink.objects.get(pk=document_links.id)
 
+
+class DocumentLinkCategorySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_document_link_category(self):
+        document_link = iati_factory.DocumentLinkFactory.create()
+        document_category = codelist_factory.DocumentCategoryFactory.create()
+
+        data = {
+            "document_link": document_link.id,
+            "category": {
+                "code": document_category.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/document_links/{}/categories/?format=json".format(document_link.activity.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.category.code, data['category']['code'])
+
+    def test_update_document_link_category(self):
+        document_link_category = iati_factory.DocumentLinkCategoryFactory.create()
+        document_category = codelist_factory.DocumentCategoryFactory.create(code="2")
+
+        data = {
+            "document_link": document_link_category.document_link.id,
+            "category": {
+                "code": document_category.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/document_links/{}/categories/{}?format=json".format(document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.category.code, data['category']['code'])
+
+    def test_delete_document_link_category(self):
+        document_link_category = iati_factory.DocumentLinkCategoryFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/document_links/{}/categories/{}?format=json".format(document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.DocumentLinkCategory.objects.get(pk=document_link_category.id)
+
+
+
+class DocumentLinkLanguageSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_language(self):
+        document_link = iati_factory.DocumentLinkFactory.create()
+        language = codelist_factory.LanguageFactory.create()
+
+        data = {
+            "document_link": document_link.id,
+            "language": {
+                "code": language.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/document_links/{}/languages/?format=json".format(document_link.activity.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.language.code, data['language']['code'])
+
+    def test_update_language(self):
+        document_link_language = iati_factory.DocumentLinkLanguageFactory.create()
+        language = codelist_factory.LanguageFactory.create(code="2")
+
+        data = {
+            "document_link": document_link_language.document_link.id,
+            "language": {
+                "code": language.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/document_links/{}/languages/{}?format=json".format(document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.language.code, data['language']['code'])
+
+    def test_delete_language(self):
+        document_link_language = iati_factory.DocumentLinkLanguageFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/document_links/{}/languages/{}?format=json".format(document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.DocumentLinkLanguage.objects.get(pk=document_link_language.id)

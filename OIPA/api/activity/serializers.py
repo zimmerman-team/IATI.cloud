@@ -253,12 +253,80 @@ class ValueSerializer(serializers.Serializer):
                 )
 
 
-class DocumentCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = iati_models.DocumentCategory
-        fields = ('code', 'name')
+class DocumentLinkCategorySerializer(serializers.ModelSerializer):
+    category = CodelistSerializer()
 
-        extra_kwargs = { "id": { "read_only": False }}
+    document_link = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.DocumentLinkCategory
+        fields = (
+            'document_link',
+            'id',
+            'category', 
+            )
+
+    def validate(self, data):
+        document_link = get_or_raise(iati_models.DocumentLink, data, 'document_link')
+
+        validated = validators.document_link_category(
+            document_link,
+            data.get('category', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.DocumentLinkCategory.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.DocumentLinkCategory(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
+
+
+class DocumentLinkLanguageSerializer(serializers.ModelSerializer):
+    language = CodelistSerializer()
+
+    document_link = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = iati_models.DocumentLinkLanguage
+        fields = (
+            'document_link',
+            'id',
+            'language', 
+            )
+
+    def validate(self, data):
+        document_link = get_or_raise(iati_models.DocumentLink, data, 'document_link')
+
+        validated = validators.document_link_language(
+            document_link,
+            data.get('language', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        instance = iati_models.DocumentLinkLanguage.objects.create(**validated_data)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        update_instance = iati_models.DocumentLinkLanguage(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        return update_instance
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
@@ -267,7 +335,8 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-    categories = DocumentCategorySerializer(many=True, required=False)
+    categories = DocumentLinkCategorySerializer(many=True, required=False)
+    languages = DocumentLinkLanguageSerializer(many=True, required=False)
     title = NarrativeContainerSerializer(source="documentlinktitle")
     document_date = DocumentDateSerializer(source="*")
 
@@ -493,8 +562,6 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
         provider_narratives_data = validated_data.pop('provider_org_narratives', [])
         receiver_data = validated_data.pop('receiver_org')
         receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
-
-        # print(provider_data)
 
         instance = iati_models.PlannedDisbursement.objects.create(**validated_data)
 

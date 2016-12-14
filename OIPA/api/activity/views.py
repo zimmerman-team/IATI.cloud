@@ -673,6 +673,34 @@ class ActivityDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.DocumentLink.objects.get(pk=pk)
 
+class ActivityDocumentLinkCategoryList(ListCreateAPIView):
+    serializer_class = activity_serializers.DocumentLinkCategorySerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('document_link_id')
+        return iati_models.DocumentLink(pk=pk).documentlinkcategory_set.all()
+
+class ActivityDocumentLinkCategoryDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.DocumentLinkCategorySerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('category_id')
+        return iati_models.DocumentLinkCategory.objects.get(pk=pk)
+
+class ActivityDocumentLinkLanguageList(ListCreateAPIView):
+    serializer_class = activity_serializers.DocumentLinkLanguageSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('document_link_id')
+        return iati_models.DocumentLink(pk=pk).documentlinklanguage_set.all()
+
+class ActivityDocumentLinkLanguageDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = activity_serializers.DocumentLinkLanguageSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('language_id')
+        return iati_models.DocumentLinkLanguage.objects.get(pk=pk)
+
 class ActivityRelatedActivityList(ListCreateAPIView):
     serializer_class = activity_serializers.RelatedActivitySerializer
 

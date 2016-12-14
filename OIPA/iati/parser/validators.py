@@ -2399,7 +2399,6 @@ def crs_add_loan_status(
         warnings = []
         errors = []
 
-        print(currency_code)
         currency = get_or_none(models.Currency, code=currency_code)
 
         if not year:
@@ -2743,4 +2742,73 @@ def activity_document_link(
                 "iso_date": document_date,
             },
         }
+
+
+
+
+def document_link_category(
+        document_link,
+        category_code,
+        ):
+        warnings = []
+        errors = []
+
+        category = get_or_none(models.DocumentCategory, code=category_code)
+
+        if not category_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link/category",
+                    "code",
+                    ))
+        elif not category:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link/category",
+                    "code",
+                    "category not found for code {}".format(category_code)
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "document_link": document_link,
+                "category": category,
+            },
+        }
+
+
+def document_link_language(
+        document_link,
+        language_code,
+        ):
+        warnings = []
+        errors = []
+
+        language = get_or_none(models.Language, code=language_code)
+
+        if not language_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link/language",
+                    "code",
+                    ))
+        elif not language:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link/language",
+                    "code",
+                    "language not found for code {}".format(language_code)
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "document_link": document_link,
+                "language": language,
+            },
+        }
+
 
