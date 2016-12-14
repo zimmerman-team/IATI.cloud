@@ -11,7 +11,7 @@ from django.conf import settings
 import time
 import requests
 import os
-
+from common.download_file import DownloadFile
 import fulltext
 
 redis_conn = Redis()
@@ -339,17 +339,16 @@ def download_file(d):
         url_is_valid = False
         if r.headers["content-type"] == 'application/pdf':
             url_is_valid = True
-            r = requests.get(long_url, stream=True)
-            with open(local_filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
-                is_downloaded = True
             save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
-            os.rename(local_filename, save_path + save_name)
+            downloader = DownloadFile(long_url, save_path + save_name)
+            try:
+                is_downloaded = downloader.download()
+            except Exception as e:
+                print str(e)
 
             '''Get Text from file and save document'''
-            document_content=fulltext.get(save_path + save_name, '< no content >')
+            if is_downloaded:
+                document_content=fulltext.get(save_path + save_name, '< no content >')
             
             doc.long_url = long_url
             doc.document_name = local_filename
