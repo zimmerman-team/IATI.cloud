@@ -138,6 +138,15 @@ class LegacyDataFactory(NoDatabaseFactory):
     iati_equivalent = "activity-id"
 
 
+
+class DocumentLinkTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentLinkTitle
+
+    # document_link = SubFactory(DocumentLinkFactory)
+    # narratives = SubFactory(NarrativeFactory)
+
+
 class DocumentLinkFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.DocumentLink
@@ -145,16 +154,9 @@ class DocumentLinkFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
     file_format = SubFactory(FileFormatFactory)
+
+    documentlinktitle = RelatedFactory(DocumentLinkTitleFactory, 'document_link')
     # title = 'some title'
-
-
-class DocumentLinkTitleFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.DocumentLinkTitle
-
-    document_link = SubFactory(DocumentLinkFactory)
-    # narratives = SubFactory(NarrativeFactory)
-
 
 class DocumentLinkCategoryFactory(NoDatabaseFactory):
     # TODO: eliminate need for this element

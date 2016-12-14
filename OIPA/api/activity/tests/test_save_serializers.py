@@ -4047,3 +4047,114 @@ class RelatedActivitySaveTestCase(TestCase):
             instance = iati_models.RelatedActivity.objects.get(pk=related_activity.id)
 
 
+
+
+class DocumentLinkSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def test_create_document_link(self):
+        activity = iati_factory.ActivityFactory.create()
+        file_format = codelist_factory.FileFormatFactory.create()
+
+        data = {
+            "activity": activity.id,
+            "url": "https://bitcoin.org/bitcoin.pdf",
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "document_date": {
+                "iso_date": datetime.date.today().isoformat(),
+            },
+            "format": {
+                "code": file_format.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/activities/{}/document_links/?format=json".format(activity.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.url, data['url'])
+        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.file_format.code, data['format']['code'])
+
+        instance2 = iati_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+    def test_update_document_link(self):
+        document_link = iati_factory.DocumentLinkFactory.create()
+        file_format = codelist_factory.FileFormatFactory.create(code="application/json")
+
+        data = {
+            "activity": document_link.activity.id,
+            "url": "https://bitcoin.org/bitcoin.pdf",
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "document_date": {
+                "iso_date": datetime.date.today().isoformat(),
+            },
+            "format": {
+                "code": file_format.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/activities/{}/document_links/{}?format=json".format(document_link.activity.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.activity.id, data['activity'])
+        self.assertEqual(instance.url, data['url'])
+        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.file_format.code, data['format']['code'])
+
+        instance2 = iati_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+    def test_delete_document_link(self):
+        document_links = iati_factory.DocumentLinkFactory.create()
+
+        res = self.c.delete(
+                "/api/activities/{}/document_links/{}?format=json".format(document_links.activity.id, document_links.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = iati_models.DocumentLink.objects.get(pk=document_links.id)
+

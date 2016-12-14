@@ -664,14 +664,14 @@ class ActivityDocumentLinkList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).document_links.all()
+        return iati_models.Activity(pk=pk).documentlink_set.all()
 
 class ActivityDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.ActivityDocumentLink.objects.get(pk=pk)
+        return iati_models.DocumentLink.objects.get(pk=pk)
 
 class ActivityRelatedActivityList(ListCreateAPIView):
     serializer_class = activity_serializers.RelatedActivitySerializer

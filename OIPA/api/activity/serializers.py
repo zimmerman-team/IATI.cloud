@@ -263,16 +263,20 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
     class DocumentDateSerializer(serializers.Serializer):
-        iso_date = serializers.DateField()
+        # CharField because we want to let the validators do the parsing
+        iso_date = serializers.CharField()
 
     format = CodelistSerializer(source='file_format')
-    categories = DocumentCategorySerializer(many=True)
+    categories = DocumentCategorySerializer(many=True, required=False)
     title = NarrativeContainerSerializer(source="documentlinktitle")
     document_date = DocumentDateSerializer(source="*")
+
+    activity = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.DocumentLink
         fields = (
+            'activity',
             'id',
             'url',
             'format',
@@ -281,7 +285,44 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'document_date',
         )
 
-        extra_kwargs = { "id": { "read_only": False }}
+    def validate(self, data):
+        activity = get_or_raise(iati_models.Activity, data, 'activity')
+
+        validated = validators.activity_document_link(
+            activity,
+            data.get('url'),
+            data.get('file_format', {}).get('code'),
+            data.get('iso_date'),
+            data.get('documentlinktitle', {}).get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        activity = validated_data.get('activity')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+
+        instance = iati_models.DocumentLink.objects.create(**validated_data)
+
+        document_link_title = iati_models.DocumentLinkTitle.objects.create(document_link=instance)
+
+        save_narratives(document_link_title, title_narratives_data, activity)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('activity')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+
+        update_instance = iati_models.DocumentLink(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(update_instance.documentlinktitle, title_narratives_data, activity)
+
+        return update_instance
 
 
 class CapitalSpendSerializer(serializers.ModelSerializer):

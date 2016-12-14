@@ -33,7 +33,7 @@ class FileFormatFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FileFormat
 
-    code = 'application/json'
+    code = 'application/pdf'
     name = ''
 
 class DocumentCategoryCategoryFactory(NoDatabaseFactory):

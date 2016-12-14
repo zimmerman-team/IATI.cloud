@@ -2627,7 +2627,6 @@ def related_activity(
             },
         }
 
-
 def related_activity(
         activity,
         ref,
@@ -2675,6 +2674,73 @@ def related_activity(
                 "ref_activity": ref_activity,
                 "ref": ref,
                 "type": type,
+            },
+        }
+
+
+def activity_document_link(
+        activity,
+        url,
+        file_format_code,
+        document_date_raw,
+        title_narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not title_narratives_data:
+            title_narratives_data = []
+
+        file_format = get_or_none(models.FileFormat, code=file_format_code)
+
+        if not file_format_code:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link",
+                    "file-format",
+                    ))
+        elif not file_format:
+            errors.append(
+                RequiredFieldError(
+                    "activity/document-link",
+                    "file-format",
+                    "format not found for code {}".format(file_format_code)
+                    ))
+
+        # TODO: check the url actually resolves? - 2016-12-14
+        if not url:
+            errors.append(
+                RequiredFieldError(
+                    "document_link",
+                    "url",
+                    ))
+
+        try:
+            document_date = validate_date(document_date_raw)
+        except RequiredFieldError:
+            # if not document_date:
+            #     errors.append(
+            #             RequiredFieldError(
+            #                 "activity/document-link",
+            #                 "document-date",
+            #                 ))
+
+            document_date = None
+
+
+        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + title_narratives['errors']
+        warnings = warnings + title_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "activity": activity,
+                "url": url,
+                "file_format": file_format,
+                "title_narratives": title_narratives['validated_data'],
+                "iso_date": document_date,
             },
         }
 
