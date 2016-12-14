@@ -26,14 +26,14 @@ class LanguageFactory(NoDatabaseFactory):
         model = iati.models.Language
         django_get_or_create = ('code',)
 
-    code = 'fr'
-    name = 'french'
+    code = 'en'
+    name = 'english'
 
 class FileFormatFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FileFormat
 
-    code = 'application/json'
+    code = 'application/pdf'
     name = ''
 
 class DocumentCategoryCategoryFactory(NoDatabaseFactory):
@@ -95,7 +95,7 @@ class ActivityStatusFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.ActivityStatus
 
-    code = 1
+    code = "1"
     name = 'Pipeline/identification'
 
 
@@ -179,12 +179,29 @@ class OrganisationRoleFactory(NoDatabaseFactory):
     name = 'Funding'
 
 
+class BudgetIdentifierSectorCategoryFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.BudgetIdentifierSectorCategory
+
+    code = "1"
+    name = "General Public Service"
+
+
+class BudgetIdentifierSectorFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.BudgetIdentifierSector
+
+    code = "1.1"
+    name = "Executive"
+    category = SubFactory(BudgetIdentifierSectorCategoryFactory)
+
 class BudgetIdentifierFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.BudgetIdentifier
 
     code = "1"
     name = "IATI"
+    category = SubFactory(BudgetIdentifierSectorFactory)
 
 
 class PolicyMarkerFactory(NoDatabaseFactory):
@@ -204,12 +221,20 @@ class PolicySignificanceFactory(NoDatabaseFactory):
     description = 'test description'
 
 
+class FinanceTypeCategoryFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.FinanceTypeCategory
+
+    code = "100"
+    name = "GRANT"
+
 class FinanceTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FinanceType
 
     code = "110"
     name = 'Aid grant excluding debt reorganisation'
+    category = SubFactory(FinanceTypeCategoryFactory)
 
 
 class TiedStatusFactory(NoDatabaseFactory):
@@ -284,4 +309,69 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
     code = "1"
     name = 'Emergency'
 
+from iati.transaction.models import TransactionType
 
+class TransactionTypeFactory(NoDatabaseFactory):
+    code = "1"
+    name = "Incoming Funds"
+    description = ""
+
+    class Meta:
+        model = TransactionType
+
+class DisbursementChannelFactory(NoDatabaseFactory):
+    code = "1"
+    name = "Money is disbursed through central Ministry of Finance or Treasury"
+    description = ""
+
+    class Meta:
+        model = codelist_models.DisbursementChannel
+
+class IndicatorMeasureFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.IndicatorMeasure
+
+    code = "1"
+    name = "Unit"
+
+class OtherIdentifierTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.OtherIdentifierType
+
+    code = 'A1'
+    name = 'Reporting Organisations internal activity identifier'
+
+
+class ConditionTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.ConditionType
+
+    code = '1'
+    name = 'Policy'
+
+class LoanRepaymentTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.LoanRepaymentType
+
+    code = '1'
+    name = 'Equal Principal Payments'
+
+class LoanRepaymentPeriodFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.LoanRepaymentPeriod
+
+    code = '1'
+    name = 'Annual'
+
+class OtherFlagsFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = codelist_models.OtherFlags
+
+    code = '1'
+
+class RelatedActivityTypeFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = iati.models.RelatedActivityType
+
+    code = '1'
+    name = 'Parent'

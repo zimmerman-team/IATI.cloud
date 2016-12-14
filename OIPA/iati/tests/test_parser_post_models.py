@@ -9,6 +9,7 @@ from iati.transaction.factories import TransactionFactory, TransactionTypeFactor
 from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, BudgetTypeFactory, BudgetStatusFactory
 from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
+from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
 from iati.models import BudgetSector
 from iati.parser import post_save
 
@@ -22,11 +23,12 @@ class PostSaveActivityTestCase(TestCase):
         self.parser = Parser_201(None)
 
         version = VersionFactory.create(code='2.01')
+        dataset = DatasetFactory.create()
         self.activity = iati_factory.ActivityFactory.create(
             id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
-            xml_source_ref='source_reference')
+            dataset=dataset)
 
     def setUpCountriesRegionsSectors(self):
         self.sector_vocabulary = SectorVocabularyFactory()

@@ -9,6 +9,10 @@ LOGIN_URL = reverse_lazy('two_factor:login')
 LOGOUT_URL = '/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
+# AUTH_USER_MODEL = 'permissions.OrganisationUser'
+
+SECRET_KEY = 'REPLACE_THIS'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -145,6 +149,12 @@ INSTALLED_APPS = [
     'nested_admin',
     'djorm_pgfulltext',
     'admin_reorder',
+    'rest_framework.authtoken',
+    'iati.permissions',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
 
 ADMIN_REORDER = (
@@ -177,6 +187,11 @@ REST_FRAMEWORK = {
         'api.renderers.PaginatedCSVRenderer',
         # 'rest_framework_csv.renderers.CSVRenderer',
     ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
 }
 
 RQ_QUEUES = {
@@ -209,3 +224,11 @@ ROOT_ORGANISATIONS = []
 ERROR_LOGS_ENABLED = True
 
 DEFAULT_LANG = None
+# django-all-auth
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+# django-rest-auth
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": 'api.permissions.serializers.OrganisationUserSerializer',
+}
+

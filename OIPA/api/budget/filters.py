@@ -86,10 +86,6 @@ class BudgetFilter(TogetherFilterSet):
         lookup_type='isnull', 
         name='activity__start_date')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity__xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)

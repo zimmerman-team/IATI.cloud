@@ -17,6 +17,7 @@ from iati_organisation.models import Organisation
 
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
+from iati_synchroniser.models import Dataset
 
 
 class Narrative(models.Model):
@@ -65,7 +66,7 @@ class Activity(models.Model):
     iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
-    xml_source_ref = models.CharField(max_length=200, default="", db_index=True)
+    dataset = models.ForeignKey(Dataset, null=True, default=None)
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)
@@ -73,7 +74,8 @@ class Activity(models.Model):
 
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
 
-    default_lang = models.CharField(max_length=2, blank=True, null=True)
+    # default_lang = models.CharField(max_length=2, blank=True, null=True)
+    default_lang = models.ForeignKey(Language, null=True, blank=True, default=None)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
     planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
@@ -127,6 +129,13 @@ class Activity(models.Model):
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 
+    # is this valid IATI?
+    # this value should be updated on every O2M, M2M save and activity update
+    # is_valid_iati = models.BooleanField(default=False, db_index=True)
+
+    # is this activity published to the IATI registry?
+    published = models.BooleanField(default=False, db_index=True)
+
     objects = ActivityManager(
         ft_model = ActivitySearch, # model that contains the ft indexes
         fields = ('title', 'description'), # fields on the model 
@@ -150,6 +159,13 @@ class Activity(models.Model):
             ["actual_end", "id"],
             ["end_date", "id"],
         ]
+
+    def is_valid_iati(self):
+        """
+        Check if all required foreign objects are created
+        """
+        # TODO: create this method - 2016-10-03
+        return True
 
     @property
     def get_providing_activities(self):
@@ -405,9 +421,8 @@ class ActivityRecipientCountry(models.Model):
 
 
 class CountryBudgetItem(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.OneToOneField(Activity, related_name="country_budget_items")
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
-    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
 class HumanitarianScope(models.Model):
     activity = models.ForeignKey(Activity)
@@ -423,7 +438,7 @@ class BudgetItem(models.Model):
 
 
 class BudgetItemDescription(models.Model):
-    budget_item = models.ForeignKey(BudgetItem)
+    budget_item = models.OneToOneField(BudgetItem, related_name="description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -570,7 +585,6 @@ class DocumentLinkCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "Document link categories"
-
 
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
@@ -927,13 +941,23 @@ class PlannedDisbursementReceiver(models.Model):
         return "%s - %s" % (self.ref,
                             self.receiver_activity_ref,)
 
-class Condition(models.Model):
+class Conditions(models.Model):
     activity = models.ForeignKey(Activity)
-    text = models.TextField(default="")
-    type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
+    attached = models.BooleanField()
 
-    def __unicode__(self,):
-        return "text: %s - type: %s" % (self.text[:30], self.type)
+    # def __unicode__(self,):
+    #     return "text: %s - type: %s" % (self.text[:30], self.type)
+
+class Condition(models.Model):
+    conditions = models.ForeignKey(Conditions)
+    type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+    # def __unicode__(self,):
+    #     return "text: %s - type: %s" % (self.text[:30], self.type)
 
 
 class Location(models.Model):
@@ -995,7 +1019,7 @@ class LocationAdministrative(models.Model):
 
 
 class LocationName(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="name")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1003,7 +1027,7 @@ class LocationName(models.Model):
 
 
 class LocationDescription(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1011,7 +1035,7 @@ class LocationDescription(models.Model):
 
 
 class LocationActivityDescription(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.OneToOneField(Location, related_name="activity_description")
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1020,7 +1044,7 @@ class LocationActivityDescription(models.Model):
 
 class Fss(models.Model):
     activity = models.ForeignKey(Activity)
-    extraction_date = models.DateField(null=True, blank=True, default=None)
+    extraction_date = models.DateField()
     priority = models.BooleanField(default=False)
     phaseout_year = models.IntegerField(null=True, blank=True)
 
@@ -1030,9 +1054,9 @@ class Fss(models.Model):
 
 class FssForecast(models.Model):
     fss = models.ForeignKey(Fss)
-    year = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField()
     currency = models.ForeignKey(Currency)
-    value_date = models.DateField(null=True, blank=True, default=None)
+    value_date = models.DateField()
     value = models.DecimalField(max_digits=15, decimal_places=2)
 
     def __unicode__(self,):
@@ -1041,24 +1065,35 @@ class FssForecast(models.Model):
 
 class CrsAdd(models.Model):
     activity = models.ForeignKey(Activity)
+    channel_code = models.CharField(max_length=50, null=True, blank=True)
 
     def __unicode__(self,):
         return "%s" % self.id
 
 
 class CrsAddOtherFlags(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
+    crs_add = models.ForeignKey(CrsAdd, related_name="other_flags")
     other_flags = models.ForeignKey(OtherFlags)
-    other_flags_significance = models.BooleanField(default=True)
+    significance = models.BooleanField()
 
     def __unicode__(self,):
         return "%s" % self.id
 
 
 class CrsAddLoanTerms(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
-    rate_1 = models.IntegerField(null=True, blank=True, default=None)
-    rate_2 = models.IntegerField(null=True, blank=True, default=None)
+    crs_add = models.OneToOneField(CrsAdd, related_name="loan_terms")
+    rate_1 = models.DecimalField(
+        null=True,
+        blank=True,
+        default=None,
+        max_digits=5,
+        decimal_places=2)
+    rate_2 = models.DecimalField(
+        null=True,
+        blank=True,
+        default=None,
+        max_digits=5,
+        decimal_places=2)
     repayment_type = models.ForeignKey(
         LoanRepaymentType,
         null=True,
@@ -1079,7 +1114,7 @@ class CrsAddLoanTerms(models.Model):
 
 
 class CrsAddLoanStatus(models.Model):
-    crs_add = models.ForeignKey(CrsAdd)
+    crs_add = models.OneToOneField(CrsAdd, related_name="loan_status")
     year = models.IntegerField(null=True, blank=True, default=None)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(Currency, null=True, blank=True, default=None)

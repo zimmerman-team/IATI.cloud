@@ -25,6 +25,7 @@ class TransactionTypeFactory(NoDatabaseFactory):
 
     class Meta:
         model = TransactionType
+        django_get_or_create = ('code',)
 
 
 class TransactionProviderFactory(NoDatabaseFactory):
@@ -48,7 +49,7 @@ class TransactionFactory(NoDatabaseFactory):
 
     activity = SubFactory(ActivityFactory)
 
-    transaction_type = SubFactory(TransactionTypeFactory, code=1)
+    transaction_type = SubFactory(TransactionTypeFactory)
     transaction_date = date.today()
 
     value = 200
@@ -65,8 +66,8 @@ class TransactionSectorFactory(NoDatabaseFactory):
     transaction = SubFactory(TransactionFactory)
     sector = SubFactory(SectorFactory)
     vocabulary = SubFactory(SectorVocabularyFactory)
-
     percentage = 100
+
     reported_on_transaction = False
 
     class Meta:
@@ -77,8 +78,8 @@ class TransactionRecipientCountryFactory(NoDatabaseFactory):
     
     transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
-
     percentage = 100
+
     reported_on_transaction = False
 
     class Meta:
@@ -89,8 +90,8 @@ class TransactionRecipientRegionFactory(NoDatabaseFactory):
 
     transaction = SubFactory(TransactionFactory)
     region = SubFactory(RegionFactory)
-
     percentage = 100
+
     reported_on_transaction = False
 
     class Meta:

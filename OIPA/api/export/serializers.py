@@ -63,10 +63,10 @@ class NarrativeContainerXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.S
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
 
-class DocumentCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentCategorySerializer):
+class DocumentLinkCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkCategorySerializer):
     xml_meta = {'attributes': ('code',)}
 
-    class Meta(activity_serializers.DocumentCategorySerializer.Meta):
+    class Meta(activity_serializers.DocumentLinkCategorySerializer.Meta):
         fields = ('code',)
 
 
@@ -74,7 +74,7 @@ class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.D
     xml_meta = {'attributes': ('url', 'format',)}
 
     format = serializers.CharField(source='file_format.code')
-    category = DocumentCategorySerializer(many=True, source='categories')
+    category = DocumentLinkCategorySerializer(many=True, source='categories')
     title = NarrativeContainerXMLSerializer(source='documentlinktitle')
     document_date = IsoDateSerializer()
 
@@ -282,27 +282,32 @@ class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serialize
         )
 
 
-class ResultIndicatorPeriodLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodLocationSerializer):
+class ResultIndicatorPeriodActualLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualLocationSerializer):
+    xml_meta = {'attributes': ('ref',)}
+class ResultIndicatorPeriodTargetLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
 
-class ResultIndicatorPeriodDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodDimensionSerializer):
+class ResultIndicatorPeriodActualDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualDimensionSerializer):
+    xml_meta = {'attributes': ('name', 'value')}
+
+class ResultIndicatorPeriodTargetDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer):
     xml_meta = {'attributes': ('name', 'value')}
 
 
 class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
-    dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
+    location = ResultIndicatorPeriodTargetLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
+    dimension = ResultIndicatorPeriodTargetDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
 
 
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
     xml_meta = {'attributes': ('value',)}
 
-    location = ResultIndicatorPeriodLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
-    dimension = ResultIndicatorPeriodDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
+    location = ResultIndicatorPeriodActualLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
+    dimension = ResultIndicatorPeriodActualDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
 
 
@@ -545,5 +550,4 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'humanitarian',
             'hierarchy',
             'linked_data_uri',
-            # 'xml_source_ref',
         )

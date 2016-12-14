@@ -89,7 +89,7 @@ class ActivitySerializerTestCase(TestCase):
         doc_category = iati_factory.DocumentCategoryFactory.build()
         serializer = serializers.DocumentCategorySerializer(doc_category)
 
-        assert serializer.data['code'] == doc_category.code,\
+        self.assertEquals(serializer.data['code'], doc_category.code),\
             """
             'document_category.code' should be serialized to a field called
             'code'
@@ -257,8 +257,8 @@ class ActivitySerializerTestCase(TestCase):
             'serializer.data should contain an object called vocabulary'
         assert 'significance' in data,\
             'serializer.data should contain an object called significance'
-        assert 'code' in data,\
-            'serializer.data should contain an object called code'
+        assert 'policy_marker' in data,\
+            'serializer.data should contain an object called policy_marker'
 
     def test_PolicyMarkerSerializer(self):
         policy_marker = iati_factory.PolicyMarkerFactory.build()
@@ -622,7 +622,6 @@ class ActivitySerializerTestCase(TestCase):
             last_updated_datetime=datetime.datetime.now(),
             hierarchy=1,
             linked_data_uri='www.data.example.org/123',
-            xml_source_ref='www.data.example.org/123/1234.xml'
         )
         serializer = serializers.ActivitySerializer(
             activity, context={'request': request_dummy})
@@ -649,11 +648,6 @@ class ActivitySerializerTestCase(TestCase):
             """
             a serialized activity should contain a field 'linked_data_uri'
             that contains the data in activity.linked_data_uri
-            """
-        assert serializer.data['xml_source_ref'] == activity.xml_source_ref,\
-            """
-            a serialized activity should contain a field 'xml_source_ref' that
-            contains the data in activity.xml_source_ref
             """
 
     # @pytest.mark.django_db
@@ -693,7 +687,7 @@ class ActivitySerializerTestCase(TestCase):
             'default_tied_status',
             'budgets',
             'capital_spend',
-            'xml_source_ref',
+            'dataset',
             'document_links',
             'results',
             'locations',

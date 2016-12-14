@@ -7,13 +7,7 @@ import datetime
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 
-from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import BudgetIdentifierVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import PolicyMarkerVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import RegionVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import GeographicVocabularyFactory
-from iati_vocabulary.factory.vocabulary_factory import HumanitarianScopeVocabularyFactory
-
+from iati_vocabulary.factory.vocabulary_factory import *
 from iati_codelists.factory.codelist_factory import *
 
 import geodata
@@ -49,12 +43,13 @@ class NarrativeMixin(NoDatabaseFactory):
 class ActivityFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
-        # django_get_or_create = ('iati_standard_version')
+        django_get_or_create = ('id',)
 
     id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
 
     iati_standard_version = SubFactory(VersionFactory)
+    default_lang = SubFactory(LanguageFactory)
     # iati_standard_version = VersionFactory()
 
 
@@ -128,9 +123,28 @@ class RelatedActivityFactory(NoDatabaseFactory):
     ref_activity = SubFactory(ActivityFactory)
     current_activity = SubFactory(ActivityFactory, id="IATI-0002", iati_identifier="IATI-0002")
     ref = "IATI-0001"
+    type = SubFactory(RelatedActivityTypeFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
+
+class LegacyDataFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LegacyData
+
+    activity = SubFactory(ActivityFactory)
+    name = "value"
+    value = "value"
+    iati_equivalent = "activity-id"
+
+
+
+class DocumentLinkTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentLinkTitle
+
+    # document_link = SubFactory(DocumentLinkFactory)
+    # narratives = SubFactory(NarrativeFactory)
 
 
 class DocumentLinkFactory(NoDatabaseFactory):
@@ -140,16 +154,9 @@ class DocumentLinkFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     url = 'http://someuri.com'
     file_format = SubFactory(FileFormatFactory)
+
+    documentlinktitle = RelatedFactory(DocumentLinkTitleFactory, 'document_link')
     # title = 'some title'
-
-
-class DocumentLinkTitleFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.DocumentLinkTitle
-
-    document_link = SubFactory(DocumentLinkFactory)
-    # narratives = SubFactory(NarrativeFactory)
-
 
 class DocumentLinkCategoryFactory(NoDatabaseFactory):
     # TODO: eliminate need for this element
@@ -158,6 +165,13 @@ class DocumentLinkCategoryFactory(NoDatabaseFactory):
 
     document_link = SubFactory(DocumentLinkFactory)
     category = SubFactory(DocumentCategoryFactory)
+
+class DocumentLinkLanguageFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentLinkLanguage
+
+    document_link = SubFactory(DocumentLinkFactory)
+    language = SubFactory(LanguageFactory)
 
 
 class BudgetFactory(NoDatabaseFactory):
@@ -220,20 +234,6 @@ class CityFactory(NoDatabaseFactory):
     geoname_id = 3443013
 
 
-class ParticipatingOrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati.models.ActivityParticipatingOrganisation
-
-    activity = SubFactory(ActivityFactory)
-    ref = "some-ref"
-    normalized_ref = "some_ref"
-    type = SubFactory(OrganisationTypeFactory)
-    role = SubFactory(OrganisationRoleFactory)
-
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
-
-
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.Organisation
@@ -243,6 +243,29 @@ class OrganisationFactory(NoDatabaseFactory):
     organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
 
+
+class ParticipatingOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ActivityParticipatingOrganisation
+
+    activity = SubFactory(ActivityFactory)
+    organisation = SubFactory(OrganisationFactory)
+    ref = "some-ref"
+    normalized_ref = "some_ref"
+    type = SubFactory(OrganisationTypeFactory)
+    role = SubFactory(OrganisationRoleFactory)
+
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
+
+class OtherIdentifierFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.OtherIdentifier
+
+    identifier = "some-id"
+    owner_ref = "123"
+    type = SubFactory(OtherIdentifierTypeFactory)
+    activity = SubFactory(ActivityFactory)
 
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
@@ -290,9 +313,10 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
         model = iati.models.ActivityRecipientRegion
 
     percentage = 100
+    region = SubFactory(RegionFactory)
     region = RegionFactory.build()
-    vocabulary = RegionVocabularyFactory.build()
-    activity = ActivityFactory.build()
+    vocabulary = SubFactory(RegionVocabularyFactory)
+    activity = SubFactory(ActivityFactory)
 
     narrative1 = NarrativeRelatedFactory(content="title test")
     narrative2 = NarrativeRelatedFactory(content="title test2")
@@ -305,8 +329,15 @@ class CountryBudgetItemFactory(NoDatabaseFactory):
     id = 1
     activity = SubFactory(ActivityFactory)
     vocabulary = SubFactory(BudgetIdentifierVocabularyFactory)
-    percentage = 50.2
 
+
+class BudgetItemDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.BudgetItemDescription
+
+    
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class BudgetItemFactory(NoDatabaseFactory):
     class Meta:
@@ -314,6 +345,8 @@ class BudgetItemFactory(NoDatabaseFactory):
 
     code = SubFactory(BudgetIdentifierFactory) # Executive - executive
     country_budget_item = SubFactory(CountryBudgetItemFactory)
+    description = RelatedFactory(BudgetItemDescriptionFactory, 'budget_item')
+
     percentage = 50.2
 
 
@@ -321,61 +354,50 @@ class ActivityPolicyMarkerFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityPolicyMarker
 
-    activity = ActivityFactory.build()
-    code = PolicyMarkerFactory.build()
+    activity = SubFactory(ActivityFactory)
+    code = SubFactory(PolicyMarkerFactory)
     # alt_policy_marker = 'alt_policy_marker' # ?
-    vocabulary = PolicyMarkerVocabularyFactory.build()
-    significance = PolicySignificanceFactory.build()
+    vocabulary = SubFactory(PolicyMarkerVocabularyFactory)
+    significance = SubFactory(PolicySignificanceFactory)
 
 
-class ResultFactory(NoDatabaseFactory):
+class ResultTitleFactory(NoDatabaseFactory):
     class Meta:
-        model = iati.models.Result
+        model = iati.models.ResultTitle
 
-    activity = ActivityFactory.build()
-    type = ResultTypeFactory.build()
-    aggregation_status = False
+    narrative1 = NarrativeRelatedFactory(content="title test")
+    narrative2 = NarrativeRelatedFactory(content="title test2")
 
+class ResultDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ResultDescription
 
-class ResultIndicatorFactory(NoDatabaseFactory):
-    class Meta: model = iati.models.ResultIndicator
+    narrative1 = NarrativeRelatedFactory(content="description test")
+    narrative2 = NarrativeRelatedFactory(content="description test2")
 
-    result = ResultFactory.build()
+class LocationNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationName
 
+    # location = SubFactory(LocationFactory)
 
-class ResultIndicatorTitleFactory(NoDatabaseFactory):
-    class Meta: model = iati.models.ResultIndicatorTitle
+class LocationDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationDescription
 
-    result_indicator = ResultIndicatorFactory.build()
-    primary_name = 'title'
+    # location = SubFactory(LocationFactory)
 
+class LocationActivityDescriptionFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.LocationActivityDescription
 
-class ResultIndicatorPeriodFactory(NoDatabaseFactory):
-    class Meta: 
-        model = iati.models.ResultIndicatorPeriod
-
-    result_indicator = ResultIndicatorFactory.build()
-
-
-class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
-    class Meta: 
-        model = iati.models.ResultIndicatorPeriodTargetComment
-
-    result_period = ResultIndicatorPeriodFactory.build()
-
-
-class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
-    class Meta: 
-        model = iati.models.ResultIndicatorPeriodActualComment
-
-    result_period = ResultIndicatorPeriodFactory.build()
-
+    # location = SubFactory(LocationFactory)
 
 class LocationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Location
 
-    activity = ActivityFactory.build()
+    activity = SubFactory(ActivityFactory)
     ref = 'AF-KAN'
     location_reach = SubFactory(GeographicLocationReachFactory)
     location_id_vocabulary = SubFactory(GeographicVocabularyFactory)
@@ -385,6 +407,10 @@ class LocationFactory(NoDatabaseFactory):
     exactness = SubFactory(GeographicExactnessFactory)
     location_class = SubFactory(GeographicLocationClassFactory)
     feature_designation = SubFactory(LocationTypeFactory)
+
+    name = RelatedFactory(LocationNameFactory, 'location')
+    description = RelatedFactory(LocationDescriptionFactory, 'location')
+    activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
 
 
 class LocationAdministrativeFactory(NoDatabaseFactory):
@@ -396,6 +422,116 @@ class LocationAdministrativeFactory(NoDatabaseFactory):
     vocabulary = SubFactory(GeographicVocabularyFactory)
     level = 1
 
+class ResultFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Result
+
+    activity = SubFactory(ActivityFactory)
+    type = SubFactory(ResultTypeFactory)
+    aggregation_status = False
+
+    resulttitle = RelatedFactory(ResultTitleFactory, 'result')
+    resultdescription = RelatedFactory(ResultDescriptionFactory, 'result')
+
+
+class ResultIndicatorTitleFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorTitle
+
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorDescriptionFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorDescription
+
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorBaselineCommentFactory(NoDatabaseFactory):
+    class Meta: model = iati.models.ResultIndicatorBaselineComment
+
+    # result_indicator = SubFactory(ResultIndicatorFactory)
+
+class ResultIndicatorFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicator
+
+    result = SubFactory(ResultFactory)
+    resultindicatortitle = RelatedFactory(ResultIndicatorTitleFactory, 'result_indicator')
+    resultindicatordescription = RelatedFactory(ResultIndicatorDescriptionFactory, 'result_indicator')
+    resultindicatorbaselinecomment = RelatedFactory(ResultIndicatorBaselineCommentFactory, 'result_indicator')
+
+class ResultIndicatorReferenceFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorReference
+
+    result_indicator = SubFactory(ResultIndicatorFactory)
+    code = "1"
+    vocabulary = SubFactory(IndicatorVocabularyFactory)
+    indicator_uri = "https://twitter.com"
+
+
+class ResultIndicatorPeriodTargetCommentFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetComment
+
+    # result_period = SubFactory(ResultIndicatorPeriodFactory)
+
+
+class ResultIndicatorPeriodActualCommentFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualComment
+
+    # result_period = SubFactory(ResultIndicatorPeriodFactory)
+class ResultIndicatorPeriodFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriod
+
+    result_indicator = SubFactory(ResultIndicatorFactory)
+    resultindicatorperiodactualcomment = RelatedFactory(ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
+    resultindicatorperiodtargetcomment = RelatedFactory(ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
+
+
+class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualLocation
+
+    ref = "AF-KAN"
+    location = SubFactory(LocationFactory)
+
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodTargetLocationFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetLocation
+
+    ref = "AF-KAN"
+    location = SubFactory(LocationFactory)
+
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodActualDimensionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodActualDimension
+
+    name = "gender"
+    value = "female"
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class ResultIndicatorPeriodTargetDimensionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.ResultIndicatorPeriodTargetDimension
+
+    name = "gender"
+    value = "female"
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+
+class HumanitarianScopeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.HumanitarianScope
+
+    activity = SubFactory(ActivityFactory)
+    code = "code"
+    type = SubFactory(HumanitarianScopeTypeFactory)
+    vocabulary = SubFactory(HumanitarianScopeVocabularyFactory)
+    vocabulary_uri = "http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/humanitarian-scope/"
 
 class ActivitySearchFactory(ActivityFactory):
     """A complete search field factory for testing search"""
@@ -412,3 +548,77 @@ class ActivitySearchFactory(ActivityFactory):
     sector = RelatedFactory(ActivitySectorFactory, 'activity')
     document_link = RelatedFactory(DocumentLinkFactory, 'activity')
 
+class ConditionsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Conditions
+
+    activity = SubFactory(ActivityFactory)
+    attached = False
+
+class ConditionFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Condition
+
+    conditions = SubFactory(ConditionsFactory)
+    type = SubFactory(ConditionTypeFactory)
+
+class CrsAddLoanTermsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddLoanTerms
+
+    rate_1 = 20.0
+    rate_2 = 30.0
+    repayment_type = SubFactory(LoanRepaymentTypeFactory)
+    repayment_plan = SubFactory(LoanRepaymentPeriodFactory)
+    commitment_date = '2014-01-01'
+    repayment_first_date = '2014-01-02'
+    repayment_final_date = '2015-01-01'
+
+class CrsAddLoanStatusFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddLoanStatus
+    
+    year = 2014
+    currency = SubFactory(CurrencyFactory)
+    value_date = '2014-01-01'
+    interest_received = 2000
+    principal_outstanding = 1000
+    principal_arrears = 1000
+    interest_arrears = 100
+
+class CrsAddFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAdd
+
+    activity = SubFactory(ActivityFactory)
+    channel_code = "21039"
+    loan_terms = RelatedFactory(CrsAddLoanTermsFactory, 'crs_add')
+    loan_status = RelatedFactory(CrsAddLoanStatusFactory, 'crs_add')
+
+class CrsAddOtherFlagsFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.CrsAddOtherFlags
+
+    crs_add = SubFactory(CrsAddFactory)
+    other_flags = SubFactory(OtherFlagsFactory)
+    significance = True
+
+
+class FssFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.Fss
+
+    activity = SubFactory(ActivityFactory)
+    extraction_date = '2014-01-01'
+    priority = True
+    phaseout_year="2016"
+
+class FssForecastFactory(NoDatabaseFactory):
+    class Meta: 
+        model = iati.models.FssForecast
+
+    fss = SubFactory(FssFactory)
+    year= "2016"
+    value_date = '2014-01-01'
+    currency = SubFactory(CurrencyFactory)
+    value = 10000

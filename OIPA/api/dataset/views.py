@@ -1,5 +1,5 @@
 from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
-from iati_synchroniser.models import IatiXmlSource, Publisher
+from iati_synchroniser.models import Dataset, Publisher
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter, DjangoFilterBackend
@@ -8,6 +8,11 @@ from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
 
+from rest_framework.views import APIView
+from rest_framework import authentication, permissions
+
+from api.publisher.permissions import OrganisationAdminGroupPermissions
+
 
 class DatasetList(DynamicListView):
     """
@@ -15,7 +20,7 @@ class DatasetList(DynamicListView):
 
     ## Request parameters
 
-    - `ref` (*optional*): ref to search for.
+    - `name` (*optional*): name to search for.
     - `source_type` (*optional*): Filter datasets by type (activity or organisation).
     - `publisher` (*optional*): Publisher ref.
     - `publisher_name` (*optional*): Publisher name.
@@ -44,19 +49,20 @@ class DatasetList(DynamicListView):
     Each result item contains full information about datasets including URI
     to dataset details.
 
-    URI is constructed as follows: `/api/datasets/{ref}`
+    URI is constructed as follows: `/api/datasets/{name}`
 
     """
-    queryset = IatiXmlSource.objects.all()
+    queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     ordering_fields = '__all__'
 
     fields = (
-        'ref',
+        'id',
+        'name',
         'title',
-        'type',
+        'filetype',
         'publisher',
         'url',
         'source_url',
@@ -65,7 +71,7 @@ class DatasetList(DynamicListView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version',
+        'iati_version',
         'note_count')
 
 
@@ -76,15 +82,15 @@ class DatasetDetail(RetrieveAPIView):
     ## URI Format
 
     ```
-    /api/datasets/{ref}
+    /api/datasets/{name}
     ```
 
     """
-    queryset = IatiXmlSource.objects.all()
+    queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
 
     fields = (
-        'ref',
+        'name',
         'title',
         'type',
         'publisher',
@@ -94,7 +100,7 @@ class DatasetDetail(RetrieveAPIView):
         'date_created',
         'date_updated',
         'last_found_in_registry',
-        'iati_standard_version',
+        'iati_version',
         'note_count',
         'notes')
 
@@ -133,7 +139,7 @@ class DatasetAggregations(AggregationView):
 
     """
 
-    queryset = IatiXmlSource.objects.all()
+    queryset = Dataset.objects.all()
 
     filter_backends = ( DjangoFilterBackend,)
     filter_class = DatasetFilter
@@ -142,7 +148,7 @@ class DatasetAggregations(AggregationView):
         Aggregation(
             query_param='note_count',
             field='note_count',
-            annotate=Count('iatixmlsourcenote__id'),
+            annotate=Count('datasetnote__id'),
         ),
     )
 
@@ -151,7 +157,7 @@ class DatasetAggregations(AggregationView):
             query_param="dataset",
             fields=("id"),
             renamed_fields="dataset",
-            queryset=IatiXmlSource.objects.all(),
+            queryset=Dataset.objects.all(),
             serializer=SimpleDatasetSerializer,
             serializer_main_field='id'
         ),
@@ -165,22 +171,22 @@ class DatasetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="exception_type",
-            fields=("iatixmlsourcenote__exception_type"),
+            fields=("datasetnote__exception_type"),
             renamed_fields="exception_type",
         ),
         GroupBy(
             query_param="field",
-            fields=("iatixmlsourcenote__field", "iatixmlsourcenote__exception_type"),
+            fields=("datasetnote__field", "datasetnote__exception_type"),
             renamed_fields=("field", "exception_type"),
         ),
         GroupBy(
             query_param="model",
-            fields=("iatixmlsourcenote__field", "iatixmlsourcenote__model", "iatixmlsourcenote__exception_type"),
+            fields=("datasetnote__field", "datasetnote__model", "datasetnote__exception_type"),
             renamed_fields=("field", "model", "exception_type"),
         ),
         GroupBy(
             query_param="message",
-            fields=("iatixmlsourcenote__message", "iatixmlsourcenote__field", "iatixmlsourcenote__model", "iatixmlsourcenote__exception_type"),
+            fields=("datasetnote__message", "datasetnote__field", "datasetnote__model", "datasetnote__exception_type"),
             renamed_fields=("message", "field", "model", "exception_type"),
         ),
     )
@@ -203,5 +209,25 @@ class DatasetNotes(ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return IatiXmlSource(pk=pk).iatixmlsourcenote_set.all()
+        return Dataset(pk=pk).datasetnote_set.all()
+
+from api.export.views import IATIActivityList
+export_view = IATIActivityList.as_view()
+
+from ckanapi import RemoteCKAN
+
+class DatasetPublish(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def post(self, request, publisher_id):
+        publisher = Publisher.objects.get(pk=publisher_id)
+        group = OrganisationGroup.objects.get(publisher_id=publisher_id)
+
+        # TODO: create a dataset - 2016-10-25
+        # export = export_view(request).content
+
+        print(export)
+
+        return Response()
 
