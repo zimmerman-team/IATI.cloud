@@ -36,6 +36,10 @@ def _create_test_activity(
     sector2="sector2",
     document_link_title1="document_link_title1",
     document_link_title2="document_link_title2",
+    other_identifier1="other_idenifier1",
+    other_identifier2="other_idenifier2",
+    document_link1="document_link_title1",
+    document_link2="document_link_title2",
         ):
     """
     For testing narratives (hence search)
@@ -113,9 +117,14 @@ def _create_test_activity(
         document_link=document_link,
     )
 
-    other_identifier1 = OtherIdentifierFactory.create(
+    _create_test_narrative(activity, document_link.documentlinktitle, document_link1)
+    _create_test_narrative(activity, document_link.documentlinktitle, document_link2)
+
+    other_identifier = OtherIdentifierFactory.create(
         activity=activity,
         )
+    _create_test_narrative(activity, other_identifier, other_identifier1)
+    _create_test_narrative(activity, other_identifier, other_identifier2)
 
     return activity
 

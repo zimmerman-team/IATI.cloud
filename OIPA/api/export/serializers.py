@@ -6,6 +6,20 @@ from api.generics.serializers import SkipNullMixin
 import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 
+class BoolToNumField(serializers.Field):
+    """
+    represent True and False as "1" and "0"
+    """
+    def to_representation(self, val):
+        if val:
+            return "1"
+        else:
+            return "0"
+
+    # def to_internal_value(self, data):
+    #     data = data.strip('rgb(').rstrip(')')
+    #     red, green, blue = [int(col) for col in data.split(',')]
+    #     return Color(red, green, blue)
 
 class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('currency', 'value_date')}
@@ -80,14 +94,20 @@ class DocumentLinkLanguageSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
         fields = ('code',)
 
 
-class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkSerializer):
+class DocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkSerializer):
     xml_meta = {'attributes': ('url', 'format',)}
 
+    class DocumentDateSerializer(serializers.Serializer):
+        # CharField because we want to let the validators do the parsing
+        iso_date = serializers.CharField()
+
     format = serializers.CharField(source='file_format.code')
+
     category = DocumentLinkCategorySerializer(many=True, source='documentlinkcategory_set')
     language = DocumentLinkLanguageSerializer(many=True, source='documentlinklanguage_set')
+
     title = NarrativeContainerXMLSerializer(source='documentlinktitle')
-    document_date = IsoDateSerializer()
+    document_date = IsoDateSerializer(source="iso_date")
 
     class Meta(activity_serializers.DocumentLinkSerializer.Meta):
         fields = (
@@ -96,6 +116,7 @@ class DocumentLinkSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.D
             'title',
             'category',
             'language',
+            'document_date',
         )
 
 
@@ -152,6 +173,7 @@ class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_seri
 
     type = serializers.CharField(source='type.code')
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
+    secondary_reporter = BoolToNumField()
 
     class Meta(activity_serializers.ReportingOrganisationSerializer.Meta):
         fields = (
@@ -177,6 +199,28 @@ class ParticipatingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_
             'role',
             'activity_id',
             'narrative',
+        )
+
+class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.OtherIdentifierSerializer):
+    xml_meta = {'attributes': ('ref', 'type',)}
+
+    class OwnerOrgSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
+        xml_meta = {'attributes': ('ref',)}
+
+        ref = serializers.CharField(source='owner_ref')
+        narrative = NarrativeXMLSerializer(many=True, source='narratives')
+
+    ref = serializers.CharField(source="identifier")
+    type = serializers.CharField(source='type.code')
+
+    owner_org = OwnerOrgSerializer(source="*")
+
+    class Meta(activity_serializers.OtherIdentifierSerializer.Meta):
+        fields = (
+            # 'id',
+            'ref',
+            'type',
+            'owner_org'
         )
 
 
@@ -241,7 +285,7 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
 
 
 class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySectorSerializer):
-    xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
+    xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
 
     code = serializers.CharField(source='sector.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
@@ -256,12 +300,13 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
         )
 
 
-class ActivityRecipientRegionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
+class ActivityRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
 
     code = serializers.CharField(source='region.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
     vocabulary_uri = serializers.URLField()
+    # vocabulary_uri = serializers.CharField()
 
     class Meta(activity_serializers.ActivityRecipientRegionSerializer.Meta):
         fields = (
@@ -471,6 +516,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         source='participating_organisations',
         many=True,)
 
+    other_identifier = OtherIdentifierXMLSerializer(many=True,source="otheridentifier_set", required=False)
+
     activity_status = CodelistSerializer()
     activity_date = ActivityDateSerializer(
         many=True,
@@ -480,7 +527,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     recipient_country = RecipientCountrySerializer(
         many=True,
         source='activityrecipientcountry_set')
-    recipient_region = ActivityRecipientRegionSerializer(
+    recipient_region = ActivityRecipientRegionXMLSerializer(
         many=True,
         source='activityrecipientregion_set')
     location = LocationSerializer(many=True, source='location_set')
@@ -507,7 +554,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True,
         source='transaction_set')
 
-    document_link = DocumentLinkSerializer(
+    document_link = DocumentLinkXMLSerializer(
         many=True,
         source='documentlink_set')
     related_activity = RelatedActivitySerializer(
@@ -528,7 +575,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'title',
             'description',
             'participating_org',
-            # 'other_identifier',
+            'other_identifier',
             'activity_status',
             'activity_date',
             # 'contact_info',

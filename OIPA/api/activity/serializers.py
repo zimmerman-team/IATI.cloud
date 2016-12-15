@@ -2662,7 +2662,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     
     # activity attributes
     last_updated_datetime = serializers.DateTimeField(required=False)
-    xml_lang = serializers.CharField(source='default_lang', required=False)
+    xml_lang = serializers.CharField(source='default_lang.code', required=False)
     default_currency = CodelistSerializer(required=False)
 
     humanitarian = serializers.BooleanField(required=False)

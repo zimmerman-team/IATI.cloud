@@ -15,7 +15,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.geos import Point
 
 import factory
-from factory import SubFactory, RelatedFactory
+from factory import SubFactory, RelatedFactory, LazyAttribute, SelfAttribute
 from factory.django import DjangoModelFactory
 
 
@@ -77,12 +77,13 @@ class NarrativeFactory(NoDatabaseFactory):
 
 class NarrativeRelatedFactory(RelatedFactory):
 
-    def __init__(self, related_factory=NarrativeFactory, factory_related_name='related_object', 
-            activity_dummy=factory.LazyAttribute(lambda obj: ActivityDummyFactory()), **defaults):
+    def __init__(self, related_factory=NarrativeFactory, factory_related_name='related_object', **defaults):
+        print(self)
+        # activity_dummy = factory.LazyAttribute(lambda obj: ActivityDummyFactory())
 
         super(NarrativeRelatedFactory, self).__init__(related_factory,
                 factory_related_name,
-                activity=activity_dummy,
+                # activity=activity_dummy,
                 **defaults)
 
 
@@ -90,10 +91,13 @@ class TitleFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Title
 
-    activity = SubFactory(ActivityDummyFactory)
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    activity = SubFactory(ActivityFactory)
+    # narrative1 = NarrativeRelatedFactory(content="title test", activity=SelfAttribute('..activity'))
+    # narrative2 = NarrativeRelatedFactory(content="title test2", activity=SelfAttribute('..activity'))
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
+    # narrative1 = RelatedFactory(NarrativeFactory, content="title test", activity=SelfAttribute('..activity'))
 
 class DescriptionFactory(NoDatabaseFactory):
     class Meta:
@@ -102,8 +106,8 @@ class DescriptionFactory(NoDatabaseFactory):
     activity = SubFactory(ActivityFactory)
     type = SubFactory(DescriptionTypeFactory)
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title description")
+    # narrative2 = NarrativeRelatedFactory(content="title description2")
 
 
 class ContactInfoFactory(NoDatabaseFactory):
@@ -123,8 +127,8 @@ class RelatedActivityFactory(NoDatabaseFactory):
     ref = "IATI-0001"
     type = SubFactory(RelatedActivityTypeFactory)
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class LegacyDataFactory(NoDatabaseFactory):
     class Meta:
@@ -253,9 +257,10 @@ class ParticipatingOrganisationFactory(NoDatabaseFactory):
     normalized_ref = "some_ref"
     type = SubFactory(OrganisationTypeFactory)
     role = SubFactory(OrganisationRoleFactory)
+    org_activity_id = "some-id"
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class OtherIdentifierFactory(NoDatabaseFactory):
     class Meta:
@@ -266,8 +271,8 @@ class OtherIdentifierFactory(NoDatabaseFactory):
     type = SubFactory(OtherIdentifierTypeFactory)
     activity = SubFactory(ActivityFactory)
 
-    narrative1 = NarrativeRelatedFactory(content="other_identifier test")
-    narrative2 = NarrativeRelatedFactory(content="other_identifier test2")
+    # narrative1 = NarrativeRelatedFactory(content="other_identifier test")
+    # narrative2 = NarrativeRelatedFactory(content="other_identifier test2")
 
 class ReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
@@ -281,8 +286,8 @@ class ReportingOrganisationFactory(NoDatabaseFactory):
 
     organisation = SubFactory(OrganisationFactory)
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 
 class ActivitySectorFactory(NoDatabaseFactory):
@@ -295,8 +300,8 @@ class ActivitySectorFactory(NoDatabaseFactory):
     vocabulary_uri = "https://twitter.com"
     percentage = 100
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 
 class ActivityRecipientCountryFactory(NoDatabaseFactory):
@@ -307,8 +312,8 @@ class ActivityRecipientCountryFactory(NoDatabaseFactory):
     country = SubFactory(CountryFactory)
     percentage = 50
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 
 class ActivityRecipientRegionFactory(NoDatabaseFactory):
@@ -321,8 +326,8 @@ class ActivityRecipientRegionFactory(NoDatabaseFactory):
     vocabulary_uri = "https://twitter.com"
     activity = SubFactory(ActivityFactory)
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 
 class CountryBudgetItemFactory(NoDatabaseFactory):
@@ -339,8 +344,8 @@ class BudgetItemDescriptionFactory(NoDatabaseFactory):
         model = iati.models.BudgetItemDescription
 
     
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class BudgetItemFactory(NoDatabaseFactory):
     class Meta:
@@ -368,15 +373,15 @@ class ResultTitleFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ResultTitle
 
-    narrative1 = NarrativeRelatedFactory(content="title test")
-    narrative2 = NarrativeRelatedFactory(content="title test2")
+    # narrative1 = NarrativeRelatedFactory(content="title test")
+    # narrative2 = NarrativeRelatedFactory(content="title test2")
 
 class ResultDescriptionFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ResultDescription
 
-    narrative1 = NarrativeRelatedFactory(content="description test")
-    narrative2 = NarrativeRelatedFactory(content="description test2")
+    # narrative1 = NarrativeRelatedFactory(content="description test")
+    # narrative2 = NarrativeRelatedFactory(content="description test2")
 
 class LocationNameFactory(NoDatabaseFactory):
     class Meta:
