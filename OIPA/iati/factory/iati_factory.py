@@ -213,6 +213,7 @@ class ActivityDateFactory(NoDatabaseFactory):
 class RegionFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Region
+        django_get_or_create = ('code', )
 
     code = 1
     name = 'World'

@@ -40,6 +40,18 @@ def _create_test_activity(
     other_identifier2="other_idenifier2",
     document_link1="document_link_title1",
     document_link2="document_link_title2",
+    transaction_description1_1="transaction_description1_1",
+    transaction_description1_2="transaction_description1_2",
+    transaction_description2_1="transaction_description2_1",
+    transaction_description2_2="transaction_description2_2",
+    transaction_provider_org1_1="transaction_provider_org1_1",
+    transaction_provider_org1_2="transaction_provider_org1_2",
+    transaction_provider_org2_1="transaction_provider_org2_1",
+    transaction_provider_org2_2="transaction_provider_org2_2",
+    transaction_receiver_org1_1="transaction_receiver_org1_1",
+    transaction_receiver_org1_2="transaction_receiver_org1_2",
+    transaction_receiver_org2_1="transaction_receiver_org2_1",
+    transaction_receiver_org2_2="transaction_receiver_org2_2",
         ):
     """
     For testing narratives (hence search)
@@ -125,6 +137,24 @@ def _create_test_activity(
         )
     _create_test_narrative(activity, other_identifier, other_identifier1)
     _create_test_narrative(activity, other_identifier, other_identifier2)
+
+    transaction1 = TransactionFactory.create(activity=activity)
+    transaction_description1 = TransactionDescriptionFactory.create(transaction=transaction1)
+    provider_org1 = TransactionProviderFactory.create(transaction=transaction1, provider_activity=activity) 
+    receiver_org1 = TransactionReceiverFactory.create(transaction=transaction1, receiver_activity=activity) 
+    transaction_recipient_country1 = TransactionRecipientCountryFactory.create(transaction=transaction1) 
+    transaction_recipient_region1 = TransactionRecipientRegionFactory.create(transaction=transaction1) 
+    transaction_sector1 = TransactionSectorFactory.create(transaction=transaction1) 
+
+    _create_test_narrative(activity, transaction_description1, transaction_description1_1)
+    _create_test_narrative(activity, transaction_description1, transaction_description1_2)
+    _create_test_narrative(activity, provider_org1, transaction_provider_org1_1)
+    _create_test_narrative(activity, provider_org1, transaction_provider_org1_2)
+    _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_1)
+    _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_2)
+
+    # transaction2 = TransactionFactory.create(activity=activity)
+
 
     return activity
 

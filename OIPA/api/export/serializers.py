@@ -464,6 +464,44 @@ class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
         )
 
 
+class TransactionSectorXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSectorSerializer):
+    xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri')}
+
+    code = serializers.CharField(source='sector.code')
+    vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField()
+
+    class Meta(transaction_serializers.TransactionSectorSerializer.Meta):
+        fields = (
+            'code',
+            'vocabulary',
+            'vocabulary_uri',
+        )
+
+class TransactionRecipientCountryXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionRecipientCountrySerializer):
+    xml_meta = {'attributes': ('code',)}
+
+    code = serializers.CharField(source='country.code')
+
+    class Meta(transaction_serializers.TransactionRecipientCountrySerializer.Meta):
+        fields = (
+            'code',
+        )
+
+class TransactionRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionRecipientRegionSerializer):
+    xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri')}
+
+    code = serializers.CharField(source='region.code')
+    vocabulary = serializers.CharField(source='vocabulary.code')
+    vocabulary_uri = serializers.URLField(required=False)
+
+    class Meta(transaction_serializers.TransactionRecipientRegionSerializer.Meta):
+        fields = (
+            'code',
+            'vocabulary',
+            'vocabulary_uri',
+        )
+
 class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
     xml_meta = {'attributes': ('ref', 'humanitarian',)}
 
@@ -477,15 +515,19 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
+    sector = TransactionSectorXMLSerializer(many=True, required=False, source="transactionsector_set")
+    recipient_country = TransactionRecipientCountryXMLSerializer(many=True, required=False, source="transactionrecipientcountry_set")
+    recipient_region = TransactionRecipientRegionXMLSerializer(many=True, required=False, source="transactionrecipientregion_set")
+
     value = ValueSerializer(source='*')
     transaction_date = IsoDateSerializer()
     disbursement_channel = CodelistSerializer()
-    humanitarian = serializers.BooleanField()
-
+    humanitarian = BoolToNumField()
 
     class Meta(transaction_serializers.TransactionSerializer.Meta):
         fields = (
             'ref',
+            'humanitarian',
             'transaction_type',
             'transaction_date',
             'value',
@@ -493,9 +535,9 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
             'provider_org',
             'receiver_org',
             'disbursement_channel',
-            # 'sector',
-            # recipient_country',
-            # 'recipient_region',
+            'sector',
+            'recipient_country',
+            'recipient_region',
             'flow_type',
             'finance_type',
             'aid_type',
