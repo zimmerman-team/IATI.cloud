@@ -325,6 +325,7 @@ def download_file(d):
         'doc', 
         'pdf', 
         'docx',
+        'xls',
          )
     document_content = ''
 
