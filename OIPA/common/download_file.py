@@ -10,8 +10,6 @@ import sys
 import socket
 
 from time import time, sleep
- 
-#version = "0.4.0"
 
 class DownloadFile(object):
     """This class is used for downloading files from the internet via http or ftp.
@@ -23,8 +21,6 @@ class DownloadFile(object):
     
     #####
     If a non-standard port is needed just include it in the url (http://example.com:7632).
-    
-    #NOTE: S3 requires s3.amazonaws.com/hanstest/s3.py.
     
     #Rate Limiting:
         rate_limit = the average download rate in Bps

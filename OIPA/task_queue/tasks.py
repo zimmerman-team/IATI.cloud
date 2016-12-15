@@ -308,9 +308,10 @@ def update_searchable_activities():
 
 
 @job
-def collect_pdf_files():
+def collect_files():
     queue = django_rq.get_queue("collector")
-    for d in DocumentLink.objects.all().filter(file_format_id="application/pdf"):
+    for d in DocumentLink.objects.all():
+    #for d in DocumentLink.objects.all().filter(file_format_id="application/msword"):
         queue.enqueue(download_file, args=(d,))
 
 
@@ -320,6 +321,12 @@ def download_file(d):
 
     document_link = DocumentLink.objects.get(pk=d.pk)
     doc, created = Document.objects.get_or_create(document_link=document_link)
+    extensions = (
+        'doc', 
+        'pdf', 
+        'docx',
+         )
+    document_content = ''
 
     if d.url:
         '''Define the working Directory and saving Path'''
@@ -332,30 +339,38 @@ def download_file(d):
             long_url = r.url
         else:
             long_url = d.url
+        doc.long_url = long_url
         local_filename = long_url.split('/')[-1]
+        doc.document_name = local_filename
 
         '''Verify if the the URL is containing a file and authorize download'''
+        file_extension = local_filename.split('.')[-1]
         is_downloaded = False
-        url_is_valid = False
-        if r.headers["content-type"] == 'application/pdf':
-            url_is_valid = True
-            save_name = str(d.pk) +  '.' + local_filename.split('.')[-1]
+        if file_extension.lower() in extensions:
+            doc.url_is_valid = True
+            save_name = str(d.pk) +  '.' + file_extension
             downloader = DownloadFile(long_url, save_path + save_name)
             try:
                 is_downloaded = downloader.download()
+                doc.is_downloaded = is_downloaded
             except Exception as e:
                 print str(e)
 
             '''Get Text from file and save document'''
             if is_downloaded:
                 document_content=fulltext.get(save_path + save_name, '< no content >')
-            
-            doc.long_url = long_url
-            doc.document_name = local_filename
-            doc.is_downloaded = is_downloaded
-            doc.url_is_valid = url_is_valid
-            doc.document_content=document_content
-            doc.save()
+                doc.document_content=document_content    
+    try:
+        doc.save()
+    except Exception as e:
+        print str(e)
+        doc.document_content = document_content.decode("latin-1")
+        doc.save()
+
+
+
+
+
         
 
 

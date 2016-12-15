@@ -593,7 +593,7 @@ class DocumentSearch(models.Model):
 
 class Document(models.Model):
     document_link = models.OneToOneField(DocumentLink)
-    long_url = models.URLField()
+    long_url = models.TextField(max_length=500)
     url_is_valid = models.BooleanField(default=False)
     document_name = models.CharField(max_length=255)
     is_downloaded = models.BooleanField(default=False)
