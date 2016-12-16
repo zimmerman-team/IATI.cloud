@@ -21,6 +21,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['document']:
             document = Document.objects.get(document_link=options['document'])
-            reindex_activity(document)
+            reindex_document(document)
         else:
             reindex_all_documents()
