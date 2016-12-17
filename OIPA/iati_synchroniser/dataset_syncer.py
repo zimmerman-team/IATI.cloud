@@ -9,15 +9,15 @@ PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_field
 
 class DatasetSyncer():
 
-    def __init__(self):
-        """
-        Prefetch data, to minify amount of DB queries
-        """
-        source_url_tuples = Dataset.objects.values_list('id')
-        self.source_urls = [url[0] for url in source_url_tuples]
+    # def __init__(self):
+    #     """
+    #     Prefetch data, to minify amount of DB queries
+    #     """
+    #     source_url_tuples = Dataset.objects.values_list('id')
+    #     self.source_urls = [url[0] for url in source_url_tuples]
 
-        publisher_id_tuples = Publisher.objects.values_list('id')
-        self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
+    #     publisher_id_tuples = Publisher.objects.values_list('id')
+    #     self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
 
     def get_data(self, url):

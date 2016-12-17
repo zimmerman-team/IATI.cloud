@@ -9,19 +9,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('iati_synchroniser', '0014_auto_20161024_1451'),
-        ('permissions', '0001_initial'),   
     ]
 
     operations = [
-        # migrations.RunSQL(
-        #     'ALTER TABLE "iati_synchroniser_iatixmlsource" DROP CONSTRAINT iati_synchr_iatixmlsource_id_c6e8fcc4_fk_iati_synchroniser_iatixmlsource_id',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationadmingroup" DROP CONSTRAINT permissions_organisationadmingroup_publisher_id_f12aebbd_fk',
-        # ),
-        # migrations.RunSQL(
-        #     'ALTER TABLE "permissions_organisationgroup" DROP CONSTRAINT permissions_organisationgroup_publisher_id_840beca0_fk',
-        # ),
         migrations.RenameModel(
             old_name='IatiXmlSource',
             new_name='Dataset',
@@ -55,11 +45,5 @@ class Migration(migrations.Migration):
         ),
         migrations.RunSQL(
             'ALTER TABLE "iati_synchroniser_dataset" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
-        ),
-        migrations.RunSQL(
-            'ALTER TABLE "permissions_organisationadmingroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
-        ),
-        migrations.RunSQL(
-            'ALTER TABLE "permissions_organisationgroup" ALTER COLUMN "publisher_id" type varchar(255) USING CAST(publisher_id AS varchar(255));',
         ),
     ]
