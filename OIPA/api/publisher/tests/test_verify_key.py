@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 from django.test import RequestFactory, Client
 from rest_framework.test import APIClient
 from iati_synchroniser.factory import synchroniser_factory
-from iati.permissions.factories import OrganisationAdminGroupFactory, UserFactory
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 from rest_framework.authtoken.models import Token
 
 from iati_synchroniser.models import Publisher
@@ -34,9 +34,9 @@ class TestVerifyApiKey(APITestCase):
         An organization admin should be able to verify an API key
         """
         admin_group = OrganisationAdminGroupFactory.create()
-        user = UserFactory.create(username='test1')
+        user = OrganisationUserFactory.create(user__username='test1')
 
-        admin_group.user_set.add(user)
+        admin_group.organisationuser_set.add(user)
 
         self.c.force_authenticate(user)
 
@@ -46,8 +46,9 @@ class TestVerifyApiKey(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/api_key/verify", 
+                "/api/publishers/api_key/verify/", 
                 data=data,
+                format='json'
                 )
 
         print(res.status_code)
@@ -61,10 +62,10 @@ class TestVerifyApiKey(APITestCase):
 
         # test organisation groups have been created
         org_group = OrganisationGroup.objects.get(publisher=publisher)
-        self.assertEqual(org_group.user_set.get(pk=updated_user.id), updated_user)
+        self.assertEqual(org_group.organisationuser_set.get(pk=updated_user.id), updated_user)
 
         org_admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
-        self.assertEqual(org_admin_group.user_set.get(pk=updated_user.id), updated_user)
+        self.assertEqual(org_admin_group.organisationuser_set.get(pk=updated_user.id), updated_user)
         self.assertEqual(org_admin_group.owner, updated_user)
 
 

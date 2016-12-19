@@ -10,6 +10,30 @@ class OrganisationUser(models.Model):
 
     user = models.ForeignKey(User)
 
+    organisation_admin_groups = models.ManyToManyField(
+        'OrganisationAdminGroup',
+        verbose_name='Organisation Admin Groups',
+        blank=True,
+        # help_text=_(
+        #     'The groups this user belongs to. A user will get all permissions '
+        #     'granted to each of their groups.'
+        # ),
+        related_name="organisationuser_set",
+        # related_query_name="user",
+    )
+
+    organisation_groups = models.ManyToManyField(
+        'OrganisationGroup',
+        verbose_name='Organisation Groups',
+        blank=True,
+        # help_text=_(
+        #     'The groups this user belongs to. A user will get all permissions '
+        #     'granted to each of their groups.'
+        # ),
+        related_name="organisationuser_set",
+        # related_query_name="user",
+    )
+
     class Meta:
         verbose_name_plural = "Organisation users"
         # db_table = 'auth_user'

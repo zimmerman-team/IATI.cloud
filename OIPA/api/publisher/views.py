@@ -76,11 +76,16 @@ class OrganisationAdminGroupView(GenericAPIView):
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, publisher_id):
-        users = OrganisationAdminGroup.objects.get(publisher_id=publisher_id).user_set.all()
+        users = OrganisationAdminGroup.objects.get(publisher_id=publisher_id).organisationuser_set.all()
 
         print(users)
 
-        serializer = OrganisationUserSerializer(users, many=True, context=self.get_serializer_context())
+        serializer = OrganisationUserSerializer(
+            users, 
+            many=True, 
+            context=self.get_serializer_context(),
+            fields=('username', 'email'),
+            )
 
         return Response(serializer.data)
 
@@ -93,7 +98,7 @@ class OrganisationAdminGroupView(GenericAPIView):
         if not user:
             return Response(status=401)
 
-        admin_group.user_set.add(user)
+        admin_group.organisationuser_set.add(user)
 
         return Response()
 
@@ -117,7 +122,7 @@ class OrganisationAdminGroupDetailView(GenericAPIView):
         if user.id == admin_group.owner.id:
             return Response(status=401)
 
-        admin_group.user_set.remove(user)
+        admin_group.organisationuser_set.remove(user)
 
         return Response()
 
@@ -128,9 +133,14 @@ class OrganisationGroupView(GenericAPIView):
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def get(self, request, publisher_id):
-        users = OrganisationGroup.objects.get(publisher_id=publisher_id).user_set.all()
+        users = OrganisationGroup.objects.get(publisher_id=publisher_id).organisationuser_set.all()
 
-        serializer = OrganisationUserSerializer(users, many=True, context=self.get_serializer_context())
+        serializer = OrganisationUserSerializer(
+                users, 
+                many=True, 
+                context=self.get_serializer_context(), 
+                fields=('username', 'email')
+            )
 
         return Response(serializer.data)
 
@@ -143,7 +153,7 @@ class OrganisationGroupView(GenericAPIView):
         if not user:
             return Response(status=401)
 
-        group.user_set.add(user)
+        group.organisationuser_set.add(user)
 
         return Response()
 
@@ -166,16 +176,17 @@ class OrganisationGroupDetailView(GenericAPIView):
         #     return Response(status=401)
 
         # The user to remove is an admin
-        if user.groups.filter(organisationadmingroup__publisher=publisher).exists():
+        if user.organisation_admin_groups.filter(publisher=publisher).exists():
+        # if user.groups.filter(organisationadmingroup__publisher=publisher).exists():
             return Response(status=401)
 
-        group.user_set.remove(user)
+        group.organisationuser_set.remove(user)
 
         return Response()
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class OrganisationVerifyApiKey(GenericAPIView):
+class OrganisationVerifyApiKey(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -252,7 +263,7 @@ class OrganisationVerifyApiKey(GenericAPIView):
                 "name": "{} Organisation Group".format(primary_org.get('name'))
             }
         )
-        organisation_group[0].user_set.add(user)
+        organisation_group[0].organisationuser_set.add(user)
 
         if publisher[1]: # has been created
             organisation_admin_group = OrganisationAdminGroup.objects.get_or_create(
@@ -269,7 +280,7 @@ class OrganisationVerifyApiKey(GenericAPIView):
                     "name": "{} Organisation Admin Group".format(primary_org.get('name')),
                 }
             )
-        organisation_admin_group[0].user_set.add(user)
+        organisation_admin_group[0].organisationuser_set.add(user)
 
         user.iati_api_key = api_key
         user.save()

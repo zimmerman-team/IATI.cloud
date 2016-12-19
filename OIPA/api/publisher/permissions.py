@@ -17,9 +17,11 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
         if request.method == 'GET':
             return True
 
-        user = request.user
+        # TODO: why is this a OrganisationUser instance??? - 2016-12-19
+        organisation_user = request.user
+        user = request.user.user
 
-        if not request.user or not request.user.is_authenticated:
+        if not user or not user.is_authenticated:
             return False
 
         publisher_id = view.kwargs.get('publisher_id')
@@ -34,5 +36,7 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
         except OrganisationAdminGroup.DoesNotExist:
             return False
 
-        return user.groups.filter(organisationadmingroup__publisher=publisher).exists()
+        # check if this user is in the admin group
+
+        return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
 

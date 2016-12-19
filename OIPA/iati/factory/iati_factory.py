@@ -417,9 +417,9 @@ class LocationFactory(NoDatabaseFactory):
     location_class = SubFactory(GeographicLocationClassFactory)
     feature_designation = SubFactory(LocationTypeFactory)
 
-    # name = RelatedFactory(LocationNameFactory, 'location')
-    # description = RelatedFactory(LocationDescriptionFactory, 'location')
-    # activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
+    name = RelatedFactory(LocationNameFactory, 'location')
+    description = RelatedFactory(LocationDescriptionFactory, 'location')
+    activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
 
 
 class LocationAdministrativeFactory(NoDatabaseFactory):

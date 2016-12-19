@@ -22,7 +22,7 @@ class AggregationInstanceTestCase(DjangoTestCase):
 
     def setUp(self):
         # TODO: mock a queryset instead - 2016-04-11
-        self.activity = _create_test_activity(id="test", iati_identifier="test123")
+        self.activity = _create_test_activity(id="test", iati_identifier="test")
         self.activity.save()
         self.queryset = Activity.objects.all()
 

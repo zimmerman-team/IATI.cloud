@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 from django.test import RequestFactory, Client
 from rest_framework.test import APIClient
 from iati_synchroniser.factory import synchroniser_factory
-from iati.permissions.factories import OrganisationGroupFactory, UserFactory, OrganisationAdminGroupFactory
+from iati.permissions.factories import OrganisationGroupFactory, OrganisationUserFactory, OrganisationAdminGroupFactory
 from rest_framework.authtoken.models import Token
 
 from iati_synchroniser.models import Publisher
@@ -22,11 +22,11 @@ class TestOrganisationGroupAPI(APITestCase):
         get a list of users within this organisation
         """
         organisation_group = OrganisationGroupFactory.create()
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        organisation_group.user_set.add(user)
-        organisation_group.user_set.add(new_user)
+        organisation_group.organisationuser_set.add(user)
+        organisation_group.organisationuser_set.add(new_user)
 
         self.c.force_authenticate(user)
 
@@ -44,10 +44,10 @@ class TestOrganisationGroupAPI(APITestCase):
         Make sure adding a user to admin group fails when the user is not in the admin group
         """
         organisation_group = OrganisationGroupFactory.create()
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        # organisation_group.user_set.add(user)
+        # organisation_group.organisationuser_set.add(user)
 
         self.c.force_authenticate(user)
 
@@ -71,11 +71,11 @@ class TestOrganisationGroupAPI(APITestCase):
         organisation_group = OrganisationGroupFactory.create()
         admin_group = OrganisationAdminGroupFactory.create()
 
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        organisation_group.user_set.add(user)
-        admin_group.user_set.add(user)
+        organisation_group.organisationuser_set.add(user)
+        admin_group.organisationuser_set.add(user)
 
         admin_group.save()
 
@@ -92,18 +92,18 @@ class TestOrganisationGroupAPI(APITestCase):
                 )
 
         self.assertEquals(res.status_code, 200)
-        self.assertEquals(len(OrganisationGroup.objects.get(pk=organisation_group.id).user_set.all()), 2)
+        self.assertEquals(len(OrganisationGroup.objects.get(pk=organisation_group.id).organisationuser_set.all()), 2)
 
     def test_remove_user_from_organisation_group_fail(self):
         """
         Make sure a normal user can't remove users from an admin group
         """
         organisation_group = OrganisationGroupFactory.create()
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        # organisation_group.user_set.add(user)
-        organisation_group.user_set.add(new_user)
+        # organisation_group.organisationuser_set.add(user)
+        organisation_group.organisationuser_set.add(new_user)
 
         self.c.force_authenticate(user)
 
@@ -124,12 +124,12 @@ class TestOrganisationGroupAPI(APITestCase):
         """
         organisation_group = OrganisationGroupFactory.create()
         admin_group = OrganisationAdminGroupFactory.create()
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        admin_group.user_set.add(user)
-        organisation_group.user_set.add(user)
-        organisation_group.user_set.add(new_user)
+        admin_group.organisationuser_set.add(user)
+        organisation_group.organisationuser_set.add(user)
+        organisation_group.organisationuser_set.add(new_user)
 
         self.c.force_authenticate(user)
 
@@ -151,14 +151,14 @@ class TestOrganisationGroupAPI(APITestCase):
         """
         organisation_group = OrganisationGroupFactory.create()
         admin_group = OrganisationAdminGroupFactory.create()
-        user = UserFactory.create(username='test1')
-        new_user = UserFactory.create(username='test2')
+        user = OrganisationUserFactory.create(user__username='test1')
+        new_user = OrganisationUserFactory.create(user__username='test2')
 
-        admin_group.user_set.add(user)
-        organisation_group.user_set.add(user)
+        admin_group.organisationuser_set.add(user)
+        organisation_group.organisationuser_set.add(user)
 
-        admin_group.user_set.add(new_user)
-        organisation_group.user_set.add(new_user)
+        admin_group.organisationuser_set.add(new_user)
+        organisation_group.organisationuser_set.add(new_user)
 
         self.c.force_authenticate(user)
 
