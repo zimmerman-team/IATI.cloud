@@ -325,6 +325,7 @@ class DisbursementChannelFactory(NoDatabaseFactory):
     description = ""
 
     class Meta:
+        django_get_or_create = ('code',)
         model = codelist_models.DisbursementChannel
 
 class IndicatorMeasureFactory(NoDatabaseFactory):
