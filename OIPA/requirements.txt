@@ -3,7 +3,7 @@ django-supervisor==0.4.0
 django-nested-admin==2.2.6
 django-autocomplete-light==2.3.3
 requests==2.12.4
-Django==1.10.3
+Django==1.10.4
 django-two-factor-auth==1.4.0
 django-cors-headers==1.2.2
 django-debug-toolbar==1.6
