@@ -342,22 +342,22 @@ def activity(
                     "iati-identifier",
                     ))
 
-        if not len(title):
-            errors.append(
-                RequiredFieldError(
-                    "activity",
-                    "title",
-                    ))
+
+        # TODO: must be separated as validation to ensure - 2016-12-19
+        # if not len(title):
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity",
+        #             "title",
+        #             ))
 
         title_narratives = title.get('narratives', [])
-        if not len(title_narratives):
-            errors.append(
-                RequiredFieldError(
-                    "activity",
-                    "title__narratives",
-                    ))
-
-        validate_dates()
+        # if not len(title_narratives):
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "activity",
+        #             "title__narratives",
+        #             ))
 
         title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors)
         errors = errors + title_narratives['errors']
