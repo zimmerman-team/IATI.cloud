@@ -64,9 +64,9 @@ class ActivitySerializerTestCase(TestCase):
             """
 
         assert type(serializer.fields['categories'].child) is serializers.\
-            DocumentCategorySerializer,\
+            DocumentLinkCategorySerializer,\
             """
-            the field 'categories' should be a DocumentCategorySerializer
+            the field 'categories' should be a DocumentLinkCategorySerializer
             """
 
         assert type(serializer.fields['title']) is serializers.\
@@ -74,6 +74,7 @@ class ActivitySerializerTestCase(TestCase):
             """
             the field 'title' should be a TitleSerializer
             """
+
 
     def test_FileFormatSerializer(self):
         file_format = iati_factory.FileFormatFactory.build()
@@ -84,10 +85,10 @@ class ActivitySerializerTestCase(TestCase):
             'file_format.code' should be serialized to a field called 'code'
             """
 
-    def test_DocumentCategorySerializer(self):
+    def test_DocumentLinkCategorySerializer(self):
 
         doc_category = iati_factory.DocumentCategoryFactory.build()
-        serializer = serializers.DocumentCategorySerializer(doc_category)
+        serializer = serializers.DocumentLinkCategorySerializer(doc_category)
 
         self.assertEquals(serializer.data['code'], doc_category.code),\
             """

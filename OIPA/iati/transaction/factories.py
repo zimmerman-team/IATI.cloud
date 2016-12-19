@@ -42,11 +42,11 @@ class TransactionFactory(NoDatabaseFactory):
     value_date = date.today()
     currency = SubFactory(CurrencyFactory)
 
-    disbursement_channel = SubFactory(DisbursementChannelFactory)
-    flow_type = SubFactory(FlowTypeFactory)
-    finance_type = SubFactory(FinanceTypeFactory)
-    aid_type = SubFactory(AidTypeFactory)
-    tied_status = SubFactory(TiedStatusFactory)
+    # disbursement_channel = SubFactory(DisbursementChannelFactory)
+    # flow_type = SubFactory(FlowTypeFactory)
+    # finance_type = SubFactory(FinanceTypeFactory)
+    # aid_type = SubFactory(AidTypeFactory)
+    # tied_status = SubFactory(TiedStatusFactory)
 
     class Meta:
         model = Transaction
