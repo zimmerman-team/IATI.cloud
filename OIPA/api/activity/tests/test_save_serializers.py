@@ -71,6 +71,7 @@ class ActivitySaveTestCase(TestCase):
                 "code": default_tied_status.code, # should be ignored
                 "name": 'irrelevant',
             },
+            "xml_lang": language.code,
             "title": {
                 "narratives": [
                     {
@@ -115,6 +116,7 @@ class ActivitySaveTestCase(TestCase):
         activity = iati_factory.ActivityFactory.create()
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
+        language = codelist_factory.LanguageFactory.create()
         activity_status = codelist_factory.ActivityStatusFactory.create()
         activity_scope = codelist_factory.ActivityScopeFactory.create()
         collaboration_type = codelist_factory.CollaborationTypeFactory.create()
@@ -158,7 +160,7 @@ class ActivitySaveTestCase(TestCase):
                 "code": default_tied_status.code, # should be ignored
                 "name": 'irrelevant',
             },
-            "xml_lang": "en",
+            "xml_lang": language.code,
             "title": {
                 "narratives": [
                     {

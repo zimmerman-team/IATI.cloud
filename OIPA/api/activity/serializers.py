@@ -350,6 +350,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'url',
             'format',
             'categories',
+            'languages',
             'title',
             'document_date',
         )
@@ -2673,7 +2674,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
-            data.get('default_lang'),
+            data.get('default_lang', {}).get('code'),
             data.get('hierarchy'),
             data.get('humanitarian'),
             data.get('last_updated_datetime'),
@@ -2745,10 +2746,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance = iati_models.Activity(**validated_data)
         update_instance.id = instance.id
 
-        if title_data:
-            title = iati_models.Title.objects.create(**title_data)
-            instance.title = title
-
         update_instance.activity_status = activity_status
         update_instance.scope = activity_scope
         update_instance.collaboration_type = collaboration_type
@@ -2758,6 +2755,10 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance.default_tied_status = default_tied_status
 
         update_instance.save()
+
+        if title_data:
+            title = iati_models.Title.objects.create(**title_data)
+            instance.title = title
 
         if title_narratives_data:
             save_narratives(title, title_narratives_data, instance)
