@@ -311,9 +311,7 @@ def update_searchable_activities():
 def collect_files():
     queue = django_rq.get_queue("collector")
     for d in DocumentLink.objects.all():
-    #for d in DocumentLink.objects.all().filter(file_format_id="application/msword"):
         queue.enqueue(download_file, args=(d,))
-
 
 
 @job
@@ -326,7 +324,7 @@ def download_file(d):
         'pdf', 
         'docx',
         'xls',
-         )
+        )
     document_content = ''
 
     if d.url:
@@ -345,28 +343,38 @@ def download_file(d):
         doc.document_name = local_filename
 
         '''Verify if the the URL is containing a file and authorize download'''
-        file_extension = local_filename.split('.')[-1]
+        file_extension = local_filename.split('.')[-1].lower()
+        save_name = str(d.pk) +  '.' + file_extension
+        document_path = save_path + save_name
         is_downloaded = False
-        if file_extension.lower() in extensions:
-            doc.url_is_valid = True
-            save_name = str(d.pk) +  '.' + file_extension
-            downloader = DownloadFile(long_url, save_path + save_name)
-            try:
-                is_downloaded = downloader.download()
-                doc.is_downloaded = is_downloaded
-            except Exception as e:
-                print str(e)
 
-            '''Get Text from file and save document'''
-            if is_downloaded:
-                document_content=fulltext.get(save_path + save_name, '< no content >')
-                doc.document_content=document_content    
+        if file_extension in extensions:
+            if created or (not created and not doc.is_downloaded):
+                doc.url_is_valid = True
+                downloader = DownloadFile(long_url, document_path)
+                try:
+                    is_downloaded = downloader.download()
+                    doc.is_downloaded = is_downloaded
+                except Exception as e:
+                    print str(e)
+
+                '''Get Text from file and save document'''
+                if is_downloaded:
+                    document_content=fulltext.get(save_path + save_name, '< no content >')
+                    doc.document_content=document_content    
     try:
         doc.save()
     except Exception as e:
         print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
+
+
+
+
+
+
+
 
 
 
