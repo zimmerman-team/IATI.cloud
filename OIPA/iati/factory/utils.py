@@ -52,6 +52,12 @@ def _create_test_activity(
     transaction_receiver_org1_2="transaction_receiver_org1_2",
     transaction_receiver_org2_1="transaction_receiver_org2_1",
     transaction_receiver_org2_2="transaction_receiver_org2_2",
+    location_name1_1="location_name1_1",
+    location_name1_2="location_name1_2",
+    location_description1_1="location_description1_1",
+    location_description1_2="location_description1_2",
+    location_activity_description1_1="location_activity_description1_1",
+    location_activity_description1_2="location_activity_description1_2",
         ):
     """
     For testing narratives (hence search)
@@ -154,6 +160,18 @@ def _create_test_activity(
     _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_2)
 
     # transaction2 = TransactionFactory.create(activity=activity)
+
+#     location1 = LocationFactory.create(activity=activity)
+#     location_name1 = LocationNameFactory.create(location=location1)
+#     location_description1 = LocationDescriptionFactory.create(location=location1)
+#     location_activity_description1 = LocationActivityDescriptionFactory.create(location=location1)
+
+#     _create_test_narrative(activity, location_name1, transaction_name1_1)
+#     _create_test_narrative(activity, location_name1, transaction_name1_2)
+#     _create_test_narrative(activity, location_description1, transaction_description1_1)
+#     _create_test_narrative(activity, location_description1, transaction_description1_2)
+#     _create_test_narrative(activity, location_activity_description1, transaction_activity_description1_1)
+#     _create_test_narrative(activity, location_activity_description1, transaction_activity_description1_2)
 
 
     return activity
