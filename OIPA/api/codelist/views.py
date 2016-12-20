@@ -24,6 +24,7 @@ class CodelistMetaList(DynamicListView):
     queryset = Codelist.objects.all().order_by('name')
     serializer_class = CodelistMetaSerializer
     fields = ('name', 'items')
+    pagination_class = None
 
 
 class CodelistItemList(DynamicListView):
@@ -59,6 +60,7 @@ class CodelistItemList(DynamicListView):
         'Country': 'geodata',
         'Region': 'geodata',
     }
+    pagination_class = None
 
     # def capitalize(self, name):
     #     return "".join([ part.capitalize() for part in name.split('_') ])
