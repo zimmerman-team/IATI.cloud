@@ -10,3 +10,4 @@ DATABASES = {
 }
 
 FTS = False
+CKAN_URL = "https://iati-staging.ckan.io"

@@ -15,28 +15,28 @@ class PostSaveFileTestCase(TestCase):
     """
 
     def setUp(self):
-        self.iati_source = DatasetFactory.create(ref='source_reference')
+        self.dataset = DatasetFactory.create(name='source_reference')
         version = VersionFactory(code='2.01')
         self.first_activity = iati_factory.ActivityFactory.create(
             id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
-            xml_source_ref='source_reference')
+            dataset=self.dataset)
         self.second_activity = iati_factory.ActivityFactory.create(
             id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=self.first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
+            dataset=self.dataset)
 
     def test_post_save_file(self):
         """
         Check if all required functions are called
         """
         self.parser = Parser_201(None)
-        self.parser.iati_source = self.iati_source
+        self.parser.dataset = self.dataset
         self.parser.delete_removed_activities = MagicMock()
-        self.parser.post_save_file(self.parser.iati_source)
-        self.parser.delete_removed_activities.assert_called_once_with('source_reference')
+        self.parser.post_save_file(self.parser.dataset)
+        self.parser.delete_removed_activities.assert_called_once_with(self.parser.dataset)
 
     def test_delete_removed_activities(self):
         """The parser should remove activities that are not in the source any longer
@@ -54,7 +54,7 @@ class PostSaveFileTestCase(TestCase):
         root.append(xml_activity)
 
         self.parser = Parser_201(root)
-        self.parser.iati_source = self.iati_source
+        self.parser.dataset = self.dataset
         # mock non related functions that are called (and that use postgres fts which makes the test fail on sqlite)
         self.parser.update_activity_search_index = MagicMock()
         self.parser.post_save_models = MagicMock()

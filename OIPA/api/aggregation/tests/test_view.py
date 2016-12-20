@@ -13,6 +13,8 @@ from iati.factory.utils import _create_test_activity
 from api.generics.serializers import DynamicFieldsSerializer
 from django.test.client import RequestFactory
 
+from collections import OrderedDict
+
 class AggregationInstanceTestCase(DjangoTestCase):
     """
     Check the Aggregation class construction and methods behave correctly
@@ -20,7 +22,7 @@ class AggregationInstanceTestCase(DjangoTestCase):
 
     def setUp(self):
         # TODO: mock a queryset instead - 2016-04-11
-        self.activity = _create_test_activity(id="test", iati_identifier="test123")
+        self.activity = _create_test_activity(id="test", iati_identifier="test")
         self.activity.save()
         self.queryset = Activity.objects.all()
 
@@ -115,8 +117,8 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
     def setUp(self):
         # TODO: mock a queryset instead - 2016-04-11
-        self.activity = _create_test_activity(id="test", iati_identifier="test123")
-        self.activity2 = _create_test_activity(id="test2", iati_identifier="test456")
+        self.activity = _create_test_activity(id="test", iati_identifier="test")
+        self.activity2 = _create_test_activity(id="test2", iati_identifier="test2")
         self.activity.save()
         self.activity2.save()
 
@@ -304,19 +306,19 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         new_results = group_by.serialize_results(results, request)
 
-        self.assertItemsEqual(new_results, [
+        self.assertEqual(new_results, [
             {
-                    "key": {
-                        "id": "test",
-                        "iati_identifier": "test123",
-                    },
+                    "key": OrderedDict([
+                        ('id', 'test'),
+                        ('iati_identifier', 'test'),
+                    ]),
                     "count": 12345,
             },
             {
-                    "key": {
-                        "id": "test2",
-                        "iati_identifier": "test456",
-                    },
+                    "key": OrderedDict([
+                        ('id', 'test2'),
+                        ('iati_identifier', 'test2'),
+                    ]),
                     "count": 67890,
             }
             ])

@@ -44,6 +44,8 @@ FIXTURE_DIRS = (
      os.path.join(BASE_DIR, '../fixtures/'),
 )
 
+CKAN_URL = "https://iati-staging.ckan.io"
+
 try:
     from local_settings import *
 except ImportError:
