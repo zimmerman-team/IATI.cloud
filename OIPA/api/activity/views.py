@@ -621,7 +621,7 @@ class ActivityPolicyMarkerList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).policy_markers.all()
+        return iati_models.Activity(pk=pk).activitypolicymarker_set.all()
 
 class ActivityPolicyMarkerDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityPolicyMarkerSerializer
