@@ -9,8 +9,8 @@ class TestDocumentsSearchFilters(TestCase):
 
 	request_dummy = RequestFactory().get('/')
 	c = APIClient()
-	
-	if settings.FTS:   
+
+	if settings.FTS_ENABLED:   
 		def test_documents_search_filter(self):
 			url = '/api/document-links/?document_q=aaaaaaaaaaa&format=json'
 			response = self.c.get(url)

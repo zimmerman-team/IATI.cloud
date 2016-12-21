@@ -3,7 +3,7 @@
 from OIPA.base_settings import *
 
 DEBUG = True
-FTS = True
+FTS_ENABLED = True
 
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
