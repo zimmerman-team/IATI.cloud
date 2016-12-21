@@ -2554,7 +2554,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         many=True,
         source='activitydate_set',
         read_only=True,
-        required=False,
         )
 
     # TODO ; add contact-info serializer
@@ -2813,6 +2812,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
         )
+
+        validators = []
 
 
 # class CheckValidIATIMixin():
