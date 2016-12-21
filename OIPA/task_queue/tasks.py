@@ -309,7 +309,7 @@ def update_searchable_activities():
 
 @job
 def collect_files():
-    queue = django_rq.get_queue("collector")
+    queue = django_rq.get_queue("document_collector")
     for d in DocumentLink.objects.all():
         queue.enqueue(download_file, args=(d,))
 

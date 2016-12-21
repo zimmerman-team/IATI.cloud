@@ -208,7 +208,7 @@ RQ_QUEUES = {
         'DB': 0,
         'DEFAULT_TIMEOUT': 5400,
     },
-        'collector': {
+    'document_collector': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,

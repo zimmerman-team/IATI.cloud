@@ -10,8 +10,8 @@ class Command(BaseCommand):
         Reindex full text search values for all documents
     """
 
-    def add_arguments(self, collector):
-        collector.add_argument('--document',
+    def add_arguments(self, document_collector):
+        document_collector.add_argument('--document',
             action='store',
             dest='document',
             default=None,
