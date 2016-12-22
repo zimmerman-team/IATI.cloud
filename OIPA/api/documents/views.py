@@ -1,8 +1,8 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.filters import DjangoFilterBackend
 
-from api.document_links import serializers as documentSerializers
-from api.document_links import filters
+from api.documents import serializers as documentSerializers
+from api.documents import filters
 from api.generics.filters import DocumentSearchFilter
 from api.generics.views import DynamicListView
 
@@ -39,9 +39,9 @@ class DocumentList(DynamicListView):
     fields = (
         'id',
         'document_name',
-        'long_url',
+        'long_url')
         #'document_content',
-        'document_link')
+        #'document_link')
 
     always_ordering = 'id'
 
