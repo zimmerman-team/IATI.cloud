@@ -247,41 +247,19 @@ class ActivityQuerySet(SearchQuerySet):
         from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
         from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
 
-        narrative_prefetch = Prefetch(
-            'narratives',
-            queryset=Narrative.objects.all().select_related('language'))
+        # TODO: add correct narrative prefetches here - 2016-12-22
 
-        location_name_prefetch = Prefetch(
-            'locationname_set',
-            queryset=LocationName.objects.all()
-            .prefetch_related(narrative_prefetch))
-
-        location_administrative_prefetch = Prefetch(
-            'locationadministrative_set',
-            queryset=LocationAdministrative.objects.all()
-            .select_related('vocabulary'))
-
-
-        location_description_prefetch = Prefetch(
-            'locationdescription_set',
-            queryset=LocationDescription.objects.all()
-            .prefetch_related(narrative_prefetch))
-
-        location_activity_description_prefetch = Prefetch(
-            'locationactivitydescription_set',
-            queryset=LocationActivityDescription.objects.all()
-            .prefetch_related(narrative_prefetch))
 
         return self.prefetch_related(
             Prefetch(
                 'location_set',
                 queryset=Location.objects.all()
-                .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness')
+                .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness', 'name', 'description', 'activity_description')
                 .prefetch_related(
-                    location_name_prefetch,
-                    location_administrative_prefetch,
-                    location_description_prefetch,
-                    location_activity_description_prefetch
+                    # location_name_prefetch,
+                    # location_administrative_prefetch,
+                    # location_description_prefetch,
+                    # location_activity_description_prefetch
                 ))
         )
 
