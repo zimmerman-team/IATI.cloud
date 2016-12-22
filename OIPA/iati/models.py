@@ -607,11 +607,14 @@ class DocumentSearch(models.Model):
 
 class Document(models.Model):
     document_link = models.OneToOneField(DocumentLink)
-    long_url = models.TextField(max_length=500)
+    long_url = models.TextField(max_length=500, default='')
     url_is_valid = models.BooleanField(default=False)
-    document_name = models.CharField(max_length=255)
+    document_name = models.CharField(max_length=500, default='')
     is_downloaded = models.BooleanField(default=False)
     document_content = models.TextField(default='')
+    long_url_hash = models.CharField(max_length=500, default='')
+    file_hash = models.CharField(max_length=500, default='')
+    document_or_long_url_changed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
 

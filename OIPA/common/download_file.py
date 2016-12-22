@@ -8,6 +8,7 @@ import urlparse
 import urllib
 import sys
 import socket
+import hashlib
 
 from time import time, sleep
 
@@ -298,3 +299,11 @@ class TokenBucket(object):
             self._tokens = min(self.capacity, self._tokens + delta)
         self.timestamp = now
         return self._tokens
+
+def hash_file(filename):
+    h = hashlib.sha1()
+    with open(filename,'rb') as file:
+        chunk = 0
+        chunk = file.read(1024)
+        h.update(chunk)
+    return h.hexdigest()

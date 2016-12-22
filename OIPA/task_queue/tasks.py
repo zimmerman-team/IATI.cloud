@@ -11,7 +11,9 @@ from django.conf import settings
 import time
 import requests
 import os
+import hashlib
 from common.download_file import DownloadFile
+from common.download_file import hash_file
 import fulltext
 
 redis_conn = Redis()
@@ -360,8 +362,32 @@ def download_file(d):
 
                 '''Get Text from file and save document'''
                 if is_downloaded:
+                    doc.long_url_hash = hashlib.md5(long_url).hexdigest()
+                    doc.file_hash = hash_file(document_path)
                     document_content=fulltext.get(save_path + save_name, '< no content >')
-                    doc.document_content=document_content    
+                    doc.document_content=document_content 
+
+            if (not created and doc.is_downloaded):
+                '''prepare the updated file storage with the new name <update.timestamp.id.extention'''
+                ts = time.time()
+                document_path_update = "update." + str(ts) "."+ document_path
+                downloader = DownloadFile(long_url, document_path_update)
+                try:
+                    is_downloaded = downloader.download()
+                except Exception as e:
+                    print str(e)
+                '''hash the downloaded file and it long url'''
+                if is_downloaded:
+                    long_url_hash = hashlib.md5(long_url).hexdigest()
+                    file_hash = hash_file(document_path_update)
+                '''if file hash or url hash id different, parse the content of the file'''
+                if is_downloaded and (doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
+                    doc.document_or_long_url_changed = True
+                    document_content=fulltext.get(document_path_update, '< no content >')
+                    doc.document_content=document_content
+                else:
+                    '''delete the updated file. This file is empty'''
+                    os.remove(document_path_update)
     try:
         doc.save()
     except Exception as e:
