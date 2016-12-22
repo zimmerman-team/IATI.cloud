@@ -370,7 +370,7 @@ def download_file(d):
             if (not created and doc.is_downloaded):
                 '''prepare the updated file storage with the new name <update.timestamp.id.extention'''
                 ts = time.time()
-                document_path_update = "update." + str(ts) "."+ document_path
+                document_path_update = "update." + str(ts) + "."+ document_path
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
