@@ -85,8 +85,8 @@ class Parse(IatiParser):
                 "no iati-identifier found")
         
         activity_id = self._normalize(iati_identifier[0])
-
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
