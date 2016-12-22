@@ -29,7 +29,8 @@ sudo apt-get install -y redis-server
 sudo pip install ipython
 
 #Unittest dependencies
-sudo apt-get install libsqlite3-mod-spatialite
+sudo apt-get install -y libsqlite3-mod-spatialite
 
 # fulltext Python library for extracting text from various file formats (for indexing).
-sudo apt-get install catdoc odt2txt antiword poppler-utils unrtf perl libimage-exiftool-perl html2text binutils unrar gzip bzip2 unzip docx2txt
+sudo apt-get update
+sudo apt-get install -y catdoc odt2txt antiword poppler-utils unrtf perl libimage-exiftool-perl html2text binutils unrar gzip bzip2 unzip docx2txt
