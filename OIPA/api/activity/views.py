@@ -205,7 +205,6 @@ class ActivityList(DynamicListCRUDView):
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
-    - `recipient_region_not_in` (*optional*): Comma separated list of region codes the activity should not be in.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `reporting_organisation` (*optional*): Comma separated list of organisation id's.

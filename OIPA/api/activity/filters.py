@@ -150,6 +150,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='current_activity',
     )
 
+    related_activity_type_not = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='related_activity__type__code',
+        exclude=True
+    )
+
+
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
         lookup_type='in',
