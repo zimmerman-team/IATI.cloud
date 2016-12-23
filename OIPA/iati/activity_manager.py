@@ -130,7 +130,7 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_title(self):
         from iati.models import Narrative
 
-        return self.prefetch_related(
+        return self.select_related('title').prefetch_related(
             Prefetch(
                 'title__narratives',
                 queryset=Narrative.objects.all()
