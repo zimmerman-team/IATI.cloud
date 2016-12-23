@@ -381,8 +381,10 @@ def download_file(d):
                     long_url_hash = hashlib.md5(long_url).hexdigest()
                     file_hash = hash_file(document_path_update)
                 '''if file hash or url hash id different, parse the content of the file'''
-                if is_downloaded and (doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
+                if is_downloaded and long_url_hash !='' and (doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
                     doc.document_or_long_url_changed = True
+                    doc.long_url_hash = long_url_hash
+                    doc.file_hash = file_hash
                     document_content=fulltext.get(document_path_update, '< no content >')
                     doc.document_content=document_content
                 else:
