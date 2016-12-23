@@ -48,8 +48,29 @@ class ActivitySaveTestCase(TestCase):
             serializer = ActivitySerializer(
                     queryset, 
                     many=True,
+                    context={'request': self.request_dummy},
                     fields=('participating_organisations',))
 
-            print(serializer.data)
+            list(serializer.data)
 
 
+    def test_prefetch_reporting_organisations(self):
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 3 queries:
+        1. Fetch Activity objects
+        2. Fetch ReportingOrganisation objects
+        2. Fetch corresponding narratives
+        3. 
+        """
+
+
+        with self.assertNumQueries(3):
+            queryset = Activity.objects.all().prefetch_reporting_organisations()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('reporting_organisations',))
+
+            list(serializer.data)
