@@ -508,7 +508,7 @@ class ActivityRecipientCountryList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).recipient_countries.all()
+        return iati_models.Activity(pk=pk).activityrecipientcountry_set.all()
 
 class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
@@ -522,7 +522,7 @@ class ActivityRecipientRegionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).recipient_regions.all()
+        return iati_models.Activity(pk=pk).activityrecipientregion_set.all()
 
 class ActivityRecipientRegionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
@@ -537,7 +537,7 @@ class ActivitySectorList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).sectors.all()
+        return iati_models.Activity(pk=pk).activitysector_set.all()
 
 class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivitySectorSerializer
