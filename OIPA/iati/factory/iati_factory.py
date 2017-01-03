@@ -177,6 +177,20 @@ class DocumentLinkLanguageFactory(NoDatabaseFactory):
     language = SubFactory(LanguageFactory)
 
 
+class DocumentFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.Document
+
+    document_link = SubFactory(DocumentLinkFactory)
+    long_url = 'http://someuri.com'
+
+class DocumentSearchFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.DocumentSearch
+
+    document = SubFactory(DocumentFactory)
+    last_reindexed = datetime.datetime.now()
+
 class BudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Budget

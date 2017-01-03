@@ -8,7 +8,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from rest_framework import filters
 from djorm_pgfulltext.fields import TSConfig
-from iati.models import Activity
+from iati.models import Activity, Document
 from iati.models import Location
 from common.util import combine_filters
 
@@ -76,6 +76,39 @@ class SearchFilter(filters.BaseFilterBackend):
 
         return queryset
 
+
+class DocumentSearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        query = request.query_params.get('document_q', None)
+        query_lookup = request.query_params.get('q_lookup', None)
+        lookup_type = 'ft'
+        if query_lookup:
+            if query_lookup == 'exact':
+                lookup_type = 'ft'
+            if query_lookup == 'startswith':
+                lookup_type = 'ft_startswith'
+
+        if query:
+
+            query_fields = request.query_params.get('q_fields')
+            dict_query_list = [TSConfig('simple'), query]
+
+            model_prefix = ''
+
+            # when SearchFilter is used on other endpoints than activities, 
+            # add activity__ to the filter name
+            if Document is not queryset.model:
+                model_prefix = 'document__'
+
+            # if root organisations set, only query searchable activities
+            # if settings.ROOT_ORGANISATIONS:
+            #     queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
+
+
+            return queryset.filter(**{'{0}documentsearch__text__{1}'.format(model_prefix, lookup_type): dict_query_list})
+
+        return queryset
 
 class CommaSeparatedCharFilter(CharFilter):
 
