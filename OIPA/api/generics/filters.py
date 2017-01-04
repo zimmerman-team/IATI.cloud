@@ -279,6 +279,36 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         # return qs.filter(id__in=nested_qs.values(self.fk))
 
 
+class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
+    """
+    Same as ToManyFilter, but as a not in filter.
+    """
+
+    def __init__(self, qs=None, fk=None, main_fk="id", **kwargs):
+        if not qs:
+            raise ValueError("qs must be specified")
+        if not fk:
+            raise ValueError("fk must be specified, that relates back to the main model")
+
+        self.nested_qs = qs
+        self.fk = fk
+        self.main_fk = main_fk
+
+        super(ToManyNotInFilter, self).__init__(**kwargs)
+
+    def filter(self, qs, value):
+        if not value: return qs
+
+        nested_qs = self.nested_qs.objects.all()
+        nested_qs = super(ToManyNotInFilter, self).filter(nested_qs, value)
+
+        in_filter = {
+            "{}__in".format(self.main_fk): nested_qs.values(self.fk)
+        }
+
+        return qs.exclude(**in_filter)
+
+
 class NestedFilter(CommaSeparatedCharMultipleFilter):
     """
     An in filter for a to-many field, where the IN is executed as a subfilter

@@ -13,6 +13,7 @@ from distutils.util import strtobool
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
 
@@ -207,6 +208,13 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     recipient_region = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
+
+    recipient_region_not = ToManyNotInFilter(
         qs=ActivityRecipientRegion,
         lookup_type='in',
         name='region__code',
