@@ -89,7 +89,7 @@ class ActivityQuerySet(SearchQuerySet):
 
         return self.prefetch_related(
             Prefetch(
-                'other_identifiers',
+                'otheridentifier_set',
                 queryset=OtherIdentifier.objects.all()
                 .select_related('type')
                 .prefetch_related(narrative_prefetch)),)
