@@ -94,7 +94,7 @@ class Parse(IATI_105_Parser):
                 "required attribute missing")
 
         if not gazetteer_ref:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/gazetteer-entry",
                 "gazetteer-ref",
                 "not found on the accompanying code list")

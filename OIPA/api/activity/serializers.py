@@ -90,13 +90,22 @@ def save_narratives(instance, data, activity_instance):
         
 #     return validated_data
 
+def set_deep(d, key_string, value):
+    dd = d
+    keys = key_string.split('.')
+    last = keys.pop()
+    for k in keys:
+        dd.setDefault(k, {})
+    dd.setDefault(latest, value)
+
+
 def handle_errors(*validated):
     validated_data = {}
     error_dict = {}
 
     for vali in validated:
         for error in vali['errors']:
-            error_dict[error.field] = error.message
+            set_deep(error_dict, error.apiField, error.message)
 
         for key, val in vali['validated_data'].iteritems():
             validated_data.update({
