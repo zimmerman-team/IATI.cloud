@@ -466,7 +466,7 @@ class ActivityRecipientRegion(models.Model):
 
 
 class OtherIdentifier(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, related_name="other_identifiers")
     identifier = models.CharField(max_length=100)
     owner_ref = models.CharField(max_length=100, default="")
     # owner_name = models.CharField(max_length=100, default="")

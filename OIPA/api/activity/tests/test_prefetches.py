@@ -231,32 +231,18 @@ class ActivitySaveTestCase(TestCase):
 
         """
         Test if the prefetches are applied correctly
-        Here we expect 2 queries:
-        1. Fetch Activity objects
-        2. Fetch DocumentLink objects
-        3. Fetch DocumentLinkCategory objects
-        4. Fetch DocumentLinkCategory objects
-        5. Fetch DocumentLinkLanguage objects
-        6. Fetch Language objects
-        7. Fetch DocumentLinkTitle objects
-        8. Fetch Narrative objects
-        9. Fetch Language objects
-        10. Fetch Language objects
-        11. Fetch DocumentLinkLanguage objects
-        12. Fetch Language objects
-        13. Fetch DocumentLinkTitle objects
-        14. Fetch Narrative objects
-        15. Fetch Language objects
-        16. Fetch Language objects
-        17. Fetch DocumentLinkLanguage objects
-        18. Fetch Language objects
-        19. Fetch DocumentLinkTitle objects
-        20. Fetch Narrative objects
-        21. Fetch Language objects
-        22. Fetch Language objects
+        Here we expect 7 queries:
+        1. Fetch Activity objects.
+        2. Fetch DocumentLink objects.
+        3. Fetch DocumentLinkLanguage objects.
+        4. Fetch DocumentLinkCategory objects.
+        5. Fetch Narrative objects.
+        6. Fetch DocumentLinkCategory objects.
+        7. Fetch DocumentLinkLanguage objects.
+        TODO: Verify if the queries 6 and 7 can be deleted.
         """
 
-        with self.assertNumQueries(22):
+        with self.assertNumQueries(7):
             queryset = Activity.objects.all().prefetch_document_links()
             serializer = ActivitySerializer(
                     queryset, 
@@ -265,3 +251,299 @@ class ActivitySaveTestCase(TestCase):
                     fields=('document_links',))
 
             list(serializer.data)
+
+
+    def test_prefetch_results(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch Result objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_results()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('results',))
+
+            list(serializer.data)
+
+    def test_prefetch_locations(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch Location objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_locations()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('locations',))
+
+            list(serializer.data)
+
+    def test_prefetch_related_activities(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch RelatedActivity objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_related_activities()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('related_activities',))
+
+            list(serializer.data)
+
+    def test_prefetch_aggregations(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivityAggregation objects
+        3. Fetch ChildAggregation objects
+        4. Fetch  ActivityPlusChildAggregationobjects 
+        """
+
+        with self.assertNumQueries(4):
+            queryset = Activity.objects.all().prefetch_aggregations()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('related_aggregations',))
+
+            list(serializer.data)
+
+    def test_prefetch_default_aid_type(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        """
+
+        with self.assertNumQueries(1):
+            queryset = Activity.objects.all().prefetch_default_aid_type()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('default_aid_type',))
+
+            list(serializer.data)
+
+    def test_prefetch_default_finance_type(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        """
+
+        with self.assertNumQueries(1):
+            queryset = Activity.objects.all().prefetch_default_finance_type()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('default_finance_type',))
+
+            list(serializer.data)
+
+    def test_prefetch_other_identifiers(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch otheridentifier objects
+        3. Fetch Narrative objects
+        """
+
+        with self.assertNumQueries(3):
+            queryset = Activity.objects.all().prefetch_other_identifiers()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('other_identifiers',))
+
+            list(serializer.data)
+
+    def test_prefetch_contact_info(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch ContactInfo objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_contact_info()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('contact_info',))
+
+            list(serializer.data)
+
+
+    def test_prefetch_legacy_data(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch LegacyData objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_legacy_data()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('legacy_data',))
+
+            list(serializer.data)
+
+
+    def test_prefetch_conditions(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch conditions objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_conditions()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('conditions',))
+
+            list(serializer.data)
+
+    def test_prefetch_crs_add(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch CrsAdd objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_crs_add()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('crs_add',))
+
+            list(serializer.data)
+
+
+    def test_prefetch_fss(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch Fss objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_fss()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('fss',))
+
+            list(serializer.data)
+
+
+    def test_prefetch_planned_disbursement(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch PlannedDisbursement objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_planned_disbursement()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('planned_disbursement',))
+
+            list(serializer.data)
+
+
+
+    def test_prefetch_humanitarian_scope(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch HumanitarianScope objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_humanitarian_scope()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('humanitarian_scope',))
+
+            list(serializer.data)
+
+    def test_prefetch_country_budget_items(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch CountryBudgetItem objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_country_budget_items()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('country_budget_items',))
+
+            list(serializer.data)
+
+
+
