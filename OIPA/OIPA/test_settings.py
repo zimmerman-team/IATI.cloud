@@ -8,3 +8,6 @@ DATABASES = {
         'NAME': ':memory:',
     },
 }
+
+CKAN_URL = "https://iati-staging.ckan.io"
+

@@ -1,5 +1,6 @@
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
+from django.conf import settings
 
 from iati_organisation.models import (
     Organisation,
@@ -81,7 +82,8 @@ class Parse(IatiParser):
     def iati_organisations__iati_organisation(self, element):
         id = self._normalize(element.xpath('organisation-identifier/text()')[0])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
 
         if not id:
@@ -746,13 +748,14 @@ class Parse(IatiParser):
         return element
 
     def post_save_models(self):
-        """Perform all actions that need to happen after a single activity's been parsed."""
+        """Perform all actions that need to happen after a single organisation's been parsed."""
         organisation = self.get_model('Organisation')
 
         if not organisation:
             return False
 
         post_save.set_activity_reporting_organisation(organisation)
+        post_save.set_publisher_fk(organisation)
 
     def post_save_file(self, xml_source):
         pass

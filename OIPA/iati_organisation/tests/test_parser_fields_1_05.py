@@ -14,7 +14,6 @@ from lxml.builder import E
 
 from iati.parser.parse_manager import ParseManager
 
-from iati_synchroniser.models import IatiXmlSource, Publisher
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 import iati_organisation.models as org_models
@@ -24,6 +23,8 @@ from iati.factory import iati_factory
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati_organisation.parser.organisation_1_05 import Parse as OrgParse_105
+
+from iati_synchroniser.factory import synchroniser_factory
 
 
 def build_xml(version, organisation_identifier):
@@ -47,7 +48,7 @@ def copy_xml_tree(tree):
 
 # TODO: Get rid of fixtures - 2016-04-21
 def setUpModule():
-    fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
+    fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
@@ -66,7 +67,7 @@ class ParserSetupTestCase(DjangoTestCase):
 
         self.iati_105 = build_xml("1.05", self.iati_identifier)
 
-        dummy_source = IatiXmlSource.objects.get(id=2)
+        dummy_source = synchroniser_factory.DatasetFactory.create(filetype=2)
 
         self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
 
@@ -99,6 +100,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         # iati_organisation.append(E("organisation-identifier", self.iati_identifier))
 
         self.organisation = iati_factory.OrganisationFactory.create()
+
         self.parser_105.default_lang = "en"
         self.parser_105.register_model('Organisation', self.organisation)
 

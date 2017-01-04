@@ -41,3 +41,30 @@ def get_type_parameters(name, query_params):
         result_fields[type_name] = type_value
 
     return result_fields
+
+
+from iati.parser import validators
+from iati.parser import exceptions
+def get_or_raise(model, validated_data, attr, default=None):
+    try:
+        pk = validated_data.pop(attr)
+    except KeyError:
+        raise exceptions.RequiredFieldError(
+                model.__name__,
+                attr,
+                )
+
+    return model.objects.get(pk=pk)
+    # except model.DoesNotExist:
+    #     return default
+
+def get_or_none(model, validated_data, attr, default=None):
+    pk = validated_data.pop(attr, None)
+
+    if pk is None:
+        return default
+    try:
+        return model.objects.get(pk=pk)
+    except model.DoesNotExist:
+        return default
+

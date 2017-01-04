@@ -18,7 +18,10 @@ class CountrySerializer(DynamicFieldsModelSerializer):
                 'name'
             )
 
-    url = serializers.HyperlinkedIdentityField(view_name='countries:country-detail')
+        
+    code = serializers.CharField()
+    name = serializers.CharField(required=False)
+    url = serializers.HyperlinkedIdentityField(view_name='countries:country-detail', read_only=True)
     region = RegionSerializer(fields=('url', 'code', 'name'))
     un_region = RegionSerializer(fields=('url', 'code', 'name'))
     unesco_region = RegionSerializer(fields=('url', 'code', 'name'))

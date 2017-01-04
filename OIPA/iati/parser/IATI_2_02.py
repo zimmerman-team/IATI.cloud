@@ -18,6 +18,8 @@ from decimal import Decimal
 from iati.parser.exceptions import *
 # from iati.parser.higher_order_parser import compose, code
 
+import iati.parser.validators
+
 
 class Parse(IatiParser):
     
@@ -83,8 +85,8 @@ class Parse(IatiParser):
                 "no iati-identifier found")
         
         activity_id = self._normalize(iati_identifier[0])
-
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', self.default_lang)
+        # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -101,7 +103,7 @@ class Parse(IatiParser):
 
         if old_activity and not self.force_reparse:
             # update last_updated_model to prevent the activity from being deleted
-            # because its not updated (and thereby assumed not found in the source)
+            # because its not updated (and thereby assumed not found in the dataset)
             old_activity.save()
 
             if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
@@ -133,11 +135,12 @@ class Parse(IatiParser):
         activity = models.Activity()
         activity.id = activity_id
         activity.iati_identifier = iati_identifier[0]
-        activity.default_lang = default_lang
+        if default_lang:
+            activity.default_lang_id = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
         activity.humanitarian = self.makeBoolNone(humanitarian)
-        activity.xml_source_ref = self.iati_source.ref
+        activity.dataset = self.dataset
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
@@ -2373,15 +2376,17 @@ class Parse(IatiParser):
     # iati-equivalent:activity-status
 
     # tag:legacy-data"""
-    # def iati_activities__iati_activity__legacy_data(self, element):
-    #     model = self.get_func_parent_model()
-    #     legacy_data = models.LegacyData()
-    #     legacy_data.activity = model
-    #     legacy_data.name = element.attrib.get('name')
-    #     legacy_data.value = element.attrib.get('value')
-    #     legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
-    #     legacy_data.save()
-    #     return element
+    def iati_activities__iati_activity__legacy_data(self, element):
+        activity = self.get_model('Activity')
+        legacy_data = models.LegacyData()
+        legacy_data.activity = activity
+        legacy_data.name = element.attrib.get('name')
+        legacy_data.value = element.attrib.get('value')
+        legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
+
+        self.register_model('LegacyData', legacy_data)
+
+        return element
 
     # """attributes:
     # attached:1
@@ -3052,25 +3057,25 @@ class Parse(IatiParser):
         post_save.set_sector_transaction(activity)
         post_save.set_sector_budget(activity)
 
-    def post_save_file(self, xml_source):
-        """Perform all actions that need to happen after a single IATI source's been parsed.
+    def post_save_file(self, dataset):
+        """Perform all actions that need to happen after a single IATI dataset's been parsed.
 
         Keyword arguments:
-        xml_source -- the IatiXmlSource object of the current source
+        dataset -- the Dataset object
         """
-        self.delete_removed_activities(xml_source.ref)
+        self.delete_removed_activities(dataset)
 
-    def delete_removed_activities(self, xml_source_ref):
-        """ Delete activities that were not found in the XML source any longer
+    def delete_removed_activities(self, dataset):
+        """ Delete activities that were not found in the dataset any longer
 
         Keyword arguments:
-        xml_source_ref -- the IatiXmlSource object PK (ref) of the current source
+        dataset -- the Dataset object
 
         Used variables:
         activity.last_updated_model -- the datetime at which this activity was last saved
-        self.parse_start_datetime -- the datetime at which parsing this source started
+        self.parse_start_datetime -- the datetime at which parsing this dataset started
         """
         models.Activity.objects.filter(
-            xml_source_ref=xml_source_ref,
+            dataset=dataset,
             last_updated_model__lt=self.parse_start_datetime).delete()
 

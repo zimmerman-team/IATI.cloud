@@ -88,10 +88,6 @@ class ActivityFilter(TogetherFilterSet):
     end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
     start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity_status',)
@@ -153,6 +149,13 @@ class ActivityFilter(TogetherFilterSet):
         name='type__code',
         fk='current_activity',
     )
+
+    related_activity_type_not = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='related_activity__type__code',
+        exclude=True
+    )
+
 
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
