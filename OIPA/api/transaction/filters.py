@@ -2,6 +2,7 @@ from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from api.activity.filters import ActivityFilter
 
@@ -265,6 +266,14 @@ class TransactionFilter(FilterSet):
     )
 
     recipient_region = ToManyFilter(
+        main_fk='activity',
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
+
+    recipient_region_not = ToManyNotInFilter(
         main_fk='activity',
         qs=ActivityRecipientRegion,
         lookup_type='in',

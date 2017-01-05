@@ -125,7 +125,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
-
     humanitarian = TypedChoiceFilter(
         choices=(('0', 'False'), ('1', 'True')),
         coerce=strtobool)
@@ -153,10 +152,9 @@ class ActivityFilter(TogetherFilterSet):
 
     related_activity_type_not = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__type__code',
+        name='relatedactivity__type__code',
         exclude=True
     )
-
 
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
