@@ -542,7 +542,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         except FieldDoesNotExist:
             return False
 
-    def remove_invalid_fields(self, queryset, ordering, view):
+    def remove_invalid_fields(self, queryset, ordering, view, request):
 
         mapped_fields = {
             'title': 'title__narratives__content',
