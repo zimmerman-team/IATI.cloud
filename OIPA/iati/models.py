@@ -19,6 +19,7 @@ from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
 from iati_synchroniser.models import Dataset
 
+from iati_synchroniser.models import Publisher
 
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
@@ -67,6 +68,7 @@ class Activity(models.Model):
 
     iati_standard_version = models.ForeignKey(Version)
     dataset = models.ForeignKey(Dataset, null=True, default=None)
+    publisher = models.ForeignKey(Publisher, null=True, default=None)
 
     default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
     hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)

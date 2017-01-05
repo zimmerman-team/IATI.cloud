@@ -197,7 +197,7 @@ class OrganisationVerifyApiKey(APIView):
         # publisher = Publisher.objects.get(pk=publisher_id)
         # group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
-        user = request.user
+        user = request.user.organisationuser
         api_key = request.data.get('apiKey')
         user_id = request.data.get('userId')
 
@@ -292,9 +292,9 @@ class OrganisationRemoveApiKey(GenericAPIView):
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
     def post(self, request):
-        user = request.user
+        user = request.user.organisationuser
 
-        org_admin = OrganisationAdminGroup.objects.filter(user=user).delete()
+        org_admin = OrganisationAdminGroup.objects.filter(user__organisationuser=user).delete()
 
         user.iati_api_key = None
         user.save()

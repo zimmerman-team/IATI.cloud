@@ -18,6 +18,8 @@ from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
+from api.publisher.serializers import PublisherSerializer
+
 from iati.parser import validators
 from iati.parser import exceptions
 
@@ -2679,6 +2681,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
+    publisher = PublisherSerializer()
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -2728,6 +2732,12 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         instance.default_aid_type = default_aid_type
         instance.default_tied_status = default_tied_status
 
+        # TODO: set activity.publisher to user. - 2017-01-05
+        # passed along
+        publisher_id = self.context['view'].get('publisher_id')
+        publisher = Publisher.objects.get(pk=publisher_id)
+        instance.publisher = publisher
+
         instance.save()
 
         if title_data:
@@ -2761,6 +2771,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance.default_finance_type = default_finance_type
         update_instance.default_aid_type = default_aid_type
         update_instance.default_tied_status = default_tied_status
+
+        # TODO: check if user is in the AdminGroup belonging to the publisher - 2017-01-05
 
         update_instance.save()
 
@@ -2820,6 +2832,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'linked_data_uri',
             'aggregations',
             'dataset',
+            'publisher',
         )
 
         validators = []

@@ -23,6 +23,7 @@ class IatiParser(object):
         self.errors = []
         self.parse_start_datetime = datetime.datetime.now()
         self.dataset = None
+        self.publisher = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
 

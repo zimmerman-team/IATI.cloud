@@ -141,6 +141,7 @@ class Parse(IatiParser):
             activity.hierarchy = hierarchy
         activity.humanitarian = self.makeBoolNone(humanitarian)
         activity.dataset = self.dataset
+        activity.publisher = self.publisher
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
