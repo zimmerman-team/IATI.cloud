@@ -17,7 +17,6 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
         if request.method == 'GET':
             return True
 
-        # TODO: why is this a OrganisationUser instance??? - 2016-12-19
         organisation_user = request.user.organisationuser
         user = request.user
 
@@ -83,10 +82,6 @@ class PublisherPermissions(permissions.BasePermission):
         """
         For Activity Update and Delete
         """
-
-        # TODO: this might be dangerous - 2016-10-24
-        # if request.method == 'GET':
-        #     return True
 
         user = request.user
         organisation_user = user.organisationuser
