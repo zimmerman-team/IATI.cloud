@@ -291,7 +291,8 @@ class LocationTypeFactory(NoDatabaseFactory):
     code = 'AIRQ'
     name = 'abandoned airfield'
     description = 'abandoned airfield'
-    category = LocationTypeCategoryFactory.build()
+    #category = LocationTypeCategoryFactory.build()
+    category = SubFactory(LocationTypeCategoryFactory)
 
 
 class ActivityScopeFactory(NoDatabaseFactory):
