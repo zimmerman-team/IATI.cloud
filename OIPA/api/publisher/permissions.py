@@ -85,8 +85,8 @@ class PublisherPermissions(permissions.BasePermission):
         """
 
         # TODO: this might be dangerous - 2016-10-24
-        if request.method == 'GET':
-            return True
+        # if request.method == 'GET':
+        #     return True
 
         user = request.user
         organisation_user = user.organisationuser

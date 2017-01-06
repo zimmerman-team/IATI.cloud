@@ -2683,11 +2683,9 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
     publisher = PublisherSerializer(read_only=True)
-    publisher_id = serializers.CharField(write_only=True, source='publisher.id')
 
     def validate(self, data):
         validated = validators.activity(
-            data.get('publisher', {}).get('id'),
             data.get('iati_identifier'),
             data.get('default_lang', {}).get('code'),
             data.get('hierarchy'),
@@ -2769,8 +2767,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance.default_aid_type = default_aid_type
         update_instance.default_tied_status = default_tied_status
 
-        # TODO: check if user is in the AdminGroup belonging to the publisher - 2017-01-05
-
         update_instance.save()
 
         if title_data:
@@ -2830,7 +2826,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
-            'publisher_id',
         )
 
         validators = []

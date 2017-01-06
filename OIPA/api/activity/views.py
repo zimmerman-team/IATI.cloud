@@ -301,11 +301,6 @@ class ActivityList(DynamicListView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-    # TODO: define authentication_classes globally? - 2017-01-05
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (ActivityCreatePermissions, )
-
-    # TODO: can't be set for IATI Studio API - 2017-01-05
     fields = (
         'url', 
         'iati_identifier', 
@@ -364,9 +359,6 @@ class ActivityDetail(DynamicDetailView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
 
@@ -416,18 +408,12 @@ class ActivityTransactionList(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).transaction_set.all()
 
 class ActivityTransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
-
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('id')

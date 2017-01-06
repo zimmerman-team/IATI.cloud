@@ -197,7 +197,6 @@ def codelist(iati_name, model, code):
 
 
 def activity(
-        publisher_id,
         iati_identifier,
         default_lang,
         hierarchy,
@@ -239,8 +238,6 @@ def activity(
         default_aid_type = get_or_none(models.AidType, pk=default_aid_type)
         default_tied_status = get_or_none(models.TiedStatus, pk=default_tied_status)
         default_lang = get_or_none(models.Language, pk=default_lang)
-
-        publisher = Publisher.objects.get(pk=publisher_id)
 
         try:
             last_updated_datetime = validate_date(last_updated_datetime)
@@ -406,7 +403,6 @@ def activity(
                     "activity_id": activity_id,
                 },
                 "title_narratives": title_narratives['validated_data'],
-                "publisher": publisher,
             },
         }
 

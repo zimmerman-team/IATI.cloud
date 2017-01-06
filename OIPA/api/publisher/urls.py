@@ -3,6 +3,8 @@ from api.publisher import views
 
 import api
 
+from api.transaction.views import TransactionSectorList, TransactionSectorDetail
+
 urlpatterns = [
     url(r'^$', 
         views.PublisherList.as_view(), 
@@ -59,6 +61,15 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityTransactionDetailCRUD.as_view(),
         name='activity-transaction-detail'),
+
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/transactions/(?P<pk>[^@$&+,/:;=?]+)/sectors/$',
+        TransactionSectorList.as_view(),
+        name='transaction-sectors'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/transactions/(?P<pk>[^@$&+,/:;=?]+)/sectors/(?P<id>[^@$&+,/:;=?]+)/$',
+        TransactionSectorDetail.as_view(),
+        name='activity-sectors-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/reporting_organisations/$',
         api.activity.views.ActivityReportingOrganisationList.as_view(),
