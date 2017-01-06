@@ -42,7 +42,8 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
-
+from rest_framework import authentication, permissions
+from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
 
 class ActivityAggregations(AggregationView):
     """
@@ -196,7 +197,7 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(DynamicListCRUDView):
+class ActivityList(DynamicListView):
     """
     Returns a list of IATI Activities stored in OIPA.
 
@@ -300,13 +301,18 @@ class ActivityList(DynamicListCRUDView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-#     fields = (
-#         'url', 
-#         'iati_identifier', 
-#         'title', 
-#         'descriptions', 
-#         'transactions', 
-#         'reporting_organisations')
+    # TODO: define authentication_classes globally? - 2017-01-05
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (ActivityCreatePermissions, )
+
+    # TODO: can't be set for IATI Studio API - 2017-01-05
+    fields = (
+        'url', 
+        'iati_identifier', 
+        'title', 
+        'descriptions', 
+        'transactions', 
+        'reporting_organisations')
 
     always_ordering = 'id'
 
@@ -325,8 +331,7 @@ class ActivityList(DynamicListCRUDView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-
-class ActivityDetail(DynamicDetailCRUDView):
+class ActivityDetail(DynamicDetailView):
     """
     Returns detailed information about Activity.
 
@@ -354,14 +359,18 @@ class ActivityDetail(DynamicDetailCRUDView):
     - `fields` (*optional*): List of fields to display
 
     """
+
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
 
-class ActivityTransactions(ListCreateAPIView):
+class ActivityTransactionList(DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
 
@@ -407,12 +416,103 @@ class ActivityTransactions(ListCreateAPIView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).transaction_set.all()
 
-class ActivityTransactionDetail(RetrieveUpdateDestroyAPIView):
+class ActivityTransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return Transaction.objects.get(pk=pk)
+
+
+class ActivityListCRUD(DynamicListCRUDView):
+
+    queryset = Activity.objects.all()
+    filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
+    filter_class = filters.ActivityFilter
+    serializer_class = activity_serializers.ActivitySerializer
+
+    # TODO: define authentication_classes globally? - 2017-01-05
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    always_ordering = 'id'
+
+    ordering_fields = (
+        'title',
+        'recipient_country',
+        'planned_start_date',
+        'actual_start_date',
+        'planned_end_date',
+        'actual_end_date',
+        'start_date',
+        'end_date',
+        'activity_budget_value',
+        'activity_incoming_funds_value',
+        'activity_disbursement_value',
+        'activity_expenditure_value',
+        'activity_plus_child_budget_value')
+
+class ActivityDetailCRUD(DynamicDetailCRUDView):
+    """
+    Returns detailed information about Activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    ## Extra endpoints
+
+    All information on activity transactions can be found on a separate page:
+
+    - `/api/activities/{activity_id}/transactions/`:
+        List of transactions.
+    - `/api/activities/{activity_id}/provider-activity-tree/`:
+        The upward and downward provider-activity-id traceability tree of this activity.
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+    queryset = Activity.objects.all()
+    filter_class = filters.ActivityFilter
+    serializer_class = activity_serializers.ActivitySerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+class ActivityTransactionListCRUD(ListCreateAPIView):
+    serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Activity(pk=pk).transaction_set.all()
+
+class ActivityTransactionDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('id')

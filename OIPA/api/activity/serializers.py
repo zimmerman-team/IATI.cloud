@@ -3,6 +3,7 @@ from rest_framework import serializers
 from iati import models as iati_models
 from rest_framework.response import Response
 from rest_framework import status
+from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
@@ -2681,10 +2682,12 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
-    publisher = PublisherSerializer()
+    publisher = PublisherSerializer(read_only=True)
+    publisher_id = serializers.CharField(write_only=True, source='publisher.id')
 
     def validate(self, data):
         validated = validators.activity(
+            data.get('publisher', {}).get('id'),
             data.get('iati_identifier'),
             data.get('default_lang', {}).get('code'),
             data.get('hierarchy'),
@@ -2706,7 +2709,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('planned_end'),
             data.get('actual_end'),
             data.get('end_date'),
-            data.get('title', {})
+            data.get('title', {}),
         )
 
         return handle_errors(validated)
@@ -2731,12 +2734,6 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         instance.default_finance_type = default_finance_type
         instance.default_aid_type = default_aid_type
         instance.default_tied_status = default_tied_status
-
-        # TODO: set activity.publisher to user. - 2017-01-05
-        # passed along
-        publisher_id = self.context['view'].get('publisher_id')
-        publisher = Publisher.objects.get(pk=publisher_id)
-        instance.publisher = publisher
 
         instance.save()
 
@@ -2833,6 +2830,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
+            'publisher_id',
         )
 
         validators = []

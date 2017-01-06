@@ -82,7 +82,6 @@ class ActivitySaveTestCase(TestCase):
                     }
                 ]
             },
-
         }
 
         res = self.c.post(

@@ -18,7 +18,7 @@ class VersionFactory(NoDatabaseFactory):
         model = codelist_models.Version
         django_get_or_create = ('code',)
 
-    code = '2.01'
+    code = '2.02'
     name = 'IATI version 2.01'
 
 class LanguageFactory(NoDatabaseFactory):
