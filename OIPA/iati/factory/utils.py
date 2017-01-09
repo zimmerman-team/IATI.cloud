@@ -161,12 +161,6 @@ def _create_test_activity(
     _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_1)
     _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_2)
 
-    #location = LocationFactory.create(activity=activity,)
-    #_create_test_narrative(activity, location, location_description1_1)
-
-
-
-
     # transaction2 = TransactionFactory.create(activity=activity)
 
     location = LocationFactory.create(activity=activity)
@@ -175,22 +169,7 @@ def _create_test_activity(
     _create_test_narrative(activity, location.activity_description, location_activity_description1_1)
     location_administrative = LocationAdministrativeFactory.create(location=location)
     
-
-
-    #administrative = SubFactory(LocationAdministrativeFactory)
-    #location_activity_description = LocationActivityDescriptionFactory.create(location=location)
-    #_create_test_narrative(activity, location.activity_description, location_activity_description1_1)
-    #location_name1 = LocationNameFactory.create(location=location1)
-    #location_description1 = LocationDescriptionFactory.create(location=location1)
-    #location_activity_description1 = LocationActivityDescriptionFactory.create(location=location1)
-
-    # _create_test_narrative(activity, location_name1, transaction_name1_1)
-    #_create_test_narrative(activity, location_name1, transaction_name1_2)
-    #_create_test_narrative(activity, location_description1, transaction_description1_1)
-    #_create_test_narrative(activity, location_description1, transaction_description1_2)
-    #_create_test_narrative(activity, location_activity_description1, transaction_activity_description1_1)
-    #_create_test_narrative(activity, location_activity_description1, transaction_activity_description1_2)
-
+    budget = BudgetFactory.create(activity=activity)
 
     return activity
 

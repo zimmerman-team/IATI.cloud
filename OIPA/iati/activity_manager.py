@@ -258,7 +258,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'budget_set',
                 queryset=Budget.objects.all()
-                .select_related('type', 'currency'))
+                .select_related('type', 'status', 'currency'))
         )
 
     def prefetch_planned_disbursement(self):
