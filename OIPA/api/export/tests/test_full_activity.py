@@ -47,11 +47,13 @@ finance_type = getattr(E, 'finance-type')
 aid_type = getattr(E, 'aid-type')
 tied_status = getattr(E, 'tied-status')
 location = getattr(E, 'location')
+name = getattr(E, 'name')
 location_reach = getattr(E, 'location-reach')
 location_id = getattr(E, 'location-id')
 activity_description = getattr(E, 'activity-description')
 administrative = getattr(E, 'administrative')
 point = getattr(E, 'point')
+pos = getattr(E, 'pos')
 exactness = getattr(E, 'exactness')
 location_class = getattr(E, 'location-class')
 feature_designation = getattr(E, 'feature-designation')
@@ -98,6 +100,8 @@ class ActivityXMLTestCase(TestCase):
         document_link1 = activity.documentlink_set.all()[0]
         document_link_category1 = document_link1.documentlinkcategory_set.all()[0]
         document_link_language1 = document_link1.documentlinklanguage_set.all()[0]
+        location1 = activity.location_set.all()[0]
+        location_administrative1= location1.locationadministrative_set.all()[0]
         transaction1 = activity.transaction_set.all()[0]
         provider_org1 = transaction1.provider_organisation
         receiver_org1 = transaction1.receiver_organisation
@@ -181,41 +185,40 @@ class ActivityXMLTestCase(TestCase):
                                 "percentage": str(recipient_region1.percentage)
                             }
                             ),
-                        # location(
-                        #     location_reach(code=location1.location_reach.code),
-                        #     location_id(**{
-                        #         "vocabulary": location.location_id_vocabulary.code,
-                        #         "code": location.location_id_code,
-                        #     }),
-                        #     name(
-                        #         narrative("location_name1"),
-                        #         narrative("location_name2"),
-                        #         ),
-                        #     description(
-                        #         narrative("location_description1"),
-                        #         narrative("location_description2"),
-                        #         ),
-                        #     activity_description(
-                        #         narrative("location_activity_description1"),
-                        #         narrative("location_activity_description2"),
-                        #         ),
-                        #     administrative(**{
-                        #         "vocabulary": location_administrative1.code,
-                        #         "code": location.administrative1.vocabulary.code,
-                        #         "level": str(location.administrative1.level),
-                        #     }),
-                        #     point(
-                        #         pos("{} {}".format(location1.point_pos.latitude, location1.point_pos.longitude)),
-                        #         **{
-                        #             "srsName": location1.point_srs_name,
-                        #         }),
-                        #     exactness(code=location1.exactness.code),
-                        #     location_class(code=location1.location_class.code),
-                        #     feature_designation(code=location1.feature_designation.code),
-                        #     **{
-                        #         "ref": location1.ref,
-                        #     }
-                        #         ),
+                        location(
+                            location_reach(code=location1.location_reach.code),
+                            location_id(**{
+                                "vocabulary": location1.location_id_vocabulary.code,
+                                "code": location1.location_id_code,
+                            }),
+                            name(
+                                narrative("location_name1_1"),
+                                ),
+                            description(
+                                narrative("location_description1_1"),
+                                ),
+                            activity_description(
+                                narrative("location_activity_description1_1"),
+                                ),
+                            administrative(**{
+                                "vocabulary": location_administrative1.vocabulary.code,
+                                "code": location_administrative1.code,
+                                "level": str(location_administrative1.level),
+                            }),
+                            point(
+                                pos(
+                                    "{} {}".format(location1.point_pos.y, location1.point_pos.x)),
+                                **{
+                                    "srsName": location1.point_srs_name,
+                                }
+                                ),
+                            exactness(code=location1.exactness.code),
+                            location_class(code=location1.location_class.code),
+                            feature_designation(code=location1.feature_designation.code),
+                            **{
+                                "ref": location1.ref,
+                            }
+                                ),
                         sector(
                             # narrative("sector1"),
                             # narrative("sector2"),

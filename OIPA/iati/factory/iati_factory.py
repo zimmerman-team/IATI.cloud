@@ -422,6 +422,7 @@ class LocationFactory(NoDatabaseFactory):
     activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
 
 
+
 class LocationAdministrativeFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.LocationAdministrative
