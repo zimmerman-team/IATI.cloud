@@ -20,6 +20,7 @@ def _create_test_activity(
     iati_identifier="IATI-search1",
     title1="title1",
     title2="title2",
+    capital_spend="88.80",
     description1_1="description1_1",
     description1_2="description1_2",
     description2_1="description2_1",
@@ -65,7 +66,8 @@ def _create_test_activity(
 
     activity = ActivityFactory.create(
         id=iati_identifier,
-        iati_identifier=iati_identifier
+        iati_identifier=iati_identifier,
+        capital_spend=capital_spend
     )
 
     title = TitleFactory.create(

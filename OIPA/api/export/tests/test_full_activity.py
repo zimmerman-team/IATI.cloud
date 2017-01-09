@@ -38,6 +38,7 @@ owner_org = getattr(E, 'owner-org')
 transaction = getattr(E, 'transaction')
 transaction_type = getattr(E, 'transaction-type')
 transaction_date = getattr(E, 'transaction-date')
+capital_spend = getattr(E, 'capital-spend')
 value = getattr(E, 'value')
 provider_org = getattr(E, 'provider-org')
 receiver_org = getattr(E, 'receiver-org')
@@ -227,6 +228,11 @@ class ActivityXMLTestCase(TestCase):
                                 "vocabulary": sector1.vocabulary.code,
                                 "vocabulary-uri": sector1.vocabulary_uri,
                                 "percentage": str(sector1.percentage),
+                            }
+                            ),
+                        capital_spend(
+                            **{
+                                "percentage": str(activity.capital_spend),
                             }
                             ),
                         transaction(
