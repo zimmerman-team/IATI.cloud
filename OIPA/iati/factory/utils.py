@@ -20,7 +20,7 @@ def _create_test_activity(
     iati_identifier="IATI-search1",
     title1="title1",
     title2="title2",
-    capital_spend="88.8",
+    capital_spend="88.80",
     description1_1="description1_1",
     description1_2="description1_2",
     description2_1="description2_1",

@@ -230,6 +230,11 @@ class ActivityXMLTestCase(TestCase):
                                 "percentage": str(sector1.percentage),
                             }
                             ),
+                        capital_spend(
+                            **{
+                                "percentage": str(activity.capital_spend),
+                            }
+                            ),
                         transaction(
                             transaction_type(code=transaction1.transaction_type.code),
                             transaction_date(**{ 'iso-date': transaction1.transaction_date.isoformat() }),
@@ -277,11 +282,6 @@ class ActivityXMLTestCase(TestCase):
                                 "ref": transaction1.ref,
                                 "humanitarian": boolToNum(transaction1.humanitarian)
                             }),
-                        capital_spend(
-                            **{
-                                "percentage": str(activity.capital_spend),
-                            }
-                            ),
                         document_link(
                             title(
                                 narrative("document_link_title1"),
@@ -311,13 +311,13 @@ class ActivityXMLTestCase(TestCase):
         print("PARSED")
         print(ET.tostring(parsed_xml))
 
-        # def elements_equal(e1, e2):
-        #     self.assertEqual(e1.tag, e2.tag)
-        #     self.assertEqual(e1.text, e2.text)
-        #     self.assertEqual(e1.tail, e2.tail)
-        #     self.assertEqual(e1.attrib, e2.attrib)
-        #     self.assertEqual(len(e1), len(e2), "{} != {} for elements {} and {}".format(len(e1), len(e2), e1.tag, e2.tag))
-        #     return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
+        def elements_equal(e1, e2):
+            self.assertEqual(e1.tag, e2.tag)
+            self.assertEqual(e1.text, e2.text)
+            self.assertEqual(e1.tail, e2.tail)
+            self.assertEqual(e1.attrib, e2.attrib)
+            self.assertEqual(len(e1), len(e2), "{} != {} for elements {} and {}".format(len(e1), len(e2), e1.tag, e2.tag))
+            return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
 
-        # elements_equal(ET.fromstring(ET.tostring(xml, pretty_print=True)), parsed_xml)
+        elements_equal(ET.fromstring(ET.tostring(xml, pretty_print=True)), parsed_xml)
 
