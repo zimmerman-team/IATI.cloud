@@ -216,7 +216,7 @@ class ActivitySaveTestCase(TestCase):
         TODO: Reduce queries number 09-01-2017
         """
 
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(8):
             queryset = Activity.objects.all().prefetch_locations()
             serializer = ActivitySerializer(
                     queryset, 
