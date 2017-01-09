@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     def starworst(apps, schema_editor):
         try: # don't run on first migration
             Activity = apps.get_model('iati', 'Activity')
-            Dataset = apps.get_model('iati', 'Dataset')
+            Dataset = apps.get_model('iati_synchroniser', 'Dataset')
         except:
             return
 
