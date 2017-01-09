@@ -397,7 +397,7 @@ def activity(
                 "default_aid_type": default_aid_type,
                 "default_tied_status": default_tied_status,
                 "default_lang": default_lang,
-                "iati_standard_version_id": iati_standard_version,
+                "iati_standard_version": iati_standard_version,
                 "published": published,
                 "title": {
                     "activity_id": activity_id,
