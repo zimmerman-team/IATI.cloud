@@ -168,7 +168,13 @@ def _create_test_activity(
     # transaction2 = TransactionFactory.create(activity=activity)
 
     location = LocationFactory.create(activity=activity)
+    _create_test_narrative(activity, location.name, location_name1_1)
+    _create_test_narrative(activity, location.description, location_description1_1)
+    _create_test_narrative(activity, location.activity_description, location_activity_description1_1)
     location_administrative = LocationAdministrativeFactory.create(location=location)
+    
+
+
     #administrative = SubFactory(LocationAdministrativeFactory)
     #location_activity_description = LocationActivityDescriptionFactory.create(location=location)
     #_create_test_narrative(activity, location.activity_description, location_activity_description1_1)
@@ -176,7 +182,7 @@ def _create_test_activity(
     #location_description1 = LocationDescriptionFactory.create(location=location1)
     #location_activity_description1 = LocationActivityDescriptionFactory.create(location=location1)
 
-    #_create_test_narrative(activity, location_name1, transaction_name1_1)
+    # _create_test_narrative(activity, location_name1, transaction_name1_1)
     #_create_test_narrative(activity, location_name1, transaction_name1_2)
     #_create_test_narrative(activity, location_description1, transaction_description1_1)
     #_create_test_narrative(activity, location_description1, transaction_description1_2)

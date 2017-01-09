@@ -81,10 +81,10 @@ class ActivityXMLTestCase(TestCase):
         # TODO: generate full activity example so we can parse this and test the result - 2016-12-14
 
     def test_create_activity(self):
-        # res = self.c.get(
-        #         "/api/export/activities/?format=xml", 
-        #         format='json'
-        #         )
+        res = self.c.get(
+                "/api/export/activities/?format=xml", 
+                format='json'
+                )
 
         activity = self.activity
         reporting_org1 = activity.reporting_organisations.all()[0]
@@ -192,16 +192,13 @@ class ActivityXMLTestCase(TestCase):
                                 "code": location1.location_id_code,
                             }),
                             name(
-                                narrative("location_name1"),
-                                narrative("location_name2"),
+                                narrative("location_name1_1"),
                                 ),
                             description(
-                                narrative("location_description1"),
-                                narrative("location_description2"),
+                                narrative("location_description1_1"),
                                 ),
                             activity_description(
-                                narrative("location_activity_description1"),
-                                narrative("location_activity_description2"),
+                                narrative("location_activity_description1_1"),
                                 ),
                             administrative(**{
                                 "vocabulary": location_administrative1.vocabulary.code,
@@ -210,7 +207,7 @@ class ActivityXMLTestCase(TestCase):
                             }),
                             point(
                                 pos(
-                                    "{} {}".format(location1.point_pos.x, location1.point_pos.y)),
+                                    "{} {}".format(location1.point_pos.y, location1.point_pos.x)),
                                 **{
                                     "srsName": location1.point_srs_name,
                                 }
@@ -300,13 +297,13 @@ class ActivityXMLTestCase(TestCase):
                     version="2.02",
                 )
 
-        # parsed_xml = ET.fromstring(res.content)
+        parsed_xml = ET.fromstring(res.content)
 
         print("ORIGINAL")
         print(ET.tostring(xml, pretty_print=True))
 
-        # print("PARSED")
-        # print(ET.tostring(parsed_xml))
+        print("PARSED")
+        print(ET.tostring(parsed_xml))
 
         def elements_equal(e1, e2):
             self.assertEqual(e1.tag, e2.tag)
@@ -316,5 +313,5 @@ class ActivityXMLTestCase(TestCase):
             self.assertEqual(len(e1), len(e2), "{} != {} for elements {} and {}".format(len(e1), len(e2), e1.tag, e2.tag))
             return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
 
-        # elements_equal(ET.fromstring(ET.tostring(xml, pretty_print=True)), parsed_xml)
+        elements_equal(ET.fromstring(ET.tostring(xml, pretty_print=True)), parsed_xml)
 

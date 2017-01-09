@@ -415,12 +415,12 @@ class LocationFactory(NoDatabaseFactory):
     point_srs_name = "http://www.opengis.net/def/crs/EPSG/0/4326"
     exactness = SubFactory(GeographicExactnessFactory)
     location_class = SubFactory(GeographicLocationClassFactory)
-    #location_type_category = SubFactory(LocationTypeCategoryFactory)
     feature_designation = SubFactory(LocationTypeFactory)
-    #administrative = SubFactory(LocationAdministrativeFactory)
+
     name = RelatedFactory(LocationNameFactory, 'location')
     description = RelatedFactory(LocationDescriptionFactory, 'location')
     activity_description = RelatedFactory(LocationActivityDescriptionFactory, 'location')
+
 
 
 class LocationAdministrativeFactory(NoDatabaseFactory):

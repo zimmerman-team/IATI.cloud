@@ -163,12 +163,23 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_locations(self):
         from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
         from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
+        # from django.contrib.contenttypes.models import ContentType
 
-        # TODO: add correct narrative prefetches here - 2016-12-22
+        # pr = Prefetch(
+        #     'content_object',
+        #     queryset=ContentType.objects.all())
+
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
+
+
+
         location_name_prefetch = Prefetch(
-            'name',
+            'name__narratives',
             queryset=Narrative.objects.all()
-            .select_related('language'))
+            .select_related('language')
+            )
 
         location_administrative_prefetch = Prefetch(
             'locationadministrative_set',
@@ -176,25 +187,14 @@ class ActivityQuerySet(SearchQuerySet):
             .select_related('vocabulary'))
 
         location_description_prefetch = Prefetch(
-            'description',
+            'description__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
         location_activity_description_prefetch = Prefetch(
-            'activity_description',
+            'activity_description__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
-
-        # category_prefetch = Prefetch(
-        #     'documentlinkcategory_set',
-        #     queryset=DocumentLinkCategory.objects.all()
-        #     .select_related('category'))
-
-        # language_prefetch = Prefetch(
-        #     'documentlinklanguage_set',
-        #     queryset=DocumentLinkLanguage.objects.all()
-        #     .select_related('language'))
-
 
         return self.prefetch_related(
             Prefetch(
@@ -202,8 +202,8 @@ class ActivityQuerySet(SearchQuerySet):
                 queryset=Location.objects.all()
                 .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness', 'name', 'description', 'activity_description')
                 .prefetch_related(
-                    location_name_prefetch,
                     location_administrative_prefetch,
+                    location_name_prefetch,
                     location_description_prefetch,
                     location_activity_description_prefetch
                 ))
@@ -302,12 +302,14 @@ class ActivityQuerySet(SearchQuerySet):
         category_prefetch = Prefetch(
             'documentlinkcategory_set',
             queryset=DocumentLinkCategory.objects.all()
-            .select_related('category'))
+            .select_related('category')
+            )
 
         language_prefetch = Prefetch(
             'documentlinklanguage_set',
             queryset=DocumentLinkLanguage.objects.all()
             .select_related('language'))
+
 
         return self.prefetch_related(
             Prefetch(
