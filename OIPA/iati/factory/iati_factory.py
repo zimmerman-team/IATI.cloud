@@ -196,6 +196,9 @@ class BudgetFactory(NoDatabaseFactory):
         model = iati.models.Budget
 
     activity = SubFactory(ActivityFactory)
+    type = SubFactory(BudgetTypeFactory)
+    status = SubFactory(BudgetStatusFactory)
+    currency = SubFactory(CurrencyFactory)
     period_start = '2011-01-01'
     period_end = '2011-12-30'
     value = 100

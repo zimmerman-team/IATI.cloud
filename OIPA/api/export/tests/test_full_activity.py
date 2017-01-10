@@ -58,6 +58,9 @@ pos = getattr(E, 'pos')
 exactness = getattr(E, 'exactness')
 location_class = getattr(E, 'location-class')
 feature_designation = getattr(E, 'feature-designation')
+budget = getattr(E, 'budget')
+period_start = getattr(E, 'period-start')
+period_end = getattr(E, 'period-end')
 
 def narrative(content):
     return getattr(E, 'narrative')(content, **{
@@ -109,6 +112,8 @@ class ActivityXMLTestCase(TestCase):
         transaction_sector1 = transaction1.transactionsector_set.all()[0]
         transaction_recipient_country1 = transaction1.transactionrecipientcountry_set.all()[0]
         transaction_recipient_region1 = transaction1.transactionrecipientregion_set.all()[0]
+        budget1 = activity.budget_set.all()[0]
+
 
         xml = iati_activities(
                 iati_activity(
@@ -230,6 +235,19 @@ class ActivityXMLTestCase(TestCase):
                                 "percentage": str(sector1.percentage),
                             }
                             ),
+                            budget(
+                                period_start(**{'iso-date': budget1.period_start.isoformat()}),
+                                period_end(**{'iso-date': budget1.period_end.isoformat()}),
+                                value(
+                                    str(budget1.value),
+                                    **{
+                                    'currency': budget1.currency.code, 
+                                    'value-date': budget1.value_date.isoformat(),
+                                    }),
+                            **{
+                            "type": budget1.type.code,
+                            "status": budget1.status.code,
+                            }),
                         capital_spend(
                             **{
                                 "percentage": str(activity.capital_spend),
