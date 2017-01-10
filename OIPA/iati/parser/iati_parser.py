@@ -91,7 +91,7 @@ class IatiParser(object):
 
     def _normalize(self, attr): 
         attr = attr.strip(' \t\n\r').replace(" ", "")
-        attr = re.sub("[/:',.+]", "-", attr)
+        attr = re.sub("[/:&',.+]", "-", attr)
         return attr
 
     def validate_date(self, unvalidated_date):
