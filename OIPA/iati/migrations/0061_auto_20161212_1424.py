@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         Condition.objects.all().delete()
 
     operations = [
-        migrations.RunPython(remove_conditions),
+        migrations.RunPython(remove_conditions, lambda x,y: None),
         migrations.CreateModel(
             name='Conditions',
             fields=[

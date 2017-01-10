@@ -15,7 +15,7 @@ class ParserError(Exception):
 
 
 class RequiredFieldError(Exception):
-    def __init__(self, model, field, msg="required attribute/element missing"):
+    def __init__(self, model, field, msg="required attribute/element missing", apiField=None):
         """
         This error 
 
@@ -24,33 +24,19 @@ class RequiredFieldError(Exception):
         """
         self.model = model
         self.field = field
+        if not apiField:
+            self.apiField = field
+        else:
+            self.apiField = apiField
         self.message = msg
 
     def __str__(self):
         return repr(self.field)
 
 
-class EmptyFieldError(Exception):
-    def __init__(self, model, field, msg):
-        """
-        This error 
-
-        field: the field that is required
-        msg: explanation why
-        """
-        self.model = model
-        self.field = field
-        self.message = msg
-
-    def __str__(self):
-        return repr(self.field)
-
-
-class ValidationError(Exception):
+class FieldValidationError(Exception):
     def __init__(self, model, field, msg, iati_id=None):
         """
-
-
         field: the field that is validated
         msg: explanation what went wrong
         """
@@ -62,6 +48,20 @@ class ValidationError(Exception):
     def __str__(self):
         return repr(self.field)
 
+
+class ValidationError(Exception):
+    def __init__(self, model, msg, iati_id=None):
+        """
+        field: the field that is validated
+        msg: explanation what went wrong
+        """
+        self.model = model
+        self.field = field
+        self.message = msg
+        self.iati_id = iati_id
+
+    def __str__(self):
+        return repr(self.field)
 
 class IgnoredVocabularyError(Exception):
     def __init__(self, model, field, msg):

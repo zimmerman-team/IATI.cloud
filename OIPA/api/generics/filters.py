@@ -15,6 +15,27 @@ from common.util import combine_filters
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
 
+def reduce_comma(arr, value):
+    """
+    urls are already unescaped when arriving in filters.
+
+    In case the filter is on a name that contains a comma, 
+    this should be treated as 1 filter instead of 2:
+
+    Example: "Wageningen, University of"
+
+    before: ["Wageningen", " University of"]
+    after: ["Wageningen, University of"]
+
+    This only works when there's a space behind the comma.
+    """
+    if value[:1] == ' ' and len(arr):
+        arr[len(arr) - 1] = arr[len(arr) - 1] + "," + value
+    else:
+        arr.append(value)
+    return arr
+
+
 class DistanceFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
 
@@ -116,6 +137,7 @@ class CommaSeparatedCharFilter(CharFilter):
 
         if value:
             value = value.split(',')
+            value = reduce(reduce_comma, value, [])
 
         self.lookup_type = 'in'
 
@@ -135,30 +157,13 @@ class CommaSeparatedStickyCharFilter(CharFilter):
 
         if value:
             value = value.split(',')
+            value = reduce(reduce_comma, value, [])
 
         self.lookup_type = 'in'
         qs._next_is_sticky()
 
         return super(CommaSeparatedStickyCharFilter, self).filter(qs, value)
 
-#
-# class CommaSeparatedCharMultipleFilter(CharFilter):
-#     """
-#     Comma separated filter for lookups like 'exact', 'iexact', etc..
-#     """
-#     def filter(self, qs, value):
-#         if not value: return qs
-#
-#         values = value.split(',')
-#
-#         lookup_type = self.lookup_type
-#
-#         filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
-#         final_filters = reduce(lambda a, b: a | b, filters)
-#
-#         return qs.filter(final_filters)
-#
-#
 
 class StickyBooleanFilter(BooleanFilter):
     """
@@ -253,9 +258,11 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
     Comma separated filter for lookups like 'exact', 'iexact', etc..
     """
     def filter(self, qs, value):
-        if not value: return qs
+        if not value: 
+            return qs
 
         values = value.split(',')
+        values = reduce(reduce_comma, values, [])
 
         lookup_type = self.lookup_type
 
@@ -310,6 +317,36 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         return qs.filter(**in_filter)
 
         # return qs.filter(id__in=nested_qs.values(self.fk))
+
+
+class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
+    """
+    Same as ToManyFilter, but as a not in filter.
+    """
+
+    def __init__(self, qs=None, fk=None, main_fk="id", **kwargs):
+        if not qs:
+            raise ValueError("qs must be specified")
+        if not fk:
+            raise ValueError("fk must be specified, that relates back to the main model")
+
+        self.nested_qs = qs
+        self.fk = fk
+        self.main_fk = main_fk
+
+        super(ToManyNotInFilter, self).__init__(**kwargs)
+
+    def filter(self, qs, value):
+        if not value: return qs
+
+        nested_qs = self.nested_qs.objects.all()
+        nested_qs = super(ToManyNotInFilter, self).filter(nested_qs, value)
+
+        in_filter = {
+            "{}__in".format(self.main_fk): nested_qs.values(self.fk)
+        }
+
+        return qs.exclude(**in_filter)
 
 
 class NestedFilter(CommaSeparatedCharMultipleFilter):

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from iati import models as iati_models
 from rest_framework.response import Response
 from rest_framework import status
+from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
@@ -17,6 +18,8 @@ from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
+
+from api.publisher.serializers import PublisherSerializer
 
 from iati.parser import validators
 from iati.parser import exceptions
@@ -90,13 +93,22 @@ def save_narratives(instance, data, activity_instance):
         
 #     return validated_data
 
+def set_deep(d, key_string, value):
+    dd = d
+    keys = key_string.split('.')
+    last = keys.pop()
+    for k in keys:
+        dd.setDefault(k, {})
+    dd.setDefault(latest, value)
+
+
 def handle_errors(*validated):
     validated_data = {}
     error_dict = {}
 
     for vali in validated:
         for error in vali['errors']:
-            error_dict[error.field] = error.message
+            set_deep(error_dict, error.apiField, error.message)
 
         for key, val in vali['validated_data'].iteritems():
             validated_data.update({
@@ -2670,6 +2682,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
+    publisher = PublisherSerializer(read_only=True)
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -2693,7 +2707,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('planned_end'),
             data.get('actual_end'),
             data.get('end_date'),
-            data.get('title', {})
+            data.get('title', {}),
         )
 
         return handle_errors(validated)
@@ -2811,6 +2825,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'linked_data_uri',
             'aggregations',
             'dataset',
+            'publisher',
         )
 
         validators = []

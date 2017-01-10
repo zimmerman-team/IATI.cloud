@@ -15,6 +15,7 @@ from api.activity import serializers
 from iati import models as iati_models
 from iati.transaction import models as transaction_models
 from django.core.exceptions import ObjectDoesNotExist
+from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 
 from decimal import Decimal
 
@@ -22,6 +23,16 @@ from decimal import Decimal
 class ActivitySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_activity(self):
 
@@ -82,11 +93,10 @@ class ActivitySaveTestCase(TestCase):
                     }
                 ]
             },
-
         }
 
         res = self.c.post(
-                "/api/activities/?format=json", 
+                "/api/publishers/{}/activities/?format=json".format(self.publisher.id), 
                 data,
                 format='json'
                 )
@@ -175,7 +185,7 @@ class ActivitySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -205,7 +215,7 @@ class ActivitySaveTestCase(TestCase):
         activity = iati_factory.ActivityFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/?format=json".format(self.publisher.id, activity.id), 
                 format='json'
                 )
 
@@ -218,6 +228,17 @@ class ActivitySaveTestCase(TestCase):
 class ReportingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
 
     def test_create_reporting_organisation(self):
 
@@ -246,7 +267,7 @@ class ReportingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/reporting_organisations/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/reporting_organisations/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -289,7 +310,7 @@ class ReportingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/reporting_organisations/{}?format=json".format(reporting_org.activity.id, reporting_org.id), 
+                "/api/publishers/{}/activities/{}/reporting_organisations/{}?format=json".format(self.publisher.id, reporting_org.activity.id, reporting_org.id), 
                 data,
                 format='json'
                 )
@@ -312,7 +333,7 @@ class ReportingOrganisationSaveTestCase(TestCase):
         reporting_org = iati_factory.ReportingOrganisationFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/reporting_organisations/{}?format=json".format(reporting_org.activity.id, reporting_org.id), 
+                "/api/publishers/{}/activities/{}/reporting_organisations/{}?format=json".format(self.publisher.id, reporting_org.activity.id, reporting_org.id), 
                 format='json'
                 )
 
@@ -324,6 +345,17 @@ class ReportingOrganisationSaveTestCase(TestCase):
 class DescriptionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
 
     def test_create_description(self):
 
@@ -348,7 +380,7 @@ class DescriptionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/descriptions/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/descriptions/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -387,7 +419,7 @@ class DescriptionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id), 
+                "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(self.publisher.id, description.activity.id, description.id), 
                 data,
                 format='json'
                 )
@@ -408,7 +440,7 @@ class DescriptionSaveTestCase(TestCase):
         description = iati_factory.DescriptionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/descriptions/{}?format=json".format(description.activity.id, description.id), 
+                "/api/publishers/{}/activities/{}/descriptions/{}?format=json".format(self.publisher.id, description.activity.id, description.id), 
                 format='json'
                 )
 
@@ -421,6 +453,16 @@ class DescriptionSaveTestCase(TestCase):
 class ParticipatingOrganisationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_participating_organisation(self):
 
@@ -452,7 +494,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/participating_organisations/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/participating_organisations/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -500,7 +542,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/participating_organisations/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(self.publisher.id, participating_org.activity.id, participating_org.id), 
                 data,
                 format='json'
                 )
@@ -524,7 +566,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         participating_org = iati_factory.ParticipatingOrganisationFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/participating_organisations/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                "/api/publishers/{}/activities/{}/participating_organisations/{}?format=json".format(self.publisher.id, participating_org.activity.id, participating_org.id), 
                 format='json'
                 )
 
@@ -537,6 +579,16 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
 class ActivityDateSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_activity_date(self):
 
@@ -553,7 +605,7 @@ class ActivityDateSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/activity_dates/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/activity_dates/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -580,7 +632,7 @@ class ActivityDateSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/activity_dates/{}?format=json".format(activity_date.activity.id, activity_date.id), 
+                "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(self.publisher.id, activity_date.activity.id, activity_date.id), 
                 data,
                 format='json'
                 )
@@ -596,7 +648,7 @@ class ActivityDateSaveTestCase(TestCase):
         activity_dates = iati_factory.ActivityDateFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/activity_dates/{}?format=json".format(activity_dates.activity.id, activity_dates.id), 
+                "/api/publishers/{}/activities/{}/activity_dates/{}?format=json".format(self.publisher.id, activity_dates.activity.id, activity_dates.id), 
                 format='json'
                 )
 
@@ -609,6 +661,16 @@ class ActivityDateSaveTestCase(TestCase):
 class ContactInfoSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_contact_info(self):
 
@@ -685,7 +747,7 @@ class ContactInfoSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/contact_info/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/contact_info/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -783,7 +845,7 @@ class ContactInfoSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/contact_info/{}?format=json".format(contact_info.activity.id, contact_info.id), 
+                "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(self.publisher.id, contact_info.activity.id, contact_info.id), 
                 data,
                 format='json'
                 )
@@ -820,7 +882,7 @@ class ContactInfoSaveTestCase(TestCase):
         contact_infos = iati_factory.ContactInfoFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/contact_info/{}?format=json".format(contact_infos.activity.id, contact_infos.id), 
+                "/api/publishers/{}/activities/{}/contact_info/{}?format=json".format(self.publisher.id, contact_infos.activity.id, contact_infos.id), 
                 format='json'
                 )
 
@@ -833,6 +895,16 @@ class ContactInfoSaveTestCase(TestCase):
 class ActivityRecipientCountrySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_recipient_country(self):
 
@@ -849,7 +921,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/recipient_countries/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/recipient_countries/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -876,7 +948,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_country.activity.id, recipient_country.id), 
+                "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(self.publisher.id, recipient_country.activity.id, recipient_country.id), 
                 data,
                 format='json'
                 )
@@ -893,7 +965,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
         recipient_country = iati_factory.ActivityRecipientCountryFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/recipient_countries/{}?format=json".format(recipient_country.activity.id, recipient_country.id), 
+                "/api/publishers/{}/activities/{}/recipient_countries/{}?format=json".format(self.publisher.id, recipient_country.activity.id, recipient_country.id), 
                 format='json'
                 )
 
@@ -908,6 +980,16 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
 class ActivityRecipientRegionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_recipient_region(self):
 
@@ -930,7 +1012,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/recipient_regions/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/recipient_regions/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -962,7 +1044,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/recipient_regions/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(self.publisher.id, recipient_region.activity.id, recipient_region.id), 
                 data,
                 format='json'
                 )
@@ -979,7 +1061,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         recipient_region = iati_factory.ActivityRecipientRegionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/recipient_regions/{}?format=json".format(recipient_region.activity.id, recipient_region.id), 
+                "/api/publishers/{}/activities/{}/recipient_regions/{}?format=json".format(self.publisher.id, recipient_region.activity.id, recipient_region.id), 
                 format='json'
                 )
 
@@ -991,6 +1073,16 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
 class ActivitySectorSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create__sector(self):
 
@@ -1013,7 +1105,7 @@ class ActivitySectorSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/sectors/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/sectors/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1045,7 +1137,7 @@ class ActivitySectorSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/sectors/{}?format=json".format(_sector.activity.id, _sector.id), 
+                "/api/publishers/{}/activities/{}/sectors/{}?format=json".format(self.publisher.id, _sector.activity.id, _sector.id), 
                 data,
                 format='json'
                 )
@@ -1062,7 +1154,7 @@ class ActivitySectorSaveTestCase(TestCase):
         _sector = iati_factory.ActivitySectorFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/sectors/{}?format=json".format(_sector.activity.id, _sector.id), 
+                "/api/publishers/{}/activities/{}/sectors/{}?format=json".format(self.publisher.id, _sector.activity.id, _sector.id), 
                 format='json'
                 )
 
@@ -1076,6 +1168,16 @@ class ActivitySectorSaveTestCase(TestCase):
 class LocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_location(self):
 
@@ -1155,7 +1257,7 @@ class LocationSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/locations/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/locations/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1267,7 +1369,7 @@ class LocationSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/locations/{}?format=json".format(location.activity.id, location.id), 
+                "/api/publishers/{}/activities/{}/locations/{}?format=json".format(self.publisher.id, location.activity.id, location.id), 
                 data,
                 format='json'
                 )
@@ -1308,7 +1410,7 @@ class LocationSaveTestCase(TestCase):
         location = iati_factory.LocationFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/locations/{}?format=json".format(location.activity.id, location.id), 
+                "/api/publishers/{}/activities/{}/locations/{}?format=json".format(self.publisher.id, location.activity.id, location.id), 
                 format='json'
                 )
 
@@ -1320,6 +1422,16 @@ class LocationSaveTestCase(TestCase):
 class HumanitarianScopeSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_humanitarian_scope(self):
 
@@ -1342,7 +1454,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/humanitarian_scopes/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/humanitarian_scopes/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1376,7 +1488,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/humanitarian_scopes/{}?format=json".format(humanitarian_scope.activity.id, humanitarian_scope.id), 
+                "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(self.publisher.id, humanitarian_scope.activity.id, humanitarian_scope.id), 
                 data,
                 format='json'
                 )
@@ -1394,7 +1506,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
         humanitarian_scopes = iati_factory.HumanitarianScopeFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/humanitarian_scopes/{}?format=json".format(humanitarian_scopes.activity.id, humanitarian_scopes.id), 
+                "/api/publishers/{}/activities/{}/humanitarian_scopes/{}?format=json".format(self.publisher.id, humanitarian_scopes.activity.id, humanitarian_scopes.id), 
                 format='json'
                 )
 
@@ -1407,6 +1519,16 @@ class HumanitarianScopeSaveTestCase(TestCase):
 class PolicyMarkerSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_policy_marker(self):
         activity = iati_factory.ActivityFactory.create()
@@ -1440,7 +1562,7 @@ class PolicyMarkerSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/policy_markers/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/policy_markers/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1491,7 +1613,7 @@ class PolicyMarkerSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/policy_markers/{}?format=json".format(activity_policy_marker.activity.id, activity_policy_marker.id), 
+                "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(self.publisher.id, activity_policy_marker.activity.id, activity_policy_marker.id), 
                 data,
                 format='json'
                 )
@@ -1515,7 +1637,7 @@ class PolicyMarkerSaveTestCase(TestCase):
         participating_org = iati_factory.ActivityPolicyMarkerFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/policy_markers/{}?format=json".format(participating_org.activity.id, participating_org.id), 
+                "/api/publishers/{}/activities/{}/policy_markers/{}?format=json".format(self.publisher.id, participating_org.activity.id, participating_org.id), 
                 format='json'
                 )
 
@@ -1528,6 +1650,16 @@ class PolicyMarkerSaveTestCase(TestCase):
 class BudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_budget(self):
 
@@ -1559,7 +1691,7 @@ class BudgetSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/budgets/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/budgets/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1606,7 +1738,7 @@ class BudgetSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/budgets/{}?format=json".format(budget.activity.id, budget.id), 
+                "/api/publishers/{}/activities/{}/budgets/{}?format=json".format(self.publisher.id, budget.activity.id, budget.id), 
                 data,
                 format='json'
                 )
@@ -1628,7 +1760,7 @@ class BudgetSaveTestCase(TestCase):
         budgets = iati_factory.BudgetFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/budgets/{}?format=json".format(budgets.activity.id, budgets.id), 
+                "/api/publishers/{}/activities/{}/budgets/{}?format=json".format(self.publisher.id, budgets.activity.id, budgets.id), 
                 format='json'
                 )
 
@@ -1640,6 +1772,16 @@ class BudgetSaveTestCase(TestCase):
 class PlannedDisbursementSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_planned_disbursement(self):
 
@@ -1701,7 +1843,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/planned_disbursements/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/planned_disbursements/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -1799,7 +1941,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/planned_disbursements/{}?format=json".format(planned_disbursement.activity.id, planned_disbursement.id), 
+                "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(self.publisher.id, planned_disbursement.activity.id, planned_disbursement.id), 
                 data,
                 format='json'
                 )
@@ -1842,7 +1984,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         planned_disbursements = iati_factory.PlannedDisbursementFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/planned_disbursements/{}?format=json".format(planned_disbursements.activity.id, planned_disbursements.id), 
+                "/api/publishers/{}/activities/{}/planned_disbursements/{}?format=json".format(self.publisher.id, planned_disbursements.activity.id, planned_disbursements.id), 
                 format='json'
                 )
 
@@ -1856,6 +1998,16 @@ class PlannedDisbursementSaveTestCase(TestCase):
 class TransactionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_transaction(self):
         activity = iati_factory.ActivityFactory.create()
@@ -1989,7 +2141,7 @@ class TransactionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/transactions/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/transactions/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -2168,7 +2320,7 @@ class TransactionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/transactions/{}?format=json".format(transaction.activity.id, transaction.id), 
+                "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(self.publisher.id, transaction.activity.id, transaction.id), 
                 data,
                 format='json'
                 )
@@ -2220,7 +2372,7 @@ class TransactionSaveTestCase(TestCase):
         transaction = transaction_factory.TransactionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/transactions/{}?format=json".format(transaction.activity.id, transaction.id), 
+                "/api/publishers/{}/activities/{}/transactions/{}?format=json".format(self.publisher.id, transaction.activity.id, transaction.id), 
                 format='json'
                 )
 
@@ -2234,6 +2386,16 @@ class TransactionSaveTestCase(TestCase):
 class TransactionSectorSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_sector(self):
 
@@ -2255,7 +2417,7 @@ class TransactionSectorSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/transactions/{}/sectors/?format=json".format(transaction.id), 
+                "/api/publishers/{}/activities/{}/transactions/{}/sectors/?format=json".format(self.publisher.id, transaction.activity.id, transaction.id), 
                 data,
                 format='json'
                 )
@@ -2285,7 +2447,7 @@ class TransactionSectorSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/transactions/{}/sectors/{}?format=json".format(transaction_sector.transaction.id, transaction_sector.id), 
+                "/api/publishers/{}/activities/{}/transactions/{}/sectors/{}/?format=json".format(self.publisher.id, transaction_sector.transaction.activity.id, transaction_sector.transaction.id, transaction_sector.id), 
                 data,
                 format='json'
                 )
@@ -2302,7 +2464,7 @@ class TransactionSectorSaveTestCase(TestCase):
         transaction_sector = transaction_factory.TransactionSectorFactory.create()
 
         res = self.c.delete(
-                "/api/transactions/{}/sectors/{}?format=json".format(transaction_sector.transaction.id, transaction_sector.id), 
+                "/api/publishers/{}/activities/{}/transactions/{}/sectors/{}/?format=json".format(self.publisher.id, transaction_sector.transaction.activity.id, transaction_sector.transaction.id, transaction_sector.id), 
                 format='json'
                 )
 
@@ -2316,6 +2478,16 @@ class TransactionSectorSaveTestCase(TestCase):
 class ResultSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_result(self):
 
@@ -2352,7 +2524,7 @@ class ResultSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/results/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/results/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -2408,7 +2580,7 @@ class ResultSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/results/{}?format=json".format(result.activity.id, result.id), 
+                "/api/publishers/{}/activities/{}/results/{}?format=json".format(self.publisher.id, result.activity.id, result.id), 
                 data,
                 format='json'
                 )
@@ -2434,7 +2606,7 @@ class ResultSaveTestCase(TestCase):
         results = iati_factory.ResultFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}?format=json".format(results.activity.id, results.id), 
+                "/api/publishers/{}/activities/{}/results/{}?format=json".format(self.publisher.id, results.activity.id, results.id), 
                 format='json'
                 )
 
@@ -2448,6 +2620,16 @@ class ResultSaveTestCase(TestCase):
 class ResultIndicatorSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_result_indicator(self):
 
@@ -2498,7 +2680,7 @@ class ResultIndicatorSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/?format=json".format(result.activity.id, result.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/?format=json".format(self.publisher.id, result.activity.id, result.id), 
                 data,
                 format='json'
                 )
@@ -2571,7 +2753,7 @@ class ResultIndicatorSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(self.publisher.id, result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 data,
                 format='json'
                 )
@@ -2600,7 +2782,7 @@ class ResultIndicatorSaveTestCase(TestCase):
         result_indicator = iati_factory.ResultIndicatorFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}?format=json".format(self.publisher.id, result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 format='json'
                 )
 
@@ -2614,6 +2796,16 @@ class ResultIndicatorSaveTestCase(TestCase):
 class ResultIndicatorReferenceSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_result_indicator_reference(self):
         result_indicator = iati_factory.ResultIndicatorFactory.create()
@@ -2630,7 +2822,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/references/?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/?format=json".format(self.publisher.id, result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 data,
                 format='json'
                 )
@@ -2659,7 +2851,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(self.publisher.id, result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
                 data,
                 format='json'
                 )
@@ -2670,7 +2862,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
         result_indicator_reference = iati_factory.ResultIndicatorReferenceFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/references/{}?format=json".format(self.publisher.id, result_indicator_reference.result_indicator.result.activity.id, result_indicator_reference.result_indicator.result.id, result_indicator_reference.result_indicator.id, result_indicator_reference.id), 
                 format='json'
                 )
 
@@ -2684,6 +2876,16 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
 class ResultIndicatorPeriodSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_result_indicator_period(self):
         result_indicator = iati_factory.ResultIndicatorFactory.create()
@@ -2721,7 +2923,7 @@ class ResultIndicatorPeriodSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/periods/?format=json".format(result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/?format=json".format(self.publisher.id, result_indicator.result.activity.id, result_indicator.result.id, result_indicator.id), 
                 data,
                 format='json'
                 )
@@ -2783,7 +2985,7 @@ class ResultIndicatorPeriodSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 data,
                 format='json'
                 )
@@ -2813,7 +3015,7 @@ class ResultIndicatorPeriodSaveTestCase(TestCase):
         result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 format='json'
                 )
 
@@ -2827,6 +3029,16 @@ class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_result_indicator_period_actual_location(self):
         result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
         location = iati_factory.LocationFactory.create(activity=result_indicator_period.result_indicator.result.activity)
@@ -2838,7 +3050,7 @@ class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
 
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 data,
                 format='json'
                 )
@@ -2867,7 +3079,7 @@ class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_actual_location.result_indicator_period
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_location.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_location.id), 
                 data,
                 format='json'
                 )
@@ -2888,7 +3100,7 @@ class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_actual_location.result_indicator_period
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_location.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_location.id), 
                 format='json'
                 )
 
@@ -2904,6 +3116,16 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_result_indicator_period_target_location(self):
         result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
         location = iati_factory.LocationFactory.create(activity=result_indicator_period.result_indicator.result.activity)
@@ -2915,7 +3137,7 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
 
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/location/?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 data,
                 format='json'
                 )
@@ -2944,7 +3166,7 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_target_location.result_indicator_period
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_location.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_location.id), 
                 data,
                 format='json'
                 )
@@ -2965,7 +3187,7 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_target_location.result_indicator_period
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_location.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_location.id), 
                 format='json'
                 )
 
@@ -2980,6 +3202,16 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_result_indicator_period_actual_dimension(self):
         result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
 
@@ -2991,7 +3223,7 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
 
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 data,
                 format='json'
                 )
@@ -3017,7 +3249,7 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_actual_dimension.result_indicator_period
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_dimension.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_dimension.id), 
                 data,
                 format='json'
                 )
@@ -3038,7 +3270,7 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_actual_dimension.result_indicator_period
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_dimension.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/dimension/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_actual_dimension.id), 
                 format='json'
                 )
 
@@ -3052,6 +3284,16 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_result_indicator_period_target_dimension(self):
         result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create()
 
@@ -3063,7 +3305,7 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
 
 
         res = self.c.post(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id), 
                 data,
                 format='json'
                 )
@@ -3089,7 +3331,7 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_target_dimension.result_indicator_period
 
         res = self.c.put(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_dimension.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_dimension.id), 
                 data,
                 format='json'
                 )
@@ -3110,7 +3352,7 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
         result_indicator_period = result_indicator_period_target_dimension.result_indicator_period
 
         res = self.c.delete(
-                "/api/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_dimension.id), 
+                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(self.publisher.id, result_indicator_period.result_indicator.result.activity.id, result_indicator_period.result_indicator.result.id, result_indicator_period.result_indicator.id, result_indicator_period.id, result_indicator_period_target_dimension.id), 
                 format='json'
                 )
 
@@ -3126,6 +3368,16 @@ class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
 class OtherIdentifierSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_other_identifier(self):
         activity = iati_factory.ActivityFactory.create()
@@ -3152,7 +3404,7 @@ class OtherIdentifierSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/other_identifiers/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/other_identifiers/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3195,7 +3447,7 @@ class OtherIdentifierSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/other_identifiers/{}?format=json".format(other_identifier.activity.id, other_identifier.id), 
+                "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(self.publisher.id, other_identifier.activity.id, other_identifier.id), 
                 data,
                 format='json'
                 )
@@ -3217,7 +3469,7 @@ class OtherIdentifierSaveTestCase(TestCase):
         other_identifier = iati_factory.OtherIdentifierFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/other_identifiers/{}?format=json".format(other_identifier.activity.id, other_identifier.id), 
+                "/api/publishers/{}/activities/{}/other_identifiers/{}?format=json".format(self.publisher.id, other_identifier.activity.id, other_identifier.id), 
                 format='json'
                 )
 
@@ -3229,6 +3481,16 @@ class OtherIdentifierSaveTestCase(TestCase):
 class CountryBudgetItemsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_country_budget_items(self):
         activity = iati_factory.ActivityFactory.create()
@@ -3244,7 +3506,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/country_budget_items/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3269,7 +3531,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/country_budget_items/?format=json".format(country_budget_items.activity.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(self.publisher.id, country_budget_items.activity.id), 
                 data,
                 format='json'
                 )
@@ -3284,7 +3546,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
         country_budget_items = iati_factory.CountryBudgetItemFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/country_budget_items/?format=json".format(country_budget_items.activity.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/?format=json".format(self.publisher.id, country_budget_items.activity.id), 
                 format='json'
                 )
 
@@ -3298,6 +3560,16 @@ class CountryBudgetItemsSaveTestCase(TestCase):
 class BudgetItemSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_budget_item(self):
         country_budget_item = iati_factory.CountryBudgetItemFactory.create()
@@ -3322,7 +3594,7 @@ class BudgetItemSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/country_budget_items/budget_items/?format=json".format(country_budget_item.activity.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/budget_items/?format=json".format(self.publisher.id, country_budget_item.activity.id), 
                 data,
                 format='json'
                 )
@@ -3360,7 +3632,7 @@ class BudgetItemSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/country_budget_items/budget_items/{}?format=json".format(budget_item.country_budget_item.activity.id, budget_item.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(self.publisher.id, budget_item.country_budget_item.activity.id, budget_item.id), 
                 data,
                 format='json'
                 )
@@ -3379,7 +3651,7 @@ class BudgetItemSaveTestCase(TestCase):
         budget_item = iati_factory.BudgetItemFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/country_budget_items/budget_items/{}?format=json".format(budget_item.country_budget_item.activity.id, budget_item.id), 
+                "/api/publishers/{}/activities/{}/country_budget_items/budget_items/{}?format=json".format(self.publisher.id, budget_item.country_budget_item.activity.id, budget_item.id), 
                 format='json'
                 )
 
@@ -3393,6 +3665,16 @@ class LegacyDataSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_legacy_data(self):
         activity = iati_factory.ActivityFactory.create()
 
@@ -3404,7 +3686,7 @@ class LegacyDataSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/legacy_data/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/legacy_data/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3428,7 +3710,7 @@ class LegacyDataSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/legacy_data/{}?format=json".format(legacy_data.activity.id, legacy_data.id), 
+                "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(self.publisher.id, legacy_data.activity.id, legacy_data.id), 
                 data,
                 format='json'
                 )
@@ -3445,7 +3727,7 @@ class LegacyDataSaveTestCase(TestCase):
         legacy_data = iati_factory.LegacyDataFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/legacy_data/{}?format=json".format(legacy_data.activity.id, legacy_data.id), 
+                "/api/publishers/{}/activities/{}/legacy_data/{}?format=json".format(self.publisher.id, legacy_data.activity.id, legacy_data.id), 
                 format='json'
                 )
 
@@ -3459,6 +3741,16 @@ class ConditionsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_conditions(self):
         activity = iati_factory.ActivityFactory.create()
 
@@ -3468,7 +3760,7 @@ class ConditionsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/conditions/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/conditions/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3488,7 +3780,7 @@ class ConditionsSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/conditions/?format=json".format(conditions.activity.id), 
+                "/api/publishers/{}/activities/{}/conditions/?format=json".format(self.publisher.id, conditions.activity.id), 
                 data,
                 format='json'
                 )
@@ -3503,7 +3795,7 @@ class ConditionsSaveTestCase(TestCase):
         conditions = iati_factory.ConditionsFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/conditions/?format=json".format(conditions.activity.id), 
+                "/api/publishers/{}/activities/{}/conditions/?format=json".format(self.publisher.id, conditions.activity.id), 
                 format='json'
                 )
 
@@ -3517,6 +3809,16 @@ class ConditionsSaveTestCase(TestCase):
 class ConditionSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_condition(self):
         conditions = iati_factory.ConditionsFactory.create()
@@ -3539,7 +3841,7 @@ class ConditionSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/conditions/condition/?format=json".format(conditions.activity.id), 
+                "/api/publishers/{}/activities/{}/conditions/condition/?format=json".format(self.publisher.id, conditions.activity.id), 
                 data,
                 format='json'
                 )
@@ -3575,7 +3877,7 @@ class ConditionSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/conditions/condition/{}?format=json".format(condition.conditions.activity.id, condition.id), 
+                "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(self.publisher.id, condition.conditions.activity.id, condition.id), 
                 data,
                 format='json'
                 )
@@ -3595,7 +3897,7 @@ class ConditionSaveTestCase(TestCase):
         condition = iati_factory.ConditionFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/conditions/condition/{}?format=json".format(condition.conditions.activity.id, condition.id), 
+                "/api/publishers/{}/activities/{}/conditions/condition/{}?format=json".format(self.publisher.id, condition.conditions.activity.id, condition.id), 
                 format='json'
                 )
 
@@ -3610,6 +3912,16 @@ class ConditionSaveTestCase(TestCase):
 class CrsAddSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_crs_add(self):
         activity = iati_factory.ActivityFactory.create()
@@ -3650,7 +3962,7 @@ class CrsAddSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/crs_add/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/crs_add/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3718,7 +4030,7 @@ class CrsAddSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/crs_add/{}?format=json".format(crs_add.activity.id, crs_add.id), 
+                "/api/publishers/{}/activities/{}/crs_add/{}?format=json".format(self.publisher.id, crs_add.activity.id, crs_add.id), 
                 data,
                 format='json'
                 )
@@ -3751,7 +4063,7 @@ class CrsAddSaveTestCase(TestCase):
         crs_add = iati_factory.CrsAddFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/crs_add/{}?format=json".format(crs_add.activity.id, crs_add.id), 
+                "/api/publishers/{}/activities/{}/crs_add/{}?format=json".format(self.publisher.id, crs_add.activity.id, crs_add.id), 
                 format='json'
                 )
 
@@ -3765,6 +4077,16 @@ class CrsAddSaveTestCase(TestCase):
 class CrsAddOtherFlagsSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_crs_add_other_flags(self):
         crs_add = iati_factory.CrsAddFactory.create()
@@ -3780,7 +4102,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/crs_add/{}/other_flags/?format=json".format(crs_add.activity.id, crs_add.id), 
+                "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/?format=json".format(self.publisher.id, crs_add.activity.id, crs_add.id), 
                 data,
                 format='json'
                 )
@@ -3806,7 +4128,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/crs_add/{}/other_flags/{}?format=json".format(crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(self.publisher.id, crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
                 data,
                 format='json'
                 )
@@ -3823,7 +4145,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
         crs_add_other_flags = iati_factory.CrsAddOtherFlagsFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/crs_add/{}/other_flags/{}?format=json".format(crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
+                "/api/publishers/{}/activities/{}/crs_add/{}/other_flags/{}?format=json".format(self.publisher.id, crs_add_other_flags.crs_add.activity.id, crs_add_other_flags.crs_add.id, crs_add_other_flags.id), 
                 format='json'
                 )
 
@@ -3837,6 +4159,16 @@ class FssSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_fss(self):
         activity = iati_factory.ActivityFactory.create()
 
@@ -3848,7 +4180,7 @@ class FssSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/fss/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/fss/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -3871,7 +4203,7 @@ class FssSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/fss/{}?format=json".format(fss.activity.id, fss.id), 
+                "/api/publishers/{}/activities/{}/fss/{}?format=json".format(self.publisher.id, fss.activity.id, fss.id), 
                 data,
                 format='json'
                 )
@@ -3887,7 +4219,7 @@ class FssSaveTestCase(TestCase):
         fss = iati_factory.FssFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/fss/{}?format=json".format(fss.activity.id, fss.id), 
+                "/api/publishers/{}/activities/{}/fss/{}?format=json".format(self.publisher.id, fss.activity.id, fss.id), 
                 format='json'
                 )
 
@@ -3900,6 +4232,16 @@ class FssSaveTestCase(TestCase):
 class FssForecastSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_fss_forecast(self):
         fss = iati_factory.FssFactory.create()
@@ -3917,7 +4259,7 @@ class FssForecastSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/fss/{}/forecast/?format=json".format(fss.activity.id, fss.id), 
+                "/api/publishers/{}/activities/{}/fss/{}/forecast/?format=json".format(self.publisher.id, fss.activity.id, fss.id), 
                 data,
                 format='json'
                 )
@@ -3948,7 +4290,7 @@ class FssForecastSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/fss/{}/forecast/{}?format=json".format(fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
+                "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(self.publisher.id, fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
                 data,
                 format='json'
                 )
@@ -3966,7 +4308,7 @@ class FssForecastSaveTestCase(TestCase):
         fss_forecast = iati_factory.FssForecastFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/fss/{}/forecast/{}?format=json".format(fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
+                "/api/publishers/{}/activities/{}/fss/{}/forecast/{}?format=json".format(self.publisher.id, fss_forecast.fss.activity.id, fss_forecast.fss.id, fss_forecast.id), 
                 format='json'
                 )
 
@@ -3978,6 +4320,16 @@ class FssForecastSaveTestCase(TestCase):
 class RelatedActivitySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_related_activity(self):
         activity = iati_factory.ActivityFactory.create()
@@ -3994,7 +4346,7 @@ class RelatedActivitySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/related_activities/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/related_activities/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -4022,7 +4374,7 @@ class RelatedActivitySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/related_activities/{}?format=json".format(related_activity.current_activity.id, related_activity.id), 
+                "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(self.publisher.id, related_activity.current_activity.id, related_activity.id), 
                 data,
                 format='json'
                 )
@@ -4039,7 +4391,7 @@ class RelatedActivitySaveTestCase(TestCase):
         related_activity = iati_factory.RelatedActivityFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/related_activities/{}?format=json".format(related_activity.current_activity.id, related_activity.id), 
+                "/api/publishers/{}/activities/{}/related_activities/{}?format=json".format(self.publisher.id, related_activity.current_activity.id, related_activity.id), 
                 format='json'
                 )
 
@@ -4054,6 +4406,16 @@ class RelatedActivitySaveTestCase(TestCase):
 class DocumentLinkSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_document_link(self):
         activity = iati_factory.ActivityFactory.create()
@@ -4082,7 +4444,7 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/document_links/?format=json".format(activity.id), 
+                "/api/publishers/{}/activities/{}/document_links/?format=json".format(self.publisher.id, activity.id), 
                 data,
                 format='json'
                 )
@@ -4128,7 +4490,7 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/document_links/{}?format=json".format(document_link.activity.id, document_link.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(self.publisher.id, document_link.activity.id, document_link.id), 
                 data,
                 format='json'
                 )
@@ -4151,7 +4513,7 @@ class DocumentLinkSaveTestCase(TestCase):
         document_links = iati_factory.DocumentLinkFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/document_links/{}?format=json".format(document_links.activity.id, document_links.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}?format=json".format(self.publisher.id, document_links.activity.id, document_links.id), 
                 format='json'
                 )
 
@@ -4164,6 +4526,16 @@ class DocumentLinkSaveTestCase(TestCase):
 class DocumentLinkCategorySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
 
     def test_create_document_link_category(self):
         document_link = iati_factory.DocumentLinkFactory.create()
@@ -4178,7 +4550,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/document_links/{}/categories/?format=json".format(document_link.activity.id, document_link.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/categories/?format=json".format(self.publisher.id, document_link.activity.id, document_link.id), 
                 data,
                 format='json'
                 )
@@ -4203,7 +4575,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/document_links/{}/categories/{}?format=json".format(document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
                 data,
                 format='json'
                 )
@@ -4219,7 +4591,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         document_link_category = iati_factory.DocumentLinkCategoryFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/document_links/{}/categories/{}?format=json".format(document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.activity.id, document_link_category.document_link.id, document_link_category.id), 
                 format='json'
                 )
 
@@ -4234,6 +4606,16 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
     def test_create_language(self):
         document_link = iati_factory.DocumentLinkFactory.create()
         language = codelist_factory.LanguageFactory.create()
@@ -4247,7 +4629,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/activities/{}/document_links/{}/languages/?format=json".format(document_link.activity.id, document_link.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/languages/?format=json".format(self.publisher.id, document_link.activity.id, document_link.id), 
                 data,
                 format='json'
                 )
@@ -4272,7 +4654,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/activities/{}/document_links/{}/languages/{}?format=json".format(document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
                 data,
                 format='json'
                 )
@@ -4288,7 +4670,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         document_link_language = iati_factory.DocumentLinkLanguageFactory.create()
 
         res = self.c.delete(
-                "/api/activities/{}/document_links/{}/languages/{}?format=json".format(document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
+                "/api/publishers/{}/activities/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.activity.id, document_link_language.document_link.id, document_link_language.id), 
                 format='json'
                 )
 

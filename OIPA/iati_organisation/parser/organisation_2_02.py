@@ -123,7 +123,7 @@ class Parse(IatiParser):
         name_list = self.get_model_list('OrganisationName')
 
         if name_list and len(name_list) > 0:
-            raise self.ValidationError("name", "Duplicate names are not allowed")
+            raise self.FieldValidationError("name", "Duplicate names are not allowed")
 
         organisation = self.get_model('Organisation')
 
@@ -599,7 +599,7 @@ class Parse(IatiParser):
                 "required element empty")
 
         if not currency:
-            raise ValidationError(
+            raise FieldValidationError(
                 "total-expenditure/value/currency",
                 "code",
                 "not found on the accompanying code list")
@@ -633,7 +633,7 @@ class Parse(IatiParser):
                 "required element empty")
 
         if not currency:
-            raise ValidationError(
+            raise FieldValidationError(
                 "total-expenditure/value/currency",
                 "code",
                 "not found on the accompanying code list")
@@ -726,7 +726,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link/document-date",
                 "iso-date",
                 "iso-date not of type xsd:date")

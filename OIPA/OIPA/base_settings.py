@@ -236,6 +236,10 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # django-rest-auth
 REST_AUTH_SERIALIZERS = {
-    "USER_DETAILS_SERIALIZER": 'api.permissions.serializers.OrganisationUserSerializer',
+    "USER_DETAILS_SERIALIZER": 'api.permissions.serializers.UserSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'api.permissions.serializers.RegistrationSerializer'
 }
 

@@ -38,7 +38,7 @@ class TestVerifyApiKey(APITestCase):
 
         admin_group.organisationuser_set.add(user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         data={
             "apiKey": "this_is_mocked",

@@ -28,7 +28,7 @@ class TestOrganisationGroupAPI(APITestCase):
         organisation_group.organisationuser_set.add(user)
         organisation_group.organisationuser_set.add(new_user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         res = self.c.get(
                 "/api/publishers/{}/group/?format=json".format(organisation_group.publisher.id), 
@@ -49,7 +49,7 @@ class TestOrganisationGroupAPI(APITestCase):
 
         # organisation_group.organisationuser_set.add(user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         data = {
             "user_id": new_user.id,
@@ -79,7 +79,7 @@ class TestOrganisationGroupAPI(APITestCase):
 
         admin_group.save()
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         data = {
             "user_id": new_user.id,
@@ -105,7 +105,7 @@ class TestOrganisationGroupAPI(APITestCase):
         # organisation_group.organisationuser_set.add(user)
         organisation_group.organisationuser_set.add(new_user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         data = {
             "user_id": new_user.id,
@@ -131,7 +131,7 @@ class TestOrganisationGroupAPI(APITestCase):
         organisation_group.organisationuser_set.add(user)
         organisation_group.organisationuser_set.add(new_user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         data = {
             "user_id": new_user.id,
@@ -160,7 +160,7 @@ class TestOrganisationGroupAPI(APITestCase):
         admin_group.organisationuser_set.add(new_user)
         organisation_group.organisationuser_set.add(new_user)
 
-        self.c.force_authenticate(user)
+        self.c.force_authenticate(user.user)
 
         res = self.c.delete(
                 "/api/publishers/{}/group/{}?format=json".format(organisation_group.publisher.id, new_user.id), 

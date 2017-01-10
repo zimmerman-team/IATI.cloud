@@ -124,6 +124,7 @@ class ParseManager():
 
         parser.force_reparse = self.force_reparse
         parser.dataset = dataset
+        parser.publisher = dataset.publisher
 
         return parser
 
