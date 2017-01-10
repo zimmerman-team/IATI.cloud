@@ -555,3 +555,154 @@ class ActivitySaveTestCase(TestCase):
 
 
 
+    def test_prefetch_recipient_countries(self):
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 3 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivityRecipientCountry objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_recipient_countries()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('recipient_countries',))
+
+            list(serializer.data)
+
+    def test_prefetch_recipient_regions(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 8 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivityRecipientRegion objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_recipient_regions()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('recipient_regions',))
+
+            list(serializer.data)
+
+    def test_prefetch_sectors(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivitySector objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_sectors()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('sectors',))
+
+            list(serializer.data)
+
+    def test_prefetch_activity_dates(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivityDate objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_activity_dates()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('activity_dates',))
+
+            list(serializer.data)
+
+    def test_prefetch_policy_markers(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch ActivityPolicyMarker objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_policy_markers()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('policy_markers',))
+
+            list(serializer.data)
+
+    def test_prefetch_budgets(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch Budget objects
+        """
+
+        with self.assertNumQueries(2):
+            queryset = Activity.objects.all().prefetch_budgets()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('budgets',))
+
+            list(serializer.data)
+
+    def test_prefetch_document_links(self):
+
+        """
+        Test if the prefetches are applied correctly
+        Here we expect 2 queries:
+        1. Fetch Activity objects
+        2. Fetch DocumentLink objects
+        3. Fetch DocumentLinkCategory objects
+        4. Fetch DocumentLinkCategory objects
+        5. Fetch DocumentLinkLanguage objects
+        6. Fetch Language objects
+        7. Fetch DocumentLinkTitle objects
+        8. Fetch Narrative objects
+        9. Fetch Language objects
+        10. Fetch Language objects
+        11. Fetch DocumentLinkLanguage objects
+        12. Fetch Language objects
+        13. Fetch DocumentLinkTitle objects
+        14. Fetch Narrative objects
+        15. Fetch Language objects
+        16. Fetch Language objects
+        17. Fetch DocumentLinkLanguage objects
+        18. Fetch Language objects
+        19. Fetch DocumentLinkTitle objects
+        20. Fetch Narrative objects
+        21. Fetch Language objects
+        22. Fetch Language objects
+        """
+
+        with self.assertNumQueries(22):
+            queryset = Activity.objects.all().prefetch_document_links()
+            serializer = ActivitySerializer(
+                    queryset, 
+                    many=True,
+                    context={'request': self.request_dummy},
+                    fields=('document_links',))
+
+            list(serializer.data)

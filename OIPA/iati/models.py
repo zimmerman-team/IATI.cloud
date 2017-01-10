@@ -689,6 +689,9 @@ class DocumentLinkTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
+    def get_publisher(self):
+        return self.document_link.activity.publisher
+
 
 class DocumentSearch(models.Model):
     document = models.OneToOneField('Document')
@@ -728,9 +731,8 @@ class Document(models.Model):
             ["created_at", "id"],
         ]
 
-
-
-
+    def get_publisher(self):
+        return self.document_link.activity.publisher
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
