@@ -13,6 +13,7 @@ from distutils.util import strtobool
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
 
@@ -124,7 +125,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
-
     humanitarian = TypedChoiceFilter(
         choices=(('0', 'False'), ('1', 'True')),
         coerce=strtobool)
@@ -152,10 +152,9 @@ class ActivityFilter(TogetherFilterSet):
 
     related_activity_type_not = CommaSeparatedCharFilter(
         lookup_type='in',
-        name='related_activity__type__code',
+        name='relatedactivity__type__code',
         exclude=True
     )
-
 
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
@@ -207,6 +206,13 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     recipient_region = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
+
+    recipient_region_not = ToManyNotInFilter(
         qs=ActivityRecipientRegion,
         lookup_type='in',
         name='region__code',
@@ -536,7 +542,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         except FieldDoesNotExist:
             return False
 
-    def remove_invalid_fields(self, queryset, ordering, view):
+    def remove_invalid_fields(self, queryset, ordering, view, request):
 
         mapped_fields = {
             'title': 'title__narratives__content',

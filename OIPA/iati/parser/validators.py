@@ -7,6 +7,7 @@ from iati_organisation import models as organisation_models
 import dateutil.parser
 from datetime import datetime
 from decimal import Decimal
+from iati_synchroniser.models import Publisher
 
 from iati.parser.exceptions import *
 
@@ -17,6 +18,7 @@ def get_or_raise(model, validated_data, attr, default=None):
         raise RequiredFieldError(
                 model.__name__,
                 attr,
+                apiField=attr,
                 )
 
     return model.objects.get(pk=pk)
@@ -109,7 +111,7 @@ def validate_dates(*dates):
     #     validate_date()
 
 
-def narrative(activity_id, default_lang, lang, text):
+def narrative(i, activity_id, default_lang, lang, text, apiField=""):
     warnings = []
     errors = []
 
@@ -127,6 +129,7 @@ def narrative(activity_id, default_lang, lang, text):
                 "narrative",
                 "xml:lang",
                 "must specify xml:lang on iati-activity or xml:lang on the element itself",
+                apiField="{}narratives[{}].language".format(apiField + "." if apiField else "", i),
                 ))
 
     if not text:
@@ -135,6 +138,7 @@ def narrative(activity_id, default_lang, lang, text):
                 'narrative',
                 "text", 
                 "empty narrative",
+                apiField="{}narratives[{}].text".format(apiField + "." if apiField else "", i),
                 ))
 
     return {
@@ -147,13 +151,13 @@ def narrative(activity_id, default_lang, lang, text):
         }
     }
 
-def narratives(narratives, default_lang, activity_id, warnings=[], errors=[]):
+def narratives(narratives, default_lang, activity_id, warnings=[], errors=[], apiField=""):
     # warnings = []
     # errors = []
     validated_data = []
 
-    for n in narratives:
-        validated = narrative(activity_id, default_lang, n.get('language', {}).get('code'), n.get('content'))
+    for i, n in enumerate(narratives):
+        validated = narrative(i, activity_id, default_lang, n.get('language', {}).get('code'), n.get('content'), apiField)
         warnings = warnings + validated['warnings']
         errors = errors + validated['errors']
         validated_data.append(validated['validated_data'])
@@ -179,10 +183,10 @@ def codelist(iati_name, model, code):
 
     if not instance:
         errors.append(
-            RequiredFieldError(
+            FieldValidationError(
                 iati_name,
                 "code",
-                "not found on the accompanying code list"
+                "not found on the accompanying code list",
                 ))
 
     return {
@@ -239,10 +243,11 @@ def activity(
             last_updated_datetime = validate_date(last_updated_datetime)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
                     "last-updated-datetime",
                     "invalid date",
+                    apiField="last_updated_datetime",
                     ))
             last_updated_datetime = None
 
@@ -250,10 +255,11 @@ def activity(
             planned_start = validate_date(planned_start)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
                     "planned-start",
                     "invalid date",
+                    apiField="planned_start",
                     ))
             planned_start = None
 
@@ -262,10 +268,11 @@ def activity(
             actual_start = validate_date(actual_start)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
-                    "planned-start",
+                    "actual-start",
                     "invalid date",
+                    apiField="planned_start",
                     ))
             actual_start = None
 
@@ -274,10 +281,11 @@ def activity(
             start_date = validate_date(start_date)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
-                    "planned-start",
+                    "start-date",
                     "invalid date",
+                    apiField="start_date",
                     ))
             start_date = None
 
@@ -285,10 +293,11 @@ def activity(
             planned_end = validate_date(planned_end)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
-                    "planned-start",
+                    "planned-end",
                     "invalid date",
+                    apiField="planned_end",
                     ))
             planned_end = None
 
@@ -296,10 +305,11 @@ def activity(
             actual_end = validate_date(actual_end)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
-                    "planned-start",
+                    "actual-end",
                     "invalid date",
+                    apiField="actual_end",
                     ))
             actual_end = None
 
@@ -307,10 +317,11 @@ def activity(
             end_date = validate_date(end_date)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
-                    "planned-start",
+                    "end-date",
                     "invalid date",
+                    apiField="end_date",
                     ))
             end_date = None
 
@@ -330,6 +341,7 @@ def activity(
                 RequiredFieldError(
                     "activity",
                     "default-lang",
+                    apiField="default_lang",
                     ))
 
 
@@ -340,6 +352,7 @@ def activity(
                 RequiredFieldError(
                     "activity",
                     "iati-identifier",
+                    apiField="iati_identifier",
                     ))
 
 
@@ -359,7 +372,7 @@ def activity(
         #             "title__narratives",
         #             ))
 
-        title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors)
+        title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors, "title")
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 
@@ -384,7 +397,7 @@ def activity(
                 "default_aid_type": default_aid_type,
                 "default_tied_status": default_tied_status,
                 "default_lang": default_lang,
-                "iati_standard_version_id": iati_standard_version,
+                "iati_standard_version": iati_standard_version,
                 "published": published,
                 "title": {
                     "activity_id": activity_id,
@@ -412,13 +425,15 @@ def activity_reporting_org(
                 RequiredFieldError(
                     "reporting-org",
                     "ref",
+                    apiField="ref",
                     ))
 
         if not org_type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "reporting-org",
                     "type",
+                    apiField="type.code",
                     ))
 
         if not secondary_reporter:
@@ -426,10 +441,11 @@ def activity_reporting_org(
 
         if not organisation:
             warnings.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "reporting-org",
                     "organisation",
-                    "organisation with ref {} does not exist in organisation standard".format(ref)
+                    "organisation with ref {} does not exist in organisation standard".format(ref),
+                    apiField="organisation",
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
@@ -466,6 +482,7 @@ def activity_description(
                 RequiredFieldError(
                     "activity",
                     "description__narratives",
+                    apiField="narratives",
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
@@ -504,28 +521,32 @@ def activity_participating_org(
                 RequiredFieldError(
                     "reporting-org",
                     "ref",
+                    apiField="ref",
                     ))
 
         if not org_type:
             warnings.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "reporting-org",
                     "type",
+                    apiField="type.code",
                     ))
 
         if not org_role:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "reporting-org",
                     "role",
+                    apiField="role.code",
                     ))
 
         if not organisation:
             warnings.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "reporting-org",
                     "organisation",
-                    "organisation with ref {} does not exist in organisation standard".format(ref)
+                    "organisation with ref {} does not exist in organisation standard".format(ref),
+                    apiField="organisation",
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
@@ -560,10 +581,11 @@ def activity_activity_date(
             iso_date = validate_date(iso_date)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity",
                     "iso-date",
                     "invalid date",
+                    apiField="iso_date",
                     ))
 
         return {
@@ -595,27 +617,27 @@ def activity_contact_info(
         contact_type = get_or_none(models.ContactType, code=type_code)
 
         organisation_narratives_data = organisation.get('narratives', [])
-        organisation_narratives = narratives(organisation_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        organisation_narratives = narratives(organisation_narratives_data, activity.default_lang, activity.id,  warnings, errors, "organisation")
         errors = errors + organisation_narratives['errors']
         warnings = warnings + organisation_narratives['warnings']
 
         department_narratives_data = department.get('narratives', [])
-        department_narratives = narratives(department_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        department_narratives = narratives(department_narratives_data, activity.default_lang, activity.id,  warnings, errors, "department")
         errors = errors + department_narratives['errors']
         warnings = warnings + department_narratives['warnings']
 
         person_name_narratives_data = person_name.get('narratives', [])
-        person_name_narratives = narratives(person_name_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        person_name_narratives = narratives(person_name_narratives_data, activity.default_lang, activity.id,  warnings, errors, "person_name")
         errors = errors + person_name_narratives['errors']
         warnings = warnings + person_name_narratives['warnings']
 
         job_title_narratives_data = job_title.get('narratives', [])
-        job_title_narratives = narratives(job_title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        job_title_narratives = narratives(job_title_narratives_data, activity.default_lang, activity.id,  warnings, errors, "job_title")
         errors = errors + job_title_narratives['errors']
         warnings = warnings + job_title_narratives['warnings']
 
         mailing_address_narratives_data = mailing_address.get('narratives', [])
-        mailing_address_narratives = narratives(mailing_address_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        mailing_address_narratives = narratives(mailing_address_narratives_data, activity.default_lang, activity.id,  warnings, errors, "mailing_address")
         errors = errors + mailing_address_narratives['errors']
         warnings = warnings + mailing_address_narratives['warnings']
 
@@ -666,9 +688,10 @@ def activity_recipient_country(
 
         if not recipient_country:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-country",
                     "code",
+                    apiField="country.code",
                     ))
 
         if type(percentage) is not int and type(percentage) is not Decimal:
@@ -676,14 +699,16 @@ def activity_recipient_country(
                 RequiredFieldError(
                     "recipient-country",
                     "percentage",
+                    apiField="percentage",
                     ))
 
         if percentage < 0 or percentage > 100:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-country",
                     "percentage",
-                    "percentage must be a value between 0 and 100"
+                    "percentage must be a value between 0 and 100",
+                    apiField="percentage",
                     ))
 
         # recipient_countries = activity.activityrecipientcountry_set.all()
@@ -695,10 +720,10 @@ def activity_recipient_country(
 
         # if sum_percentage != Decimal(100):
         #     errors.append(
-        #         ValidationError(
+        #         FieldValidationError(
         #             "recipient-country",
         #             "percentage",
-        #             "The recipient-country percentage doesn't add up to 100"
+        #             "The recipient-country percentage doesn't add up to 100",
         #             ))
 
         return {
@@ -730,13 +755,15 @@ def activity_recipient_region(
                 RequiredFieldError(
                     "recipient-region",
                     "code",
+                    apiField="region.code",
                     ))
         elif not recipient_region:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-region",
                     "code",
-                    "recipient-region not found for code {}".format(region_code)
+                    "recipient-region not found for code {}".format(region_code),
+                    apiField="region.code",
                     ))
 
         if not vocabulary_code:
@@ -744,36 +771,41 @@ def activity_recipient_region(
                 RequiredFieldError(
                     "recipient-region",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         elif not vocabulary: 
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-region",
                     "vocabulary",
-                    "vocabulary not found for code {}".format(vocabulary_code)
+                    "vocabulary not found for code {}".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
 
         if vocabulary_code == "99" and not vocabulary_uri:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-region",
                     "vocabulary_uri",
-                    "vocabulary_uri is required when vocabulary code is 99"
+                    "vocabulary_uri is required when vocabulary code is 99",
+                    apiField="vocabulary_uri",
                     ))
 
         if type(percentage) is not int and type(percentage) is not Decimal:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-region",
                     "percentage",
+                    apiField="percentage",
                     ))
 
         if percentage < 0 or percentage > 100:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-region",
                     "percentage",
-                    "percentage must be a value between 0 and 100"
+                    "percentage must be a value between 0 and 100",
+                    apiField="percentage",
                     ))
 
 
@@ -807,52 +839,59 @@ def activity__sector(
         if not sector_code:
             errors.append(
                 RequiredFieldError(
-                    "-sector",
+                    "sector",
                     "code",
+                    apiField="sector.code",
                     ))
         elif not sector:
             errors.append(
-                RequiredFieldError(
-                    "-sector",
+                FieldValidationError(
+                    "sector",
                     "code",
-                    "-sector not found for code {}".format(sector_code)
+                    "sector not found for code {}".format(sector_code),
+                    apiField="sector.code",
                     ))
 
         if not vocabulary_code:
             errors.append(
                 RequiredFieldError(
-                    "-sector",
+                    "sector",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         elif not vocabulary: 
             errors.append(
-                RequiredFieldError(
-                    "-sector",
+                FieldValidationError(
+                    "sector",
                     "vocabulary",
-                    "vocabulary not found for code {}".format(vocabulary_code)
+                    "vocabulary not found for code {}".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
 
         if vocabulary_code == "99" and not vocabulary_uri:
             errors.append(
-                RequiredFieldError(
-                    "-sector",
+                FieldValidationError(
+                    "sector",
                     "vocabulary_uri",
-                    "vocabulary_uri is required when vocabulary code is 99"
+                    "vocabulary_uri is required when vocabulary code is 99",
+                    apiField="vocabulary_uri",
                     ))
 
         if type(percentage) is not int and type(percentage) is not Decimal:
             errors.append(
-                RequiredFieldError(
-                    "-sector",
+                FieldValidationError(
+                    "sector",
                     "percentage",
+                    apiField="percentage",
                     ))
 
         if percentage < 0 or percentage > 100:
             errors.append(
-                RequiredFieldError(
-                    "-sector",
+                FieldValidationError(
+                    "sector",
                     "percentage",
-                    "percentage must be a value between 0 and 100"
+                    "percentage must be a value between 0 and 100",
+                    apiField="percentage",
                     ))
 
 
@@ -898,6 +937,7 @@ def activity_location(
                 RequiredFieldError(
                     "location",
                     "ref",
+                    apiField="ref",
                     ))
 
         if not exactness_code:
@@ -905,24 +945,26 @@ def activity_location(
                 RequiredFieldError(
                     "location",
                     "exactness",
+                    apiField="exactness.code",
                     ))
         elif not exactness: 
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "location",
                     "exactness",
-                    "codelist entry not found for {}".format(exactness_code)
+                    "codelist entry not found for {}".format(exactness_code),
+                    apiField="exactness.code",
                     ))
 
-        name_narratives = narratives(name_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        name_narratives = narratives(name_narratives_data, activity.default_lang, activity.id,  warnings, errors, "name")
         errors = errors + name_narratives['errors']
         warnings = warnings + name_narratives['warnings']
 
-        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors, "description")
         errors = errors + description_narratives['errors']
         warnings = warnings + description_narratives['warnings']
 
-        activity_description_narratives = narratives(activity_description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        activity_description_narratives = narratives(activity_description_narratives_data, activity.default_lang, activity.id,  warnings, errors, "activity_description")
         errors = errors + activity_description_narratives['errors']
         warnings = warnings + activity_description_narratives['warnings']
 
@@ -965,32 +1007,37 @@ def activity_humanitarian_scope(
                 RequiredFieldError(
                     "location",
                     "type",
+                    apiField="type.code",
                     ))
         if not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "location",
                     "type",
-                    "codelist entry not found for {}".format(type_code)
+                    "codelist entry not found for {}".format(type_code),
+                    apiField="type.code",
                     ))
         if not vocabulary_code:
             errors.append(
                 RequiredFieldError(
                     "location",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         if not vocabulary:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "location",
                     "vocabulary",
-                    "codelist entry not found for {}".format(vocabulary_code)
+                    "codelist entry not found for {}".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
         if not code:
             errors.append(
                 RequiredFieldError(
                     "location",
                     "code",
+                    apiField="code",
                     ))
 
         return {
@@ -1025,13 +1072,15 @@ def activity_policy_marker(
                 RequiredFieldError(
                     "policy-marker",
                     "code",
+                    apiField="policy_marker.code",
                     ))
         if not policy_marker:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "policy-marker",
                     "code",
-                    "codelist entry not found for {}".format(policy_marker_code)
+                    "codelist entry not found for {}".format(policy_marker_code),
+                    apiField="policy_marker.code",
                     ))
 
         if not significance_code:
@@ -1039,13 +1088,15 @@ def activity_policy_marker(
                 RequiredFieldError(
                     "policy-marker",
                     "significance",
+                    apiField="significance.code",
                     ))
         if not significance:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "policy-marker",
                     "significance",
-                    "codelist entry not found for {}".format(significance_code)
+                    "codelist entry not found for {}".format(significance_code),
+                    apiField="significance.code",
                     ))
 
 
@@ -1054,6 +1105,7 @@ def activity_policy_marker(
                 RequiredFieldError(
                     "policy-marker",
                     "narratives",
+                    apiField="narratives",
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
@@ -1094,26 +1146,30 @@ def activity_budget(
                 RequiredFieldError(
                     "budget",
                     "type",
+                    apiField="type.code",
                     ))
         elif not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "budget",
                     "type",
-                    "codelist entry not found for {}".format(type_code)
+                    "codelist entry not found for {}".format(type_code),
+                    apiField="type.code",
                     ))
         if not status_code:
             errors.append(
                 RequiredFieldError(
                     "budget",
                     "status",
+                    apiField="status.code",
                     ))
         if not status:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "budget",
                     "status",
-                    "codelist entry not found for {}".format(status_code)
+                    "codelist entry not found for {}".format(status_code),
+                    apiField="status.code",
                     ))
 
         if not period_start_raw:
@@ -1121,6 +1177,7 @@ def activity_budget(
                 RequiredFieldError(
                     "budget",
                     "period-start",
+                    apiField="period_start",
                     ))
             period_start = None
         else:
@@ -1128,10 +1185,11 @@ def activity_budget(
                 period_start = validate_date(period_start_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "budget",
                         "period-start",
                         "iso-date not of type xsd:date",
+                        apiField="period_start",
                         ))
                 period_start = None
 
@@ -1140,6 +1198,7 @@ def activity_budget(
                 RequiredFieldError(
                     "budget",
                     "period-end",
+                    apiField="period_end",
                     ))
             period_end = None
         else:
@@ -1147,18 +1206,20 @@ def activity_budget(
                 period_end = validate_date(period_end_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "budget",
                         "period-end",
                         "iso-date not of type xsd:date",
+                        apiField="period_end",
                         ))
                 period_end = None
 
         if not value:
             errors.append(
                 RequiredFieldError(
-                    "location",
+                    "budget",
                     "value",
+                    apiField="value",
                     ))
 
 
@@ -1167,6 +1228,7 @@ def activity_budget(
                 RequiredFieldError(
                     "budget",
                     "value-date",
+                    apiField="value_date",
                     ))
             value_date = None
         else:
@@ -1174,10 +1236,11 @@ def activity_budget(
                 value_date = validate_date(value_date_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "budget",
                         "value-date",
                         "iso-date not of type xsd:date",
+                        apiField="value_date",
                         ))
                 value_date = None
 
@@ -1186,7 +1249,8 @@ def activity_budget(
                 RequiredFieldError(
                     "budget",
                     "currency",
-                    "currency not specified and no default specified on activity"
+                    "currency not specified and no default specified on activity",
+                    apiField="currency.code",
                     ))
 
         return {
@@ -1242,22 +1306,25 @@ def activity_planned_disbursement(
         if not type_code:
             errors.append(
                 RequiredFieldError(
-                    "planned_disbursement",
+                    "planned-disbursement",
                     "type",
+                    apiField="type.code",
                     ))
         if not type:
             errors.append(
-                RequiredFieldError(
-                    "planned_disbursement",
+                FieldValidationError(
+                    "planned-disbursement",
                     "type",
-                    "codelist entry not found for {}".format(type_code)
+                    "codelist entry not found for {}".format(type_code),
+                    apiField="type.code",
                     ))
 
         if not period_start_raw:
             errors.append(
                 RequiredFieldError(
-                    "planned_disbursement",
+                    "planned-disbursement",
                     "period-start",
+                    apiField="period_start",
                     ))
             period_start = None
         else:
@@ -1265,18 +1332,20 @@ def activity_planned_disbursement(
                 period_start = validate_date(period_start_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
-                        "planned_disbursement",
+                    FieldValidationError(
+                        "planned-disbursement",
                         "period-start",
                         "iso-date not of type xsd:date",
+                        apiField="period_start",
                         ))
                 period_start = None
 
         if not period_end_raw:
             errors.append(
                 RequiredFieldError(
-                    "planned_disbursement",
+                    "planned-disbursement",
                     "period-end",
+                    apiField="period_end",
                     ))
             period_end = None
         else:
@@ -1284,10 +1353,11 @@ def activity_planned_disbursement(
                 period_end = validate_date(period_end_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
-                        "planned_disbursement",
+                    FieldValidationError(
+                        "planned-disbursement",
                         "period-end",
                         "iso-date not of type xsd:date",
+                        apiField="period_end",
                         ))
                 period_end = None
 
@@ -1296,14 +1366,16 @@ def activity_planned_disbursement(
                 RequiredFieldError(
                     "planned-disbursement",
                     "value",
+                    apiField="value",
                     ))
 
 
         if not value_date_raw:
             errors.append(
                 RequiredFieldError(
-                    "planned_disbursement",
+                    "planned-disbursement",
                     "value-date",
+                    apiField="value_date",
                     ))
             value_date = None
         else:
@@ -1311,19 +1383,21 @@ def activity_planned_disbursement(
                 value_date = validate_date(value_date_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
-                        "planned_disbursement",
+                    FieldValidationError(
+                        "planned-disbursement",
                         "value-date",
                         "iso-date not of type xsd:date",
+                        apiField="last_updated_datetime",
                         ))
                 value_date = None
 
         if not currency and not activity.default_currency:
             errors.append(
                 RequiredFieldError(
-                    "planned_disbursement",
+                    "planned-disbursement",
                     "currency",
-                    "currency not specified and no default specified on activity"
+                    "currency not specified and no default specified on activity",
+                    apiField="currency.code",
                     ))
 
         # provider-org-ref is set so assume user wants to report it
@@ -1331,11 +1405,11 @@ def activity_planned_disbursement(
             if not provider_org_activity:
                 provider_org_activity = activity
 
-        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors, 'provider_organisation')
         errors = errors + provider_org_narratives['errors']
         warnings = warnings + provider_org_narratives['warnings']
 
-        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors, 'receiver_organisation')
         errors = errors + receiver_org_narratives['errors']
         warnings = warnings + receiver_org_narratives['warnings']
 
@@ -1437,13 +1511,15 @@ def activity_transaction(
                 RequiredFieldError(
                     "transaction",
                     "transaction-type",
+                    apiField="transaction_type.code",
                     ))
         if not transaction_type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "transaction",
                     "transaction-type",
-                    "codelist entry not found for {}".format(transaction_type_code)
+                    "codelist entry not found for {}".format(transaction_type_code),
+                    apiField="transaction_type.code",
                     ))
 
         if not transaction_date_raw:
@@ -1451,6 +1527,7 @@ def activity_transaction(
                 RequiredFieldError(
                     "transaction",
                     "transaction-date",
+                    apiField="transaction_date",
                     ))
             transaction_date = None
         else:
@@ -1458,10 +1535,11 @@ def activity_transaction(
                 transaction_date = validate_date(transaction_date_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "transaction",
                         "transaction-date",
                         "iso-date not of type xsd:date",
+                        apiField="transaction_date",
                         ))
                 transaction_date = None
 
@@ -1470,6 +1548,7 @@ def activity_transaction(
                 RequiredFieldError(
                     "transaction",
                     "value",
+                    apiField="value",
                     ))
 
         if not value_date_raw:
@@ -1477,6 +1556,7 @@ def activity_transaction(
                 RequiredFieldError(
                     "transaction",
                     "value-date",
+                    apiField="value_date",
                     ))
             value_date = None
         else:
@@ -1484,10 +1564,11 @@ def activity_transaction(
                 value_date = validate_date(value_date_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "transaction",
                         "value-date",
                         "iso-date not of type xsd:date",
+                        apiField="value_date",
                         ))
                 value_date = None
 
@@ -1496,7 +1577,8 @@ def activity_transaction(
                 RequiredFieldError(
                     "transaction",
                     "currency",
-                    "currency not specified and no default specified on activity"
+                    "currency not specified and no default specified on activity",
+                    apiField="currency.code",
                     ))
 
 
@@ -1509,7 +1591,7 @@ def activity_transaction(
         #             RequiredFieldError(
         #                 "transaction",
         #                 "sector",
-        #                 "Already provided a sector on activity"
+        #                 "Already provided a sector on activity",
         #                 ))
 
         if recipient_country_code:
@@ -1519,10 +1601,11 @@ def activity_transaction(
 
             if has_existing_recipient_countries:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "transaction",
                         "recipient_country",
-                        "Already provided a recipient_country on activity"
+                        "Already provided a recipient_country on activity",
+                        apiField="last_updated_datetime",
                         ))
 
         if recipient_region_code:
@@ -1531,10 +1614,11 @@ def activity_transaction(
 
             if has_existing_recipient_regions:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "transaction",
                         "recipient_region",
-                        "Already provided a recipient_region on activity"
+                        "Already provided a recipient_region on activity",
+                        apiField="recipient_countries",
                         ))
 
 
@@ -1544,15 +1628,15 @@ def activity_transaction(
             if not provider_org_activity:
                 provider_org_activity = activity
 
-        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors, "description")
         errors = errors + description_narratives['errors']
         warnings = warnings + description_narratives['warnings']
 
-        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        provider_org_narratives = narratives(provider_org_narratives_data, activity.default_lang, activity.id,  warnings, errors, "provider_organisation")
         errors = errors + provider_org_narratives['errors']
         warnings = warnings + provider_org_narratives['warnings']
 
-        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        receiver_org_narratives = narratives(receiver_org_narratives_data, activity.default_lang, activity.id,  warnings, errors, "receiver_organisation")
         errors = errors + receiver_org_narratives['errors']
         warnings = warnings + receiver_org_narratives['warnings']
 
@@ -1622,13 +1706,15 @@ def transaction_sector(
                 RequiredFieldError(
                     "recipient-sector",
                     "code",
+                    apiField="sector.code",
                     ))
         elif not sector:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-sector",
                     "code",
-                    "recipient-sector not found for code {}".format(sector_code)
+                    "recipient-sector not found for code {}".format(sector_code),
+                    apiField="sector.code",
                     ))
 
         if not vocabulary_code:
@@ -1636,13 +1722,15 @@ def transaction_sector(
                 RequiredFieldError(
                     "recipient-sector",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         elif not vocabulary: 
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "recipient-sector",
                     "vocabulary",
-                    "vocabulary not found for code {}".format(vocabulary_code)
+                    "vocabulary not found for code {}".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
 
         if vocabulary_code == "99" and not vocabulary_uri:
@@ -1650,7 +1738,8 @@ def transaction_sector(
                 RequiredFieldError(
                     "recipient-sector",
                     "vocabulary_uri",
-                    "vocabulary_uri is required when vocabulary code is 99"
+                    "vocabulary_uri is required when vocabulary code is 99",
+                    apiField="vocabulary.code",
                     ))
 
         if sector_code:
@@ -1659,10 +1748,11 @@ def transaction_sector(
 
             if has_existing_sectors:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "transaction",
                         "sector",
-                        "Already provided a sector on activity"
+                        "Already provided a sector on activity",
+                        apiField="sector",
                         ))
 
 
@@ -1703,22 +1793,24 @@ def activity_result(
                 RequiredFieldError(
                     "result",
                     "type",
+                    apiField="type.code",
                     ))
         elif not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "result",
                     "type",
-                    "type not found for code {}".format(type_code)
+                    "type not found for code {}".format(type_code),
+                    apiField="type.code",
                     ))
 
         aggregation_status = makeBool(aggregation_status)
 
-        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors, 'title')
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 
-        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        description_narratives = narratives(description_narratives_data, activity.default_lang, activity.id,  warnings, errors, "title")
         errors = errors + description_narratives['errors']
         warnings = warnings + description_narratives['warnings']
 
@@ -1763,13 +1855,15 @@ def activity_result_indicator(
                 RequiredFieldError(
                     "indicator",
                     "measure",
+                    apiField="measure.code",
                     ))
         elif not measure:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "indicator",
                     "measure",
-                    "measure not found for code {}".format(measure_code)
+                    "measure not found for code {}".format(measure_code),
+                    apiField="measure.code",
                     ))
 
         if not len(title_narratives_data):
@@ -1777,6 +1871,7 @@ def activity_result_indicator(
                 RequiredFieldError(
                     "indicator",
                     "title",
+                    apiField="title",
                     ))
 
         if baseline_year or baseline_value:
@@ -1785,25 +1880,27 @@ def activity_result_indicator(
                     RequiredFieldError(
                         "baseline",
                         "year",
+                        apiField="baseline.year",
                     ))
             if not baseline_value:
                 errors.append(
                     RequiredFieldError(
                         "baseline",
                         "value",
+                        apiField="baseline.value",
                     ))
 
         ascending = makeBool(ascending)
 
-        title_narratives = narratives(title_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        title_narratives = narratives(title_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors, "title")
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 
-        description_narratives = narratives(description_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        description_narratives = narratives(description_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors, "description")
         errors = errors + description_narratives['errors']
         warnings = warnings + description_narratives['warnings']
 
-        baseline_comment_narratives = narratives(baseline_comment_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors)
+        baseline_comment_narratives = narratives(baseline_comment_narratives_data, result.activity.default_lang, result.activity.id,  warnings, errors, "baseline.comment")
         errors = errors + baseline_comment_narratives['errors']
         warnings = warnings + baseline_comment_narratives['warnings']
 
@@ -1839,6 +1936,7 @@ def activity_result_indicator_reference(
                 RequiredFieldError(
                     "result-indicator-reference",
                     "code",
+                    apiField="code",
                     ))
 
         if not vocabulary_code:
@@ -1846,13 +1944,15 @@ def activity_result_indicator_reference(
                 RequiredFieldError(
                     "result-indicator-reference",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         elif not vocabulary: 
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "result-indicator-reference",
                     "vocabulary",
-                    "vocabulary not found for code {}".format(vocabulary_code)
+                    "vocabulary not found for code {}".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
 
         if vocabulary_code == "99" and not indicator_uri:
@@ -1860,7 +1960,8 @@ def activity_result_indicator_reference(
                 RequiredFieldError(
                     "result-indicator-reference",
                     "indicator_uri",
-                    "indicator_uri is required when vocabulary code is 99"
+                    "indicator_uri is required when vocabulary code is 99",
+                    apiField="vocabulary.code",
                     ))
 
 
@@ -1900,6 +2001,7 @@ def activity_result_indicator_period(
                 RequiredFieldError(
                     "result-indicator-period",
                     "period-start",
+                    apiField="period_start",
                     ))
             period_start = None
         else:
@@ -1907,10 +2009,11 @@ def activity_result_indicator_period(
                 period_start = validate_date(period_start_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "result-indicator-period",
                         "period-start",
                         "iso-date not of type xsd:date",
+                        apiField="period_start",
                         ))
                 period_start = None
 
@@ -1919,6 +2022,7 @@ def activity_result_indicator_period(
                 RequiredFieldError(
                     "result-indicator-period",
                     "period-end",
+                    apiField="period_end",
                     ))
             period_end = None
         else:
@@ -1926,20 +2030,22 @@ def activity_result_indicator_period(
                 period_end = validate_date(period_end_raw)
             except RequiredFieldError:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "result-indicator-period",
                         "period-end",
                         "iso-date not of type xsd:date",
+                        apiField="period_end",
                         ))
                 period_end = None
 
         if period_start and period_end:
             if period_start >= period_end:
                 errors.append(
-                    RequiredFieldError(
+                    FieldValidationError(
                         "result-indicator-period",
                         "period-start",
                         "period-start must be before period-end",
+                        apiField="period_end",
                         ))
 
         if not target:
@@ -1947,21 +2053,23 @@ def activity_result_indicator_period(
                 RequiredFieldError(
                     "result-indicator-period-target",
                     "value",
+                    apiField="target.value",
                     ))
         if not actual:
             errors.append(
                 RequiredFieldError(
                     "result-indicator-period-actual",
                     "value",
+                    apiField="actual.value",
                     ))
 
         activity = result_indicator.result.activity
 
-        target_comment_narratives = narratives(target_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        target_comment_narratives = narratives(target_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors, "target.comment")
         errors = errors + target_comment_narratives['errors']
         warnings = warnings + target_comment_narratives['warnings']
 
-        actual_comment_narratives = narratives(actual_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        actual_comment_narratives = narratives(actual_comment_narratives_data, activity.default_lang, activity.id,  warnings, errors, "actual.comment")
         errors = errors + actual_comment_narratives['errors']
         warnings = warnings + actual_comment_narratives['warnings']
 
@@ -1995,13 +2103,15 @@ def activity_result_indicator_period_location(
                 RequiredFieldError(
                     "result/indicator/period/actual/location",
                     "ref",
+                    apiField="ref",
                     ))
 
         if not location:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "result/indicator/period/actual/location",
                     "location with ref {} not found".format(ref),
+                    apiField="location.code",
                     ))
 
         return {
@@ -2029,6 +2139,7 @@ def activity_result_indicator_period_dimension(
                 RequiredFieldError(
                     "result/indicator/period/actual/dimension",
                     "name",
+                    apiField="name",
                     ))
 
         if not value:
@@ -2036,6 +2147,7 @@ def activity_result_indicator_period_dimension(
                 RequiredFieldError(
                     "result/indicator/period/actual/dimension",
                     "value",
+                    apiField="value",
                     ))
 
         return {
@@ -2067,6 +2179,7 @@ def other_identifier(
                 RequiredFieldError(
                     "activity/other-identifier",
                     "ref",
+                    apiField="ref",
                     ))
 
         if not type_code:
@@ -2074,19 +2187,21 @@ def other_identifier(
                 RequiredFieldError(
                     "activity/other-identifier",
                     "type",
+                    apiField="type.code",
                     ))
         elif not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/other-identifier",
                     "type with code {} not found".format(type.code),
+                    apiField="type.code",
                     ))
 
         if owner_ref:
             pass
             # TODO:  check for valid org id http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/owner-org/ - 2016-12-07
 
-        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors, "owner_org")
 
         return {
             "warnings": warnings,
@@ -2115,13 +2230,15 @@ def country_budget_items(
                 RequiredFieldError(
                     "activity/country-budget-items",
                     "vocabulary",
+                    apiField="vocabulary.code",
                     ))
         elif not vocabulary:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/country-budget-items",
                     "vocabulary",
-                    "vocabulary with code {} not found".format(vocabulary_code)
+                    "vocabulary with code {} not found".format(vocabulary_code),
+                    apiField="vocabulary.code",
                     ))
 
         return {
@@ -2148,17 +2265,19 @@ def budget_item(
                 RequiredFieldError(
                     "activity/country-budget-items/budget-item",
                     "code",
+                    apiField="budget_identifier.code",
                     ))
         elif not budget_identifier:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/country-budget-items/budget-item",
                     "code {} not found on BudgetIdentifier codelist".format(budget_identifier_code),
+                    apiField="budget_identifier.code",
                     ))
 
         # TODO: validate something with percentage here? - 2016-12-08
 
-        validated_narratives = narratives(narratives_data, country_budget_item.activity.default_lang, country_budget_item.activity.id,  warnings, errors)
+        validated_narratives = narratives(narratives_data, country_budget_item.activity.default_lang, country_budget_item.activity.id,  warnings, errors, "description")
 
         return {
             "warnings": warnings,
@@ -2184,12 +2303,14 @@ def legacy_data(
                 RequiredFieldError(
                     "activity/legacy-data",
                     "name",
+                    apiField="name",
                     ))
         if not value:
             errors.append(
                 RequiredFieldError(
                     "activity/legacy-data",
                     "value",
+                    apiField="value",
                     ))
 
         return {
@@ -2215,6 +2336,7 @@ def conditions(
                 RequiredFieldError(
                     "activity/conditions",
                     "attached",
+                    apiField="attached",
                     ))
         return {
             "warnings": warnings,
@@ -2241,12 +2363,14 @@ def condition(
                 RequiredFieldError(
                     "activity/conditions/condition",
                     "type",
+                    apiField="type.code",
                     ))
         elif not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/conditions/condition",
                     "code {} not found on ConditionType codelist".format(type_code),
+                    apiField="type.code",
                     ))
 
         validated_narratives = narratives(narratives_data, conditions.activity.default_lang, conditions.activity.id,  warnings, errors)
@@ -2301,12 +2425,14 @@ def crs_add_loan_terms(
                 RequiredFieldError(
                     "activity/crs_add/loan_terms",
                     "rate_1",
+                    apiField="loan_terms.rate_1",
                     ))
         if not rate_2:
             errors.append(
                 RequiredFieldError(
                     "activity/crs_add/loan_terms",
                     "rate_2",
+                    apiField="loan_terms.rate_2",
                     ))
 
         # if not repayment_type_code:
@@ -2340,10 +2466,11 @@ def crs_add_loan_terms(
             commitment_date = validate_date(commitment_date_raw)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/crs_add/loan_terms",
                     "commitment_date",
                     "invalid date",
+                    apiField="loan_terms.commitment_date",
                     ))
             commitment_date = None
 
@@ -2351,10 +2478,11 @@ def crs_add_loan_terms(
             repayment_first_date = validate_date(repayment_first_date_raw)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/crs_add/loan_terms",
                     "repayment_first_date",
                     "invalid date",
+                    apiField="loan_terms.repayment_first_date",
                     ))
             repayment_first_date = None
 
@@ -2362,10 +2490,11 @@ def crs_add_loan_terms(
             repayment_final_date = validate_date(repayment_final_date_raw)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/crs_add/loan_terms",
                     "repayment_final_date",
                     "invalid date",
+                    apiField="loan_terms.repayment_final_date",
                     ))
             repayment_final_date = None
 
@@ -2406,16 +2535,18 @@ def crs_add_loan_status(
                 RequiredFieldError(
                     "activity/crs_add/loan_status",
                     "year",
+                    apiField="loan_status.year",
                     ))
 
         try:
             value_date = validate_date(value_date_raw)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/crs_add/loan_status",
                     "value_date",
                     "invalid date",
+                    apiField="loan_status.value_date",
                     ))
             value_date = None
 
@@ -2451,12 +2582,14 @@ def crs_add_other_flags(
                 RequiredFieldError(
                     "activity/crs_add/other_flags",
                     "other_flags",
+                    apiField="other_flags.code",
                     ))
         elif not other_flags:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/crs_add/other_flags",
                     "code {} not found on OtherFlags codelist".format(other_flags),
+                    apiField="other_flags.code",
                     ))
 
 
@@ -2465,6 +2598,7 @@ def crs_add_other_flags(
                 RequiredFieldError(
                     "activity/crs_add/other_flags",
                     "significance",
+                    apiField="significance",
                     ))
 
         return {
@@ -2490,10 +2624,11 @@ def fss(
             extraction_date = validate_date(extraction_date_raw)
         except RequiredFieldError:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/fss",
                     "extraction_date",
                     "invalid date",
+                    apiField="extraction_date",
                     ))
             extraction_date = None
 
@@ -2525,19 +2660,21 @@ def fss_forecast(
         except RequiredFieldError:
             if not value:
                 errors.append(
-                        RequiredFieldError(
+                        FieldValidationError(
                             "activity/fss/forecast",
                             "value",
+                            apiField="value",
                             ))
 
             value_date = None
 
         if not currency and not fss.activity.default_currency:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/fss/forecast",
                     "currency",
-                    "currency not specified and no default specified on activity"
+                    "currency not specified and no default specified on activity",
+                    apiField="currency.code",
                     ))
 
         if not year:
@@ -2545,6 +2682,7 @@ def fss_forecast(
                 RequiredFieldError(
                     "activity/fss/forecast",
                     "year",
+                    apiField="currency.code",
                     ))
 
         if not value:
@@ -2552,6 +2690,7 @@ def fss_forecast(
                 RequiredFieldError(
                     "activity/fss/forecast",
                     "value",
+                    apiField="value",
                     ))
 
 
@@ -2584,19 +2723,21 @@ def related_activity(
         except RequiredFieldError:
             if not value:
                 errors.append(
-                        RequiredFieldError(
+                        FieldValidationError(
                             "activity/fss/forecast",
                             "value",
+                            apiField="value",
                             ))
 
             value_date = None
 
         if not currency and not fss.activity.default_currency:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/fss/forecast",
                     "currency",
-                    "currency not specified and no default specified on activity"
+                    "currency not specified and no default specified on activity",
+                    apiField="currency.code",
                     ))
 
         if not year:
@@ -2604,6 +2745,7 @@ def related_activity(
                 RequiredFieldError(
                     "activity/fss/forecast",
                     "year",
+                    apiField="year",
                     ))
 
         if not value:
@@ -2611,6 +2753,7 @@ def related_activity(
                 RequiredFieldError(
                     "activity/fss/forecast",
                     "value",
+                    apiField="value",
                     ))
 
 
@@ -2642,13 +2785,15 @@ def related_activity(
                 RequiredFieldError(
                     "related-activity",
                     "ref",
+                    apiField="ref",
                     ))
         elif not ref_activity:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "related-activity",
                     "ref",
-                    "activity not found for {}".format(type_code)
+                    "activity not found for {}".format(type_code),
+                    apiField="ref",
                     ))
 
         if not type_code:
@@ -2656,13 +2801,15 @@ def related_activity(
                 RequiredFieldError(
                     "related-activity",
                     "type",
+                    apiField="type.code",
                     ))
         elif not type:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "related-activity",
                     "type",
-                    "codelist entry not found for {}".format(type_code)
+                    "codelist entry not found for {}".format(type_code),
+                    apiField="type.code",
                     ))
 
         return {
@@ -2697,13 +2844,15 @@ def activity_document_link(
                 RequiredFieldError(
                     "activity/document-link",
                     "file-format",
+                    apiField="file_format.code",
                     ))
         elif not file_format:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/document-link",
                     "file-format",
-                    "format not found for code {}".format(file_format_code)
+                    "format not found for code {}".format(file_format_code),
+                    apiField="file_format.code",
                     ))
 
         # TODO: check the url actually resolves? - 2016-12-14
@@ -2712,6 +2861,7 @@ def activity_document_link(
                 RequiredFieldError(
                     "document_link",
                     "url",
+                    apiField="url",
                     ))
 
         try:
@@ -2727,7 +2877,7 @@ def activity_document_link(
             document_date = None
 
 
-        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        title_narratives = narratives(title_narratives_data, activity.default_lang, activity.id,  warnings, errors, "title")
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 
@@ -2760,13 +2910,15 @@ def document_link_category(
                 RequiredFieldError(
                     "activity/document-link/category",
                     "code",
+                    apiField="category.code",
                     ))
         elif not category:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/document-link/category",
                     "code",
-                    "category not found for code {}".format(category_code)
+                    "category not found for code {}".format(category_code),
+                    apiField="category.code",
                     ))
 
         return {
@@ -2793,13 +2945,15 @@ def document_link_language(
                 RequiredFieldError(
                     "activity/document-link/language",
                     "code",
+                    apiField="language.code",
                     ))
         elif not language:
             errors.append(
-                RequiredFieldError(
+                FieldValidationError(
                     "activity/document-link/language",
                     "code",
-                    "language not found for code {}".format(language_code)
+                    "language not found for code {}".format(language_code),
+                    apiField="language.code",
                     ))
 
         return {

@@ -94,7 +94,7 @@ class Parse(IATI_201_Parser):
                 "required attribute missing")
 
         if not role: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "participating-org",
                 "role",
                 "not found on the accompanying code list")
@@ -128,7 +128,7 @@ class Parse(IATI_201_Parser):
                 "required element empty")
 
         if identifier and len(identifier) > 200:
-            raise ValidationError(
+            raise FieldValidationError(
                 "other-identifier",
                 "text",
                 "identifier is longer than 200 characters (unlikely and is most often a data bug)")

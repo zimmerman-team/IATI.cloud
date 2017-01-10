@@ -28,7 +28,7 @@ from iati.parser.post_save import *
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_02 import Parse as Parser_202
-from iati.parser.exceptions import ValidationError
+from iati.parser.exceptions import FieldValidationError
 
 from iati_codelists.factory import codelist_factory
 from iati_vocabulary.factory import vocabulary_factory
@@ -1437,7 +1437,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     # TODO : test for latlong validation
     # def test_location_pos_pos_invalid_latlong_202(self):
     #     pos = E('pos', '91.616944 328392189031283.716944')
-    #     with self.assertRaises(ValidationError):
+    #     with self.assertRaises(FieldValidationError):
     #         self.parser_202.iati_activities__iati_activity__location__point__pos(pos)
 
     def test_location_exactness_202(self):
@@ -1762,7 +1762,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
 
     def test_activity_policy_marker_202_no_significance_on_oecd_dac(self):
         """
-        No significance on oecd dac voc should raise ValidationError.
+        No significance on oecd dac voc should raise FieldValidationError.
         """
         attrs = self.attrs
         del attrs['significance']
@@ -1933,7 +1933,7 @@ class BudgetTestCase(ParserSetupTestCase):
 
         value = E('value', text, **attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__budget__value(value)
 
 
@@ -3082,7 +3082,7 @@ class ResultTestCase(ParserSetupTestCase):
 
     def test_result_indicator_period_target_non_existing_location(self):
         """
-        should throw ValidationError
+        should throw FieldValidationError
         """
         self.parser_202.pop_model('Location')
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
@@ -3091,7 +3091,7 @@ class ResultTestCase(ParserSetupTestCase):
         loc_attrs = {'ref': 'AF-KAN'}
         target_location = E('location', **loc_attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
 
     def test_result_indicator_period_target_dimension(self):
@@ -3177,7 +3177,7 @@ class ResultTestCase(ParserSetupTestCase):
 
     def test_result_indicator_period_actual_non_existing_location(self):
         """
-        should throw ValidationError
+        should throw FieldValidationError
         """
         self.parser_202.pop_model('Location')
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
@@ -3186,7 +3186,7 @@ class ResultTestCase(ParserSetupTestCase):
         loc_attrs = {'ref': 'AF-KAN'}
         actual_location = E('location', **loc_attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
 
     def test_result_indicator_period_actual_dimension(self):

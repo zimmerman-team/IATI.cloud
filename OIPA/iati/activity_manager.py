@@ -82,10 +82,17 @@ class ActivityQuerySet(SearchQuerySet):
                 .prefetch_related(narrative_prefetch)),)
 
     def prefetch_other_identifiers(self):
-        from iati.models import ActivityDate
+        from iati.models import OtherIdentifier, Narrative
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'otheridentifier_set',
+                queryset=OtherIdentifier.objects.all()
+                .select_related('type')
+                .prefetch_related(narrative_prefetch)),)
 
 
     def prefetch_activity_dates(self):
@@ -156,9 +163,38 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_locations(self):
         from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
         from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
+        # from django.contrib.contenttypes.models import ContentType
 
-        # TODO: add correct narrative prefetches here - 2016-12-22
+        # pr = Prefetch(
+        #     'content_object',
+        #     queryset=ContentType.objects.all())
 
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
+
+
+
+        location_name_prefetch = Prefetch(
+            'name__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language')
+            )
+
+        location_administrative_prefetch = Prefetch(
+            'locationadministrative_set',
+            queryset=LocationAdministrative.objects.all()
+            .select_related('vocabulary'))
+
+        location_description_prefetch = Prefetch(
+            'description__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        location_activity_description_prefetch = Prefetch(
+            'activity_description__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
 
         return self.prefetch_related(
             Prefetch(
@@ -166,10 +202,10 @@ class ActivityQuerySet(SearchQuerySet):
                 queryset=Location.objects.all()
                 .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness', 'name', 'description', 'activity_description')
                 .prefetch_related(
-                    # location_name_prefetch,
-                    # location_administrative_prefetch,
-                    # location_description_prefetch,
-                    # location_activity_description_prefetch
+                    location_administrative_prefetch,
+                    location_name_prefetch,
+                    location_description_prefetch,
+                    location_activity_description_prefetch
                 ))
         )
 
@@ -184,16 +220,22 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('vocabulary')))
 
     def prefetch_country_budget_items(self):
-        from iati.models import ActivityDate
+        from iati.models import CountryBudgetItem
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'country_budget_items',
+                queryset=CountryBudgetItem.objects.all()
+                ))
 
     def prefetch_humanitarian_scope(self):
-        from iati.models import ActivityDate
+        from iati.models import HumanitarianScope
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'humanitarianscope_set',
+                queryset=HumanitarianScope.objects.all()
+                ))
 
     def prefetch_policy_markers(self):
         from iati.models import ActivityPolicyMarker, Narrative
@@ -219,11 +261,14 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('type', 'currency'))
         )
 
-    def prefetch_planned_disbursements(self):
-        from iati.models import ActivityDate
+    def prefetch_planned_disbursement(self):
+        from iati.models import PlannedDisbursement
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'planneddisbursement_set',
+                queryset=PlannedDisbursement.objects.all()
+                ))
 
     # def prefetch_transactions(self):
     #     from iati.transaction.models import Transaction
@@ -245,22 +290,41 @@ class ActivityQuerySet(SearchQuerySet):
     #     )
 
     def prefetch_document_links(self):
-        from iati.models import DocumentLink, DocumentLinkCategory
+        from iati.models import DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Narrative
 
         # TODO: fix category prefetch, not working
+
+        title_prefetch = Prefetch(
+            'documentlinktitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
         category_prefetch = Prefetch(
             'documentlinkcategory_set',
             queryset=DocumentLinkCategory.objects.all()
-            .select_related('category'))
+            .select_related('category')
+            )
+
+        language_prefetch = Prefetch(
+            'documentlinklanguage_set',
+            queryset=DocumentLinkLanguage.objects.all()
+            .select_related('language'))
+
 
         return self.prefetch_related(
             Prefetch(
                 'documentlink_set',
                 queryset=DocumentLink.objects.all()
-                .select_related('file_format')
-                .prefetch_related(category_prefetch))
+                .select_related('file_format', 'documentlinktitle')
+                .prefetch_related(
+                    language_prefetch,
+                    category_prefetch,
+                    title_prefetch
+                    )
+                )
         )
 
+        
     def prefetch_related_activities(self):
         from iati.models import RelatedActivity
 
@@ -272,16 +336,28 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
     def prefetch_legacy_data(self):
-        from iati.models import ActivityDate
+        from iati.models import LegacyData
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'legacydata_set',
+                queryset=LegacyData.objects.all())
+            )
 
     def prefetch_conditions(self):
-        from iati.models import ActivityDate
+        from iati.models import Conditions, Narrative
 
-        # TODO: todo - 2016-12-23
-        return self
+        condition_prefetch = Prefetch(
+            'condition__narrative',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch(
+                'conditions_set',
+                queryset=Conditions.objects.all()
+                .prefetch_related(condition_prefetch)
+                ))
 
     def prefetch_results(self):
         from iati.models import Result, Narrative, ResultIndicatorPeriod, ResultIndicator
@@ -359,16 +435,22 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
     def prefetch_crs_add(self):
-        from iati.models import ActivityDate
+        from iati.models import CrsAdd
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'crsadd_set',
+                queryset=CrsAdd.objects.all()
+                ))
 
     def prefetch_fss(self):
-        from iati.models import ActivityDate
+        from iati.models import Fss
 
-        # TODO: todo - 2016-12-23
-        return self
+        return self.prefetch_related(
+            Prefetch(
+                'fss_set',
+                queryset=Fss.objects.all()
+                ))
 
     def prefetch_default_aid_type(self):
         return self.select_related('default_aid_type__category')

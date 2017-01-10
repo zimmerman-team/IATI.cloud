@@ -62,6 +62,9 @@ class Transaction(models.Model):
             self.transaction_date,
             self.transaction_type,)
 
+    def get_publisher(self):
+        return self.activity.publisher
+
 
 class TransactionProvider(models.Model):
     ref = models.CharField(blank=True, default="", max_length=250)
@@ -117,6 +120,9 @@ class TransactionProvider(models.Model):
     def __unicode__(self, ):
         return "%s - %s" % (self.ref,
                             self.provider_activity_ref,)
+
+    def get_publisher(self):
+        return self.transaction.activity.publisher
 
 
 class TransactionReceiver(models.Model):
@@ -174,6 +180,9 @@ class TransactionReceiver(models.Model):
         return "%s - %s" % (self.ref,
                             self.receiver_activity_ref,)
 
+    def get_publisher(self):
+        return self.transaction.activity.publisher
+
 
 class TransactionDescription(models.Model):
     transaction = models.OneToOneField(
@@ -184,6 +193,9 @@ class TransactionDescription(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
+
+    def get_publisher(self):
+        return self.transaction.activity.publisher
 
 
 class TransactionSector(models.Model):
@@ -214,6 +226,9 @@ class TransactionSector(models.Model):
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.sector)
 
+    def get_publisher(self):
+        return self.transaction.activity.publisher
+
 
 class TransactionRecipientCountry(models.Model):
     transaction = models.ForeignKey(
@@ -234,6 +249,9 @@ class TransactionRecipientCountry(models.Model):
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.country)
+
+    def get_publisher(self):
+        return self.transaction.activity.publisher
 
 
 class TransactionRecipientRegion(models.Model):
@@ -264,4 +282,7 @@ class TransactionRecipientRegion(models.Model):
 
     def __unicode__(self, ):
         return "%s - %s" % (self.transaction.id, self.region)
+
+    def get_publisher(self):
+        return self.transaction.activity.publisher
 

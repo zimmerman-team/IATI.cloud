@@ -20,6 +20,7 @@ def _create_test_activity(
     iati_identifier="IATI-search1",
     title1="title1",
     title2="title2",
+    capital_spend="88.80",
     description1_1="description1_1",
     description1_2="description1_2",
     description2_1="description2_1",
@@ -65,7 +66,8 @@ def _create_test_activity(
 
     activity = ActivityFactory.create(
         id=iati_identifier,
-        iati_identifier=iati_identifier
+        iati_identifier=iati_identifier,
+        capital_spend=capital_spend
     )
 
     title = TitleFactory.create(
@@ -159,19 +161,35 @@ def _create_test_activity(
     _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_1)
     _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_2)
 
+    #location = LocationFactory.create(activity=activity,)
+    #_create_test_narrative(activity, location, location_description1_1)
+
+
+
+
     # transaction2 = TransactionFactory.create(activity=activity)
 
-#     location1 = LocationFactory.create(activity=activity)
-#     location_name1 = LocationNameFactory.create(location=location1)
-#     location_description1 = LocationDescriptionFactory.create(location=location1)
-#     location_activity_description1 = LocationActivityDescriptionFactory.create(location=location1)
+    location = LocationFactory.create(activity=activity)
+    _create_test_narrative(activity, location.name, location_name1_1)
+    _create_test_narrative(activity, location.description, location_description1_1)
+    _create_test_narrative(activity, location.activity_description, location_activity_description1_1)
+    location_administrative = LocationAdministrativeFactory.create(location=location)
+    
 
-#     _create_test_narrative(activity, location_name1, transaction_name1_1)
-#     _create_test_narrative(activity, location_name1, transaction_name1_2)
-#     _create_test_narrative(activity, location_description1, transaction_description1_1)
-#     _create_test_narrative(activity, location_description1, transaction_description1_2)
-#     _create_test_narrative(activity, location_activity_description1, transaction_activity_description1_1)
-#     _create_test_narrative(activity, location_activity_description1, transaction_activity_description1_2)
+
+    #administrative = SubFactory(LocationAdministrativeFactory)
+    #location_activity_description = LocationActivityDescriptionFactory.create(location=location)
+    #_create_test_narrative(activity, location.activity_description, location_activity_description1_1)
+    #location_name1 = LocationNameFactory.create(location=location1)
+    #location_description1 = LocationDescriptionFactory.create(location=location1)
+    #location_activity_description1 = LocationActivityDescriptionFactory.create(location=location1)
+
+    # _create_test_narrative(activity, location_name1, transaction_name1_1)
+    #_create_test_narrative(activity, location_name1, transaction_name1_2)
+    #_create_test_narrative(activity, location_description1, transaction_description1_1)
+    #_create_test_narrative(activity, location_description1, transaction_description1_2)
+    #_create_test_narrative(activity, location_activity_description1, transaction_activity_description1_1)
+    #_create_test_narrative(activity, location_activity_description1, transaction_activity_description1_2)
 
 
     return activity

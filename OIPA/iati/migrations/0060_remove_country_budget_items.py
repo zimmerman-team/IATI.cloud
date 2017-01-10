@@ -22,5 +22,5 @@ class Migration(migrations.Migration):
 
 
     operations = [
-        migrations.RunPython(remove_all_wopa),
+        migrations.RunPython(remove_all_wopa, lambda x,y: None),
     ]

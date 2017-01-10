@@ -23,6 +23,7 @@ class IatiParser(object):
         self.errors = []
         self.parse_start_datetime = datetime.datetime.now()
         self.dataset = None
+        self.publisher = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
 
@@ -71,12 +72,12 @@ class IatiParser(object):
         try:
             return Decimal(decimal_string)
         except ValueError:
-            raise ValidationError(
+            raise FieldValidationError(
                 model_name,
                 "value",
                 "Must be decimal or integer string")
         except InvalidOperation:
-            raise ValidationError(
+            raise FieldValidationError(
                 model_name,
                 "value",
                 "Must be decimal or integer string")
@@ -207,19 +208,11 @@ class IatiParser(object):
             except RequiredFieldError as e:
                 self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
                 return
-            except EmptyFieldError as e:
-                self.append_error('EmptyFieldError', e.model, e.field, e.message, element.sourceline)
+            except FieldValidationError as e:
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
                 return
             except ValidationError as e:
-                self.append_error('ValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
-                return
-            except ValueError as e:
-                traceback.print_exc()
-                # self.append_error('ValueError', 'TO DO', 'TO DO', e.message, element.sourceline)
-                return
-            except InvalidOperation as e:
-                traceback.print_exc()
-                # self.append_error('InvalidOperation', 'TO DO', 'TO DO', e.message, element.sourceline)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
                 return
             except IgnoredVocabularyError as e:
                 # not implemented, ignore for now

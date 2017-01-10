@@ -6,6 +6,8 @@ from api.generics.serializers import SkipNullMixin
 import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 
+from iati import models as iati_models
+
 class BoolToNumField(serializers.Field):
     """
     represent True and False as "1" and "0"
@@ -401,36 +403,66 @@ class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Resu
     indicator = ResultIndicatorXMLSerializer(source='resultindicator_set', many=True)
 
 
-class LocationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
+class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
-    class LocationIdSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
-        xml_meta = {'attributes': ('code', 'vocabulary',)}
+    location_reach = CodelistSerializer()
 
-        vocabulary = serializers.CharField(
-            source='location_id_vocabulary.code')
+    class LocationIdXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
+        xml_meta = {'attributes': ('code', 'vocabulary', )}
+        vocabulary = serializers.CharField(source='location_id_vocabulary.code')
 
+    location_id = LocationIdXMLSerializer(source='*')
+
+    name = NarrativeContainerXMLSerializer()
+
+    description = NarrativeContainerXMLSerializer()
+
+    activity_description = NarrativeContainerXMLSerializer()
+
+    class LocationAdministrativeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
+        xml_meta = {'attributes': ('code', 'vocabulary', 'level', )}
+        vocabulary = serializers.CharField(source='vocabulary.code')
+
+        class Meta:
+            model = iati_models.LocationAdministrative
+            fields = (
+                'code',
+                'vocabulary',
+                'level',
+            )
+
+    administrative = LocationAdministrativeXMLSerializer(
+        many=True,
+        source="locationadministrative_set")
 
     class PointSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.PointSerializer):
         xml_meta = {'attributes': ('srsName',)}
         
         pos = PointIATIField(source='point_pos')
-#         srsName = serializers.CharField(source="point_srs_name")
+        #srsName = serializers.CharField(source="point_srs_name")
 
-
-    class AdministrativeSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
-        xml_meta = {'attributes': ('code', 'vocabulary', 'level')}
-
-        vocabulary = serializers.CharField(source='vocabulary.code')
-
-    location_id = LocationIdSerializer(source='*')
-    activity_description = NarrativeContainerXMLSerializer(many=True, source="locationactivitydescription_set")
-    administrative = AdministrativeSerializer(many=True, source="locationadministrative_set")
     point = PointSerializer(source="*")
     exactness = CodelistSerializer()
-    # class Meta(transaction_serializers.LocationSerializer.Meta):
-    #     pass
 
+    location_class = CodelistSerializer()
+
+    feature_designation = CodelistSerializer()
+
+    class Meta(activity_serializers.LocationSerializer.Meta):
+        fields = (
+            'ref',
+            'location_reach',
+            'location_id',
+            'name',
+            'description',
+            'activity_description',
+            'administrative',
+            'point',
+            'exactness',
+            'location_class',
+            'feature_designation',
+        )
 
 class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
     xml_meta = {'attributes': ('ref', 'provider_activity_id', 'type')}
@@ -572,7 +604,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     recipient_region = ActivityRecipientRegionXMLSerializer(
         many=True,
         source='activityrecipientregion_set')
-    location = LocationSerializer(many=True, source='location_set')
+    location = LocationXMLSerializer(many=True, source='location_set')
     sector = ActivitySectorSerializer(
         many=True,
         source='activitysector_set')

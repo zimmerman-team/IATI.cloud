@@ -10,6 +10,7 @@ from django_filters import BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
 
@@ -191,6 +192,14 @@ class BudgetFilter(TogetherFilterSet):
         name='region__code',
         fk='activity__budget',
     )
+
+    recipient_region_not = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity__budget',
+    )
+
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',

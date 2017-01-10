@@ -18,7 +18,7 @@ class VersionFactory(NoDatabaseFactory):
         model = codelist_models.Version
         django_get_or_create = ('code',)
 
-    code = '2.01'
+    code = '2.02'
     name = 'IATI version 2.01'
 
 class LanguageFactory(NoDatabaseFactory):
@@ -291,7 +291,8 @@ class LocationTypeFactory(NoDatabaseFactory):
     code = 'AIRQ'
     name = 'abandoned airfield'
     description = 'abandoned airfield'
-    category = LocationTypeCategoryFactory.build()
+    #category = LocationTypeCategoryFactory.build()
+    category = SubFactory(LocationTypeCategoryFactory)
 
 
 class ActivityScopeFactory(NoDatabaseFactory):
