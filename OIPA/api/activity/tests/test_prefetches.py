@@ -1,20 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @HatimKH
- Unwatch 19
-  Unstar 15
- Fork 18 zimmerman-zimmerman/OIPA
- Code  Issues 45  Pull requests 2  Projects 1  Wiki  Pulse  Graphs
-Branch: develop Find file Copy pathOIPA/OIPA/api/activity/tests/test_prefetches.py
-5988b0b  a day ago
-@HatimKH HatimKH #296 XML Export of Activity Location element
-2 contributors @HatimKH @bryanph
-RawBlameHistory     
-558 lines (426 sloc)  16.9 KB
 
 
 # TODO: no need to test codelist fields separately; instead test the whole serializer in once along with the code and vocabulary fields. Or is testing the fields separately preferable?
