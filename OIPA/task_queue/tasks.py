@@ -120,6 +120,7 @@ def force_parse_source_by_url(url, update_searchable=False):
         xml_source = IatiXmlSource.objects.get(source_url=url)
         xml_source.process(force_reparse=True)
 
+    queue = django_rq.get_queue("parser")
     if update_searchable and settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
