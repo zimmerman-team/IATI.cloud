@@ -41,3 +41,4 @@ django-modeladmin-reorder==0.2
 djangorestframework-recursive==0.1.1
 django-rest-auth[with_social]==0.9.0
 ckanapi==3.6
+git+https://github.com/zimmerman-zimmerman/fulltext.git

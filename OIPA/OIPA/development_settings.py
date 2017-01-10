@@ -3,6 +3,7 @@
 from OIPA.base_settings import *
 
 DEBUG = True
+FTS_ENABLED = True
 
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -49,4 +50,3 @@ try:
     from local_settings import *
 except ImportError:
     pass
-

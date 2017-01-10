@@ -1,6 +1,7 @@
 from geodata.models import Country, Region
 from activity_manager import ActivityManager
 from location_manager import LocationManager
+from document_manager import DocumentManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -15,6 +16,7 @@ from iati_vocabulary.models import HumanitarianScopeVocabulary
 from iati_vocabulary.models import IndicatorVocabulary
 from iati_organisation.models import Organisation
 
+from djorm_pgfulltext.models import SearchManager
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
 from iati_synchroniser.models import Dataset
@@ -690,6 +692,47 @@ class DocumentLinkTitle(models.Model):
     def get_publisher(self):
         return self.document_link.activity.publisher
 
+
+class DocumentSearch(models.Model):
+    document = models.OneToOneField('Document')
+    content = VectorField()
+    text = VectorField()
+    last_reindexed = models.DateTimeField()
+
+class Document(models.Model):
+    document_link = models.OneToOneField(DocumentLink)
+    long_url = models.TextField(max_length=500, default='')
+    url_is_valid = models.BooleanField(default=False)
+    document_name = models.CharField(max_length=500, default='')
+    is_downloaded = models.BooleanField(default=False)
+    document_content = models.TextField(default='')
+    long_url_hash = models.CharField(max_length=500, default='')
+    file_hash = models.CharField(max_length=500, default='')
+    document_or_long_url_changed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now_add=True)
+
+    objects = DocumentManager(
+        ft_model = DocumentSearch, # model that contains the ft indexes
+        fields = ('content'), # fields on the model 
+        config = 'pg_catalog.simple', # default dictionary to use
+        search_field = 'text', # text field for all search fields,
+        auto_update_search_field = False, # TODO: make this compatible with M2M - 2016-01-11
+    )
+
+    def __unicode__(self):
+        return self.id
+
+    class Meta:
+        ordering = ['id']
+        verbose_name_plural = "documents"
+
+        index_together = [
+            ["created_at", "id"],
+        ]
+
+    def get_publisher(self):
+        return self.document_link.activity.publisher
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)

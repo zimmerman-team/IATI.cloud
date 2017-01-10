@@ -535,23 +535,3 @@ class ActivitySaveTestCase(TestCase):
                     fields=('related_aggregations',))
 
             list(serializer.data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

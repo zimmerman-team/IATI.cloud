@@ -6,3 +6,5 @@ DATABASES = {
         'NAME': ':memory:',
     },    
 }
+
+FTS_ENABLED = False
