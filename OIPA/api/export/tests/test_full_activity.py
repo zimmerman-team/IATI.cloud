@@ -63,6 +63,16 @@ period_start = getattr(E, 'period-start')
 period_end = getattr(E, 'period-end')
 conditions = getattr(E, 'conditions')
 condition = getattr(E, 'condition')
+contact_info = getattr(E, 'contact-info')
+organisation = getattr(E, 'organisation')
+department = getattr(E, 'department')
+person_name = getattr(E, 'person-name')
+job_title = getattr(E, 'job-title')
+telephone = getattr(E, 'telephone')
+email = getattr(E, 'email')
+website= getattr(E, 'website')
+mailing_address = getattr(E, 'mailing-address')
+
 
 def narrative(content):
     return getattr(E, 'narrative')(content, **{
@@ -117,6 +127,7 @@ class ActivityXMLTestCase(TestCase):
         budget1 = activity.budget_set.all()[0]
         conditions1 = activity.conditions_set.all()[0]
         condition1 = conditions1.condition_set.all()[0]
+        contact_info1 = activity.contactinfo_set.all()[0]
 
 
         xml = iati_activities(
@@ -177,6 +188,28 @@ class ActivityXMLTestCase(TestCase):
                         #         "code": activity_status1.type.code
                         #     }
                         #     ),
+                        contact_info(
+                            organisation(
+                                narrative("Agency A"),
+                                ),
+                            department(
+                                narrative("Department B"),
+                                ),
+                            person_name(
+                                narrative("A. Example"),
+                                ),
+                            job_title(
+                                narrative("Transparency Lead"),
+                                ),
+                            telephone(contact_info1.telephone),
+                            email(contact_info1.email),
+                            website(contact_info1.website),
+                            mailing_address(
+                                narrative("Transparency House, The Street, Town, City, Postcode")
+                                ), 
+                            ** {
+                            "type": contact_info1.type.code,
+                            }),
                         recipient_country(
                             # narrative("recipient_country1"),
                             # narrative("recipient_country2"),
@@ -336,6 +369,8 @@ class ActivityXMLTestCase(TestCase):
 
         print("ORIGINAL")
         print(ET.tostring(xml, pretty_print=True))
+
+        #print contact_info1.mailing_address.narratives.all()[0]
 
         print("PARSED")
         print(ET.tostring(parsed_xml))

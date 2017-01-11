@@ -61,6 +61,11 @@ def _create_test_activity(
     location_activity_description1_2="location_activity_description1_2",
     condition1_narrative_1="Conditions text",
     condition1_narrative_2="Conditions texte",
+    organisation_narrative_1="Agency A",
+    department_narrative_1="Department B",
+    person_name_narrative_1="A. Example",
+    job_title_narrative_1="Transparency Lead",
+    mailing_address_narrative_1="Transparency House, The Street, Town, City, Postcode",
         ):
     """
     For testing narratives (hence search)
@@ -177,6 +182,31 @@ def _create_test_activity(
     condition1 = ConditionFactory.create(conditions=conditions1)
     _create_test_narrative(activity, condition1, condition1_narrative_1)
     _create_test_narrative(activity, condition1, condition1_narrative_2)
+
+    contact_info1 = ContactInfoFactory.create(activity=activity)
+    contactinfoorganisation1 = ContactInfoOrganisationFactory.create(contact_info=contact_info1)
+    _create_test_narrative(activity, contactinfoorganisation1, organisation_narrative_1)
+    contactinfodepartment1 = ContactInfoDepartmentFactory.create(contact_info=contact_info1)
+    _create_test_narrative(activity, contact_info1.department, department_narrative_1)
+    contactinfopersonname1 = ContactInfoPersonNameFactory.create(contact_info=contact_info1)
+    _create_test_narrative(activity, contactinfopersonname1, person_name_narrative_1)
+    contactinfojobtitle1 = ContactInfoJobTitleFactory.create(contact_info=contact_info1)
+    _create_test_narrative(activity, contactinfojobtitle1, job_title_narrative_1)
+    contactinfomailingaddress1 = ContactInfoMailingAddressFactory.create(contact_info=contact_info1)
+    _create_test_narrative(activity, contactinfomailingaddress1, mailing_address_narrative_1)
+
+
+        # department = RelatedFactory(ContactInfoDepartmentFactory, 'contact_info')
+    # person_name = RelatedFactory(ContactInfoPersonNameFactory, 'contact_info')
+    # job_title = RelatedFactory(ContactInfoJobTitleFactory, 'contact_info')
+    # mailing_address = RelatedFactory(ContactInfoMailingAddressFactory, 'contact_info')
+
+    # _create_test_narrative(activity, contact_info1.organisation, organisation_narrative_1)
+    # _create_test_narrative(activity, contact_info1.department, department_narrative_1)
+    # _create_test_narrative(activity, contact_info1.person_name, person_name_narrative_1)
+    # _create_test_narrative(activity, contact_info1.job_title, job_title_narrative_1)
+    # _create_test_narrative(activity, contact_info1.mailing_address, mailing_address_narrative_1)
+    
 
     return activity
 

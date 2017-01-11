@@ -403,6 +403,30 @@ class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Resu
     indicator = ResultIndicatorXMLSerializer(source='resultindicator_set', many=True)
 
 
+class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ContactInfoSerializer):
+    xml_meta = {'attributes': ('type', )}
+
+    type = serializers.CharField(source='type.code')
+    organisation = NarrativeContainerXMLSerializer()
+    department = NarrativeContainerXMLSerializer()
+    person_name = NarrativeContainerXMLSerializer()
+    job_title = NarrativeContainerXMLSerializer()
+    mailing_address = NarrativeContainerXMLSerializer()
+
+    class Meta(activity_serializers.ContactInfoSerializer.Meta):
+        fields = (
+            'type',
+            'organisation',
+            'department',
+            'person_name',
+            'job_title',
+            'telephone',
+            'email',
+            'website',
+            'mailing_address',
+        )
+
+
 class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
@@ -624,6 +648,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True,
         source='activitydate_set')
 
+    contact_info = ContactInfoXMLSerializer(many=True, source="contactinfo_set")
+
     activity_scope = CodelistSerializer(source='scope')
     recipient_country = RecipientCountrySerializer(
         many=True,
@@ -681,7 +707,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'other_identifier',
             'activity_status',
             'activity_date',
-            # 'contact_info',
+            'contact_info',
             'activity_scope',
             'recipient_country',
             'recipient_region',

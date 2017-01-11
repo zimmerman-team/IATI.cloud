@@ -110,12 +110,43 @@ class DescriptionFactory(NoDatabaseFactory):
     # narrative2 = NarrativeRelatedFactory(content="title description2")
 
 
+
+class ContactInfoOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoOrganisation
+
+class ContactInfoDepartmentFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoDepartment
+
+class ContactInfoPersonNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoPersonName
+
+class ContactInfoJobTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoJobTitle
+
+class ContactInfoMailingAddressFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoMailingAddress
+
 class ContactInfoFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ContactInfo
 
     activity = SubFactory(ActivityFactory)
     type = SubFactory(ContactTypeFactory)
+    telephone = "0044111222333444"
+    email = "transparency@example.org"
+    website = "http://www.example.org"
+
+    # organisation = RelatedFactory(ContactInfoOrganisationFactory, 'contact_info')
+    # department = RelatedFactory(ContactInfoDepartmentFactory, 'contact_info')
+    # person_name = RelatedFactory(ContactInfoPersonNameFactory, 'contact_info')
+    # job_title = RelatedFactory(ContactInfoJobTitleFactory, 'contact_info')
+    # mailing_address = RelatedFactory(ContactInfoMailingAddressFactory, 'contact_info')
+
 
 
 class RelatedActivityFactory(NoDatabaseFactory):
