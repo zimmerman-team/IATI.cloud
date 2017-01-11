@@ -61,6 +61,8 @@ feature_designation = getattr(E, 'feature-designation')
 budget = getattr(E, 'budget')
 period_start = getattr(E, 'period-start')
 period_end = getattr(E, 'period-end')
+conditions = getattr(E, 'conditions')
+condition = getattr(E, 'condition')
 
 def narrative(content):
     return getattr(E, 'narrative')(content, **{
@@ -113,6 +115,8 @@ class ActivityXMLTestCase(TestCase):
         transaction_recipient_country1 = transaction1.transactionrecipientcountry_set.all()[0]
         transaction_recipient_region1 = transaction1.transactionrecipientregion_set.all()[0]
         budget1 = activity.budget_set.all()[0]
+        conditions1 = activity.conditions_set.all()[0]
+        condition1 = conditions1.condition_set.all()[0]
 
 
         xml = iati_activities(
@@ -312,6 +316,13 @@ class ActivityXMLTestCase(TestCase):
                                 "format": document_link1.file_format.code,
                                 "url": document_link1.url,
                             }
+                            ),
+                        conditions(
+                            condition(
+                                narrative("Conditions text"),
+                                narrative("Conditions texte"),
+                                **{"type": condition1.type.code,}),
+                            **{"attached": boolToNum(conditions1.attached),}
                             ),
                         **{
                             "hierarchy": str(activity.hierarchy),

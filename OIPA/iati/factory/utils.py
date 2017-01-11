@@ -59,6 +59,8 @@ def _create_test_activity(
     location_description1_2="location_description1_2",
     location_activity_description1_1="location_activity_description1_1",
     location_activity_description1_2="location_activity_description1_2",
+    condition1_narrative_1="Conditions text",
+    condition1_narrative_2="Conditions texte",
         ):
     """
     For testing narratives (hence search)
@@ -170,6 +172,11 @@ def _create_test_activity(
     location_administrative = LocationAdministrativeFactory.create(location=location)
     
     budget = BudgetFactory.create(activity=activity)
+
+    conditions1 = ConditionsFactory.create(activity=activity)
+    condition1 = ConditionFactory.create(conditions=conditions1)
+    _create_test_narrative(activity, condition1, condition1_narrative_1)
+    _create_test_narrative(activity, condition1, condition1_narrative_2)
 
     return activity
 
