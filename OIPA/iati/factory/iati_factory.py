@@ -383,7 +383,7 @@ class CountryBudgetItemFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.CountryBudgetItem
 
-    id = 1
+    #id = 1
     activity = SubFactory(ActivityFactory)
     vocabulary = SubFactory(BudgetIdentifierVocabularyFactory)
 

@@ -217,10 +217,13 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_country_budget_items(self):
         from iati.models import CountryBudgetItem
 
+
+
         return self.prefetch_related(
             Prefetch(
                 'country_budget_items',
                 queryset=CountryBudgetItem.objects.all()
+                .select_related('vocabulary')
                 ))
 
     def prefetch_humanitarian_scope(self):

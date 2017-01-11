@@ -427,6 +427,35 @@ class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
         )
 
 
+class CountryBudgetItemsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CountryBudgetItemsSerializer):
+    xml_meta = {'attributes': ('vocabulary',)}
+
+    vocabulary = serializers.CharField(source='vocabulary.code')
+
+    class BudgetItemXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetItemSerializer.BudgetItemDescriptionSerializer):
+        xml_meta = {'attributes': ('code',)}
+
+        code = serializers.CharField(source='code.code')
+        description = NarrativeContainerXMLSerializer()
+
+        class Meta:
+            model = iati_models.BudgetItem
+            fields = (
+                # 'budget_identifier',
+                'code',
+                'description',
+            )
+
+    budget_item = BudgetItemXMLSerializer(
+        many=True,
+        source="budgetitem_set")
+
+    class Meta(activity_serializers.CountryBudgetItemsSerializer.Meta):
+        fields = (
+            'vocabulary',
+            'budget_item',
+        )
+
 class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
@@ -662,6 +691,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True,
         source='activitysector_set')
 
+    country_budget_items = CountryBudgetItemsXMLSerializer()
+
     humanitarian_scope = HumanitarianScopeSerializer(many=True,source="?")
 
     policy_marker = ActivityPolicyMarkerSerializer(
@@ -713,7 +744,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'recipient_region',
             'location',
             'sector',
-            # 'country_budget_items',
+            'country_budget_items',
             # 'humanitarian_scope',
             'policy_marker',
             'collaboration_type',

@@ -66,6 +66,7 @@ def _create_test_activity(
     person_name_narrative_1="A. Example",
     job_title_narrative_1="Transparency Lead",
     mailing_address_narrative_1="Transparency House, The Street, Town, City, Postcode",
+    budget_item_description_narrative_1="Description text",
         ):
     """
     For testing narratives (hence search)
@@ -195,17 +196,9 @@ def _create_test_activity(
     contactinfomailingaddress1 = ContactInfoMailingAddressFactory.create(contact_info=contact_info1)
     _create_test_narrative(activity, contactinfomailingaddress1, mailing_address_narrative_1)
 
-
-        # department = RelatedFactory(ContactInfoDepartmentFactory, 'contact_info')
-    # person_name = RelatedFactory(ContactInfoPersonNameFactory, 'contact_info')
-    # job_title = RelatedFactory(ContactInfoJobTitleFactory, 'contact_info')
-    # mailing_address = RelatedFactory(ContactInfoMailingAddressFactory, 'contact_info')
-
-    # _create_test_narrative(activity, contact_info1.organisation, organisation_narrative_1)
-    # _create_test_narrative(activity, contact_info1.department, department_narrative_1)
-    # _create_test_narrative(activity, contact_info1.person_name, person_name_narrative_1)
-    # _create_test_narrative(activity, contact_info1.job_title, job_title_narrative_1)
-    # _create_test_narrative(activity, contact_info1.mailing_address, mailing_address_narrative_1)
+    country_budget_item = CountryBudgetItemFactory.create(activity=activity)
+    budget_item = BudgetItemFactory.create(country_budget_item=country_budget_item)
+    _create_test_narrative(activity, budget_item.description, budget_item_description_narrative_1)
     
 
     return activity

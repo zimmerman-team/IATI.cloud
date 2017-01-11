@@ -72,6 +72,8 @@ telephone = getattr(E, 'telephone')
 email = getattr(E, 'email')
 website= getattr(E, 'website')
 mailing_address = getattr(E, 'mailing-address')
+country_budget_items = getattr(E, 'country-budget-items')
+budget_item = getattr(E, 'budget-item')
 
 
 def narrative(content):
@@ -128,6 +130,8 @@ class ActivityXMLTestCase(TestCase):
         conditions1 = activity.conditions_set.all()[0]
         condition1 = conditions1.condition_set.all()[0]
         contact_info1 = activity.contactinfo_set.all()[0]
+        country_budget_item1 = activity.country_budget_items
+        budget_item1 = country_budget_item1.budgetitem_set.all()[0]
 
 
         xml = iati_activities(
@@ -272,6 +276,15 @@ class ActivityXMLTestCase(TestCase):
                                 "percentage": str(sector1.percentage),
                             }
                             ),
+                        country_budget_items(
+                            budget_item(
+                                description(
+                                    narrative("Description text"),
+                                    ),
+                                **{"code": budget_item1.code.code}
+                                ),
+                            **{"vocabulary": country_budget_item1.vocabulary.code}
+                            ),
                             budget(
                                 period_start(**{'iso-date': budget1.period_start.isoformat()}),
                                 period_end(**{'iso-date': budget1.period_end.isoformat()}),
@@ -371,6 +384,7 @@ class ActivityXMLTestCase(TestCase):
         print(ET.tostring(xml, pretty_print=True))
 
         #print contact_info1.mailing_address.narratives.all()[0]
+        #print budget_item1.description.narratives.all()[0]
 
         print("PARSED")
         print(ET.tostring(parsed_xml))
