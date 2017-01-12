@@ -61,6 +61,8 @@ def _create_test_activity(
     location_activity_description1_2="location_activity_description1_2",
     condition1_narrative_1="Conditions text",
     condition1_narrative_2="Conditions texte",
+    condition2_narrative_1="Conditions text2",
+    condition2_narrative_2="Conditions texte2",
         ):
     """
     For testing narratives (hence search)
@@ -177,6 +179,9 @@ def _create_test_activity(
     condition1 = ConditionFactory.create(conditions=conditions1)
     _create_test_narrative(activity, condition1, condition1_narrative_1)
     _create_test_narrative(activity, condition1, condition1_narrative_2)
+    condition2 = ConditionFactory.create(conditions=conditions1)
+    _create_test_narrative(activity, condition2, condition2_narrative_1)
+    _create_test_narrative(activity, condition2, condition2_narrative_2)
 
     return activity
 

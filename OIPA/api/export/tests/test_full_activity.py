@@ -117,6 +117,7 @@ class ActivityXMLTestCase(TestCase):
         budget1 = activity.budget_set.all()[0]
         conditions1 = activity.conditions_set.all()[0]
         condition1 = conditions1.condition_set.all()[0]
+        condition2 = conditions1.condition_set.all()[1]
 
 
         xml = iati_activities(
@@ -321,7 +322,13 @@ class ActivityXMLTestCase(TestCase):
                             condition(
                                 narrative("Conditions text"),
                                 narrative("Conditions texte"),
-                                **{"type": condition1.type.code,}),
+                                **{"type": condition1.type.code,}
+                                ),
+                            condition(
+                                narrative("Conditions text2"),
+                                narrative("Conditions texte2"),
+                                **{"type": condition2.type.code,}
+                                ),
                             **{"attached": boolToNum(conditions1.attached),}
                             ),
                         **{
