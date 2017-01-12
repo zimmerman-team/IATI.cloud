@@ -126,6 +126,21 @@ class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.C
     xml_meta = {'attributes': ('percentage',)}
 
 
+class LegacyDataXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LegacyDataSerializer):
+    xml_meta = {'attributes': ('name', 'value', 'iati_equivalent', )}
+
+    name = serializers.CharField()
+    value = serializers.CharField()
+    iati_equivalent = serializers.CharField()
+
+
+    class Meta(activity_serializers.LegacyDataSerializer.Meta):
+        fields = (
+            'name',
+            'value',
+            'iati_equivalent',
+        )
+
 class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetSerializer):
     xml_meta = {'attributes': ('type', 'status')}
 
@@ -728,6 +743,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True, 
         source='relatedactivity_set')
 
+    legacy_data = LegacyDataXMLSerializer(many=True, source="legacydata_set")
+
     conditions = ConditionsXMLSerializer(many=True, source='conditions_set')
 
     result = ResultXMLSerializer(many=True, source="result_set")
@@ -767,7 +784,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'transaction',
             'document_link',
             'related_activity',
-            # 'legacy_data',
+            'legacy_data',
             'conditions',
             'result',
             # 'crs_add',

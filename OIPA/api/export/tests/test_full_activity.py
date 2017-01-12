@@ -75,6 +75,7 @@ mailing_address = getattr(E, 'mailing-address')
 country_budget_items = getattr(E, 'country-budget-items')
 budget_item = getattr(E, 'budget-item')
 humanitarian_scope = getattr(E, 'humanitarian-scope')
+legacy_data = getattr(E, 'legacy-data')
 
 
 def narrative(content):
@@ -134,6 +135,9 @@ class ActivityXMLTestCase(TestCase):
         country_budget_item1 = activity.country_budget_items
         budget_item1 = country_budget_item1.budgetitem_set.all()[0]
         humanitarian_scope1 = activity.humanitarianscope_set.all()[0]
+        legacy_data1 = activity.legacydata_set.all()[0]
+        legacy_data2 = activity.legacydata_set.all()[1]
+
 
 
         xml = iati_activities(
@@ -371,6 +375,20 @@ class ActivityXMLTestCase(TestCase):
                             **{
                                 "format": document_link1.file_format.code,
                                 "url": document_link1.url,
+                            }
+                            ),
+                        legacy_data(
+                            **{
+                            "name": legacy_data1.name,
+                            "value": legacy_data1.value,
+                            "iati-equivalent": legacy_data1.iati_equivalent
+                            }
+                            ),
+                        legacy_data(
+                            **{
+                            "name": legacy_data2.name,
+                            "value": legacy_data2.value,
+                            "iati-equivalent": legacy_data2.iati_equivalent
                             }
                             ),
                         conditions(

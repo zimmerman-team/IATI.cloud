@@ -201,7 +201,9 @@ def _create_test_activity(
     _create_test_narrative(activity, budget_item.description, budget_item_description_narrative_1)
 
     humanitarian_scope = HumanitarianScopeFactory(activity=activity)
-    
+
+    legacy_data = LegacyDataFactory(activity=activity)
+    legacy_data2 = LegacyDataFactory(activity=activity)
 
     return activity
 
