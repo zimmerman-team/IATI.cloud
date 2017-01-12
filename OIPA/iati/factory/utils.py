@@ -199,6 +199,8 @@ def _create_test_activity(
     country_budget_item = CountryBudgetItemFactory.create(activity=activity)
     budget_item = BudgetItemFactory.create(country_budget_item=country_budget_item)
     _create_test_narrative(activity, budget_item.description, budget_item_description_narrative_1)
+
+    humanitarian_scope = HumanitarianScopeFactory(activity=activity)
     
 
     return activity

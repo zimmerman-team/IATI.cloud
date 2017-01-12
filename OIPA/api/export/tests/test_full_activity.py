@@ -74,6 +74,7 @@ website= getattr(E, 'website')
 mailing_address = getattr(E, 'mailing-address')
 country_budget_items = getattr(E, 'country-budget-items')
 budget_item = getattr(E, 'budget-item')
+humanitarian_scope = getattr(E, 'humanitarian-scope')
 
 
 def narrative(content):
@@ -132,6 +133,7 @@ class ActivityXMLTestCase(TestCase):
         contact_info1 = activity.contactinfo_set.all()[0]
         country_budget_item1 = activity.country_budget_items
         budget_item1 = country_budget_item1.budgetitem_set.all()[0]
+        humanitarian_scope1 = activity.humanitarianscope_set.all()[0]
 
 
         xml = iati_activities(
@@ -285,19 +287,27 @@ class ActivityXMLTestCase(TestCase):
                                 ),
                             **{"vocabulary": country_budget_item1.vocabulary.code}
                             ),
-                            budget(
-                                period_start(**{'iso-date': budget1.period_start.isoformat()}),
-                                period_end(**{'iso-date': budget1.period_end.isoformat()}),
-                                value(
-                                    str(budget1.value),
-                                    **{
-                                    'currency': budget1.currency.code, 
-                                    'value-date': budget1.value_date.isoformat(),
-                                    }),
+                        humanitarian_scope(
+                            # Add HumanitarianScope in data models Date 12-01-2017
+                            # narrative("Nepal Earthquake April 2015"),
                             **{
-                            "type": budget1.type.code,
-                            "status": budget1.status.code,
+                            "type": humanitarian_scope1.type.code,
+                            "vocabulary": humanitarian_scope1.vocabulary.code,
+                            "code": humanitarian_scope1.code
                             }),
+                        budget(
+                            period_start(**{'iso-date': budget1.period_start.isoformat()}),
+                            period_end(**{'iso-date': budget1.period_end.isoformat()}),
+                            value(
+                                str(budget1.value),
+                                **{
+                                'currency': budget1.currency.code, 
+                                'value-date': budget1.value_date.isoformat(),
+                                }),
+                        **{
+                        "type": budget1.type.code,
+                        "status": budget1.status.code,
+                        }),
                         capital_spend(
                             **{
                                 "percentage": str(activity.capital_spend),
@@ -383,8 +393,8 @@ class ActivityXMLTestCase(TestCase):
         print("ORIGINAL")
         print(ET.tostring(xml, pretty_print=True))
 
-        #print contact_info1.mailing_address.narratives.all()[0]
-        #print budget_item1.description.narratives.all()[0]
+        # print contact_info1.mailing_address.narratives.all()[0]
+        # print budget_item1.description.narratives.all()[0]
 
         print("PARSED")
         print(ET.tostring(parsed_xml))

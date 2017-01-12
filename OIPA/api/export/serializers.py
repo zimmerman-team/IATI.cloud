@@ -319,13 +319,22 @@ class ActivityRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity
         )
 
 
-class HumanitarianScopeSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.HumanitarianScopeSerializer):
-    xml_meta = {'attributes': ('type', 'vocabulary', 'vocabulary_uri', 'code',)}
+class HumanitarianScopeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.HumanitarianScopeSerializer):
+    xml_meta = {'attributes': ('type', 'vocabulary', 'code',)}
 
     type = serializers.CharField(source='type.code')
-    code = serializers.CharField(source='code.code')
+    code = serializers.CharField()
     vocabulary = serializers.CharField(source='vocabulary.code')
-    vocabulary_uri = serializers.URLField()
+    # vocabulary_uri = serializers.URLField()
+
+
+    class Meta(activity_serializers.HumanitarianScopeSerializer.Meta):
+        fields = (
+            'type',
+            'vocabulary',
+            # 'vocabulary_uri',
+            'code',
+        )
 
 
 class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RecipientCountrySerializer):
@@ -693,7 +702,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     country_budget_items = CountryBudgetItemsXMLSerializer()
 
-    humanitarian_scope = HumanitarianScopeSerializer(many=True,source="?")
+    humanitarian_scope = HumanitarianScopeXMLSerializer(many=True,source='humanitarianscope_set')
 
     policy_marker = ActivityPolicyMarkerSerializer(
         many=True,
@@ -745,7 +754,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'location',
             'sector',
             'country_budget_items',
-            # 'humanitarian_scope',
+            'humanitarian_scope',
             'policy_marker',
             'collaboration_type',
             'default_flow_type',
