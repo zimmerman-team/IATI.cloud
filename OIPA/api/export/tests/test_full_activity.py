@@ -118,6 +118,9 @@ class ActivityXMLTestCase(TestCase):
         conditions1 = activity.conditions_set.all()[0]
         condition1 = conditions1.condition_set.all()[0]
         condition2 = conditions1.condition_set.all()[1]
+        conditions2 = activity.conditions_set.all()[1]
+        condition3 = conditions2.condition_set.all()[0]
+        condition4 = conditions2.condition_set.all()[1]
 
 
         xml = iati_activities(
@@ -330,6 +333,19 @@ class ActivityXMLTestCase(TestCase):
                                 **{"type": condition2.type.code,}
                                 ),
                             **{"attached": boolToNum(conditions1.attached),}
+                            ),
+                        conditions(
+                            condition(
+                                narrative("Conditions text3"),
+                                narrative("Conditions texte3"),
+                                **{"type": condition1.type.code,}
+                                ),
+                            condition(
+                                narrative("Conditions text4"),
+                                narrative("Conditions texte4"),
+                                **{"type": condition2.type.code,}
+                                ),
+                            **{"attached": boolToNum(conditions2.attached),}
                             ),
                         **{
                             "hierarchy": str(activity.hierarchy),
