@@ -568,6 +568,79 @@ class ConditionsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.
             'condition',
         )
 
+class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddSerializer):
+
+    class CrsAddOtherFlagsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddOtherFlagsSerializer):
+        xml_meta = {'attributes': ('code',  'significance', )}
+
+        code = serializers.CharField(source='other_flags.code') 
+        significance = BoolToNumField()
+
+        class Meta:
+            model = iati_models.CrsAddOtherFlags
+            fields = (
+                'code',
+                'significance',
+            )
+
+    other_flags = CrsAddOtherFlagsXMLSerializer(many=True, required=False)
+
+    class CrsAddLoanTermsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddLoanTermsSerializer):
+        xml_meta = {'attributes': ('rate_1',  'rate_2', )}
+
+        rate_1 = serializers.CharField()
+        rate_2 = serializers.CharField()
+        repayment_type = CodelistSerializer()
+        repayment_plan = CodelistSerializer()
+        commitment_date = IsoDateSerializer()
+        repayment_first_date = IsoDateSerializer()
+        repayment_final_date = IsoDateSerializer()
+
+        class Meta:
+            model = iati_models.CrsAddLoanTerms
+            fields = (
+                'rate_1',
+                'rate_2',
+                'repayment_type',
+                'repayment_plan',
+                'commitment_date',
+                'repayment_first_date',
+                'repayment_final_date',
+            )
+
+    loan_terms = CrsAddLoanTermsXMLSerializer(required=False)
+
+    class CrsAddLoanStatusXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddLoanStatusSerializer):
+        xml_meta = {'attributes': ('year',  'currency', 'value_date' )}
+
+        currency = serializers.CharField(source='currency.code')
+
+        class Meta:
+            model = iati_models.CrsAddLoanStatus
+            fields = (
+                'year',
+                'currency',
+                'value_date',
+                'interest_received',
+                'principal_outstanding',
+                'principal_arrears',
+                'interest_arrears',
+            )
+
+    loan_status = CrsAddLoanStatusXMLSerializer(required=False)
+
+    channel_code = serializers.CharField()
+
+    class Meta(activity_serializers.CrsAddSerializer.Meta):
+        fields = (
+            'other_flags',
+            'loan_terms',
+            'loan_status',
+            'channel_code',
+        )
+
+
+
 class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
     xml_meta = {'attributes': ('ref', 'provider_activity_id', 'type')}
 
@@ -749,6 +822,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     result = ResultXMLSerializer(many=True, source="result_set")
 
+    crs_add = CrsAddXMLSerializer(many=True, source="crsadd_set")
+
     humanitarian = serializers.BooleanField()
     
     default_currency = serializers.CharField(source='default_currency.code')
@@ -787,7 +862,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'legacy_data',
             'conditions',
             'result',
-            # 'crs_add',
+            'crs_add',
             # 'fss',
             'last_updated_datetime',
             'xml_lang',

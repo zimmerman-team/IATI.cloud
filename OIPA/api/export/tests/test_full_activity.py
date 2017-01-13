@@ -76,6 +76,21 @@ country_budget_items = getattr(E, 'country-budget-items')
 budget_item = getattr(E, 'budget-item')
 humanitarian_scope = getattr(E, 'humanitarian-scope')
 legacy_data = getattr(E, 'legacy-data')
+crs_add = getattr(E, 'crs-add')
+other_flags = getattr(E, 'other-flags')
+loan_terms = getattr(E, 'loan-terms')
+repayment_type = getattr(E, 'repayment-type')
+repayment_plan = getattr(E, 'repayment-plan')
+commitment_date = getattr(E, 'commitment-date')
+repayment_first_date = getattr(E, 'repayment-first-date')
+repayment_final_date = getattr(E, 'repayment-final-date')
+loan_status = getattr(E, 'loan-status')
+interest_received = getattr(E, 'interest-received')
+principal_outstanding = getattr(E, 'principal-outstanding')
+principal_arrears = getattr(E, 'principal-arrears')
+interest_arrears = getattr(E, 'interest-arrears')
+channel_code = getattr(E, 'channel-code')
+
 
 
 def narrative(content):
@@ -137,6 +152,10 @@ class ActivityXMLTestCase(TestCase):
         humanitarian_scope1 = activity.humanitarianscope_set.all()[0]
         legacy_data1 = activity.legacydata_set.all()[0]
         legacy_data2 = activity.legacydata_set.all()[1]
+        crs_add1 = activity.crsadd_set.all()[0]
+        # other_flag1 = crs_add1.crsaddotherflags_set.all()[0]
+        other_flag1 = crs_add1.other_flags.all()[0]
+        crs_add_loan_terms1 = crs_add1.loan_terms
 
 
 
@@ -397,6 +416,57 @@ class ActivityXMLTestCase(TestCase):
                                 narrative("Conditions texte"),
                                 **{"type": condition1.type.code,}),
                             **{"attached": boolToNum(conditions1.attached),}
+                            ),
+                        crs_add(
+                            other_flags(
+                                **{
+                                "code": other_flag1.other_flags.code,
+                                "significance": boolToNum(other_flag1.significance)
+                                }
+                            ),
+                            loan_terms(
+                                repayment_type(
+                                    **{
+                                    "code":crs_add1.loan_terms.repayment_type.code
+                                    }
+                                    ),
+                                repayment_plan(
+                                    **{
+                                    "code":crs_add1.loan_terms.repayment_plan.code
+                                    }
+                                    ),
+                                commitment_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.commitment_date)
+                                    }
+                                    ),
+                                repayment_first_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.repayment_first_date)
+                                    }
+                                    ),
+                                repayment_final_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.repayment_final_date)
+                                    }
+                                    ),
+                                **{
+                                "rate-1":str(crs_add1.loan_terms.rate_1),
+                                "rate-2":str(crs_add1.loan_terms.rate_2)
+                                }
+                                ),
+                            loan_status(
+                                interest_received(str(crs_add1.loan_status.interest_received)),
+                                principal_outstanding(str(crs_add1.loan_status.principal_outstanding)),
+                                principal_arrears(str(crs_add1.loan_status.principal_arrears)),
+                                interest_arrears(str(crs_add1.loan_status.interest_arrears)),
+                                **{
+                                "year": str(crs_add1.loan_status.year),
+                                "currency":crs_add1.loan_status.currency.code,
+                                "value-date": str(crs_add1.loan_status.value_date)
+                                }
+                                ),
+                            channel_code(crs_add1.channel_code)
                             ),
                         **{
                             "hierarchy": str(activity.hierarchy),

@@ -202,8 +202,11 @@ def _create_test_activity(
 
     humanitarian_scope = HumanitarianScopeFactory(activity=activity)
 
-    legacy_data = LegacyDataFactory(activity=activity)
-    legacy_data2 = LegacyDataFactory(activity=activity)
+    legacy_data = LegacyDataFactory.create(activity=activity)
+    legacy_data2 = LegacyDataFactory.create(activity=activity)
+
+    crs_add = CrsAddFactory.create(activity=activity)
+    crs_add_other_flags = CrsAddOtherFlagsFactory.create(crs_add=crs_add)
 
     return activity
 

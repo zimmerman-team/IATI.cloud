@@ -453,9 +453,12 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch CrsAdd objects
+        3. Fetch crsaddotherflags objects
+        4. Fetch crsaddloanterms objects
+        5. Fetch crsaddloanstatus objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(5):
             queryset = Activity.objects.all().prefetch_crs_add()
             serializer = ActivitySerializer(
                     queryset, 

@@ -2178,6 +2178,7 @@ class CrsAddLoanTermsSerializer(serializers.ModelSerializer):
         )
 
 
+
 class CrsAddLoanStatusSerializer(serializers.ModelSerializer):
     value_date = serializers.CharField()
     currency = CodelistSerializer()
