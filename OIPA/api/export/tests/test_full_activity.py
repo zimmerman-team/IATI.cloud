@@ -95,6 +95,7 @@ default_flow_type = getattr(E, 'default-flow-type')
 default_finance_type = getattr(E, 'default-finance-type')
 default_aid_type = getattr(E, 'default-aid-type')
 default_tied_status = getattr(E, 'default-tied-status')
+related_activity = getattr(E, 'related-activity')
 
 
 
@@ -122,7 +123,7 @@ class ActivityXMLTestCase(TestCase):
 
     def test_create_activity(self):
         res = self.c.get(
-                "/api/export/activities/?format=xml", 
+                "/api/export/activities/IATI-search1?format=xml", 
                 format='json'
                 )
 
@@ -158,13 +159,24 @@ class ActivityXMLTestCase(TestCase):
         legacy_data1 = activity.legacydata_set.all()[0]
         legacy_data2 = activity.legacydata_set.all()[1]
         crs_add1 = activity.crsadd_set.all()[0]
-        # other_flag1 = crs_add1.crsaddotherflags_set.all()[0]
         other_flag1 = crs_add1.other_flags.all()[0]
         crs_add_loan_terms1 = crs_add1.loan_terms
-
+        related_activity1 = activity.relatedactivity_set.all()[0]
 
 
         xml = iati_activities(
+                iati_activity(
+                    iati_identifier(related_activity1.ref_activity.iati_identifier),
+                    collaboration_type(**{"code": str(related_activity1.ref_activity.collaboration_type.code)}),
+                    default_flow_type(**{"code": str(related_activity1.ref_activity.default_flow_type.code)}),
+                    default_finance_type(**{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
+                    default_aid_type(**{"code": str(related_activity1.ref_activity.default_aid_type.code)}),
+                    default_tied_status(**{"code": str(related_activity1.ref_activity.default_tied_status.code)}),
+                    **{
+                            "hierarchy": str(related_activity1.ref_activity.hierarchy),
+                            "{http://www.w3.org/XML/1998/namespace}lang": related_activity1.ref_activity.default_lang.code,
+                    }
+                    ),
                 iati_activity(
                         iati_identifier(activity.iati_identifier),
                         reporting_org(
@@ -406,6 +418,10 @@ class ActivityXMLTestCase(TestCase):
                                 "url": document_link1.url,
                             }
                             ),
+                        related_activity(**{
+                            "ref": related_activity1.ref,
+                            "type": str(related_activity1.type.code)
+                            }),
                         legacy_data(
                             **{
                             "name": legacy_data1.name,

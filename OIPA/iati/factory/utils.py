@@ -208,6 +208,8 @@ def _create_test_activity(
     crs_add = CrsAddFactory.create(activity=activity)
     crs_add_other_flags = CrsAddOtherFlagsFactory.create(crs_add=crs_add)
 
+    related_activity = RelatedActivityFactory.create(current_activity=activity)
+
     return activity
 
 
