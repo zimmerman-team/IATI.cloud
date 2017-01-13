@@ -90,6 +90,11 @@ principal_outstanding = getattr(E, 'principal-outstanding')
 principal_arrears = getattr(E, 'principal-arrears')
 interest_arrears = getattr(E, 'interest-arrears')
 channel_code = getattr(E, 'channel-code')
+collaboration_type = getattr(E, 'collaboration-type')
+default_flow_type = getattr(E, 'default-flow-type')
+default_finance_type = getattr(E, 'default-finance-type')
+default_aid_type = getattr(E, 'default-aid-type')
+default_tied_status = getattr(E, 'default-tied-status')
 
 
 
@@ -318,6 +323,11 @@ class ActivityXMLTestCase(TestCase):
                             "vocabulary": humanitarian_scope1.vocabulary.code,
                             "code": humanitarian_scope1.code
                             }),
+                        collaboration_type(**{"code": str(activity.collaboration_type.code)}),
+                        default_flow_type(**{"code": str(activity.default_flow_type.code)}),
+                        default_finance_type(**{"code": str(activity.default_finance_type.code)}),
+                        default_aid_type(**{"code": str(activity.default_aid_type.code)}),
+                        default_tied_status(**{"code": str(activity.default_tied_status.code)}),
                         budget(
                             period_start(**{'iso-date': budget1.period_start.isoformat()}),
                             period_end(**{'iso-date': budget1.period_end.isoformat()}),
