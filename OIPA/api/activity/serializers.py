@@ -955,7 +955,7 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
 
 
 # TODO: change to NarrativeContainer
-class TitleSerializer(serializers.Serializer):
+class TitleSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
     # def validate(self, data):
@@ -2736,12 +2736,11 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
         instance.save()
 
-        if title_data:
-            title = iati_models.Title.objects.create(**title_data)
-            instance.title = title
+        title = iati_models.Title.objects.create(activity=instance)
+        instance.title = title
 
-            if title_narratives_data:
-                save_narratives(title, title_narratives_data, instance)
+        if title_narratives_data:
+            save_narratives(title, title_narratives_data, instance)
 
         return instance
 
@@ -2770,12 +2769,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
         update_instance.save()
 
-        if title_data:
-            title = iati_models.Title.objects.create(**title_data)
-            instance.title = title
-
         if title_narratives_data:
-            save_narratives(title, title_narratives_data, instance)
+            save_narratives(update_instance.title, title_narratives_data, instance)
 
         return update_instance
 
