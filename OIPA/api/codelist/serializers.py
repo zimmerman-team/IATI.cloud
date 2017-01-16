@@ -6,21 +6,21 @@ from django.core.urlresolvers import reverse
 
 
 class VocabularySerializer(serializers.Serializer):
-    code = serializers.CharField(required=False)
-    name = serializers.CharField(required=False)
+    code = serializers.CharField(required=False, allow_null=True)
+    name = serializers.CharField(required=False, allow_null=True)
 
 
 class CodelistSerializer(DynamicFieldsSerializer):
-    code = serializers.CharField(required=False)
-    name = serializers.CharField(required=False)
+    code = serializers.CharField(required=False, allow_null=True)
+    name = serializers.CharField(required=False, allow_null=True)
 
 
 class CodelistCategorySerializer(CodelistSerializer):
-    category = CodelistSerializer(required=False)
+    category = CodelistSerializer(required=False, allow_null=True)
 
 
 class CodelistVocabularySerializer(CodelistSerializer):
-    vocabulary = VocabularySerializer(required=False)
+    vocabulary = VocabularySerializer(required=False, allow_null=True)
 
 
 class NarrativeSerializer(serializers.ModelSerializer):
