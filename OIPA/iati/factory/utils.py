@@ -210,6 +210,10 @@ def _create_test_activity(
 
     related_activity = RelatedActivityFactory.create(current_activity=activity)
 
+    policy_marker = ActivityPolicyMarkerFactory.create(
+        activity=activity,
+    )
+
     return activity
 
 

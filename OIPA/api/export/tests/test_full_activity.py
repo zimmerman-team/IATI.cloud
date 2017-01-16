@@ -96,6 +96,8 @@ default_finance_type = getattr(E, 'default-finance-type')
 default_aid_type = getattr(E, 'default-aid-type')
 default_tied_status = getattr(E, 'default-tied-status')
 related_activity = getattr(E, 'related-activity')
+activity_scope = getattr(E,'activity-scope')
+policy_marker = getattr(E,'policy-marker')
 
 
 
@@ -162,11 +164,14 @@ class ActivityXMLTestCase(TestCase):
         other_flag1 = crs_add1.other_flags.all()[0]
         crs_add_loan_terms1 = crs_add1.loan_terms
         related_activity1 = activity.relatedactivity_set.all()[0]
+        policy_marker1 = activity.activitypolicymarker_set.all()[0]
 
 
         xml = iati_activities(
                 iati_activity(
                     iati_identifier(related_activity1.ref_activity.iati_identifier),
+                    activity_status(**{"code": str(related_activity1.ref_activity.activity_status.code)}),
+                    activity_scope(**{"code": str(related_activity1.ref_activity.scope.code)}),
                     collaboration_type(**{"code": str(related_activity1.ref_activity.collaboration_type.code)}),
                     default_flow_type(**{"code": str(related_activity1.ref_activity.default_flow_type.code)}),
                     default_finance_type(**{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
@@ -229,11 +234,7 @@ class ActivityXMLTestCase(TestCase):
                                 "type": other_identifier1.type.code,
                             }
                             ),
-                        # activity_status(
-                        #     **{
-                        #         "code": activity_status1.type.code
-                        #     }
-                        #     ),
+                        activity_status(**{"code": str(activity.activity_status.code)}),
                         contact_info(
                             organisation(
                                 narrative("Agency A"),
@@ -256,6 +257,8 @@ class ActivityXMLTestCase(TestCase):
                             ** {
                             "type": contact_info1.type.code,
                             }),
+                        activity_scope(
+                            **{"code": str(activity.scope.code)}),
                         recipient_country(
                             # narrative("recipient_country1"),
                             # narrative("recipient_country2"),
@@ -335,6 +338,13 @@ class ActivityXMLTestCase(TestCase):
                             "vocabulary": humanitarian_scope1.vocabulary.code,
                             "code": humanitarian_scope1.code
                             }),
+                        policy_marker(
+                                **{
+                                "vocabulary": policy_marker1.vocabulary.code,
+                                "code": policy_marker1.code.code,
+                                "significance": policy_marker1.significance.code
+                                }
+                                ),
                         collaboration_type(**{"code": str(activity.collaboration_type.code)}),
                         default_flow_type(**{"code": str(activity.default_flow_type.code)}),
                         default_finance_type(**{"code": str(activity.default_finance_type.code)}),

@@ -56,6 +56,8 @@ class ActivityFactory(NoDatabaseFactory):
     default_finance_type = SubFactory(FinanceTypeFactory)
     default_aid_type = SubFactory(AidTypeFactory)
     default_tied_status = SubFactory(TiedStatusFactory)
+    scope = SubFactory(ActivityScopeFactory)
+    activity_status = SubFactory(ActivityStatusFactory)
     
     # iati_standard_version = VersionFactory()
 
