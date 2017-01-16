@@ -124,6 +124,7 @@ class ActivitySaveTestCase(TestCase):
 
     def test_update_activity(self):
         activity = iati_factory.ActivityFactory.create()
+        title = iati_factory.TitleFactory.create(activity=activity)
 
         iati_version = codelist_factory.VersionFactory.create(code="2.02")
         language = codelist_factory.LanguageFactory.create()
