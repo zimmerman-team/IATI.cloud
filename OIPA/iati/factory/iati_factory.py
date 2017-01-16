@@ -52,6 +52,7 @@ class ActivityFactory(NoDatabaseFactory):
     default_lang = SubFactory(LanguageFactory)
     # iati_standard_version = VersionFactory()
 
+    # title = SubFactory('iati.factory.iati_factory.TitleFactory')
 
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:

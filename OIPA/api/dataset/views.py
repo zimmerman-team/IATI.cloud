@@ -11,8 +11,15 @@ from api.generics.views import DynamicListView, DynamicDetailView
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
 
+from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 
+from rest_framework import exceptions
+
+from iati_synchroniser.admin import export_xml_by_source
+
+from django.db.models import Q
+from datetime import datetime
 
 class DatasetList(DynamicListView):
     """
@@ -214,20 +221,72 @@ class DatasetNotes(ListAPIView):
 from api.export.views import IATIActivityList
 export_view = IATIActivityList.as_view()
 
-from ckanapi import RemoteCKAN
+from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class DatasetPublish(APIView):
+class DatasetPublishActivities(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def post(self, request, publisher_id):
+        print('called post...')
+        user = request.user.organisationuser
         publisher = Publisher.objects.get(pk=publisher_id)
-        group = OrganisationGroup.objects.get(publisher_id=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
-        # TODO: create a dataset - 2016-10-25
-        # export = export_view(request).content
+        source_url = request.data.get('source_url', None)
 
-        print(export)
+        if not source_url:
+            raise exceptions.APIException(detail="no source_url provided")
 
-        return Response()
+        user = request.user
+        organisationuser = user.organisationuser
+        api_key = organisationuser.iati_api_key
+        client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
+
+        source_name = '{}-activity'.format(publisher.name)
+
+        # 0. create_or_update Dataset object
+        dataset = Dataset.objects.get_or_create(
+            name=source_name,
+            title=source_name,
+            filetype=1,
+            publisher=publisher,
+            source_url=source_url, # TODO: store in OIPA somewhere, or let user define this? - 2017-01-13
+            is_parsed=False,
+            iati_version="2.02",
+                )
+
+        # 1. actually generate the XML
+        xml = export_xml_by_source(dataset.id)
+
+        # 2. get all published activities, except for the ones that are just modified
+        activities = Activity.objects.filter(
+                Q(published=True) & ~(Q(ready_to_publish=False) & Q(modified=True)), publisher=publisher)
+
+        # 3. sync main datasets to IATI registry
+        try:
+            dataset = client.call_action('package_create', { 
+                "resources": [
+                    { "url": source_url }
+                ],
+                "name": source_name,
+                "filetype": "activity",
+                "date_updated": datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+                "activity_count": activities.count(),
+                "title": source_name,
+                "owner_org": publisher.organisation.ref,
+                "url": source_url,
+            })
+        except:
+            raise exceptions.APIException(detail="Failed publishing dataset")
+
+        # 5. update the affected activities flags
+        activities.update(published=True, modified=False, ready_to_publish=False)
+
+        # 6. remove the old datasets from the registry
+        # TODO: query the registry to remove a dataset - 2017-01-16
+        # TODO: remove old datasets locally as well - 2017-01-16
+
+        # 7. return Dataset object
+        return Response(dataset)
 

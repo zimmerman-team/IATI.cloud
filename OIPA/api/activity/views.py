@@ -326,6 +326,18 @@ class ActivityList(DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
+class ActivityListNextPublished(ActivityList):
+    queryset = Activity.objects.all()
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+
+        # return all activities that are already published but have not been modified yet
+        return Activity.objects.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
+
+
+
+
 class ActivityDetail(DynamicDetailView):
     """
     Returns detailed information about Activity.

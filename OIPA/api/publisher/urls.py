@@ -15,6 +15,11 @@ urlpatterns = [
         views.PublisherDetail.as_view(),
         name='publisher-detail'
     ),
+
+    #
+    # IATI Studio groups and admin groups, used for managing publishing rights
+    #
+
     url(
         r'^(?P<publisher_id>[^@$&+,/:;=?]+)/admin-group/$',
         views.OrganisationAdminGroupView.as_view(),
@@ -35,17 +40,31 @@ urlpatterns = [
         views.OrganisationGroupDetailView.as_view(),
         name='publisher-group-detail'
     ),
+    # verify API key and add user to the corresponding admin group
     url(
         r'^api_key/verify/$',
         views.OrganisationVerifyApiKey.as_view(),
         name='publisher-verify-api-key'
     ),
+    # remove the API key and remove the user from the corresponding admin group
     url(
         r'^api_key/remove/$',
         views.OrganisationRemoveApiKey.as_view(),
         name='publisher-verify-api-key'
     ),
 
+    #
+    # For IATI Studio publisher
+    #
+
+    # get all activities that are ready to be published + the ones that are published
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_activities/$',
+        api.export.views.IATIActivityNextExportList.as_view(),
+        name='activity-nextexport-list'),
+    
+    #
+    # Activity CRUD
+    #
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/$',
         api.activity.views.ActivityListCRUD.as_view(),
