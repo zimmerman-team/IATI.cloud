@@ -247,6 +247,9 @@ def _create_test_activity(
     result_indicator_period_actual_dimension = ResultIndicatorPeriodActualDimensionFactory.create(result_indicator_period=result_indicator_period)
     _create_test_narrative(activity, result_indicator_period.resultindicatorperiodactualcomment, resultindicatorperiodactualcomment_narrative_1)
 
+    fss = FssFactory.create(activity=activity)
+    fss_forecast = FssForecastFactory.create(fss=fss)
+
 
     return activity
 

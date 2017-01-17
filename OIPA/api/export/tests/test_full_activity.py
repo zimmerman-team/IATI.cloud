@@ -109,6 +109,8 @@ comment = getattr(E,'comment')
 target = getattr(E,'target')
 dimension = getattr(E,'dimension')
 actual = getattr(E,'actual')
+fss = getattr(E, 'fss')
+forecast  = getattr(E, 'forecast')
 
 
 
@@ -194,6 +196,9 @@ class ActivityXMLTestCase(TestCase):
 
         location01 = related_activity1.ref_activity.location_set.all()[0]
         location02 = related_activity1.ref_activity.location_set.all()[1]
+
+        fss1 = activity.fss_set.all()[0]
+        fss_forecast1 = fss1.fssforecast_set.all()[0]
 
 
 
@@ -661,6 +666,19 @@ class ActivityXMLTestCase(TestCase):
                                 ),
                             channel_code(crs_add1.channel_code)
                             ),
+                        fss(
+                            forecast(
+                                str(fss_forecast1.value),
+                                **{
+                                "year": str(fss_forecast1.year),
+                                "value-date": fss_forecast1.value_date.isoformat(),
+                                "currency": str(fss_forecast1.currency.code)
+                                }),
+                            **{
+                            "extraction-date": fss1.extraction_date.isoformat(),
+                            "priority": boolToNum(fss1.priority),
+                            "phaseout-year": str(fss1.phaseout_year)
+                            }),
                         **{
                             "hierarchy": str(activity.hierarchy),
                             "{http://www.w3.org/XML/1998/namespace}lang": activity.default_lang.code,

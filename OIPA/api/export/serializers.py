@@ -760,6 +760,41 @@ class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsA
             'channel_code',
         )
 
+class FssXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssSerializer):
+    xml_meta = {'attributes': ('extraction_date',  'priority', 'phaseout_year',)}
+
+    priority = BoolToNumField()
+
+    class FssForecastXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssForecastSerializer):
+        xml_meta = {'attributes': ('year', 'value_date', 'currency',)}
+
+        currency = serializers.CharField(source='currency.code')
+
+        text = serializers.DecimalField(
+            source='value',
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+            )
+
+        class Meta(activity_serializers.FssForecastSerializer.Meta):
+            fields = (
+                'text',
+                'year',
+                'value_date',
+                'currency',
+            )
+
+    forecast = FssForecastXMLSerializer(many=True, source='fssforecast_set')
+
+    class Meta(activity_serializers.FssSerializer.Meta):
+        model = iati_models.Fss
+        fields = (
+            'extraction_date',
+            'priority',
+            'phaseout_year',
+            'forecast',
+        )
 
 
 class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
@@ -945,6 +980,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     crs_add = CrsAddXMLSerializer(many=True, source="crsadd_set")
 
+    fss = FssXMLSerializer(many=True, source="fss_set")
+
     humanitarian = serializers.BooleanField()
     
     default_currency = serializers.CharField(source='default_currency.code')
@@ -984,7 +1021,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'conditions',
             'result',
             'crs_add',
-            # 'fss',
+            'fss',
             'last_updated_datetime',
             'xml_lang',
             'default_currency',
