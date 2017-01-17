@@ -258,6 +258,27 @@ class PlannedDisbursementFactory(NoDatabaseFactory):
     value_date = '2014-01-01'
 
 
+class PlannedDisbursementProviderFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.PlannedDisbursementProvider
+
+    planned_disbursement = SubFactory(PlannedDisbursementFactory)
+
+    provider_activity_ref = "BB-BBB-123456789-1234AA"
+    type = SubFactory(OrganisationTypeFactory)
+    ref = "BB-BBB-123456789"
+
+class PlannedDisbursementReceiverFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.PlannedDisbursementReceiver
+
+    planned_disbursement = SubFactory(PlannedDisbursementFactory)
+
+    receiver_activity_ref = "AA-AAA-123456789-1234"
+    type = SubFactory(OrganisationTypeFactory)
+    ref = "AA-AAA-123456789"
+
+
 class ActivityDateFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityDate

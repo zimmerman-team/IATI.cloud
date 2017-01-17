@@ -170,12 +170,52 @@ class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serial
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()
 
+    class PlannedDisbursementProviderXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementProviderSerializer):
+        xml_meta = {'attributes': ('type','ref', 'provider_activity_id',)}
+
+        ref = serializers.CharField()
+        provider_activity_id = serializers.CharField(source='provider_activity_ref')
+        type = serializers.CharField(source='type.code')
+        narrative = NarrativeXMLSerializer(many=True, required=False, source='narratives')
+
+        class Meta:
+            model = iati_models.PlannedDisbursementProvider
+            fields = (
+                    'ref',
+                    'provider_activity_id',
+                    'type',
+                    'narrative',
+                    )
+
+    provider_org = PlannedDisbursementProviderXMLSerializer(source='provider_organisation')
+
+    class PlannedDisbursementReceiverXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementReceiverSerializer):
+        xml_meta = {'attributes': ('type','ref', 'receiver_activity_id',)}
+
+        ref = serializers.CharField()
+        receiver_activity_id = serializers.CharField(source='receiver_activity_ref')
+        type = serializers.CharField(source='type.code')
+        narrative = NarrativeXMLSerializer(many=True, required=False, source='narratives')
+
+        class Meta:
+            model = iati_models.PlannedDisbursementReceiver
+            fields = (
+                    'ref',
+                    'receiver_activity_id',
+                    'type',
+                    'narrative',
+                    )
+            
+    receiver_org = PlannedDisbursementReceiverXMLSerializer(source='receiver_organisation')
+
     class Meta(activity_serializers.PlannedDisbursementSerializer.Meta):
         fields = (
             'type',
             'period_start',
             'period_end',
             'value',
+            'provider_org',
+            'receiver_org',
         )
 
 
@@ -183,6 +223,9 @@ class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.A
     xml_meta = {'attributes': ('type', 'iso_date')}
 
     type = serializers.CharField(source='type.code')
+
+    class Meta(activity_serializers.ActivityDateSerializer.Meta):
+        fields = ('iso_date', 'type')
 
 
 class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ReportingOrganisationSerializer):

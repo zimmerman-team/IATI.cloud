@@ -67,6 +67,9 @@ def _create_test_activity(
     job_title_narrative_1="Transparency Lead",
     mailing_address_narrative_1="Transparency House, The Street, Town, City, Postcode",
     budget_item_description_narrative_1="Description text",
+    planned_disbursement_provider_narrative_1="Agency B",
+    planned_disbursement_receiver_narrative_1="Agency A",
+
         ):
     """
     For testing narratives (hence search)
@@ -213,6 +216,16 @@ def _create_test_activity(
     policy_marker = ActivityPolicyMarkerFactory.create(
         activity=activity,
     )
+
+    activity_date = ActivityDateFactory.create(activity=activity)
+
+    planned_disbursement = PlannedDisbursementFactory.create(activity=activity)
+    planned_disbursement_provider = PlannedDisbursementProviderFactory.create(planned_disbursement=planned_disbursement)
+    _create_test_narrative(activity, planned_disbursement_provider, planned_disbursement_provider_narrative_1)
+    planned_disbursement_receiver = PlannedDisbursementReceiverFactory.create(planned_disbursement=planned_disbursement)
+    _create_test_narrative(activity, planned_disbursement_receiver, planned_disbursement_receiver_narrative_1)
+
+
 
     return activity
 

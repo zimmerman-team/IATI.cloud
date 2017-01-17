@@ -98,6 +98,8 @@ default_tied_status = getattr(E, 'default-tied-status')
 related_activity = getattr(E, 'related-activity')
 activity_scope = getattr(E,'activity-scope')
 policy_marker = getattr(E,'policy-marker')
+activity_date = getattr(E,'activity-date')
+planned_disbursement = getattr(E,'planned-disbursement')
 
 
 
@@ -165,6 +167,11 @@ class ActivityXMLTestCase(TestCase):
         crs_add_loan_terms1 = crs_add1.loan_terms
         related_activity1 = activity.relatedactivity_set.all()[0]
         policy_marker1 = activity.activitypolicymarker_set.all()[0]
+        activity_date1 = activity.activitydate_set.all()[0]
+        planned_disbursement1 = activity.planneddisbursement_set.all()[0]
+        planned_disbursement_provider1 = planned_disbursement1.provider_organisation
+        planned_disbursement_receiver1 = planned_disbursement1.receiver_organisation
+
 
 
         xml = iati_activities(
@@ -235,6 +242,11 @@ class ActivityXMLTestCase(TestCase):
                             }
                             ),
                         activity_status(**{"code": str(activity.activity_status.code)}),
+                        activity_date(
+                            **{
+                            "iso-date": activity_date1.iso_date.isoformat(),
+                            "type": activity_date1.type.code
+                            }),
                         contact_info(
                             organisation(
                                 narrative("Agency A"),
@@ -350,6 +362,31 @@ class ActivityXMLTestCase(TestCase):
                         default_finance_type(**{"code": str(activity.default_finance_type.code)}),
                         default_aid_type(**{"code": str(activity.default_aid_type.code)}),
                         default_tied_status(**{"code": str(activity.default_tied_status.code)}),
+                        planned_disbursement(
+                            period_start(**{"iso-date": planned_disbursement1.period_start.isoformat()}),
+                            period_end(**{"iso-date": planned_disbursement1.period_end.isoformat()}),
+                            value(
+                                str(planned_disbursement1.value),
+                                **{
+                                "currency": planned_disbursement1.currency.code,
+                                "value-date": planned_disbursement1.value_date.isoformat()
+                                }),
+                            provider_org(
+                                narrative("Agency B"),
+                                **{
+                                "provider-activity-id": planned_disbursement_provider1.provider_activity_ref,
+                                "type": planned_disbursement_provider1.type.code,
+                                "ref": planned_disbursement_provider1.ref
+                                }),
+                            receiver_org(
+                                narrative("Agency A"),
+                                **{
+                                "receiver-activity-id":planned_disbursement_receiver1.receiver_activity_ref,
+                                "type": planned_disbursement_receiver1.type.code,
+                                "ref":planned_disbursement_receiver1.ref
+                                }),
+                            **{"type": planned_disbursement1.type.code}
+                            ),
                         budget(
                             period_start(**{'iso-date': budget1.period_start.isoformat()}),
                             period_end(**{'iso-date': budget1.period_end.isoformat()}),
@@ -519,6 +556,7 @@ class ActivityXMLTestCase(TestCase):
 
         # print contact_info1.mailing_address.narratives.all()[0]
         # print budget_item1.description.narratives.all()[0]
+        #print planned_disbursement_provider1.narratives.all()[0]
 
         print("PARSED")
         print(ET.tostring(parsed_xml))
