@@ -100,6 +100,15 @@ activity_scope = getattr(E,'activity-scope')
 policy_marker = getattr(E,'policy-marker')
 activity_date = getattr(E,'activity-date')
 planned_disbursement = getattr(E,'planned-disbursement')
+result = getattr(E, 'result')
+period = getattr(E,'period')
+indicator = getattr(E,'indicator')
+reference = getattr(E,'reference')
+baseline = getattr(E,'baseline')
+comment = getattr(E,'comment')
+target = getattr(E,'target')
+dimension = getattr(E,'dimension')
+actual = getattr(E,'actual')
 
 
 
@@ -171,6 +180,23 @@ class ActivityXMLTestCase(TestCase):
         planned_disbursement1 = activity.planneddisbursement_set.all()[0]
         planned_disbursement_provider1 = planned_disbursement1.provider_organisation
         planned_disbursement_receiver1 = planned_disbursement1.receiver_organisation
+        result1 = activity.result_set.all()[0]
+        result_indicator1 = result1.resultindicator_set.all()[0]
+        result_indicator_reference1 = result_indicator1.resultindicatorreference_set.all()[0]
+        result_indicator_period1 = result_indicator1.resultindicatorperiod_set.all()[0]
+        result_indicator_period_target_location1 = result_indicator_period1.resultindicatorperiodtargetlocation_set.all()[0]
+        result_indicator_period_target_dimension1 = result_indicator_period1.resultindicatorperiodtargetdimension_set.all()[0]
+        result_indicator_period_target_comment1 = result_indicator_period1.resultindicatorperiodtargetcomment
+
+        result_indicator_period_actual_location1 = result_indicator_period1.resultindicatorperiodactuallocation_set.all()[0]
+        result_indicator_period_actual_dimension1 = result_indicator_period1.resultindicatorperiodactualdimension_set.all()[0]
+        result_indicator_period_actual_comment1 = result_indicator_period1.resultindicatorperiodactualcomment
+
+        location01 = related_activity1.ref_activity.location_set.all()[0]
+        location02 = related_activity1.ref_activity.location_set.all()[1]
+
+
+
 
 
 
@@ -179,6 +205,52 @@ class ActivityXMLTestCase(TestCase):
                     iati_identifier(related_activity1.ref_activity.iati_identifier),
                     activity_status(**{"code": str(related_activity1.ref_activity.activity_status.code)}),
                     activity_scope(**{"code": str(related_activity1.ref_activity.scope.code)}),
+                    location(
+                        location_reach(code=location01.location_reach.code),
+                        location_id(**{
+                            "vocabulary": location01.location_id_vocabulary.code,
+                            "code": location01.location_id_code,
+                        }),
+                        name(),
+                        description(),
+                        activity_description(),
+                        point(
+                            pos(
+                                "{} {}".format(location01.point_pos.y, location01.point_pos.x)),
+                            **{
+                                "srsName": location01.point_srs_name,
+                            }
+                            ),
+                        exactness(code=location01.exactness.code),
+                        location_class(code=location01.location_class.code),
+                        feature_designation(code=location01.feature_designation.code),
+                        **{
+                            "ref": location01.ref,
+                        }
+                        ),
+                    location(
+                        location_reach(code=location02.location_reach.code),
+                        location_id(**{
+                            "vocabulary": location02.location_id_vocabulary.code,
+                            "code": location02.location_id_code,
+                        }),
+                        name(),
+                        description(),
+                        activity_description(),
+                        point(
+                            pos(
+                                "{} {}".format(location02.point_pos.y, location02.point_pos.x)),
+                            **{
+                                "srsName": location02.point_srs_name,
+                            }
+                            ),
+                        exactness(code=location02.exactness.code),
+                        location_class(code=location02.location_class.code),
+                        feature_designation(code=location02.feature_designation.code),
+                        **{
+                            "ref": location02.ref,
+                        }
+                        ),
                     collaboration_type(**{"code": str(related_activity1.ref_activity.collaboration_type.code)}),
                     default_flow_type(**{"code": str(related_activity1.ref_activity.default_flow_type.code)}),
                     default_finance_type(**{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
@@ -490,6 +562,54 @@ class ActivityXMLTestCase(TestCase):
                                 **{"type": condition1.type.code,}),
                             **{"attached": boolToNum(conditions1.attached),}
                             ),
+                        result(
+                            title(narrative("Result title")),
+                            description(narrative("Result description text")),
+                            indicator(
+                                title(narrative("Indicator title")),
+                                description(narrative("Indicator description text")),
+                                reference(
+                                    **{
+                                    "vocabulary": result_indicator_reference1.vocabulary.code,
+                                    "code": result_indicator_reference1.code,
+                                    "indicator-uri": result_indicator_reference1.indicator_uri
+                                    }),
+                                baseline(
+                                    comment(narrative("Baseline comment text")),
+                                    **{
+                                    "year": str(result_indicator1.baseline_year),
+                                    "value": result_indicator1.baseline_value
+                                    }),
+                                period(
+                                    period_start(**{"iso-date":result_indicator_period1.period_start.isoformat()}),
+                                    period_end(**{"iso-date": result_indicator_period1.period_end.isoformat()}),
+                                    target(
+                                        comment(narrative("Target comment text")),
+                                        location(**{"ref": result_indicator_period_target_location1.ref}),
+                                        dimension(**{
+                                            "name": result_indicator_period_target_dimension1.name, 
+                                            "value": result_indicator_period_target_dimension1.value
+                                            }),
+                                        **{"value": str(result_indicator_period1.target)}
+                                        ),
+                                    actual(
+                                        comment(narrative("Actual comment text")),
+                                        location(**{"ref": result_indicator_period_actual_location1.ref}),
+                                        dimension(**{
+                                            "name": result_indicator_period_actual_dimension1.name,
+                                            "value":result_indicator_period_actual_dimension1.value
+                                            }),
+                                        **{"value": str(result_indicator_period1.actual)}
+                                        )
+                                    ),
+                                **{
+                                "measure": result_indicator1.measure.code,
+                                "ascending": boolToNum(result_indicator1.ascending)
+                                }),
+                            **{
+                            "type": result1.type.code,
+                            "aggregation-status": boolToNum(result1.aggregation_status)
+                            }),
                         crs_add(
                             other_flags(
                                 **{
@@ -557,6 +677,8 @@ class ActivityXMLTestCase(TestCase):
         # print contact_info1.mailing_address.narratives.all()[0]
         # print budget_item1.description.narratives.all()[0]
         #print planned_disbursement_provider1.narratives.all()[0]
+        # print result1.resulttitle.narratives.all()[0]
+
 
         print("PARSED")
         print(ET.tostring(parsed_xml))

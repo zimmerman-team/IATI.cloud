@@ -69,7 +69,13 @@ def _create_test_activity(
     budget_item_description_narrative_1="Description text",
     planned_disbursement_provider_narrative_1="Agency B",
     planned_disbursement_receiver_narrative_1="Agency A",
-
+    resulttitle_narrative_1="Result title",
+    resultdescription_narrative_1="Result description text",
+    resultindicatortitle_narrative_1="Indicator title",
+    resultindicatordescription_narrative_1="Indicator description text",
+    resultindicatorbaselinecomment_narrative_1="Baseline comment text",
+    resultindicatorperiodtargetcomment_narrative_1="Target comment text",
+    resultindicatorperiodactualcomment_narrative_1="Actual comment text",
         ):
     """
     For testing narratives (hence search)
@@ -225,6 +231,21 @@ def _create_test_activity(
     planned_disbursement_receiver = PlannedDisbursementReceiverFactory.create(planned_disbursement=planned_disbursement)
     _create_test_narrative(activity, planned_disbursement_receiver, planned_disbursement_receiver_narrative_1)
 
+    result = ResultFactory(activity=activity)
+    _create_test_narrative(activity, result.resulttitle, resulttitle_narrative_1)
+    _create_test_narrative(activity, result.resultdescription, resultdescription_narrative_1)
+    result_indicator = ResultIndicatorFactory.create(result=result)
+    _create_test_narrative(activity, result_indicator.resultindicatortitle, resultindicatortitle_narrative_1)
+    _create_test_narrative(activity, result_indicator.resultindicatordescription, resultindicatordescription_narrative_1)
+    result_indicator_reference = ResultIndicatorReferenceFactory.create(result_indicator=result_indicator)
+    _create_test_narrative(activity, result_indicator.resultindicatorbaselinecomment, resultindicatorbaselinecomment_narrative_1)
+    result_indicator_period = ResultIndicatorPeriodFactory.create(result_indicator=result_indicator)
+    result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create(result_indicator_period=result_indicator_period)
+    result_indicator_period_target_dimension = ResultIndicatorPeriodTargetDimensionFactory.create(result_indicator_period=result_indicator_period)
+    _create_test_narrative(activity, result_indicator_period.resultindicatorperiodtargetcomment, resultindicatorperiodtargetcomment_narrative_1)
+    result_indicator_period_actual_location = ResultIndicatorPeriodActualLocationFactory.create(result_indicator_period=result_indicator_period)
+    result_indicator_period_actual_dimension = ResultIndicatorPeriodActualDimensionFactory.create(result_indicator_period=result_indicator_period)
+    _create_test_narrative(activity, result_indicator_period.resultindicatorperiodactualcomment, resultindicatorperiodactualcomment_narrative_1)
 
 
     return activity

@@ -546,6 +546,11 @@ class ResultIndicatorFactory(NoDatabaseFactory):
     resultindicatordescription = RelatedFactory(ResultIndicatorDescriptionFactory, 'result_indicator')
     resultindicatorbaselinecomment = RelatedFactory(ResultIndicatorBaselineCommentFactory, 'result_indicator')
 
+    measure = SubFactory(IndicatorMeasureFactory)
+    ascending = True
+    baseline_year = 2012
+    baseline_value = "10"
+
 class ResultIndicatorReferenceFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorReference
@@ -575,6 +580,12 @@ class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     result_indicator = SubFactory(ResultIndicatorFactory)
     resultindicatorperiodactualcomment = RelatedFactory(ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
     resultindicatorperiodtargetcomment = RelatedFactory(ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
+
+    period_start = "2013-01-01"
+    period_end = "2013-03-31"
+    target = "10"
+    actual = "11"
+
 
 
 class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):

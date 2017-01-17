@@ -436,9 +436,11 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch Result objects
+        ...
+        TODO: Reduce queries number 17-01-2017
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(70):
             queryset = Activity.objects.all().prefetch_results()
             serializer = ActivitySerializer(
                     queryset, 

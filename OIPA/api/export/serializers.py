@@ -410,15 +410,46 @@ class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serialize
 
 class ResultIndicatorPeriodActualLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
+
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodActualLocation
+        fields = (
+            # 'result_indicator_period',
+            'ref',
+        )
+
 class ResultIndicatorPeriodTargetLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
+
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodTargetLocation
+        fields = (
+            # 'result_indicator_period',
+            'ref',
+        )
 
 
 class ResultIndicatorPeriodActualDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualDimensionSerializer):
     xml_meta = {'attributes': ('name', 'value')}
 
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodActualDimension
+        fields = (
+            # 'result_indicator_period',
+            'name',
+            'value',
+        )
+
 class ResultIndicatorPeriodTargetDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer):
     xml_meta = {'attributes': ('name', 'value')}
+
+    class Meta:
+        model = iati_models.ResultIndicatorPeriodTargetDimension
+        fields = (
+            # 'result_indicator_period',
+            'name',
+            'value',
+        )
 
 
 class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
@@ -427,6 +458,7 @@ class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activit
     location = ResultIndicatorPeriodTargetLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
     dimension = ResultIndicatorPeriodTargetDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
+
 
 
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
@@ -444,11 +476,33 @@ class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.Res
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()
 
+    class Meta:
+        model = iati_models.ResultIndicatorPeriod
+        fields = (
+            'period_start',
+            'period_end',
+            'target',
+            'actual',
+        )
+
 
 class ResultIndicatorBaselineXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorBaselineSerializer):
     xml_meta = {'attributes': ('year', 'value',)}
 
     comment = NarrativeContainerXMLSerializer(source="resultindicatorbaselinecomment")
+
+class ResultIndicatorReferenceXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorReferenceSerializer):
+    xml_meta = {'attributes': ('vocabulary', 'code', 'indicator_uri',)}
+
+    vocabulary = serializers.CharField(source='vocabulary.code')
+
+    class Meta:
+        model = iati_models.ResultIndicatorReference
+        fields = (
+            'vocabulary',
+            'code',
+            'indicator_uri',
+        )
 
 
 class ResultIndicatorXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorSerializer):
@@ -456,9 +510,23 @@ class ResultIndicatorXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seriali
 
     title = NarrativeContainerXMLSerializer(source="resultindicatortitle")
     description = NarrativeContainerXMLSerializer(source="resultindicatordescription")
+    reference = ResultIndicatorReferenceXMLSerializer(source='resultindicatorreference_set', many=True, required=False)
     baseline = ResultIndicatorBaselineXMLSerializer(source="*")
     period = ResultIndicatorPeriodXMLSerializer(source='resultindicatorperiod_set', many=True)
     measure = serializers.CharField(source='measure.code')
+    ascending = BoolToNumField()
+
+    class Meta:
+        model = iati_models.ResultIndicator
+        fields = (
+            'title',
+            'description',
+            'reference',
+            'baseline',
+            'period',
+            'measure',
+            'ascending'
+        )
 
 
 class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultSerializer):
@@ -468,6 +536,16 @@ class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Resu
     title = NarrativeContainerXMLSerializer(source="resulttitle")
     description = NarrativeContainerXMLSerializer(source="resultdescription")
     indicator = ResultIndicatorXMLSerializer(source='resultindicator_set', many=True)
+    aggregation_status = BoolToNumField()
+
+    class Meta(activity_serializers.ResultSerializer.Meta):
+        fields = (
+            'title',
+            'description',
+            'indicator',
+            'type',
+            'aggregation_status',
+        )
 
 
 class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ContactInfoSerializer):

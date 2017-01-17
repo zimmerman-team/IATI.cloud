@@ -410,7 +410,12 @@ class ActivityQuerySet(SearchQuerySet):
         indicator_prefetch = Prefetch(
             'resultindicator_set',
             queryset=ResultIndicator.objects.all()
-                .select_related('measure')
+                .select_related(
+                    'result', 
+                    'measure', 
+                    'resultindicatortitle', 
+                    'resultindicatordescription', 
+                    'resultindicatorbaselinecomment')
                 .prefetch_related(
                     indicator_title_prefetch, 
                     indicator_description_prefetch,
