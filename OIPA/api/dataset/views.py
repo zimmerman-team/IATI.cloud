@@ -249,7 +249,7 @@ class DatasetPublishActivities(APIView):
         api_key = organisationuser.iati_api_key
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
-        source_name = '{}-banarieactivity'.format(publisher.name)
+        source_name = '{}-iatistudioactivity'.format(publisher.name)
 
         # get all published activities, except for the ones that are just modified
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
@@ -308,7 +308,7 @@ class DatasetPublishActivities(APIView):
                 )
 
         #  update the affected activities flags
-        activities.update(published=True, modified=False, ready_to_publish=False)
+        activities.update(published=True, modified=False, ready_to_publish=True)
 
         # remove the old datasets from the registry
         # TODO: query the registry to remove a dataset - 2017-01-16
@@ -343,7 +343,7 @@ class DatasetPublishActivitiesUpdate(APIView):
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
 
         #  update the affected activities flags
-        activities.update(published=True, modified=False, ready_to_publish=False)
+        activities.update(published=True, modified=False, ready_to_publish=True)
 
         #  return Dataset object
         serializer = DatasetSerializer(dataset, context={'request': request})
