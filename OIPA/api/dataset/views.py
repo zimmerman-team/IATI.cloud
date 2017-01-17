@@ -7,6 +7,9 @@ from api.dataset.filters import DatasetFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
+from rest_framework.response import Response
+
+from iati.models import Activity
 
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
@@ -20,6 +23,8 @@ from iati_synchroniser.admin import export_xml_by_source
 
 from django.db.models import Q
 from datetime import datetime
+
+from django.conf import settings
 
 class DatasetList(DynamicListView):
     """
@@ -79,7 +84,9 @@ class DatasetList(DynamicListView):
         'date_updated',
         'last_found_in_registry',
         'iati_version',
-        'note_count')
+        'note_count',
+        'added_manually',
+        )
 
 
 class DatasetDetail(RetrieveAPIView):
@@ -228,7 +235,6 @@ class DatasetPublishActivities(APIView):
     permission_classes = (OrganisationAdminGroupPermissions, )
 
     def post(self, request, publisher_id):
-        print('called post...')
         user = request.user.organisationuser
         publisher = Publisher.objects.get(pk=publisher_id)
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
@@ -243,10 +249,55 @@ class DatasetPublishActivities(APIView):
         api_key = organisationuser.iati_api_key
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
-        source_name = '{}-activity'.format(publisher.name)
+        source_name = '{}-banarieactivity'.format(publisher.name)
+
+        # get all published activities, except for the ones that are just modified
+        activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
+
+        try:
+            orgList = client.call_action('organization_list_for_user', {})
+        except:
+            raise exceptions.APIException(detail="Can't get organisation list for user".format(user_id))
+
+        primary_org_id = orgList[0]['id']
+
+        try:
+            # sync main datasets to IATI registry
+            registry_dataset = client.call_action('package_create', { 
+                "resources": [
+                    { "url": source_url }
+                ],
+                "name": source_name,
+                "filetype": "activity",
+                "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                "activity_count": activities.count(),
+                "title": source_name,
+                "owner_org": primary_org_id,
+                "url": source_url,
+            })
+                # registry_dataset = client.call_action('package_update', { 
+                #     "id": dataset.id,
+                #     "resources": [
+                #         { "url": source_url }
+                #     ],
+                #     "name": source_name,
+                #     "filetype": "activity",
+                #     "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                #     "activity_count": activities.count(),
+                #     "title": source_name,
+                #     "owner_org": primary_org_id,
+                #     "url": source_url,
+                # })
+
+
+        except Exception as e:
+            # try re-enabling it instead
+            print('exception raised in client_call_action', e, e.error_dict)
+            raise exceptions.APIException(detail="Failed publishing dataset")
 
         # 0. create_or_update Dataset object
-        dataset = Dataset.objects.get_or_create(
+        dataset = Dataset.objects.create(
+            id=registry_dataset['id'],
             name=source_name,
             title=source_name,
             filetype=1,
@@ -256,37 +307,45 @@ class DatasetPublishActivities(APIView):
             iati_version="2.02",
                 )
 
-        # 1. actually generate the XML
-        xml = export_xml_by_source(dataset.id)
-
-        # 2. get all published activities, except for the ones that are just modified
-        activities = Activity.objects.filter(
-                Q(published=True) & ~(Q(ready_to_publish=False) & Q(modified=True)), publisher=publisher)
-
-        # 3. sync main datasets to IATI registry
-        try:
-            dataset = client.call_action('package_create', { 
-                "resources": [
-                    { "url": source_url }
-                ],
-                "name": source_name,
-                "filetype": "activity",
-                "date_updated": datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
-                "activity_count": activities.count(),
-                "title": source_name,
-                "owner_org": publisher.organisation.ref,
-                "url": source_url,
-            })
-        except:
-            raise exceptions.APIException(detail="Failed publishing dataset")
-
-        # 5. update the affected activities flags
+        #  update the affected activities flags
         activities.update(published=True, modified=False, ready_to_publish=False)
 
-        # 6. remove the old datasets from the registry
+        # remove the old datasets from the registry
         # TODO: query the registry to remove a dataset - 2017-01-16
         # TODO: remove old datasets locally as well - 2017-01-16
 
-        # 7. return Dataset object
-        return Response(dataset)
+        # return Dataset object
+        serializer = DatasetSerializer(dataset, context={'request': request})
+        return Response(serializer.data)
+
+class DatasetPublishActivitiesUpdate(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def put(self, request, publisher_id, dataset_id):
+        user = request.user.organisationuser
+        publisher = Publisher.objects.get(pk=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
+
+        source_url = request.data.get('source_url', None)
+
+        if not source_url:
+            raise exceptions.APIException(detail="no source_url provided")
+
+        user = request.user
+        organisationuser = user.organisationuser
+        api_key = organisationuser.iati_api_key
+        client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
+
+        dataset = Dataset.objects.get(id=dataset_id)
+
+        # get all ready to publish activities
+        activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
+
+        #  update the affected activities flags
+        activities.update(published=True, modified=False, ready_to_publish=False)
+
+        #  return Dataset object
+        serializer = DatasetSerializer(dataset, context={'request': request})
+        return Response(serializer.data)
 

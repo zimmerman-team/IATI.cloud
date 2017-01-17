@@ -46,7 +46,9 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
             'filetype',
             'publisher',
             'source_url',
-            'iati_version')
+            'iati_version',
+            'added_manually',
+            )
 
     def get_type(self, obj):
         return obj.get_filetype_display()
@@ -82,7 +84,10 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'iati_version',
             'sha1',
             'note_count',
-            'notes')
+            'notes',
+            'added_manually',
+            'is_parsed',
+            )
 
     def get_filetype(self, obj):
         return obj.get_filetype_display()

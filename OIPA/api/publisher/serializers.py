@@ -16,7 +16,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     datasets = DatasetSerializer(
         many=True, 
         source="dataset_set",
-        fields=('url', 'name', 'title', 'filetype', 'source_url'))
+        fields=('id', 'url', 'name', 'title', 'filetype', 'source_url', 'added_manually', 'is_parsed'))
     activity_count = SerializerMethodField()
     note_count = SerializerMethodField()
     activities = SerializerMethodField()

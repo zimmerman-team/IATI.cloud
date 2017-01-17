@@ -22,4 +22,9 @@ urlpatterns = [
         views.DatasetPublishActivities.as_view(),
         name='dataset-publish'
     ),
+    url(
+        r'^(?P<publisher_id>[^@$&+,/:;=?]+)/publish_activities/(?P<dataset_id>[^@$&+,/:;=?]+)$',
+        views.DatasetPublishActivitiesUpdate.as_view(),
+        name='dataset-publish'
+    ),
 ]

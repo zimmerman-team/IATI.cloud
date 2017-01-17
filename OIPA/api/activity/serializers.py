@@ -2733,6 +2733,12 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         instance.default_aid_type = default_aid_type
         instance.default_tied_status = default_tied_status
 
+        # this is set on the view
+        instance.publisher_id = self.context['view'].kwargs.get('publisher_id')
+        instance.published = False
+        instance.ready_to_publish = False
+        instance.modified = True
+
         instance.save()
 
         title = iati_models.Title.objects.create(activity=instance)
@@ -2765,6 +2771,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance.default_finance_type = default_finance_type
         update_instance.default_aid_type = default_aid_type
         update_instance.default_tied_status = default_tied_status
+
+        instance.modified = True
 
         update_instance.save()
 

@@ -11,6 +11,8 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from api.pagination import IatiXMLPagination
 from django.db.models import Q
 
+from rest_framework import authentication, permissions
+from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
 
 class IATIActivityList(ListAPIView):
 
@@ -53,13 +55,17 @@ class IATIActivityNextExportList(IATIActivityList):
 
     renderer_classes = (XMLRenderer, )
 
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
     def get_queryset(self):
         publisher_id = self.kwargs.get('publisher_id')
         queryset = super(IATIActivityNextExportList, self).get_queryset()
-        print(queryset[0].publisher.id)
-        print(publisher_id)
-        print(queryset.filter(publisher_id=publisher_id))
-        filtered = queryset.filter(Q(published=True) & ~(Q(ready_to_publish=False) & Q(modified=True)), publisher_id=publisher_id)
+
+        # get all published activities, except for the ones that are just modified
+        filtered = queryset.filter(ready_to_publish=True, publisher_id=publisher_id)
+
+        return filtered
 
 
 
