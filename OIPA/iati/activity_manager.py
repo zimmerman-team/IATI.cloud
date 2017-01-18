@@ -344,16 +344,10 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_conditions(self):
         from iati.models import Conditions, Narrative
 
-        # condition_prefetch = Prefetch(
-        #     'condition__narratives',
-        #     queryset=Narrative.objects.all()
-        #     .select_related('language'))
-
         return self.prefetch_related(
             Prefetch(
                 'conditions_set',
                 queryset=Conditions.objects.all()
-                # .prefetch_related(condition_prefetch)
                 ))
 
     def prefetch_results(self):
