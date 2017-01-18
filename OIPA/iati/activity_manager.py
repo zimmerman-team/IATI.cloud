@@ -165,15 +165,10 @@ class ActivityQuerySet(SearchQuerySet):
         from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
         # from django.contrib.contenttypes.models import ContentType
 
-        # pr = Prefetch(
-        #     'content_object',
-        #     queryset=ContentType.objects.all())
 
         narrative_prefetch = Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
-
-
 
         location_name_prefetch = Prefetch(
             'name__narratives',
@@ -347,16 +342,10 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_conditions(self):
         from iati.models import Conditions, Narrative
 
-        condition_prefetch = Prefetch(
-            'condition__narrative',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
         return self.prefetch_related(
             Prefetch(
                 'conditions_set',
                 queryset=Conditions.objects.all()
-                .prefetch_related(condition_prefetch)
                 ))
 
     def prefetch_results(self):

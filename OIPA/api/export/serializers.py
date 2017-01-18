@@ -464,6 +464,33 @@ class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Lo
             'feature_designation',
         )
 
+class ConditionsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ConditionsSerializer):
+    xml_meta = {'attributes': ('attached',)}
+    attached = BoolToNumField()
+
+    class ConditionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ConditionSerializer):
+        xml_meta = {'attributes': ('type', )}
+        type = serializers.CharField(source='type.code')
+        #test= NarrativeContainerXMLSerializer()
+        narrative = NarrativeXMLSerializer(many=True, source='narratives')
+
+        class Meta:
+            model = iati_models.Condition
+            fields = (
+                'type',
+                'narrative',
+            )
+
+    condition = ConditionXMLSerializer(
+        many=True,
+        source="condition_set")
+
+    class Meta(activity_serializers.ConditionsSerializer.Meta):
+        fields = (
+            'attached',
+            'condition',
+        )
+
 class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
     xml_meta = {'attributes': ('ref', 'provider_activity_id', 'type')}
 
@@ -635,6 +662,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True, 
         source='relatedactivity_set')
 
+    conditions = ConditionsXMLSerializer(many=True, source='conditions_set')
+
     result = ResultXMLSerializer(many=True, source="result_set")
 
     humanitarian = serializers.BooleanField()
@@ -673,7 +702,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
             'document_link',
             'related_activity',
             # 'legacy_data',
-            # 'conditions',
+            'conditions',
             'result',
             # 'crs_add',
             # 'fss',
