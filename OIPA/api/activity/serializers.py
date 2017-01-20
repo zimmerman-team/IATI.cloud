@@ -98,8 +98,8 @@ def set_deep(d, key_string, value):
     keys = key_string.split('.')
     last = keys.pop()
     for k in keys:
-        dd.setDefault(k, {})
-    dd.setDefault(latest, value)
+        dd.setdefault(k, {})
+    dd.setdefault(latest, value)
 
 
 def handle_errors(*validated):
