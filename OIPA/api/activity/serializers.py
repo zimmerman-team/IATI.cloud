@@ -99,7 +99,7 @@ def set_deep(d, key_string, value):
     last = keys.pop()
     for k in keys:
         dd.setdefault(k, {})
-    dd.setdefault(latest, value)
+    dd.setdefault(last, value)
 
 
 def handle_errors(*validated):
