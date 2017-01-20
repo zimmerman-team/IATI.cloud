@@ -35,7 +35,7 @@ class RequiredFieldError(Exception):
 
 
 class FieldValidationError(Exception):
-    def __init__(self, model, field, msg, iati_id=None):
+    def __init__(self, model, field, msg, apiField, iati_id=None):
         """
         field: the field that is validated
         msg: explanation what went wrong
@@ -44,6 +44,10 @@ class FieldValidationError(Exception):
         self.field = field
         self.message = msg
         self.iati_id = iati_id
+        if not apiField:
+            self.apiField = field
+        else:
+            self.apiField = apiField
 
     def __str__(self):
         return repr(self.field)
