@@ -294,6 +294,9 @@ class OrganisationRemoveApiKey(GenericAPIView):
     def post(self, request):
         user = request.user.organisationuser
 
+        user.organisation_admin_groups.clear()
+        user.organisation_groups.clear()
+
         org_admin = OrganisationAdminGroup.objects.filter(user__organisationuser=user).delete()
 
         user.iati_api_key = None
