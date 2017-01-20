@@ -97,8 +97,9 @@ def set_deep(d, key_string, value):
     dd = d
     keys = key_string.split('.')
     last = keys.pop()
+    print(last)
     for k in keys:
-        dd.setdefault(k, {})
+        dd = dd.setdefault(k, {})
     dd.setdefault(last, value)
 
 

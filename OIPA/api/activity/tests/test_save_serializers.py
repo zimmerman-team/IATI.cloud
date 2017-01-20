@@ -16,8 +16,45 @@ from iati import models as iati_models
 from iati.transaction import models as transaction_models
 from django.core.exceptions import ObjectDoesNotExist
 from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
+from rest_framework.exceptions import ValidationError
 
 from decimal import Decimal
+
+from iati.parser.exceptions import *
+
+class ErrorHandlingTestCase(TestCase):
+    def test_handle_errors_raises_proper_dict(self):
+        validated = {
+            "errors": [
+                FieldValidationError(
+                    "Activity",
+                    "id",
+                    "required"
+                    ),
+                FieldValidationError(
+                    "Activity",
+                    "name",
+                    "required"
+                    ),
+                FieldValidationError(
+                    "Activity",
+                    "description-nested",
+                    "required",
+                    apiField="description.nested"
+                    ),
+            ],
+            "validated_data": {
+                "id": "test",
+            }
+        }
+
+        try:
+            serializers.handle_errors(validated)
+            self.assertFail()
+        except Exception as e:
+            self.assertEqual(e.get_full_details(), {'id': {u'message': u'required', u'code': u'invalid'}, 'description': {'nested': {u'message': u'required', u'code': u'invalid'}}, 'name': {u'message': u'required', u'code': u'invalid'}})
+
+
 
 
 class ActivitySaveTestCase(TestCase):
