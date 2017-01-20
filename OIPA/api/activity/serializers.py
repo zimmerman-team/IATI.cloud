@@ -97,7 +97,6 @@ def set_deep(d, key_string, value):
     dd = d
     keys = key_string.split('.')
     last = keys.pop()
-    print(last)
     for k in keys:
         dd = dd.setdefault(k, {})
     dd.setdefault(last, value)
@@ -267,9 +266,9 @@ class ValueSerializer(serializers.Serializer):
 
 
 class DocumentLinkCategorySerializer(serializers.ModelSerializer):
-    category = CodelistSerializer()
+    category = CodelistSerializer(required=False)
 
-    document_link = serializers.CharField(write_only=True)
+    document_link = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = iati_models.DocumentLinkCategory
