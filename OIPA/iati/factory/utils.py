@@ -187,14 +187,6 @@ def _create_test_activity(
     _create_test_narrative(activity, condition2, condition2_narrative_1)
     _create_test_narrative(activity, condition2, condition2_narrative_2)
 
-    conditions2 = ConditionsFactory.create(activity=activity)
-    condition3 = ConditionFactory.create(conditions=conditions2)
-    _create_test_narrative(activity, condition3, condition3_narrative_1)
-    _create_test_narrative(activity, condition3, condition3_narrative_2)
-    condition4 = ConditionFactory.create(conditions=conditions2)
-    _create_test_narrative(activity, condition4, condition4_narrative_1)
-    _create_test_narrative(activity, condition4, condition4_narrative_2)
-
     return activity
 
 

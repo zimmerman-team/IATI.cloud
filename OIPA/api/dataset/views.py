@@ -337,7 +337,10 @@ class DatasetPublishActivitiesUpdate(APIView):
         api_key = organisationuser.iati_api_key
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
+
         dataset = Dataset.objects.get(id=dataset_id)
+        dataset.date_updated = datetime.now()
+        dataset.save()
 
         # get all ready to publish activities
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)

@@ -669,7 +669,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True, 
         source='relatedactivity_set')
 
-    conditions = ConditionsXMLSerializer(many=True, source='conditions_set')
+    conditions = ConditionsXMLSerializer()
 
     result = ResultXMLSerializer(many=True, source="result_set")
 
