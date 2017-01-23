@@ -266,9 +266,9 @@ class ValueSerializer(serializers.Serializer):
 
 
 class DocumentLinkCategorySerializer(serializers.ModelSerializer):
-    category = CodelistSerializer(required=False)
+    category = CodelistSerializer()
 
-    document_link = serializers.CharField(write_only=True, required=False)
+    document_link = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.DocumentLinkCategory
@@ -411,8 +411,8 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
-        source='*',
-        coerce_to_string=False
+        coerce_to_string=False,
+        source="*"
     )
 
     class Meta:
@@ -2639,7 +2639,13 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             read_only=True,
             )
 
-    capital_spend = CapitalSpendSerializer(required=False)
+    # capital_spend = CapitalSpendSerializer(required=False)
+    capital_spend = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False,
+        required=False,
+    )
 
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
@@ -2707,6 +2713,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('planned_end'),
             data.get('actual_end'),
             data.get('end_date'),
+            data.get('capital_spend'),
             data.get('title', {}),
         )
 

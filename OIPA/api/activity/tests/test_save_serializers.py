@@ -130,6 +130,7 @@ class ActivitySaveTestCase(TestCase):
                     }
                 ]
             },
+            "capital_spend": Decimal("20.2")
         }
 
         res = self.c.post(
@@ -153,6 +154,7 @@ class ActivitySaveTestCase(TestCase):
         self.assertEqual(instance.default_finance_type.code, str(data['default_finance_type']['code']))
         self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
         self.assertEqual(instance.default_tied_status.code, str(data['default_tied_status']['code']))
+        self.assertEqual(instance.capital_spend, data['capital_spend'])
 
         title = instance.title
         title_narratives = title.narratives.all()
@@ -219,7 +221,7 @@ class ActivitySaveTestCase(TestCase):
                     }
                 ]
             },
-
+            "capital_spend": Decimal("20.2"),
         }
 
         res = self.c.put(
@@ -243,6 +245,7 @@ class ActivitySaveTestCase(TestCase):
         self.assertEqual(instance.default_finance_type.code, str(data['default_finance_type']['code']))
         self.assertEqual(instance.default_aid_type.code, str(data['default_aid_type']['code']))
         self.assertEqual(instance.default_tied_status.code, str(data['default_tied_status']['code']))
+        self.assertEqual(instance.capital_spend, data['capital_spend'])
 
         title = instance.title
         title_narratives = title.narratives.all()

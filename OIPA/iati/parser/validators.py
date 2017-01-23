@@ -218,6 +218,7 @@ def activity(
         planned_end=None,
         actual_end=None,
         end_date=None,
+        capital_spend=None,
         title={}, # important arg
         iati_standard_version="2.02",
         published=False,
@@ -397,6 +398,7 @@ def activity(
                 "default_aid_type": default_aid_type,
                 "default_tied_status": default_tied_status,
                 "default_lang": default_lang,
+                "capital_spend": capital_spend,
                 "iati_standard_version": iati_standard_version,
                 "published": published,
                 "title": {
