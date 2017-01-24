@@ -2530,6 +2530,10 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'feature_designation',
         )
 
+class PublishedStateSerializer(DynamicFieldsSerializer):
+    published = serializers.BooleanField()
+    ready_to_publish = serializers.BooleanField()
+    modified = serializers.BooleanField()
 
 class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     activity = ActivityAggregationSerializer(source='activity_aggregation')
@@ -2690,6 +2694,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
     publisher = PublisherSerializer(read_only=True)
 
+    published_state = PublishedStateSerializer(source="*", read_only=True)
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -2836,6 +2842,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
+            'published_state',
         )
 
         validators = []
