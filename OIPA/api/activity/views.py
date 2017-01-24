@@ -44,6 +44,20 @@ from api.organisation.serializers import OrganisationSerializer
 
 from rest_framework import authentication, permissions
 from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
+from rest_framework.response import Response
+
+class FilterPublisherMixin(object):
+    serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        publisher_id = self.kwargs.get('publisher_id')
+
+        return Activity.objects.filter(publisher__id=publisher_id)
+
 
 class ActivityAggregations(AggregationView):
     """
@@ -326,14 +340,36 @@ class ActivityList(DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-class ActivityListNextPublished(ActivityList):
-    queryset = Activity.objects.all()
+class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
 
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(ActivityListNextPublished, self).__init__(*args, **kwargs)
 
         # return all activities that are already published but have not been modified yet
-        return Activity.objects.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
+        return queryset.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
+
+class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def post(self, request, publisher_id, pk):
+        activity = Activity.objects.get(pk=pk)
+
+        if (activity.ready_to_publish):
+            activity.ready_to_publish = False
+            activity.save()
+            return Response(False)
+
+
+        # TODO: check if activity is valid for publishing- 2017-01-24
+
+
+        activity.ready_to_publish = True
+        activity.save()
+
+
+        return Response(True)
 
 
 
@@ -431,18 +467,6 @@ class ActivityTransactionDetail(DynamicDetailView):
         pk = self.kwargs.get('id')
         return Transaction.objects.get(pk=pk)
 
-
-class FilterPublisherMixin(object):
-    serializer_class = TransactionSerializer
-    filter_class = TransactionFilter
-
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
-    def get_queryset(self):
-        publisher_id = self.kwargs.get('publisher_id')
-
-        return Activity.objects.filter(publisher__id=publisher_id)
 
 class ActivityListCRUD(FilterPublisherMixin, DynamicListCRUDView):
 

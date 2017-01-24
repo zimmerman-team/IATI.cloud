@@ -340,6 +340,7 @@ class DatasetPublishActivitiesUpdate(APIView):
 
         dataset = Dataset.objects.get(id=dataset_id)
         dataset.date_updated = datetime.now()
+        dataset.source_url = source_url
         dataset.save()
 
         # get all ready to publish activities

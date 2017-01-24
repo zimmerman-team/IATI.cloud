@@ -54,13 +54,18 @@ urlpatterns = [
     ),
 
     #
-    # For IATI Studio publisher
+    # For publishing
     #
 
     # get all activities that are ready to be published + the ones that are published
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_activities/$',
         api.export.views.IATIActivityNextExportList.as_view(),
         name='activity-nextexport-list'),
+    
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/mark_ready_to_publish$',
+        api.activity.views.ActivityMarkReadyToPublish.as_view(),
+        name='activity-mark-ready-to-publish'
+        ),
     
     #
     # Activity CRUD
