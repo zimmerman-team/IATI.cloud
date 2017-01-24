@@ -2030,45 +2030,45 @@ class ContactInfoSerializer(serializers.ModelSerializer):
         update_instance.save()
 
         if organisation_data is not None:
-            organisation = iati_models.ContactInfoOrganisation.objects.create(
+            organisation, created = iati_models.ContactInfoOrganisation.objects.update_or_create(
                     contact_info=instance,
-                    **organisation_data)
+                    defaults=organisation_data)
             update_instance.organisation = organisation
 
             if organisation_narratives_data:
                 save_narratives(organisation, organisation_narratives_data, activity)
 
         if department_data is not None:
-            department = iati_models.ContactInfoDepartment.objects.create(
+            department, created = iati_models.ContactInfoDepartment.objects.update_or_create(
                     contact_info=instance,
-                    **department_data)
+                    defaults=department_data)
             update_instance.department = department
 
             if department_narratives_data:
                 save_narratives(department, department_narratives_data, activity)
 
         if person_name_data is not None:
-            person_name = iati_models.ContactInfoPersonName.objects.create(
+            person_name, created = iati_models.ContactInfoPersonName.objects.update_or_create(
                     contact_info=instance,
-                    **person_name_data)
+                    defaults=person_name_data)
             update_instance.person_name = person_name
 
             if person_name_narratives_data:
                 save_narratives(person_name, person_name_narratives_data, activity)
 
         if job_title_data is not None:
-            job_title = iati_models.ContactInfoJobTitle.objects.create(
+            job_title, created = iati_models.ContactInfoJobTitle.objects.update_or_create(
                     contact_info=instance,
-                    **job_title_data)
+                    defaults=job_title_data)
             update_instance.job_title = job_title
 
             if job_title_narratives_data:
                 save_narratives(job_title, job_title_narratives_data, activity)
 
         if mailing_address_data is not None:
-            mailing_address = iati_models.ContactInfoMailingAddress.objects.create(
+            mailing_address, created = iati_models.ContactInfoMailingAddress.objects.update_or_create(
                     contact_info=instance,
-                    **mailing_address_data)
+                    defaults=mailing_address_data)
             update_instance.mailing_address = mailing_address
 
             if mailing_address_narratives_data:
