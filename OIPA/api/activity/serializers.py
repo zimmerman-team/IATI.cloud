@@ -607,15 +607,15 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
 
         # TODO: don't create here, but update? - 2016-12-12
         if provider_data['ref']:
-            provider_org = iati_models.PlannedDisbursementProvider.objects.create(
+            provider_org, created = iati_models.PlannedDisbursementProvider.objects.update_or_create(
                     planned_disbursement=instance,
-                    **provider_data)
+                    defaults=provider_data)
             save_narratives(provider_org, provider_narratives_data, activity)
             validated_data['provider_organisation'] = provider_org
         if receiver_data['ref']:
-            receiver_org = iati_models.PlannedDisbursementReceiver.objects.create(
+            receiver_org, created = iati_models.PlannedDisbursementReceiver.objects.update_or_create(
                     planned_disbursement=instance,
-                    **receiver_data)
+                    defaults=receiver_data)
             save_narratives(receiver_org, receiver_narratives_data, activity)
             validated_data['receiver_organisation'] = receiver_org
 
