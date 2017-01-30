@@ -8,7 +8,7 @@ from common.util import difference
 from rest_framework.filters import DjangoFilterBackend
 from api.renderers import XMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
-from api.pagination import IatiXMLPagination
+from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination
 from django.db.models import Q
 
 from rest_framework import authentication, permissions
@@ -58,12 +58,18 @@ class IATIActivityNextExportList(IATIActivityList):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
+    pagination_class = IatiXMLUnlimitedPagination
+
     def get_queryset(self):
         publisher_id = self.kwargs.get('publisher_id')
         queryset = super(IATIActivityNextExportList, self).get_queryset()
 
+        # TODO: set a is_publishing flag in the publisher, and do the publishing in a task queue - 2017-01-27
+
         # get all published activities, except for the ones that are just modified
         filtered = queryset.filter(ready_to_publish=True, publisher_id=publisher_id)
+
+        print(filtered.count())
 
         return filtered
 

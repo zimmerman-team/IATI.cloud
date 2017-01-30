@@ -186,7 +186,7 @@ class OrganisationGroupDetailView(GenericAPIView):
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class OrganisationVerifyApiKey(APIView):
+class OrganisationVerifyApiKey(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -285,7 +285,12 @@ class OrganisationVerifyApiKey(APIView):
         user.iati_api_key = api_key
         user.save()
 
-        return Response("{}")
+        serializer = OrganisationUserSerializer(
+            user, 
+            context=self.get_serializer_context(),
+            )
+
+        return Response(serializer.data)
 
 class OrganisationRemoveApiKey(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)

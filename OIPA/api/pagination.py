@@ -35,3 +35,8 @@ class IatiXMLPagination(pagination.PageNumberPagination):
         headers = {'Link': link} if link else {}
 
         return Response(data, headers=headers)
+
+class IatiXMLUnlimitedPagination(IatiXMLPagination):
+    page_size = 0
+    max_page_size = 0
+
