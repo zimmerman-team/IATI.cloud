@@ -69,8 +69,6 @@ class IATIActivityNextExportList(IATIActivityList):
         # get all published activities, except for the ones that are just modified
         filtered = queryset.filter(ready_to_publish=True, publisher_id=publisher_id)
 
-        print(filtered.count())
-
         return filtered
 
 

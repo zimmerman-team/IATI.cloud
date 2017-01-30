@@ -189,6 +189,7 @@ from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 class OrganisationVerifyApiKey(GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
+    serializer_class = OrganisationUserSerializer
 
     def post(self, request):
 
