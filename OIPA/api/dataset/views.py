@@ -345,9 +345,11 @@ class DatasetPublishActivitiesUpdate(APIView):
 
         # get all ready to publish activities
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
+        non_r2p_activities = Activity.objects.filter(ready_to_publish=False, publisher=publisher)
 
         #  update the affected activities flags
         activities.update(published=True, modified=False, ready_to_publish=True)
+        non_r2p_activities.update(published=False)
 
         #  return Dataset object
         serializer = DatasetSerializer(dataset, context={'request': request})

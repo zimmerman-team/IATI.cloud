@@ -340,13 +340,13 @@ class ActivityList(DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
+# class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
 
-    def get_queryset(self, *args, **kwargs):
-        queryset = super(ActivityListNextPublished, self).__init__(*args, **kwargs)
+#     def get_queryset(self, *args, **kwargs):
+#         queryset = super(ActivityListNextPublished, self).__init__(*args, **kwargs)
 
-        # return all activities that are already published but have not been modified yet
-        return queryset.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
+#         # return all activities that are already published but have not been modified yet
+#         return queryset.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
 
 class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
 
