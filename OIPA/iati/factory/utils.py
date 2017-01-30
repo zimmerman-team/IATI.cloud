@@ -63,10 +63,10 @@ def _create_test_activity(
     condition1_narrative_2="Conditions texte",
     condition2_narrative_1="Conditions text2",
     condition2_narrative_2="Conditions texte2",
-    condition3_narrative_1="Conditions text3",
-    condition3_narrative_2="Conditions texte3",
-    condition4_narrative_1="Conditions text4",
-    condition4_narrative_2="Conditions texte4",
+    # condition3_narrative_1="Conditions text3",
+    # condition3_narrative_2="Conditions texte3",
+    # condition4_narrative_1="Conditions text4",
+    # condition4_narrative_2="Conditions texte4",
     organisation_narrative_1="Agency A",
     department_narrative_1="Department B",
     person_name_narrative_1="A. Example",
@@ -201,13 +201,13 @@ def _create_test_activity(
     condition2 = ConditionFactory.create(conditions=conditions1)
     _create_test_narrative(activity, condition2, condition2_narrative_1)
     _create_test_narrative(activity, condition2, condition2_narrative_2)
-    conditions2 = ConditionsFactory.create(activity=activity)
-    condition3 = ConditionFactory.create(conditions=conditions2)
-    _create_test_narrative(activity, condition3, condition3_narrative_1)
-    _create_test_narrative(activity, condition3, condition3_narrative_2)
-    condition4 = ConditionFactory.create(conditions=conditions2)
-    _create_test_narrative(activity, condition4, condition4_narrative_1)
-    _create_test_narrative(activity, condition4, condition4_narrative_2)
+    # conditions2 = ConditionsFactory.create(activity=activity)
+    # condition3 = ConditionFactory.create(conditions=conditions2)
+    # _create_test_narrative(activity, condition3, condition3_narrative_1)
+    # _create_test_narrative(activity, condition3, condition3_narrative_2)
+    # condition4 = ConditionFactory.create(conditions=conditions2)
+    # _create_test_narrative(activity, condition4, condition4_narrative_1)
+    # _create_test_narrative(activity, condition4, condition4_narrative_2)
 
     contact_info1 = ContactInfoFactory.create(activity=activity)
     contactinfoorganisation1 = ContactInfoOrganisationFactory.create(contact_info=contact_info1)

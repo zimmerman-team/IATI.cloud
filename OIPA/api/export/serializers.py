@@ -981,7 +981,9 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     legacy_data = LegacyDataXMLSerializer(many=True, source="legacydata_set")
 
-    conditions = ConditionsXMLSerializer(many=True, source='conditions_set')
+    # conditions = ConditionsXMLSerializer(many=True, source='conditions_set')
+
+    conditions = ConditionsXMLSerializer()
 
     result = ResultXMLSerializer(many=True, source="result_set")
 
