@@ -40,8 +40,8 @@ class Dataset(models.Model):
     iati_version = models.CharField(max_length=10, default="")
     
     # OIPA related fields
-    date_created = models.DateTimeField(auto_now_add=True, editable=False)
-    date_updated = models.DateTimeField(auto_now_add=True, editable=False)
+    date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
     is_parsed = models.BooleanField(null=False, default=False)
@@ -87,8 +87,7 @@ class Dataset(models.Model):
         parser = ParseManager(self)
         parser.parse_activity(activity_id)
 
-    def save(self, process=False, added_manually=True, *args, **kwargs):
-        self.added_manually = added_manually
+    def save(self, process=False, *args, **kwargs):
         super(Dataset, self).save()
 
         if process:
@@ -110,7 +109,7 @@ class Codelist(models.Model):
     description = models.TextField(max_length=1000, blank=True, null=True)
     count = models.CharField(max_length=10, blank=True, null=True)
     fields = models.CharField(max_length=255, blank=True, null=True)
-    date_updated = models.DateTimeField(auto_now=True, editable=False)
+    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __unicode__(self,):
         return "%s" % self.name

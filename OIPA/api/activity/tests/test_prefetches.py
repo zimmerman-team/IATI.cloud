@@ -419,7 +419,7 @@ class ActivitySaveTestCase(TestCase):
         2. Fetch conditions objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1):
             queryset = Activity.objects.all().prefetch_conditions()
             serializer = ActivitySerializer(
                     queryset, 

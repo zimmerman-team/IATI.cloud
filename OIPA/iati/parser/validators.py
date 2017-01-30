@@ -218,6 +218,7 @@ def activity(
         planned_end=None,
         actual_end=None,
         end_date=None,
+        capital_spend=None,
         title={}, # important arg
         iati_standard_version="2.02",
         published=False,
@@ -397,6 +398,7 @@ def activity(
                 "default_aid_type": default_aid_type,
                 "default_tied_status": default_tied_status,
                 "default_lang": default_lang,
+                "capital_spend": capital_spend,
                 "iati_standard_version": iati_standard_version,
                 "published": published,
                 "title": {
@@ -486,6 +488,8 @@ def activity_description(
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -550,6 +554,8 @@ def activity_participating_org(
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -1109,6 +1115,8 @@ def activity_policy_marker(
                     ))
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors)
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -2202,6 +2210,8 @@ def other_identifier(
             # TODO:  check for valid org id http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/owner-org/ - 2016-12-07
 
         validated_narratives = narratives(narratives_data, activity.default_lang, activity.id,  warnings, errors, "owner_org")
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -2278,6 +2288,8 @@ def budget_item(
         # TODO: validate something with percentage here? - 2016-12-08
 
         validated_narratives = narratives(narratives_data, country_budget_item.activity.default_lang, country_budget_item.activity.id,  warnings, errors, "description")
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,
@@ -2374,6 +2386,8 @@ def condition(
                     ))
 
         validated_narratives = narratives(narratives_data, conditions.activity.default_lang, conditions.activity.id,  warnings, errors)
+        errors = errors + validated_narratives['errors']
+        warnings = warnings + validated_narratives['warnings']
 
         return {
             "warnings": warnings,

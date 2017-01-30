@@ -1157,7 +1157,7 @@ class PlannedDisbursementReceiver(models.Model):
         return self.planned_disbursement.activity.publisher
 
 class Conditions(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.OneToOneField(Activity, related_name="conditions")
     attached = models.BooleanField()
 
     # def __unicode__(self,):

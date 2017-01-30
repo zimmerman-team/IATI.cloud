@@ -98,8 +98,8 @@ def set_deep(d, key_string, value):
     keys = key_string.split('.')
     last = keys.pop()
     for k in keys:
-        dd.setDefault(k, {})
-    dd.setDefault(latest, value)
+        dd = dd.setdefault(k, {})
+    dd.setdefault(last, value)
 
 
 def handle_errors(*validated):
@@ -411,8 +411,8 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
-        source='*',
-        coerce_to_string=False
+        coerce_to_string=False,
+        source="*"
     )
 
     class Meta:
@@ -607,15 +607,15 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
 
         # TODO: don't create here, but update? - 2016-12-12
         if provider_data['ref']:
-            provider_org = iati_models.PlannedDisbursementProvider.objects.create(
+            provider_org, created = iati_models.PlannedDisbursementProvider.objects.update_or_create(
                     planned_disbursement=instance,
-                    **provider_data)
+                    defaults=provider_data)
             save_narratives(provider_org, provider_narratives_data, activity)
             validated_data['provider_organisation'] = provider_org
         if receiver_data['ref']:
-            receiver_org = iati_models.PlannedDisbursementReceiver.objects.create(
+            receiver_org, created = iati_models.PlannedDisbursementReceiver.objects.update_or_create(
                     planned_disbursement=instance,
-                    **receiver_data)
+                    defaults=receiver_data)
             save_narratives(receiver_org, receiver_narratives_data, activity)
             validated_data['receiver_organisation'] = receiver_org
 
@@ -2030,45 +2030,45 @@ class ContactInfoSerializer(serializers.ModelSerializer):
         update_instance.save()
 
         if organisation_data is not None:
-            organisation = iati_models.ContactInfoOrganisation.objects.create(
+            organisation, created = iati_models.ContactInfoOrganisation.objects.update_or_create(
                     contact_info=instance,
-                    **organisation_data)
+                    defaults=organisation_data)
             update_instance.organisation = organisation
 
             if organisation_narratives_data:
                 save_narratives(organisation, organisation_narratives_data, activity)
 
         if department_data is not None:
-            department = iati_models.ContactInfoDepartment.objects.create(
+            department, created = iati_models.ContactInfoDepartment.objects.update_or_create(
                     contact_info=instance,
-                    **department_data)
+                    defaults=department_data)
             update_instance.department = department
 
             if department_narratives_data:
                 save_narratives(department, department_narratives_data, activity)
 
         if person_name_data is not None:
-            person_name = iati_models.ContactInfoPersonName.objects.create(
+            person_name, created = iati_models.ContactInfoPersonName.objects.update_or_create(
                     contact_info=instance,
-                    **person_name_data)
+                    defaults=person_name_data)
             update_instance.person_name = person_name
 
             if person_name_narratives_data:
                 save_narratives(person_name, person_name_narratives_data, activity)
 
         if job_title_data is not None:
-            job_title = iati_models.ContactInfoJobTitle.objects.create(
+            job_title, created = iati_models.ContactInfoJobTitle.objects.update_or_create(
                     contact_info=instance,
-                    **job_title_data)
+                    defaults=job_title_data)
             update_instance.job_title = job_title
 
             if job_title_narratives_data:
                 save_narratives(job_title, job_title_narratives_data, activity)
 
         if mailing_address_data is not None:
-            mailing_address = iati_models.ContactInfoMailingAddress.objects.create(
+            mailing_address, created = iati_models.ContactInfoMailingAddress.objects.update_or_create(
                     contact_info=instance,
-                    **mailing_address_data)
+                    defaults=mailing_address_data)
             update_instance.mailing_address = mailing_address
 
             if mailing_address_narratives_data:
@@ -2531,6 +2531,10 @@ class LocationSerializer(DynamicFieldsModelSerializer):
             'feature_designation',
         )
 
+class PublishedStateSerializer(DynamicFieldsSerializer):
+    published = serializers.BooleanField()
+    ready_to_publish = serializers.BooleanField()
+    modified = serializers.BooleanField()
 
 class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     activity = ActivityAggregationSerializer(source='activity_aggregation')
@@ -2640,7 +2644,13 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             read_only=True,
             )
 
-    capital_spend = CapitalSpendSerializer(required=False)
+    # capital_spend = CapitalSpendSerializer(required=False)
+    capital_spend = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False,
+        required=False,
+    )
 
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
@@ -2685,6 +2695,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
     publisher = PublisherSerializer(read_only=True)
 
+    published_state = PublishedStateSerializer(source="*", read_only=True)
+
     def validate(self, data):
         validated = validators.activity(
             data.get('iati_identifier'),
@@ -2708,6 +2720,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             data.get('planned_end'),
             data.get('actual_end'),
             data.get('end_date'),
+            data.get('capital_spend'),
             data.get('title', {}),
         )
 
@@ -2733,6 +2746,12 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         instance.default_finance_type = default_finance_type
         instance.default_aid_type = default_aid_type
         instance.default_tied_status = default_tied_status
+
+        # this is set on the view
+        instance.publisher_id = self.context['view'].kwargs.get('publisher_id')
+        instance.published = False
+        instance.ready_to_publish = False
+        instance.modified = True
 
         instance.save()
 
@@ -2766,6 +2785,8 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         update_instance.default_finance_type = default_finance_type
         update_instance.default_aid_type = default_aid_type
         update_instance.default_tied_status = default_tied_status
+
+        instance.modified = True
 
         update_instance.save()
 
@@ -2822,6 +2843,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'aggregations',
             'dataset',
             'publisher',
+            'published_state',
         )
 
         validators = []

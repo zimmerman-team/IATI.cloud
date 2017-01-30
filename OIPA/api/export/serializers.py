@@ -125,6 +125,13 @@ class DocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializer
 class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CapitalSpendSerializer):
     xml_meta = {'attributes': ('percentage',)}
 
+    percentage = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        coerce_to_string=False,
+        source="*"
+    )
+
 
 class LegacyDataXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LegacyDataSerializer):
     xml_meta = {'attributes': ('name', 'value', 'iati_equivalent', )}

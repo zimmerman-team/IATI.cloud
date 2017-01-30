@@ -61,6 +61,7 @@ class ActivityFactory(NoDatabaseFactory):
     
     # iati_standard_version = VersionFactory()
 
+    # title = SubFactory('iati.factory.iati_factory.TitleFactory')
 
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:

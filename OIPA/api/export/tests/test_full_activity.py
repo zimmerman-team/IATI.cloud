@@ -165,7 +165,7 @@ class ActivityXMLTestCase(TestCase):
         transaction_recipient_country1 = transaction1.transactionrecipientcountry_set.all()[0]
         transaction_recipient_region1 = transaction1.transactionrecipientregion_set.all()[0]
         budget1 = activity.budget_set.all()[0]
-        conditions1 = activity.conditions_set.all()[0]
+        conditions1 = activity.conditions
         condition1 = conditions1.condition_set.all()[0]
         condition2 = conditions1.condition_set.all()[1]
         conditions2 = activity.conditions_set.all()[1]

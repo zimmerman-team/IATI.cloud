@@ -10,7 +10,7 @@ import djorm_pgfulltext.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iati', '0063_auto_20170109_1357'),
+        ('iati', '0064_added_manually'),
     ]
 
     operations = [

@@ -147,6 +147,10 @@ class Parse(IatiParser):
         activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
 
+        activity.published = True
+        activity.ready_to_publish = True
+        activity.modified = False
+
         # for later reference
         self.default_lang = default_lang
 
