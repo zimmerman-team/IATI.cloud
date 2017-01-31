@@ -3041,8 +3041,11 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         default_aid_type = validated_data.pop('default_aid_type', None)
         default_tied_status = validated_data.pop('default_tied_status', None)
 
-        update_instance = iati_models.Activity(**validated_data)
-        update_instance.id = instance.id
+        # update_instance = iati_models.Activity(**validated_data)
+        update_instance = instance
+        for (key, value) in  validated_data.items():
+            setattr(update_instance, key, value)
+        # update_instance.id = instance.id
 
         update_instance.activity_status = activity_status
         update_instance.scope = activity_scope
