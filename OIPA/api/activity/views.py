@@ -1,6 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework import mixins
+from rest_framework.exceptions import ValidationError
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
@@ -45,6 +46,8 @@ from api.organisation.serializers import OrganisationSerializer
 from rest_framework import authentication, permissions
 from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
 from rest_framework.response import Response
+
+from api.activity.validators import activity_required_fields
 
 class FilterPublisherMixin(object):
     serializer_class = TransactionSerializer
@@ -361,9 +364,9 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
             activity.save()
             return Response(False)
 
-
         # TODO: check if activity is valid for publishing- 2017-01-24
-
+        if not activity_required_fields(activity):
+            return ValidationError("not all required fields are set on the activity")
 
         activity.ready_to_publish = True
         activity.save()
