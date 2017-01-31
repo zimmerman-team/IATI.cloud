@@ -318,7 +318,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    participating_organisation = ToManyFilter(
+    participating_organisation_ref = ToManyFilter(
         main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',
