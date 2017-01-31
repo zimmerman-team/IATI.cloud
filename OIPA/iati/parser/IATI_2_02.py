@@ -101,7 +101,7 @@ class Parse(IatiParser):
 
         old_activity = self.get_or_none(models.Activity, id=activity_id)
 
-        if old_activity and not self.force_reparse:
+        if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the dataset)
             old_activity.save()

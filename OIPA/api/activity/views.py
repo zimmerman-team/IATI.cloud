@@ -371,10 +371,7 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
         activity.ready_to_publish = True
         activity.save()
 
-
         return Response(True)
-
-
 
 
 class ActivityDetail(DynamicDetailView):
