@@ -46,6 +46,7 @@ from api.organisation.serializers import OrganisationSerializer
 from rest_framework import authentication, permissions
 from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
 from rest_framework.response import Response
+from rest_framework import status
 
 from api.activity.validators import activity_required_fields
 
@@ -366,7 +367,10 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
 
         # TODO: check if activity is valid for publishing- 2017-01-24
         if not activity_required_fields(activity):
-            return ValidationError("not all required fields are set on the activity")
+            return Response({
+                'error': True,
+                'content': 'Not all required fields are on the activity'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         activity.ready_to_publish = True
         activity.save()

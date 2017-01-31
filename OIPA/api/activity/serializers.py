@@ -2993,6 +2993,15 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
         return handle_errors(validated)
 
     def create(self, validated_data):
+
+        old_activity = get_or_none(iati_models.Activity, validated_data, 'iati_identifier')
+
+        if old_activity:
+            raise ValidationError({
+                "iati_identifier": "Activity with this IATI identifier already exists"
+            })
+
+        
         title_data = validated_data.pop('title', None)
         title_narratives_data = validated_data.pop('title_narratives', None)
         activity_status = validated_data.pop('activity_status', None)
