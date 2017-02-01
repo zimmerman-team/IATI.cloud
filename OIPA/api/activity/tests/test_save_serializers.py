@@ -2202,6 +2202,8 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.finance_type.code, str(data['finance_type']['code']))
         self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
         self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
+        self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
+        self.assertEqual(instance.humanitarian, data['humanitarian'])
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
