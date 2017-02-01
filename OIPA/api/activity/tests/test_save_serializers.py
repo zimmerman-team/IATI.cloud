@@ -1833,7 +1833,6 @@ class PlannedDisbursementSaveTestCase(TestCase):
         organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
         activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
 
-
         data = {
             "activity": activity.id,
             "type": {

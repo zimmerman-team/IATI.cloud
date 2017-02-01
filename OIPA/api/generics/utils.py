@@ -47,7 +47,7 @@ from iati.parser import validators
 from iati.parser import exceptions
 def get_or_raise(model, validated_data, attr, default=None):
     try:
-        pk = validated_data.pop(attr)
+        pk = validated_data.get(attr)
     except KeyError:
         raise exceptions.RequiredFieldError(
                 model.__name__,
@@ -59,7 +59,7 @@ def get_or_raise(model, validated_data, attr, default=None):
     #     return default
 
 def get_or_none(model, validated_data, attr, default=None):
-    pk = validated_data.pop(attr, None)
+    pk = validated_data.get(attr, None)
 
     if pk is None:
         return default
