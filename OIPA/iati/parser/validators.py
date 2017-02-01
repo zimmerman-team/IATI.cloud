@@ -1514,6 +1514,14 @@ def activity_transaction(
         aid_type = get_or_none(models.AidType, pk=aid_type_code)
         tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
 
+        if not humanitarian:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "humanitarian",
+                    apiField="humanitarian",
+                    ))
+
         if not transaction_type_code:
             errors.append(
                 RequiredFieldError(
@@ -1670,6 +1678,7 @@ def activity_transaction(
             "validated_data": {
                 "activity": activity,
                 "ref": ref,
+                "humanitarian": humanitarian,
                 "transaction_type": transaction_type,
                 "transaction_date": transaction_date,
                 "value": value,
