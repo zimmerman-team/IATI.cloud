@@ -1514,6 +1514,14 @@ def activity_transaction(
         aid_type = get_or_none(models.AidType, pk=aid_type_code)
         tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
 
+        if not humanitarian:
+            errors.append(
+                RequiredFieldError(
+                    "transaction",
+                    "humanitarian",
+                    apiField="humanitarian",
+                    ))
+
         if not transaction_type_code:
             errors.append(
                 RequiredFieldError(
@@ -1528,6 +1536,22 @@ def activity_transaction(
                     "transaction-type",
                     "codelist entry not found for {}".format(transaction_type_code),
                     apiField="transaction_type.code",
+                    ))
+
+        # if not disbursement_channel_code:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "transaction",
+        #             "disbursement-channel",
+        #             apiField="disbursement_channel.code",
+        #             ))
+        if not disbursement_channel:
+            errors.append(
+                FieldValidationError(
+                    "transaction",
+                    "disbursement-channel",
+                    "codelist entry not found for {}".format(disbursement_channel_code),
+                    apiField="disbursement_channel.code",
                     ))
 
         if not transaction_date_raw:
@@ -1654,6 +1678,7 @@ def activity_transaction(
             "validated_data": {
                 "activity": activity,
                 "ref": ref,
+                "humanitarian": humanitarian,
                 "transaction_type": transaction_type,
                 "transaction_date": transaction_date,
                 "value": value,
@@ -1676,6 +1701,7 @@ def activity_transaction(
                     "type": receiver_org_type,
                 },
                 "receiver_org_narratives": receiver_org_narratives['validated_data'],
+                "disbursement_channel": disbursement_channel,
                 # "sector": {
                 #     "sector": sector,
                 #     "vocabulary": sector_vocabulary,
