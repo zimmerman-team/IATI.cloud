@@ -1514,7 +1514,7 @@ def activity_transaction(
         aid_type = get_or_none(models.AidType, pk=aid_type_code)
         tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
 
-        if not humanitarian in (0,1) or humanitarian is None:
+        if not humanitarian in (0,1):
             errors.append(
                 FieldValidationError(
                     "transaction",
