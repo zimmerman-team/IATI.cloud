@@ -1538,13 +1538,13 @@ def activity_transaction(
                     apiField="transaction_type.code",
                     ))
 
-        if not disbursement_channel_code:
-            errors.append(
-                RequiredFieldError(
-                    "transaction",
-                    "disbursement-channel",
-                    apiField="disbursement_channel.code",
-                    ))
+        # if not disbursement_channel_code:
+        #     errors.append(
+        #         RequiredFieldError(
+        #             "transaction",
+        #             "disbursement-channel",
+        #             apiField="disbursement_channel.code",
+        #             ))
         if not disbursement_channel:
             errors.append(
                 FieldValidationError(
