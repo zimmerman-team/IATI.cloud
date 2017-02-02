@@ -239,6 +239,9 @@ class TransactionAggregation(AggregationView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
+    - `incoming_commitment`
+    - `disbursement_expenditure` Disbursement and expenditure summed togehther
+
 
     ## Currency options
 
@@ -309,6 +312,18 @@ class TransactionAggregation(AggregationView):
             annotate=annotate_currency,
             extra_filter=Q(transaction_type=4),
         ),
+        Aggregation(
+            query_param='incoming_commitment',
+            field='incoming_commitment',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=11),
+        ),
+        Aggregation(
+            query_param='disbursement_expenditure',
+            field='disbursement_expenditure',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type__in=[3,4]),
+        )
     )
 
     allowed_groupings = (
