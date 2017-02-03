@@ -2138,6 +2138,7 @@ class TransactionSaveTestCase(TestCase):
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
+                    "url": 'https://twitter.com/',
                 },
             }],
             "recipient_regions": [{
@@ -2319,6 +2320,7 @@ class TransactionSaveTestCase(TestCase):
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
+                    "url": 'https://twitter.com/',
                 },
             },
             "recipient_region": {

@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from iati import models as iati_models
 from iati.transaction import models
+from geodata import models as geodata_models
 
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.codelist.serializers import CodelistSerializer, NarrativeSerializer, VocabularySerializer
@@ -17,6 +18,8 @@ from api.activity.serializers import save_narratives, handle_errors
 
 from iati.parser import validators
 from iati.parser import exceptions
+
+from api.transaction import validators as transactions_validators
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
@@ -165,7 +168,10 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     receiver_organisation = TransactionReceiverSerializer()
     disbursement_channel = CodelistSerializer()
     sector = TransactionSectorSerializer(many=True, required=False, source="transactionsector_set")
-    recipient_countries = TransactionRecipientCountrySerializer(many=True, required=False, source="transactionrecipientcountry_set")
+    recipient_countries = TransactionRecipientCountrySerializer(many=True,
+     required=False,
+     # source="transactionrecipientcountry_set"
+     )
     recipient_regions = TransactionRecipientRegionSerializer(many=True, required=False, source="transactionrecipientregion_set")
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
@@ -205,9 +211,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
     def validate(self, data):
 
+        # print data.get('recipient_countries')
+
         activity = get_or_raise(iati_models.Activity, data, 'activity_id')
 
-        validated = validators.activity_transaction(
+        validated = transactions_validators.activity_transaction(
             activity,
             data.get('ref'),
             data.get('humanitarian'),
@@ -229,7 +237,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             # data.get('sector', {}).get('code'),
             # data.get('sector', {}).get('vocabulary'),
             # data.get('sector', {}).get('vocabulary_uri'),
-            data.get('recipient_country', {}).get('code'),
+            data.get('recipient_countries', {}),
             data.get('recipient_region', {}).get('code'),
             data.get('recipient_region', {}).get('vocabulary'),
             data.get('recipient_region', {}).get('vocabulary_uri'),
@@ -250,7 +258,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         receiver_data = validated_data.pop('receiver_org')
         receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
         # sector_data = validated_data.pop('sector')
-        recipient_country_data = validated_data.pop('recipient_country')
+        recipient_country_data = validated_data.pop('recipient_countries')
         recipient_region_data = validated_data.pop('recipient_region')
 
         instance = models.Transaction.objects.create(**validated_data)
@@ -275,12 +283,25 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         #         **sector_data
         #         )
 
-        if recipient_country_data.get('country'):
-            models.TransactionRecipientCountry.objects.create(
-                transaction=instance,
-                percentage=100,
-                **recipient_country_data
+        # if recipient_country_data.get('country'):
+        #     models.TransactionRecipientCountry.objects.create(
+        #         transaction=instance,
+        #         percentage=100,
+        #         **recipient_country_data
+        #         )
+
+        if len(recipient_country_data) > 0 :
+            for country_data in recipient_country_data:
+                country_code = country_data.get('country')['code']
+                country = geodata_models.Country.objects.get(code=country_code)
+                models.TransactionRecipientCountry.objects.create(
+                    transaction=instance,
+                    percentage=100,
+                    country=country
                 )
+
+        print recipient_country_data
+
 
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
@@ -300,7 +321,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         receiver_data = validated_data.pop('receiver_org')
         receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
         # sector_data = validated_data.pop('sector')
-        recipient_country_data = validated_data.pop('recipient_country')
+        recipient_country_data = validated_data.pop('recipient_countries')
         recipient_region_data = validated_data.pop('recipient_region')
 
         update_instance = models.Transaction(**validated_data)
@@ -327,11 +348,23 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         #         **sector_data
         #         )
 
-        if recipient_country_data.get('country'):
-            models.TransactionRecipientCountry.objects.create(
-                transaction=instance,
-                percentage=100,
-                **recipient_country_data
+        # if recipient_country_data.get('country'):
+        #     models.TransactionRecipientCountry.objects.create(
+        #         transaction=instance,
+        #         percentage=100,
+        #         **recipient_country_data
+        #         )
+
+
+        if len(recipient_country_data) > 0 :
+            models.TransactionRecipientCountry.objects.filter(transaction=instance).delete()
+            for country_data in recipient_country_data:
+                country_code = country_data.get('country')['code']
+                country = geodata_models.Country.objects.get(code=country_code)
+                models.TransactionRecipientCountry.objects.create(
+                    transaction=instance,
+                    percentage=100,
+                    country=country
                 )
 
         if recipient_region_data.get('region'):
