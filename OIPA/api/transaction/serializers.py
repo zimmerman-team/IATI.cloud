@@ -300,8 +300,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                     country=country
                 )
 
-        print recipient_country_data
-
 
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
