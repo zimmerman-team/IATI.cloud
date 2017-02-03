@@ -63,6 +63,56 @@ period_start = getattr(E, 'period-start')
 period_end = getattr(E, 'period-end')
 conditions = getattr(E, 'conditions')
 condition = getattr(E, 'condition')
+contact_info = getattr(E, 'contact-info')
+organisation = getattr(E, 'organisation')
+department = getattr(E, 'department')
+person_name = getattr(E, 'person-name')
+job_title = getattr(E, 'job-title')
+telephone = getattr(E, 'telephone')
+email = getattr(E, 'email')
+website= getattr(E, 'website')
+mailing_address = getattr(E, 'mailing-address')
+country_budget_items = getattr(E, 'country-budget-items')
+budget_item = getattr(E, 'budget-item')
+humanitarian_scope = getattr(E, 'humanitarian-scope')
+legacy_data = getattr(E, 'legacy-data')
+crs_add = getattr(E, 'crs-add')
+other_flags = getattr(E, 'other-flags')
+loan_terms = getattr(E, 'loan-terms')
+repayment_type = getattr(E, 'repayment-type')
+repayment_plan = getattr(E, 'repayment-plan')
+commitment_date = getattr(E, 'commitment-date')
+repayment_first_date = getattr(E, 'repayment-first-date')
+repayment_final_date = getattr(E, 'repayment-final-date')
+loan_status = getattr(E, 'loan-status')
+interest_received = getattr(E, 'interest-received')
+principal_outstanding = getattr(E, 'principal-outstanding')
+principal_arrears = getattr(E, 'principal-arrears')
+interest_arrears = getattr(E, 'interest-arrears')
+channel_code = getattr(E, 'channel-code')
+collaboration_type = getattr(E, 'collaboration-type')
+default_flow_type = getattr(E, 'default-flow-type')
+default_finance_type = getattr(E, 'default-finance-type')
+default_aid_type = getattr(E, 'default-aid-type')
+default_tied_status = getattr(E, 'default-tied-status')
+related_activity = getattr(E, 'related-activity')
+activity_scope = getattr(E,'activity-scope')
+policy_marker = getattr(E,'policy-marker')
+activity_date = getattr(E,'activity-date')
+planned_disbursement = getattr(E,'planned-disbursement')
+result = getattr(E, 'result')
+period = getattr(E,'period')
+indicator = getattr(E,'indicator')
+reference = getattr(E,'reference')
+baseline = getattr(E,'baseline')
+comment = getattr(E,'comment')
+target = getattr(E,'target')
+dimension = getattr(E,'dimension')
+actual = getattr(E,'actual')
+fss = getattr(E, 'fss')
+forecast  = getattr(E, 'forecast')
+
+
 
 def narrative(content):
     return getattr(E, 'narrative')(content, **{
@@ -88,7 +138,7 @@ class ActivityXMLTestCase(TestCase):
 
     def test_create_activity(self):
         res = self.c.get(
-                "/api/export/activities/?format=xml", 
+                "/api/export/activities/IATI-search1?format=xml", 
                 format='json'
                 )
 
@@ -118,8 +168,104 @@ class ActivityXMLTestCase(TestCase):
         conditions1 = activity.conditions
         condition1 = conditions1.condition_set.all()[0]
         condition2 = conditions1.condition_set.all()[1]
+        # conditions2 = activity.conditions_set.all()[1]
+        # condition3 = conditions2.condition_set.all()[0]
+        # condition4 = conditions2.condition_set.all()[1]
+        contact_info1 = activity.contactinfo_set.all()[0]
+        country_budget_item1 = activity.country_budget_items
+        budget_item1 = country_budget_item1.budgetitem_set.all()[0]
+        humanitarian_scope1 = activity.humanitarianscope_set.all()[0]
+        legacy_data1 = activity.legacydata_set.all()[0]
+        legacy_data2 = activity.legacydata_set.all()[1]
+        crs_add1 = activity.crsadd_set.all()[0]
+        other_flag1 = crs_add1.other_flags.all()[0]
+        crs_add_loan_terms1 = crs_add1.loan_terms
+        related_activity1 = activity.relatedactivity_set.all()[0]
+        policy_marker1 = activity.activitypolicymarker_set.all()[0]
+        activity_date1 = activity.activitydate_set.all()[0]
+        planned_disbursement1 = activity.planneddisbursement_set.all()[0]
+        planned_disbursement_provider1 = planned_disbursement1.provider_organisation
+        planned_disbursement_receiver1 = planned_disbursement1.receiver_organisation
+        result1 = activity.result_set.all()[0]
+        result_indicator1 = result1.resultindicator_set.all()[0]
+        result_indicator_reference1 = result_indicator1.resultindicatorreference_set.all()[0]
+        result_indicator_period1 = result_indicator1.resultindicatorperiod_set.all()[0]
+        result_indicator_period_target_location1 = result_indicator_period1.resultindicatorperiodtargetlocation_set.all()[0]
+        result_indicator_period_target_dimension1 = result_indicator_period1.resultindicatorperiodtargetdimension_set.all()[0]
+        result_indicator_period_target_comment1 = result_indicator_period1.resultindicatorperiodtargetcomment
+
+        result_indicator_period_actual_location1 = result_indicator_period1.resultindicatorperiodactuallocation_set.all()[0]
+        result_indicator_period_actual_dimension1 = result_indicator_period1.resultindicatorperiodactualdimension_set.all()[0]
+        result_indicator_period_actual_comment1 = result_indicator_period1.resultindicatorperiodactualcomment
+
+        location01 = related_activity1.ref_activity.location_set.all()[0]
+        location02 = related_activity1.ref_activity.location_set.all()[1]
+
+        fss1 = activity.fss_set.all()[0]
+        fss_forecast1 = fss1.fssforecast_set.all()[0]
+
 
         xml = iati_activities(
+                iati_activity(
+                    iati_identifier(related_activity1.ref_activity.iati_identifier),
+                    activity_status(**{"code": str(related_activity1.ref_activity.activity_status.code)}),
+                    activity_scope(**{"code": str(related_activity1.ref_activity.scope.code)}),
+                    location(
+                        location_reach(code=location01.location_reach.code),
+                        location_id(**{
+                            "vocabulary": location01.location_id_vocabulary.code,
+                            "code": location01.location_id_code,
+                        }),
+                        name(),
+                        description(),
+                        activity_description(),
+                        point(
+                            pos(
+                                "{} {}".format(location01.point_pos.y, location01.point_pos.x)),
+                            **{
+                                "srsName": location01.point_srs_name,
+                            }
+                            ),
+                        exactness(code=location01.exactness.code),
+                        location_class(code=location01.location_class.code),
+                        feature_designation(code=location01.feature_designation.code),
+                        **{
+                            "ref": location01.ref,
+                        }
+                        ),
+                    location(
+                        location_reach(code=location02.location_reach.code),
+                        location_id(**{
+                            "vocabulary": location02.location_id_vocabulary.code,
+                            "code": location02.location_id_code,
+                        }),
+                        name(),
+                        description(),
+                        activity_description(),
+                        point(
+                            pos(
+                                "{} {}".format(location02.point_pos.y, location02.point_pos.x)),
+                            **{
+                                "srsName": location02.point_srs_name,
+                            }
+                            ),
+                        exactness(code=location02.exactness.code),
+                        location_class(code=location02.location_class.code),
+                        feature_designation(code=location02.feature_designation.code),
+                        **{
+                            "ref": location02.ref,
+                        }
+                        ),
+                    collaboration_type(**{"code": str(related_activity1.ref_activity.collaboration_type.code)}),
+                    default_flow_type(**{"code": str(related_activity1.ref_activity.default_flow_type.code)}),
+                    default_finance_type(**{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
+                    default_aid_type(**{"code": str(related_activity1.ref_activity.default_aid_type.code)}),
+                    default_tied_status(**{"code": str(related_activity1.ref_activity.default_tied_status.code)}),
+                    **{
+                            "hierarchy": str(related_activity1.ref_activity.hierarchy),
+                            "{http://www.w3.org/XML/1998/namespace}lang": related_activity1.ref_activity.default_lang.code,
+                    }
+                    ),
                 iati_activity(
                         iati_identifier(activity.iati_identifier),
                         reporting_org(
@@ -172,11 +318,36 @@ class ActivityXMLTestCase(TestCase):
                                 "type": other_identifier1.type.code,
                             }
                             ),
-                        # activity_status(
-                        #     **{
-                        #         "code": activity_status1.type.code
-                        #     }
-                        #     ),
+                        activity_status(**{"code": str(activity.activity_status.code)}),
+                        activity_date(
+                            **{
+                            "iso-date": activity_date1.iso_date.isoformat(),
+                            "type": activity_date1.type.code
+                            }),
+                        contact_info(
+                            organisation(
+                                narrative("Agency A"),
+                                ),
+                            department(
+                                narrative("Department B"),
+                                ),
+                            person_name(
+                                narrative("A. Example"),
+                                ),
+                            job_title(
+                                narrative("Transparency Lead"),
+                                ),
+                            telephone(contact_info1.telephone),
+                            email(contact_info1.email),
+                            website(contact_info1.website),
+                            mailing_address(
+                                narrative("Transparency House, The Street, Town, City, Postcode")
+                                ), 
+                            ** {
+                            "type": contact_info1.type.code,
+                            }),
+                        activity_scope(
+                            **{"code": str(activity.scope.code)}),
                         recipient_country(
                             # narrative("recipient_country1"),
                             # narrative("recipient_country2"),
@@ -239,19 +410,73 @@ class ActivityXMLTestCase(TestCase):
                                 "percentage": str(sector1.percentage),
                             }
                             ),
-                            budget(
-                                period_start(**{'iso-date': budget1.period_start.isoformat()}),
-                                period_end(**{'iso-date': budget1.period_end.isoformat()}),
-                                value(
-                                    str(budget1.value),
-                                    **{
-                                    'currency': budget1.currency.code, 
-                                    'value-date': budget1.value_date.isoformat(),
-                                    }),
+                        country_budget_items(
+                            budget_item(
+                                description(
+                                    narrative("Description text"),
+                                    ),
+                                **{"code": budget_item1.code.code}
+                                ),
+                            **{"vocabulary": country_budget_item1.vocabulary.code}
+                            ),
+                        humanitarian_scope(
+                            # Add HumanitarianScope in data models Date 12-01-2017
+                            # narrative("Nepal Earthquake April 2015"),
                             **{
-                            "type": budget1.type.code,
-                            "status": budget1.status.code,
+                            "type": humanitarian_scope1.type.code,
+                            "vocabulary": humanitarian_scope1.vocabulary.code,
+                            "code": humanitarian_scope1.code
                             }),
+                        policy_marker(
+                                **{
+                                "vocabulary": policy_marker1.vocabulary.code,
+                                "code": policy_marker1.code.code,
+                                "significance": policy_marker1.significance.code
+                                }
+                                ),
+                        collaboration_type(**{"code": str(activity.collaboration_type.code)}),
+                        default_flow_type(**{"code": str(activity.default_flow_type.code)}),
+                        default_finance_type(**{"code": str(activity.default_finance_type.code)}),
+                        default_aid_type(**{"code": str(activity.default_aid_type.code)}),
+                        default_tied_status(**{"code": str(activity.default_tied_status.code)}),
+                        planned_disbursement(
+                            period_start(**{"iso-date": planned_disbursement1.period_start.isoformat()}),
+                            period_end(**{"iso-date": planned_disbursement1.period_end.isoformat()}),
+                            value(
+                                str(planned_disbursement1.value),
+                                **{
+                                "currency": planned_disbursement1.currency.code,
+                                "value-date": planned_disbursement1.value_date.isoformat()
+                                }),
+                            provider_org(
+                                narrative("Agency B"),
+                                **{
+                                "provider-activity-id": planned_disbursement_provider1.provider_activity_ref,
+                                "type": planned_disbursement_provider1.type.code,
+                                "ref": planned_disbursement_provider1.ref
+                                }),
+                            receiver_org(
+                                narrative("Agency A"),
+                                **{
+                                "receiver-activity-id":planned_disbursement_receiver1.receiver_activity_ref,
+                                "type": planned_disbursement_receiver1.type.code,
+                                "ref":planned_disbursement_receiver1.ref
+                                }),
+                            **{"type": planned_disbursement1.type.code}
+                            ),
+                        budget(
+                            period_start(**{'iso-date': budget1.period_start.isoformat()}),
+                            period_end(**{'iso-date': budget1.period_end.isoformat()}),
+                            value(
+                                str(budget1.value),
+                                **{
+                                'currency': budget1.currency.code, 
+                                'value-date': budget1.value_date.isoformat(),
+                                }),
+                        **{
+                        "type": budget1.type.code,
+                        "status": budget1.status.code,
+                        }),
                         capital_spend(
                             **{
                                 "percentage": str(activity.capital_spend),
@@ -317,6 +542,24 @@ class ActivityXMLTestCase(TestCase):
                                 "url": document_link1.url,
                             }
                             ),
+                        related_activity(**{
+                            "ref": related_activity1.ref,
+                            "type": str(related_activity1.type.code)
+                            }),
+                        legacy_data(
+                            **{
+                            "name": legacy_data1.name,
+                            "value": legacy_data1.value,
+                            "iati-equivalent": legacy_data1.iati_equivalent
+                            }
+                            ),
+                        legacy_data(
+                            **{
+                            "name": legacy_data2.name,
+                            "value": legacy_data2.value,
+                            "iati-equivalent": legacy_data2.iati_equivalent
+                            }
+                            ),
                         conditions(
                             condition(
                                 narrative("Conditions text"),
@@ -330,6 +573,131 @@ class ActivityXMLTestCase(TestCase):
                                 ),
                             **{"attached": boolToNum(conditions1.attached),}
                             ),
+                        # conditions(
+                        #     condition(
+                        #         narrative("Conditions text3"),
+                        #         narrative("Conditions texte3"),
+                        #         **{"type": condition1.type.code,}
+                        #         ),
+                        #     condition(
+                        #         narrative("Conditions text4"),
+                        #         narrative("Conditions texte4"),
+                        #         **{"type": condition2.type.code,}
+                        #         ),
+                        #     **{"attached": boolToNum(conditions2.attached),}
+                        #     ),
+                        result(
+                            title(narrative("Result title")),
+                            description(narrative("Result description text")),
+                            indicator(
+                                title(narrative("Indicator title")),
+                                description(narrative("Indicator description text")),
+                                reference(
+                                    **{
+                                    "vocabulary": result_indicator_reference1.vocabulary.code,
+                                    "code": result_indicator_reference1.code,
+                                    "indicator-uri": result_indicator_reference1.indicator_uri
+                                    }),
+                                baseline(
+                                    comment(narrative("Baseline comment text")),
+                                    **{
+                                    "year": str(result_indicator1.baseline_year),
+                                    "value": result_indicator1.baseline_value
+                                    }),
+                                period(
+                                    period_start(**{"iso-date":result_indicator_period1.period_start.isoformat()}),
+                                    period_end(**{"iso-date": result_indicator_period1.period_end.isoformat()}),
+                                    target(
+                                        comment(narrative("Target comment text")),
+                                        location(**{"ref": result_indicator_period_target_location1.ref}),
+                                        dimension(**{
+                                            "name": result_indicator_period_target_dimension1.name, 
+                                            "value": result_indicator_period_target_dimension1.value
+                                            }),
+                                        **{"value": str(result_indicator_period1.target)}
+                                        ),
+                                    actual(
+                                        comment(narrative("Actual comment text")),
+                                        location(**{"ref": result_indicator_period_actual_location1.ref}),
+                                        dimension(**{
+                                            "name": result_indicator_period_actual_dimension1.name,
+                                            "value":result_indicator_period_actual_dimension1.value
+                                            }),
+                                        **{"value": str(result_indicator_period1.actual)}
+                                        )
+                                    ),
+                                **{
+                                "measure": result_indicator1.measure.code,
+                                "ascending": boolToNum(result_indicator1.ascending)
+                                }),
+                            **{
+                            "type": result1.type.code,
+                            "aggregation-status": boolToNum(result1.aggregation_status)
+                            }),
+                        crs_add(
+                            other_flags(
+                                **{
+                                "code": other_flag1.other_flags.code,
+                                "significance": boolToNum(other_flag1.significance)
+                                }
+                            ),
+                            loan_terms(
+                                repayment_type(
+                                    **{
+                                    "code":crs_add1.loan_terms.repayment_type.code
+                                    }
+                                    ),
+                                repayment_plan(
+                                    **{
+                                    "code":crs_add1.loan_terms.repayment_plan.code
+                                    }
+                                    ),
+                                commitment_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.commitment_date)
+                                    }
+                                    ),
+                                repayment_first_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.repayment_first_date)
+                                    }
+                                    ),
+                                repayment_final_date(
+                                    **{
+                                    "iso-date":str(crs_add1.loan_terms.repayment_final_date)
+                                    }
+                                    ),
+                                **{
+                                "rate-1":str(crs_add1.loan_terms.rate_1),
+                                "rate-2":str(crs_add1.loan_terms.rate_2)
+                                }
+                                ),
+                            loan_status(
+                                interest_received(str(crs_add1.loan_status.interest_received)),
+                                principal_outstanding(str(crs_add1.loan_status.principal_outstanding)),
+                                principal_arrears(str(crs_add1.loan_status.principal_arrears)),
+                                interest_arrears(str(crs_add1.loan_status.interest_arrears)),
+                                **{
+                                "year": str(crs_add1.loan_status.year),
+                                "currency":crs_add1.loan_status.currency.code,
+                                "value-date": str(crs_add1.loan_status.value_date)
+                                }
+                                ),
+                            channel_code(crs_add1.channel_code)
+                            ),
+                        fss(
+                            forecast(
+                                str(fss_forecast1.value),
+                                **{
+                                "year": str(fss_forecast1.year),
+                                "value-date": fss_forecast1.value_date.isoformat(),
+                                "currency": str(fss_forecast1.currency.code)
+                                }),
+                            **{
+                            "extraction-date": fss1.extraction_date.isoformat(),
+                            "priority": boolToNum(fss1.priority),
+                            "phaseout-year": str(fss1.phaseout_year)
+                            }),
                         **{
                             "hierarchy": str(activity.hierarchy),
                             "{http://www.w3.org/XML/1998/namespace}lang": activity.default_lang.code,
@@ -342,6 +710,12 @@ class ActivityXMLTestCase(TestCase):
 
         print("ORIGINAL")
         print(ET.tostring(xml, pretty_print=True))
+
+        # print contact_info1.mailing_address.narratives.all()[0]
+        # print budget_item1.description.narratives.all()[0]
+        #print planned_disbursement_provider1.narratives.all()[0]
+        # print result1.resulttitle.narratives.all()[0]
+
 
         print("PARSED")
         print(ET.tostring(parsed_xml))

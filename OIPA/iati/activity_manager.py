@@ -221,6 +221,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'country_budget_items',
                 queryset=CountryBudgetItem.objects.all()
+                .select_related('vocabulary')
                 ))
 
     def prefetch_humanitarian_scope(self):
@@ -230,6 +231,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'humanitarianscope_set',
                 queryset=HumanitarianScope.objects.all()
+                .select_related('type', 'vocabulary')
                 ))
 
     def prefetch_policy_markers(self):
@@ -403,7 +405,12 @@ class ActivityQuerySet(SearchQuerySet):
         indicator_prefetch = Prefetch(
             'resultindicator_set',
             queryset=ResultIndicator.objects.all()
-                .select_related('measure')
+                .select_related(
+                    'result', 
+                    'measure', 
+                    'resultindicatortitle', 
+                    'resultindicatordescription', 
+                    'resultindicatorbaselinecomment')
                 .prefetch_related(
                     indicator_title_prefetch, 
                     indicator_description_prefetch,
@@ -425,12 +432,33 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
     def prefetch_crs_add(self):
-        from iati.models import CrsAdd
+        from iati.models import CrsAdd, CrsAddOtherFlags, CrsAddLoanTerms, CrsAddLoanStatus
+
+        other_flags_prefetch = Prefetch(
+            'other_flags',
+            queryset=CrsAddOtherFlags.objects.all()
+            .select_related('other_flags')
+            )
+
+        loan_terms_prefetch = Prefetch(
+            'loan_terms',
+            queryset=CrsAddLoanTerms.objects.all()
+            .select_related('repayment_type', 'repayment_plan')
+            )
+
+        loan_status_prefetch = Prefetch(
+            'loan_status',
+            queryset=CrsAddLoanStatus.objects.all()
+            .select_related('currency')
+            )
+
+
 
         return self.prefetch_related(
             Prefetch(
                 'crsadd_set',
                 queryset=CrsAdd.objects.all()
+                .prefetch_related(other_flags_prefetch, loan_terms_prefetch, loan_status_prefetch)
                 ))
 
     def prefetch_fss(self):

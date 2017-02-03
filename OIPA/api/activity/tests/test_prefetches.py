@@ -157,9 +157,14 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch ContactInfo objects
+        3. Fetch organisation__narratives objects
+        4. Fetch department__narratives objects
+        5. Fetch person_name__narratives objects
+        6. Fetch job_title__narratives objects
+        7. Fetch mailing_address__narratives objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(7):
             queryset = Activity.objects.all().prefetch_contact_info()
             serializer = ActivitySerializer(
                     queryset, 
@@ -290,9 +295,11 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch ActivityPolicyMarker objects
+        3. Fetch content_type objects
+        4. Fetch narrative objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(4):
             queryset = Activity.objects.all().prefetch_policy_markers()
             serializer = ActivitySerializer(
                     queryset, 
@@ -429,9 +436,11 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch Result objects
+        ...
+        TODO: Reduce queries number 17-01-2017
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(70):
             queryset = Activity.objects.all().prefetch_results()
             serializer = ActivitySerializer(
                     queryset, 
@@ -448,9 +457,12 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch CrsAdd objects
+        3. Fetch crsaddotherflags objects
+        4. Fetch crsaddloanterms objects
+        5. Fetch crsaddloanstatus objects
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(5):
             queryset = Activity.objects.all().prefetch_crs_add()
             serializer = ActivitySerializer(
                     queryset, 

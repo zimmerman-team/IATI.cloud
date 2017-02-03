@@ -50,6 +50,15 @@ class ActivityFactory(NoDatabaseFactory):
 
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
+
+    collaboration_type = SubFactory(CollaborationTypeFactory)
+    default_flow_type = SubFactory(FlowTypeFactory)
+    default_finance_type = SubFactory(FinanceTypeFactory)
+    default_aid_type = SubFactory(AidTypeFactory)
+    default_tied_status = SubFactory(TiedStatusFactory)
+    scope = SubFactory(ActivityScopeFactory)
+    activity_status = SubFactory(ActivityStatusFactory)
+    
     # iati_standard_version = VersionFactory()
 
     # title = SubFactory('iati.factory.iati_factory.TitleFactory')
@@ -111,12 +120,43 @@ class DescriptionFactory(NoDatabaseFactory):
     # narrative2 = NarrativeRelatedFactory(content="title description2")
 
 
+
+class ContactInfoOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoOrganisation
+
+class ContactInfoDepartmentFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoDepartment
+
+class ContactInfoPersonNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoPersonName
+
+class ContactInfoJobTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoJobTitle
+
+class ContactInfoMailingAddressFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ContactInfoMailingAddress
+
 class ContactInfoFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ContactInfo
 
     activity = SubFactory(ActivityFactory)
     type = SubFactory(ContactTypeFactory)
+    telephone = "0044111222333444"
+    email = "transparency@example.org"
+    website = "http://www.example.org"
+
+    # organisation = RelatedFactory(ContactInfoOrganisationFactory, 'contact_info')
+    # department = RelatedFactory(ContactInfoDepartmentFactory, 'contact_info')
+    # person_name = RelatedFactory(ContactInfoPersonNameFactory, 'contact_info')
+    # job_title = RelatedFactory(ContactInfoJobTitleFactory, 'contact_info')
+    # mailing_address = RelatedFactory(ContactInfoMailingAddressFactory, 'contact_info')
+
 
 
 class RelatedActivityFactory(NoDatabaseFactory):
@@ -217,6 +257,27 @@ class PlannedDisbursementFactory(NoDatabaseFactory):
     value = 100
     currency = SubFactory(CurrencyFactory)
     value_date = '2014-01-01'
+
+
+class PlannedDisbursementProviderFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.PlannedDisbursementProvider
+
+    planned_disbursement = SubFactory(PlannedDisbursementFactory)
+
+    provider_activity_ref = "BB-BBB-123456789-1234AA"
+    type = SubFactory(OrganisationTypeFactory)
+    ref = "BB-BBB-123456789"
+
+class PlannedDisbursementReceiverFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.PlannedDisbursementReceiver
+
+    planned_disbursement = SubFactory(PlannedDisbursementFactory)
+
+    receiver_activity_ref = "AA-AAA-123456789-1234"
+    type = SubFactory(OrganisationTypeFactory)
+    ref = "AA-AAA-123456789"
 
 
 class ActivityDateFactory(NoDatabaseFactory):
@@ -353,7 +414,7 @@ class CountryBudgetItemFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.CountryBudgetItem
 
-    id = 1
+    #id = 1
     activity = SubFactory(ActivityFactory)
     vocabulary = SubFactory(BudgetIdentifierVocabularyFactory)
 
@@ -486,6 +547,11 @@ class ResultIndicatorFactory(NoDatabaseFactory):
     resultindicatordescription = RelatedFactory(ResultIndicatorDescriptionFactory, 'result_indicator')
     resultindicatorbaselinecomment = RelatedFactory(ResultIndicatorBaselineCommentFactory, 'result_indicator')
 
+    measure = SubFactory(IndicatorMeasureFactory)
+    ascending = True
+    baseline_year = 2012
+    baseline_value = "10"
+
 class ResultIndicatorReferenceFactory(NoDatabaseFactory):
     class Meta: 
         model = iati.models.ResultIndicatorReference
@@ -515,6 +581,12 @@ class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     result_indicator = SubFactory(ResultIndicatorFactory)
     resultindicatorperiodactualcomment = RelatedFactory(ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
     resultindicatorperiodtargetcomment = RelatedFactory(ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
+
+    period_start = "2013-01-01"
+    period_end = "2013-03-31"
+    target = "10"
+    actual = "11"
+
 
 
 class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):
