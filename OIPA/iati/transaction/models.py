@@ -234,7 +234,7 @@ class TransactionRecipientCountry(models.Model):
     transaction = models.ForeignKey(
         Transaction,
         on_delete=models.CASCADE,
-        # related_name="recipient_country"
+        related_name="recipient_country"
         )
     
     country = models.ForeignKey(
