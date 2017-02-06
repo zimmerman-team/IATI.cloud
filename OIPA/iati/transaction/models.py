@@ -236,6 +236,12 @@ class TransactionRecipientCountry(models.Model):
         on_delete=models.CASCADE,
         # related_name="recipient_country"
         )
+
+    reported_transaction = models.OneToOneField(
+        Transaction,
+        related_name="transaction_recipient_country",
+        null=True
+        )
     
     country = models.ForeignKey(
         Country,
