@@ -299,7 +299,7 @@ class ActivitySaveTestCase(TestCase):
         4. Fetch narrative objects
         """
 
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             queryset = Activity.objects.all().prefetch_policy_markers()
             serializer = ActivitySerializer(
                     queryset, 
