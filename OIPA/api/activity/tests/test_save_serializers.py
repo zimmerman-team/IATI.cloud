@@ -2134,12 +2134,12 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_countries": [{
+            "transaction_recipient_country": {
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
-                },
-            }],
+                }
+            },
             "recipient_regions": [{
                 "region": {
                     "code": region.code,
@@ -2315,11 +2315,11 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_country": {
+            "transaction_recipient_country": {
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
-                },
+                }
             },
             "recipient_region": {
                 "region": {

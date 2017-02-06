@@ -166,6 +166,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     disbursement_channel = CodelistSerializer()
     sector = TransactionSectorSerializer(many=True, required=False, source="transactionsector_set")
     recipient_countries = TransactionRecipientCountrySerializer(many=True, required=False, source="transactionrecipientcountry_set")
+    transaction_recipient_country = TransactionRecipientCountrySerializer(required=False)
     recipient_regions = TransactionRecipientRegionSerializer(many=True, required=False, source="transactionrecipientregion_set")
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
@@ -196,6 +197,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'disbursement_channel',
             'sector',
             'recipient_countries',
+            'transaction_recipient_country',
             'recipient_regions',
             'flow_type',
             'finance_type',
@@ -229,7 +231,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             # data.get('sector', {}).get('code'),
             # data.get('sector', {}).get('vocabulary'),
             # data.get('sector', {}).get('vocabulary_uri'),
-            data.get('recipient_country', {}).get('code'),
+            data.get('transaction_recipient_country', {}).get('country')['code'],
             data.get('recipient_region', {}).get('code'),
             data.get('recipient_region', {}).get('vocabulary'),
             data.get('recipient_region', {}).get('vocabulary_uri'),
