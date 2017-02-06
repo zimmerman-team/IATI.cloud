@@ -223,7 +223,7 @@ class ActivitySerializerTestCase(TestCase):
             """
 
     def test_ReportingOrganisationSerializer(self):
-        reporting_organisation = iati_factory.ReportingOrganisationFactory.build()
+        reporting_organisation = iati_factory.OrganisationReportingOrganisationFactory.build()
 
         data = serializers.ReportingOrganisationSerializer(
             reporting_organisation,
@@ -670,7 +670,7 @@ class ActivitySerializerTestCase(TestCase):
             'default_currency',
             'hierarchy',
             'linked_data_uri',
-            'reporting_organisations',
+            'reporting_organisation',
             'participating_organisations',
             'related_activities',
             'activity_status',

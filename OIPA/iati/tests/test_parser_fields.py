@@ -793,9 +793,17 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(organisation_reporting_org.org_type.code, self.attrs['type'])
         self.assertEqual(organisation_reporting_org.reporting_org_identifier, self.attrs['ref'])
         self.assertEqual(organisation_reporting_org.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
+        organisation_name = self.parser_202.get_model('OrganisationName')
+        self.assertEqual(organisation_name.organisation, organisation)
 
         organisation_narrative = self.parser_202.get_model('OrganisationNameNarrative')
+        self.assertEqual(organisation_narrative.related_object, organisation_name)
         self.assertEqual(organisation_narrative.content, self.attrs["primary_name"])
+
+        # organisation.save()
+        # organisation_reporting_org.save()
+        # organisation_name.save()
+        # organisation_narrative.save()
 
 
     def test_reporting_organisation_already_parsed(self):

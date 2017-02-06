@@ -42,7 +42,7 @@ class ActivitySaveTestCase(TestCase):
         """
 
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             queryset = Activity.objects.all().prefetch_reporting_organisations()
             serializer = ActivitySerializer(
                     queryset, 

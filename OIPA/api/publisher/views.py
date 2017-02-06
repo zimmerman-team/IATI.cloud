@@ -251,12 +251,13 @@ class OrganisationVerifyApiKey(GenericAPIView):
             raise exceptions.APIException(detail="publisher_iati_id of {} not found in Organisation standard, correct this in the IATI registry".format(primary_org_iati_id))
 
         # TODO: add organisation foreign key - 2016-10-25
-        publisher = Publisher.objects.get_or_create(
+        publisher = Publisher.objects.update_or_create(
             pk=primary_org_id,
             publisher_iati_id=primary_org_iati_id,
             defaults={
                 "name": primary_org.get('name'),
                 "display_name": primary_org.get('display_name'),
+                "organisation": publisher_org,
             }
         )
 

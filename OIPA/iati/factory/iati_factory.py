@@ -58,6 +58,8 @@ class ActivityFactory(NoDatabaseFactory):
     default_tied_status = SubFactory(TiedStatusFactory)
     scope = SubFactory(ActivityScopeFactory)
     activity_status = SubFactory(ActivityStatusFactory)
+
+    publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
     
     # iati_standard_version = VersionFactory()
 
@@ -316,7 +318,6 @@ class CityFactory(NoDatabaseFactory):
     name = 'Colonia del Sacramento'
     geoname_id = 3443013
 
-
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.Organisation
@@ -325,6 +326,29 @@ class OrganisationFactory(NoDatabaseFactory):
     id = 'GB-COH-03580586'
     organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
+
+class OrganisationReportingOrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationReportingOrganisation
+        django_get_or_create = ('id',)
+
+    id = '123123'
+    org_type = SubFactory(OrganisationTypeFactory)
+    secondary_reporter = False
+
+    organisation = SubFactory(OrganisationFactory)
+    # organisation = RelatedFactory(OrganisationFactory, 'reporting_org')
+
+
+class OrganisationNarrativeFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationNarrative
+
+    related_object = SubFactory(ActivityDummyFactory) # default, change by calling with related_object
+
+    organisation = SubFactory(OrganisationFactory) # overwrite this for the required behaviour
+    language = SubFactory(LanguageFactory)
+    content = "Some name or description"
 
 
 class ParticipatingOrganisationFactory(NoDatabaseFactory):
@@ -368,7 +392,6 @@ class ReportingOrganisationFactory(NoDatabaseFactory):
 
     # narrative1 = NarrativeRelatedFactory(content="title test")
     # narrative2 = NarrativeRelatedFactory(content="title test2")
-
 
 class ActivitySectorFactory(NoDatabaseFactory):
     class Meta:

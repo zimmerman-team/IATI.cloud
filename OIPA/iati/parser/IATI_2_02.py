@@ -27,7 +27,7 @@ class Parse(IatiParser):
         super(Parse, self).__init__(*args, **kwargs)
         self.VERSION = '2.02'
 
-    def add_narrative(self, element, parent):
+    def add_narrative(self, element, parent, is_organisation_narrative=False):
         # set on activity (if set)
 
         default_lang = self.default_lang
@@ -58,11 +58,16 @@ class Parse(IatiParser):
                 "text", 
                 "empty narrative")
 
-        narrative = models.Narrative()
+        if not is_organisation_narrative:
+            narrative = models.Narrative()
+            narrative.activity = self.get_model('Activity')
+        else:
+            narrative = organisation_models.OrganisationNarrative()
+            narrative.organisation = self.get_model('Organisation')
+
         narrative.language = language
         narrative.content = element.text
         narrative.related_object = parent
-        narrative.activity = self.get_model('Activity')
 
         self.register_model(register_name, narrative)
 
@@ -225,8 +230,8 @@ class Parse(IatiParser):
 
             if len(narratives) > 0:
                 for narrative in narratives:
-                    # TODO this goes wrong somewhere, narrative not displying in API
-                    self.add_narrative(narrative, organisation_name)
+                    self.add_narrative(narrative, organisation_name, is_organisation_narrative=True)
+                    self.add_narrative(narrative, organisation_reporting_org, is_organisation_narrative=True)
                     organisation.primary_name = self.get_primary_name(narrative, organisation.primary_name)
             else:
                 organisation.primary_name = ref

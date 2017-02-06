@@ -143,7 +143,7 @@ class ActivityXMLTestCase(TestCase):
                 )
 
         activity = self.activity
-        reporting_org1 = activity.reporting_organisations.all()[0]
+        reporting_org1 = activity.publisher.organisation.reporting_org
         # reporting_org2 = activity.reporting_organisations.all()[1]
         description1 = activity.description_set.all()[0]
         description2 = activity.description_set.all()[1]
@@ -208,6 +208,15 @@ class ActivityXMLTestCase(TestCase):
         xml = iati_activities(
                 iati_activity(
                     iati_identifier(related_activity1.ref_activity.iati_identifier),
+                    reporting_org(
+                        narrative("reporting_organisation1"),
+                        narrative("reporting_organisation2"),
+                        **{
+                            "ref": reporting_org1.organisation.organisation_identifier,
+                            "type": reporting_org1.org_type.code,
+                            "secondary-reporter": boolToNum(reporting_org1.secondary_reporter)
+                        }
+                        ),
                     activity_status(**{"code": str(related_activity1.ref_activity.activity_status.code)}),
                     activity_scope(**{"code": str(related_activity1.ref_activity.scope.code)}),
                     location(
@@ -272,8 +281,8 @@ class ActivityXMLTestCase(TestCase):
                             narrative("reporting_organisation1"),
                             narrative("reporting_organisation2"),
                             **{
-                                "ref": reporting_org1.ref,
-                                "type": reporting_org1.type.code,
+                                "ref": reporting_org1.organisation.organisation_identifier,
+                                "type": reporting_org1.org_type.code,
                                 "secondary-reporter": boolToNum(reporting_org1.secondary_reporter)
                             }
                             ),

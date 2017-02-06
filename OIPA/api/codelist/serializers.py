@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from iati.models import Narrative, DocumentCategory
+from iati_organisation.models import OrganisationNarrative
 from iati_synchroniser.models import Codelist
 from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer
 from django.core.urlresolvers import reverse
@@ -29,6 +30,17 @@ class NarrativeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Narrative
+        fields = (
+            'text',
+            'language',
+        )
+
+class OrganisationNarrativeSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(source="content")
+    language = CodelistSerializer(required=False)
+
+    class Meta:
+        model = OrganisationNarrative
         fields = (
             'text',
             'language',

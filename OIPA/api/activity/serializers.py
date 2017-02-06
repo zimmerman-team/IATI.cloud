@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from iati import models as iati_models
+from iati_organisation import models as organisation_models
 from rest_framework.response import Response
 from rest_framework import status
 from iati_synchroniser.models import Publisher
@@ -16,7 +17,7 @@ from api.activity.filters import RelatedActivityFilter
 from api.codelist.serializers import VocabularySerializer
 from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import NarrativeContainerSerializer
-from api.codelist.serializers import NarrativeSerializer
+from api.codelist.serializers import NarrativeSerializer, OrganisationNarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 
 from api.publisher.serializers import PublisherSerializer
@@ -737,18 +738,18 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
-    ref = serializers.CharField(source="normalized_ref")
-    type = CodelistSerializer()
+    ref = serializers.CharField(source="organisation.organisation_identifier")
+    type = CodelistSerializer(source="org_type")
     secondary_reporter = serializers.BooleanField()
     # organisation = OrganisationSerializer()
     organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
 
     activity = serializers.CharField(write_only=True)
 
-    narratives = NarrativeSerializer(many=True, required=False)
+    narratives = OrganisationNarrativeSerializer(many=True, required=False)
 
     class Meta:
-        model = iati_models.ActivityReportingOrganisation
+        model = organisation_models.OrganisationReportingOrganisation
         fields = (
             'id',
             'ref',
@@ -2814,9 +2815,10 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
 
     id = serializers.CharField(required=False)
     iati_identifier = serializers.CharField()
-    reporting_organisations = ReportingOrganisationSerializer(
-        many=True,
+
+    reporting_organisation = ReportingOrganisationSerializer(
         read_only=True,
+        source="publisher.organisation.reporting_org"
     )
     title = TitleSerializer(required=False)
 
@@ -3080,7 +3082,7 @@ class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
             'url',
             'id',
             'iati_identifier',
-            'reporting_organisations',
+            'reporting_organisation',
             'title',
             'descriptions',
             'participating_organisations',

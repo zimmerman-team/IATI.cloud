@@ -238,7 +238,7 @@ class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.A
 class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ReportingOrganisationSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
 
-    type = serializers.CharField(source='type.code')
+    type = serializers.CharField(source='org_type.code')
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
     secondary_reporter = BoolToNumField()
 
@@ -921,8 +921,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'humanitarian', 'linked_data_uri', 'hierarchy', 'xml_lang')}
 
     reporting_org = ReportingOrganisationSerializer(
-        source='reporting_organisations',
-        many=True,)
+        source="publisher.organisation.reporting_org"
+        )
     title = NarrativeContainerXMLSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')

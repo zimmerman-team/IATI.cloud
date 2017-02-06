@@ -67,11 +67,13 @@ class OrganisationName(models.Model):
 
 
 class OrganisationReportingOrganisation(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name='reporting_orgs')
+    organisation = models.OneToOneField(Organisation, related_name='reporting_org')
     org_type = models.ForeignKey(OrganisationType, null=True, default=None)
     reporting_org = models.ForeignKey(Organisation,related_name='reported_by_orgs',null=True, db_constraint=False)
     reporting_org_identifier = models.CharField(max_length=250,null=True)
     secondary_reporter = models.BooleanField(default=False)
+
+    narratives = GenericRelation(OrganisationNarrative)
 
 
 # TODO: below this must be changed - 2016-04-20

@@ -2,8 +2,12 @@
 from iati.factory.iati_factory import *
 from iati.transaction.factories import *
 
-def _create_test_narrative(activity, related_object, content):
-    NarrativeFactory.create(activity=activity, related_object=related_object, content=content)
+def _create_test_narrative(activity, related_object, content, is_organisation_narrative=False):
+    if not is_organisation_narrative:
+        NarrativeFactory.create(activity=activity, related_object=related_object, content=content)
+    else:
+        OrganisationNarrativeFactory.create(organisation=activity, related_object=related_object, content=content)
+
 
 def _create_test_transaction(
     activity,
@@ -114,12 +118,16 @@ def _create_test_activity(
     _create_test_narrative(activity, description2, description2_1)
     _create_test_narrative(activity, description2, description2_2)
 
-    reporting_organisation = ReportingOrganisationFactory.create(
-        activity=activity,
-    )
+    # reporting_organisation = ReportingOrganisationFactory.create(
+    #     activity=activity,
+    # )
 
-    _create_test_narrative(activity, reporting_organisation, reporting_organisation1)
-    _create_test_narrative(activity, reporting_organisation, reporting_organisation2)
+
+    organisation = OrganisationReportingOrganisationFactory.create()
+    reporting_organisation = OrganisationReportingOrganisationFactory.create()
+
+    _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation1, True)
+    _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation2, True)
 
     participating_organisation = ParticipatingOrganisationFactory.create(
         activity=activity,
