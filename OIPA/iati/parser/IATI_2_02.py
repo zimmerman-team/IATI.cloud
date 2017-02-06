@@ -210,8 +210,16 @@ class Parse(IatiParser):
             organisation_name = organisation_models.OrganisationName()
             organisation_name.organisation = organisation
 
+            organisation_reporting_org = organisation_models.OrganisationReportingOrganisation()
+            organisation_reporting_org.organisation = organisation
+            organisation_reporting_org.org_type = org_type
+            # organisation_reporting_org.reporting_org = 
+            organisation_reporting_org.reporting_org_identifier = normalized_ref
+
+
             self.register_model('Organisation', organisation)
             self.register_model('OrganisationName', organisation_name)
+            self.register_model('OrganisationReportingOrganisation', organisation_reporting_org)
 
             narratives = element.findall('narrative')
 
