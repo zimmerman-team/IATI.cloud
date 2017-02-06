@@ -14,6 +14,8 @@ from rest_framework.authtoken.models import Token
 from iati_synchroniser.models import Publisher
 from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup, OrganisationUser
 
+from iati.factory.iati_factory import OrganisationFactory
+
 def fake_call_action(self, arg, whatever):
     if arg is "organization_list_for_user":
         return [{u'image_display_url': u'', u'display_name': u'Zimmerman & Zimmerman', u'description': u'', u'created': u'2014-02-12T06:23:00.548603', u'package_count': 2, u'title': u'Zimmerman & Zimmerman', u'name': u'zimmzimm', u'is_organization': True, u'state': u'active', u'image_url': u'', u'revision_id': u'test', u'type': u'organization', u'id': u'test', u'approval_status': u'approved'}]
@@ -37,6 +39,8 @@ class TestVerifyApiKey(APITestCase):
         user = OrganisationUserFactory.create(user__username='test1')
 
         admin_group.organisationuser_set.add(user)
+
+        organisation = OrganisationFactory.create(id="NL-KVK-51018586", organisation_identifier="NL-KVK-51018586")
 
         self.c.force_authenticate(user.user)
 

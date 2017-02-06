@@ -17,6 +17,7 @@ from rest_framework import authentication, permissions, exceptions
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 
 from iati_synchroniser.models import Publisher
+from iati_organisation.models import Organisation
 from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 from django.contrib.auth.models import Group 
 from iati.permissions.models import OrganisationUser
@@ -244,9 +245,10 @@ class OrganisationVerifyApiKey(GenericAPIView):
             raise exceptions.APIException(detail="Can't call organization_show for organization with id {}".format(primary_org_id))
 
         primary_org_iati_id = primary_org.get('publisher_iati_id')
+        publisher_org = get_or_none(Organisation, organisation_identifier=primary_org_iati_id)
         
-        if not len(primary_org_iati_id):
-            raise exceptions.APIException(detail="primary org with id {} has no iati_id set".format(primary_org_id))
+        if not publisher_org:
+            raise exceptions.APIException(detail="publisher_iati_id of {} not found in Organisation standard, correct this in the IATI registry".format(primary_org_iati_id))
 
         # TODO: add organisation foreign key - 2016-10-25
         publisher = Publisher.objects.get_or_create(
