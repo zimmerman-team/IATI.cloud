@@ -91,9 +91,9 @@ def set_country_region_transaction(activity):
     # check if country or region are set on transaction by checking the first transaction,
     # then 100% of the xdr_value will go to the country/region
     t = activity.transaction_set.all()[0]
-    if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
+    if t.recipient_country.count() or t.transactionrecipientregion_set.count():
         for t in activity.transaction_set.all():
-            for trc in t.transactionrecipientcountry_set.all():
+            for trc in t.recipient_country.all():
                 trc.percentage = 100
                 trc.save()
             for trr in t.transactionrecipientregion_set.all():
