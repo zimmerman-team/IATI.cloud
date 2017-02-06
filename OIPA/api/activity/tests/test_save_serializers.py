@@ -2134,7 +2134,7 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_countries": [{
+            "recipient_country": [{
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
@@ -2187,6 +2187,8 @@ class TransactionSaveTestCase(TestCase):
                 )
 
         result = res.json()
+
+        print result
 
         self.assertEquals(res.status_code, 201, result)
 
@@ -2315,12 +2317,12 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_country": {
+            "recipient_country": [{
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
                 },
-            },
+            }],
             "recipient_region": {
                 "region": {
                     "code": region.code,
