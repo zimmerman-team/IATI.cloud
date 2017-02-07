@@ -2188,6 +2188,7 @@ class TransactionSaveTestCase(TestCase):
 
         result = res.json()
 
+
         self.assertEquals(res.status_code, 201, result)
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
@@ -2205,6 +2206,7 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
         self.assertEqual(instance.humanitarian, data['humanitarian'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
+
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
