@@ -221,6 +221,15 @@ class Parse(IatiParser):
             # organisation_reporting_org.reporting_org = 
             organisation_reporting_org.reporting_org_identifier = normalized_ref
 
+            self.publisher.organisation = organisation
+
+            # create an organization if it is not parsed yet or not in IATI
+            # Also, link to publisher
+
+            organisation.save()
+            organisation_name.save()
+            organisation_reporting_org.save()
+            self.publisher.save()
 
             self.register_model('Organisation', organisation)
             self.register_model('OrganisationName', organisation_name)
