@@ -2016,12 +2016,12 @@ class TransactionSaveTestCase(TestCase):
                 "code": transaction_type.code,
                 "name": 'irrelevant',
             },
-            "recipient_countries": [{
+            "recipient_country": {
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
-                },
-            }],
+                }
+            },
             "recipient_regions": [{
                 "region": {
                     "code": region.code,
@@ -2070,6 +2070,7 @@ class TransactionSaveTestCase(TestCase):
 
         result = res.json()
 
+
         self.assertEquals(res.status_code, 201, result)
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
@@ -2086,6 +2087,9 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.tied_status.code, str(data['tied_status']['code']))
         self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
         self.assertEqual(instance.humanitarian, data['humanitarian'])
+        self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
+        self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
+
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
@@ -2201,7 +2205,7 @@ class TransactionSaveTestCase(TestCase):
                 "country": {
                     "code": country.code,
                     "name": 'irrelevant',
-                },
+                }
             },
             "recipient_region": {
                 "region": {
@@ -2268,6 +2272,8 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.transaction_type.code, data['transaction_type']['code'])
         self.assertEqual(instance.disbursement_channel.code, data['disbursement_channel']['code'])
         self.assertEqual(instance.humanitarian, data['humanitarian'])
+        self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
+        self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
