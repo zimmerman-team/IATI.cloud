@@ -58,6 +58,7 @@ class TransactionProviderFactory(NoDatabaseFactory):
     normalized_ref = "some_ref"
     provider_activity = SubFactory(ActivityFactory)
     provider_activity_ref = "IATI-0001"
+    type = SubFactory(OrganisationTypeFactory)
 
     class Meta:
         model = TransactionProvider

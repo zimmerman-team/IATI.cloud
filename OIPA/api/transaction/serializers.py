@@ -310,10 +310,10 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         update_instance.id = instance.id
         update_instance.save()
 
+
         if provider_data.get('ref'):
-            provider_org = models.TransactionProvider.objects.create(
-                    transaction=instance,
-                    **provider_data)
+            provider_org = models.TransactionProvider.objects.get(
+                    transaction=instance)
             save_narratives(provider_org, provider_narratives_data, activity)
             validated_data['provider_organisation'] = provider_org
 
