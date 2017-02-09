@@ -820,7 +820,7 @@ class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
 
 
 class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionReceiverSerializer):
-    xml_meta = {'attributes': ('ref', 'receiver_activity_id', 'type')}
+    xml_meta = {'attributes': ('ref', 'receiver_activity_id')}
 
     type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
@@ -830,7 +830,6 @@ class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
         fields = (
             'ref',
             'receiver_activity_id',
-            'type',
             'narrative'
         )
 

@@ -323,7 +323,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             validated_data['provider_organisation'] = provider_org
 
         if receiver_data.get('ref'):
-            receiver_org = models.TransactionReceiver.objects.create(
+            try:
+                receiver_org = models.TransactionReceiver.objects.get(
+                    transaction=instance)
+            except:
+                receiver_org = models.TransactionReceiver.objects.create(
                     transaction=instance,
                     **receiver_data)
             save_narratives(receiver_org, receiver_narratives_data, activity)

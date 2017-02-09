@@ -70,6 +70,7 @@ class TransactionReceiverFactory(NoDatabaseFactory):
     normalized_ref = "some_ref"
     receiver_activity = SubFactory(ActivityFactory)
     receiver_activity_ref = "IATI-0001"
+    type = SubFactory(OrganisationTypeFactory)
 
     class Meta:
         model = TransactionReceiver
