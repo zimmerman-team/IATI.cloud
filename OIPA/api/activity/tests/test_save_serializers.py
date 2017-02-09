@@ -2178,6 +2178,21 @@ class TransactionSaveTestCase(TestCase):
                     }
                 ],
             },
+            # "provider_organisation": {
+            #     "ref": organisation.id,
+            #     "type": {
+            #         "code": organisation_type.code,
+            #         "name": 'irrelevant',
+            #     },
+            #     "narratives": [
+            #         {
+            #             "text": "test1"
+            #         },
+            #         {
+            #             "text": "test2"
+            #         }
+            #     ],
+            # },
             "receiver_organisation": {
                 "ref": organisation.id,
                 "type": {
