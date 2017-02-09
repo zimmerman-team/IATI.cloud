@@ -159,22 +159,38 @@ def set_sector_transaction(activity):
 
         # check if percentages are not set, if so divide percentages equally over amount of sector
         if len(sectors.filter(percentage=None)):
-            total_count = sectors.count()
-            percentage = Decimal(100) / Decimal(total_count)
-            for s in sectors:
-                s.percentage = percentage
+            vocabulary_codes = []
+            for val in activity.activitysector_set.values('vocabulary__code'):
+                if not val['vocabulary__code'] in vocabulary_codes:
+                    vocabulary_codes.append(val['vocabulary__code'])
+
+            for vocabulary_code in vocabulary_codes:
+                sectors_filtred = activity.activitysector_set.filter(vocabulary__code=vocabulary_code)
+                total_count = sectors_filtred.count()
+                percentage = Decimal(100) / Decimal(total_count)
+                for s in sectors_filtred:
+                    s.percentage = percentage
 
         # create TransactionSector for each sector for each transaction with correct xdr_value
-        for t in activity.transaction_set.all():
-            for recipient_sector in sectors:
-
-                transaction_models.TransactionSector(
-                    transaction=t,
-                    sector=recipient_sector.sector,
-                    percentage=recipient_sector.percentage,
-                    vocabulary=recipient_sector.sector.vocabulary,
-                    reported_on_transaction=False
-                ).save()
+                for t in activity.transaction_set.all():
+                    for recipient_sector in sectors_filtred:
+                        transaction_models.TransactionSector(
+                            transaction=t,
+                            sector=recipient_sector.sector,
+                            percentage=recipient_sector.percentage,
+                            vocabulary=recipient_sector.sector.vocabulary,
+                            reported_on_transaction=False
+                        ).save()
+        else:
+            for t in activity.transaction_set.all():
+                for recipient_sector in sectors:
+                    transaction_models.TransactionSector(
+                        transaction=t,
+                        sector=recipient_sector.sector,
+                        percentage=recipient_sector.percentage,
+                        vocabulary=recipient_sector.sector.vocabulary,
+                        reported_on_transaction=False
+                    ).save()
 
 def set_sector_budget(activity):
     """
