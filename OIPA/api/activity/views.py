@@ -118,7 +118,7 @@ class ActivityAggregations(AggregationView):
     queryset = Activity.objects.all()
 
     filter_backends = (SearchFilter, DjangoFilterBackend,)
-    filter_class = filters.ActivityFilter
+    filter_class = filters.ActivityAggregationFilter
 
     allowed_aggregations = (
         Aggregation(
