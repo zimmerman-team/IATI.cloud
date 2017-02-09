@@ -11,6 +11,7 @@ from django_filters import TypedChoiceFilter
 from distutils.util import strtobool
 
 from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 
