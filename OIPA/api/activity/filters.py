@@ -566,3 +566,16 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]
+
+
+
+
+class ActivityAggregationFilter(ActivityFilter):
+    """
+    Activity aggregation filter class
+    """
+
+    sector_vocabulary = CommaSeparatedStickyCharFilter(
+        name='transactionsector__sector__vocabulary__code',
+        lookup_type='in',
+    )
