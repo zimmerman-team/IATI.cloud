@@ -289,6 +289,14 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
+    sector_vocabulary = ToManyFilter(
+        main_fk='activity',
+        qs=ActivitySector,
+        lookup_type='in',
+        name='sector__vocabulary__code',
+        fk='activity',
+    )
+
     transaction_recipient_country = ToManyFilter(
         qs=TransactionRecipientCountry,
         lookup_type='in',
@@ -487,6 +495,11 @@ class TransactionAggregationFilter(TransactionFilter):
 
     sector = CommaSeparatedStickyCharFilter(
         name='transactionsector__sector__code',
+        lookup_type='in',
+    )
+
+    sector_vocabulary = CommaSeparatedStickyCharFilter(
+        name='transactionsector__sector__vocabulary__code',
         lookup_type='in',
     )
 

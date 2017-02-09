@@ -228,6 +228,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    sector_vocabulary = ToManyFilter(
+        qs=ActivitySector,
+        lookup_type='in',
+        name='sector__vocabulary__code',
+        fk='activity',
+    )
+
     sector_category = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',
