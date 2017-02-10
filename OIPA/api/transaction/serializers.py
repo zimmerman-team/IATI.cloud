@@ -352,12 +352,17 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             validated_data['receiver_organisation'] = receiver_org
 
         if sector_data.get('sector'):
-            models.TransactionSector.objects.create(
-                transaction=instance,
-                reported_transaction=instance,
-                percentage=100,
-                **sector_data
-                )
+            try:
+                models.TransactionSector.objects.get(
+                    transaction=instance,
+                    reported_transaction=instance)
+            except:
+                models.TransactionSector.objects.create(
+                    transaction=instance,
+                    reported_transaction=instance,
+                    percentage=100,
+                    **sector_data
+                    )
 
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
@@ -370,6 +375,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
                 transaction=instance,
+                reported_transaction=instance,
                 percentage=100,
                 **recipient_region_data
                 )

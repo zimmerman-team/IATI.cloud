@@ -2123,6 +2123,7 @@ class TransactionSaveTestCase(TestCase):
         transaction = transaction_factory.TransactionFactory.create()
         transaction_provider = transaction_factory.TransactionProviderFactory.create(transaction=transaction)
         transaction_receiver = transaction_factory.TransactionReceiverFactory.create(transaction=transaction)
+        transaction_sector = transaction_factory.TransactionSectorFactory.create(transaction=transaction, reported_transaction=transaction)
         transaction_type = iati_factory.TransactionTypeFactory.create(code="2")
         currency = iati_factory.CurrencyFactory.create(code="af")
         organisation_type = iati_factory.OrganisationTypeFactory.create()
@@ -2240,11 +2241,11 @@ class TransactionSaveTestCase(TestCase):
             },
             "sector": {
                 "sector": {
-                    "code": sector.code,
+                    "code": transaction_sector.sector.code,
                     "name": 'irrelevant',
                 },
                 "vocabulary": {
-                    "code": sector_vocabulary.code,
+                    "code": transaction_sector.vocabulary.code,
                     "name": 'irrelevant',
                 },
                 "vocabulary_uri": "https://twitter.com/",
@@ -2294,6 +2295,11 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.humanitarian, data['humanitarian'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].region.code, data['recipient_region']['region']['code'])
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionsector_set.all()[0].sector.code, data['sector']['sector']['code'])
+        self.assertEqual(instance.transactionsector_set.all()[0].reported_transaction.pk, instance.pk)
+
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
