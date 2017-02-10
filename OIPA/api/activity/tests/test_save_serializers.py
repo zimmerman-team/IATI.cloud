@@ -1938,8 +1938,8 @@ class TransactionSaveTestCase(TestCase):
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
-        # sector = iati_factory.SectorFactory.create()
-        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        sector = iati_factory.SectorFactory.create()
+        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
         # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
         country = iati_factory.CountryFactory.create()
@@ -2033,17 +2033,17 @@ class TransactionSaveTestCase(TestCase):
                 },
                 "vocabulary_uri": "https://twitter.com/",
             },
-            # "sector": {
-            #     "sector": {
-            #         "code": sector.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary": {
-            #         "code": sector_vocabulary.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary_uri": "https://twitter.com/",
-            # },
+            "sector": {
+                "sector": {
+                    "code": sector.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": sector_vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
             "flow_type": {
                 "code": flow_type.code,
                 "name": 'irrelevant',
@@ -2069,7 +2069,6 @@ class TransactionSaveTestCase(TestCase):
                 )
 
         result = res.json()
-        # print result
 
 
         self.assertEquals(res.status_code, 201, result)
@@ -2092,6 +2091,8 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
         self.assertEqual(instance.transactionrecipientregion_set.all()[0].region.code, data['recipient_region']['region']['code'])
         self.assertEqual(instance.transactionrecipientregion_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionsector_set.all()[0].sector.code, data['sector']['sector']['code'])
+        self.assertEqual(instance.transactionsector_set.all()[0].reported_transaction.pk, instance.pk)
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
@@ -2127,8 +2128,8 @@ class TransactionSaveTestCase(TestCase):
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
-        # sector = iati_factory.SectorFactory.create()
-        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        sector = iati_factory.SectorFactory.create()
+        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
         # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
         country = iati_factory.CountryFactory.create()
@@ -2237,17 +2238,17 @@ class TransactionSaveTestCase(TestCase):
                 },
                 "vocabulary_uri": "https://twitter.com/",
             },
-            # "sector": {
-            #     "sector": {
-            #         "code": sector.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary": {
-            #         "code": sector_vocabulary.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary_uri": "https://twitter.com/",
-            # },
+            "sector": {
+                "sector": {
+                    "code": sector.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": sector_vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
             "flow_type": {
                 "code": flow_type.code,
                 "name": 'irrelevant',
