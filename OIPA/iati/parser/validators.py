@@ -1711,7 +1711,7 @@ def activity_transaction(
                     "country": recipient_country,
                 },
                 "recipient_region": {
-                    "recipient_region": recipient_region,
+                    "region": recipient_region,
                     "vocabulary": recipient_region_vocabulary,
                     "vocabulary_uri": recipient_region_vocabulary
                 },

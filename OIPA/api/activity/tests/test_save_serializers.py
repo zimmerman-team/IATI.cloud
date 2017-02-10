@@ -2022,7 +2022,7 @@ class TransactionSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 }
             },
-            "recipient_regions": [{
+            "recipient_region": {
                 "region": {
                     "code": region.code,
                     "name": 'irrelevant',
@@ -2032,7 +2032,7 @@ class TransactionSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 },
                 "vocabulary_uri": "https://twitter.com/",
-            }],
+            },
             # "sector": {
             #     "sector": {
             #         "code": sector.code,
@@ -2069,6 +2069,7 @@ class TransactionSaveTestCase(TestCase):
                 )
 
         result = res.json()
+        # print result
 
 
         self.assertEquals(res.status_code, 201, result)
@@ -2089,7 +2090,8 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.humanitarian, data['humanitarian'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
-
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].region.code, data['recipient_region']['region']['code'])
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].reported_transaction.pk, instance.pk)
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
