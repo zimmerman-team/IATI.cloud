@@ -373,12 +373,17 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 )
 
         if recipient_region_data.get('region'):
-            models.TransactionRecipientRegion.objects.create(
-                transaction=instance,
-                reported_transaction=instance,
-                percentage=100,
-                **recipient_region_data
-                )
+            try:
+                models.TransactionRecipientRegion.objects.get(
+                    transaction=instance,
+                    reported_transaction=instance)
+            except:
+                models.TransactionRecipientRegion.objects.create(
+                    transaction=instance,
+                    reported_transaction=instance,
+                    percentage=100,
+                    **recipient_region_data
+                    )
 
 
         return update_instance
