@@ -98,6 +98,7 @@ class TransactionSectorFactory(NoDatabaseFactory):
 class TransactionRecipientCountryFactory(NoDatabaseFactory):
     
     transaction = SubFactory(TransactionFactory)
+    reported_transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
     percentage = 100
 

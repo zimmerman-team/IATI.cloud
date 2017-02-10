@@ -2120,6 +2120,7 @@ class TransactionSaveTestCase(TestCase):
         transaction = transaction_factory.TransactionFactory.create()
         transaction_provider = transaction_factory.TransactionProviderFactory.create(transaction=transaction)
         transaction_receiver = transaction_factory.TransactionReceiverFactory.create(transaction=transaction)
+        transaction_recipient_country = transaction_factory.TransactionRecipientCountryFactory(transaction=transaction, reported_transaction=transaction)
         transaction_type = iati_factory.TransactionTypeFactory.create(code="2")
         currency = iati_factory.CurrencyFactory.create(code="af")
         organisation_type = iati_factory.OrganisationTypeFactory.create()
@@ -2220,7 +2221,7 @@ class TransactionSaveTestCase(TestCase):
             },
             "recipient_country": {
                 "country": {
-                    "code": country.code,
+                    "code": transaction_recipient_country.country.code,
                     "name": 'irrelevant',
                 }
             },
