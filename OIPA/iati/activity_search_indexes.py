@@ -12,7 +12,7 @@ from django.conf import settings
 
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
-    if settings.get('FTS_ENABLED') == False:
+    if getattr(settings, 'FTS_ENABLED') == False:
         return
 
     try:
