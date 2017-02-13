@@ -293,6 +293,8 @@ class DatasetPublishActivities(APIView):
         except Exception as e:
             # try re-enabling it instead
             print('exception raised in client_call_action', e, e.error_dict)
+
+            # TODO: try to recover from case when the dataset already exists (just update it instead) - 2017-02-13
             raise exceptions.APIException(detail="Failed publishing dataset")
 
         # 0. create_or_update Dataset object
@@ -348,7 +350,12 @@ class DatasetPublishActivitiesUpdate(APIView):
         non_r2p_activities = Activity.objects.filter(ready_to_publish=False, publisher=publisher)
 
         #  update the affected activities flags
-        activities.update(published=True, modified=False, ready_to_publish=True)
+        activities.update(
+                published=True,
+                modified=False,
+                ready_to_publish=True,
+                last_updated_datetime=datetime.datetime.now().isoformat(' ')
+                )
         non_r2p_activities.update(published=False)
 
         #  return Dataset object

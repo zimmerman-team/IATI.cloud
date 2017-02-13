@@ -292,7 +292,7 @@ class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seriali
 
 
 class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityPolicyMarkerSerializer):
-    xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
+    xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri', 'significance',)}
 
     code = serializers.CharField(source='code.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
