@@ -362,6 +362,7 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
 
         if (activity.ready_to_publish):
             activity.ready_to_publish = False
+            activity.modified = True
             activity.save()
             return Response(False)
 
@@ -373,6 +374,7 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         activity.ready_to_publish = True
+        activity.modified = True
         activity.save()
 
         return Response(True)
