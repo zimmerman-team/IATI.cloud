@@ -80,6 +80,14 @@ def combine_validation(validations=[]):
         "validated_data": validated_data,
     }
 
+iati_regex = re.compile(r'^[^\/\&\|\?]*$')
+def validate_iati_identifier(iati_identifier):
+    if iati_regex.match(iati_identifier):
+        return True
+    else:
+        return False
+
+
 def validate_date(unvalidated_date):
     # datetime
 
@@ -346,7 +354,16 @@ def activity(
                     ))
 
 
-        activity_id = normalize(iati_identifier)
+        if not validate_iati_identifier(iati_identifier):
+            errors.append(
+                FieldValidationError(
+                    "activity",
+                    "iati-identifier",
+                    apiField="iati_identifier",
+                    ))
+
+
+        activity_id = iati_identifier
 
         if not activity_id:
             errors.append(
