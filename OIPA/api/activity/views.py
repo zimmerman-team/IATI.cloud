@@ -1189,7 +1189,7 @@ class ActivityConditionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).country_conditions.budgetitem_set.all()
+        return iati_models.Activity(pk=pk).conditions.condition_set.all()
 
 class ActivityConditionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ConditionSerializer
