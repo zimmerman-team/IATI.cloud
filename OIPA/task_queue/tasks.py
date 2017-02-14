@@ -187,6 +187,27 @@ def update_iati_codelists():
 
 
 ###############################
+#### INTERNAL TASKS ####
+###############################
+
+from iati.models import Activity
+from api.export.serializers import ActivityXMLSerializer
+from api.renderers import XMLRenderer
+
+@job
+def export_publisher_activities(publisher_id):
+    queryset = Activity.objects.all().filter(
+            ready_to_publish=True,
+            publisher_id=publisher_id
+            )
+
+    serializer = ActivityXMLSerializer(queryset, many=True)
+
+    xml = XMLRenderer(serializer.data)
+
+    return xml
+
+###############################
 #### EXCHANGE RATE TASKS ####
 ###############################
 

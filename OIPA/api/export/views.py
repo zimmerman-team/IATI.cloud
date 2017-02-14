@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView
+from rest_framework.views import APIView
 from iati.models import Activity
 from api.export import serializers as export_serializers
 from api.activity import filters
@@ -49,27 +50,50 @@ class IATIActivityList(ListAPIView):
     def get_queryset(self):
         return super(IATIActivityList, self).get_queryset().prefetch_all()
 
+import django_rq
+from task_queue.tasks import export_publisher_activities
+from rest_framework.response import Response
 
-class IATIActivityNextExportList(IATIActivityList):
+
+class IATIActivityNextExportList(APIView):
     """IATI representation for activities"""
-
-    renderer_classes = (XMLRenderer, )
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
+    
+    def post(self, request, publisher_id):
+        queue = django_rq.get_queue('export')
+        job = queue.enqueue(export_publisher_activities, publisher_id)
 
-    pagination_class = IatiXMLUnlimitedPagination
-
-    def get_queryset(self):
-        publisher_id = self.kwargs.get('publisher_id')
-        queryset = super(IATIActivityNextExportList, self).get_queryset()
-
-        # TODO: set a is_publishing flag in the publisher, and do the publishing in a task queue - 2017-01-27
-
-        # get all published activities, except for the ones that are just modified
-        filtered = queryset.filter(ready_to_publish=True, publisher_id=publisher_id)
-
-        return filtered
+        return Response({
+            'status': 'processing',
+            'job': job.key,
+        })
 
 
+class IATIActivityNextExportListResult(APIView):
+    """IATI representation for activities"""
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+    
+    def get(self, request, publisher_id, job_id):
+        job_id = job_id.split(':')[2]
+
+        queue = django_rq.get_queue('export')
+        job = queue.fetch_job(job_id)
+
+        if job.is_finished:
+            ret = {'status':'completed', 'result': job.return_value}
+        elif job.is_queued:
+            ret = {'status':'in-queue'}
+        elif job.is_started:
+            ret = {'status':'waiting'}
+        elif job.is_failed:
+            ret = {'status': 'failed'}
+
+        print('called...')
+        print(ret)
+
+        return Response(ret)
 
