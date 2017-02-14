@@ -52,9 +52,6 @@ from api.activity.validators import activity_required_fields
 from iati.activity_search_indexes import reindex_activity
 
 class FilterPublisherMixin(object):
-    serializer_class = TransactionSerializer
-    filter_class = TransactionFilter
-
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
@@ -64,9 +61,6 @@ class FilterPublisherMixin(object):
         return Activity.objects.filter(publisher__id=publisher_id)
 
 class UpdateActivitySearchMixin(object):
-    serializer_class = TransactionSerializer
-    filter_class = TransactionFilter
-
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
