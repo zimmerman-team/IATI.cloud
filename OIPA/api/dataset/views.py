@@ -354,7 +354,7 @@ class DatasetPublishActivitiesUpdate(APIView):
                 published=True,
                 modified=False,
                 ready_to_publish=True,
-                last_updated_datetime=datetime.datetime.now().isoformat(' ')
+                last_updated_datetime=datetime.now().isoformat(' ')
                 )
         non_r2p_activities.update(published=False)
 
