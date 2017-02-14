@@ -296,7 +296,7 @@ class RegionFactory(NoDatabaseFactory):
         model = geodata.models.Region
         django_get_or_create = ('code', )
 
-    code = 1
+    code = "1"
     name = 'World'
 
 

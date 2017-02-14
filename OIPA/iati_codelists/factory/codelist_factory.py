@@ -149,7 +149,7 @@ class SectorFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.Sector
 
-    code = 200
+    code = "200"
     name = 'advice'
     description = ''
 

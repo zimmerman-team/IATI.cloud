@@ -117,6 +117,22 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
         return update_instance
 
 
+class TransactionSectorV2Serializer(serializers.ModelSerializer):
+    sector = SectorSerializer(fields=('url', 'code', 'name'))
+    vocabulary = VocabularySerializer()
+    vocabulary_uri = serializers.URLField()
+
+    class Meta:
+        model = models.TransactionSector
+        fields = (
+            'id',
+            'sector',
+            'vocabulary',
+            'vocabulary_uri',
+        )
+
+
+
 class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
     country = CountrySerializer(fields=('url', 'code', 'name'))
 
@@ -165,9 +181,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     provider_organisation = TransactionProviderSerializer(required=False)
     receiver_organisation = TransactionReceiverSerializer(required=False)
     disbursement_channel = CodelistSerializer()
-    sector = TransactionSectorSerializer(many=True, required=False, source="transactionsector_set")
+    sector = TransactionSectorV2Serializer(required=False, source="transaction_sector")
     recipient_country = TransactionRecipientCountrySerializer(required=False, source="transaction_recipient_country")
-    recipient_regions = TransactionRecipientRegionSerializer(many=True, required=False, source="transactionrecipientregion_set")
+    recipient_region = TransactionRecipientRegionSerializer(required=False, source="transaction_recipient_region")
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
@@ -197,7 +213,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'disbursement_channel',
             'sector',
             'recipient_country',
-            'recipient_regions',
+            'recipient_region',
             'flow_type',
             'finance_type',
             'aid_type',
@@ -227,13 +243,13 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             data.get('receiver_organisation', {}).get('type', {}).get('code'),
             data.get('receiver_organisation', {}).get('narratives'),
             data.get('disbursement_channel', {}).get('code'),
-            # data.get('sector', {}).get('code'),
-            # data.get('sector', {}).get('vocabulary'),
-            # data.get('sector', {}).get('vocabulary_uri'),
+            data.get('transaction_sector', {}).get('sector', {}).get('code', {}),
+            data.get('transaction_sector', {}).get('vocabulary', {}).get('code', {}),
+            data.get('transaction_sector', {}).get('vocabulary_uri', {}),
             data.get('transaction_recipient_country', {}).get('country', {}).get('code', {}),
-            data.get('recipient_region', {}).get('code'),
-            data.get('recipient_region', {}).get('vocabulary'),
-            data.get('recipient_region', {}).get('vocabulary_uri'),
+            data.get('transaction_recipient_region', {}).get('region', {}).get('code', {}),
+            data.get('transaction_recipient_region', {}).get('vocabulary', {}).get('code', {}),
+            data.get('transaction_recipient_region', {}).get('vocabulary_uri'),
             data.get('flow_type', {}).get('code'),
             data.get('finance_type', {}).get('code'),
             data.get('aid_type', {}).get('code'),
@@ -250,7 +266,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         provider_narratives_data = validated_data.pop('provider_org_narratives', [])
         receiver_data = validated_data.pop('receiver_org')
         receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
-        # sector_data = validated_data.pop('sector')
+        sector_data = validated_data.pop('sector')
         recipient_country_data = validated_data.pop('recipient_country')
         recipient_region_data = validated_data.pop('recipient_region')
 
@@ -270,11 +286,13 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             save_narratives(receiver_org, receiver_narratives_data, activity)
             validated_data['receiver_organisation'] = receiver_org
 
-        # if sector_data.get('sector'):
-        #     models.TransactionSector.objects.create(
-        #         transaction=instance,
-        #         **sector_data
-        #         )
+        if sector_data.get('sector'):
+            models.TransactionSector.objects.create(
+                transaction=instance,
+                reported_transaction=instance,
+                percentage=100,
+                **sector_data
+                )
 
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
@@ -287,9 +305,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
                 transaction=instance,
+                reported_transaction=instance,
                 percentage=100,
-
-                **recipient_region
+                **recipient_region_data
                 )
 
         return instance
@@ -302,7 +320,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         provider_narratives_data = validated_data.pop('provider_org_narratives', [])
         receiver_data = validated_data.pop('receiver_org')
         receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
-        # sector_data = validated_data.pop('sector')
+        sector_data = validated_data.pop('sector')
         recipient_country_data = validated_data.pop('recipient_country')
         recipient_region_data = validated_data.pop('recipient_region')
 
@@ -333,11 +351,18 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             save_narratives(receiver_org, receiver_narratives_data, activity)
             validated_data['receiver_organisation'] = receiver_org
 
-        # if sector_data.get('sector'):
-        #     models.TransactionSector.objects.create(
-        #         transaction=instance,
-        #         **sector_data
-        #         )
+        if sector_data.get('sector'):
+            try:
+                models.TransactionSector.objects.get(
+                    transaction=instance,
+                    reported_transaction=instance)
+            except:
+                models.TransactionSector.objects.create(
+                    transaction=instance,
+                    reported_transaction=instance,
+                    percentage=100,
+                    **sector_data
+                    )
 
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
@@ -348,11 +373,17 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 )
 
         if recipient_region_data.get('region'):
-            models.TransactionRecipientRegion.objects.create(
-                transaction=instance,
-                percentage=100,
-                **recipient_region
-                )
+            try:
+                models.TransactionRecipientRegion.objects.get(
+                    transaction=instance,
+                    reported_transaction=instance)
+            except:
+                models.TransactionRecipientRegion.objects.create(
+                    transaction=instance,
+                    reported_transaction=instance,
+                    percentage=100,
+                    **recipient_region_data
+                    )
 
 
         return update_instance
