@@ -56,7 +56,7 @@ The task queues page first shows an overview of active workers and the amount of
 
 **Force update currency exchange rates** <br> Fetches monthly currency exchange rates from the IMF. <u>Does</u> reparse exchange rates when they already exist in OIPA.
 
-**Collect documents for indexing** <br> Fetches all binary documents (pdf, csv etc.) for scraping and storage. Enables you to search *inside* of documents. Once Task has been executed, update your Index and access data at `http://<oipa_url>/admin/documents/'.
+**Collect documents for indexing** <br> Fetches all binary documents (pdf, csv etc.) for scraping and storage. Enables you to search *inside* of documents. Once Task has been executed, update your Index using 'python manage.py update_ft_indexes_documents' and access data at `http://<oipa_url>/admin/documents/'.
 
 
 --------
