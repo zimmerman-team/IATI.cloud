@@ -49,6 +49,9 @@ class Dataset(models.Model):
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
     note_count = models.IntegerField(default=0)
 
+    export_in_progress = models.BooleanField(default=False)
+    parse_in_progress = models.BooleanField(default=False)
+
     class Meta:
         verbose_name_plural = "IATI XML sources"
         ordering = ["name"]

@@ -53,6 +53,7 @@ class IATIActivityList(ListAPIView):
 import django_rq
 from task_queue.tasks import export_publisher_activities
 from rest_framework.response import Response
+from iati_synchroniser.models import Dataset
 
 
 class IATIActivityNextExportList(APIView):
@@ -62,6 +63,22 @@ class IATIActivityNextExportList(APIView):
     permission_classes = (PublisherPermissions, )
     
     def post(self, request, publisher_id):
+        try:
+            dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+        except Dataset.DoesNotExist:
+            return Response({
+                'status': 'failed',
+            })
+
+        if dataset.export_in_progress:
+            return Response({
+                'status': 'failed',
+            })
+
+
+        dataset.export_in_progress = True
+        dataset.save()
+
         queue = django_rq.get_queue('export')
         job = queue.enqueue(export_publisher_activities, publisher_id)
 
@@ -85,6 +102,17 @@ class IATIActivityNextExportListResult(APIView):
 
         if job.is_finished:
             ret = {'status':'completed', 'result': job.return_value}
+
+            try:
+                dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+            except Dataset.DoesNotExist:
+                return Response({
+                    'status': 'failed',
+                })
+
+            dataset.export_in_progress = False
+            dataset.save()
+
         elif job.is_queued:
             ret = {'status':'in-queue'}
         elif job.is_started:
@@ -93,9 +121,6 @@ class IATIActivityNextExportListResult(APIView):
             ret = {'status': 'failed'}
             print(job.to_dict())
 
-
-        print('called...')
-        print(ret)
 
         return Response(ret)
 
