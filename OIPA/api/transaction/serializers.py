@@ -70,58 +70,6 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
 
-    transaction = serializers.CharField(write_only=True)
-
-    def full_clean(self): # super(MyForm, self).clean() #if necessary
-        # if self.cleaned_data.get('film') and 'director' in self._errors:
-        #     del self._errors['director']
-        return self.cleaned_data    
-
-    class Meta:
-        model = models.TransactionSector
-        fields = (
-            'transaction',
-            'id',
-            'sector',
-            'vocabulary',
-            'vocabulary_uri',
-        )
-
-    def validate(self, data):
-        transaction = get_or_raise(models.Transaction, data, 'transaction')
-
-        validated = validators.transaction_sector(
-            transaction,
-            data.get('sector', {}).get('code'),
-            data.get('vocabulary', {}).get('code'),
-            data.get('vocabulary_uri'),
-        )
-
-        return handle_errors(validated)
-
-    def create(self, validated_data):
-        transaction = validated_data.get('transaction')
-
-        instance = models.TransactionSector.objects.create(**validated_data)
-
-        return instance
-
-
-    def update(self, instance, validated_data):
-        transaction = validated_data.get('transaction')
-
-        update_instance = models.TransactionSector(**validated_data)
-        update_instance.id = instance.id
-        update_instance.save()
-
-        return update_instance
-
-
-class TransactionSectorV2Serializer(serializers.ModelSerializer):
-    sector = SectorSerializer(fields=('url', 'code', 'name'))
-    vocabulary = VocabularySerializer()
-    vocabulary_uri = serializers.URLField()
-
     class Meta:
         model = models.TransactionSector
         fields = (
@@ -181,7 +129,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     provider_organisation = TransactionProviderSerializer(required=False)
     receiver_organisation = TransactionReceiverSerializer(required=False)
     disbursement_channel = CodelistSerializer()
-    sector = TransactionSectorV2Serializer(required=False, source="transaction_sector")
+    sector = TransactionSectorSerializer(required=False, source="transaction_sector")
     recipient_country = TransactionRecipientCountrySerializer(required=False, source="transaction_recipient_country")
     recipient_region = TransactionRecipientRegionSerializer(required=False, source="transaction_recipient_region")
     tied_status = CodelistSerializer()
