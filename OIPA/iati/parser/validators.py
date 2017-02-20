@@ -80,6 +80,14 @@ def combine_validation(validations=[]):
         "validated_data": validated_data,
     }
 
+iati_regex = re.compile(r'^[^\/\&\|\?]*$')
+def validate_iati_identifier(iati_identifier):
+    if iati_regex.match(iati_identifier):
+        return True
+    else:
+        return False
+
+
 def validate_date(unvalidated_date):
     # datetime
 
@@ -346,7 +354,16 @@ def activity(
                     ))
 
 
-        activity_id = normalize(iati_identifier)
+        if not validate_iati_identifier(iati_identifier):
+            errors.append(
+                FieldValidationError(
+                    "activity",
+                    "iati-identifier",
+                    apiField="iati_identifier",
+                    ))
+
+
+        activity_id = iati_identifier
 
         if not activity_id:
             errors.append(
@@ -1473,9 +1490,9 @@ def activity_transaction(
         receiver_org_type_code,
         receiver_org_narratives_data,
         disbursement_channel_code,
-        # sector_code,
-        # sector_vocabulary_code,
-        # sector_vocabulary_uri,
+        sector_code,
+        sector_vocabulary_code,
+        sector_vocabulary_uri,
         recipient_country_code,
         recipient_region_code,
         recipient_region_vocabulary_code,
@@ -1504,8 +1521,8 @@ def activity_transaction(
         receiver_org_organisation = get_or_none(models.Organisation, pk=receiver_org_ref)
         receiver_org_activity = get_or_none(models.Activity, pk=receiver_org_activity_id)
         disbursement_channel = get_or_none(models.DisbursementChannel, pk=disbursement_channel_code)
-        # sector = get_or_none(models.Sector, pk=sector_code)
-        # sector_vocabulary = get_or_none(models.SectorVocabulary, pk=sector_vocabulary)
+        sector = get_or_none(models.Sector, pk=sector_code)
+        sector_vocabulary = get_or_none(models.SectorVocabulary, pk=sector_vocabulary_code)
         recipient_country = get_or_none(models.Country, pk=recipient_country_code)
         recipient_region = get_or_none(models.Region, pk=recipient_region_code)
         recipient_region_vocabulary = get_or_none(models.RegionVocabulary, pk=recipient_region_vocabulary_code)
@@ -1614,17 +1631,17 @@ def activity_transaction(
                     ))
 
 
-        # if sector_code:
-        #     # check if activity is using sector-strategy or transaction-sector strategy
-        #     has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
+        if sector_code:
+            # check if activity is using sector-strategy or transaction-sector strategy
+            has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
 
-        #     if has_existing_sectors:
-        #         errors.append(
-        #             RequiredFieldError(
-        #                 "transaction",
-        #                 "sector",
-        #                 "Already provided a sector on activity",
-        #                 ))
+            if has_existing_sectors:
+                errors.append(
+                    RequiredFieldError(
+                        "transaction",
+                        "sector",
+                        "Already provided a sector on activity",
+                        ))
 
         if recipient_country_code:
             # check if activity is using recipient_country-strategy or transaction-recipient_country strategy
@@ -1702,16 +1719,16 @@ def activity_transaction(
                 },
                 "receiver_org_narratives": receiver_org_narratives['validated_data'],
                 "disbursement_channel": disbursement_channel,
-                # "sector": {
-                #     "sector": sector,
-                #     "vocabulary": sector_vocabulary,
-                #     "vocabulary_uri": sector_vocabulary
-                # },
+                "sector": {
+                    "sector": sector,
+                    "vocabulary": sector_vocabulary,
+                    "vocabulary_uri": sector_vocabulary
+                },
                 "recipient_country": {
                     "country": recipient_country,
                 },
                 "recipient_region": {
-                    "recipient_region": recipient_region,
+                    "region": recipient_region,
                     "vocabulary": recipient_region_vocabulary,
                     "vocabulary_uri": recipient_region_vocabulary
                 },

@@ -292,7 +292,7 @@ class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seriali
 
 
 class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityPolicyMarkerSerializer):
-    xml_meta = {'attributes': ('code', 'vocabulary', 'significance',)}
+    xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri', 'significance',)}
 
     code = serializers.CharField(source='code.code')
     vocabulary = serializers.CharField(source='vocabulary.code')
@@ -885,9 +885,9 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
-    sector = TransactionSectorXMLSerializer(many=True, required=False, source="transactionsector_set")
-    recipient_country = TransactionRecipientCountryXMLSerializer(many=True, required=False, source="transactionrecipientcountry_set")
-    recipient_region = TransactionRecipientRegionXMLSerializer(many=True, required=False, source="transactionrecipientregion_set")
+    sector = TransactionSectorXMLSerializer(required=False, source="transaction_sector")
+    recipient_country = TransactionRecipientCountryXMLSerializer(required=False, source="transaction_recipient_country")
+    recipient_region = TransactionRecipientRegionXMLSerializer(required=False, source="transaction_recipient_region")
 
     value = ValueSerializer(source='*')
     transaction_date = IsoDateSerializer()

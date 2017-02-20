@@ -1938,8 +1938,8 @@ class TransactionSaveTestCase(TestCase):
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
-        # sector = iati_factory.SectorFactory.create()
-        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        sector = iati_factory.SectorFactory.create()
+        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
         # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
         country = iati_factory.CountryFactory.create()
@@ -2022,7 +2022,7 @@ class TransactionSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 }
             },
-            "recipient_regions": [{
+            "recipient_region": {
                 "region": {
                     "code": region.code,
                     "name": 'irrelevant',
@@ -2032,18 +2032,18 @@ class TransactionSaveTestCase(TestCase):
                     "name": 'irrelevant',
                 },
                 "vocabulary_uri": "https://twitter.com/",
-            }],
-            # "sector": {
-            #     "sector": {
-            #         "code": sector.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary": {
-            #         "code": sector_vocabulary.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary_uri": "https://twitter.com/",
-            # },
+            },
+            "sector": {
+                "sector": {
+                    "code": sector.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": sector_vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
             "flow_type": {
                 "code": flow_type.code,
                 "name": 'irrelevant',
@@ -2089,7 +2089,10 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.humanitarian, data['humanitarian'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
-
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].region.code, data['recipient_region']['region']['code'])
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionsector_set.all()[0].sector.code, data['sector']['sector']['code'])
+        self.assertEqual(instance.transactionsector_set.all()[0].reported_transaction.pk, instance.pk)
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
@@ -2121,13 +2124,15 @@ class TransactionSaveTestCase(TestCase):
         transaction_provider = transaction_factory.TransactionProviderFactory.create(transaction=transaction)
         transaction_receiver = transaction_factory.TransactionReceiverFactory.create(transaction=transaction)
         transaction_recipient_country = transaction_factory.TransactionRecipientCountryFactory(transaction=transaction, reported_transaction=transaction)
+        transaction_recipient_region = transaction_factory.TransactionRecipientRegionFactory.create(transaction=transaction, reported_transaction=transaction)
+        transaction_sector = transaction_factory.TransactionSectorFactory.create(transaction=transaction, reported_transaction=transaction)
         transaction_type = iati_factory.TransactionTypeFactory.create(code="2")
         currency = iati_factory.CurrencyFactory.create(code="af")
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
-        # sector = iati_factory.SectorFactory.create()
-        # sector_vocabulary = iati_factory.SectorVocabulary.create()
+        sector = iati_factory.SectorFactory.create()
+        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
         # recipient_region = transaction_factory.TransactionRecipientRegionFactory.create()
         country = iati_factory.CountryFactory.create()
@@ -2227,26 +2232,26 @@ class TransactionSaveTestCase(TestCase):
             },
             "recipient_region": {
                 "region": {
-                    "code": region.code,
+                    "code": transaction_recipient_region.region.code,
                     "name": 'irrelevant',
                 },
                 "vocabulary": {
-                    "code": region_vocabulary.code,
+                    "code": transaction_recipient_region.vocabulary.code,
                     "name": 'irrelevant',
                 },
                 "vocabulary_uri": "https://twitter.com/",
             },
-            # "sector": {
-            #     "sector": {
-            #         "code": sector.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary": {
-            #         "code": sector_vocabulary.code,
-            #         "name": 'irrelevant',
-            #     },
-            #     "vocabulary_uri": "https://twitter.com/",
-            # },
+            "sector": {
+                "sector": {
+                    "code": transaction_sector.sector.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary": {
+                    "code": transaction_sector.vocabulary.code,
+                    "name": 'irrelevant',
+                },
+                "vocabulary_uri": "https://twitter.com/",
+            },
             "flow_type": {
                 "code": flow_type.code,
                 "name": 'irrelevant',
@@ -2292,6 +2297,11 @@ class TransactionSaveTestCase(TestCase):
         self.assertEqual(instance.humanitarian, data['humanitarian'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].country.code, data['recipient_country']['country']['code'])
         self.assertEqual(instance.transactionrecipientcountry_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].region.code, data['recipient_region']['region']['code'])
+        self.assertEqual(instance.transactionrecipientregion_set.all()[0].reported_transaction.pk, instance.pk)
+        self.assertEqual(instance.transactionsector_set.all()[0].sector.code, data['sector']['sector']['code'])
+        self.assertEqual(instance.transactionsector_set.all()[0].reported_transaction.pk, instance.pk)
+
 
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
@@ -2332,98 +2342,6 @@ class TransactionSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = transaction_models.Transaction.objects.get(pk=transaction.id)
-
-
-
-class TransactionSectorSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_sector(self):
-
-        transaction = transaction_factory.TransactionFactory.create()
-        sector = iati_factory.SectorFactory.create()
-        sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
-
-        data = {
-            "transaction": transaction.id,
-            "sector": {
-                "code": sector.code,
-                "name": 'irrelevant',
-            },
-            "vocabulary": {
-                "code": sector_vocabulary.code,
-                "name": 'irrelevant',
-            },
-            "vocabulary_uri": "https://twitter.com/",
-        }
-
-        res = self.c.post(
-                "/api/publishers/{}/activities/{}/transactions/{}/sectors/?format=json".format(self.publisher.id, transaction.activity.id, transaction.id), 
-                data,
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = transaction_models.TransactionSector.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.transaction.id, data['transaction'])
-        self.assertEqual(instance.sector.code, str(data['sector']['code']))
-
-    def test_update_sector(self):
-        transaction_sector = transaction_factory.TransactionSectorFactory.create()
-        sector = iati_factory.SectorFactory.create(code=89)
-
-        data = {
-            "transaction": transaction_sector.transaction.id,
-            "sector": {
-                "code": sector.code,
-                "name": 'irrelevant',
-            },
-            "vocabulary": {
-                "code": transaction_sector.vocabulary.code,
-                "name": 'irrelevant',
-            },
-            "vocabulary_uri": "https://twitter.com/",
-        }
-
-        res = self.c.put(
-                "/api/publishers/{}/activities/{}/transactions/{}/sectors/{}/?format=json".format(self.publisher.id, transaction_sector.transaction.activity.id, transaction_sector.transaction.id, transaction_sector.id), 
-                data,
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = transaction_models.TransactionSector.objects.get(pk=res.json()['id'])
-
-        self.assertEqual(instance.transaction.id, data['transaction'])
-        self.assertEqual(instance.sector.code, str(data['sector']['code']))
-        self.assertEqual(instance.vocabulary.code, str(data['vocabulary']['code']))
-
-    def test_delete_sector(self):
-        transaction_sector = transaction_factory.TransactionSectorFactory.create()
-
-        res = self.c.delete(
-                "/api/publishers/{}/activities/{}/transactions/{}/sectors/{}/?format=json".format(self.publisher.id, transaction_sector.transaction.activity.id, transaction_sector.transaction.id, transaction_sector.id), 
-                format='json'
-                )
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            instance = transaction_models.TransactionSector.objects.get(pk=transaction_sector.id)
 
 
 

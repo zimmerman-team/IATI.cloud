@@ -49,11 +49,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.activity.validators import activity_required_fields
+from iati.activity_search_indexes import reindex_activity
 
 class FilterPublisherMixin(object):
-    serializer_class = TransactionSerializer
-    filter_class = TransactionFilter
-
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
@@ -62,6 +60,22 @@ class FilterPublisherMixin(object):
 
         return Activity.objects.filter(publisher__id=publisher_id)
 
+class UpdateActivitySearchMixin(object):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def reindex_activity(self, serializer):
+        instance = serializer.instance.get_activity()
+        print('reindexing activity...')
+        reindex_activity(instance)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        self.reindex_activity(serializer)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        self.reindex_activity(serializer)
 
 class ActivityAggregations(AggregationView):
     """
@@ -362,6 +376,7 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
 
         if (activity.ready_to_publish):
             activity.ready_to_publish = False
+            activity.modified = True
             activity.save()
             return Response(False)
 
@@ -373,6 +388,7 @@ class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         activity.ready_to_publish = True
+        activity.modified = True
         activity.save()
 
         return Response(True)
@@ -472,7 +488,7 @@ class ActivityTransactionDetail(DynamicDetailView):
         return Transaction.objects.get(pk=pk)
 
 
-class ActivityListCRUD(FilterPublisherMixin, DynamicListCRUDView):
+class ActivityListCRUD(UpdateActivitySearchMixin, FilterPublisherMixin, DynamicListCRUDView):
 
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
@@ -500,7 +516,7 @@ class ActivityListCRUD(FilterPublisherMixin, DynamicListCRUDView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
-class ActivityDetailCRUD(DynamicDetailCRUDView):
+class ActivityDetailCRUD(UpdateActivitySearchMixin, DynamicDetailCRUDView):
     """
     Returns detailed information about Activity.
 
@@ -557,7 +573,7 @@ class ActivityTransactionDetailCRUD(RetrieveUpdateDestroyAPIView):
         return Transaction.objects.get(pk=pk)
 
 
-class ActivityReportingOrganisationList(ListCreateAPIView):
+class ActivityReportingOrganisationList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -567,7 +583,7 @@ class ActivityReportingOrganisationList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).reporting_organisations.all()
 
-class ActivityReportingOrganisationDetail(RetrieveUpdateDestroyAPIView):
+class ActivityReportingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -577,7 +593,7 @@ class ActivityReportingOrganisationDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return ActivityReportingOrganisation.objects.get(pk=pk)
 
-class ActivityDescriptionList(ListCreateAPIView):
+class ActivityDescriptionList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.DescriptionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -587,7 +603,7 @@ class ActivityDescriptionList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return Activity(pk=pk).description_set.all()
 
-class ActivityDescriptionDetail(RetrieveUpdateDestroyAPIView):
+class ActivityDescriptionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DescriptionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -597,7 +613,7 @@ class ActivityDescriptionDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.Description.objects.get(pk=pk)
 
-class ActivityParticipatingOrganisationList(ListCreateAPIView):
+class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.ParticipatingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -607,7 +623,7 @@ class ActivityParticipatingOrganisationList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return iati_models.Activity(pk=pk).participating_organisations.all()
 
-class ActivityParticipatingOrganisationDetail(RetrieveUpdateDestroyAPIView):
+class ActivityParticipatingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ParticipatingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -677,7 +693,7 @@ class ActivityContactInfoDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ContactInfo.objects.get(pk=pk)
 
-class ActivityRecipientCountryList(ListCreateAPIView):
+class ActivityRecipientCountryList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -687,7 +703,7 @@ class ActivityRecipientCountryList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return iati_models.Activity(pk=pk).activityrecipientcountry_set.all()
 
-class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
+class ActivityRecipientCountryDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -697,7 +713,7 @@ class ActivityRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.ActivityRecipientCountry.objects.get(pk=pk)
 
-class ActivityRecipientRegionList(ListCreateAPIView):
+class ActivityRecipientRegionList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -707,7 +723,7 @@ class ActivityRecipientRegionList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return iati_models.Activity(pk=pk).activityrecipientregion_set.all()
 
-class ActivityRecipientRegionDetail(RetrieveUpdateDestroyAPIView):
+class ActivityRecipientRegionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -718,7 +734,7 @@ class ActivityRecipientRegionDetail(RetrieveUpdateDestroyAPIView):
         return iati_models.ActivityRecipientRegion.objects.get(pk=pk)
 
 
-class ActivitySectorList(ListCreateAPIView):
+class ActivitySectorList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.ActivitySectorSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -728,7 +744,7 @@ class ActivitySectorList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return iati_models.Activity(pk=pk).activitysector_set.all()
 
-class ActivitySectorDetail(RetrieveUpdateDestroyAPIView):
+class ActivitySectorDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivitySectorSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -889,7 +905,7 @@ class ActivityPlannedDisbursementDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('id')
         return iati_models.PlannedDisbursement.objects.get(pk=pk)
 
-class ActivityDocumentLinkList(ListCreateAPIView):
+class ActivityDocumentLinkList(UpdateActivitySearchMixin, ListCreateAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -899,7 +915,7 @@ class ActivityDocumentLinkList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return iati_models.Activity(pk=pk).documentlink_set.all()
 
-class ActivityDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
+class ActivityDocumentLinkDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -1167,7 +1183,7 @@ class ActivityConditionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity(pk=pk).country_conditions.budgetitem_set.all()
+        return iati_models.Activity(pk=pk).conditions.condition_set.all()
 
 class ActivityConditionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ConditionSerializer
