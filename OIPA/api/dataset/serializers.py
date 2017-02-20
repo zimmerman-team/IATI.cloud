@@ -87,6 +87,8 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'notes',
             'added_manually',
             'is_parsed',
+            'export_in_progress',
+            'parse_in_progress',
             )
 
     def get_filetype(self, obj):

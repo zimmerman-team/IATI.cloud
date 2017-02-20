@@ -10,7 +10,7 @@ In the following sub-chapters, the most interesting elements of the admin interf
 ## Admin interface
 --------
 
-The admin interface can be found at `http:\\<oipa_url>\admin\`. When you followed the steps at <a href="/installing/">Installing</a> to install OIPA, an account already exists and you can log in with username `vagrant`, password `vagrant`.
+The admin interface can be found at `http://<oipa_url>/admin/`. When you followed the steps at <a href="/installing/">Installing</a> to install OIPA, an account already exists and you can log in with username `vagrant`, password `vagrant`.
 
 When you don't have a log-in yet, a superuser can be created with the Django management command: `python manage.py createsuperuser`. 
 
@@ -55,6 +55,8 @@ The task queues page first shows an overview of active workers and the amount of
 **Update currency exchange rates** <br>Fetches monthly currency exchange rates from the IMF. Does not reparse exchange rates when they already exist in OIPA.
 
 **Force update currency exchange rates** <br> Fetches monthly currency exchange rates from the IMF. <u>Does</u> reparse exchange rates when they already exist in OIPA.
+
+**Collect documents for indexing** <br> Fetches all binary documents (pdf, csv etc.) for scraping and storage. Enables you to search *inside* of documents. Once Task has been executed, update your Index using `python manage.py update_ft_indexes_documents` and access data at `http://<oipa_url>/api/documents/`.
 
 
 --------

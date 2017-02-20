@@ -203,6 +203,12 @@ class TransactionSector(models.Model):
         Transaction,
         on_delete=models.CASCADE
         )
+
+    reported_transaction = models.OneToOneField(
+        Transaction,
+        related_name="transaction_sector",
+        null=True
+        )
     
     sector = models.ForeignKey(
         Sector,
@@ -265,6 +271,12 @@ class TransactionRecipientRegion(models.Model):
         Transaction,
         on_delete=models.CASCADE,
         # related_name="recipient_region"
+        )
+
+    reported_transaction = models.OneToOneField(
+        Transaction,
+        related_name="transaction_recipient_region",
+        null=True
         )
 
     region = models.ForeignKey(

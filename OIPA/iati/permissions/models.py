@@ -7,6 +7,7 @@ class OrganisationUser(models.Model):
 
     # the IR API key
     iati_api_key = models.CharField(max_length=255, null=True, blank=True)
+    iati_user_id = models.CharField(max_length=255, null=True, blank=True)
 
     user = models.OneToOneField(User, related_name='organisationuser')
 

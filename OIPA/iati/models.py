@@ -172,8 +172,8 @@ class Activity(models.Model):
             ["end_date", "id"],
         ]
 
-    def get_publisher(self):
-        return self.publisher
+    def get_activity(self):
+        return self
 
     def is_valid_iati(self):
         """
@@ -297,8 +297,8 @@ class Title(models.Model):
     # related name allows title to be accessed from activity.title
     activity = models.OneToOneField(Activity, related_name="title")
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
     def __unicode__(self,):
         return "Title"
@@ -343,8 +343,8 @@ class ActivityReportingOrganisation(models.Model):
     def __unicode__(self,):
         return "ref: %s" % self.ref
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -380,8 +380,8 @@ class ActivityParticipatingOrganisation(models.Model):
         verbose_name = 'Participating organisation'
         verbose_name_plural = 'Participating organisations'
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -407,8 +407,8 @@ class ActivityPolicyMarker(models.Model):
         verbose_name = 'Policy marker'
         verbose_name_plural = 'Policy markers'
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class ActivitySector(models.Model):
@@ -430,8 +430,8 @@ class ActivitySector(models.Model):
         verbose_name = 'Sector'
         verbose_name_plural = 'Sectors'
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -452,8 +452,8 @@ class ActivityRecipientCountry(models.Model):
         verbose_name = 'Recipient country'
         verbose_name_plural = 'Recipient countries'
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -461,8 +461,8 @@ class CountryBudgetItem(models.Model):
     activity = models.OneToOneField(Activity, related_name="country_budget_items")
     vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class HumanitarianScope(models.Model):
@@ -472,8 +472,8 @@ class HumanitarianScope(models.Model):
     vocabulary_uri = models.URLField(null=True, blank=True)
     type = models.ForeignKey(HumanitarianScopeType)
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class BudgetItem(models.Model):
@@ -481,8 +481,8 @@ class BudgetItem(models.Model):
     code = models.ForeignKey(BudgetIdentifier)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
 
-    def get_publisher(self):
-        return self.country_budget_item.activity.publisher
+    def get_activity(self):
+        return self.country_budget_item.activity
 
 
 
@@ -494,8 +494,8 @@ class BudgetItemDescription(models.Model):
         object_id_field='related_object_id')
 
 
-    def get_publisher(self):
-        return self.budget_item.country_budget_item.activity.publisher
+    def get_activity(self):
+        return self.budget_item.country_budget_item.activity
 
 
 class ActivityRecipientRegion(models.Model):
@@ -517,8 +517,8 @@ class ActivityRecipientRegion(models.Model):
         verbose_name = 'Recipient region'
         verbose_name_plural = 'Recipient regions'
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class OtherIdentifier(models.Model):
@@ -535,8 +535,8 @@ class OtherIdentifier(models.Model):
     def __unicode__(self,):
         return "identifier: %s" % self.identifier
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class ActivityWebsite(models.Model):
@@ -546,8 +546,8 @@ class ActivityWebsite(models.Model):
     def __unicode__(self,):
         return "%s" % self.url
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class ContactInfo(models.Model):
@@ -560,8 +560,8 @@ class ContactInfo(models.Model):
     def __unicode__(self,):
         return "type: %s" % self.type
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class ContactInfoOrganisation(models.Model):
@@ -579,8 +579,8 @@ class ContactInfoDepartment(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.contact_info.activity.publisher
+    def get_activity(self):
+        return self.contact_info.activity
 
 
 class ContactInfoPersonName(models.Model):
@@ -590,8 +590,8 @@ class ContactInfoPersonName(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.contact_info.activity.publisher
+    def get_activity(self):
+        return self.contact_info.activity
 
 
 
@@ -602,8 +602,8 @@ class ContactInfoJobTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.contact_info.activity.publisher
+    def get_activity(self):
+        return self.contact_info.activity
 
 
 
@@ -614,8 +614,8 @@ class ContactInfoMailingAddress(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.contact_info.activity.publisher
+    def get_activity(self):
+        return self.contact_info.activity
 
 
 
@@ -643,8 +643,8 @@ class RelatedActivity(models.Model):
     class Meta:
         verbose_name_plural = "related activities"
 
-    def get_publisher(self):
-        return self.current_activity.publisher
+    def get_activity(self):
+        return self.current_activity
 
 
 class DocumentLink(models.Model):
@@ -660,8 +660,8 @@ class DocumentLink(models.Model):
     def __unicode__(self,):
         return "url: %s" % self.url
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
@@ -672,15 +672,15 @@ class DocumentLinkCategory(models.Model):
     class Meta:
         verbose_name_plural = "Document link categories"
 
-    def get_publisher(self):
-        return self.document_link.activity.publisher
+    def get_activity(self):
+        return self.document_link.activity
 
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     language = models.ForeignKey(Language, null=True, blank=True, default=None)
 
-    def get_publisher(self):
-        return self.document_link.activity.publisher
+    def get_activity(self):
+        return self.document_link.activity
 
 class DocumentLinkTitle(models.Model):
     document_link = models.OneToOneField(DocumentLink)
@@ -689,8 +689,8 @@ class DocumentLinkTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.document_link.activity.publisher
+    def get_activity(self):
+        return self.document_link.activity
 
 
 class DocumentSearch(models.Model):
@@ -731,8 +731,8 @@ class Document(models.Model):
             ["created_at", "id"],
         ]
 
-    def get_publisher(self):
-        return self.document_link.activity.publisher
+    def get_activity(self):
+        return self.document_link.activity
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
@@ -742,8 +742,8 @@ class Result(models.Model):
     def __unicode__(self,):
         return "Result"
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class ResultTitle(models.Model):
@@ -753,8 +753,8 @@ class ResultTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result.activity.publisher
+    def get_activity(self):
+        return self.result.activity
 
 
 class ResultDescription(models.Model):
@@ -764,8 +764,8 @@ class ResultDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result.activity.publisher
+    def get_activity(self):
+        return self.result.activity
 
 
 class ResultIndicator(models.Model):
@@ -779,8 +779,8 @@ class ResultIndicator(models.Model):
         default=None)
     ascending = models.BooleanField(default=True)
 
-    def get_publisher(self):
-        return self.result.activity.publisher
+    def get_activity(self):
+        return self.result.activity
 
     def __unicode__(self,):
         return "baseline year: %s" % self.baseline_year
@@ -792,8 +792,8 @@ class ResultIndicatorReference(models.Model):
     # TODO: this should be renamed to vocabulary_uri in IATI standard... - 2016-06-03
     indicator_uri = models.URLField(null=True, blank=True)
 
-    def get_publisher(self):
-        return self.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator.result.activity
 
 
 class ResultIndicatorTitle(models.Model):
@@ -809,8 +809,8 @@ class ResultIndicatorTitle(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator.result.activity
 
 
 
@@ -821,8 +821,8 @@ class ResultIndicatorDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator.result.activity
 
 
 
@@ -833,8 +833,8 @@ class ResultIndicatorBaselineComment(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator.result.activity
 
 
 
@@ -849,8 +849,8 @@ class ResultIndicatorPeriod(models.Model):
     def __unicode__(self,):
         return "target: %s, actual: %s" % (self.target, self.actual)
 
-    def get_publisher(self):
-        return self.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodTargetLocation(models.Model):
@@ -861,8 +861,8 @@ class ResultIndicatorPeriodTargetLocation(models.Model):
     def __unicode__(self,):
         return "%s" % self.ref
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodActualLocation(models.Model):
@@ -873,8 +873,8 @@ class ResultIndicatorPeriodActualLocation(models.Model):
     def __unicode__(self,):
         return "%s" % self.ref
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 
@@ -886,8 +886,8 @@ class ResultIndicatorPeriodTargetDimension(models.Model):
     def __unicode__(self,):
         return "%s: %s" % (self.name, self.value)
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodActualDimension(models.Model):
@@ -898,8 +898,8 @@ class ResultIndicatorPeriodActualDimension(models.Model):
     def __unicode__(self,):
         return "%s: %s" % (self.name, self.value)
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodTargetComment(models.Model):
@@ -909,8 +909,8 @@ class ResultIndicatorPeriodTargetComment(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 
@@ -921,8 +921,8 @@ class ResultIndicatorPeriodActualComment(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.result_indicator_period.result_indicator.result.activity.publisher
+    def get_activity(self):
+        return self.result_indicator_period.result_indicator.result.activity
 
 
 
@@ -944,8 +944,8 @@ class Description(models.Model):
     def __unicode__(self,):
         return "Description with type %s" % self.type
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -970,8 +970,8 @@ class Budget(models.Model):
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 
@@ -994,8 +994,8 @@ class BudgetSector(models.Model):
     def __unicode__(self, ):
         return "%s - %s" % (self.budget.id, self.sector.code)
 
-    def get_publisher(self):
-        return self.budget.activity.publisher
+    def get_activity(self):
+        return self.budget.activity
 
 
 
@@ -1021,8 +1021,8 @@ class PlannedDisbursement(models.Model):
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
     # budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
@@ -1095,8 +1095,8 @@ class PlannedDisbursementProvider(models.Model):
                             self.provider_activity_ref,)
 
 
-    def get_publisher(self):
-        return self.planned_disbursement.activity.publisher
+    def get_activity(self):
+        return self.planned_disbursement.activity
 
 
 class PlannedDisbursementReceiver(models.Model):
@@ -1153,8 +1153,8 @@ class PlannedDisbursementReceiver(models.Model):
         return "%s - %s" % (self.ref,
                             self.receiver_activity_ref,)
 
-    def get_publisher(self):
-        return self.planned_disbursement.activity.publisher
+    def get_activity(self):
+        return self.planned_disbursement.activity
 
 class Conditions(models.Model):
     activity = models.OneToOneField(Activity, related_name="conditions")
@@ -1163,8 +1163,8 @@ class Conditions(models.Model):
     # def __unicode__(self,):
     #     return "text: %s - type: %s" % (self.text[:30], self.type)
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 class Condition(models.Model):
     conditions = models.ForeignKey(Conditions)
@@ -1177,8 +1177,8 @@ class Condition(models.Model):
     # def __unicode__(self,):
     #     return "text: %s - type: %s" % (self.text[:30], self.type)
 
-    def get_publisher(self):
-        return self.conditions.activity.publisher
+    def get_activity(self):
+        return self.conditions.activity
 
 
 class Location(models.Model):
@@ -1228,8 +1228,8 @@ class Location(models.Model):
     def __unicode__(self,):
         return "Location: %s" % self.point_pos
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 # TODO: move to codelist
@@ -1241,8 +1241,8 @@ class LocationAdministrative(models.Model):
         related_name="administrative_vocabulary")
     level = models.IntegerField(null=True, blank=True, default=None)
 
-    def get_publisher(self):
-        return self.location.activity.publisher
+    def get_activity(self):
+        return self.location.activity
 
 class LocationName(models.Model):
     location = models.OneToOneField(Location, related_name="name")
@@ -1251,8 +1251,8 @@ class LocationName(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.location.activity.publisher
+    def get_activity(self):
+        return self.location.activity
 
 
 class LocationDescription(models.Model):
@@ -1262,8 +1262,8 @@ class LocationDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.location.activity.publisher
+    def get_activity(self):
+        return self.location.activity
 
 
 class LocationActivityDescription(models.Model):
@@ -1273,8 +1273,8 @@ class LocationActivityDescription(models.Model):
         content_type_field='related_content_type',
         object_id_field='related_object_id')
 
-    def get_publisher(self):
-        return self.location.activity.publisher
+    def get_activity(self):
+        return self.location.activity
 
 
 class Fss(models.Model):
@@ -1286,8 +1286,8 @@ class Fss(models.Model):
     def __unicode__(self,):
         return "%s" % self.extraction_date
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class FssForecast(models.Model):
@@ -1300,8 +1300,8 @@ class FssForecast(models.Model):
     def __unicode__(self,):
         return "%s" % self.year
 
-    def get_publisher(self):
-        return self.fss.activity.publisher
+    def get_activity(self):
+        return self.fss.activity
 
 
 class CrsAdd(models.Model):
@@ -1311,8 +1311,8 @@ class CrsAdd(models.Model):
     def __unicode__(self,):
         return "%s" % self.id
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class CrsAddOtherFlags(models.Model):
@@ -1323,8 +1323,8 @@ class CrsAddOtherFlags(models.Model):
     def __unicode__(self,):
         return "%s" % self.id
 
-    def get_publisher(self):
-        return self.crs_add.activity.publisher
+    def get_activity(self):
+        return self.crs_add.activity
 
 
 class CrsAddLoanTerms(models.Model):
@@ -1359,8 +1359,8 @@ class CrsAddLoanTerms(models.Model):
     def __unicode__(self,):
         return "%s" % self.crs_add_id
 
-    def get_publisher(self):
-        return self.crs_add.activity.publisher
+    def get_activity(self):
+        return self.crs_add.activity
 
 
 class CrsAddLoanStatus(models.Model):
@@ -1396,8 +1396,8 @@ class CrsAddLoanStatus(models.Model):
     def __unicode__(self):
         return "%s" % self.year
 
-    def get_publisher(self):
-        return self.crs_add.activity.publisher
+    def get_activity(self):
+        return self.crs_add.activity
 
 
 class ActivityDate(models.Model):
@@ -1408,8 +1408,8 @@ class ActivityDate(models.Model):
     def __unicode__(self):
         return "type: %s - iso_date: %s" % (self.type, self.iso_date.strftime('%Y-%m-%d'))
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 
 
 class LegacyData(models.Model):
@@ -1421,6 +1421,6 @@ class LegacyData(models.Model):
     def __unicode__(self):
         return "%s" % self.name
 
-    def get_publisher(self):
-        return self.activity.publisher
+    def get_activity(self):
+        return self.activity
 

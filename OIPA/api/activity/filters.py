@@ -490,6 +490,14 @@ class ActivityFilter(TogetherFilterSet):
         return queryset.filter(Q(modified=True))
     modified = MethodFilter()
 
+    def filter_published(self, queryset, value):
+        if value == "true":
+            return queryset.filter(Q(published=True))
+        else:
+            return queryset.filter(Q(published=False))
+
+    published = MethodFilter()
+
     # modified = BooleanFilter(name='modified')
     # start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
