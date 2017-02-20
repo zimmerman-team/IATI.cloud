@@ -79,7 +79,7 @@ class OrganisationAdminGroupView(GenericAPIView):
     def get(self, request, publisher_id):
         users = OrganisationAdminGroup.objects.get(publisher_id=publisher_id).organisationuser_set.all()
 
-        print(users)
+        # print(users)
 
         serializer = OrganisationUserSerializer(
             users, 
@@ -216,16 +216,16 @@ class OrganisationVerifyApiKey(GenericAPIView):
         except:
             raise exceptions.APIException(detail="user with id {} not found".format(user_id))
 
-        print('got user')
-        print(result)
+        # print('got user')
+        # print(result)
 
         try:
             orgList = client.call_action('organization_list_for_user', {})
         except:
             raise exceptions.APIException(detail="Can't get organisation list for user".format(user_id))
 
-        print('got orgList')
-        print(orgList)
+#         print('got orgList')
+#         print(orgList)
 
         if not len(orgList):
             raise exceptions.APIException(detail="This user has no organisations yet".format(user_id))
@@ -238,8 +238,8 @@ class OrganisationVerifyApiKey(GenericAPIView):
             raise exceptions.APIException(detail="Can't call organization_show for organization with id {}".format(primary_org_id))
             return Response(status=401)
 
-        print('got primary_org')
-        print(primary_org)
+        # print('got primary_org')
+        # print(primary_org)
 
         if not primary_org:
             raise exceptions.APIException(detail="Can't call organization_show for organization with id {}".format(primary_org_id))
@@ -287,6 +287,7 @@ class OrganisationVerifyApiKey(GenericAPIView):
         organisation_admin_group[0].organisationuser_set.add(user)
 
         user.iati_api_key = api_key
+        user.iati_user_id = user_id
         user.save()
 
         serializer = OrganisationUserSerializer(

@@ -61,6 +61,9 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_activities/$',
         api.export.views.IATIActivityNextExportList.as_view(),
         name='activity-nextexport-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_activities/(?P<job_id>[^@$+,/;=?]+)$',
+        api.export.views.IATIActivityNextExportListResult.as_view(),
+        name='activity-nextexport-list'),
     
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/mark_ready_to_publish$',
         api.activity.views.ActivityMarkReadyToPublish.as_view(),
