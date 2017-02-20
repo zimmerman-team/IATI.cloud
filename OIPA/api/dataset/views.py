@@ -250,7 +250,8 @@ class DatasetPublishActivities(APIView):
         api_key = organisationuser.iati_api_key
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
-        source_name = '{}-iatistudioactivity2'.format(publisher.name)
+        # TODO: should this be the name? - 2017-02-20
+        source_name = '{}-activities'.format(publisher.name)
 
         # get all published activities, except for the ones that are just modified
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
@@ -312,6 +313,7 @@ class DatasetPublishActivities(APIView):
         # remove the old datasets from the registry
         # TODO: query the registry to remove a dataset - 2017-01-16
         # TODO: remove old datasets locally as well - 2017-01-16
+        # TODO: Or just ask the user to remove the old datasets by hand? - 2017-02-20
 
         # return Dataset object
         serializer = DatasetSerializer(dataset, context={'request': request})
@@ -327,6 +329,8 @@ class DatasetPublishActivitiesUpdate(APIView):
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
         source_url = request.data.get('source_url', None)
+
+        # TODO: call package_update to update source_url for registry as well - 2017-02-20
 
         if not source_url:
             raise exceptions.APIException(detail="no source_url provided")
