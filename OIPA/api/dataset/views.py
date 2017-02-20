@@ -279,21 +279,30 @@ class DatasetPublishActivities(APIView):
             })
 
         except Exception as e:
-            # try re-enabling it instead
-            print('exception raised in client_call_action', e, e.error_dict)
-            print(source_name)
-            print(source_url)
-            print(primary_org_id)
+            # try to recover from case when the dataset already exists (just update it instead)
 
-#             result = client.call_action('user_show', { 
-#                 "id": iati_user_id,
-#                 "include_datasets": True,
-#             })
+            old_package = client.call_action('package_show', { 
+                "name_or_id": source_name,
+            })
 
-#             print(result)
+            if not old_package:
+                print('exception raised in client_call_action', e, e.error_dict)
+                raise exceptions.APIException(detail="Failed publishing dataset")
 
-            # TODO: try to recover from case when the dataset already exists (just update it instead) - 2017-02-13
-            raise exceptions.APIException(detail="Failed publishing dataset")
+            registry_dataset = client.call_action('package_update', { 
+                "id": old_package.get('id'),
+                "resources": [
+                    { "url": source_url }
+                ],
+                "name": source_name,
+                "filetype": "activity",
+                "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                "activity_count": activities.count(),
+                "title": source_name,
+                "owner_org": primary_org_id,
+                "url": source_url,
+            })
+
 
         # 0. create_or_update Dataset object
         dataset = Dataset.objects.create(
