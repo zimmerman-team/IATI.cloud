@@ -91,6 +91,8 @@ class IATIActivityNextExportListResult(APIView):
             ret = {'status':'waiting'}
         elif job.is_failed:
             ret = {'status': 'failed'}
+            print(job.to_dict())
+
 
         print('called...')
         print(ret)

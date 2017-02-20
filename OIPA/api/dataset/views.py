@@ -236,6 +236,7 @@ class DatasetPublishActivities(APIView):
 
     def post(self, request, publisher_id):
         user = request.user.organisationuser
+        iati_user_id = user.iati_user_id
         publisher = Publisher.objects.get(pk=publisher_id)
         admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
 
@@ -249,7 +250,7 @@ class DatasetPublishActivities(APIView):
         api_key = organisationuser.iati_api_key
         client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
 
-        source_name = '{}-iatistudioactivity'.format(publisher.name)
+        source_name = '{}-iatistudioactivity2'.format(publisher.name)
 
         # get all published activities, except for the ones that are just modified
         activities = Activity.objects.filter(ready_to_publish=True, publisher=publisher)
@@ -275,24 +276,20 @@ class DatasetPublishActivities(APIView):
                 "owner_org": primary_org_id,
                 "url": source_url,
             })
-                # registry_dataset = client.call_action('package_update', { 
-                #     "id": dataset.id,
-                #     "resources": [
-                #         { "url": source_url }
-                #     ],
-                #     "name": source_name,
-                #     "filetype": "activity",
-                #     "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
-                #     "activity_count": activities.count(),
-                #     "title": source_name,
-                #     "owner_org": primary_org_id,
-                #     "url": source_url,
-                # })
-
 
         except Exception as e:
             # try re-enabling it instead
             print('exception raised in client_call_action', e, e.error_dict)
+            print(source_name)
+            print(source_url)
+            print(primary_org_id)
+
+#             result = client.call_action('user_show', { 
+#                 "id": iati_user_id,
+#                 "include_datasets": True,
+#             })
+
+#             print(result)
 
             # TODO: try to recover from case when the dataset already exists (just update it instead) - 2017-02-13
             raise exceptions.APIException(detail="Failed publishing dataset")

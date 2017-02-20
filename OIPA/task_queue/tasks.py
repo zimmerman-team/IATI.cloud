@@ -203,7 +203,8 @@ def export_publisher_activities(publisher_id):
 
     serializer = ActivityXMLSerializer(queryset, many=True)
 
-    xml = XMLRenderer(serializer.data)
+    xml_renderer = XMLRenderer()
+    xml = xml_renderer.render(serializer.data)
 
     return xml
 
