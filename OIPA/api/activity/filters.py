@@ -11,6 +11,7 @@ from django_filters import TypedChoiceFilter
 from distutils.util import strtobool
 
 from api.generics.filters import CommaSeparatedCharFilter
+from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 
@@ -214,6 +215,13 @@ class ActivityFilter(TogetherFilterSet):
         qs=ActivitySector,
         lookup_type='in',
         name='sector__code',
+        fk='activity',
+    )
+
+    sector_vocabulary = ToManyFilter(
+        qs=ActivitySector,
+        lookup_type='in',
+        name='sector__vocabulary__code',
         fk='activity',
     )
 
@@ -559,3 +567,16 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]
+
+
+
+
+class ActivityAggregationFilter(ActivityFilter):
+    """
+    Activity aggregation filter class
+    """
+
+    sector_vocabulary = CommaSeparatedStickyCharFilter(
+        name='sector__vocabulary__code',
+        lookup_type='in',
+    )
