@@ -4,6 +4,7 @@ from django.utils.six.moves import StringIO
 from rest_framework.renderers import BaseRenderer
 from lxml import etree
 from lxml.builder import E
+from django.conf import settings
 
 
 # TODO: Make this more generic - 2016-01-21
@@ -27,14 +28,16 @@ class XMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        if 'results' in data: # list of items
-            xml = E(self.root_tag_name)
-            xml.set('version', self.version)
-            self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
-        else: # one item
-            xml = E(self.root_tag_name)
-            xml.set('version', self.version)
-            self._to_xml(xml, data, parent_name=self.item_tag_name)
+        if 'results' in data:
+            data = data['results']
+
+        xml = E(self.root_tag_name)
+        xml.set('version', self.version)
+
+        if hasattr(settings, 'EXPORT_COMMENT'):
+            xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+        self._to_xml(xml, data, parent_name=self.item_tag_name)
 
         return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
