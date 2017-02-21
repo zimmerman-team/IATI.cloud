@@ -577,6 +577,6 @@ class ActivityAggregationFilter(ActivityFilter):
     """
 
     sector_vocabulary = CommaSeparatedStickyCharFilter(
-        name='transactionsector__sector__vocabulary__code',
+        name='sector__vocabulary__code',
         lookup_type='in',
     )
