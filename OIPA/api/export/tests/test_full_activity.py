@@ -204,6 +204,8 @@ class ActivityXMLTestCase(TestCase):
         fss1 = activity.fss_set.all()[0]
         fss_forecast1 = fss1.fssforecast_set.all()[0]
 
+        transaction2 = related_activity1.ref_activity.transaction_set.all()[0]
+
 
         xml = iati_activities(
                 iati_activity(
@@ -270,6 +272,26 @@ class ActivityXMLTestCase(TestCase):
                     default_finance_type(**{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
                     default_aid_type(**{"code": str(related_activity1.ref_activity.default_aid_type.code)}),
                     default_tied_status(**{"code": str(related_activity1.ref_activity.default_tied_status.code)}),
+                    transaction(
+                        transaction_type(**{"code": transaction2.transaction_type.code}),
+                        transaction_date(**{"iso-date": transaction2.transaction_date.isoformat()}),
+                        value(
+                        str(transaction2.value),
+                            **{
+                            "value-date": transaction2.value_date.isoformat(),
+                            "currency": transaction2.currency.code
+                        }
+                        ),
+                        disbursement_channel(**{"code": transaction2.disbursement_channel.code}),
+                        flow_type(**{"code": transaction2.flow_type.code}),
+                        finance_type(**{"code": transaction2.finance_type.code}),
+                        aid_type(**{"code": transaction2.aid_type.code}),
+                        tied_status(**{"code": transaction2.tied_status.code}),
+                        **{
+                        "humanitarian": boolToNum(transaction2.humanitarian), 
+                        "ref": transaction2.ref
+                        }
+                        ),
                     **{
                             "hierarchy": str(related_activity1.ref_activity.hierarchy),
                             "{http://www.w3.org/XML/1998/namespace}lang": related_activity1.ref_activity.default_lang.code,

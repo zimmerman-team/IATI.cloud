@@ -2035,6 +2035,7 @@ class Parse(IatiParser):
         transaction = self.get_model('Transaction')
         transaction_sector = transaction_models.TransactionSector()
         transaction_sector.transaction = transaction
+        transaction_sector.reported_transaction = transaction
         transaction_sector.sector = sector
         transaction_sector.vocabulary = vocabulary
         transaction_sector.vocabulary_uri = vocabulary_uri
@@ -2067,6 +2068,7 @@ class Parse(IatiParser):
         transaction = self.get_model('Transaction')
         transaction_country = transaction_models.TransactionRecipientCountry()
         transaction_country.transaction = transaction
+        transaction_country.reported_transaction = transaction
         transaction_country.country = country
         transaction_country.percentage = 100
         transaction_country.reported_on_transaction = True
@@ -2112,6 +2114,7 @@ class Parse(IatiParser):
         transaction = self.get_model('Transaction')
         transaction_recipient_region = transaction_models.TransactionRecipientRegion()
         transaction_recipient_region.transaction = transaction
+        transaction_recipient_region.reported_transaction = transaction
         transaction_recipient_region.region = region
         transaction_recipient_region.vocabulary = vocabulary
         transaction_recipient_region.vocabulary_uri = vocabulary_uri
