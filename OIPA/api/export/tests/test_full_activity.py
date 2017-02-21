@@ -20,6 +20,8 @@ from lxml import etree as ET
 
 from iati.factory.utils import _create_test_activity
 
+from django.conf import settings
+
 # narrative = getattr(E, 'narrative')
 iati_activities = getattr(E, 'iati-activities')
 iati_activity = getattr(E, 'iati-activity')
@@ -208,7 +210,7 @@ class ActivityXMLTestCase(TestCase):
 
 
         xml = iati_activities(
-                ET.Comment("Published using the IATI Studio publisher"),
+                ET.Comment(settings.EXPORT_COMMENT),
                 iati_activity(
                     iati_identifier(related_activity1.ref_activity.iati_identifier),
                     reporting_org(
