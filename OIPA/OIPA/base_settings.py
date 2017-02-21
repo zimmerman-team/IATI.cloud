@@ -249,3 +249,5 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'api.permissions.serializers.RegistrationSerializer'
 }
 
+EXPORT_COMMENT = "Published using the IATI Studio publisher"
+
