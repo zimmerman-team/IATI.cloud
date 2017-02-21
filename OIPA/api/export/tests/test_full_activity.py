@@ -208,6 +208,7 @@ class ActivityXMLTestCase(TestCase):
 
 
         xml = iati_activities(
+                ET.Comment("Published using the IATI Studio publisher"),
                 iati_activity(
                     iati_identifier(related_activity1.ref_activity.iati_identifier),
                     reporting_org(
