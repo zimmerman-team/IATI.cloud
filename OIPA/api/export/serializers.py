@@ -886,7 +886,7 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     currency = CodelistSerializer()
 
     sector = TransactionSectorXMLSerializer(many=True, required=False, source="transactionsector_set")
-    recipient_country = TransactionRecipientCountryXMLSerializer(many=true, required=False, source="transactionrecipientcountry_set")
+    recipient_country = TransactionRecipientCountryXMLSerializer(many=True, required=False, source="transactionrecipientcountry_set")
     recipient_region = TransactionRecipientRegionXMLSerializer(many=True, required=False, source="transactionrecipientregion_set")
 
     value = ValueSerializer(source='*')
