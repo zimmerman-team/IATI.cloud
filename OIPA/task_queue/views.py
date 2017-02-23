@@ -105,7 +105,7 @@ def add_scheduled_task(request):
         scheduler.schedule(
             scheduled_time=datetime.utcnow(),   # Time for first execution
             func=getattr(tasks, task),       # Function to be queued
-            args=[int(parameters)],
+            args=(parameters,),
             interval=int(period),                 # Time before the function is called again, in seconds
             repeat=None                      # Repeat this number of times (None means repeat forever)
         )

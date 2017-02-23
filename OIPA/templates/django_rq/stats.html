@@ -463,8 +463,17 @@ $(document).ready(function (){
 
 
     $('select[name="new-schedule-task"]').change(function(){
-       if ($(this).val() == "parse_all_not_parsed_in_x_days"){
+       if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref" || $(this).val() == "delete_sources_not_found_in_registry_in_x_days"){
            $('#add-scheduled-task-input-parameters-wrapper').show(500);
+
+
+            if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref"){
+                $('#add-scheduled-task-input-parameters').attr("placeholder", "organisation ref here");
+            } else{
+                $('#add-scheduled-task-input-parameters').attr("placeholder", "days (only the number)");
+            }
+
+
        } else {
            $("#add-scheduled-task-input-parameters-wrapper").hide(500);
        }
@@ -477,7 +486,7 @@ $(document).ready(function (){
         var period = $('select[name="new-schedule-period"]').val();
         var parameters = null;
 
-        if (task == "parse_all_not_parsed_in_x_days"){
+        if (["parse_all_sources_by_publisher_ref", "force_parse_by_publisher_ref", "delete_sources_not_found_in_registry_in_x_days"].indexOf(task) > -1){
             parameters = $('input[name="add-scheduled-task-default-parameters"]').val();
         }
 
