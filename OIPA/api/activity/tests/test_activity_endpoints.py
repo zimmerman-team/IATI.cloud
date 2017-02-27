@@ -25,7 +25,7 @@ class TestActivityEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_activity_detail_endpoint(self):
-        iati_factory.ActivityFactory.create(id='activity_id')
+        iati_factory.ActivityFactory.create(iati_identifier='activity_id')
         url = reverse('activities:activity-detail', args={'activity_id'})
         msg = 'activity detail endpoint should be located at {0}'
         expect_url = '/api/activities/activity_id/'
