@@ -104,7 +104,7 @@ class Parse(IatiParser):
                 "text", 
                 "required element empty")
 
-        old_activity = self.get_or_none(models.Activity, id=activity_id)
+        old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
 
         if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
@@ -138,7 +138,6 @@ class Parse(IatiParser):
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
 
         activity = models.Activity()
-        activity.id = activity_id
         activity.iati_identifier = iati_identifier[0]
         if default_lang:
             activity.default_lang_id = default_lang

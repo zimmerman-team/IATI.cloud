@@ -144,7 +144,6 @@ class ActivitySaveTestCase(TestCase):
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
-        self.assertEqual(instance.id, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
         self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
@@ -235,7 +234,6 @@ class ActivitySaveTestCase(TestCase):
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
         self.assertEqual(instance.iati_identifier, data['iati_identifier'])
-        self.assertEqual(instance.id, data['iati_identifier'])
         self.assertEqual(instance.iati_standard_version.code, "2.02")
         self.assertEqual(instance.humanitarian, bool(data['humanitarian']))
         self.assertEqual(instance.activity_status.code, str(data['activity_status']['code']))
@@ -4225,7 +4223,7 @@ class RelatedActivitySaveTestCase(TestCase):
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
-        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.ref, str(data['ref']))
         self.assertEqual(instance.ref_activity.pk, data['ref'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
@@ -4253,7 +4251,7 @@ class RelatedActivitySaveTestCase(TestCase):
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
-        self.assertEqual(instance.ref, data['ref'])
+        self.assertEqual(instance.ref, str(data['ref']))
         self.assertEqual(instance.ref_activity.id, data['ref'])
         self.assertEqual(instance.type.code, data['type']['code'])
 

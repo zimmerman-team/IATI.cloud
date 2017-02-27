@@ -43,9 +43,8 @@ class NarrativeMixin(NoDatabaseFactory):
 class ActivityFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
-        django_get_or_create = ('id',)
+        django_get_or_create = ('iati_identifier',)
 
-    id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
 
     iati_standard_version = SubFactory(VersionFactory)
@@ -63,14 +62,13 @@ class ActivityFactory(NoDatabaseFactory):
     
     # iati_standard_version = VersionFactory()
 
-    # title = SubFactory('iati.factory.iati_factory.TitleFactory')
+    # title = RelatedFactory('iati.factory.iati_factory.TitleFactory', 'activity')
 
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
-        django_get_or_create = ('id', 'iati_identifier')
+        django_get_or_create = ('iati_identifier')
 
-    id = 'IATI-0001'
     iati_identifier = 'IATI-0001'
 
     iati_standard_version = SubFactory(VersionFactory)
@@ -166,7 +164,7 @@ class RelatedActivityFactory(NoDatabaseFactory):
         model = iati.models.RelatedActivity
 
     ref_activity = SubFactory(ActivityFactory)
-    current_activity = SubFactory(ActivityFactory, id="IATI-0002", iati_identifier="IATI-0002")
+    current_activity = SubFactory(ActivityFactory, iati_identifier="IATI-0002")
     ref = "IATI-0001"
     type = SubFactory(RelatedActivityTypeFactory)
 

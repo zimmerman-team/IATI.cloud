@@ -65,8 +65,7 @@ class Activity(models.Model):
         (2, u"Child"),
     )
 
-    id = models.CharField(max_length=150, primary_key=True, blank=False)
-    iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
+    iati_identifier = models.CharField(max_length=150, blank=False, unique=True, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
     dataset = models.ForeignKey(Dataset, null=True, default=None)
@@ -157,7 +156,7 @@ class Activity(models.Model):
 
 
     def __unicode__(self):
-        return self.id
+        return self.iati_identifier
 
     class Meta:
         ordering = ['id']

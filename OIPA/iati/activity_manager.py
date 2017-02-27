@@ -1,9 +1,27 @@
 from django.db import models
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 
 class ActivityQuerySet(SearchQuerySet):
+
+    def get(self, *args, **kwargs):
+        """
+        Search in both 'id' and 'iati_identifier' fields if querying by pk
+        """
+        if 'pk' in kwargs:
+            pk = kwargs.get('pk')
+
+            try:
+                pk_int = int(pk)
+
+                return super(ActivityQuerySet, self).get(Q(pk=pk_int) | Q(iati_identifier=pk_int))
+
+            except ValueError:
+                return super(ActivityQuerySet, self).get(Q(iati_identifier=pk))
+
+
+        return super(ActivityQuerySet, self).get(*args, **kwargs)
 
     # TODO: this makes counting a lot slower than it has to be for a lot of queries
     def count(self):

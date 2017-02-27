@@ -66,7 +66,6 @@ class UpdateActivitySearchMixin(object):
 
     def reindex_activity(self, serializer):
         instance = serializer.instance.get_activity()
-        print('reindexing activity...')
         reindex_activity(instance)
 
     def perform_create(self, serializer):
