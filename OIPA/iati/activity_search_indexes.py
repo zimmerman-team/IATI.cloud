@@ -103,7 +103,7 @@ def reindex_activity(activity):
 
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
-        print("Building ft indexes for {id} raises: {e}".format(id=activity.id, e=e.message))
+        print("Building ft indexes for {id} raises: {e}".format(id=activity.iati_identifier, e=e.message))
 
 
 def reindex_all_activities():

@@ -18,7 +18,6 @@ class PostSaveOrganisationTestCase(TestCase):
         self.parser = Org_Parser_201(None)
         self.version = VersionFactory.create(code='2.01')
         self.organisation = OrganisationFactory.create(
-            id='org1',
             organisation_identifier='org1',
             iati_standard_version=self.version)
 

@@ -319,9 +319,8 @@ class CityFactory(NoDatabaseFactory):
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.Organisation
-        django_get_or_create = ('id',)
+        django_get_or_create = ('organisation_identifier',)
 
-    id = 'GB-COH-03580586'
     organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
 

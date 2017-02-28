@@ -514,6 +514,6 @@ class ActivityManager(SearchManagerMixIn, models.Manager):
     """Activity manager with search capabilities"""
     
     def get_queryset(self):
-        return ActivityQuerySet(self.model, using=self._db).order_by('iati_identifier')
+        return ActivityQuerySet(self.model, using=self._db)
         
         

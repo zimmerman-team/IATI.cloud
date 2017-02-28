@@ -25,7 +25,6 @@ class OrganisationAdminTestCase(TestCase):
     def setUp(self):
         self.site = AdminSite()
         self.organisation = OrganisationFactory.create(
-        	id='org-12345', 
         	organisation_identifier='org-12345')
 
     def test_get_urls(self):

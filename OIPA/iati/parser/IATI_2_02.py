@@ -199,17 +199,18 @@ class Parse(IatiParser):
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         secondary_reporter = element.attrib.get('secondary-reporter', '0')
 
-        organisation = self.get_or_none(models.Organisation, pk=ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
         # create an organisation
         if not organisation:
 
             organisation = organisation_models.Organisation()
-            organisation.id = ref
             organisation.organisation_identifier = ref
             organisation.last_updated_datetime = datetime.now()
             organisation.iati_standard_version_id = "2.02"
             organisation.reported_in_iati = False
+
+            organisation.save()
 
             organisation_name = organisation_models.OrganisationName()
             organisation_name.organisation = organisation
@@ -225,7 +226,6 @@ class Parse(IatiParser):
             # create an organization if it is not parsed yet or not in IATI
             # Also, link to publisher
 
-            organisation.save()
             organisation_name.save()
             organisation_reporting_org.save()
             self.publisher.save()
@@ -289,7 +289,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
 
         activity = self.get_model('Activity')

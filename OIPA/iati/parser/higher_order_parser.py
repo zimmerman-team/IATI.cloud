@@ -21,7 +21,7 @@ def provider_org(self, parent_model, provider_model, fk_name):
         provider_activity = self.get_or_none(models.Activity, iati_identifier=provider_activity_id)
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
         setattr(provider_model, fk_name, parent_model)
         provider_model.ref = ref
@@ -53,7 +53,7 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
         receiver_activity = self.get_or_none(models.Activity, iati_identifier=receiver_activity_id)
 
         normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, pk=ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
         setattr(receiver_model, fk_name, parent_model)
         receiver_model.ref = ref

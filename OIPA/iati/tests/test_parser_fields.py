@@ -784,7 +784,6 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
 
         # should create an organisation
         organisation = self.parser_202.get_model('Organisation')
-        self.assertEqual(organisation.id, self.attrs["ref"])
         self.assertEqual(organisation.organisation_identifier, self.attrs["ref"])
         self.assertEqual(organisation.primary_name, self.attrs["primary_name"])
         self.assertEqual(organisation.reported_in_iati, False)
@@ -814,7 +813,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.build(id="GB-COH-123-reporting-org")
+        test_organisation = iati_factory.OrganisationFactory.build(organisation_identifier="GB-COH-123-reporting-org")
         test_organisation.save()
 
         self.parser_202.register_model('Activity', activity)
@@ -887,7 +886,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.create(id="GB-COH-123-participating-org")
+        test_organisation = iati_factory.OrganisationFactory.create(organisation_identifier="GB-COH-123-participating-org")
 
         self.parser_202.register_model('Activity', activity)
         self.parser_202.register_model('Organisation', test_organisation)
@@ -931,7 +930,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="1.05")
 
-        test_organisation = iati_factory.OrganisationFactory.create(id="GB-COH-123-participating-org")
+        test_organisation = iati_factory.OrganisationFactory.create(organisation_identifier="GB-COH-123-participating-org")
 
         self.parser_105.register_model('Activity', activity)
         self.parser_105.register_model('Organisation', test_organisation)

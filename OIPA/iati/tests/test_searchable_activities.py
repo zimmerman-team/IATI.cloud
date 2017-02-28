@@ -33,7 +33,6 @@ class SearchableActivitiesTestCase(TestCase):
             iati_standard_version=self.first_activity.iati_standard_version)
         organisation_type = codelist_factory.OrganisationTypeFactory()
         organisation = iati_factory.OrganisationFactory(
-            id="org_id", 
             organisation_identifier="org_id")
         iati_factory.ReportingOrganisationFactory.create(
             ref='GB-1',

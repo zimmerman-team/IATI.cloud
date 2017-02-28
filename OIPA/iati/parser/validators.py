@@ -419,7 +419,7 @@ def activity_reporting_org(
         narratives_data=[],
         ):
 
-        organisation = get_or_none(models.Organisation, pk=ref)
+        organisation = get_or_none(models.Organisation, organisation_identifier=ref)
         org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
 
         warnings = []
@@ -514,7 +514,7 @@ def activity_participating_org(
         narratives_data=[],
         ):
 
-        organisation = get_or_none(models.Organisation, pk=ref)
+        organisation = get_or_none(models.Organisation, organisation_identifier=ref)
         org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
         org_role = get_or_none(codelist_models.OrganisationRole, code=org_role)
 
@@ -1308,11 +1308,11 @@ def activity_planned_disbursement(
         type = get_or_none(models.BudgetType, pk=type_code)
         currency = get_or_none(models.Currency, pk=currency_code)
         provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
-        provider_org_organisation = get_or_none(models.Organisation, pk=provider_org_ref)
-        provider_org_activity = get_or_none(models.Activity, pk=provider_org_activity_id)
+        provider_org_organisation = get_or_none(models.Organisation, organisation_identifier=provider_org_ref)
+        provider_org_activity = get_or_none(models.Activity, iati_identifier=provider_org_activity_id)
         receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
-        receiver_org_organisation = get_or_none(models.Organisation, pk=receiver_org_ref)
-        receiver_org_activity = get_or_none(models.Activity, pk=receiver_org_activity_id)
+        receiver_org_organisation = get_or_none(models.Organisation, organisation_identifier=receiver_org_ref)
+        receiver_org_activity = get_or_none(models.Activity, iati_identifier=receiver_org_activity_id)
 
         if not type_code:
             errors.append(
@@ -1501,11 +1501,11 @@ def activity_transaction(
         transaction_type = get_or_none(models.TransactionType, pk=transaction_type_code)
         currency = get_or_none(models.Currency, pk=currency_code)
         provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
-        provider_org_organisation = get_or_none(models.Organisation, pk=provider_org_ref)
-        provider_org_activity = get_or_none(models.Activity, pk=provider_org_activity_id)
+        provider_org_organisation = get_or_none(models.Organisation, organisation_identifier=provider_org_ref)
+        provider_org_activity = get_or_none(models.Activity, iati_identifier=provider_org_activity_id)
         receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
-        receiver_org_organisation = get_or_none(models.Organisation, pk=receiver_org_ref)
-        receiver_org_activity = get_or_none(models.Activity, pk=receiver_org_activity_id)
+        receiver_org_organisation = get_or_none(models.Organisation, organisation_identifier=receiver_org_ref)
+        receiver_org_activity = get_or_none(models.Activity, iati_identifier=receiver_org_activity_id)
         disbursement_channel = get_or_none(models.DisbursementChannel, pk=disbursement_channel_code)
         sector = get_or_none(models.Sector, pk=sector_code)
         sector_vocabulary = get_or_none(models.SectorVocabulary, pk=sector_vocabulary_code)

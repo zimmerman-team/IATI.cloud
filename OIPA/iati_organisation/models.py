@@ -13,6 +13,7 @@ from geodata.models import Country
 from geodata.models import Region
 from iati_vocabulary.models import RegionVocabulary
 
+from organisation_manager import OrganisationManager
 
 #function for making url
 def make_abs_url(org_identifier):
@@ -42,8 +43,7 @@ class OrganisationNarrative(models.Model):
 # organisation base class
 class Organisation(models.Model):
 
-    id = models.CharField(max_length=150, primary_key=True, blank=False)
-    organisation_identifier = models.CharField(max_length=150, db_index=True)
+    organisation_identifier = models.CharField(max_length=150, unique=True, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
@@ -55,6 +55,8 @@ class Organisation(models.Model):
 
     # first narrative
     primary_name = models.CharField(max_length=150, db_index=True)
+
+    objects = OrganisationManager()
 
     def __unicode__(self):
         return self.organisation_identifier
@@ -200,10 +202,10 @@ class DocumentLink(models.Model):
     iso_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.organisation.code, self.url)
+        return "%s - %s" % (self.organisation.organisation_identifier, self.url)
 
     def get_absolute_url(self):
-        return make_abs_url(self.organisation.code)
+        return make_abs_url(self.organisation.organisation_identifier)
 
 
 # TODO: enforce one-to-one

@@ -117,7 +117,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         organisation = self.parser_105.get_model('Organisation')
 
-        self.assertEqual(organisation.id, 'test-id')
+        self.assertEqual(organisation.organisation_identifier, 'test-id')
         self.assertEqual(organisation.default_currency_id , attribs['default-currency'])
         self.assertEqual(organisation.last_updated_datetime, self.parser_105.validate_date(attribs['last-updated-datetime']))
 

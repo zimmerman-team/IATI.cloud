@@ -92,13 +92,12 @@ class Parse(IatiParser):
                 "id", 
                 "organisation: must contain organisation-identifier")
 
-        old_organisation = self.get_or_none(Organisation, id=id)
+        old_organisation = self.get_or_none(Organisation, organisation_identifier=id)
 
         if old_organisation:
             old_organisation.delete()
 
         organisation = Organisation()
-        organisation.id = id
         organisation.organisation_identifier = id
         organisation.last_updated_datetime = last_updated_datetime
         organisation.default_lang_id = default_lang
@@ -282,7 +281,7 @@ class Parse(IatiParser):
         tag:recipient-org"""
         model = self.get_model('RecipientOrgBudget')
         model.recipient_org_identifier = element.attrib.get('ref')
-        if Organisation.objects.filter(id=element.attrib.get('ref')).exists():
+        if Organisation.objects.filter(organisation_identifier=element.attrib.get('ref')).exists():
             model.recipient_org = Organisation.objects.get(pk=element.attrib.get('ref'))
 
         # store element

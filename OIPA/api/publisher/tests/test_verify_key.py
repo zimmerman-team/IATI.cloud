@@ -40,7 +40,7 @@ class TestVerifyApiKey(APITestCase):
 
         admin_group.organisationuser_set.add(user)
 
-        organisation = OrganisationFactory.create(id="NL-KVK-51018586", organisation_identifier="NL-KVK-51018586")
+        organisation = OrganisationFactory.create(organisation_identifier="NL-KVK-51018586")
 
         self.c.force_authenticate(user.user)
 

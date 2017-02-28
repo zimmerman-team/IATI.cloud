@@ -395,7 +395,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         data = {
             "ref": 'GB-COH-03580586',
             "activity": activity.id,
-            "organisation": organisation.id,
+            "organisation": organisation.organisation_identifier,
             "type": {
                 "code": org_type.code,
                 "name": 'irrelevant',
@@ -426,7 +426,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
 
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.organisation.organisation_identifier, data['organisation'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
@@ -443,7 +443,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
         data = {
             "ref": 'GB-COH-03580586',
             "activity": participating_org.activity.id,
-            "organisation": participating_org.organisation.id,
+            "organisation": participating_org.organisation.organisation_identifier,
             "type": {
                 "code": org_type.code,
                 "name": 'irrelevant',
@@ -474,7 +474,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
 
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.activity.id, data['activity'])
-        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.organisation.organisation_identifier, data['organisation'])
         self.assertEqual(instance.type.code, str(data['type']['code']))
         self.assertEqual(instance.role.code, str(data['role']['code']))
 
@@ -1711,7 +1711,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         currency = iati_factory.CurrencyFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
 
         data = {
             "activity": activity.id,
@@ -1730,7 +1730,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
                 "date": datetime.date.today().isoformat(),
             },
             "provider_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
@@ -1745,7 +1745,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
                 ],
             },
             "receiver_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
@@ -1783,7 +1783,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         instance2 = iati_models.PlannedDisbursementProvider.objects.get(planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
         self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.organisation_identifier, data['provider_organisation']['ref'])
         self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
@@ -1794,7 +1794,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         instance3 = iati_models.PlannedDisbursementReceiver.objects.get(planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.organisation_identifier, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity'])
 
@@ -1809,7 +1809,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         currency = iati_factory.CurrencyFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
         organisation_type = iati_factory.OrganisationTypeFactory.create(code=9)
-        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
 
         data = {
             "activity": planned_disbursement.activity.id,
@@ -1828,7 +1828,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
                 "date": datetime.date.today().isoformat(),
             },
             "provider_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
@@ -1843,7 +1843,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
                 ],
             },
             "receiver_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
@@ -1881,7 +1881,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         instance2 = iati_models.PlannedDisbursementProvider.objects.get(planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
         self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.organisation_identifier, data['provider_organisation']['ref'])
         self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, planned_disbursement.activity.id)
 
@@ -1892,7 +1892,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
         instance3 = iati_models.PlannedDisbursementReceiver.objects.get(planned_disbursement_id=res.json()['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.organisation_identifier, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity'])
 
@@ -1935,7 +1935,7 @@ class TransactionSaveTestCase(TestCase):
         currency = iati_factory.CurrencyFactory.create()
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
         sector = iati_factory.SectorFactory.create()
         sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
@@ -1976,7 +1976,7 @@ class TransactionSaveTestCase(TestCase):
                 ],
             },
             "provider_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
@@ -1991,12 +1991,12 @@ class TransactionSaveTestCase(TestCase):
                 ],
             },
             "receiver_organisation": {
-                "ref": organisation.id,
+                "ref": organisation.organisation_identifier,
                 "type": {
                     "code": organisation_type.code,
                     "name": 'irrelevant',
                 },
-                "receiver_activity_id": activity2.id,
+                "receiver_activity_id": activity2.iati_identifier,
                 "narratives": [
                     {
                         "text": "test1"
@@ -2095,7 +2095,7 @@ class TransactionSaveTestCase(TestCase):
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
         self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
-        self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        self.assertEqual(instance2.organisation.organisation_identifier, data['provider_organisation']['ref'])
         self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, activity.id)
 
@@ -2106,9 +2106,9 @@ class TransactionSaveTestCase(TestCase):
         instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
-        self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        self.assertEqual(instance3.organisation.organisation_identifier, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
-        self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity_id'])
+        self.assertEqual(instance3.receiver_activity.iati_identifier, data['receiver_organisation']['receiver_activity_id'])
 
         narratives3 = instance3.narratives.all()
         self.assertEqual(narratives3[0].content, data['receiver_organisation']['narratives'][0]['text'])
@@ -2128,7 +2128,7 @@ class TransactionSaveTestCase(TestCase):
         currency = iati_factory.CurrencyFactory.create(code="af")
         organisation_type = iati_factory.OrganisationTypeFactory.create()
         organisation = iati_factory.OrganisationFactory.create()
-        activity2 = iati_factory.ActivityFactory.create(id="IATI-0002")
+        activity2 = iati_factory.ActivityFactory.create(iati_identifier="IATI-0002")
         sector = iati_factory.SectorFactory.create()
         sector_vocabulary = iati_factory.SectorVocabularyFactory.create()
         # recipient_country = transaction_factory.TransactionRecipientCountryFactory.create()
@@ -2184,7 +2184,7 @@ class TransactionSaveTestCase(TestCase):
                 ],
             },
             # "provider_organisation": {
-            #     "ref": organisation.id,
+            #     "ref": organisation.organisation_identifier,
             #     "type": {
             #         "code": organisation_type.code,
             #         "name": 'irrelevant',
@@ -2304,7 +2304,7 @@ class TransactionSaveTestCase(TestCase):
         instance2 = transaction_models.TransactionProvider.objects.get(transaction_id=result['id'])
         self.assertEqual(instance2.ref, data['provider_organisation']['ref'])
         # self.assertEqual(instance2.normalized_ref, data['provider_organisation']['ref'])
-        # self.assertEqual(instance2.organisation.id, data['provider_organisation']['ref'])
+        # self.assertEqual(instance2.organisation.organisation_identifier, data['provider_organisation']['ref'])
         self.assertEqual(instance2.type.code, str(data['provider_organisation']['type']['code']))
         self.assertEqual(instance2.provider_activity.id, instance.activity.id)
 
@@ -2315,7 +2315,7 @@ class TransactionSaveTestCase(TestCase):
         instance3 = transaction_models.TransactionReceiver.objects.get(transaction_id=result['id'])
         self.assertEqual(instance3.ref, data['receiver_organisation']['ref'])
         # self.assertEqual(instance3.normalized_ref, data['receiver_organisation']['ref'])
-        # self.assertEqual(instance3.organisation.id, data['receiver_organisation']['ref'])
+        # self.assertEqual(instance3.organisation.organisation_identifier, data['receiver_organisation']['ref'])
         self.assertEqual(instance3.type.code, str(data['receiver_organisation']['type']['code']))
         self.assertEqual(instance3.receiver_activity.id, data['receiver_organisation']['receiver_activity_id'])
 
@@ -4206,7 +4206,7 @@ class RelatedActivitySaveTestCase(TestCase):
 
         data = {
             "activity": activity.id,
-            "ref": activity2.id,
+            "ref": activity2.iati_identifier,
             "type": {
                 "code": '1',
                 "name": 'Parent',
@@ -4224,7 +4224,7 @@ class RelatedActivitySaveTestCase(TestCase):
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
         self.assertEqual(instance.ref, str(data['ref']))
-        self.assertEqual(instance.ref_activity.pk, data['ref'])
+        self.assertEqual(instance.ref_activity.iati_identifier, data['ref'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
     def test_update_related_activity(self):
@@ -4234,7 +4234,7 @@ class RelatedActivitySaveTestCase(TestCase):
 
         data = {
             "activity": related_activity.current_activity.id,
-            "ref": activity2.id,
+            "ref": activity2.iati_identifier,
             "type": {
                 "code": type.code,
                 "name": 'Parent',
@@ -4252,7 +4252,7 @@ class RelatedActivitySaveTestCase(TestCase):
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
         self.assertEqual(instance.ref, str(data['ref']))
-        self.assertEqual(instance.ref_activity.id, data['ref'])
+        self.assertEqual(instance.ref_activity.iati_identifier, data['ref'])
         self.assertEqual(instance.type.code, data['type']['code'])
 
     def test_delete_related_activity(self):

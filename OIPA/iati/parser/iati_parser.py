@@ -164,14 +164,14 @@ class IatiParser(object):
             activity = self.get_model('Activity')
             if activity and activity.iati_identifier:
                 iati_identifier = activity.iati_identifier
-            elif activity:
-                iati_identifier = activity.id
+            # elif activity:
+            #     iati_identifier = activity.id
         else:
             organisation = self.get_model('Organisation')
             if organisation and organisation.organisation_identifier:
                 iati_identifier = organisation.organisation_identifier
-            elif organisation:
-                iati_identifier = organisation.id
+            # elif organisation:
+            #     iati_identifier = organisation.id
         
         if not iati_identifier and hasattr(self, 'identifier'):
             iati_identifier = self.identifier

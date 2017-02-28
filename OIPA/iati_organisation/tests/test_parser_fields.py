@@ -119,10 +119,10 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         org = self.parser_202.get_model('Organisation')
         """:type : org_models.Organisation """
-        self.assertEqual(org.id,'AA-AAA-123456789')
+        self.assertEqual(org.organisation_identifier,'AA-AAA-123456789')
         self.assertEqual(org.default_currency_id , attribs['default-currency'])
         self.assertEqual(org.last_updated_datetime,self.parser_202.validate_date(element.attrib.get('last-updated-datetime')))
-        self.assertEqual(org.id,"AA-AAA-123456789")
+        self.assertEqual(org.organisation_identifier,"AA-AAA-123456789")
 
     def test_iati_organisations__iati_organisation__name(self):
         attribs = {
@@ -887,6 +887,11 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('category',attribs)
 
+        model = self.parser_202.get_model('DocumentLink')
+        model.organisation.save()
+        model.organisation = model.organisation
+        model.save()
+
         self.parser_202.iati_organisations__iati_organisation__document_link__category(element)
         model = self.parser_202.get_model('DocumentLink')
     
@@ -932,6 +937,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         """
         self.test_iati_organisations__iati_organisation__document_link()
         model = self.parser_202.get_model('DocumentLink')
+        model.organisation.save()
+        model.organisation = model.organisation
         model.save()
         attribs = {
                 'code':'AF',
