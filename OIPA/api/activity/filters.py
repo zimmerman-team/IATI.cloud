@@ -552,7 +552,9 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         if ordering: 
             ordering = [order.replace("-", "") for order in ordering]
-            queryset = queryset.distinct(*ordering)
+
+            if not 'iati_identifier' in ordering:
+                queryset = queryset.distinct(*ordering)
 
         return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
 

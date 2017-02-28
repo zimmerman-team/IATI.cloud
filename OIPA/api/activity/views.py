@@ -477,7 +477,10 @@ class ActivityTransactionList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).transaction_set.all()
+        try:
+            return Activity.objects.get(pk=pk).transaction_set.all()
+        except Activity.DoesNotExist:
+            return Transaction.objects.none()
 
 class ActivityTransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
@@ -559,7 +562,10 @@ class ActivityTransactionListCRUD(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).transaction_set.all()
+        try:
+            return Activity.objects.get(pk=pk).transaction_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityTransactionDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer
@@ -580,7 +586,10 @@ class ActivityReportingOrganisationList(UpdateActivitySearchMixin, ListCreateAPI
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).reporting_organisations.all()
+        try:
+            return Activity.objects.get(pk=pk).reporting_organisations.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityReportingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
@@ -600,7 +609,10 @@ class ActivityDescriptionList(UpdateActivitySearchMixin, ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).description_set.all()
+        try:
+            return Activity.objects.get(pk=pk).description_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityDescriptionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DescriptionSerializer
@@ -620,7 +632,10 @@ class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin, ListCreat
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).participating_organisations.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).participating_organisations.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityParticipatingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ParticipatingOrganisationSerializer
@@ -640,7 +655,10 @@ class ActivityOtherIdentifierList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).other_identifier_set.all()
+        try:
+            return Activity.objects.get(pk=pk).other_identifier_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityOtherIdentifierDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.OtherIdentifierSerializer
@@ -660,7 +678,10 @@ class ActivityActivityDateList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).activity_date_set.all()
+        try:
+            return Activity.objects.get(pk=pk).activity_date_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityActivityDateDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityDateSerializer
@@ -680,7 +701,10 @@ class ActivityContactInfoList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.get(pk=pk).contact_info_set.all()
+        try:
+            return Activity.objects.get(pk=pk).contact_info_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityContactInfoDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ContactInfoSerializer
@@ -700,7 +724,10 @@ class ActivityRecipientCountryList(UpdateActivitySearchMixin, ListCreateAPIView)
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).activityrecipientcountry_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).activityrecipientcountry_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityRecipientCountryDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
@@ -720,7 +747,10 @@ class ActivityRecipientRegionList(UpdateActivitySearchMixin, ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).activityrecipientregion_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).activityrecipientregion_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityRecipientRegionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
@@ -741,7 +771,10 @@ class ActivitySectorList(UpdateActivitySearchMixin, ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).activitysector_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).activitysector_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivitySectorDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivitySectorSerializer
@@ -790,7 +823,10 @@ class ActivityBudgetItemList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).country_budget_items.budgetitem_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).country_budget_items.budgetitem_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityBudgetItemDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.BudgetItemSerializer
@@ -810,7 +846,10 @@ class ActivityLocationList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).locations.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).locations.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityLocationDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.LocationSerializer
@@ -830,7 +869,10 @@ class ActivityHumanitarianScopeList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).humanitarianscope_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).humanitarianscope_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityHumanitarianScopeDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.HumanitarianScopeSerializer
@@ -851,7 +893,10 @@ class ActivityPolicyMarkerList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).activitypolicymarker_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).activitypolicymarker_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityPolicyMarkerDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityPolicyMarkerSerializer
@@ -871,7 +916,10 @@ class ActivityBudgetList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).budgets.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).budgets.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityBudgetDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.BudgetSerializer
@@ -892,7 +940,10 @@ class ActivityPlannedDisbursementList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).planned_disbursements.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).planned_disbursements.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityPlannedDisbursementDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.PlannedDisbursementSerializer
@@ -912,7 +963,10 @@ class ActivityDocumentLinkList(UpdateActivitySearchMixin, ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).documentlink_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).documentlink_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityDocumentLinkDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer
@@ -972,7 +1026,10 @@ class ActivityRelatedActivityList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).related_activities.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).related_activities.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityRelatedActivityDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.RelatedActivitySerializer
@@ -982,7 +1039,10 @@ class ActivityRelatedActivityDetail(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return iati_models.RelatedActivity.objects.get(pk=pk)
+        try:
+            return iati_models.RelatedActivity.objects.get(pk=pk)
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityLegacyDataList(ListCreateAPIView):
     serializer_class = activity_serializers.LegacyDataSerializer
@@ -992,7 +1052,10 @@ class ActivityLegacyDataList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).legacydata_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).legacydata_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityLegacyDataDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.LegacyDataSerializer
@@ -1012,7 +1075,10 @@ class ActivityResultList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).results.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).results.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityResultDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultSerializer
@@ -1032,7 +1098,10 @@ class ResultIndicatorList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('activity_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicators.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicators.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorSerializer
@@ -1052,7 +1121,10 @@ class ResultIndicatorReferenceList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_references.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_references.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorReferenceDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorReferenceSerializer
@@ -1072,7 +1144,10 @@ class ResultIndicatorPeriodList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_periods.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_periods.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorPeriodDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorPeriodSerializer
@@ -1092,7 +1167,10 @@ class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_locations.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_locations.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorPeriodActualLocationDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorPeriodActualLocationSerializer
@@ -1112,7 +1190,10 @@ class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_locations.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_locations.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorPeriodTargetLocationDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorPeriodTargetLocationSerializer
@@ -1132,7 +1213,10 @@ class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_dimensions.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_dimensions.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorPeriodActualDimensionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorPeriodActualDimensionSerializer
@@ -1152,7 +1236,10 @@ class ResultIndicatorPeriodTargetDimensionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
-        return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_dimensions.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_dimensions.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ResultIndicatorPeriodTargetDimensionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer
@@ -1182,7 +1269,10 @@ class ActivityConditionList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).conditions.condition_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).conditions.condition_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityConditionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ConditionSerializer
@@ -1202,7 +1292,10 @@ class ActivityCrsAddList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityCrsAddDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.CrsAddSerializer
@@ -1222,7 +1315,10 @@ class ActivityCrsAddOtherFlagsList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityCrsAddOtherFlagsDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.CrsAddOtherFlagsSerializer
@@ -1242,7 +1338,10 @@ class ActivityFssList(ListCreateAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        try:
+            return iati_models.Activity.objects.get(pk=pk).crsadd_set.all()
+        except Activity.DoesNotExist:
+            return None
 
 class ActivityFssDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.FssSerializer

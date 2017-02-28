@@ -16,7 +16,6 @@ class TransactionAggregationTestCase(TestCase):
 
         first_activity = iati_factory.ActivityFactory.create()
         second_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=first_activity.iati_standard_version)
 

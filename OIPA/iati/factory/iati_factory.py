@@ -67,7 +67,7 @@ class ActivityFactory(NoDatabaseFactory):
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
-        django_get_or_create = ('iati_identifier')
+        django_get_or_create = ('iati_identifier',)
 
     iati_identifier = 'IATI-0001'
 

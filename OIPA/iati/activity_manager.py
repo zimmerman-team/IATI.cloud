@@ -12,20 +12,24 @@ class ActivityQuerySet(SearchQuerySet):
         if 'pk' in kwargs:
             pk = kwargs.get('pk')
 
-            try:
-                pk_int = int(pk)
+            if pk:
+                if isinstance(pk, self.model):
+                    return pk
 
-                return super(ActivityQuerySet, self).get(Q(pk=pk_int) | Q(iati_identifier=pk_int))
+                try:
+                    pk_int = int(pk)
 
-            except ValueError:
-                return super(ActivityQuerySet, self).get(Q(iati_identifier=pk))
+                    return super(ActivityQuerySet, self).get(Q(pk=pk_int) | Q(iati_identifier=pk_int))
+
+                except ValueError:
+                    return super(ActivityQuerySet, self).get(Q(iati_identifier=pk))
 
 
         return super(ActivityQuerySet, self).get(*args, **kwargs)
 
     # TODO: this makes counting a lot slower than it has to be for a lot of queries
     def count(self):
-        self = self.order_by().only('id')
+        # self = self.order_by('iati_identifier').only('iati_identifier')
         return super(ActivityQuerySet, self).count()
 
     # TODO: is select_related properly applied to main activity? - 2016-12-23
@@ -510,6 +514,6 @@ class ActivityManager(SearchManagerMixIn, models.Manager):
     """Activity manager with search capabilities"""
     
     def get_queryset(self):
-        return ActivityQuerySet(self.model, using=self._db)
+        return ActivityQuerySet(self.model, using=self._db).order_by('iati_identifier')
         
         
