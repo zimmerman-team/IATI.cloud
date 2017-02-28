@@ -27,7 +27,7 @@ from iati.transaction.models import *
 class ActivityFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='id',
+        name='iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -143,7 +143,7 @@ class ActivityFilter(TogetherFilterSet):
         qs=RelatedActivity,
         fk='current_activity',
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
     )
 
     related_activity_type = ToManyFilter(

@@ -20,7 +20,7 @@ from iati.transaction.models import *
 class ResultFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_type='in')
 
     result_title = CommaSeparatedStickyCharFilter(
@@ -236,7 +236,7 @@ class ResultFilter(TogetherFilterSet):
         qs=RelatedActivity,
         fk='current_activity',
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
     )
 
     total_incoming_funds_lte = NumberFilter(
