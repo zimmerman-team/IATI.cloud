@@ -162,7 +162,7 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("relatedactivity__ref_activity__id"),
+            fields=("relatedactivity__ref_activity__iati_identifier"),
             renamed_fields="related_activity",
         ),
         GroupBy(

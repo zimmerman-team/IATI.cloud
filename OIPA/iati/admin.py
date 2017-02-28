@@ -463,7 +463,7 @@ class ActivityAdmin(nested_admin.NestedAdmin):
 
 
 class TransactionAdmin(nested_admin.NestedAdmin):
-    search_fields = ['activity__id']
+    search_fields = ['activity__iati_identifier']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
     exclude = (
@@ -675,7 +675,7 @@ class ResultDescriptionInline(nested_admin.NestedStackedInline):
 
 
 class ResultAdmin(nested_admin.NestedAdmin):
-    search_fields = ['activity__id']
+    search_fields = ['activity__iati_identifier']
     readonly_fields = ['activity']
     list_display = ['__unicode__']
     inlines = [
