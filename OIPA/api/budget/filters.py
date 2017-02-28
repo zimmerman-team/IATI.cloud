@@ -21,7 +21,7 @@ from iati.transaction.models import *
 class BudgetFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -134,7 +134,7 @@ class BudgetFilter(TogetherFilterSet):
         main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
         fk='current_activity',)
 
     related_activity_type = ToManyFilter(

@@ -92,7 +92,6 @@ def _create_test_activity(
     """
 
     activity = ActivityFactory.create(
-        id=iati_identifier,
         iati_identifier=iati_identifier,
         capital_spend=capital_spend
     )

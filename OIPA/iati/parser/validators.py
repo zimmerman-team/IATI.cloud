@@ -362,18 +362,6 @@ def activity(
                     apiField="iati_identifier",
                     ))
 
-
-        activity_id = iati_identifier
-
-        if not activity_id:
-            errors.append(
-                RequiredFieldError(
-                    "activity",
-                    "iati-identifier",
-                    apiField="iati_identifier",
-                    ))
-
-
         # TODO: must be separated as validation to ensure - 2016-12-19
         # if not len(title):
         #     errors.append(
@@ -390,7 +378,7 @@ def activity(
         #             "title__narratives",
         #             ))
 
-        title_narratives = narratives(title_narratives, default_lang, activity_id,  warnings, errors, "title")
+        title_narratives = narratives(title_narratives, default_lang, None,  warnings, errors, "title")
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 
@@ -398,7 +386,6 @@ def activity(
             "warnings": warnings,
             "errors": errors,
             "validated_data": {
-                "id": activity_id,
                 "iati_identifier": iati_identifier,
                 "default_lang": default_lang,
                 "hierarchy": hierarchy,
@@ -419,7 +406,6 @@ def activity(
                 "iati_standard_version": iati_standard_version,
                 "published": published,
                 "title": {
-                    "activity_id": activity_id,
                 },
                 "title_narratives": title_narratives['validated_data'],
             },

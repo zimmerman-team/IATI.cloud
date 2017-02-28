@@ -359,7 +359,7 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("activity__relatedactivity__ref_activity__id"),
+            fields=("activity__relatedactivity__ref_activity__iati_identifier"),
             renamed_fields="related_activity",
         ),
         GroupBy(

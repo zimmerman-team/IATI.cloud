@@ -30,7 +30,6 @@ class PostSaveOrganisationTestCase(TestCase):
         # create ActivityReportingOrganisation with ref this org, organisation=None
         
         activity = ActivityFactory.create(
-            id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=self.version)
 

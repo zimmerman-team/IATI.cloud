@@ -98,7 +98,7 @@ class ParserSetupTestCase(TestCase):
     # fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     def _get_activity(self, iati_identifier):
-        return iati_models.Activity.objects.get(id=iati_identifier)
+        return iati_models.Activity.objects.get(pk=iati_identifier)
 
     @classmethod
     def setUpClass(self):
@@ -535,6 +535,8 @@ class TitleTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
+        print(self.parser_105.get_model('Activity'))
+
 
     def test_title_202(self):
         self.parser_202.iati_activities__iati_activity__title(self.title)
@@ -579,7 +581,7 @@ class TitleTestCase(ParserSetupTestCase):
         self.assertEqual(narrative.related_object, title)
 
         # TODO: refactor so this isnt nescessary
-        title = self.parser_202.pop_model('Title')
+        title = self.parser_105.pop_model('Title')
 
     def test_second_title_as_narrative_105(self):
         self.title.text = "random text"
@@ -599,7 +601,7 @@ class TitleTestCase(ParserSetupTestCase):
         self.assertEqual(second_narrative.content, 'second title')
 
         # TODO: refactor so this isnt nescessary
-        title = self.parser_202.pop_model('Title')
+        title = self.parser_105.pop_model('Title')
 
         
 class DescriptionTestCase(ParserSetupTestCase):
@@ -1038,8 +1040,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         self.narrative = E('narrative', "Some description")
 
         self.activity = build_activity(version="2.02")
-        self.test_contact_info = iati_factory.ContactInfoFactory.build()
-        self.test_contact_info.save()
+        self.test_contact_info = iati_factory.ContactInfoFactory.create()
 
         self.parser_202.register_model('Activity', self.activity)
         self.parser_202.register_model('ContactInfo', self.test_contact_info)
@@ -1905,6 +1906,8 @@ class BudgetTestCase(ParserSetupTestCase):
         value = E('value', text, **attrs) 
         self.parser_202.iati_activities__iati_activity__budget__value(value)
         budget = self.parser_202.get_model('Budget')
+        budget.activity.save()
+        budget.activity = budget.activity
         budget.save()
 
         self.assertEqual(budget.value, Decimal('2000.2'))
@@ -2019,6 +2022,8 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         value = E('value', text, **attrs) 
         self.parser_202.iati_activities__iati_activity__planned_disbursement__value(value)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
+        planned_disbursement.activity.save()
+        planned_disbursement.activity = planned_disbursement.activity
         planned_disbursement.save()
 
         self.assertEqual(planned_disbursement.value, Decimal('2000.2'))
@@ -2149,7 +2154,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
-        self.test_transaction = transaction_factory.TransactionFactory.build()
+        self.test_transaction = transaction_factory.TransactionFactory.create()
         self.parser_202.register_model('Transaction', self.test_transaction)
         self.parser_105.register_model('Transaction', self.test_transaction)
 
@@ -2719,7 +2724,7 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         """
 
         self.activity.save()
-        test_related_activity = iati_factory.RelatedActivityFactory.build(ref="IATI-0001", ref_activity=None)
+        test_related_activity = iati_factory.RelatedActivityFactory.build(ref="IATI-0001", current_activity=self.activity, ref_activity=None)
         test_related_activity.save()
         self.assertEqual(test_related_activity.ref_activity, None)
 

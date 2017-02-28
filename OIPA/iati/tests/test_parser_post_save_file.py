@@ -18,12 +18,10 @@ class PostSaveFileTestCase(TestCase):
         self.dataset = DatasetFactory.create(name='source_reference')
         version = VersionFactory(code='2.01')
         self.first_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
             dataset=self.dataset)
         self.second_activity = iati_factory.ActivityFactory.create(
-            id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=self.first_activity.iati_standard_version,
             dataset=self.dataset)

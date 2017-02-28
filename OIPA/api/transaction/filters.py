@@ -94,7 +94,7 @@ class TransactionFilter(FilterSet):
     #
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -201,7 +201,7 @@ class TransactionFilter(FilterSet):
         qs=RelatedActivity,
         fk='current_activity',
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
     )
 
     related_activity_type = ToManyFilter(

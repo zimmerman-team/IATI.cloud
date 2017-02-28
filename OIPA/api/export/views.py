@@ -32,6 +32,7 @@ class IATIActivityList(ListAPIView):
         ['url', 'activity_aggregation', 'child_aggregation', 'activity_plus_child_aggregation']
     )
 
+    ordering = ('iati_identifier',)
     ordering_fields = (
         'title',
         'planned_start_date',

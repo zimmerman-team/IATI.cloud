@@ -25,7 +25,6 @@ class PostSaveActivityTestCase(TestCase):
         version = VersionFactory.create(code='2.01')
         dataset = DatasetFactory.create()
         self.activity = iati_factory.ActivityFactory.create(
-            id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
             dataset=dataset)

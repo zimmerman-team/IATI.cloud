@@ -583,6 +583,8 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         activity = get_or_raise(iati_models.Activity, data, 'activity')
 
+        print(data)
+
         validated = validators.activity_planned_disbursement(
             activity,
             data.get('type', {}).get('code'),
