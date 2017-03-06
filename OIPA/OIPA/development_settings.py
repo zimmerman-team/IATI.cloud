@@ -46,6 +46,9 @@ FIXTURE_DIRS = (
 
 CKAN_URL = "https://iati-staging.ckan.io"
 
+API_CACHE_SECONDS = 0
+
+
 try:
     from local_settings import *
 except ImportError:
