@@ -108,3 +108,44 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'default_lang',
         )
 
+    def validate(self, data):
+        validated = validators.organisation(
+            data.get('organisation_identifier'),
+            data.get('default_lang', {}).get('code'),
+            data.get('default_currency', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        old_organisation = get_or_none(org_models.Organisation, validated_data, 'organisation_identifier')
+
+        if old_organisation:
+            raise ValidationError({
+                "organisation_identifier": "Organisation with this IATI identifier already exists"
+            })
+
+
+        # TODO: only allow user to create the organisation he is validated with on the IATI registry - 2017-03-06
+
+        instance = iati_models.RelatedActivity.objects.create(**validated_data)
+
+        activity.modified = True
+        activity.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        activity = validated_data.get('current_activity')
+
+        update_instance = iati_models.RelatedActivity(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        activity.modified = True
+        activity.save()
+
+        return update_instance
+
