@@ -30,13 +30,14 @@ class PostSaveActivityTestCase(TestCase):
             dataset=dataset)
 
     def setUpCountriesRegionsSectors(self):
-        self.sector_vocabulary = SectorVocabularyFactory()
+        self.sector_vocabulary_1 = SectorVocabularyFactory()
+        self.sector_vocabulary_2 = SectorVocabularyFactory(code="2", name="DAC5")
 
         self.c1 = iati_factory.CountryFactory(code='AF', name='Afghanistan')
         self.c2 = iati_factory.CountryFactory(code='AL', name='Albania')
         self.r1 = iati_factory.RegionFactory(code='998', name='World-wide, unspecified')
-        self.s1 = SectorFactory(code='15160', name='sector A', vocabulary=self.sector_vocabulary)
-        self.s2 = SectorFactory(code='15161', name='sector B', vocabulary=self.sector_vocabulary)
+        self.s1 = SectorFactory(code='15160', name='sector A', vocabulary=self.sector_vocabulary_1)
+        self.s2 = SectorFactory(code='15161', name='sector B', vocabulary=self.sector_vocabulary_2)
         self.currency = iati_factory.CurrencyFactory(code='EUR')
 
         self.rc1 = iati_factory.ActivityRecipientCountryFactory.create(
@@ -60,14 +61,17 @@ class PostSaveActivityTestCase(TestCase):
         self.rs1 = iati_factory.ActivitySectorFactory.create(
             activity=self.activity,
             sector=self.s1,
+            vocabulary=self.sector_vocabulary_1,
             percentage=None
         )
 
         self.rs2 = iati_factory.ActivitySectorFactory.create(
             activity=self.activity,
             sector=self.s2,
+            vocabulary=self.sector_vocabulary_2,
             percentage=None
         )
+        # print self.rs2.sector.vocabulary.code
 
     def setUpBudgetmodels(self):
         self.setUpCountriesRegionsSectors()
@@ -232,11 +236,11 @@ class PostSaveActivityTestCase(TestCase):
 
         ts1 = TransactionSector.objects.filter(sector=self.s1, transaction=self.t1)[0]
         # 10000 / 2
-        self.assertEqual(ts1.percentage, 50)
+        self.assertEqual(ts1.percentage, 100)
 
         ts2 = TransactionSector.objects.filter(sector=self.s2,transaction=self.t2)[0]
         # 20000 / 3
-        self.assertEqual(round(ts2.percentage), 50)
+        self.assertEqual(round(ts2.percentage), 100)
 
 
     def test_set_sector_budget_with_percentages(self):
