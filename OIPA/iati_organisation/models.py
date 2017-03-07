@@ -56,6 +56,13 @@ class Organisation(models.Model):
     # first narrative
     primary_name = models.CharField(max_length=150, db_index=True)
 
+    # is this organisation published to the IATI registry?
+    published = models.BooleanField(default=False, db_index=True)
+    # is this organisation marked as being published in the next export?
+    ready_to_publish = models.BooleanField(default=False, db_index=True)
+    # is this organisation changed from the originally parsed version?
+    modified = models.BooleanField(default=False, db_index=True)
+
     objects = OrganisationManager()
 
     def __unicode__(self):

@@ -5,36 +5,53 @@ from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModel
 
 from api.fields import EncodedHyperlinkedIdentityField
 
-class VocabularySerializer(serializers.Serializer):
-    code = serializers.CharField()
-    name = serializers.CharField()
+from api.codelist.serializers import OrganisationNarrativeSerializer, OrganisationNarrativeContainerSerializer
+from api.codelist.serializers import VocabularySerializer
+from api.codelist.serializers import CodelistSerializer
+from api.codelist.serializers import CodelistCategorySerializer
 
-class CodelistSerializer(DynamicFieldsSerializer):
-    code = serializers.CharField()
-    name = serializers.CharField()
+from iati_organisation.parser import validators
+from iati.parser import exceptions
+from api.generics.utils import handle_errors
+from api.generics.utils import get_or_raise, get_or_none
 
-class CodelistCategorySerializer(CodelistSerializer):
-    category = CodelistSerializer()
+def save_narratives(instance, data, organisation_instance):
+    current_narratives = instance.narratives.all()
 
-class CodelistVocabularySerializer(CodelistSerializer):
-    vocabulary = VocabularySerializer()
+    current_ids = set([ i.id for i in current_narratives ])
+    old_ids = set(filter(lambda x: x is not None, [ i.get('id') for i in data ]))
+    new_data = filter(lambda x: x.get('id') is None, data)
 
-# TODO: separate this
-class NarrativeSerializer(serializers.ModelSerializer):
-    text = serializers.CharField(source="content")
-    language = CodelistSerializer()
+    # print(current_ids)
+    # print(old_ids)
+    # print(new_data)
 
-    class Meta:
-        model = org_models.OrganisationNarrative
-        fields = (
-            'text',
-            'language',
-        )
+    to_remove = list(current_ids.difference(old_ids))
+    # to_add = list(new_ids.difference(current_ids))
+    to_add = new_data
+    to_update = list(current_ids.intersection(old_ids))
 
+    for fk_id in to_update:
+        narrative = iati_models.Narrative.objects.get(pk=fk_id)
+        narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
-class NarrativeContainerSerializer(serializers.Serializer):
-    narratives = NarrativeSerializer(many=True)
+        for field, data in narrative_data.iteritems():
+            setattr(narrative, field, data)
+        narrative.save()
 
+    for fk_id in to_remove:
+        narrative = iati_models.Narrative.objects.get(pk=fk_id)
+        # instance = instances.get(pk=fk_id)
+        narrative.delete()
+
+    for narrative_data in to_add:
+        # narrative = iati_models.Narrative.objects.get(pk=fk_id)
+        # narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
+
+        org_models.OrganisationNarrative.objects.create(
+                related_object=instance, 
+                organisation=organisation_instance,
+                **narrative_data)
 
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
@@ -46,7 +63,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
 
     format = CodelistSerializer(source='file_format')
     categories = DocumentCategorySerializer(many=True)
-    title = NarrativeContainerSerializer(source="documentlinktitles", many=True)
+    title = OrganisationNarrativeContainerSerializer(source="documentlinktitles", many=True)
 
     class Meta:
         model = org_models.DocumentLink
@@ -58,7 +75,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         )
 
 class BudgetLineSerializer(serializers.ModelSerializer):
-    narratives = NarrativeSerializer(many=True)
+    narratives = OrganisationNarrativeSerializer(many=True)
     language = CodelistSerializer()
     currency = CodelistSerializer()
 
@@ -75,12 +92,12 @@ class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
     country = CodelistSerializer()
     currency = CodelistSerializer()
     budget_lines = BudgetLineSerializer(many=True)
-    narratives = NarrativeSerializer(many=True)
+    narratives = OrganisationNarrativeSerializer(many=True)
 
 
 # TODO: change to NarrativeContainer
 class OrganisationNameSerializer(serializers.Serializer):
-    narratives = NarrativeSerializer(many=True)
+    narratives = OrganisationNarrativeSerializer(many=True)
 
     class Meta:
         model = org_models.OrganisationName
@@ -88,24 +105,33 @@ class OrganisationNameSerializer(serializers.Serializer):
 
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):
-    class TypeSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = iati.models.OrganisationType
-            fields = ('code','name')
+    class PublishedStateSerializer(DynamicFieldsSerializer):
+        published = serializers.BooleanField()
+        ready_to_publish = serializers.BooleanField()
+        modified = serializers.BooleanField()
 
-    url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail')
-    name = OrganisationNameSerializer()
+    url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail', read_only=True)
+
+    id = serializers.CharField(required=False)
+    organisation_identifier = serializers.CharField()
+    last_updated_datetime = serializers.DateTimeField(required=False)
+    xml_lang = serializers.CharField(source='default_lang.code', required=False)
+    default_currency = CodelistSerializer(required=False)
+    name = OrganisationNameSerializer(required=False)
+
+    published_state = PublishedStateSerializer(source="*", read_only=True)
 
     class Meta:
         model = org_models.Organisation
         fields = (
             'url',
+            'id',
             'organisation_identifier',
-            'name',
-            'primary_name',
             'last_updated_datetime',
+            'xml_lang',
             'default_currency',
-            'default_lang',
+            'name',
+            'published_state',
         )
 
     def validate(self, data):
@@ -113,6 +139,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             data.get('organisation_identifier'),
             data.get('default_lang', {}).get('code'),
             data.get('default_currency', {}).get('code'),
+            data.get('name'),
         )
 
         return handle_errors(validated)
@@ -126,26 +153,38 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
                 "organisation_identifier": "Organisation with this IATI identifier already exists"
             })
 
+        name_data = validated_data.pop('name', None)
+        name_narratives_data = validated_data.pop('name_narratives', None)
 
         # TODO: only allow user to create the organisation he is validated with on the IATI registry - 2017-03-06
 
-        instance = iati_models.RelatedActivity.objects.create(**validated_data)
+        instance = org_models.Organisation.objects.create(**validated_data)
+        instance.publisher_id = self.context['view'].kwargs.get('publisher_id')
+        instance.published = False
+        instance.ready_to_publish = False
+        instance.modified = True
 
-        activity.modified = True
-        activity.save()
+        instance.save()
+
+        name = org_models.OrganisationName.objects.create(organisation=instance)
+        instance.name = name
+
+        if name_narratives_data:
+            save_narratives(name, name_narratives_data, instance)
 
         return instance
 
-
     def update(self, instance, validated_data):
-        activity = validated_data.get('current_activity')
+        name_data = validated_data.pop('name', None)
+        name_narratives_data = validated_data.pop('name_narratives', None)
 
-        update_instance = iati_models.RelatedActivity(**validated_data)
+        update_instance = org_models.Organisation(**validated_data)
         update_instance.id = instance.id
+        update_instance.modified = True
         update_instance.save()
 
-        activity.modified = True
-        activity.save()
+        if name_narratives_data:
+            save_narratives(update_instance.name, name_narratives_data, instance)
 
         return update_instance
 

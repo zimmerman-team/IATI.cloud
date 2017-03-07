@@ -44,7 +44,7 @@ def makeBool(text):
     return False
 
 iati_regex = re.compile(r'^[^\/\&\|\?]*$')
-def validate_iati_identifier(iati_identifier):
+def validate_organisation_identifier(iati_identifier):
     if iati_regex.match(iati_identifier):
         return True
     else:
@@ -134,30 +134,11 @@ def narratives(narratives, default_lang, activity_id, warnings=[], errors=[], ap
     }
 
 
-def activity(
-        iati_identifier,
+def organisation(
+        organisation_identifier,
         default_lang,
-        hierarchy,
-        humanitarian,
-        last_updated_datetime,
-        linked_data_uri,
         default_currency,
-        dataset=None, # if parsed
-        activity_status=None,
-        activity_scope=None,
-        collaboration_type=None,
-        default_flow_type=None,
-        default_finance_type=None,
-        default_aid_type=None,
-        default_tied_status=None,
-        planned_start=None,
-        actual_start=None,
-        start_date=None,
-        planned_end=None,
-        actual_end=None,
-        end_date=None,
-        capital_spend=None,
-        title={}, # important arg
+        name={},
         iati_standard_version="2.02",
         published=False,
         ):
@@ -165,179 +146,51 @@ def activity(
         warnings = []
         errors = []
 
-        if not hierarchy: hierarchy = 1
-
         default_currency = get_or_none(models.Currency, pk=default_currency)
         iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
-        activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
-        activity_scope = get_or_none(models.ActivityScope, pk=activity_scope)
-        collaboration_type = get_or_none(models.CollaborationType, pk=collaboration_type)
-        default_flow_type = get_or_none(models.FlowType, pk=default_flow_type)
-        default_finance_type = get_or_none(models.FinanceType, pk=default_finance_type)
-        default_aid_type = get_or_none(models.AidType, pk=default_aid_type)
-        default_tied_status = get_or_none(models.TiedStatus, pk=default_tied_status)
         default_lang = get_or_none(models.Language, pk=default_lang)
-
-        try:
-            last_updated_datetime = validate_date(last_updated_datetime)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "last-updated-datetime",
-                    "invalid date",
-                    apiField="last_updated_datetime",
-                    ))
-            last_updated_datetime = None
-
-        try:
-            planned_start = validate_date(planned_start)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "planned-start",
-                    "invalid date",
-                    apiField="planned_start",
-                    ))
-            planned_start = None
-
-
-        try:
-            actual_start = validate_date(actual_start)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "actual-start",
-                    "invalid date",
-                    apiField="planned_start",
-                    ))
-            actual_start = None
-
-
-        try:
-            start_date = validate_date(start_date)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "start-date",
-                    "invalid date",
-                    apiField="start_date",
-                    ))
-            start_date = None
-
-        try:
-            planned_end = validate_date(planned_end)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "planned-end",
-                    "invalid date",
-                    apiField="planned_end",
-                    ))
-            planned_end = None
-
-        try:
-            actual_end = validate_date(actual_end)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "actual-end",
-                    "invalid date",
-                    apiField="actual_end",
-                    ))
-            actual_end = None
-
-        try:
-            end_date = validate_date(end_date)
-        except RequiredFieldError:
-            errors.append(
-                FieldValidationError(
-                    "activity",
-                    "end-date",
-                    "invalid date",
-                    apiField="end_date",
-                    ))
-            end_date = None
-
-            # validate_dates(
-            #     last_updated_datetime,
-            #     planned_start,
-            #     actual_start,
-            #     start_date,
-            #     planned_end,
-            #     actual_end,
-            #     end_date
-            # ),
-
 
         if not default_lang:
             warnings.append(
                 RequiredFieldError(
-                    "activity",
+                    "organisation",
                     "default-lang",
                     apiField="default_lang",
                     ))
 
 
-        if not validate_iati_identifier(iati_identifier):
+        if not validate_organisation_identifier(organisation_identifier):
             errors.append(
                 FieldValidationError(
-                    "activity",
-                    "iati-identifier",
-                    apiField="iati_identifier",
+                    "organisation",
+                    "organisation-identifier",
+                    apiField="organisation_identifier",
                     ))
 
-        # TODO: must be separated as validation to ensure - 2016-12-19
-        # if not len(title):
+        name_narratives = name.get('narratives', [])
+        # if not len(name_narratives):
         #     errors.append(
         #         RequiredFieldError(
-        #             "activity",
-        #             "title",
+        #             "organisation",
+        #             "name__narratives",
         #             ))
 
-        title_narratives = title.get('narratives', [])
-        # if not len(title_narratives):
-        #     errors.append(
-        #         RequiredFieldError(
-        #             "activity",
-        #             "title__narratives",
-        #             ))
-
-        title_narratives = narratives(title_narratives, default_lang, None,  warnings, errors, "title")
-        errors = errors + title_narratives['errors']
-        warnings = warnings + title_narratives['warnings']
+        name_narratives = narratives(name_narratives, default_lang, None,  warnings, errors, "name")
+        errors = errors + name_narratives['errors']
+        warnings = warnings + name_narratives['warnings']
 
         return {
             "warnings": warnings,
             "errors": errors,
             "validated_data": {
-                "iati_identifier": iati_identifier,
+                "organisation_identifier": organisation_identifier,
                 "default_lang": default_lang,
-                "hierarchy": hierarchy,
-                "humanitarian": humanitarian,
-                "dataset": dataset,
-                "last_updated_datetime": last_updated_datetime,
-                "linked_data_uri": linked_data_uri,
                 "default_currency": default_currency,
-                "activity_status": activity_status,
-                "activity_scope": activity_scope,
-                "collaboration_type": collaboration_type,
-                "default_flow_type": default_flow_type,
-                "default_finance_type": default_finance_type,
-                "default_aid_type": default_aid_type,
-                "default_tied_status": default_tied_status,
-                "default_lang": default_lang,
-                "capital_spend": capital_spend,
                 "iati_standard_version": iati_standard_version,
                 "published": published,
-                "title": {
+                "name": {
                 },
-                "title_narratives": title_narratives['validated_data'],
+                "name_narratives": name_narratives['validated_data'],
             },
         }
 

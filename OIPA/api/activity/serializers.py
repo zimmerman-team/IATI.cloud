@@ -67,187 +67,7 @@ def save_narratives(instance, data, activity_instance):
                 activity=activity_instance,
                 **narrative_data)
 
-# def handle_errors(validated, **rest_validated):
-#     warnings = validated['warnings'] # a list
-#     errors = validated['errors']
-#     validated_data = validated['validated_data'] # a dict
-
-#     error_dict = {}
-
-#     for error in errors:
-#         error_dict[error.field] = error.message
-
-
-#     for key, vals in rest_validated.iteritems():
-
-#         validated_data.update({
-#             key: vals['validated_data']
-#         })
-
-#         if len(vals['errors']):
-#             error_dict[key] = vals['errors']
-#             # for error in vals['errors']:
-#             #     error_dict[error.field] = error.message
-
-#     if len(error_dict):
-#         raise ValidationError(error_dict)
-        
-#     return validated_data
-
-def set_deep(d, key_string, value):
-    dd = d
-    keys = key_string.split('.')
-    last = keys.pop()
-    for k in keys:
-        dd = dd.setdefault(k, {})
-    dd.setdefault(last, value)
-
-
-def handle_errors(*validated):
-    validated_data = {}
-    error_dict = {}
-
-    for vali in validated:
-        for error in vali['errors']:
-            set_deep(error_dict, error.apiField, error.message)
-
-        for key, val in vali['validated_data'].iteritems():
-            validated_data.update({
-                key: val
-            })
-
-    if len(error_dict):
-        raise ValidationError(error_dict)
-        
-    return validated_data
-
-#     validated_data.update({ "narratives": narrative_validated_data })
-
-# def handle_errors(validated, validated_narratives=None):
-#     warnings = validated['warnings'] # a list
-#     errors = validated['errors']
-#     validated_data = validated['validated_data'] # a dict
-
-#     error_dict = {}
-
-#     if len(errors):
-#         for error in errors:
-#             error_dict[error.field] = error.message
-
-#     if validated_narratives:
-#         narrative_warnings = validated_narratives['warnings']
-#         narrative_errors = validated_narratives['errors']
-#         narrative_validated_data = validated_narratives['validated_data']
-
-#         if len(narrative_errors):
-#             for error in narrative_errors:
-#                 error_dict[error.field] = error.message
-
-#         if len(error_dict):
-#             raise ValidationError(error_dict)
-
-#         validated_data.update({ "narratives": narrative_validated_data })
-
-#     return validated_data
-
-
-class NestedWriteMixin():
-    # def __init__(self, *args, **kwargs):
-    #     super(NestedWriteMixin, self).__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        model = getattr(self.Meta, 'model')
-
-        fk_fields = []
-        related_fields = []
-
-        for field, data in validated_data.copy().iteritems():
-            if (field in self.fields):
-                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
-                    related_fields[field] = validated_data.pop(field)
-                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
-                    fk_fields[field] = validated_data.pop(field)
-
-        # for field, data in related_fields.iteritems():
-
-
-        for field, data in validated_data.iteritems():
-            if (field in self.fields):
-
-                source_serializer = self.fields[field]
-                source_field = self.fields[field].source
-                model_field = model._meta.get_field(source_field)
-                field_model = model_field.related_model
-
-                instance_data = getattr(instance, source_field)
-
-                # # check if it is a related object serializer, handle accordingly
-                if isinstance(model_field, (ManyToOneRel, ManyToManyField)):
-                    if data is None:
-                        # remove all related objects
-                        instance_data.clear()
-                    else:
-                        # remove when i
-                        related_set = instance_data
-
-                        related_model_pk_field_name = field_model._meta.pk.name
-
-                        # TODO: how do we get the serializer model? - 2016-09-13
-                        serializer_model = None
-
-                        # print(related_set.all())
-                        # print(data)
-
-                        current_ids = set([ i.id for i in related_set.all() ])
-                        new_ids = set([ i[related_model_pk_field_name] for i in data ])
-
-                        to_remove = list(current_ids.difference(new_ids))
-                        to_add = list(new_ids.difference(current_ids))
-                        to_update = list(current_ids.intersection(new_ids))
-
-#                         print(to_remove)
-#                         print(to_add)
-#                         print(to_update)
-
-                        # help(related_set)
-
-                        for fk_id in to_remove:
-                            obj = field_model.objects.get(pk=fk_id)
-                            related_set.remove(obj)
-
-                        for fk_id in to_add:
-                            # TODO: instead call the serializer's create method - 2016-09-13
-                            obj = field_model.objects.create(data)
-                            related_set.add(obj)
-
-                        for fk_id in to_update:
-                            # TODO: call the serializer's update method - 2016-09-13
-                            # needed for nested updating i guess
-                            fk_data = filter(lambda x: x[related_model_pk_field_name] is fk_id, data)[0]
-                            serializer_class  = source_serializer.child
-                            serializer.initial_data = fk_data
-                            serializer.is_valid()
-                            serializer.save()
-                            pass
-
-                # check if it is a foreign key, handle accordingly
-                elif isinstance(model_field, (ForeignKey, OneToOneRel)):
-                    if data is None:
-                        # delete the fk object and set to
-                        fk_id = instance_data
-                        field_model.objects.get(pk=fk_id).remove()
-                    else:
-                        # set new foreign key
-                        setattr(instance, field, data)
-
-                else:
-                    setattr(instance, field, data)
-
-        instance.save()
-        return instance
+from api.generics.utils import handle_errors
 
 class ValueSerializer(serializers.Serializer):
     currency = CodelistSerializer()
@@ -809,7 +629,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
         return update_instance
 
 
-class ParticipatingOrganisationSerializer(NestedWriteMixin, serializers.ModelSerializer):
+class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
@@ -2812,7 +2632,7 @@ class ActivityAggregationContainerSerializer(DynamicFieldsSerializer):
     activity_children = ActivityAggregationSerializer(source='activity_plus_child_aggregation')
 
 
-class ActivitySerializer(NestedWriteMixin, DynamicFieldsModelSerializer):
+class ActivitySerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='activities:activity-detail', read_only=True)
 
     id = serializers.CharField(required=False)

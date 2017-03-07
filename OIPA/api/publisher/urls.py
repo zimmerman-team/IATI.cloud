@@ -345,4 +345,16 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/conditions/condition/(?P<condition_id>[^@$&+,/:;=?]+)',
         api.activity.views.ActivityConditionDetail.as_view(),
         name='activity-conditions-detail'),
+
+    #
+    # Organisation CRUD
+    #
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/$',
+            api.organisation.views.OrganisationListCRUD.as_view(),
+            name='organisation-detail'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/$',
+            api.organisation.views.OrganisationDetailCRUD.as_view(),
+            name='organisation-detail'),
 ]
+

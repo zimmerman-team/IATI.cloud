@@ -1,13 +1,21 @@
 from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
-import iati_organisation
+from iati_organisation import models
+
 from api.organisation import serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.filters import DjangoFilterBackend
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
 
-from api.generics.views import DynamicListView, DynamicDetailView
+from api.generics.views import DynamicListView, DynamicDetailView, DynamicListCRUDView, DynamicDetailCRUDView
+
+from rest_framework import authentication, permissions
+from api.publisher.permissions import OrganisationAdminGroupPermissions, PublisherPermissions
+from rest_framework.response import Response
+from rest_framework import status
+
 
 def custom_get_object(self):
     """
@@ -39,7 +47,7 @@ class OrganisationList(DynamicListView):
     URI is constructed as follows: `/api/organisations/{organisation_id}`
 
     """
-    queryset = iati_organisation.models.Organisation.objects.all()
+    queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'organisation_identifier','last_updated_datetime', 'name')
 
@@ -62,7 +70,7 @@ class OrganisationDetail(DynamicDetailView):
     - `fields` (*optional*): List of fields to display
 
     """
-    queryset = iati_organisation.models.Organisation.objects.all()
+    queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
 
 
@@ -176,3 +184,97 @@ class ReceivedTransactions(TransactionList):
         organisation = custom_get_object_from_queryset(
             self, organisation.models.Organisation.objects.all())
         return organisation.transaction_receiving_organisation.all()
+
+
+
+class FilterPublisherMixin(object):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        publisher_id = self.kwargs.get('publisher_id')
+
+        return Organisation.objects.filter(publisher__id=publisher_id)
+
+class UpdateOrganisationSearchMixin(object):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def reindex_organisation(self, serializer):
+        instance = serializer.instance.get_organisation()
+        reindex_organisation(instance)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        self.reindex_organisation(serializer)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        self.reindex_organisation(serializer)
+
+
+
+class OrganisationListCRUD(FilterPublisherMixin, DynamicListCRUDView):
+
+    queryset = models.Organisation.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    # filter_class = filters.OrganisationFilter
+    serializer_class = serializers.OrganisationSerializer
+
+    # TODO: define authentication_classes globally? - 2017-01-05
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    always_ordering = 'id'
+
+    ordering_fields = (
+        'title',
+        'recipient_country',
+        'planned_start_date',
+        'actual_start_date',
+        'planned_end_date',
+        'actual_end_date',
+        'start_date',
+        'end_date',
+        'organisation_budget_value',
+        'organisation_incoming_funds_value',
+        'organisation_disbursement_value',
+        'organisation_expenditure_value',
+        'organisation_plus_child_budget_value')
+
+
+class OrganisationDetailCRUD(DynamicDetailCRUDView):
+    """
+    Returns detailed information about Organisation.
+
+    ## URI Format
+
+    ```
+    /api/activities/{organisation_id}
+    ```
+
+    ### URI Parameters
+
+    - `organisation_id`: Desired organisation ID
+
+    ## Extra endpoints
+
+    All information on organisation transactions can be found on a separate page:
+
+    - `/api/activities/{organisation_id}/transactions/`:
+        List of transactions.
+    - `/api/activities/{organisation_id}/provider-organisation-tree/`:
+        The upward and downward provider-organisation-id traceability tree of this organisation.
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+    queryset = models.Organisation.objects.all()
+    # filter_class = filters.OrganisationFilter
+    serializer_class = serializers.OrganisationSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+

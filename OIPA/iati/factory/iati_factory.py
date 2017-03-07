@@ -35,8 +35,6 @@ class NarrativeMixin(NoDatabaseFactory):
         narrative.activity = iati.models.Activity.objects.all()[0] # need a dummy activity (else cyclic)
         narrative.language = LanguageFactory()
 
-        print(attrs)
-
         narrative.save()
 
 
@@ -323,6 +321,18 @@ class OrganisationFactory(NoDatabaseFactory):
 
     organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
+    default_lang = SubFactory(LanguageFactory)
+    default_currency = SubFactory(CurrencyFactory)
+
+    # publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
+    
+
+class OrganisationNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationName
+
+    organisation = SubFactory(OrganisationFactory)
+
 
 class OrganisationReportingOrganisationFactory(NoDatabaseFactory):
     class Meta:
