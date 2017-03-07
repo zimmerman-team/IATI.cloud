@@ -32,6 +32,7 @@ OIPA/supervisord.pid
 
 
 .vagrant
+.vscode
 
 session.vim
 tags
