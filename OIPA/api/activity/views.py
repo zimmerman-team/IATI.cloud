@@ -2,6 +2,9 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIV
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework.exceptions import ValidationError
+from rest_framework import renderers as r_browser
+from rest_framework import renderers as r_json
+from rest_framework_csv import renderers as r_csv
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
@@ -229,6 +232,7 @@ class ActivityAggregations(AggregationView):
 
 
 class ActivityList(DynamicListView):
+
     """
     Returns a list of IATI Activities stored in OIPA.
 
@@ -357,6 +361,7 @@ class ActivityList(DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
+
 # class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
 
 #     def get_queryset(self, *args, **kwargs):
@@ -422,9 +427,11 @@ class ActivityDetail(DynamicDetailView):
 
     """
 
+
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
+    renderer_classes = [r_csv.CSVRenderer, r_json.JSONRenderer, r_browser.BrowsableAPIRenderer]
 
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
