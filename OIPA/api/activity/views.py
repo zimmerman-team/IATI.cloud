@@ -430,7 +430,7 @@ class ActivityDetail(DynamicDetailView):
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
-    renderer_classes = [r_csv.CSVRenderer, r.JSONRenderer, r.BrowsableAPIRenderer]
+    renderer_classes = [r.BrowsableAPIRenderer, r.JSONRenderer, r_csv.CSVRenderer]
 
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
