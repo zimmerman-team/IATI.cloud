@@ -2,8 +2,6 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIV
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework.exceptions import ValidationError
-from rest_framework import renderers as r
-from rest_framework_csv import renderers as r_csv
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
@@ -430,7 +428,6 @@ class ActivityDetail(DynamicDetailView):
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
-    renderer_classes = [r.BrowsableAPIRenderer, r.JSONRenderer, r_csv.CSVRenderer]
 
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
