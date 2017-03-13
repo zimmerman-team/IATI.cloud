@@ -112,7 +112,7 @@ class BudgetLine(models.Model):
 
 
 class TotalBudget(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name="total_budget")
+    organisation = models.ForeignKey(Organisation,related_name="total_budgets")
     status = models.ForeignKey(BudgetStatus, default=1)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)

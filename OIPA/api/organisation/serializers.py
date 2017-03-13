@@ -53,6 +53,22 @@ def save_narratives(instance, data, organisation_instance):
                 organisation=organisation_instance,
                 **narrative_data)
 
+class ValueSerializer(serializers.Serializer):
+    currency = CodelistSerializer()
+    date = serializers.CharField(source='value_date')
+    value = serializers.DecimalField(
+            max_digits=15,
+            decimal_places=2,
+            coerce_to_string=False,
+            )
+
+    class Meta:
+        fields = (
+                'value',
+                'date',
+                'currency',
+                )
+
 class DocumentLinkSerializer(serializers.ModelSerializer):
 
     class DocumentCategorySerializer(serializers.ModelSerializer):
@@ -102,6 +118,68 @@ class OrganisationNameSerializer(serializers.Serializer):
     class Meta:
         model = org_models.OrganisationName
         fields = ('narratives',)
+
+class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
+
+    organisation = serializers.CharField(write_only=True)
+
+    value = ValueSerializer(source='*')
+    status = CodelistSerializer()
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    class Meta:
+        model = org_models.TotalBudget
+        # filter_class = BudgetFilter
+        fields = (
+            'organisation',
+            'id',
+            'status',
+            'period_start',
+            'period_end',
+            'value',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_total_budget(
+            organisation,
+            data.get('status', {}).get('code'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+
+        instance = org_models.TotalBudget.objects.create(**validated_data)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+
+        update_instance = org_models.TotalBudget(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
 
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):

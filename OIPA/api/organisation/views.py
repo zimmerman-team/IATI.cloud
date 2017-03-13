@@ -3,8 +3,7 @@ from django.shortcuts import get_object_or_404
 from iati_organisation import models
 
 from api.organisation import serializers
-from rest_framework.generics import ListAPIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.filters import DjangoFilterBackend
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
@@ -215,7 +214,6 @@ class UpdateOrganisationSearchMixin(object):
 
 
 class OrganisationListCRUD(FilterPublisherMixin, DynamicListCRUDView):
-
     queryset = models.Organisation.objects.all()
     filter_backends = (DjangoFilterBackend,)
     # filter_class = filters.OrganisationFilter
@@ -278,3 +276,26 @@ class OrganisationDetailCRUD(DynamicDetailCRUDView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
+
+class OrganisationTotalBudgetListCRUD(ListCreateAPIView):
+    serializer_class = serializers.OrganisationTotalBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).total_budgets.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationTotalBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationTotalBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.TotalBudget.objects.get(pk=pk)

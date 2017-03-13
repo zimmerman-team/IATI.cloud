@@ -326,6 +326,18 @@ class OrganisationFactory(NoDatabaseFactory):
 
     # publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
     
+class OrganisationTotalBudgetFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.TotalBudget
+
+    organisation = SubFactory(OrganisationFactory)
+    status = SubFactory(BudgetStatusFactory)
+    currency = SubFactory(CurrencyFactory)
+    period_start = '2011-01-01'
+    period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
 
 class OrganisationNameFactory(NoDatabaseFactory):
     class Meta:
