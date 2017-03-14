@@ -9,6 +9,8 @@ from api.codelist.serializers import OrganisationNarrativeSerializer, Organisati
 from api.codelist.serializers import VocabularySerializer
 from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import CodelistCategorySerializer
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer, BasicRegionSerializer
 
 from iati_organisation.parser import validators
 from iati.parser import exceptions
@@ -89,30 +91,6 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'categories',
             'title'
         )
-
-
-class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
-    ref = serializers.CharField()
-    value = ValueSerializer(source='*')
-    narratives = OrganisationNarrativeSerializer(many=True)
-
-    class Meta:
-        model = org_models.RecipientOrgBudgetLine
-        fields = (
-            'ref',
-            'value',
-            'narratives',
-        )
-
-class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = org_models.RecipientCountryBudget
-        fields = ('period_start','period_end','country','currency','value','budget_lines','narratives')
-    country = CodelistSerializer()
-    currency = CodelistSerializer()
-    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
-    narratives = OrganisationNarrativeSerializer(many=True)
-
 
 # TODO: change to NarrativeContainer
 class OrganisationNameSerializer(serializers.Serializer):
@@ -272,6 +250,236 @@ class OrganisationRecipientOrgBudgetSerializer(serializers.ModelSerializer):
 
         return update_instance
 
+
+class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.RecipientCountryBudgetLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
+
+class OrganisationRecipientCountryBudgetSerializer(serializers.ModelSerializer):
+    organisation = serializers.CharField(write_only=True)
+
+    value = ValueSerializer(source='*')
+    status = CodelistSerializer()
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    recipient_country = CountrySerializer(source="country", fields=('url', 'code', 'name'))
+
+    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
+
+    class Meta:
+        model = org_models.RecipientCountryBudget
+        fields = (
+            'organisation',
+            'id',
+            'status',
+            'recipient_country',
+            'period_start',
+            'period_end',
+            'value',
+            'budget_lines',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_recipient_country_budget(
+            organisation,
+            data.get('status', {}).get('code'),
+            data.get('country', {}).get('code'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+
+        instance = org_models.RecipientCountryBudget.objects.create(**validated_data)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+
+        update_instance = org_models.RecipientCountryBudget(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
+
+class RecipientRegionBudgetLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.RecipientRegionBudgetLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
+
+class OrganisationRecipientRegionBudgetSerializer(serializers.ModelSerializer):
+    organisation = serializers.CharField(write_only=True)
+
+    value = ValueSerializer(source='*')
+    status = CodelistSerializer()
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    recipient_region = BasicRegionSerializer(source="region", fields=('url', 'code', 'name'))
+
+    budget_lines = RecipientRegionBudgetLineSerializer(many=True, source="recipientregionbudgetline_set", required=False)
+
+    class Meta:
+        model = org_models.RecipientRegionBudget
+        fields = (
+            'organisation',
+            'id',
+            'status',
+            'recipient_region',
+            'period_start',
+            'period_end',
+            'value',
+            'budget_lines',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_recipient_region_budget(
+            organisation,
+            data.get('status', {}).get('code'),
+            data.get('region', {}).get('code'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+
+        instance = org_models.RecipientRegionBudget.objects.create(**validated_data)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+
+        update_instance = org_models.RecipientRegionBudget(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
+
+class TotalExpenditureLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.TotalExpenditureLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
+
+class OrganisationTotalExpenditureSerializer(serializers.ModelSerializer):
+    organisation = serializers.CharField(write_only=True)
+
+    value = ValueSerializer(source='*')
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    expense_line = TotalExpenditureLineSerializer(many=True, source="totalexpenditureline_set", required=False)
+
+    class Meta:
+        model = org_models.TotalExpenditure
+        fields = (
+            'organisation',
+            'id',
+            'period_start',
+            'period_end',
+            'value',
+            'expense_line',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_total_expenditure(
+            organisation,
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+
+        instance = org_models.TotalExpenditure.objects.create(**validated_data)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+
+        update_instance = org_models.TotalExpenditure(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
 
 class OrganisationSerializer(DynamicFieldsModelSerializer):
     class PublishedStateSerializer(DynamicFieldsSerializer):

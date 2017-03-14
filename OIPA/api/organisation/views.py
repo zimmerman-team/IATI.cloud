@@ -323,3 +323,72 @@ class OrganisationRecipientOrgBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.RecipientOrgBudget.objects.get(pk=pk)
+
+class OrganisationRecipientCountryBudgetListCRUD(ListCreateAPIView):
+    serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).recipientcountrybudget_set.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationRecipientCountryBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.RecipientCountryBudget.objects.get(pk=pk)
+
+class OrganisationRecipientRegionBudgetListCRUD(ListCreateAPIView):
+    serializer_class = serializers.OrganisationRecipientRegionBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).recipientregionbudget_set.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationRecipientRegionBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationRecipientRegionBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.RecipientRegionBudget.objects.get(pk=pk)
+
+class OrganisationTotalExpenditureListCRUD(ListCreateAPIView):
+    serializer_class = serializers.OrganisationTotalExpenditureSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).totalexpenditure_set.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationTotalExpenditureDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationTotalExpenditureSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.TotalExpenditure.objects.get(pk=pk)

@@ -372,3 +372,345 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             instance = org_models.RecipientOrgBudget.objects.get(pk=recipient_org_budget.id)
 
+
+class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_recipient_country_budget(self):
+
+        organisation = iati_factory.OrganisationFactory.create()
+        country = iati_factory.CountryFactory.create()
+        status = iati_factory.BudgetStatusFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "organisation": organisation.id,
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "recipient_country": {
+                "code": country.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/recipient_country_budgets/?format=json".format(self.publisher.id, organisation.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.RecipientCountryBudget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.country.code, data['recipient_country']['code'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_update_recipient_country_budgets(self):
+        recipient_country_budget = iati_factory.OrganisationRecipientCountryBudgetFactory.create()
+        country = iati_factory.CountryFactory.create()
+        status = iati_factory.BudgetStatusFactory.create(code="2")
+        currency = iati_factory.CurrencyFactory.create(code='af')
+
+        data = {
+            "organisation": recipient_country_budget.organisation.id,
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "recipient_country": {
+                "code": country.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(self.publisher.id, recipient_country_budget.organisation.id, recipient_country_budget.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.RecipientCountryBudget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.country.code, data['recipient_country']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_delete_recipient_country_budget(self):
+        recipient_country_budget = iati_factory.OrganisationRecipientCountryBudgetFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(self.publisher.id, recipient_country_budget.organisation.id, recipient_country_budget.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.RecipientCountryBudget.objects.get(pk=recipient_country_budget.id)
+
+class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_recipient_region_budget(self):
+
+        organisation = iati_factory.OrganisationFactory.create()
+        region = iati_factory.RegionFactory.create()
+        status = iati_factory.BudgetStatusFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "organisation": organisation.id,
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "recipient_region": {
+                "code": region.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/recipient_region_budgets/?format=json".format(self.publisher.id, organisation.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.RecipientRegionBudget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.region.code, data['recipient_region']['code'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_update_recipient_region_budgets(self):
+        recipient_region_budget = iati_factory.OrganisationRecipientRegionBudgetFactory.create()
+        region = iati_factory.RegionFactory.create()
+        status = iati_factory.BudgetStatusFactory.create(code="2")
+        currency = iati_factory.CurrencyFactory.create(code='af')
+
+        data = {
+            "organisation": recipient_region_budget.organisation.id,
+            "status": {
+                "code": status.code,
+                "name": 'irrelevant',
+            },
+            "recipient_region": {
+                "code": region.code,
+                "name": 'irrelevant',
+            },
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(self.publisher.id, recipient_region_budget.organisation.id, recipient_region_budget.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.RecipientRegionBudget.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.status.code, data['status']['code'])
+        self.assertEqual(instance.region.code, data['recipient_region']['code'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_delete_recipient_region_budget(self):
+        recipient_region_budget = iati_factory.OrganisationRecipientRegionBudgetFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(self.publisher.id, recipient_region_budget.organisation.id, recipient_region_budget.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.RecipientRegionBudget.objects.get(pk=recipient_region_budget.id)
+
+class OrganisationTotalExpenditureSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_total_expenditure(self):
+
+        organisation = iati_factory.OrganisationFactory.create()
+        currency = iati_factory.CurrencyFactory.create()
+
+        data = {
+            "organisation": organisation.id,
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/total_expenditures/?format=json".format(self.publisher.id, organisation.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.TotalExpenditure.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_update_total_expenditures(self):
+        total_expenditure = iati_factory.OrganisationTotalExpenditureFactory.create()
+        currency = iati_factory.CurrencyFactory.create(code='af')
+
+        data = {
+            "organisation": total_expenditure.organisation.id,
+            "period_start": datetime.date.today().isoformat(),
+            "period_end": datetime.date.today().isoformat(),
+            "value": {
+                "value": 123456,
+                "currency": {
+                    "code": currency.code,
+                    "name": 'irrelevant',
+                },
+                "date": datetime.date.today().isoformat(),
+            },
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(self.publisher.id, total_expenditure.organisation.id, total_expenditure.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.TotalExpenditure.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.period_start.isoformat(), data['period_start'])
+        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
+        self.assertEqual(instance.value, data['value']['value'])
+        self.assertEqual(instance.currency.code, data['value']['currency']['code'])
+        self.assertEqual(instance.value_date.isoformat(), data['value']['date'])
+
+    def test_delete_total_expenditure(self):
+        total_expenditure = iati_factory.OrganisationTotalExpenditureFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(self.publisher.id, total_expenditure.organisation.id, total_expenditure.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.TotalExpenditure.objects.get(pk=total_expenditure.id)

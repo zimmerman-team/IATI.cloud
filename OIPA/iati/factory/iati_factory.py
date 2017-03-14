@@ -338,6 +338,41 @@ class OrganisationTotalBudgetFactory(NoDatabaseFactory):
     value = 100
     value_date = '2013-06-28'
 
+class OrganisationRecipientCountryBudgetFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.RecipientCountryBudget
+
+    organisation = SubFactory(OrganisationFactory)
+    status = SubFactory(BudgetStatusFactory)
+    currency = SubFactory(CurrencyFactory)
+    period_start = '2011-01-01'
+    period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
+class OrganisationRecipientRegionBudgetFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.RecipientRegionBudget
+
+    organisation = SubFactory(OrganisationFactory)
+    status = SubFactory(BudgetStatusFactory)
+    currency = SubFactory(CurrencyFactory)
+    period_start = '2011-01-01'
+    period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
+class OrganisationTotalExpenditureFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.TotalExpenditure
+
+    organisation = SubFactory(OrganisationFactory)
+    currency = SubFactory(CurrencyFactory)
+    period_start = '2011-01-01'
+    period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
 class OrganisationRecipientOrgBudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.RecipientOrgBudget

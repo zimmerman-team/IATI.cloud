@@ -370,5 +370,26 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_org_budgets/(?P<id>[^@$&+,/:;=?]+)$',
             api.organisation.views.OrganisationRecipientOrgBudgetDetailCRUD.as_view(),
             name='organisation-recipient_org_budget-detail'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/$',
+            api.organisation.views.OrganisationRecipientCountryBudgetListCRUD.as_view(),
+            name='organisation-recipient_country_budget-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/(?P<id>[^@$&+,/:;=?]+)$',
+            api.organisation.views.OrganisationRecipientCountryBudgetDetailCRUD.as_view(),
+            name='organisation-recipient_country_budget-detail'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/$',
+            api.organisation.views.OrganisationRecipientRegionBudgetListCRUD.as_view(),
+            name='organisation-recipient_region_budget-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/(?P<id>[^@$&+,/:;=?]+)$',
+            api.organisation.views.OrganisationRecipientRegionBudgetDetailCRUD.as_view(),
+            name='organisation-recipient_region_budget-detail'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/$',
+            api.organisation.views.OrganisationTotalExpenditureListCRUD.as_view(),
+            name='organisation-total_expenditure-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/(?P<id>[^@$&+,/:;=?]+)$',
+            api.organisation.views.OrganisationTotalExpenditureDetailCRUD.as_view(),
+            name='organisation-total_expenditure-detail'),
 ]
 

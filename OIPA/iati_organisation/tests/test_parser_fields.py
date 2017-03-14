@@ -260,7 +260,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test narrative text',attribs)
         self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('TotalBudgetLineNarrative')
         self.assertEqual('test narrative text',model.content)
 
     def test_iati_organisations__iati_organisation__total_budget__budget_line__value(self):
@@ -436,7 +436,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientOrgBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__recipient_country_budget(self):
@@ -574,7 +574,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientCountryBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__recipient_region_budget(self):
@@ -714,7 +714,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientRegionBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__total_expenditure(self):
@@ -828,7 +828,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attrs)
         self.parser_202.iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('TotalExpenditureLineNarrative')
         self.assertEqual(model.content, 'test text')
 
     def test_iati_organisations__iati_organisation__document_link(self):

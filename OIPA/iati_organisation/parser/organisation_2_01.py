@@ -8,7 +8,6 @@ from iati_organisation.models import (
     OrganisationReportingOrganisation,
     TotalBudget,
     OrganisationNarrative,
-    BudgetLine,
     RecipientOrgBudget,
     RecipientCountryBudget,
     DocumentLink,
