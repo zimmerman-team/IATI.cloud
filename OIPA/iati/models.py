@@ -379,7 +379,7 @@ class ActivitySector(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "name: %s" % self.sector
+        return "name: %s" % self.sector.name
 
     class Meta:
         verbose_name = 'Sector'
