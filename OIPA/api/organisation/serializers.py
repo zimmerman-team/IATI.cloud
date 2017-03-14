@@ -90,16 +90,19 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'title'
         )
 
-class BudgetLineSerializer(serializers.ModelSerializer):
+
+class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
-    language = CodelistSerializer()
-    currency = CodelistSerializer()
 
     class Meta:
-        model = org_models.BudgetLine
-        fields = ('value_date','currency','language','currency','value','ref','narratives')
-
-
+        model = org_models.RecipientOrgBudgetLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
 
 class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -107,7 +110,7 @@ class RecipientCountryBudgetSerializer(serializers.ModelSerializer):
         fields = ('period_start','period_end','country','currency','value','budget_lines','narratives')
     country = CodelistSerializer()
     currency = CodelistSerializer()
-    budget_lines = BudgetLineSerializer(many=True)
+    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
     narratives = OrganisationNarrativeSerializer(many=True)
 
 
@@ -173,6 +176,94 @@ class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
         organisation = validated_data.get('organisation')
 
         update_instance = org_models.TotalBudget(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
+
+
+class RecipientOrgBudgetLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.RecipientOrgBudgetLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
+
+class OrganisationRecipientOrgBudgetSerializer(serializers.ModelSerializer):
+    class RecipientOrganisationSerializer(serializers.Serializer):
+        ref = serializers.CharField(source="recipient_org_identifier")
+
+        class Meta:
+            fields = (
+                'ref',
+            )
+
+    organisation = serializers.CharField(write_only=True)
+
+    value = ValueSerializer(source='*')
+    status = CodelistSerializer()
+
+    # because we want to validate in the validator instead
+    period_start = serializers.CharField()
+    period_end = serializers.CharField()
+
+    recipient_org = RecipientOrganisationSerializer(source="*")
+
+    budget_lines = RecipientOrgBudgetLineSerializer(many=True, source="recipientorgbudgetline_set", required=False)
+
+    class Meta:
+        model = org_models.RecipientOrgBudget
+        fields = (
+            'organisation',
+            'id',
+            'status',
+            'recipient_org',
+            'period_start',
+            'period_end',
+            'value',
+            'budget_lines',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_recipient_org_budget(
+            organisation,
+            data.get('status', {}).get('code'),
+            data.get('recipient_org_identifier'),
+            data.get('period_start'),
+            data.get('period_end'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+
+        instance = org_models.RecipientOrgBudget.objects.create(**validated_data)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+
+        update_instance = org_models.RecipientOrgBudget(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
 

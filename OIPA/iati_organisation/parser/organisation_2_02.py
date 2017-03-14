@@ -229,9 +229,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('TotalBudget')
-        budget_line = BudgetLine()
+        budget_line = TotalBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('TotalBudgetLine', budget_line)
         # store element
         return element
@@ -335,9 +334,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientOrgBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientOrgBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientOrgBudgetLine', budget_line)
         # store element
         return element
@@ -427,9 +425,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientCountryBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientCountryBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientCountryBudgetLine',budget_line)
         # store element
         return element
@@ -531,9 +528,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientRegionBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientRegionBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientRegionBudgetLine',budget_line)
         # store element
         return element
@@ -612,9 +608,8 @@ class Parse(IatiParser):
         """
         """
         model = self.get_model('TotalExpenditure')
-        budget_line = BudgetLine()
+        budget_line = TotalExpenditureLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('TotalExpenditureBudgetLine',budget_line)
         return element
 

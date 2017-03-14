@@ -299,3 +299,27 @@ class OrganisationTotalBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.TotalBudget.objects.get(pk=pk)
+
+
+class OrganisationRecipientOrgBudgetListCRUD(ListCreateAPIView):
+    serializer_class = serializers.OrganisationRecipientOrgBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).recipientorgbudget_set.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationRecipientOrgBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationRecipientOrgBudgetSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.RecipientOrgBudget.objects.get(pk=pk)

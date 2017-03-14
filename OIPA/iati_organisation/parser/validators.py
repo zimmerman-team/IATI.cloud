@@ -320,3 +320,134 @@ def organisation_total_budget(
             },
         }
 
+
+def organisation_recipient_org_budget(
+        organisation,
+        status_code,
+        recipient_org_identifier,
+        period_start_raw,
+        period_end_raw,
+        value,
+        currency_code,
+        value_date_raw,
+        ):
+        warnings = []
+        errors = []
+
+        status = get_or_none(models.BudgetStatus, code=status_code)
+        currency = get_or_none(models.Currency, code=currency_code)
+        recipient_org = get_or_none(organisation_models.Organisation, pk=recipient_org_identifier)
+
+        if not status_code:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "status",
+                    apiField="status.code",
+                    ))
+        if not status:
+            errors.append(
+                FieldValidationError(
+                    "recipient-org-budget",
+                    "status",
+                    "codelist entry not found for {}".format(status_code),
+                    apiField="status.code",
+                    ))
+
+        if not period_start_raw:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "period-start",
+                    apiField="period_start",
+                    ))
+            period_start = None
+        else:
+            try:
+                period_start = validate_date(period_start_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "recipient-org-budget",
+                        "period-start",
+                        "iso-date not of type xsd:date",
+                        apiField="period_start",
+                        ))
+                period_start = None
+
+        if not period_end_raw:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "period-end",
+                    apiField="period_end",
+                    ))
+            period_end = None
+        else:
+            try:
+                period_end = validate_date(period_end_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "recipient-org-budget",
+                        "period-end",
+                        "iso-date not of type xsd:date",
+                        apiField="period_end",
+                        ))
+                period_end = None
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "recipient-org-budget",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "recipient-org-budget",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "organisation": organisation,
+                "status": status,
+                "recipient_org_identifier": recipient_org_identifier,
+                "recipient_org": recipient_org,
+                "period_start": period_start,
+                "period_end": period_end,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+            },
+        }
+
