@@ -867,3 +867,179 @@ def organisation_total_expenditure(
                 "value_date": value_date,
             },
         }
+
+def organisation_document_link(
+        organisation,
+        url,
+        file_format_code,
+        document_date_raw,
+        title_narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not title_narratives_data:
+            title_narratives_data = []
+
+        file_format = get_or_none(models.FileFormat, code=file_format_code)
+
+        if not file_format_code:
+            errors.append(
+                RequiredFieldError(
+                    "organisation/document-link",
+                    "file-format",
+                    apiField="file_format.code",
+                    ))
+        elif not file_format:
+            errors.append(
+                FieldValidationError(
+                    "organisation/document-link",
+                    "file-format",
+                    "format not found for code {}".format(file_format_code),
+                    apiField="file_format.code",
+                    ))
+
+        # TODO: check the url actually resolves? - 2016-12-14
+        if not url:
+            errors.append(
+                RequiredFieldError(
+                    "document_link",
+                    "url",
+                    apiField="url",
+                    ))
+
+        try:
+            document_date = validate_date(document_date_raw)
+        except RequiredFieldError:
+            # if not document_date:
+            #     errors.append(
+            #             RequiredFieldError(
+            #                 "organisation/document-link",
+            #                 "document-date",
+            #                 ))
+
+            document_date = None
+
+
+        title_narratives = narratives(title_narratives_data, organisation.default_lang, organisation.id,  warnings, errors, "title")
+        errors = errors + title_narratives['errors']
+        warnings = warnings + title_narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "organisation": organisation,
+                "url": url,
+                "file_format": file_format,
+                "title_narratives": title_narratives['validated_data'],
+                "iso_date": document_date,
+            },
+        }
+
+
+
+
+def document_link_category(
+        document_link,
+        category_code,
+        ):
+        warnings = []
+        errors = []
+
+        category = get_or_none(models.DocumentCategory, code=category_code)
+
+        if not category_code:
+            errors.append(
+                RequiredFieldError(
+                    "organisation/document-link/category",
+                    "code",
+                    apiField="category.code",
+                    ))
+        elif not category:
+            errors.append(
+                FieldValidationError(
+                    "organisation/document-link/category",
+                    "code",
+                    "category not found for code {}".format(category_code),
+                    apiField="category.code",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "document_link": document_link,
+                "category": category,
+            },
+        }
+
+
+def document_link_language(
+        document_link,
+        language_code,
+        ):
+        warnings = []
+        errors = []
+
+        language = get_or_none(models.Language, code=language_code)
+
+        if not language_code:
+            errors.append(
+                RequiredFieldError(
+                    "organisation/document-link/language",
+                    "code",
+                    apiField="language.code",
+                    ))
+        elif not language:
+            errors.append(
+                FieldValidationError(
+                    "organisation/document-link/language",
+                    "code",
+                    "language not found for code {}".format(language_code),
+                    apiField="language.code",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "document_link": document_link,
+                "language": language,
+            },
+        }
+
+def document_link_recipient_country(
+        document_link,
+        recipient_country_code,
+        ):
+        warnings = []
+        errors = []
+
+        recipient_country = get_or_none(models.Country, code=recipient_country_code)
+
+        if not recipient_country_code:
+            errors.append(
+                RequiredFieldError(
+                    "organisation/document-link/recipient_country",
+                    "code",
+                    apiField="recipient_country.code",
+                    ))
+        elif not recipient_country:
+            errors.append(
+                FieldValidationError(
+                    "organisation/document-link/recipient_country",
+                    "code",
+                    "recipient_country not found for code {}".format(recipient_country_code),
+                    apiField="recipient_country.code",
+                    ))
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "document_link": document_link,
+                "recipient_country": recipient_country,
+            },
+        }
+

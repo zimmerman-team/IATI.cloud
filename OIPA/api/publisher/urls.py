@@ -142,7 +142,7 @@ urlpatterns = [
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/recipient_countries/$',
         api.activity.views.ActivityRecipientCountryList.as_view(),
-        name='activity-recipient_countrys'),
+        name='activity-recipient_countries'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/recipient_countries/(?P<id>[^@$&+,/:;=?]+)',
         api.activity.views.ActivityRecipientCountryDetail.as_view(),
         name='activity-recipient_countries'),
@@ -391,5 +391,34 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/(?P<id>[^@$&+,/:;=?]+)$',
             api.organisation.views.OrganisationTotalExpenditureDetailCRUD.as_view(),
             name='organisation-total_expenditure-detail'),
+
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/document_links/$',
+        api.organisation.views.OrganisationDocumentLinkList.as_view(),
+        name='organisation-document_links'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/document_links/(?P<id>[^@$&+,/:;=?]+)$',
+        api.organisation.views.OrganisationDocumentLinkDetail.as_view(),
+        name='organisation-document_links'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/categories/$',
+        api.organisation.views.OrganisationDocumentLinkCategoryList.as_view(),
+        name='organisation-document_link_category-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/categories/(?P<category_id>[^@$&+,/:;=?]+)$',
+        api.organisation.views.OrganisationDocumentLinkCategoryDetail.as_view(),
+        name='organisation-document_link_category-detail'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/languages/$',
+        api.organisation.views.OrganisationDocumentLinkLanguageList.as_view(),
+        name='organisation-document_link_language-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/languages/(?P<language_id>[^@$&+,/:;=?]+)$',
+        api.organisation.views.OrganisationDocumentLinkLanguageDetail.as_view(),
+        name='organisation-document_link_language-detail'),
+
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/recipient_countries/$',
+        api.organisation.views.OrganisationDocumentLinkRecipientCountryList.as_view(),
+        name='organisation-document_link_recipient_country-list'),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<organisation_id>[^@$&+,/:;=?]+)/document_links/(?P<document_link_id>[^@$&+,/:;=?]+)/recipient_countries/(?P<recipient_country_id>[^@$&+,/:;=?]+)$',
+        api.organisation.views.OrganisationDocumentLinkRecipientCountryDetail.as_view(),
+        name='organisation-document_link_recipient_country-detail'),
 ]
 

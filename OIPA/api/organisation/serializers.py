@@ -71,27 +71,6 @@ class ValueSerializer(serializers.Serializer):
                 'currency',
                 )
 
-class DocumentLinkSerializer(serializers.ModelSerializer):
-
-    class DocumentCategorySerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = iati.models.DocumentCategory
-            fields = ('code', 'name')
-
-    format = CodelistSerializer(source='file_format')
-    categories = DocumentCategorySerializer(many=True)
-    title = OrganisationNarrativeContainerSerializer(source="documentlinktitles", many=True)
-
-    class Meta:
-        model = org_models.DocumentLink
-        fields = (
-            'url',
-            'format',
-            'categories',
-            'title'
-        )
-
 # TODO: change to NarrativeContainer
 class OrganisationNameSerializer(serializers.Serializer):
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -475,6 +454,241 @@ class OrganisationTotalExpenditureSerializer(serializers.ModelSerializer):
         update_instance = org_models.TotalExpenditure(**validated_data)
         update_instance.id = instance.id
         update_instance.save()
+
+        organisation.modified = True
+        organisation.save()
+
+        return update_instance
+
+
+
+class OrganisationDocumentLinkCategorySerializer(serializers.ModelSerializer):
+    category = CodelistSerializer()
+
+    document_link = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = org_models.OrganisationDocumentLinkCategory
+        fields = (
+            'document_link',
+            'id',
+            'category', 
+            )
+
+    def validate(self, data):
+        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+
+        validated = validators.document_link_category(
+            document_link,
+            data.get('category', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        document_link = validated_data.get('document_link')
+
+        instance = org_models.OrganisationDocumentLinkCategory.objects.create(**validated_data)
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        document_link = validated_data.get('document_link')
+
+        update_instance = org_models.OrganisationDocumentLinkCategory(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return update_instance
+
+
+class OrganisationDocumentLinkLanguageSerializer(serializers.ModelSerializer):
+    language = CodelistSerializer()
+
+    document_link = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = org_models.OrganisationDocumentLinkLanguage
+        fields = (
+            'document_link',
+            'id',
+            'language', 
+            )
+
+    def validate(self, data):
+        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+
+        validated = validators.document_link_language(
+            document_link,
+            data.get('language', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        document_link = validated_data.get('document_link')
+
+        instance = org_models.OrganisationDocumentLinkLanguage.objects.create(**validated_data)
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        document_link = validated_data.get('document_link')
+
+        update_instance = org_models.OrganisationDocumentLinkLanguage(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return update_instance
+
+class OrganisationDocumentLinkRecipientCountrySerializer(serializers.ModelSerializer):
+    recipient_country = CodelistSerializer()
+
+    document_link = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = org_models.DocumentLinkRecipientCountry
+        fields = (
+            'document_link',
+            'id',
+            'recipient_country', 
+            )
+
+    def validate(self, data):
+        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+
+        validated = validators.document_link_recipient_country(
+            document_link,
+            data.get('recipient_country', {}).get('code'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        document_link = validated_data.get('document_link')
+
+        instance = org_models.DocumentLinkRecipientCountry.objects.create(**validated_data)
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        document_link = validated_data.get('document_link')
+
+        update_instance = org_models.DocumentLinkRecipientCountry(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        document_link.organisation.modified = True
+        document_link.organisation.save()
+
+        return update_instance
+
+class OrganisationDocumentLinkSerializer(serializers.ModelSerializer):
+
+    class DocumentDateSerializer(serializers.Serializer):
+        # CharField because we want to let the validators do the parsing
+        iso_date = serializers.CharField()
+
+    format = CodelistSerializer(source='file_format')
+
+    categories = OrganisationDocumentLinkCategorySerializer(
+            many=True,
+            required=False,
+            source="documentlinkcategory_set"
+            )
+
+    languages = OrganisationDocumentLinkLanguageSerializer(
+            many=True,
+            required=False,
+            source="documentlinklanguage_set"
+            )
+
+    recipient_countries = OrganisationDocumentLinkRecipientCountrySerializer(
+            many=True,
+            required=False,
+            source="documentlinkrecipientcountry_set"
+            )
+
+    title = OrganisationNarrativeContainerSerializer(source="documentlinktitle")
+
+    document_date = DocumentDateSerializer(source="*")
+
+    organisation = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = org_models.OrganisationDocumentLink
+        fields = (
+            'organisation',
+            'id',
+            'url',
+            'format',
+            'title',
+            'categories',
+            'languages',
+            'document_date',
+            'recipient_countries',
+        )
+
+    def validate(self, data):
+        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+
+        validated = validators.organisation_document_link(
+            organisation,
+            data.get('url'),
+            data.get('file_format', {}).get('code'),
+            data.get('iso_date'),
+            data.get('documentlinktitle', {}).get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+
+    def create(self, validated_data):
+        organisation = validated_data.get('organisation')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+
+        instance = org_models.OrganisationDocumentLink.objects.create(**validated_data)
+
+        document_link_title = org_models.DocumentLinkTitle.objects.create(document_link=instance)
+
+        save_narratives(document_link_title, title_narratives_data, organisation)
+
+        organisation.modified = True
+        organisation.save()
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        organisation = validated_data.get('organisation')
+        title_narratives_data = validated_data.pop('title_narratives', [])
+
+        update_instance = org_models.OrganisationDocumentLink(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        save_narratives(update_instance.documentlinktitle, title_narratives_data, organisation)
 
         organisation.modified = True
         organisation.save()

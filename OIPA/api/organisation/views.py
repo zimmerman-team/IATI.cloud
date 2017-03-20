@@ -392,3 +392,87 @@ class OrganisationTotalExpenditureDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.TotalExpenditure.objects.get(pk=pk)
+
+
+class OrganisationDocumentLinkList(ListCreateAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return models.Organisation.objects.get(pk=pk).documentlink_set.all()
+        except Organisation.DoesNotExist:
+            return None
+
+class OrganisationDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return models.OrganisationDocumentLink.objects.get(pk=pk)
+
+class OrganisationDocumentLinkCategoryList(ListCreateAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkCategorySerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('document_link_id')
+        return models.OrganisationDocumentLink(pk=pk).documentlinkcategory_set.all()
+
+class OrganisationDocumentLinkCategoryDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkCategorySerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('category_id')
+        return models.OrganisationDocumentLinkCategory.objects.get(pk=pk)
+
+class OrganisationDocumentLinkLanguageList(ListCreateAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkLanguageSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('document_link_id')
+        return models.OrganisationDocumentLink(pk=pk).documentlinklanguage_set.all()
+
+class OrganisationDocumentLinkLanguageDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkLanguageSerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('language_id')
+        return models.OrganisationDocumentLinkLanguage.objects.get(pk=pk)
+
+class OrganisationDocumentLinkRecipientCountryList(ListCreateAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkRecipientCountrySerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('document_link_id')
+        return models.OrganisationDocumentLink(pk=pk).documentlinkrecipient_country_set.all()
+
+class OrganisationDocumentLinkRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.OrganisationDocumentLinkRecipientCountrySerializer
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_object(self):
+        pk = self.kwargs.get('recipient_country_id')
+        return models.DocumentLinkRecipientCountry.objects.get(pk=pk)

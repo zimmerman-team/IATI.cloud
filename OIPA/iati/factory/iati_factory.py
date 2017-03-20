@@ -62,6 +62,45 @@ class ActivityFactory(NoDatabaseFactory):
 
     # title = RelatedFactory('iati.factory.iati_factory.TitleFactory', 'activity')
 
+class OrganisationFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.Organisation
+        django_get_or_create = ('organisation_identifier',)
+
+    organisation_identifier = 'GB-COH-03580586'
+    iati_standard_version = SubFactory(VersionFactory)
+    default_lang = SubFactory(LanguageFactory)
+    default_currency = SubFactory(CurrencyFactory)
+
+    # publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
+    
+class RegionFactory(NoDatabaseFactory):
+    class Meta:
+        model = geodata.models.Region
+        django_get_or_create = ('code', )
+
+    code = "1"
+    name = 'World'
+
+
+class CountryFactory(NoDatabaseFactory):
+    class Meta:
+        model = geodata.models.Country
+        django_get_or_create = ('code', )
+
+    code = 'AD'
+    name = 'andorra'
+    iso3 = 'and'
+
+
+class CityFactory(NoDatabaseFactory):
+    class Meta:
+        model = geodata.models.City
+
+    id = 1
+    name = 'Colonia del Sacramento'
+    geoname_id = 3443013
+
 class ActivityDummyFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.Activity
@@ -178,7 +217,46 @@ class LegacyDataFactory(NoDatabaseFactory):
     value = "value"
     iati_equivalent = "activity-id"
 
+class OrganisationDocumentLinkTitleFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.DocumentLinkTitle
 
+    # document_link = SubFactory(DocumentLinkFactory)
+    # narratives = SubFactory(NarrativeFactory)
+
+class OrganisationDocumentLinkFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationDocumentLink
+
+    organisation = SubFactory(OrganisationFactory)
+    url = 'http://someuri.com'
+    file_format = SubFactory(FileFormatFactory)
+
+    documentlinktitle = RelatedFactory(OrganisationDocumentLinkTitleFactory, 'document_link')
+    iso_date = datetime.datetime.now()
+    # title = 'some title'
+
+class OrganisationDocumentLinkCategoryFactory(NoDatabaseFactory):
+    # TODO: eliminate need for this element
+    class Meta:
+        model = iati_organisation.models.OrganisationDocumentLinkCategory
+
+    document_link = SubFactory(OrganisationDocumentLinkFactory)
+    category = SubFactory(DocumentCategoryFactory)
+
+class OrganisationDocumentLinkLanguageFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationDocumentLinkLanguage
+
+    document_link = SubFactory(OrganisationDocumentLinkFactory)
+    language = SubFactory(LanguageFactory)
+
+class OrganisationDocumentLinkRecipientCountryFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.DocumentLinkRecipientCountry
+
+    document_link = SubFactory(OrganisationDocumentLinkFactory)
+    recipient_country = SubFactory(CountryFactory)
 
 class DocumentLinkTitleFactory(NoDatabaseFactory):
     class Meta:
@@ -186,7 +264,6 @@ class DocumentLinkTitleFactory(NoDatabaseFactory):
 
     # document_link = SubFactory(DocumentLinkFactory)
     # narratives = SubFactory(NarrativeFactory)
-
 
 class DocumentLinkFactory(NoDatabaseFactory):
     class Meta:
@@ -287,45 +364,6 @@ class ActivityDateFactory(NoDatabaseFactory):
     type = SubFactory(ActivityDateTypeFactory)
 
 
-class RegionFactory(NoDatabaseFactory):
-    class Meta:
-        model = geodata.models.Region
-        django_get_or_create = ('code', )
-
-    code = "1"
-    name = 'World'
-
-
-class CountryFactory(NoDatabaseFactory):
-    class Meta:
-        model = geodata.models.Country
-        django_get_or_create = ('code', )
-
-    code = 'AD'
-    name = 'andorra'
-    iso3 = 'and'
-
-
-class CityFactory(NoDatabaseFactory):
-    class Meta:
-        model = geodata.models.City
-
-    id = 1
-    name = 'Colonia del Sacramento'
-    geoname_id = 3443013
-
-class OrganisationFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati_organisation.models.Organisation
-        django_get_or_create = ('organisation_identifier',)
-
-    organisation_identifier = 'GB-COH-03580586'
-    iati_standard_version = SubFactory(VersionFactory)
-    default_lang = SubFactory(LanguageFactory)
-    default_currency = SubFactory(CurrencyFactory)
-
-    # publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
-    
 class OrganisationTotalBudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.TotalBudget
@@ -472,7 +510,6 @@ class ActivitySectorFactory(NoDatabaseFactory):
     # narrative1 = NarrativeRelatedFactory(content="title test")
     # narrative2 = NarrativeRelatedFactory(content="title test2")
 
-
 class ActivityRecipientCountryFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ActivityRecipientCountry
@@ -483,7 +520,6 @@ class ActivityRecipientCountryFactory(NoDatabaseFactory):
 
     # narrative1 = NarrativeRelatedFactory(content="title test")
     # narrative2 = NarrativeRelatedFactory(content="title test2")
-
 
 class ActivityRecipientRegionFactory(NoDatabaseFactory):
     class Meta:

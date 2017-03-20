@@ -13,6 +13,9 @@ from geodata.models import Country
 from geodata.models import Region
 from iati_vocabulary.models import RegionVocabulary
 
+from iati_codelists.models import *
+from iati_vocabulary.models import *
+
 from organisation_manager import OrganisationManager
 
 #function for making url
@@ -171,18 +174,24 @@ class TotalExpenditureLine(models.Model):
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
 
-class DocumentLink(models.Model):
-    organisation = models.ForeignKey(Organisation, related_name='documentlinks')
+class OrganisationDocumentLink(models.Model):
+    organisation = models.ForeignKey(Organisation)
     url = models.TextField(max_length=500)
-    file_format = models.ForeignKey(FileFormat, null=True, default=None, related_name='file_formats')
+    file_format = models.ForeignKey(FileFormat, null=True, default=None)
+
     categories = models.ManyToManyField(
         DocumentCategory,
-        related_name='doc_categories')
-    # title = models.CharField(max_length=255, default="")
-    language = models.ForeignKey(Language, null=True, default=None, related_name='languages')
+        through="OrganisationDocumentLinkCategory")
+
+    language = models.ForeignKey(Language, null=True, default=None)
+
     recipient_countries = models.ManyToManyField(
-        Country, blank=True,
-        related_name='recipient_countries')
+        Country, 
+        blank=True,
+        related_name='recipient_countries',
+        through="DocumentLinkRecipientCountry"
+        )
+
     iso_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self,):
@@ -191,9 +200,31 @@ class DocumentLink(models.Model):
     def get_absolute_url(self):
         return make_abs_url(self.organisation.organisation_identifier)
 
+# enables saving before parent object is saved (workaround)
+# TODO: eliminate the need for this
+class OrganisationDocumentLinkCategory(models.Model):
+    document_link = models.ForeignKey(OrganisationDocumentLink)
+    category = models.ForeignKey(DocumentCategory)
 
-# TODO: enforce one-to-one
-class DocumentLinkTitle(models.Model):
-    document_link = models.ForeignKey(DocumentLink, related_name='documentlinktitles')
+    class Meta:
+        verbose_name_plural = "Document link categories"
+
+# enables saving before parent object is saved (workaround)
+# TODO: eliminate the need for this
+class DocumentLinkRecipientCountry(models.Model):
+    document_link = models.ForeignKey(OrganisationDocumentLink)
+    recipient_country = models.ForeignKey(Country)
+
     narratives = GenericRelation(OrganisationNarrative)
+
+    class Meta:
+        verbose_name_plural = "Document link categories"
+
+class DocumentLinkTitle(models.Model):
+    document_link = models.OneToOneField(OrganisationDocumentLink)
+    narratives = GenericRelation(OrganisationNarrative)
+
+class OrganisationDocumentLinkLanguage(models.Model):
+    document_link = models.ForeignKey(OrganisationDocumentLink)
+    language = models.ForeignKey(Language, null=True, blank=True, default=None)
 

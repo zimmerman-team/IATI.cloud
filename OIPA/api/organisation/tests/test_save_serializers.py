@@ -714,3 +714,360 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = org_models.TotalExpenditure.objects.get(pk=total_expenditure.id)
+
+
+
+
+class DocumentLinkSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_document_link(self):
+        organisation = iati_factory.OrganisationFactory.create()
+        file_format = codelist_factory.FileFormatFactory.create()
+
+        data = {
+            "organisation": organisation.id,
+            "url": "https://bitcoin.org/bitcoin.pdf",
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "document_date": {
+                "iso_date": datetime.date.today().isoformat(),
+            },
+            "format": {
+                "code": file_format.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/document_links/?format=json".format(self.publisher.id, organisation.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.OrganisationDocumentLink.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.url, data['url'])
+        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.file_format.code, data['format']['code'])
+
+        instance2 = org_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+    def test_update_document_link(self):
+        document_link = iati_factory.OrganisationDocumentLinkFactory.create()
+        file_format = codelist_factory.FileFormatFactory.create(code="application/json")
+
+        data = {
+            "organisation": document_link.organisation.id,
+            "url": "https://bitcoin.org/bitcoin.pdf",
+            "title": {
+                "narratives": [
+                    {
+                        "text": "test1"
+                    },
+                    {
+                        "text": "test2"
+                    }
+                ],
+            },
+            "document_date": {
+                "iso_date": datetime.date.today().isoformat(),
+            },
+            "format": {
+                "code": file_format.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.OrganisationDocumentLink.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.organisation.id, data['organisation'])
+        self.assertEqual(instance.url, data['url'])
+        self.assertEqual(instance.iso_date.isoformat(), data['document_date']['iso_date'])
+        self.assertEqual(instance.file_format.code, data['format']['code'])
+
+        instance2 = org_models.DocumentLinkTitle.objects.get(document_link_id=res.json()['id'])
+        narratives2 = instance2.narratives.all()
+        self.assertEqual(narratives2[0].content, data['title']['narratives'][0]['text'])
+        self.assertEqual(narratives2[1].content, data['title']['narratives'][1]['text'])
+
+    def test_delete_document_link(self):
+        document_links = iati_factory.OrganisationDocumentLinkFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(self.publisher.id, document_links.organisation.id, document_links.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.OrganisationDocumentLink.objects.get(pk=document_links.id)
+
+
+class DocumentLinkCategorySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_document_link_category(self):
+        document_link = iati_factory.OrganisationDocumentLinkFactory.create()
+        document_category = codelist_factory.DocumentCategoryFactory.create()
+
+        data = {
+            "document_link": document_link.id,
+            "category": {
+                "code": document_category.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/document_links/{}/categories/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.OrganisationDocumentLinkCategory.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.category.code, data['category']['code'])
+
+    def test_update_document_link_category(self):
+        document_link_category = iati_factory.OrganisationDocumentLinkCategoryFactory.create()
+        document_category = codelist_factory.DocumentCategoryFactory.create(code="2")
+
+        data = {
+            "document_link": document_link_category.document_link.id,
+            "category": {
+                "code": document_category.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.organisation.id, document_link_category.document_link.id, document_link_category.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.OrganisationDocumentLinkCategory.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.category.code, data['category']['code'])
+
+    def test_delete_document_link_category(self):
+        document_link_category = iati_factory.OrganisationDocumentLinkCategoryFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.organisation.id, document_link_category.document_link.id, document_link_category.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.OrganisationDocumentLinkCategory.objects.get(pk=document_link_category.id)
+
+
+class DocumentLinkLanguageSaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_language(self):
+        document_link = iati_factory.OrganisationDocumentLinkFactory.create()
+        language = codelist_factory.LanguageFactory.create()
+
+        data = {
+            "document_link": document_link.id,
+            "language": {
+                "code": language.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/document_links/{}/languages/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.OrganisationDocumentLinkLanguage.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.language.code, data['language']['code'])
+
+    def test_update_language(self):
+        document_link_language = iati_factory.OrganisationDocumentLinkLanguageFactory.create()
+        language = codelist_factory.LanguageFactory.create(code="2")
+
+        data = {
+            "document_link": document_link_language.document_link.id,
+            "language": {
+                "code": language.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.organisation.id, document_link_language.document_link.id, document_link_language.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.OrganisationDocumentLinkLanguage.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.language.code, data['language']['code'])
+
+    def test_delete_language(self):
+        document_link_language = iati_factory.OrganisationDocumentLinkLanguageFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.organisation.id, document_link_language.document_link.id, document_link_language.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.OrganisationDocumentLinkLanguage.objects.get(pk=document_link_language.id)
+
+
+
+class DocumentLinkRecipientCountrySaveTestCase(TestCase):
+    request_dummy = RequestFactory().get('/')
+    c = APIClient()
+
+    def setUp(self):
+        admin_group = OrganisationAdminGroupFactory.create()
+        user = OrganisationUserFactory.create(user__username='test1')
+
+        admin_group.organisationuser_set.add(user)
+
+        self.publisher = admin_group.publisher
+
+        self.c.force_authenticate(user.user)
+
+    def test_create_recipient_country(self):
+        document_link = iati_factory.OrganisationDocumentLinkFactory.create()
+        recipient_country = iati_factory.CountryFactory.create()
+
+        data = {
+            "document_link": document_link.id,
+            "recipient_country": {
+                "code": recipient_country.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.post(
+                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 201, res.json())
+
+        instance = org_models.DocumentLinkRecipientCountry.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.recipient_country.code, data['recipient_country']['code'])
+
+    def test_update_recipient_country(self):
+        document_link_recipient_country = iati_factory.OrganisationDocumentLinkRecipientCountryFactory.create()
+        recipient_country = iati_factory.CountryFactory.create(code="2")
+
+        data = {
+            "document_link": document_link_recipient_country.document_link.id,
+            "recipient_country": {
+                "code": recipient_country.code,
+                "name": "random_stuff",
+            }
+        }
+
+        res = self.c.put(
+                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(self.publisher.id, document_link_recipient_country.document_link.organisation.id, document_link_recipient_country.document_link.id, document_link_recipient_country.id), 
+                data,
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 200, res.json())
+
+        instance = org_models.DocumentLinkRecipientCountry.objects.get(pk=res.json()['id'])
+
+        self.assertEqual(instance.document_link.id, data['document_link'])
+        self.assertEqual(instance.recipient_country.code, data['recipient_country']['code'])
+
+    def test_delete_recipient_country(self):
+        document_link_recipient_country = iati_factory.OrganisationDocumentLinkRecipientCountryFactory.create()
+
+        res = self.c.delete(
+                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(self.publisher.id, document_link_recipient_country.document_link.organisation.id, document_link_recipient_country.document_link.id, document_link_recipient_country.id), 
+                format='json'
+                )
+
+        self.assertEquals(res.status_code, 204)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            instance = org_models.DocumentLinkRecipientCountry.objects.get(pk=document_link_recipient_country.id)
