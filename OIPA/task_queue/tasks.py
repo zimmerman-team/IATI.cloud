@@ -74,10 +74,10 @@ def force_parse_all_existing_sources():
     queue = django_rq.get_queue("parser")
 
     for e in Dataset.objects.all().filter(filetype=2):
-        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(force_parse_source_by_id, args=(e.id,), timeout=14400)
 
     for e in Dataset.objects.all().filter(filetype=1):
-        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(force_parse_source_by_id, args=(e.id,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
@@ -91,10 +91,10 @@ def parse_all_existing_sources():
     queue = django_rq.get_queue("parser")
 
     for e in Dataset.objects.all().filter(filetype=2):
-        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(parse_source_by_id, args=(e.id,), timeout=14400)
 
     for e in Dataset.objects.all().filter(filetype=1):
-        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(parse_source_by_id, args=(e.id,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
@@ -104,7 +104,7 @@ def parse_all_existing_sources():
 def parse_all_sources_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
     for e in Dataset.objects.filter(publisher__publisher_iati_id=org_ref):
-        queue.enqueue(parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(parse_source_by_id, args=(e.id,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
@@ -114,7 +114,7 @@ def parse_all_sources_by_publisher_ref(org_ref):
 def force_parse_by_publisher_ref(org_ref):
     queue = django_rq.get_queue("parser")
     for e in Dataset.objects.filter(publisher__publisher_iati_id=org_ref):
-        queue.enqueue(force_parse_source_by_url, args=(e.source_url,), timeout=14400)
+        queue.enqueue(force_parse_source_by_id, args=(e.id,), timeout=14400)
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
@@ -132,8 +132,26 @@ def force_parse_source_by_url(url, update_searchable=False):
 
 
 @job
+def force_parse_source_by_id(source_id, update_searchable=False):
+    if Dataset.objects.filter(pk=source_id).exists():
+        xml_source = Dataset.objects.get(source_url=url)
+        xml_source.process(force_reparse=True)
+
+    queue = django_rq.get_queue("parser")
+    if update_searchable and settings.ROOT_ORGANISATIONS:
+        queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
+
+
+@job
 def parse_source_by_url(url):
     if Dataset.objects.filter(source_url=url).exists():
+        xml_source = Dataset.objects.get(source_url=url)
+        xml_source.process()
+
+
+@job
+def parse_source_by_id(source_id):
+    if Dataset.objects.filter(pk=source_id).exists():
         xml_source = Dataset.objects.get(source_url=url)
         xml_source.process()
 
