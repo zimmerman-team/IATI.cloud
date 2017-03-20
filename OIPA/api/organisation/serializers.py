@@ -79,6 +79,19 @@ class OrganisationNameSerializer(serializers.Serializer):
         model = org_models.OrganisationName
         fields = ('narratives',)
 
+class TotalBudgetBudgetLineSerializer(serializers.ModelSerializer):
+    ref = serializers.CharField()
+    value = ValueSerializer(source='*')
+    narratives = OrganisationNarrativeSerializer(many=True)
+
+    class Meta:
+        model = org_models.TotalBudgetBudgetLine
+        fields = (
+            'ref',
+            'value',
+            'narratives',
+        )
+
 class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
 
     organisation = serializers.CharField(write_only=True)
@@ -90,6 +103,8 @@ class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
+    budget_lines = TotalBudgetBudgetLineSerializer(many=True, source="totalbudgetbudgetline_set", required=False)
+
     class Meta:
         model = org_models.TotalBudget
         # filter_class = BudgetFilter
@@ -100,6 +115,7 @@ class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
             'period_start',
             'period_end',
             'value',
+            'budget_lines',
         )
 
     def validate(self, data):
@@ -561,6 +577,8 @@ class OrganisationDocumentLinkRecipientCountrySerializer(serializers.ModelSerial
     recipient_country = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
+
+    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
 
     class Meta:
         model = org_models.DocumentLinkRecipientCountry
