@@ -96,10 +96,7 @@ def reindex_activity(activity):
         ])
 
         activity_search.last_reindexed = datetime.now()
-        print('saving...')
         activity_search.save()
-
-        print('saved...')
 
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
