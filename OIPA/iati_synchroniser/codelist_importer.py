@@ -68,7 +68,7 @@ class CodeListImporter():
         model_name = tag
 
         if tag == "Country":
-            name = name.lower().capitalize()
+            name = name.lower().title()
             item = Country(language=language_name, data_source="IATI")
 
         elif tag == "DocumentCategory-category":
