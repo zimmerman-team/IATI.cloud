@@ -6,8 +6,8 @@ from django_filters import FilterSet
 from django_filters import NumberFilter
 from django_filters import DateFilter
 from django_filters import BooleanFilter
-from django_filters import MethodFilter
 from django_filters import TypedChoiceFilter
+from django_filters import CharFilter
 
 from distutils.util import strtobool
 
@@ -486,25 +486,24 @@ class ActivityFilter(TogetherFilterSet):
     #
     # Related to publishing
     #
-    def filter_ready_to_publish(self, queryset, value):
+    def filter_ready_to_publish(self, queryset, name, value):
         return queryset.filter(Q(ready_to_publish=True))
-    ready_to_publish = MethodFilter(name='ready_to_publish')
+    ready_to_publish = CharFilter(name='ready_to_publish', method=filter_ready_to_publish)
 
-    def filter_modified_ready_to_publish(self, queryset, value):
+    def filter_modified_ready_to_publish(self, queryset, name, value):
         return queryset.filter(Q(modified=True) & Q(ready_to_publish=True))
-    modified_ready_to_publish = MethodFilter()
+    modified_ready_to_publish = CharFilter(method=filter_modified_ready_to_publish)
 
-    def filter_modified(self, queryset, value):
+    def filter_modified(self, queryset, name, value):
         return queryset.filter(Q(modified=True))
-    modified = MethodFilter()
+    modified = CharFilter(method=filter_modified)
 
-    def filter_published(self, queryset, value):
+    def filter_published(self, queryset, name, value):
         if value == "true":
             return queryset.filter(Q(published=True))
         else:
             return queryset.filter(Q(published=False))
-
-    published = MethodFilter()
+    published = CharFilter(method=filter_published)
 
     # modified = BooleanFilter(name='modified')
     # start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')

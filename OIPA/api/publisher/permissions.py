@@ -80,6 +80,7 @@ class PublisherPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         """
+        checks if the publisher_id sent along in the URL matches one of the OrganisationAdminGroups that the user belongs to.
         For Activity Update and Delete
         """
 
@@ -94,7 +95,6 @@ class PublisherPermissions(permissions.BasePermission):
             publisher = Publisher.objects.get(pk=publisher_id)
         except Publisher.DoesNotExist:
             return False
-
 
         try:
             admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
