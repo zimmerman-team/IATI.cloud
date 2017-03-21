@@ -222,13 +222,13 @@ class ActivitySerializerTestCase(TestCase):
             'activity_date_type.code' should be serialized to a vield callded 'code'
             """
 
-    def test_ReportingOrganisationSerializer(self):
-        reporting_organisation = iati_factory.OrganisationFactory.build()
+    # def test_ReportingOrganisationSerializer(self):
+    #     reporting_organisation = iati_factory.OrganisationFactory.build()
 
-        data = serializers.ReportingOrganisationSerializer(
-            reporting_organisation,
-            context={'request': self.request_dummy},
-            ).data
+    #     data = serializers.ReportingOrganisationSerializer(
+    #         reporting_organisation,
+    #         context={'request': self.request_dummy},
+    #         ).data
         # assert data['secondary_reporter'] == reporting_organisation.secondary_reporter,\
         #     """
         #     reporting_organisation.seconary_reporter should be serialized to a field
