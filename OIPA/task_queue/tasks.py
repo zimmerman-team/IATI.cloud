@@ -134,7 +134,7 @@ def force_parse_source_by_url(url, update_searchable=False):
 @job
 def force_parse_source_by_id(source_id, update_searchable=False):
     if Dataset.objects.filter(pk=source_id).exists():
-        xml_source = Dataset.objects.get(source_url=url)
+        xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process(force_reparse=True)
 
     queue = django_rq.get_queue("parser")
@@ -152,7 +152,7 @@ def parse_source_by_url(url):
 @job
 def parse_source_by_id(source_id):
     if Dataset.objects.filter(pk=source_id).exists():
-        xml_source = Dataset.objects.get(source_url=url)
+        xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process()
 
 
