@@ -53,6 +53,9 @@ class OrganisationNarrativeSerializer(serializers.ModelSerializer):
 class NarrativeContainerSerializer(serializers.Serializer):
     narratives = NarrativeSerializer(many=True)
 
+class OrganisationNarrativeContainerSerializer(serializers.Serializer):
+    narratives = OrganisationNarrativeSerializer(many=True)
+
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
     class Meta:

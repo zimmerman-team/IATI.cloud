@@ -18,7 +18,7 @@ class Publisher(models.Model):
     name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
 
-    organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
+    organisation = models.OneToOneField(Organisation, default=None, null=True)
 
     def __unicode__(self):
         return self.publisher_iati_id

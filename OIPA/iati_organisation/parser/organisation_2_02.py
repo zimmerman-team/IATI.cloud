@@ -8,13 +8,20 @@ from iati_organisation.models import (
     OrganisationReportingOrganisation,
     TotalBudget,
     OrganisationNarrative,
-    BudgetLine,
+    TotalBudgetLine,
+    RecipientCountryBudgetLine,
+    RecipientRegionBudgetLine,
+    RecipientOrgBudgetLine,
+    TotalExpenditureLine,
     RecipientOrgBudget,
     RecipientCountryBudget,
     RecipientRegionBudget,
-    DocumentLink,
+    OrganisationDocumentLink,
     DocumentLinkTitle,
-    TotalExpenditure)
+    TotalExpenditure,
+    DocumentLinkRecipientCountry,
+    OrganisationDocumentLinkCategory,
+    )
 
 from geodata.models import Country, Region
 from iati_organisation.parser import post_save
@@ -229,9 +236,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('TotalBudget')
-        budget_line = BudgetLine()
+        budget_line = TotalBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('TotalBudgetLine', budget_line)
         # store element
         return element
@@ -335,9 +341,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientOrgBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientOrgBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientOrgBudgetLine', budget_line)
         # store element
         return element
@@ -427,9 +432,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientCountryBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientCountryBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientCountryBudgetLine',budget_line)
         # store element
         return element
@@ -531,9 +535,8 @@ class Parse(IatiParser):
 
         tag:budget-line"""
         model = self.get_model('RecipientRegionBudget')
-        budget_line = BudgetLine()
+        budget_line = RecipientRegionBudgetLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('RecipientRegionBudgetLine',budget_line)
         # store element
         return element
@@ -612,9 +615,8 @@ class Parse(IatiParser):
         """
         """
         model = self.get_model('TotalExpenditure')
-        budget_line = BudgetLine()
+        budget_line = TotalExpenditureLine()
         budget_line.ref = element.attrib.get('ref')
-        budget_line.parent = model
         self.register_model('TotalExpenditureBudgetLine',budget_line)
         return element
 
@@ -656,11 +658,11 @@ class Parse(IatiParser):
 
         tag:document-link"""
         model = self.get_model('Organisation')
-        document_link = DocumentLink()
+        document_link = OrganisationDocumentLink()
         document_link.organisation = model
         document_link.url = element.attrib.get('url')
         document_link.file_format = self.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format'))
-        self.register_model('DocumentLink',document_link)
+        self.register_model('OrganisationDocumentLink',document_link)
 
         # store element
         return element
@@ -669,7 +671,7 @@ class Parse(IatiParser):
         """atributes:
 
         tag:title"""
-        model = self.get_model('DocumentLink')
+        model = self.get_model('OrganisationDocumentLink')
         document_link_title = DocumentLinkTitle()
         document_link_title.document_link = model
         self.register_model('DocumentLinkTitle',document_link_title)
@@ -691,11 +693,16 @@ class Parse(IatiParser):
         code:B01
 
         tag:category"""
-        model = self.get_model('DocumentLink')
-        model.save()
+        model = self.get_model('OrganisationDocumentLink')
+
         document_category = self.get_or_none(codelist_models.DocumentCategory, code=element.attrib.get('code'))
-        model.categories.add(document_category)
-        # store element
+
+        document_link_category = OrganisationDocumentLinkCategory()
+        document_link_category.category = document_category
+        document_link_category.document_link = model
+
+        self.register_model('OrganisationDocumentLinkCategory',document_link_category)
+
         return element
 
     def iati_organisations__iati_organisation__document_link__language(self, element):
@@ -703,7 +710,7 @@ class Parse(IatiParser):
         code:en
 
         tag:language"""
-        model = self.get_model('DocumentLink')
+        model = self.get_model('OrganisationDocumentLink')
         model.language = self.get_or_none(codelist_models.Language, code=element.attrib.get('code'))
         # store element
         return element
@@ -730,7 +737,7 @@ class Parse(IatiParser):
                 "iso-date",
                 "iso-date not of type xsd:date")
 
-        document_link = self.get_model('DocumentLink')
+        document_link = self.get_model('OrganisationDocumentLink')
         document_link.iso_date = iso_date
         return element
 
@@ -739,9 +746,15 @@ class Parse(IatiParser):
         code:AF
 
         tag:recipient-country"""
-        model = self.get_model('DocumentLink')
+        model = self.get_model('OrganisationDocumentLink')
+
         country = self.get_or_none(Country, code=element.attrib.get('code'))
-        model.recipient_countries.add(country)
+
+        document_link_recipient_country = DocumentLinkRecipientCountry()
+        document_link_recipient_country.recipient_country = country
+        document_link_recipient_country.document_link = model
+
+        self.register_model('DocumentLinkRecipientCountry',document_link_recipient_country)
 
         # store element
         return element

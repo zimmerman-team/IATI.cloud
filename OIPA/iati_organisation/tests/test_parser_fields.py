@@ -260,7 +260,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test narrative text',attribs)
         self.parser_202.iati_organisations__iati_organisation__total_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('TotalBudgetLineNarrative')
         self.assertEqual('test narrative text',model.content)
 
     def test_iati_organisations__iati_organisation__total_budget__budget_line__value(self):
@@ -436,7 +436,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_org_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientOrgBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__recipient_country_budget(self):
@@ -574,7 +574,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_country_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientCountryBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__recipient_region_budget(self):
@@ -714,7 +714,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attribs)
         self.parser_202.iati_organisations__iati_organisation__recipient_region_budget__budget_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('RecipientRegionBudgetLineNarrative')
         self.assertEqual('test text',model.content)
 
     def test_iati_organisations__iati_organisation__total_expenditure(self):
@@ -828,7 +828,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('narrative','test text',attrs)
         self.parser_202.iati_organisations__iati_organisation__total_expenditure__expense_line__narrative(element)
-        model = self.parser_202.get_model('BudgetLineNarrative')
+        model = self.parser_202.get_model('TotalExpenditureLineNarrative')
         self.assertEqual(model.content, 'test text')
 
     def test_iati_organisations__iati_organisation__document_link(self):
@@ -846,8 +846,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('document-link',attribs)
         self.parser_202.iati_organisations__iati_organisation__document_link(element)
-        model = self.parser_202.get_model('DocumentLink')
-        """ :type : org_models.DocumentLink """
+        model = self.parser_202.get_model('OrganisationDocumentLink')
+        """ :type : org_models.OrganisationDocumentLink """
         self.assertEqual(model.url,element.attrib.get('url'))
         self.assertEqual(model.file_format,self.parser_202.get_or_none(codelist_models.FileFormat, code=element.attrib.get('format')))
 
@@ -887,13 +887,13 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('category',attribs)
 
-        model = self.parser_202.get_model('DocumentLink')
+        model = self.parser_202.get_model('OrganisationDocumentLink')
         model.organisation.save()
         model.organisation = model.organisation
         model.save()
 
         self.parser_202.iati_organisations__iati_organisation__document_link__category(element)
-        model = self.parser_202.get_model('DocumentLink')
+        model = self.parser_202.get_model('OrganisationDocumentLink')
     
     def test_iati_organisations__iati_organisation__document_link__language(self):
         """attributes:
@@ -909,8 +909,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         element = E('language',attribs)
 
         self.parser_202.iati_organisations__iati_organisation__document_link__language(element)
-        model = self.parser_202.get_model('DocumentLink')
-        """ :type : org_models.DocumentLink """
+        model = self.parser_202.get_model('OrganisationDocumentLink')
+        """ :type : org_models.OrganisationDocumentLink """
         self.assertEqual(model.language,self.parser_202.get_or_none(codelist_models.Language, code=element.attrib.get('code')))
 
     def test_iati_organisations__iati_organisation__document_link_document_date_202(self):
@@ -925,7 +925,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.test_iati_organisations__iati_organisation__document_link()
 
         self.parser_202.iati_organisations__iati_organisation__document_link__document_date(document_date)
-        document_link = self.parser_202.get_model('DocumentLink')
+        document_link = self.parser_202.get_model('OrganisationDocumentLink')
 
         self.assertEqual(str(document_link.iso_date), attrs['iso-date'])
 
@@ -936,7 +936,7 @@ class OrganisationTestCase(ParserSetupTestCase):
         tag:recipient-country
         """
         self.test_iati_organisations__iati_organisation__document_link()
-        model = self.parser_202.get_model('DocumentLink')
+        model = self.parser_202.get_model('OrganisationDocumentLink')
         model.organisation.save()
         model.organisation = model.organisation
         model.save()
