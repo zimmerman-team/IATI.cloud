@@ -250,3 +250,4 @@ class ResultFilter(TogetherFilterSet):
 
     class Meta:
         model = Result
+        fields = '__all__'

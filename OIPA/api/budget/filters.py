@@ -415,3 +415,4 @@ class BudgetFilter(TogetherFilterSet):
 
     class Meta:
         model = Budget
+        fields = '__all__'

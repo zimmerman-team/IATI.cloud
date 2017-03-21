@@ -512,6 +512,7 @@ class ActivityFilter(TogetherFilterSet):
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
+        fields = '__all__'
 
 
 class RelatedActivityFilter(FilterSet):
@@ -522,6 +523,7 @@ class RelatedActivityFilter(FilterSet):
 
     class Meta:
         model = RelatedActivity
+        fields = '__all__'
 
 
 class RelatedOrderingFilter(filters.OrderingFilter):
