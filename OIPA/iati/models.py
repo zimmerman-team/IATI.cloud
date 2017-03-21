@@ -129,6 +129,9 @@ class Activity(models.Model):
     has_conditions = models.BooleanField(default=False)
     humanitarian = models.NullBooleanField(null=True, blank=True)
 
+    # this is reported on activity/reporting-org
+    secondary_reporter = models.BooleanField(default=False)
+
     # added data
     is_searchable = models.BooleanField(default=True, db_index=True)
 

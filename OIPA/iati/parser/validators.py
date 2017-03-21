@@ -227,6 +227,7 @@ def activity(
         actual_end=None,
         end_date=None,
         capital_spend=None,
+        secondary_reporter=None,
         title={}, # important arg
         iati_standard_version="2.02",
         published=False,
@@ -236,6 +237,7 @@ def activity(
         errors = []
 
         if not hierarchy: hierarchy = 1
+        if not secondary_reporter: secondary_reporter = False
 
         default_currency = get_or_none(models.Currency, pk=default_currency)
         iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
@@ -408,6 +410,7 @@ def activity(
                 "title": {
                 },
                 "title_narratives": title_narratives['validated_data'],
+                "secondary_reporter": secondary_reporter,
             },
         }
 

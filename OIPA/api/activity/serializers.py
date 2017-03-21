@@ -560,73 +560,70 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
-    ref = serializers.CharField(source="organisation.organisation_identifier")
-    type = CodelistSerializer(source="org_type")
+    ref = serializers.CharField(source="publisher.organisation.organisation_identifier")
+    type = CodelistSerializer(source="publisher.organisation.type")
     secondary_reporter = serializers.BooleanField()
-    # organisation = OrganisationSerializer()
-    organisation = serializers.HyperlinkedRelatedField(view_name='organisations:organisation-detail', read_only=True)
 
     activity = serializers.CharField(write_only=True)
 
-    narratives = OrganisationNarrativeSerializer(many=True, required=False)
+    narratives = OrganisationNarrativeSerializer(source="publisher.organisation.name.narratives", many=True, required=False)
 
     class Meta:
-        model = organisation_models.OrganisationReportingOrganisation
+        model = organisation_models.Organisation
         fields = (
             'id',
             'ref',
-            'organisation',
             'type',
             'secondary_reporter',
             'narratives',
             'activity',
         )
 
-    def validate(self, data):
-        activity = get_or_raise(iati_models.Activity, data, 'activity')
-        # narratives = data.pop('narratives', [])
+    # def validate(self, data):
+    #     activity = get_or_raise(iati_models.Activity, data, 'activity')
+    #     # narratives = data.pop('narratives', [])
 
-        validated = validators.activity_reporting_org(
-            activity,
-            data.get('normalized_ref'),
-            data.get('type', {}).get('code'),
-            data.get('secondary_reporter'),
-            data.get('narratives')
-        )
+    #     validated = validators.activity_reporting_org(
+    #         activity,
+    #         data.get('normalized_ref'),
+    #         data.get('type', {}).get('code'),
+    #         data.get('secondary_reporter'),
+    #         data.get('narratives')
+    #     )
 
-        # validated_narratives = validators.narratives(activity, narratives)
+    #     # validated_narratives = validators.narratives(activity, narratives)
 
-        return handle_errors(validated)
-
-
-    def create(self, validated_data):
-        activity = validated_data.get('activity')
-        narratives = validated_data.pop('narratives', [])
-
-        instance = iati_models.ActivityReportingOrganisation.objects.create(**validated_data)
-
-        save_narratives(instance, narratives, activity)
-
-        activity.modified = True
-        activity.save()
-
-        return instance
+    #     return handle_errors(validated)
 
 
-    def update(self, instance, validated_data):
-        activity = validated_data.get('activity')
-        narratives = validated_data.pop('narratives', [])
+    # def create(self, validated_data):
+    #     activity = validated_data.get('activity')
+    #     narratives = validated_data.pop('narratives', [])
 
-        update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
-        update_instance.id = instance.id
-        update_instance.save()
+    #     instance = iati_models.ActivityReportingOrganisation.objects.create(**validated_data)
 
-        save_narratives(update_instance, narratives, activity)
+    #     save_narratives(instance, narratives, activity)
 
-        activity.modified = True
-        activity.save()
+    #     activity.modified = True
+    #     activity.save()
 
-        return update_instance
+    #     return instance
+
+
+    # def update(self, instance, validated_data):
+    #     activity = validated_data.get('activity')
+    #     narratives = validated_data.pop('narratives', [])
+
+    #     update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
+    #     update_instance.id = instance.id
+    #     update_instance.save()
+
+    #     save_narratives(update_instance, narratives, activity)
+
+    #     activity.modified = True
+    #     activity.save()
+
+    #     return update_instance
 
 
 class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
@@ -2640,7 +2637,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     reporting_organisation = ReportingOrganisationSerializer(
         read_only=True,
-        source="publisher.organisation.reporting_org"
+        source="*"
     )
     title = TitleSerializer(required=False)
 
@@ -2781,6 +2778,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     humanitarian = serializers.BooleanField(required=False)
 
+    # from reporting-org, can be saved directly on activity
+    secondary_reporter = serializers.BooleanField(write_only=True, required=False)
+
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
@@ -2812,6 +2812,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             data.get('actual_end'),
             data.get('end_date'),
             data.get('capital_spend'),
+            data.get('secondary_reporter'),
             data.get('title', {}),
         )
 
@@ -2943,6 +2944,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'humanitarian',
             'hierarchy',
             'linked_data_uri',
+            'secondary_reporter',
             'aggregations',
             'dataset',
             'publisher',

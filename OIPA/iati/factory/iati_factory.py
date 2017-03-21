@@ -62,6 +62,13 @@ class ActivityFactory(NoDatabaseFactory):
 
     # title = RelatedFactory('iati.factory.iati_factory.TitleFactory', 'activity')
 
+class OrganisationNameFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.OrganisationName
+        django_get_or_create = ('organisation',)
+
+    # organisation = SubFactory(OrganisationFactory)
+
 class OrganisationFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.Organisation
@@ -72,7 +79,11 @@ class OrganisationFactory(NoDatabaseFactory):
     default_lang = SubFactory(LanguageFactory)
     default_currency = SubFactory(CurrencyFactory)
 
+    # actually defined on reporting-org
+    type = SubFactory(OrganisationTypeFactory)
     # publisher = SubFactory('iati_synchroniser.factory.synchroniser_factory.PublisherFactory')
+
+    name = RelatedFactory(OrganisationNameFactory, 'organisation')
     
 class RegionFactory(NoDatabaseFactory):
     class Meta:
@@ -472,12 +483,6 @@ class OrganisationRecipientOrgBudgetLineFactory(NoDatabaseFactory):
     currency = SubFactory(CurrencyFactory)
     value = 100
     value_date = '2013-06-28'
-
-class OrganisationNameFactory(NoDatabaseFactory):
-    class Meta:
-        model = iati_organisation.models.OrganisationName
-
-    organisation = SubFactory(OrganisationFactory)
 
 
 class OrganisationReportingOrganisationFactory(NoDatabaseFactory):

@@ -780,6 +780,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(reporting_organisation.ref, self.attrs["ref"])
         self.assertEqual(reporting_organisation.type.code, self.attrs["type"])
         self.assertEqual(reporting_organisation.activity, activity)
+        self.assertEqual(reporting_organisation.activity.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
         self.assertEqual(reporting_organisation.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
 
         # should create an organisation
@@ -789,11 +790,6 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(organisation.reported_in_iati, False)
         self.assertEqual(reporting_organisation.organisation, organisation)
 
-        organisation_reporting_org = self.parser_202.get_model('OrganisationReportingOrganisation')
-        self.assertEqual(organisation_reporting_org.organisation, organisation)
-        self.assertEqual(organisation_reporting_org.org_type.code, self.attrs['type'])
-        self.assertEqual(organisation_reporting_org.reporting_org_identifier, self.attrs['ref'])
-        self.assertEqual(organisation_reporting_org.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
         organisation_name = self.parser_202.get_model('OrganisationName')
         self.assertEqual(organisation_name.organisation, organisation)
 
@@ -829,6 +825,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(reporting_organisation.organisation.id, test_organisation.id)
         self.assertEqual(reporting_organisation.type.code, self.attrs["type"])
         self.assertEqual(reporting_organisation.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
+        self.assertEqual(reporting_organisation.activity.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
 
     @skip('NotImplemented')
     def test_reporting_organisation_narrative(self):

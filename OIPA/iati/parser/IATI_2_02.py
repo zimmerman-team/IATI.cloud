@@ -215,31 +215,22 @@ class Parse(IatiParser):
             organisation_name = organisation_models.OrganisationName()
             organisation_name.organisation = organisation
 
-            organisation_reporting_org = organisation_models.OrganisationReportingOrganisation()
-            organisation_reporting_org.organisation = organisation
-            organisation_reporting_org.org_type = org_type
-            # organisation_reporting_org.reporting_org = 
-            organisation_reporting_org.reporting_org_identifier = normalized_ref
-
             self.publisher.organisation = organisation
 
             # create an organization if it is not parsed yet or not in IATI
             # Also, link to publisher
 
             organisation_name.save()
-            organisation_reporting_org.save()
             self.publisher.save()
 
             self.register_model('Organisation', organisation)
             self.register_model('OrganisationName', organisation_name)
-            self.register_model('OrganisationReportingOrganisation', organisation_reporting_org)
 
             narratives = element.findall('narrative')
 
             if len(narratives) > 0:
                 for narrative in narratives:
                     self.add_narrative(narrative, organisation_name, is_organisation_narrative=True)
-                    self.add_narrative(narrative, organisation_reporting_org, is_organisation_narrative=True)
                     organisation.primary_name = self.get_primary_name(narrative, organisation.primary_name)
             else:
                 organisation.primary_name = ref
@@ -252,6 +243,8 @@ class Parse(IatiParser):
         reporting_organisation.activity = activity
         reporting_organisation.organisation = organisation
         reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
+
+        activity.secondary_reporter = self.makeBool(secondary_reporter)
 
         self.register_model('ActivityReportingOrganisation', reporting_organisation)
     

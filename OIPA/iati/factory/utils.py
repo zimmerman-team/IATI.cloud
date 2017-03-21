@@ -122,11 +122,16 @@ def _create_test_activity(
     # )
 
 
-    organisation = OrganisationReportingOrganisationFactory.create()
-    reporting_organisation = OrganisationReportingOrganisationFactory.create()
+    # organisation = OrganisationReportingOrganisationFactory.create()
+    # reporting_organisation = OrganisationReportingOrganisationFactory.create()
+    # _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation1, True)
+    # _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation2, True)
 
-    _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation1, True)
-    _create_test_narrative(reporting_organisation.organisation, reporting_organisation, reporting_organisation2, True)
+    organisation = OrganisationFactory.create()
+    # organisation_name = OrganisationNameFactory.create(organisation=organisation)
+
+    _create_test_narrative(organisation, organisation.name, reporting_organisation1, True)
+    _create_test_narrative(organisation, organisation.name, reporting_organisation2, True)
 
     participating_organisation = ParticipatingOrganisationFactory.create(
         activity=activity,

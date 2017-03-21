@@ -66,6 +66,9 @@ class Organisation(models.Model):
 
     reported_in_iati = models.BooleanField(default=True)
 
+    # this is actually reported on activity/reporting-org but we store it here so we can simultaneously update it for all activities
+    type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
+
     # first narrative
     primary_name = models.CharField(max_length=150, db_index=True)
 
