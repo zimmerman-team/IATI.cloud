@@ -376,6 +376,16 @@ class OrganisationTotalBudgetFactory(NoDatabaseFactory):
     value = 100
     value_date = '2013-06-28'
 
+class OrganisationTotalBudgetLineFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.TotalBudgetLine
+
+    total_budget = SubFactory(OrganisationTotalBudgetFactory)
+    ref = "some ref"
+    currency = SubFactory(CurrencyFactory)
+    value = 100
+    value_date = '2013-06-28'
+
 class OrganisationRecipientCountryBudgetFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.RecipientCountryBudget
@@ -385,6 +395,16 @@ class OrganisationRecipientCountryBudgetFactory(NoDatabaseFactory):
     currency = SubFactory(CurrencyFactory)
     period_start = '2011-01-01'
     period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
+class OrganisationRecipientCountryBudgetLineFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.RecipientCountryBudgetLine
+
+    recipient_country_budget = SubFactory(OrganisationRecipientCountryBudgetFactory)
+    ref = "some ref"
+    currency = SubFactory(CurrencyFactory)
     value = 100
     value_date = '2013-06-28'
 
@@ -400,6 +420,16 @@ class OrganisationRecipientRegionBudgetFactory(NoDatabaseFactory):
     value = 100
     value_date = '2013-06-28'
 
+class OrganisationRecipientRegionBudgetLineFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.RecipientRegionBudgetLine
+
+    recipient_region_budget = SubFactory(OrganisationRecipientRegionBudgetFactory)
+    ref = "some ref"
+    currency = SubFactory(CurrencyFactory)
+    value = 100
+    value_date = '2013-06-28'
+
 class OrganisationTotalExpenditureFactory(NoDatabaseFactory):
     class Meta:
         model = iati_organisation.models.TotalExpenditure
@@ -408,6 +438,16 @@ class OrganisationTotalExpenditureFactory(NoDatabaseFactory):
     currency = SubFactory(CurrencyFactory)
     period_start = '2011-01-01'
     period_end = '2011-12-30'
+    value = 100
+    value_date = '2013-06-28'
+
+class OrganisationTotalExpenditureLineFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.TotalExpenditureLine
+
+    total_expenditure = SubFactory(OrganisationTotalExpenditureFactory)
+    ref = "some ref"
+    currency = SubFactory(CurrencyFactory)
     value = 100
     value_date = '2013-06-28'
 
@@ -423,6 +463,15 @@ class OrganisationRecipientOrgBudgetFactory(NoDatabaseFactory):
     value = 100
     value_date = '2013-06-28'
 
+class OrganisationRecipientOrgBudgetLineFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati_organisation.models.RecipientOrgBudgetLine
+
+    recipient_org_budget = SubFactory(OrganisationRecipientOrgBudgetFactory)
+    ref = "some ref"
+    currency = SubFactory(CurrencyFactory)
+    value = 100
+    value_date = '2013-06-28'
 
 class OrganisationNameFactory(NoDatabaseFactory):
     class Meta:

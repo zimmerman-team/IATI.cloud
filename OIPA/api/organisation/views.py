@@ -330,9 +330,9 @@ class OrganisationRecipientOrgBudgetListCRUD(ListCreateAPIView):
     permission_classes = (PublisherPermissions, )
 
     def get_queryset(self):
-        pk = self.kwargs.get('recipient_org_budget_id')
+        pk = self.kwargs.get('pk')
         try:
-            return models.TotalBudget.objects.get(pk=pk).recipientorgbudgetline_set.all()
+            return models.Organisation.objects.get(pk=pk).recipientorgbudget_set.all()
         except Organisation.DoesNotExist:
             return None
 
@@ -344,7 +344,7 @@ class OrganisationRecipientOrgBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         pk = self.kwargs.get('id')
-        return models.RecipientOrgBudgetLine.objects.get(pk=pk)
+        return models.RecipientOrgBudget.objects.get(pk=pk)
 
 class OrganisationRecipientOrgBudgetBudgetLineListCRUD(ListCreateAPIView):
     serializer_class = serializers.RecipientOrgBudgetLineSerializer
@@ -353,9 +353,9 @@ class OrganisationRecipientOrgBudgetBudgetLineListCRUD(ListCreateAPIView):
     permission_classes = (PublisherPermissions, )
 
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
+        pk = self.kwargs.get('recipient_org_budget_id')
         try:
-            return models.Organisation.objects.get(pk=pk).recipient_org_budgets.all()
+            return models.TotalBudget.objects.get(pk=pk).recipientorgbudgetline_set.all()
         except Organisation.DoesNotExist:
             return None
 
@@ -486,7 +486,7 @@ class OrganisationTotalExpenditureDetailCRUD(RetrieveUpdateDestroyAPIView):
         return models.TotalExpenditure.objects.get(pk=pk)
 
 
-class OrganisationTotalExpenditureExpenseLineLineListCRUD(ListCreateAPIView):
+class OrganisationTotalExpenditureExpenseLineListCRUD(ListCreateAPIView):
     serializer_class = serializers.TotalExpenditureLineSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)

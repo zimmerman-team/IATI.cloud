@@ -116,7 +116,7 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
         }
     }
 
-def narratives(narratives, default_lang, activity_id, warnings=[], errors=[], apiField=""):
+def narratives_validate(narratives, default_lang, activity_id, warnings=[], errors=[], apiField=""):
     # warnings = []
     # errors = []
     validated_data = []
@@ -175,7 +175,7 @@ def organisation(
         #             "name__narratives",
         #             ))
 
-        name_narratives = narratives(name_narratives, default_lang, None,  warnings, errors, "name")
+        name_narratives = narratives_validate(name_narratives, default_lang, None,  warnings, errors, "name")
         errors = errors + name_narratives['errors']
         warnings = warnings + name_narratives['warnings']
 
@@ -317,6 +317,78 @@ def organisation_total_budget(
                 "value": value,
                 "currency": currency,
                 "value_date": value_date,
+            },
+        }
+
+def organisation_total_budget_line(
+        total_budget,
+        ref,
+        value,
+        currency_code,
+        value_date_raw,
+        narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not narratives_data:
+            narratives_data = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "total-budget/budget-line",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not total_budget.organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        narratives = narratives_validate(narratives_data, total_budget.organisation.default_lang, total_budget.organisation.id,  warnings, errors, "total-budget/budget-line")
+        errors = errors + narratives['errors']
+        warnings = warnings + narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "total_budget": total_budget,
+                "ref": ref,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+                "narratives": narratives['validated_data'],
             },
         }
 
@@ -468,6 +540,78 @@ def organisation_recipient_org_budget(
             },
         }
 
+def organisation_recipient_org_budget_line(
+        recipient_org_budget,
+        ref,
+        value,
+        currency_code,
+        value_date_raw,
+        narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not narratives_data:
+            narratives_data = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "total-budget/budget-line",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not recipient_org_budget.organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        narratives = narratives_validate(narratives_data, recipient_org_budget.organisation.default_lang, recipient_org_budget.organisation.id,  warnings, errors, "total-budget/budget-line")
+        errors = errors + narratives['errors']
+        warnings = warnings + narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "recipient_org_budget": recipient_org_budget,
+                "ref": ref,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+                "narratives": narratives['validated_data'],
+            },
+        }
+
 def organisation_recipient_country_budget(
         organisation,
         status_code,
@@ -611,6 +755,78 @@ def organisation_recipient_country_budget(
                 "value": value,
                 "currency": currency,
                 "value_date": value_date,
+            },
+        }
+
+def organisation_recipient_country_budget_line(
+        recipient_country_budget,
+        ref,
+        value,
+        currency_code,
+        value_date_raw,
+        narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not narratives_data:
+            narratives_data = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "total-budget/budget-line",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not recipient_country_budget.organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        narratives = narratives_validate(narratives_data, recipient_country_budget.organisation.default_lang, recipient_country_budget.organisation.id,  warnings, errors, "total-budget/budget-line")
+        errors = errors + narratives['errors']
+        warnings = warnings + narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "recipient_country_budget": recipient_country_budget,
+                "ref": ref,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+                "narratives": narratives['validated_data'],
             },
         }
 
@@ -760,6 +976,78 @@ def organisation_recipient_region_budget(
             },
         }
 
+def organisation_recipient_region_budget_line(
+        recipient_region_budget,
+        ref,
+        value,
+        currency_code,
+        value_date_raw,
+        narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not narratives_data:
+            narratives_data = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "total-budget/budget-line",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not recipient_region_budget.organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        narratives = narratives_validate(narratives_data, recipient_region_budget.organisation.default_lang, recipient_region_budget.organisation.id,  warnings, errors, "total-budget/budget-line")
+        errors = errors + narratives['errors']
+        warnings = warnings + narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "recipient_region_budget": recipient_region_budget,
+                "ref": ref,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+                "narratives": narratives['validated_data'],
+            },
+        }
+
 
 def organisation_total_expenditure(
         organisation,
@@ -868,6 +1156,80 @@ def organisation_total_expenditure(
             },
         }
 
+
+def organisation_total_expenditure_line(
+        total_expenditure,
+        ref,
+        value,
+        currency_code,
+        value_date_raw,
+        narratives_data,
+        ):
+        warnings = []
+        errors = []
+
+        if not narratives_data:
+            narratives_data = []
+
+        currency = get_or_none(models.Currency, code=currency_code)
+
+        if not value:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value",
+                    apiField="value",
+                    ))
+
+
+        if not value_date_raw:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "value-date",
+                    apiField="value_date",
+                    ))
+            value_date = None
+        else:
+            try:
+                value_date = validate_date(value_date_raw)
+            except RequiredFieldError:
+                errors.append(
+                    FieldValidationError(
+                        "total-budget/budget-line",
+                        "value-date",
+                        "iso-date not of type xsd:date",
+                        apiField="value_date",
+                        ))
+                value_date = None
+
+        if not currency and not total_expenditure.organisation.default_currency:
+            errors.append(
+                RequiredFieldError(
+                    "total-budget/budget-line",
+                    "currency",
+                    "currency not specified and no default specified on organisation",
+                    apiField="currency.code",
+                    ))
+
+        narratives = narratives_validate(narratives_data, total_expenditure.organisation.default_lang, total_expenditure.organisation.id,  warnings, errors, "total-budget/budget-line")
+        errors = errors + narratives['errors']
+        warnings = warnings + narratives['warnings']
+
+        return {
+            "warnings": warnings,
+            "errors": errors,
+            "validated_data": {
+                "total_expenditure": total_expenditure,
+                "ref": ref,
+                "value": value,
+                "currency": currency,
+                "value_date": value_date,
+                "narratives": narratives['validated_data'],
+            },
+        }
+
+
 def organisation_document_link(
         organisation,
         url,
@@ -921,7 +1283,7 @@ def organisation_document_link(
             document_date = None
 
 
-        title_narratives = narratives(title_narratives_data, organisation.default_lang, organisation.id,  warnings, errors, "title")
+        title_narratives = narratives_validate(title_narratives_data, organisation.default_lang, organisation.id,  warnings, errors, "title")
         errors = errors + title_narratives['errors']
         warnings = warnings + title_narratives['warnings']
 

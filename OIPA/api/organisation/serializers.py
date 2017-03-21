@@ -84,9 +84,57 @@ class TotalBudgetBudgetLineSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
 
+    total_budget = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        total_budget = get_or_raise(org_models.TotalBudget, data, 'total_budget')
+
+        validated = validators.organisation_total_budget_line(
+            total_budget,
+            data.get('ref'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+            data.get('narratives'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        total_budget = validated_data.get('total_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        instance = org_models.TotalBudgetLine.objects.create(**validated_data)
+
+        total_budget.organisation.modified = True
+        total_budget.organisation.save()
+
+        save_narratives(total_budget, narratives_data, total_budget.organisation)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        total_budget = validated_data.get('total_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        update_instance = org_models.TotalBudgetLine(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        total_budget.organisation.modified = True
+        total_budget.organisation.save()
+
+        save_narratives(total_budget, narratives_data, total_budget.organisation)
+
+        return update_instance
+
     class Meta:
-        model = org_models.TotalBudgetBudgetLine
+        model = org_models.TotalBudgetLine
         fields = (
+            'total_budget',
+            'id',
             'ref',
             'value',
             'narratives',
@@ -163,9 +211,57 @@ class RecipientOrgBudgetLineSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
 
+    recipient_org_budget = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        recipient_org_budget = get_or_raise(org_models.RecipientOrgBudget, data, 'recipient_org_budget')
+
+        validated = validators.organisation_recipient_org_budget_line(
+            recipient_org_budget,
+            data.get('ref'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+            data.get('narratives'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        recipient_org_budget = validated_data.get('recipient_org_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        instance = org_models.RecipientOrgBudgetLine.objects.create(**validated_data)
+
+        recipient_org_budget.organisation.modified = True
+        recipient_org_budget.organisation.save()
+
+        save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        recipient_org_budget = validated_data.get('recipient_org_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        update_instance = org_models.RecipientOrgBudgetLine(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        recipient_org_budget.organisation.modified = True
+        recipient_org_budget.organisation.save()
+
+        save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
+
+        return update_instance
+
     class Meta:
         model = org_models.RecipientOrgBudgetLine
         fields = (
+            'recipient_org_budget',
+            'id',
             'ref',
             'value',
             'narratives',
@@ -251,9 +347,57 @@ class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
 
+    recipient_country_budget = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        recipient_country_budget = get_or_raise(org_models.RecipientCountryBudget, data, 'recipient_country_budget')
+
+        validated = validators.organisation_recipient_country_budget_line(
+            recipient_country_budget,
+            data.get('ref'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+            data.get('narratives'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        recipient_country_budget = validated_data.get('recipient_country_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        instance = org_models.RecipientCountryBudgetLine.objects.create(**validated_data)
+
+        recipient_country_budget.organisation.modified = True
+        recipient_country_budget.organisation.save()
+
+        save_narratives(recipient_country_budget, narratives_data, recipient_country_budget.organisation)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        recipient_country_budget = validated_data.get('recipient_country_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        update_instance = org_models.RecipientCountryBudgetLine(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        recipient_country_budget.organisation.modified = True
+        recipient_country_budget.organisation.save()
+
+        save_narratives(recipient_country_budget, narratives_data, recipient_country_budget.organisation)
+
+        return update_instance
+
     class Meta:
         model = org_models.RecipientCountryBudgetLine
         fields = (
+            'recipient_country_budget',
+            'id',
             'ref',
             'value',
             'narratives',
@@ -330,9 +474,57 @@ class RecipientRegionBudgetLineSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
 
+    recipient_region_budget = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        recipient_region_budget = get_or_raise(org_models.RecipientRegionBudget, data, 'recipient_region_budget')
+
+        validated = validators.organisation_recipient_region_budget_line(
+            recipient_region_budget,
+            data.get('ref'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+            data.get('narratives'),
+
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        recipient_region_budget = validated_data.get('recipient_region_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        instance = org_models.RecipientRegionBudgetLine.objects.create(**validated_data)
+
+        recipient_region_budget.organisation.modified = True
+        recipient_region_budget.organisation.save()
+
+        save_narratives(recipient_region_budget, narratives_data, recipient_region_budget.organisation)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        recipient_region_budget = validated_data.get('recipient_region_budget')
+        narratives_data = validated_data.pop('narratives', [])
+
+        update_instance = org_models.RecipientRegionBudgetLine(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        recipient_region_budget.organisation.modified = True
+        recipient_region_budget.organisation.save()
+
+        save_narratives(recipient_region_budget, narratives_data, recipient_region_budget.organisation)
+
+        return update_instance
+
     class Meta:
         model = org_models.RecipientRegionBudgetLine
         fields = (
+            'recipient_region_budget',
+            'id',
             'ref',
             'value',
             'narratives',
@@ -409,9 +601,56 @@ class TotalExpenditureLineSerializer(serializers.ModelSerializer):
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
 
+    total_expenditure = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        total_expenditure = get_or_raise(org_models.TotalExpenditure, data, 'total_expenditure')
+
+        validated = validators.organisation_total_expenditure_line(
+            total_expenditure,
+            data.get('ref'),
+            data.get('value'),
+            data.get('currency').get('code'),
+            data.get('value_date'),
+            data.get('narratives'),
+        )
+
+        return handle_errors(validated)
+
+    def create(self, validated_data):
+        total_expenditure = validated_data.get('total_expenditure')
+        narratives_data = validated_data.pop('narratives', [])
+
+        instance = org_models.TotalExpenditureLine.objects.create(**validated_data)
+
+        total_expenditure.organisation.modified = True
+        total_expenditure.organisation.save()
+
+        save_narratives(total_expenditure, narratives_data, total_expenditure.organisation)
+
+        return instance
+
+
+    def update(self, instance, validated_data):
+        total_expenditure = validated_data.get('total_expenditure')
+        narratives_data = validated_data.pop('narratives', [])
+
+        update_instance = org_models.TotalExpenditureLine(**validated_data)
+        update_instance.id = instance.id
+        update_instance.save()
+
+        total_expenditure.organisation.modified = True
+        total_expenditure.organisation.save()
+
+        save_narratives(total_expenditure, narratives_data, total_expenditure.organisation)
+
+        return update_instance
+
     class Meta:
         model = org_models.TotalExpenditureLine
         fields = (
+            'total_expenditure',
+            'id',
             'ref',
             'value',
             'narratives',
@@ -586,6 +825,7 @@ class OrganisationDocumentLinkRecipientCountrySerializer(serializers.ModelSerial
             'document_link',
             'id',
             'recipient_country', 
+            'budget_lines',
             )
 
     def validate(self, data):

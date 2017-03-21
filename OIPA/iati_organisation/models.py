@@ -44,7 +44,7 @@ class OrganisationNarrative(models.Model):
         index_together = [('content_type', 'object_id')]
 
 class BudgetLineAbstract(models.Model):
-    ref = models.CharField(max_length=150,primary_key=True)
+    ref = models.CharField(max_length=150)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
@@ -168,7 +168,7 @@ class TotalExpenditure(models.Model):
 class TotalExpenditureLine(models.Model):
     total_expenditure = models.ForeignKey(TotalExpenditure)
 
-    ref = models.CharField(max_length=150,primary_key=True)
+    ref = models.CharField(max_length=150)
     currency = models.ForeignKey(Currency,null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
