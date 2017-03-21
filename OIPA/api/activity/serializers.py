@@ -2784,7 +2784,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
 
-    publisher = PublisherSerializer(read_only=True)
+    publisher = PublisherSerializer(read_only=True,  fields = ('id', 'url', 'publisher_iati_id', 'display_name', 'name'))
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
