@@ -33,15 +33,6 @@ class ResultFilter(TogetherFilterSet):
         lookup_expr='in',
     )
 
-    indicator_period_actual_not = CommaSeparatedStickyCharFilter(
-        name='resultindicator__resultindicatorperiod__actual',
-        lookup_expr='in',
-        exclude=True)
-
-    # indicator_period_actual_null = StickyBooleanFilter(
-    #     name='resultindicator__resultindicatorperiod__actual__isnull',
-    #     lookup_expr='exact')
-
     indicator_period_actual_null = StickyBooleanFilter(
         lookup_expr='isnull',
         name='resultindicator__resultindicatorperiod__actual')
