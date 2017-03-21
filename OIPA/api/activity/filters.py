@@ -28,104 +28,104 @@ class ActivityFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
         name='iati_identifier',
-        lookup_type='in')
+        lookup_expr='in')
 
     activity_scope = CommaSeparatedCharFilter(
         name='scope__code',
-        lookup_type='in',)
+        lookup_expr='in',)
 
     document_link_category = ToManyFilter(
         qs=DocumentLink,
-        lookup_type='in',
+        lookup_expr='in',
         name='categories',
         fk='activity',
     )
 
     planned_start_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='planned_start')
 
     planned_start_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='planned_start')
 
     actual_start_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='actual_start')
 
     actual_start_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='actual_start')
 
     planned_end_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='planned_end')
 
     planned_end_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='planned_end')
 
     actual_end_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='actual_end')
 
     actual_end_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='actual_end')
 
     end_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='end_date')
 
     end_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='end_date')
 
     start_date_lte = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='start_date')
 
     start_date_gte = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='start_date')
 
-    end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
-    start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
+    end_date_isnull = BooleanFilter(lookup_expr='isnull', name='end_date')
+    start_date_isnull = BooleanFilter(lookup_expr='isnull', name='start_date')
 
     activity_status = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='activity_status',)
 
     hierarchy = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='hierarchy',)
 
     collaboration_type = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='collaboration_type',)
 
     default_flow_type = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='default_flow_type',)
 
     default_aid_type = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='default_aid_type',)
 
     default_finance_type = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='default_finance_type',)
 
     default_tied_status = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='default_tied_status',)
 
     budget_period_start = DateFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='budget__period_start',)
 
     budget_period_end = DateFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='budget__period_end')
 
     humanitarian = TypedChoiceFilter(
@@ -134,7 +134,7 @@ class ActivityFilter(TogetherFilterSet):
 
     humanitarian_scope_type = ToManyFilter(
         qs=HumanitarianScope,
-        lookup_type='in',
+        lookup_expr='in',
         name='type__code',
         fk='activity',
     )
@@ -142,172 +142,172 @@ class ActivityFilter(TogetherFilterSet):
     related_activity_id = ToManyFilter(
         qs=RelatedActivity,
         fk='current_activity',
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__iati_identifier',
     )
 
     related_activity_type = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='type__code',
         fk='current_activity',
     )
 
     related_activity_type_not = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='relatedactivity__type__code',
         exclude=True
     )
 
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__transaction__receiver_organisation__narratives__content',
         fk='current_activity',
     )
 
     related_activity_recipient_country = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__recipient_country',
         fk='current_activity',
     )
 
     related_activity_recipient_region = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__recipient_region',
         fk='current_activity',
     )
 
     related_activity_sector = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__sector',
         fk='current_activity',
     )
 
     related_activity_sector_category = ToManyFilter(
         qs=RelatedActivity,
-        lookup_type='in',
+        lookup_expr='in',
         name='ref_activity__sector__category',
         fk='current_activity',
     )
 
     budget_currency = ToManyFilter(
         qs=Budget,
-        lookup_type='in',
+        lookup_expr='in',
         name='currency__code',
         fk='activity',
     )
 
     recipient_country = ToManyFilter(
         qs=ActivityRecipientCountry,
-        lookup_type='in',
+        lookup_expr='in',
         name='country__code',
         fk='activity',
     )
 
     recipient_region = ToManyFilter(
         qs=ActivityRecipientRegion,
-        lookup_type='in',
+        lookup_expr='in',
         name='region__code',
         fk='activity',
     )
 
     recipient_region_not = ToManyNotInFilter(
         qs=ActivityRecipientRegion,
-        lookup_type='in',
+        lookup_expr='in',
         name='region__code',
         fk='activity',
     )
     
     sector = ToManyFilter(
         qs=ActivitySector,
-        lookup_type='in',
+        lookup_expr='in',
         name='sector__code',
         fk='activity',
     )
 
     sector_vocabulary = ToManyFilter(
         qs=ActivitySector,
-        lookup_type='in',
+        lookup_expr='in',
         name='sector__vocabulary__code',
         fk='activity',
     )
 
     sector_category = ToManyFilter(
         qs=ActivitySector,
-        lookup_type='in',
+        lookup_expr='in',
         name='sector__category__code',
         fk='activity',
     )
 
     policy_marker = ToManyFilter(
         qs=ActivityPolicyMarker,
-        lookup_type='in',
+        lookup_expr='in',
         name='code',
         fk='activity',
     )
 
     participating_organisation = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
-        lookup_type='in',
+        lookup_expr='in',
         name='normalized_ref',
         fk='activity',
     )
 
     participating_organisation_name = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
-        lookup_type='in',
+        lookup_expr='in',
         name='primary_name',
         fk='activity',
     )
 
     participating_organisation_role = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
-        lookup_type='in',
+        lookup_expr='in',
         name='role__code',
         fk='activity',
     )
 
     participating_organisation_type = ToManyFilter(
         qs=ActivityParticipatingOrganisation,
-        lookup_type='in',
+        lookup_expr='in',
         name='type__code',
         fk='activity',
     )
 
     reporting_organisation = ToManyFilter(
         qs=ActivityReportingOrganisation,
-        lookup_type='in',
+        lookup_expr='in',
         name='normalized_ref',
         fk='activity',
     )
 
     reporting_organisation_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
-        lookup_type='startswith',
+        lookup_expr='startswith',
         name='normalized_ref',
         fk='activity',
     )
 
     result_title = ToManyFilter(
         qs=Result,
-        lookup_type='in',
+        lookup_expr='in',
         name='resulttitle__narratives__content',
         fk='activity',
     )
 
     indicator_title = ToManyFilter(
         qs=ResultIndicatorTitle,
-        lookup_type='in',
+        lookup_expr='in',
         name='primary_name',
         fk='result_indicator__result__activity')
 
     indicator_period_end_year = ToManyFilter(
         qs=ResultIndicatorPeriod,
-        lookup_type='year',
+        lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
 
@@ -317,84 +317,84 @@ class ActivityFilter(TogetherFilterSet):
 
     transaction_type = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='transaction_type',
         fk='activity',
     )
 
     provider_organisation_primary_name = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='provider_organisation__primary_name',
         fk='activity',
     )
 
     receiver_organisation_primary_name = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='receiver_organisation__primary_name',
         fk='activity',
     )
 
     transaction_provider_organisation = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='provider_organisation__ref',
         fk='activity',
     )
 
     transaction_receiver_organisation = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='receiver_organisation__ref',
         fk='activity',
     )
 
     transaction_provider_organisation_name = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='provider_organisation__narratives__content',
         fk='activity',
     )
 
     transaction_receiver_organisation_name = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='receiver_organisation__narratives__content',
         fk='activity',
     )
 
     transaction_provider_activity = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='provider_organisation__provider_activity_ref',
         fk='activity',
     )
 
     transaction_receiver_activity = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='receiver_organisation__receiver_activity_ref',
         fk='activity',
     )
 
     transaction_provider_activity_reporting_org = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='provider_organisation__provider_activity__reporting_organisations__ref',
         fk='activity',
     )
 
     transaction_currency = ToManyFilter(
         qs=Transaction,
-        lookup_type='in',
+        lookup_expr='in',
         name='currency',
         fk='activity',
     )
 
     transaction_date_year = ToManyFilter(
         qs=Transaction,
-        lookup_type='year',
+        lookup_expr='year',
         name='transaction_date',
         fk='activity'
     )
@@ -404,83 +404,83 @@ class ActivityFilter(TogetherFilterSet):
     #
 
     total_budget_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_aggregation__budget_value')
 
     total_budget_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_aggregation__budget_value')
 
     total_disbursement_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_aggregation__disbursement_value')
 
     total_disbursement_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_aggregation__disbursement_value')
 
     total_incoming_funds_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_aggregation__incoming_funds_value')
 
     total_incoming_funds_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_aggregation__incoming_funds_value')
 
     total_expenditure_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_aggregation__expenditure_value')
 
     total_expenditure_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_aggregation__expenditure_value')
 
     total_commitment_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_aggregation__commitment_value')
 
     total_commitment_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_aggregation__commitment_value')
 
     total_hierarchy_budget_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_plus_child_aggregation__budget_value')
 
     total_hierarchy_budget_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_plus_child_aggregation__budget_value')
 
     total_hierarchy_disbursement_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_plus_child_aggregation__disbursement_value')
 
     total_hierarchy_disbursement_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_plus_child_aggregation__disbursement_value')
 
     total_hierarchy_incoming_funds_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_plus_child_aggregation__incoming_funds_value')
 
     total_hierarchy_incoming_funds_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_plus_child_aggregation__incoming_funds_value')
 
     total_hierarchy_expenditure_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_plus_child_aggregation__expenditure_value')
 
     total_hierarchy_expenditure_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_plus_child_aggregation__expenditure_value')
 
     total_hierarchy_commitment_lte = NumberFilter(
-        lookup_type='lte',
+        lookup_expr='lte',
         name='activity_plus_child_aggregation__commitment_value')
 
     total_hierarchy_commitment_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='activity_plus_child_aggregation__commitment_value')
 
     #
@@ -506,7 +506,7 @@ class ActivityFilter(TogetherFilterSet):
     published = CharFilter(method=filter_published)
 
     # modified = BooleanFilter(name='modified')
-    # start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
+    # start_date_isnull = BooleanFilter(lookup_expr='isnull', name='start_date')
 
 
     class Meta:
@@ -518,7 +518,7 @@ class ActivityFilter(TogetherFilterSet):
 class RelatedActivityFilter(FilterSet):
 
     related_activity_type = CommaSeparatedCharFilter(
-        lookup_type='in',
+        lookup_expr='in',
         name='type__code')
 
     class Meta:
@@ -619,5 +619,5 @@ class ActivityAggregationFilter(ActivityFilter):
 
     sector_vocabulary = CommaSeparatedStickyCharFilter(
         name='sector__vocabulary__code',
-        lookup_type='in',
+        lookup_expr='in',
     )

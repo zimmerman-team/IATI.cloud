@@ -20,4 +20,4 @@ from iati.models import *
 class DocumentFilter(TogetherFilterSet):
     class Meta:
         model = Document
-        #together_exclusive = [('budget_period_start', 'budget_period_end')]
+        fields = '__all__'

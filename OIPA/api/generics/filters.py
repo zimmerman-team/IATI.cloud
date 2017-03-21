@@ -63,12 +63,12 @@ class SearchFilter(filters.BaseFilterBackend):
 
         query = request.query_params.get('q', None)
         query_lookup = request.query_params.get('q_lookup', None)
-        lookup_type = 'ft'
+        lookup_expr = 'ft'
         if query_lookup:
             if query_lookup == 'exact':
-                lookup_type = 'ft'
+                lookup_expr = 'ft'
             if query_lookup == 'startswith':
-                lookup_type = 'ft_startswith'
+                lookup_expr = 'ft_startswith'
 
         if query:
 
@@ -90,10 +90,10 @@ class SearchFilter(filters.BaseFilterBackend):
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_type): dict_query_list}) for field in query_fields])
+                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
             else:
-                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_type): dict_query_list})
+                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
 
         return queryset
 
@@ -103,12 +103,12 @@ class DocumentSearchFilter(filters.BaseFilterBackend):
 
         query = request.query_params.get('document_q', None)
         query_lookup = request.query_params.get('q_lookup', None)
-        lookup_type = 'ft'
+        lookup_expr = 'ft'
         if query_lookup:
             if query_lookup == 'exact':
-                lookup_type = 'ft'
+                lookup_expr = 'ft'
             if query_lookup == 'startswith':
-                lookup_type = 'ft_startswith'
+                lookup_expr = 'ft_startswith'
 
         if query:
 
@@ -127,7 +127,7 @@ class DocumentSearchFilter(filters.BaseFilterBackend):
             #     queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
 
 
-            return queryset.filter(**{'{0}documentsearch__text__{1}'.format(model_prefix, lookup_type): dict_query_list})
+            return queryset.filter(**{'{0}documentsearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
 
         return queryset
 
@@ -139,7 +139,7 @@ class CommaSeparatedCharFilter(CharFilter):
             value = value.split(',')
             value = reduce(reduce_comma, value, [])
 
-        self.lookup_type = 'in'
+        self.lookup_expr = 'in'
 
         return super(CommaSeparatedCharFilter, self).filter(qs, value)
 
@@ -159,7 +159,7 @@ class CommaSeparatedStickyCharFilter(CharFilter):
             value = value.split(',')
             value = reduce(reduce_comma, value, [])
 
-        self.lookup_type = 'in'
+        self.lookup_expr = 'in'
         qs._next_is_sticky()
 
         return super(CommaSeparatedStickyCharFilter, self).filter(qs, value)
@@ -192,15 +192,15 @@ class TogetherFilter(Filter):
     Used with TogetherFilterSet, always gets called regardless of GET args
     """
     
-    def __init__(self, filters=None, values=None, **kwargs):
+    def __init__(self, filters=None, values=None, *args, **kwargs):
         self.filter_classes = filters
         self.values = values
 
-        super(TogetherFilter, self).__init__(**kwargs)
+        super(TogetherFilter, self).__init__(*args, **kwargs)
 
     def filter(self, qs, values):
         if self.filter_classes:
-            filters = { "%s__%s" % (c[0].name, c[0].lookup_type) : c[1] for c in zip(self.filter_classes, values)}
+            filters = { "%s__%s" % (c[0].name, c[0].lookup_expr) : c[1] for c in zip(self.filter_classes, values)}
             qs = qs.filter(**filters)
 
             return qs
@@ -208,7 +208,7 @@ class TogetherFilter(Filter):
 
 class TogetherFilterSet(FilterSet):
 
-    def __init__(self, data=None, queryset=None, prefix=None, strict=None):
+    def __init__(self, data=None, queryset=None, prefix=None, strict=None, *args, **kwargs):
         """
         Adds a together_exclusive meta option that selects fields that have to 
         be called in the same django filter() call when both present
@@ -232,7 +232,7 @@ class TogetherFilterSet(FilterSet):
                 self.base_filters[uid] = TogetherFilter(filters=filter_classes)
                 data.appendlist(uid, filter_values)
 
-        super(FilterSet, self).__init__(data, queryset, prefix, strict)
+        super(FilterSet, self).__init__(data, queryset, prefix, strict, *args, **kwargs)
 
 
 # class SubFilterSet(FilterSet):
@@ -264,12 +264,12 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
         values = value.split(',')
         values = reduce(reduce_comma, values, [])
 
-        lookup_type = self.lookup_type
+        lookup_expr = self.lookup_expr
 
-        if lookup_type is 'in':
-            final_filters = Q(**{"{}__{}".format(self.name, lookup_type): values})
+        if lookup_expr is 'in':
+            final_filters = Q(**{"{}__{}".format(self.name, lookup_expr): values})
         else:
-            filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
+            filters = [Q(**{"{}__{}".format(self.name, lookup_expr): value}) for value in values]
             final_filters = reduce(lambda a, b: a | b, filters)
 
         return qs.filter(final_filters)
