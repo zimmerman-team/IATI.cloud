@@ -2,6 +2,7 @@ from iati.models import Activity
 from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from django.db.models import Q
 
 
 def find(list, filter):
@@ -33,23 +34,31 @@ class ChainRetriever():
     def retrieve_chain_for_all_activities(self):
         for activity in Activity.objects.iterator():
 
-            chain = Chain.objects.filter(chainlink__activity=activity)
-            if len(chain) > 0 and chain.last_updated < self.started_at:
+            chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity))
+
+            if len(chain) > 0 and chain[0].last_updated < self.started_at:
+                # in a chain, only update if the chain is not created within this run
                 self.retrieve_chain(activity)
 
-            if not ChainLink.objects.filter(activity=activity).exists():
-                # not in a chain yet, create the chain
-                retrieve_chain(activity)
+                # error catching
+                if len(chain) > 1:
+                    print 'activity {} occurs in multiple chains, probably a coding error.'.format(activity.iati_identifier)
 
+            elif len(chain) is 0:
+                # not in a chain yet, create the chain
+                self.retrieve_chain(activity)
 
     def retrieve_chain(self, activity):
 
         # delete old chain
-        if Chain.objects.filter(chainlink__start_node__activity=activity).count() > 0:
-            Chain.objects.filter(chainlink__start_node__activity=activity).delete()
+        if Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity)).count() > 0:
+            Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity)).delete()
 
         # create, is saved as self.chain
         self.create_chain()
+
+        # log
+        print 'creating chain {}, started at activity {}'.format(self.chain.id, activity.iati_identifier)
         
         # add all links based upon the current activity
         self.get_activity_links(activity)
@@ -71,13 +80,7 @@ class ChainRetriever():
         # save errors
         ChainNodeError.objects.bulk_create([ChainNodeError(**error) for error in self.errors])
 
-
-        # TODO set eol, bol, level of nodes.
-        # idea:
-        # to find bols, get all activities that are in the chain and are not mentioned as end_node.
-        # to find eols, get all activities that are in the chain and are not mentioned as start_node.
-        # to calculate levels, start with bols.
-
+        # define start points, end points, and tiers of nodes
         self.retrieve_bols()
         self.retrieve_eols()
         self.calculate_tiers()
@@ -86,52 +89,6 @@ class ChainRetriever():
         self.links = []
         self.errors = []
         self.chain = None
-
-
-    def retrieve_bols(self):
-        """
-        Find and set the activities where this tree starts (begin of line).
-        """
-
-        # get all nodes that are not mentioned as link end_node and set them as BOL.
-        ChainNode.objects.filter(chain=self.chain).exclude(id__in=ChainLink.objects.filter(chain=self.chain).values('end_node__id')).update(
-            bol=True,
-            level=0
-        )
-
-
-    def retrieve_eols(self):
-        """
-        Find and set the activities where this tree ends (end of line).
-        """
-
-        # get all nodes that are not mentioned as link start_node and set them as EOL. 
-        ChainNode.objects.filter(chain=self.chain).exclude(id__in=ChainLink.objects.filter(chain=self.chain).values('start_node__id')).update(eol=True)
-
-
-    def calculate_tiers(self):
-        """
-        By walking from the bol's, set the level of each activity.
-
-        TODO: this does not work correctly on side-funding, to check how to fix this.
-        """
-
-        def calculate_next_tier(level):
-
-            for cn in ChainNode.objects.filter(level=level):
-                # find chainlinks where this node is the start, set the end node as next level if None
-
-                for cl in ChainLink.objects.filter(start_node=cn):
-                    end_node = cl.end_node
-                    if not end_node.level:
-                        end_node.level == (level + 1)
-                        end_node.save()
-
-            if ChainNode.objects.filter(level=(level + 1)).exists():
-                calculate_next_tier((level + 1))
-
-        calculate_next_tier(0)
-
 
     def create_chain(self):
         # create chain
@@ -145,10 +102,6 @@ class ChainRetriever():
             cn.checked = True
             cn.save()
             self.get_activity_links(cn.activity)
-            print 'checked {}'.format(cn.activity.iati_identifier)
-
-        print ChainNode.objects.filter(checked=False).count()
-
 
         if ChainNode.objects.filter(checked=False).count() > 0:
             loops += 1
@@ -267,8 +220,6 @@ class ChainRetriever():
                 'activity_iati_id': activity.iati_identifier
             },
         )
-
-        print 'checking {}'.format(activity.iati_identifier)
 
         # 1.
         for t in activity.transaction_set.filter(transaction_type='1'):
@@ -415,4 +366,57 @@ class ChainRetriever():
             'related_id': related_id
         })
 
+    def retrieve_bols(self):
+        """
+        Find and set the activities where this tree starts (begin of line).
+        """
+
+        # get all nodes that are not mentioned as link end_node and set them as BOL.
+        ChainNode.objects.filter(
+            chain=self.chain
+        ).exclude(
+            id__in=ChainLink.objects.filter(chain=self.chain).values('end_node__id')
+        ).update(
+            bol=True,
+            level=0
+        )
+
+
+    def retrieve_eols(self):
+        """
+        Find and set the activities where this tree ends (end of line).
+        """
+
+        # get all nodes that are not mentioned as link start_node and set them as EOL. 
+        ChainNode.objects.filter(
+            chain=self.chain
+        ).exclude(
+            id__in=ChainLink.objects.filter(chain=self.chain).values('start_node__id')
+        ).update(
+            eol=True
+        )
+
+
+    def calculate_tiers(self):
+        """
+        By walking from the bol's, set the level of each activity.
+
+        TODO: this does not work correctly on side-funding, to check how to fix this.
+        """
+
+        def calculate_next_tier(level):
+
+            for cn in ChainNode.objects.filter(level=level):
+                # find chainlinks where this node is the start, set the end node as next level if None
+                for cl in ChainLink.objects.filter(start_node=cn):
+                    end_node = cl.end_node
+
+                    if not end_node.level:
+                        end_node.level = level + 1
+                        end_node.save()
+
+            if ChainNode.objects.filter(level=(level + 1)).exists():
+                calculate_next_tier((level + 1))
+
+        calculate_next_tier(0)
 

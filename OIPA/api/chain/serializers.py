@@ -20,6 +20,7 @@ class ChainNodeSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = chain_models.ChainNode
         fields = (
+            'id',
             'activity',
             'activity_oipa_id',
             'activity_iati_id',
@@ -71,8 +72,8 @@ class ChainLinkRelationSerializer(serializers.ModelSerializer):
 
 
 class ChainLinkSerializer(DynamicFieldsModelSerializer):
-    start_node = ChainNodeSerializer(fields=('activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
-    end_node = ChainNodeSerializer(fields=('activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
+    start_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
+    end_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
     relations = ChainLinkRelationSerializer(many=True)
 
     class Meta:
