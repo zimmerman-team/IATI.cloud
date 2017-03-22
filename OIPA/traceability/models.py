@@ -1,6 +1,6 @@
 from django.db import models
 from iati.models import Activity
-from datetime import datetime
+from django.utils.timezone import now
 
 # Networks should be based upon orgs in the org standard
 
@@ -16,7 +16,10 @@ from datetime import datetime
 class Chain(models.Model):
     # chains have no name
     name = models.CharField(max_length=255, blank=False)
-    last_updated = models.DateTimeField(default=datetime.now())
+    last_updated = models.DateTimeField(default=now)
+
+    def __unicode__(self):
+        return self.name
 
 
 class ChainNode(models.Model):
@@ -24,10 +27,14 @@ class ChainNode(models.Model):
     activity = models.ForeignKey(Activity, null=True)
     activity_oipa_id = models.IntegerField(blank=False)
     activity_iati_id = models.CharField(max_length=255, blank=False)
-    level = models.IntegerField()
+    level = models.IntegerField(null=True, default=None)
     bol = models.BooleanField(default=False)
     eol = models.BooleanField(default=False)
-    
+    checked = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.activity_iati_id
+
 
 class ChainNodeError(models.Model):
     level_choices = (
@@ -86,3 +93,4 @@ class ChainLinkRelation(models.Model):
     relation = models.CharField(choices=relation_choices, max_length=30)
     from_node = models.CharField(choices=from_choices, max_length=10)
     related_id = models.CharField(max_length=100)
+

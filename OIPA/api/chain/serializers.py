@@ -18,11 +18,11 @@ class ChainNodeSerializer(DynamicFieldsModelSerializer):
     activity = SimpleActivitySerializer()
 
     class Meta:
-        model = chain_models.Chain
+        model = chain_models.ChainNode
         fields = (
-            'chain',
             'activity',
-            'activity_identifier',
+            'activity_oipa_id',
+            'activity_iati_id',
             'level',
             'bol',
             'eol'
@@ -44,10 +44,13 @@ class ChainSerializer(DynamicFieldsModelSerializer):
         view_name='chains:chain-activity-list',
         )
 
+    url = serializers.HyperlinkedIdentityField(view_name='chains:chain-detail', read_only=True)
+
     class Meta:
         model = chain_models.Chain
         fields = (
             'id',
+            'url',
             'name',
             'last_updated',
             'links',
@@ -61,8 +64,6 @@ class ChainLinkRelationSerializer(serializers.ModelSerializer):
     class Meta:
         model = chain_models.ChainLinkRelation
         fields = (
-            'id',
-            'chain_link',
             'relation',
             'from_node',
             'related_id'
@@ -70,16 +71,14 @@ class ChainLinkRelationSerializer(serializers.ModelSerializer):
 
 
 class ChainLinkSerializer(DynamicFieldsModelSerializer):
-    chain = ChainSerializer()
-    start_node = ChainNodeSerializer()
-    end_node = ChainNodeSerializer()
+    start_node = ChainNodeSerializer(fields=('activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
+    end_node = ChainNodeSerializer(fields=('activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
     relations = ChainLinkRelationSerializer(many=True)
 
     class Meta:
         model = chain_models.ChainLink
         fields = (
             'id',
-            'chain',
             'start_node',
             'end_node',
             'relations'
@@ -91,7 +90,7 @@ class ChainNodeErrorSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = chain_models.ChainNodeError
         fields = (
-            'chain',
+            'chain_node',
             'error_type',
             'mentioned_activity_or_org',
             'related_id',

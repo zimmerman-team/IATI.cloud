@@ -101,6 +101,7 @@ class ChainList(DynamicListView):
 
     fields = (
         'id',
+        'url',
         'name',
         'last_updated'
     )
@@ -115,6 +116,7 @@ class ChainDetail(DynamicDetailView):
 
     fields = (
         'id',
+        'url',
         'name',
         'last_updated',
         'links',
@@ -152,14 +154,13 @@ class ChainLinkList(DynamicListView):
     )
     fields = (
         'id',
-        'chain',
         'start_node',
         'end_node',
         'relations')
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related('relations')
+        return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related('relations').prefetch_related('start_node').prefetch_related('end_node')
 
 
 class ChainNodeErrorList(DynamicListView):
@@ -174,7 +175,7 @@ class ChainNodeErrorList(DynamicListView):
     pagination_class = None
 
     fields = (
-        'chain',
+        'chain_node',
         'error_type',
         'mentioned_activity_or_org',
         'related_id',
@@ -183,7 +184,7 @@ class ChainNodeErrorList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return ChainError.objects.filter(chain=Chain.objects.get(pk=pk))
+        return ChainNodeError.objects.filter(chain_node__chain=Chain.objects.get(pk=pk))
 
 
 class ChainActivities(ActivityList):
@@ -193,7 +194,7 @@ class ChainActivities(ActivityList):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Activity.objects.filter(id__in=Activity.objects.filter(chainlink__chain=pk))
+        return Activity.objects.filter(id__in=Activity.objects.filter(chainnode__chain=pk))
 
 
 

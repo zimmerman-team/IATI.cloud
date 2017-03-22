@@ -1,14 +1,7 @@
 from iati.models import Activity
-from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, 
+from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
-
-
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
 
 
 def find(list, filter):
@@ -24,18 +17,13 @@ class ChainRetriever():
 
     """
     def __init__(self):
-        self.nodes = []
-
         self.links = []
-        self.link_relations = []
-
         self.errors = []
-        self.started_at 
+        self.started_at = datetime.now()
         self.chain = None
 
     def retrieve_chains_by_publisher(self, publisher_iati_id):
         for activity in Activity.objects.filter(publisher__publisher_iati_id=publisher_iati_id):
-            print activity
             self.retrieve_chain(activity)
 
     def retrieve_chain_by_activity_id(self, activity_id):
@@ -57,11 +45,11 @@ class ChainRetriever():
     def retrieve_chain(self, activity):
 
         # delete old chain
-        if Chain.objects.filter(chainlink__activity=activity).count() > 0:
-            Chain.objects.filter(chainlink__activity=activity).delete()
+        if Chain.objects.filter(chainlink__start_node__activity=activity).count() > 0:
+            Chain.objects.filter(chainlink__start_node__activity=activity).delete()
 
         # create, is saved as self.chain
-        self.create_chain(activity)
+        self.create_chain()
         
         # add all links based upon the current activity
         self.get_activity_links(activity)
@@ -71,14 +59,17 @@ class ChainRetriever():
 
         # save links
         for link in self.links:
-            link.pop('iati_identifier', None)
-            link.pop('checked', None)
+            relations = link['relations']
+            link.pop('relations', None)
 
-        ChainLink.objects.bulk_create([ChainLink(**link) for link in self.links])
-        ChainLinkRelation.objects.bulk_create(ChainLinkRelation(**link_relation) for link_relation in self.link_relations[])
+            cl = ChainLink.objects.create(**link)
+
+            for relation in relations:
+                relation['chain_link'] = cl
+            ChainLinkRelation.objects.bulk_create([ChainLinkRelation(**link_relation) for link_relation in relations])
 
         # save errors
-        ChainErrorError.objects.bulk_create([ChainNodeError(**error) for error in self.errors])
+        ChainNodeError.objects.bulk_create([ChainNodeError(**error) for error in self.errors])
 
 
         # TODO set eol, bol, level of nodes.
@@ -87,12 +78,62 @@ class ChainRetriever():
         # to find eols, get all activities that are in the chain and are not mentioned as start_node.
         # to calculate levels, start with bols.
 
+        self.retrieve_bols()
+        self.retrieve_eols()
+        self.calculate_tiers()
+
         # reinit
         self.links = []
         self.errors = []
         self.chain = None
 
-    def create_chain(self, root_activity):
+
+    def retrieve_bols(self):
+        """
+        Find and set the activities where this tree starts (begin of line).
+        """
+
+        # get all nodes that are not mentioned as link end_node and set them as BOL.
+        ChainNode.objects.filter(chain=self.chain).exclude(id__in=ChainLink.objects.filter(chain=self.chain).values('end_node__id')).update(
+            bol=True,
+            level=0
+        )
+
+
+    def retrieve_eols(self):
+        """
+        Find and set the activities where this tree ends (end of line).
+        """
+
+        # get all nodes that are not mentioned as link start_node and set them as EOL. 
+        ChainNode.objects.filter(chain=self.chain).exclude(id__in=ChainLink.objects.filter(chain=self.chain).values('start_node__id')).update(eol=True)
+
+
+    def calculate_tiers(self):
+        """
+        By walking from the bol's, set the level of each activity.
+
+        TODO: this does not work correctly on side-funding, to check how to fix this.
+        """
+
+        def calculate_next_tier(level):
+
+            for cn in ChainNode.objects.filter(level=level):
+                # find chainlinks where this node is the start, set the end node as next level if None
+
+                for cl in ChainLink.objects.filter(start_node=cn):
+                    end_node = cl.end_node
+                    if not end_node.level:
+                        end_node.level == (level + 1)
+                        end_node.save()
+
+            if ChainNode.objects.filter(level=(level + 1)).exists():
+                calculate_next_tier((level + 1))
+
+        calculate_next_tier(0)
+
+
+    def create_chain(self):
         # create chain
         chain = Chain(name="Unnamed chain", last_updated=datetime.now())
         chain.save()
@@ -100,12 +141,16 @@ class ChainRetriever():
 
     def walk_the_tree(self, loops):
 
-        for link in self.links:
-            if not link['checked']:
-                link['checked'] = True
-                self.get_activity_links(link['activity'])
+        for cn in ChainNode.objects.filter(checked=False):
+            cn.checked = True
+            cn.save()
+            self.get_activity_links(cn.activity)
+            print 'checked {}'.format(cn.activity.iati_identifier)
 
-        if contains(self.links, lambda x: x['checked'] == False):
+        print ChainNode.objects.filter(checked=False).count()
+
+
+        if ChainNode.objects.filter(checked=False).count() > 0:
             loops += 1
             self.walk_the_tree(loops)
 
@@ -214,16 +259,16 @@ class ChainRetriever():
         provider_org_refs = []
         receiver_org_refs = []
 
-        activity_node = ChainNode.objects.get_or_create(
+        activity_node, created = ChainNode.objects.get_or_create(
             activity=activity,
+            chain=self.chain,
             defaults={
                 'activity_oipa_id': activity.id,
-                'activity_iati_id': activity.iati_identifier,
-                'level': None,
-                'bol': False,
-                'eol': False
+                'activity_iati_id': activity.iati_identifier
             },
         )
+
+        print 'checking {}'.format(activity.iati_identifier)
 
         # 1.
         for t in activity.transaction_set.filter(transaction_type='1'):
@@ -296,11 +341,11 @@ class ChainRetriever():
 
         # 6. 
         for a in Activity.objects.filter(transaction__transaction_type="1", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(self, activity, a, 'incoming_fund', 'end_node', 'to do')
+            self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do')
 
         # 7.
         for a in Activity.objects.filter(transaction__transaction_type="3", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(self, a, activity, 'disbursement', 'start_node', 'to do')
+            self.add_link(a, activity, 'disbursement', 'start_node', 'to do')
 
         # 8.
         # DONE IN #1
@@ -318,31 +363,27 @@ class ChainRetriever():
         """
 
         # add start activity
-        start_node = ChainNode.objects.get_or_create(
+        start_node, created = ChainNode.objects.get_or_create(
             activity=start_activity,
+            chain=self.chain,
             defaults={
                 'activity_oipa_id': start_activity.id,
-                'activity_iati_id': start_activity.iati_identifier,
-                'level': None,
-                'bol': False,
-                'eol': False
+                'activity_iati_id': start_activity.iati_identifier
             },
         )
 
         # add end activity
-        end_node = ChainNode.objects.get_or_create(
+        end_node, created = ChainNode.objects.get_or_create(
             activity=end_activity,
+            chain=self.chain,
             defaults={
                 'activity_oipa_id': end_activity.id,
-                'activity_iati_id': end_activity.iati_identifier,
-                'level': None,
-                'bol': False,
-                'eol': False
+                'activity_iati_id': end_activity.iati_identifier
             },
         )
 
         # add link + relation info
-        link = find(self.links, lambda x: (x['start_node'].activity == activity and x['end_node'].activity == activity)):
+        link = find(self.links, lambda x: (x['start_node'].activity == start_activity and x['end_node'].activity == end_activity))
 
         if not link:
             self.links.append({
@@ -352,16 +393,16 @@ class ChainRetriever():
                 'relations': [
                     {
                         'relation': relation,
-                        'from': from_node,
+                        'from_node': from_node,
                         'related_id': related_id,
                     }
                 ]
             })
         else:
-            link.relations.append(
+            link['relations'].append(
                 {
                 'relation': relation,
-                'from': from_node,
+                'from_node': from_node,
                 'related_id': related_id,
             })
 
