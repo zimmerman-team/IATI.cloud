@@ -246,6 +246,11 @@ class Parse(IatiParser):
         reporting_organisation.organisation = organisation
         reporting_organisation.secondary_reporter = self.makeBool(secondary_reporter)
 
+        narratives = element.findall('narrative')
+        if len(narratives) > 0:
+            for narrative in narratives:
+                self.add_narrative(narrative, reporting_organisation)
+
         activity.secondary_reporter = self.makeBool(secondary_reporter)
 
         self.register_model('ActivityReportingOrganisation', reporting_organisation)
