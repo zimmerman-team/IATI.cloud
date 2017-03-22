@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('iati', '0002_auto_20170228_1625'),
+        ('iati', '0002_auto_20170321_1107'),
     ]
 
     operations = [
