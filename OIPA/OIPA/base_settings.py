@@ -132,6 +132,7 @@ INSTALLED_APPS = [
     'iati_synchroniser.apps.IatiSynchroniserConfig',
     'geodata.apps.GeodataConfig',
     'currency_convert.apps.CurrencyConvertConfig',
+    'traceability.apps.TraceabilityConfig',
     'api',
     'task_queue',
     'djsupervisor',
