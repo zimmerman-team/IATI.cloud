@@ -412,6 +412,8 @@ class ChainRetriever():
 
         def calculate_next_tier(tier):
 
+            moved_nodes = []
+
             for cn in ChainNode.objects.filter(tier=tier):
                 # find chainlinks where this node is the start, set the end node as next level if None
                 for cl in ChainLink.objects.filter(start_node=cn):
@@ -422,7 +424,11 @@ class ChainRetriever():
                         end_node.tier = tier + 1
                         end_node.save()
 
-            if ChainNode.objects.filter(tier=(tier + 1)).exists():
+                        if end_node.tier < (tier + 1):
+                            moved_nodes.append(end_node.id)
+                        
+
+            if ChainNode.objects.filter(tier=(tier + 1)).exclude(id__in=moved_nodes).exists():
                 calculate_next_tier((tier + 1))
 
         calculate_next_tier(0)
