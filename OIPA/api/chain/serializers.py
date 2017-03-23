@@ -24,7 +24,7 @@ class ChainNodeSerializer(DynamicFieldsModelSerializer):
             'activity',
             'activity_oipa_id',
             'activity_iati_id',
-            'level',
+            'tier',
             'bol',
             'eol'
         )
@@ -72,8 +72,8 @@ class ChainLinkRelationSerializer(serializers.ModelSerializer):
 
 
 class ChainLinkSerializer(DynamicFieldsModelSerializer):
-    start_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
-    end_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'level', 'eol', 'bol'))
+    start_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'tier', 'eol', 'bol'))
+    end_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'tier', 'eol', 'bol'))
     relations = ChainLinkRelationSerializer(many=True)
 
     class Meta:

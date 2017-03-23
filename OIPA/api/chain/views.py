@@ -1,84 +1,74 @@
+from django.db.models import Count, Sum
+
 from rest_framework.filters import DjangoFilterBackend
-
-from api.generics.views import DynamicListView, DynamicDetailView
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from django.db.models import Sum
-
-from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter
-from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer
-from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
-
-
 from rest_framework import filters
 
+from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
+from iati.models import Activity, ActivityReportingOrganisation
+
+from api.organisation.serializers import OrganisationSerializer
+from api.generics.views import DynamicListView, DynamicDetailView
+from api.aggregation.views import AggregationView, Aggregation, GroupBy
+from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter
+from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer
 from api.activity.views import ActivityList
-from iati.models import Activity
 
-# class ChainAggregations(AggregationView):
-#     """
-#     Returns aggregations based on the item grouped by, and the selected aggregation.
 
-#     ## Group by options
+class ChainAggregations(AggregationView):
+    """
+    Returns aggregations based on the item grouped by, and the selected aggregation.
 
-#     API request has to include `group_by` parameter.
+    ## Group by options
+
+    API request has to include `group_by` parameter.
     
-#     This parameter controls result aggregations and
-#     can be one or more (comma separated values) of:
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
 
-#     - `chain`
-#     - `tier`
-#     - `reporting_org`
+    - `tier`
+    - `reporting_org`    
 
-#     ## Aggregation options
+    ## Aggregation options
 
-#     API request has to include `aggregations` parameter.
+    API request has to include `aggregations` parameter.
     
-#     This parameter controls result aggregations and
-#     can be one or more (comma separated values) of:
+    This parameter controls result aggregations and
+    can be one or more (comma separated values) of:
 
-#     - `activity_count`
-#     - `link_count`
+    - `count` - node count
 
-#     ## Request parameters
+    ## Request parameters
 
-#     All filters available on the Indicator List, can be used on aggregations.
+    All filters available on the Chain List, can be used on aggregations.
 
-#     """
+    """
 
-#     queryset = IndicatorData.objects.all()
-#     filter_backends = (DjangoFilterBackend, )
-#     filter_class = IndicatorDataFilter
+    queryset = ChainNode.objects.all()
+    filter_backends = (DjangoFilterBackend, )
+    filter_class = None
 
-#     allowed_aggregations = (
-#         Aggregation(
-#             query_param='value',
-#             field='value',
-#             annotate=Sum('value'),
-#         ),
-#     )
+    allowed_aggregations = (
+        Aggregation(
+            query_param='count',
+            field='count',
+            annotate=Count('id', distinct=True),
+        ),
+    )
 
-#     allowed_groupings = (
+    allowed_groupings = (
         
-#         GroupBy(
-#             query_param="name",
-#             fields=("name",)
-#         ),
-#         # GroupBy(
-#         #     query_param="country",
-#         #     fields="country",
-#         #     queryset=Country.objects.all(),
-#         #     serializer=CountrySerializer,
-#         #     serializer_main_field='id',
-#         #     serializer_fields=('id', 'name'),
-#         # ),
-#     )
+        GroupBy(
+            query_param="tier",
+            fields=("tier",)
+        ),
+        GroupBy(
+            query_param="reporting_organisation",
+            fields=("activity__reporting_organisations__organisation__organisation_identifier", "activity__reporting_organisations__organisation__primary_name"),
+            renamed_fields=("reporting_organisation_ref", "reporting_organisation_name"),
+            queryset=ActivityReportingOrganisation.objects.all(),
+        ),
+    )
 
-
-
-
-
-
-# class ChainError(models.Model):
 
 class ChainList(DynamicListView):
     """
@@ -86,7 +76,7 @@ class ChainList(DynamicListView):
 
     ## Aggregations
 
-    The /chains/aggregations endpoint can be used for chain based aggregations.
+    The [`  /chains/aggregations`](/api/chains/aggregations) endpoint can be used for chain based aggregations.
 
     ## Result details
 

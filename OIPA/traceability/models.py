@@ -27,7 +27,7 @@ class ChainNode(models.Model):
     activity = models.ForeignKey(Activity, null=True)
     activity_oipa_id = models.IntegerField(blank=False)
     activity_iati_id = models.CharField(max_length=255, blank=False)
-    level = models.IntegerField(null=True, default=None)
+    tier = models.IntegerField(null=True, default=None)
     bol = models.BooleanField(default=False)
     eol = models.BooleanField(default=False)
     checked = models.BooleanField(default=False)

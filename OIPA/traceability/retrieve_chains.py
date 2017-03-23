@@ -378,7 +378,7 @@ class ChainRetriever():
             id__in=ChainLink.objects.filter(chain=self.chain).values('end_node__id')
         ).update(
             bol=True,
-            level=0
+            tier=0
         )
 
 
@@ -399,24 +399,24 @@ class ChainRetriever():
 
     def calculate_tiers(self):
         """
-        By walking from the bol's, set the level of each activity.
+        By walking from the bol's, set the tier of each activity.
 
         TODO: this does not work correctly on side-funding, to check how to fix this.
         """
 
-        def calculate_next_tier(level):
+        def calculate_next_tier(tier):
 
-            for cn in ChainNode.objects.filter(level=level):
+            for cn in ChainNode.objects.filter(tier=tier):
                 # find chainlinks where this node is the start, set the end node as next level if None
                 for cl in ChainLink.objects.filter(start_node=cn):
                     end_node = cl.end_node
 
-                    if not end_node.level:
-                        end_node.level = level + 1
+                    if not end_node.tier:
+                        end_node.level = tier + 1
                         end_node.save()
 
-            if ChainNode.objects.filter(level=(level + 1)).exists():
-                calculate_next_tier((level + 1))
+            if ChainNode.objects.filter(tier=(tier + 1)).exists():
+                calculate_next_tier((tier + 1))
 
         calculate_next_tier(0)
 
