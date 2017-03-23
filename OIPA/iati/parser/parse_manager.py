@@ -153,6 +153,7 @@ class ParseManager():
         except ValueError:
             raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
 
+        self.parser.force_reparse = True
         self.parser.parse(activity.getparent())
         self.parser.save_all_models()
         self.parser.post_save_models()
