@@ -281,7 +281,7 @@ class ActivityFilter(TogetherFilterSet):
     reporting_organisation = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='in',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity',
     )
 
