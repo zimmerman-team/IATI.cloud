@@ -961,8 +961,6 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
     url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail', read_only=True)
 
-    id = serializers.CharField(required=False)
-    organisation_identifier = serializers.CharField()
     last_updated_datetime = serializers.DateTimeField(required=False)
     xml_lang = serializers.CharField(source='default_lang.code', required=False)
     default_currency = CodelistSerializer(required=False)
