@@ -25,7 +25,8 @@ class ChainRetriever():
 
     def retrieve_chains_by_publisher(self, publisher_iati_id):
         for activity in Activity.objects.filter(publisher__publisher_iati_id=publisher_iati_id):
-            self.retrieve_chain(activity)
+            if self.chain_update_needed(activity):
+                self.retrieve_chain(activity)
 
     def retrieve_chain_by_activity_id(self, activity_id):
         activity = Activity.objects.get(iati_identifier=activity_id)
@@ -33,20 +34,25 @@ class ChainRetriever():
 
     def retrieve_chain_for_all_activities(self):
         for activity in Activity.objects.iterator():
-
-            chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity))
-
-            if len(chain) > 0 and chain[0].last_updated < self.started_at:
-                # in a chain, only update if the chain is not created within this run
+            if self.chain_update_needed(activity):
                 self.retrieve_chain(activity)
+    
+    def update_needed(self, activity):
+        chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity))
 
-                # error catching
-                if len(chain) > 1:
-                    print 'activity {} occurs in multiple chains, probably a coding error.'.format(activity.iati_identifier)
+        if len(chain) > 0 and chain[0].last_updated < self.started_at:
+            # in a chain, only update if the chain is not created within this run
+            
+            # error catching
+            if len(chain) > 1:
+                print 'activity {} occurs in multiple chains, probably a coding error.'.format(activity.iati_identifier)
+            
+            return True 
 
-            elif len(chain) is 0:
-                # not in a chain yet, create the chain
-                self.retrieve_chain(activity)
+        elif len(chain) is 0:
+            # not in a chain yet, create the chain
+            return True               
+        return False
 
     def retrieve_chain(self, activity):
 
