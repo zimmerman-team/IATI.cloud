@@ -61,7 +61,6 @@ class ChainAggregations(AggregationView):
     )
 
     allowed_groupings = (
-        
         GroupBy(
             query_param="tier",
             fields=("tier",)
@@ -238,6 +237,7 @@ class ChainNodeList(DynamicListView):
     queryset = ChainNode.objects.all()
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     serializer_class = ChainNodeSerializer
+    filter_class = ChainNodeFilter
     pagination_class = None
 
     ordering_fields = (
@@ -254,6 +254,30 @@ class ChainNodeList(DynamicListView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return ChainNode.objects.filter(chain=Chain.objects.get(pk=pk))
+
+
+class NodeList(DynamicListView):
+    """
+
+    """
+    queryset = ChainNode.objects.all()
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    serializer_class = ChainNodeSerializer
+    filter_class = ChainNodeFilter
+
+    ordering_fields = (
+        'id',
+    )
+    fields = (
+        'id',
+        'activity_oipa_id',
+        'activity_iati_id',
+        'tier',
+        'bol',
+        'eol')
+
+    def get_queryset(self):
+        return ChainNode.objects.all().distinct()
 
 
 class ChainNodeErrorList(DynamicListView):
