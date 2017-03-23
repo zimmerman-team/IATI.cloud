@@ -5,13 +5,18 @@ from rest_framework import filters
 
 from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
 from iati.models import Activity, ActivityReportingOrganisation
+from iati.transaction.models import Transaction
+
+from api.generics.views import DynamicListView, DynamicDetailView
+from api.pagination import CustomTransactionPagination
 
 from api.organisation.serializers import OrganisationSerializer
-from api.generics.views import DynamicListView, DynamicDetailView
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter
-from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer
+from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer
 from api.activity.views import ActivityList
+from api.transaction.serializers import TransactionSerializer
+from api.transaction.filters import TransactionFilter
 
 
 class ChainAggregations(AggregationView):
@@ -97,6 +102,63 @@ class ChainList(DynamicListView):
     )
 
 
+class ChainTransactionList(DynamicListView):
+    """
+    Returns a list of IATI Transactions stored in OIPA.
+
+    ## Request parameters
+
+    - `id` (*optional*): Transaction identifier.
+    - `aid_type` (*optional*): Aid type identifier.
+    - `activity` (*optional*): Comma separated list of activity id's.
+    - `transaction_type` (*optional*): Transaction type identifier.
+    - `value` (*optional*): Transaction value.
+    - `min_value` (*optional*): Minimal transaction value.
+    - `max_value` (*optional*): Maximal transaction value.
+    - `q` (*optional*): Search specific value in activities list.
+        See [Searching]() section for details.
+    - `fields` (*optional*): List of fields to display.
+
+    ## Searching
+
+    - `description`
+    - `provider_organisation_name`
+    - `receiver_organisation_name`
+
+    ## Result details
+
+    Each result item contains short information about transaction including URI to transaction details.
+
+    URI is constructed as follows: `/api/transactions/{transaction_id}`
+
+    """
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    filter_class = TransactionFilter
+    pagination_class = CustomTransactionPagination
+
+    fields = (
+        'url',
+        'activity',
+        'provider_organisation',
+        'receiver_organisation',
+        'currency',
+        'transaction_type',
+        'value_date',
+        'value',
+    )
+
+    search_fields = (
+        'description',
+        'provider_organisation',
+        'receiver_organisation',
+    )
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Transaction.objects.filter(activity__id__in=Activity.objects.filter(chainnode__chain=pk))
+
+
 class ChainDetail(DynamicDetailView):
     """
     Returns subpages of chains
@@ -111,7 +173,9 @@ class ChainDetail(DynamicDetailView):
         'last_updated',
         'links',
         'errors',
-        'activities'
+        'activities',
+        'transactions',
+        'nodes'
     )
 
 
@@ -151,6 +215,45 @@ class ChainLinkList(DynamicListView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related('relations').prefetch_related('start_node').prefetch_related('end_node')
+
+
+class ChainNodeList(DynamicListView):
+    """
+    Returns a list of chain links.
+
+    ## Request parameters
+    - `chain` (*optional*): Comma separated list of chain names.
+    - `tier` (*optional*): Comma separated list of tiers the link is in.
+
+    ## Aggregations
+
+    The /chains/aggregations endpoint can be used for chain based aggregations.
+
+    ## Result details
+
+    Each item contains all information on the chain link being shown.
+
+    """
+
+    queryset = ChainNode.objects.all()
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    serializer_class = ChainNodeSerializer
+    pagination_class = None
+
+    ordering_fields = (
+        'id',
+    )
+    fields = (
+        'id',
+        'activity_oipa_id',
+        'activity_iati_id',
+        'tier',
+        'bol',
+        'eol')
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return ChainNode.objects.filter(chain=Chain.objects.get(pk=pk))
 
 
 class ChainNodeErrorList(DynamicListView):

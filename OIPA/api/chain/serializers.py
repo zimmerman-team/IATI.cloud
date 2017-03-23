@@ -44,6 +44,14 @@ class ChainSerializer(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='chains:chain-activity-list',
         )
+    transactions = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        view_name='chains:chain-transaction-list',
+        )
+    nodes = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        view_name='chains:chain-node-list',
+        )
 
     url = serializers.HyperlinkedIdentityField(view_name='chains:chain-detail', read_only=True)
 
@@ -56,7 +64,9 @@ class ChainSerializer(DynamicFieldsModelSerializer):
             'last_updated',
             'links',
             'errors',
-            'activities'
+            'activities',
+            'transactions',
+            'nodes'
         )
 
 
