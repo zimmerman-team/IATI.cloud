@@ -412,7 +412,7 @@ class ChainRetriever():
                     end_node = cl.end_node
 
                     if not end_node.tier:
-                        end_node.level = tier + 1
+                        end_node.tier = tier + 1
                         end_node.save()
 
             if ChainNode.objects.filter(tier=(tier + 1)).exists():
