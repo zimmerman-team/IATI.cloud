@@ -411,7 +411,8 @@ class ChainRetriever():
                 for cl in ChainLink.objects.filter(start_node=cn):
                     end_node = cl.end_node
 
-                    if not end_node.tier:
+                    if not end_node.tier or end_node.tier < (tier + 1): 
+                        # the or is to place activities with cofunding from other activities on the deepest level where they exist.
                         end_node.tier = tier + 1
                         end_node.save()
 
