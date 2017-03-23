@@ -37,7 +37,7 @@ class ChainRetriever():
             if self.chain_update_needed(activity):
                 self.retrieve_chain(activity)
     
-    def update_needed(self, activity):
+    def chain_update_needed(self, activity):
         chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity))
 
         if len(chain) > 0 and chain[0].last_updated < self.started_at:
