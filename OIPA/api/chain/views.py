@@ -12,7 +12,7 @@ from api.pagination import CustomTransactionPagination
 
 from api.organisation.serializers import OrganisationSerializer
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter
+from api.chain.filters import ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
 from api.chain.serializers import ChainSerializer, ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer
 from api.activity.views import ActivityList
 from api.transaction.serializers import TransactionSerializer
@@ -50,7 +50,7 @@ class ChainAggregations(AggregationView):
 
     queryset = ChainNode.objects.all()
     filter_backends = (DjangoFilterBackend, )
-    filter_class = None
+    filter_class = ChainNodeFilter
 
     allowed_aggregations = (
         Aggregation(

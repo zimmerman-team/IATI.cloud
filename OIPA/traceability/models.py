@@ -68,8 +68,8 @@ class ChainNodeError(models.Model):
 
 class ChainLink(models.Model):
     chain = models.ForeignKey(Chain, null=False)
-    start_node = models.ForeignKey(ChainNode, null=False, related_name='start_nodes')
-    end_node = models.ForeignKey(ChainNode, null=False, related_name='end_nodes')
+    start_node = models.ForeignKey(ChainNode, null=False, related_name='start_link')
+    end_node = models.ForeignKey(ChainNode, null=False, related_name='end_link')
 
 
 class ChainLinkRelation(models.Model):
