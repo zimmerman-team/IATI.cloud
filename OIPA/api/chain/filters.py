@@ -9,7 +9,6 @@ from traceability.models import Chain, ChainLink, ChainNodeError, ChainNode
 
 class ChainFilter(FilterSet):
     includes_activity = CharFilter(name='chainnode__activity__iati_identifier', lookup_type='exact')
-    end_node_not_of_reporting_org = CharFilter(name='chainlink__end_node__activity__reporting_organisations__ref', lookup_type='exact', exclude=True)
 
     class Meta:
         model = Chain
@@ -17,7 +16,6 @@ class ChainFilter(FilterSet):
 
 
 class ChainLinkFilter(FilterSet):
-
     chain = NumberFilter(name='chain__id')
 
     class Meta:
@@ -41,6 +39,8 @@ class ChainNodeFilter(FilterSet):
     is_start_node = BooleanFilter(name='start_link', lookup_type='isnull', distinct=True)
     tier = NumberFilter(name='tier')
     link_end_node_hierarchy = NumberFilter(name='start_link__end_node__activity__hierarchy', lookup_type='exact')
+    hierarchy = CharFilter(name='activity_hierarchy', lookup_type='exact')
+
     class Meta:
         model = ChainNode
         fields = [

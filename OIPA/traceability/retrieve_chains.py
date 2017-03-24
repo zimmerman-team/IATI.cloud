@@ -46,6 +46,7 @@ class ChainRetriever():
             # error catching
             if len(chain) > 1:
                 print 'activity {} occurs in multiple chains, probably a coding error.'.format(activity.iati_identifier)
+                print chain.values('id')
             
             return True 
 
@@ -407,7 +408,7 @@ class ChainRetriever():
         """
         By walking from the bol's, set the tier of each activity.
 
-        TODO: this does not work correctly on side-funding, to check how to fix this.
+        (on side funding, the node is moved to the tier of lowest occurance).
         """
 
         def calculate_next_tier(tier):
@@ -420,13 +421,14 @@ class ChainRetriever():
                     end_node = cl.end_node
 
                     if not end_node.tier or end_node.tier < (tier + 1): 
-                        # the or is to place activities with cofunding from other activities on the deepest level where they exist.
-                        end_node.tier = tier + 1
-                        end_node.save()
 
+                        # to place activities with cofunding from other activities on the deepest level where they exist, 
+                        # , moved nodes array is there to prevent an endless loop
                         if end_node.tier < (tier + 1):
                             moved_nodes.append(end_node.id)
-                        
+
+                        end_node.tier = tier + 1
+                        end_node.save()
 
             if ChainNode.objects.filter(tier=(tier + 1)).exclude(id__in=moved_nodes).exists():
                 calculate_next_tier((tier + 1))
