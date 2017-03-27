@@ -115,7 +115,7 @@ class ActivitySaveTestCase(TestCase):
 
         """
         Test if the prefetches are applied correctly
-        Here we expect 2 queries:
+        Here we expect 3 queries:
         1. Fetch Activity objects
         2. Fetch otheridentifier objects
         3. Fetch Narrative objects
@@ -218,9 +218,14 @@ class ActivitySaveTestCase(TestCase):
         Here we expect 2 queries:
         1. Fetch Activity objects
         2. Fetch Location objects
+        6. Fetch LocationAdministrative objects
+        3. Fetch LocationNameNarrative objects
+        4. Fetch LocationDescriptionNarrative objects
+        5. Fetch LocationActivityDescriptionNarrative objects
         TODO: Reduce queries number 09-01-2017
         """
 
+        # TODO: should be 6 queries, LocationAdministrative gets duplicated - 2017-03-27
         with self.assertNumQueries(7):
             queryset = Activity.objects.all().prefetch_locations()
             serializer = ActivitySerializer(
@@ -433,14 +438,27 @@ class ActivitySaveTestCase(TestCase):
 
         """
         Test if the prefetches are applied correctly
-        Here we expect 2 queries:
+        Here we expect 16 queries:
         1. Fetch Activity objects
         2. Fetch Result objects
-        ...
-        TODO: Reduce queries number 17-01-2017
+        3. Fetch ResultTitleNarrative objects
+        4. Fetch ResultDescriptionNarrative objects
+        5. Fetch ResultIndicator objects
+        6. Fetch ResultIndicatorReference objects
+        7. Fetch ResultIndicatorTitleNarrative objects
+        8. Fetch ResultIndicatorDescriptionNarrative objects
+        9. Fetch ResultIndicatorBaselineComment objects
+        10. Fetch ResultIndicatorPeriod objects
+        11. Fetch ResultIndicatorPeriodTargetLocation objects
+        12. Fetch ResultIndicatorPeriodActualLocation objects
+        13. Fetch ResultIndicatorPeriodTargetDimension objects
+        14. Fetch ResultIndicatorPeriodActualDimension objects
+        15. Fetch ResultIndicatorPeriodTargetCommentNarrative objects
+        16. Fetch ResultIndicatorPeriodActualCommentNarrative objects
         """
 
-        with self.assertNumQueries(70):
+        # TODO: this should be 16 - 2017-03-27
+        with self.assertNumQueries(60):
             queryset = Activity.objects.all().prefetch_results()
             serializer = ActivitySerializer(
                     queryset, 
@@ -458,11 +476,9 @@ class ActivitySaveTestCase(TestCase):
         1. Fetch Activity objects
         2. Fetch CrsAdd objects
         3. Fetch crsaddotherflags objects
-        4. Fetch crsaddloanterms objects
-        5. Fetch crsaddloanstatus objects
         """
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(3):
             queryset = Activity.objects.all().prefetch_crs_add()
             serializer = ActivitySerializer(
                     queryset, 
@@ -531,14 +547,11 @@ class ActivitySaveTestCase(TestCase):
 
         """
         Test if the prefetches are applied correctly
-        Here we expect 2 queries:
+        Here we expect 1 queries:
         1. Fetch Activity objects
-        2. Fetch ActivityAggregation objects
-        3. Fetch ChildAggregation objects
-        4. Fetch  ActivityPlusChildAggregationobjects 
         """
 
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(1):
             queryset = Activity.objects.all().prefetch_aggregations()
             serializer = ActivitySerializer(
                     queryset, 
