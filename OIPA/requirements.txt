@@ -7,13 +7,13 @@ django-cors-headers==2.0.2
 django-debug-toolbar==1.7
 sqlparse==0.2.3
 django-extensions==1.7.7
-django-filter==1.0.1
+django-filter==1.0.2
 django-grappelli==2.9.1
 django-otp==0.3.11
 django-otp-yubikey==0.3.5
 django-rq==0.9.5
 django-test-without-migrations==0.4
-djangorestframework==3.5
+djangorestframework==3.6.2
 factory-boy==2.8.1
 lxml==3.7.3
 Markdown==2.6.8

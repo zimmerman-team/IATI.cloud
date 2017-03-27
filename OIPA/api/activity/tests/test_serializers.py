@@ -222,6 +222,7 @@ class ActivitySerializerTestCase(TestCase):
             'activity_date_type.code' should be serialized to a vield callded 'code'
             """
 
+    # TODO: fix this with an activity as input - 2017-03-21
     # def test_ReportingOrganisationSerializer(self):
     #     reporting_organisation = iati_factory.OrganisationFactory.build()
 
