@@ -212,6 +212,11 @@ class Parse(IatiParser):
             organisation.iati_standard_version_id = "2.02"
             organisation.reported_in_iati = False
 
+            # TODO: is this right? - 2017-03-27
+            organisation.published = False
+            organisation.ready_to_publish = True
+            organisation.modified = False
+
             organisation.save()
 
             organisation_name = organisation_models.OrganisationName()

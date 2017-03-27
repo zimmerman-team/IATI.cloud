@@ -99,17 +99,32 @@ class Parse(IatiParser):
                 "id", 
                 "organisation: must contain organisation-identifier")
 
+        # TODO: check for last-updated-datetime - 2017-03-27
+
         old_organisation = self.get_or_none(Organisation, organisation_identifier=id)
 
         if old_organisation:
-            old_organisation.delete()
+            organisation.name.delete()
+            organisation.reporting_org.delete()
+            TotalBudget.objects.filter(organisation=old_organisation).delete()
+            RecipientOrgBudget.objects.filter(organisation=old_organisation).delete()
+            RecipientCountryBudget.objects.filter(organisation=old_organisation).delete()
+            RecipientRegionBudget.objects.filter(organisation=old_organisation).delete()
+            TotalExpenditure.objects.filter(organisation=old_organisation).delete()
 
-        organisation = Organisation()
+            organisation = old_organisation
+        else:
+            organisation = Organisation()
+
         organisation.organisation_identifier = id
         organisation.last_updated_datetime = last_updated_datetime
         organisation.default_lang_id = default_lang
         organisation.iati_standard_version_id = self.VERSION
         organisation.default_currency = default_currency
+
+        organisation.published = True
+        organisation.ready_to_publish = True
+        organisation.modified = False
 
         self.organisation_identifier = organisation.organisation_identifier
         self.default_currency = default_currency
