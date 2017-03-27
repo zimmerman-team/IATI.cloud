@@ -67,7 +67,7 @@ class ChainAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields=("activity__reporting_organisations__organisation__organisation_identifier", "activity__reporting_organisations__organisation__primary_name"),
+            fields=("activity__publisher__organisation__organisation_identifier", "activity__publisher__organisation__primary_name"),
             renamed_fields=("reporting_organisation_ref", "reporting_organisation_name"),
             queryset=ActivityReportingOrganisation.objects.all(),
         ),

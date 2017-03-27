@@ -168,12 +168,12 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="reporting_organisations__organisation__id",
+            fields="publisher__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field="reporting_organisations__organisation__primary_name",
+            name_search_field="publisher__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
