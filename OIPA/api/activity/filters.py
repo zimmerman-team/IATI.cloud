@@ -278,17 +278,17 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    reporting_organisation = ToManyFilter(
+    reporting_organisation_identifier = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='in',
         name='organisation__organisation_identifier',
         fk='activity',
     )
 
-    reporting_organisation_startswith = ToManyFilter(
+    reporting_organisation_identifier_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='startswith',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity',
     )
 

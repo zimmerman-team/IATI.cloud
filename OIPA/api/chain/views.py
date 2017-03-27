@@ -270,6 +270,7 @@ class NodeList(DynamicListView):
     )
     fields = (
         'id',
+        'chain',
         'activity_oipa_id',
         'activity_iati_id',
         'tier',
@@ -278,6 +279,28 @@ class NodeList(DynamicListView):
 
     def get_queryset(self):
         return ChainNode.objects.all().distinct()
+
+
+class ErrorList(DynamicListView):
+    """
+    Returns a list of chain errors.
+    """
+
+    queryset = ChainNodeError.objects.all()
+    filter_backends = (DjangoFilterBackend, )
+    filter_class = ChainNodeErrorFilter
+    serializer_class = ChainNodeErrorSerializer
+
+    fields = (
+        'chain_node',
+        'error_type',
+        'mentioned_activity_or_org',
+        'related_id',
+        'warning_level'
+    )
+
+    def get_queryset(self):
+        return ChainNodeError.objects.all().distinct()
 
 
 class ChainNodeErrorList(DynamicListView):

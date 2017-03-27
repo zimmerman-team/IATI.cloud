@@ -52,37 +52,37 @@ class DatasetFilter(FilterSet):
         qs=DatasetNote,
         lookup_expr='in',
         name='model',
-        fk='source')
+        fk='dataset')
 
     note_model_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
         name='model',
-        fk='source')
+        fk='dataset')
 
     note_field = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_field_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_message = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_message_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_count_gte = NumberFilter(
         lookup_expr='gte',

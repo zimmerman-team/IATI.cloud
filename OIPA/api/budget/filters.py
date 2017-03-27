@@ -249,17 +249,17 @@ class BudgetFilter(TogetherFilterSet):
         fk='activity__budget',
     )
 
-    reporting_organisation = ToManyFilter(
+    reporting_organisation_identifier = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='in',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity__budget',
     )
 
-    reporting_organisation_startswith = ToManyFilter(
+    reporting_organisation_identifier_startswith = ToManyFilter(
         qs=ActivityReportingOrganisation,
         lookup_expr='startswith',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity__budget',
     )
 

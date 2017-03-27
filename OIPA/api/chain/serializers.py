@@ -21,6 +21,7 @@ class ChainNodeSerializer(DynamicFieldsModelSerializer):
         model = chain_models.ChainNode
         fields = (
             'id',
+            'chain',
             'activity',
             'activity_oipa_id',
             'activity_iati_id',

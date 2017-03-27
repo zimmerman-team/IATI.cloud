@@ -51,6 +51,7 @@ from rest_framework import status
 from api.activity.validators import activity_required_fields
 from iati.activity_search_indexes import reindex_activity
 
+
 class FilterPublisherMixin(object):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )

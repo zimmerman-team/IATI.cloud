@@ -54,10 +54,15 @@ class TransactionFilter(FilterSet):
         fk='transaction',
     )
 
+    has_provider_activity = BooleanFilter(
+        name='provider_organisation__provider_activity',
+        lookup_expr='isnull',
+        exclude=True)
+
     provider_activity_reporting_org = ToManyFilter(
         qs=TransactionProvider,
         lookup_expr='in',
-        name='provider_activity__reporting_organisations__ref',
+        name='provider_activity__reporting_organisations__organisation__organisation_identifier',
         fk='transaction',
     )
 
@@ -358,11 +363,11 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    reporting_organisation = ToManyFilter(
+    reporting_organisation_identifier = ToManyFilter(
         main_fk='activity',
         qs=ActivityReportingOrganisation,
         lookup_expr='in',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity',
     )
 
@@ -374,17 +379,17 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    # TODO: degrades performance very badly, should probably remove this - 2016-03-02
-    reporting_organisation_startswith = ToManyFilter(
+    reporting_organisation_identifier_startswith = ToManyFilter(
         main_fk='activity',
         qs=ActivityReportingOrganisation,
         lookup_expr='startswith',
-        name='normalized_ref',
+        name='organisation__organisation_identifier',
         fk='activity',
     )
 
-    # activity aggregation filters
 
+
+    # activity aggregation filters
     total_budget_lte = NumberFilter(
         lookup_expr='lte',
         name='activity__activity_aggregation__budget_value')
