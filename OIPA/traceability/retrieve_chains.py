@@ -38,7 +38,7 @@ class ChainRetriever():
                 self.retrieve_chain(activity)
     
     def chain_update_needed(self, activity):
-        chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity))
+        chain = Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity)).distinct()
 
         if len(chain) > 0 and chain[0].last_updated < self.started_at:
             # in a chain, only update if the chain is not created within this run
