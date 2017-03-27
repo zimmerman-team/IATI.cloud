@@ -38,23 +38,33 @@ class ActivityQuerySet(SearchQuerySet):
         return self.prefetch_default_aid_type() \
             .prefetch_default_finance_type() \
             .prefetch_participating_organisations() \
+            .prefetch_other_identifiers() \
             .prefetch_reporting_organisations() \
             .prefetch_recipient_countries() \
             .prefetch_recipient_regions() \
             .prefetch_sectors() \
+            .prefetch_country_budget_items() \
+            .prefetch_humanitarian_scope() \
             .prefetch_activity_dates() \
+            .prefetch_contact_info() \
             .prefetch_policy_markers() \
             .prefetch_budgets() \
+            .prefetch_planned_disbursement() \
+            .prefetch_legacy_data() \
+            .prefetch_conditions() \
             .prefetch_title() \
             .prefetch_descriptions() \
             .prefetch_document_links() \
             .prefetch_results() \
+            .prefetch_crs_add() \
+            .prefetch_fss() \
             .prefetch_locations() \
             .prefetch_related_activities() \
             .prefetch_aggregations()
 
     def prefetch_reporting_organisations(self):
         from iati.models import ActivityReportingOrganisation, Narrative
+
         narrative_prefetch = Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
