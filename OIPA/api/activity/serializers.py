@@ -8,6 +8,8 @@ from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import ModelSerializerNoValidation
+from api.generics.serializers import SerializerNoValidation
 from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer, BasicRegionSerializer
@@ -69,7 +71,7 @@ def save_narratives(instance, data, activity_instance):
 
 from api.generics.utils import handle_errors
 
-class ValueSerializer(serializers.Serializer):
+class ValueSerializer(SerializerNoValidation):
     currency = CodelistSerializer()
     date = serializers.CharField(source='value_date')
     value = serializers.DecimalField(
@@ -86,7 +88,7 @@ class ValueSerializer(serializers.Serializer):
                 )
 
 
-class DocumentLinkCategorySerializer(serializers.ModelSerializer):
+class DocumentLinkCategorySerializer(ModelSerializerNoValidation):
     category = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -134,7 +136,7 @@ class DocumentLinkCategorySerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class DocumentLinkLanguageSerializer(serializers.ModelSerializer):
+class DocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     language = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -181,9 +183,9 @@ class DocumentLinkLanguageSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class DocumentLinkSerializer(serializers.ModelSerializer):
+class DocumentLinkSerializer(ModelSerializerNoValidation):
 
-    class DocumentDateSerializer(serializers.Serializer):
+    class DocumentDateSerializer(SerializerNoValidation):
         # CharField because we want to let the validators do the parsing
         iso_date = serializers.CharField()
 
@@ -254,7 +256,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class CapitalSpendSerializer(serializers.ModelSerializer):
+class CapitalSpendSerializer(ModelSerializerNoValidation):
     percentage = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -267,7 +269,7 @@ class CapitalSpendSerializer(serializers.ModelSerializer):
         fields = ('percentage',)
 
 
-class BudgetSerializer(serializers.ModelSerializer):
+class BudgetSerializer(ModelSerializerNoValidation):
 
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
@@ -332,7 +334,7 @@ class BudgetSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class PlannedDisbursementProviderSerializer(serializers.ModelSerializer):
+class PlannedDisbursementProviderSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField(source="normalized_ref")
     organisation = serializers.PrimaryKeyRelatedField(queryset=iati_models.Organisation.objects.all(), required=False)
     type = CodelistSerializer()
@@ -352,7 +354,7 @@ class PlannedDisbursementProviderSerializer(serializers.ModelSerializer):
 
         validators = []
 
-class PlannedDisbursementReceiverSerializer(serializers.ModelSerializer):
+class PlannedDisbursementReceiverSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField(source="normalized_ref")
     organisation = serializers.PrimaryKeyRelatedField(queryset=iati_models.Organisation.objects.all(), required=False)
     type = CodelistSerializer()
@@ -372,7 +374,7 @@ class PlannedDisbursementReceiverSerializer(serializers.ModelSerializer):
 
         validators = []
 
-class PlannedDisbursementSerializer(serializers.ModelSerializer):
+class PlannedDisbursementSerializer(ModelSerializerNoValidation):
     value = ValueSerializer(source='*')
     type = CodelistSerializer()
 
@@ -485,7 +487,7 @@ class PlannedDisbursementSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class ActivityDateSerializer(serializers.ModelSerializer):
+class ActivityDateSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     iso_date = serializers.DateTimeField()
 
@@ -626,7 +628,7 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     #     return update_instance
 
 
-class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
+class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source='normalized_ref')
     type = CodelistSerializer()
@@ -691,8 +693,8 @@ class ParticipatingOrganisationSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OtherIdentifierSerializer(serializers.ModelSerializer):
-    class OwnerOrgSerializer(serializers.Serializer):
+class OtherIdentifierSerializer(ModelSerializerNoValidation):
+    class OwnerOrgSerializer(SerializerNoValidation):
         ref = serializers.CharField(source='owner_ref')
         narratives = NarrativeSerializer(many=True, required=False)
 
@@ -757,7 +759,7 @@ class OtherIdentifierSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
+class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
     vocabulary_uri = serializers.URLField()
     policy_marker = CodelistSerializer(source="code")
@@ -824,7 +826,7 @@ class ActivityPolicyMarkerSerializer(serializers.ModelSerializer):
 
 
 # TODO: change to NarrativeContainer
-class TitleSerializer(serializers.ModelSerializer):
+class TitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
 
     # def validate(self, data):
@@ -865,7 +867,7 @@ class TitleSerializer(serializers.ModelSerializer):
         model = iati_models.Title
         fields = ('id', 'narratives',)
 
-class DescriptionSerializer(serializers.ModelSerializer):
+class DescriptionSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True)
 
@@ -921,7 +923,7 @@ class DescriptionSerializer(serializers.ModelSerializer):
         )
 
 
-class RelatedActivitySerializer(serializers.ModelSerializer):
+class RelatedActivitySerializer(ModelSerializerNoValidation):
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = CodelistSerializer()
 
@@ -974,7 +976,7 @@ class RelatedActivitySerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class LegacyDataSerializer(serializers.ModelSerializer):
+class LegacyDataSerializer(ModelSerializerNoValidation):
     activity = serializers.CharField(write_only=True)
 
     class Meta:
@@ -1025,7 +1027,7 @@ class LegacyDataSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class ActivitySectorSerializer(serializers.ModelSerializer):
+class ActivitySectorSerializer(ModelSerializerNoValidation):
     sector = SectorSerializer(fields=('url', 'code', 'name'))
     percentage = serializers.DecimalField(
         max_digits=5,
@@ -1085,9 +1087,9 @@ class ActivitySectorSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class BudgetItemSerializer(serializers.ModelSerializer):
+class BudgetItemSerializer(ModelSerializerNoValidation):
 
-    class BudgetItemDescriptionSerializer(serializers.Serializer):
+    class BudgetItemDescriptionSerializer(SerializerNoValidation):
         narratives = NarrativeSerializer(many=True, required=False)
 
     budget_identifier = CodelistSerializer(source="code")
@@ -1147,7 +1149,7 @@ class BudgetItemSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class CountryBudgetItemsSerializer(serializers.ModelSerializer):
+class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     vocabulary = VocabularySerializer()
     # TODO: gives errors, why? - 2016-12-12
@@ -1205,7 +1207,7 @@ class CountryBudgetItemsSerializer(serializers.ModelSerializer):
         activity.modified = True
         activity.save()
 
-class ConditionSerializer(serializers.ModelSerializer):
+class ConditionSerializer(ModelSerializerNoValidation):
 
     type = CodelistSerializer()
     narratives = NarrativeSerializer(many=True, required=False)
@@ -1263,7 +1265,7 @@ class ConditionSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class ConditionsSerializer(serializers.ModelSerializer):
+class ConditionsSerializer(ModelSerializerNoValidation):
     # conditions = ConditionSerializer(source="condition_set", required=False)
     attached = serializers.CharField()
     activity = serializers.CharField(write_only=True)
@@ -1492,7 +1494,7 @@ class RecipientCountrySerializer(DynamicFieldsModelSerializer):
         )
 
 
-class ResultTypeSerializer(serializers.ModelSerializer):
+class ResultTypeSerializer(ModelSerializerNoValidation):
     class Meta:
         model = iati_models.ResultType
         fields = (
@@ -1503,7 +1505,7 @@ class ResultTypeSerializer(serializers.ModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
-class ResultDescriptionSerializer(serializers.ModelSerializer):
+class ResultDescriptionSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(source="*")
 
     class Meta:
@@ -1515,7 +1517,7 @@ class ResultDescriptionSerializer(serializers.ModelSerializer):
 
         extra_kwargs = { "id": { "read_only": False }}
 
-class ResultTitleSerializer(serializers.ModelSerializer):
+class ResultTitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(source="*")
 
     class Meta:
@@ -1529,7 +1531,7 @@ class ResultTitleSerializer(serializers.ModelSerializer):
 
 
 
-class ResultIndicatorPeriodActualLocationSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
 
@@ -1575,7 +1577,7 @@ class ResultIndicatorPeriodActualLocationSerializer(serializers.ModelSerializer)
 
         return update_instance
 
-class ResultIndicatorPeriodTargetLocationSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
 
@@ -1621,7 +1623,7 @@ class ResultIndicatorPeriodTargetLocationSerializer(serializers.ModelSerializer)
 
         return update_instance
 
-class ResultIndicatorPeriodActualDimensionSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodActualDimensionSerializer(ModelSerializerNoValidation):
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
@@ -1670,7 +1672,7 @@ class ResultIndicatorPeriodActualDimensionSerializer(serializers.ModelSerializer
 
         return update_instance
 
-class ResultIndicatorPeriodTargetDimensionSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation):
     name = serializers.CharField()
     value = serializers.CharField()
     result_indicator_period = serializers.CharField(write_only=True)
@@ -1719,19 +1721,19 @@ class ResultIndicatorPeriodTargetDimensionSerializer(serializers.ModelSerializer
 
         return update_instance
 
-class ResultIndicatorPeriodTargetSerializer(serializers.Serializer):
+class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
     location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
     dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
 
-class ResultIndicatorPeriodActualSerializer(serializers.Serializer):
+class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
     location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
     dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
 
-class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
+class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
@@ -1803,12 +1805,12 @@ class ResultIndicatorPeriodSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class ResultIndicatorBaselineSerializer(serializers.Serializer):
+class ResultIndicatorBaselineSerializer(SerializerNoValidation):
     year = serializers.CharField(source='baseline_year')
     value = serializers.CharField(source='baseline_value')
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
-class ResultIndicatorReferenceSerializer(serializers.ModelSerializer):
+class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
     code = serializers.CharField()
 
@@ -1861,7 +1863,7 @@ class ResultIndicatorReferenceSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class ResultIndicatorSerializer(serializers.ModelSerializer):
+class ResultIndicatorSerializer(ModelSerializerNoValidation):
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(source="resultindicatordescription")
     #  TODO 2.02 reference = ? 
@@ -1949,7 +1951,7 @@ class ResultIndicatorSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class ContactInfoSerializer(serializers.ModelSerializer):
+class ContactInfoSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
     organisation = NarrativeContainerSerializer()
     department = NarrativeContainerSerializer()
@@ -2129,7 +2131,7 @@ class ContactInfoSerializer(serializers.ModelSerializer):
             'mailing_address',
         )
 
-class ResultSerializer(serializers.ModelSerializer):
+class ResultSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
@@ -2201,7 +2203,7 @@ class ResultSerializer(serializers.ModelSerializer):
 
 
 
-class CrsAddLoanTermsSerializer(serializers.ModelSerializer):
+class CrsAddLoanTermsSerializer(ModelSerializerNoValidation):
     repayment_type = CodelistSerializer()
     repayment_plan = CodelistSerializer()
     commitment_date = serializers.CharField()
@@ -2222,7 +2224,7 @@ class CrsAddLoanTermsSerializer(serializers.ModelSerializer):
 
 
 
-class CrsAddLoanStatusSerializer(serializers.ModelSerializer):
+class CrsAddLoanStatusSerializer(ModelSerializerNoValidation):
     value_date = serializers.CharField()
     currency = CodelistSerializer()
 
@@ -2238,7 +2240,7 @@ class CrsAddLoanStatusSerializer(serializers.ModelSerializer):
             'interest_arrears',
         )
 
-class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
+class CrsAddOtherFlagsSerializer(ModelSerializerNoValidation):
     other_flags = CodelistSerializer() 
     significance = serializers.CharField()
 
@@ -2288,7 +2290,7 @@ class CrsAddOtherFlagsSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class CrsAddSerializer(serializers.ModelSerializer):
+class CrsAddSerializer(ModelSerializerNoValidation):
     other_flags = CrsAddOtherFlagsSerializer(many=True, required=False)
     loan_terms = CrsAddLoanTermsSerializer(required=False)
     loan_status = CrsAddLoanStatusSerializer(required=False)
@@ -2384,7 +2386,7 @@ class CrsAddSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class FssForecastSerializer(serializers.ModelSerializer):
+class FssForecastSerializer(ModelSerializerNoValidation):
     value_date = serializers.CharField()
     currency = CodelistSerializer()
 
@@ -2438,7 +2440,7 @@ class FssForecastSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class FssSerializer(serializers.ModelSerializer):
+class FssSerializer(ModelSerializerNoValidation):
     extraction_date = serializers.CharField()
     forecasts = FssForecastSerializer(many=True, required=False)
 
@@ -2492,16 +2494,16 @@ class FssSerializer(serializers.ModelSerializer):
 
 
 class LocationSerializer(DynamicFieldsModelSerializer):
-    class LocationIdSerializer(serializers.Serializer):
+    class LocationIdSerializer(SerializerNoValidation):
         vocabulary = VocabularySerializer(
             source='location_id_vocabulary')
         code = serializers.CharField(source='location_id_code')
 
-    class PointSerializer(serializers.Serializer):
+    class PointSerializer(SerializerNoValidation):
         pos = PointField(source='point_pos')
         srsName = serializers.CharField(source="point_srs_name")
 
-    class AdministrativeSerializer(serializers.ModelSerializer):
+    class AdministrativeSerializer(ModelSerializerNoValidation):
         code = serializers.CharField()
         vocabulary = VocabularySerializer()
 

@@ -11,6 +11,8 @@ from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import CodelistCategorySerializer
 from api.country.serializers import CountrySerializer
 from api.region.serializers import RegionSerializer, BasicRegionSerializer
+from api.generics.serializers import ModelSerializerNoValidation
+from api.generics.serializers import SerializerNoValidation
 
 from iati_organisation.parser import validators
 from iati.parser import exceptions
@@ -55,7 +57,7 @@ def save_narratives(instance, data, organisation_instance):
                 organisation=organisation_instance,
                 **narrative_data)
 
-class ValueSerializer(serializers.Serializer):
+class ValueSerializer(SerializerNoValidation):
     currency = CodelistSerializer()
     date = serializers.CharField(source='value_date')
     value = serializers.DecimalField(
@@ -72,14 +74,14 @@ class ValueSerializer(serializers.Serializer):
                 )
 
 # TODO: change to NarrativeContainer
-class OrganisationNameSerializer(serializers.Serializer):
+class OrganisationNameSerializer(SerializerNoValidation):
     narratives = OrganisationNarrativeSerializer(many=True)
 
     class Meta:
         model = org_models.OrganisationName
         fields = ('narratives',)
 
-class TotalBudgetBudgetLineSerializer(serializers.ModelSerializer):
+class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -140,7 +142,7 @@ class TotalBudgetBudgetLineSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
+class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
     organisation = serializers.CharField(write_only=True)
 
@@ -206,7 +208,7 @@ class OrganisationTotalBudgetSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class RecipientOrgBudgetLineSerializer(serializers.ModelSerializer):
+class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -267,8 +269,8 @@ class RecipientOrgBudgetLineSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OrganisationRecipientOrgBudgetSerializer(serializers.ModelSerializer):
-    class RecipientOrganisationSerializer(serializers.Serializer):
+class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
+    class RecipientOrganisationSerializer(SerializerNoValidation):
         ref = serializers.CharField(source="recipient_org_identifier")
 
         class Meta:
@@ -342,7 +344,7 @@ class OrganisationRecipientOrgBudgetSerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
+class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -403,7 +405,7 @@ class RecipientCountryBudgetLineSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OrganisationRecipientCountryBudgetSerializer(serializers.ModelSerializer):
+class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
 
     value = ValueSerializer(source='*')
@@ -469,7 +471,7 @@ class OrganisationRecipientCountryBudgetSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class RecipientRegionBudgetLineSerializer(serializers.ModelSerializer):
+class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -530,7 +532,7 @@ class RecipientRegionBudgetLineSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OrganisationRecipientRegionBudgetSerializer(serializers.ModelSerializer):
+class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
 
     value = ValueSerializer(source='*')
@@ -596,7 +598,7 @@ class OrganisationRecipientRegionBudgetSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class TotalExpenditureLineSerializer(serializers.ModelSerializer):
+class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
     value = ValueSerializer(source='*')
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -656,7 +658,7 @@ class TotalExpenditureLineSerializer(serializers.ModelSerializer):
             'narratives',
         )
 
-class OrganisationTotalExpenditureSerializer(serializers.ModelSerializer):
+class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
 
     value = ValueSerializer(source='*')
@@ -717,7 +719,7 @@ class OrganisationTotalExpenditureSerializer(serializers.ModelSerializer):
 
 
 
-class OrganisationDocumentLinkCategorySerializer(serializers.ModelSerializer):
+class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
     category = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -765,7 +767,7 @@ class OrganisationDocumentLinkCategorySerializer(serializers.ModelSerializer):
         return update_instance
 
 
-class OrganisationDocumentLinkLanguageSerializer(serializers.ModelSerializer):
+class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     language = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -812,7 +814,7 @@ class OrganisationDocumentLinkLanguageSerializer(serializers.ModelSerializer):
 
         return update_instance
 
-class OrganisationDocumentLinkRecipientCountrySerializer(serializers.ModelSerializer):
+class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValidation):
     recipient_country = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -862,9 +864,9 @@ class OrganisationDocumentLinkRecipientCountrySerializer(serializers.ModelSerial
 
         return update_instance
 
-class OrganisationDocumentLinkSerializer(serializers.ModelSerializer):
+class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
 
-    class DocumentDateSerializer(serializers.Serializer):
+    class DocumentDateSerializer(SerializerNoValidation):
         # CharField because we want to let the validators do the parsing
         iso_date = serializers.CharField()
 
