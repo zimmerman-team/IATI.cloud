@@ -3071,7 +3071,9 @@ class Parse(IatiParser):
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's been parsed."""
         activity = self.get_model('Activity')
-        if not activity:
+
+        # the model was not saved
+        if not activity or not activity.pk:
             return False
 
         participating_organisations = self.get_model_list('ActivityParticipatingOrganisation')
