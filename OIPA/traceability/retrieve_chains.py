@@ -24,7 +24,7 @@ class ChainRetriever():
         self.chain = None
 
     def retrieve_chains_by_publisher(self, publisher_iati_id):
-        for activity in Activity.objects.filter(publisher__publisher_iati_id=publisher_iati_id):
+        for activity in Activity.objects.filter(publisher__publisher_iati_id=publisher_iati_id, hierarchy=1):
             if self.chain_update_needed(activity):
                 self.retrieve_chain(activity)
 
@@ -111,12 +111,12 @@ class ChainRetriever():
 
     def walk_the_tree(self, loops):
 
-        for cn in ChainNode.objects.filter(checked=False, treated_as_end_node=False):
+        for cn in ChainNode.objects.filter(chain=self.chain, checked=False, treated_as_end_node=False):
             cn.checked = True
             cn.save()
             self.get_activity_links(cn.activity, True)
 
-        if ChainNode.objects.filter(checked=False, treated_as_end_node=False).count() > 0:
+        if ChainNode.objects.filter(chain=self.chain, checked=False, treated_as_end_node=False).count() > 0:
             loops += 1
             self.walk_the_tree(loops)
 
@@ -422,9 +422,9 @@ class ChainRetriever():
 
             moved_nodes = []
 
-            for cn in ChainNode.objects.filter(tier=tier):
+            for cn in ChainNode.objects.filter(chain=self.chain, tier=tier):
                 # find chainlinks where this node is the start, set the end node as next level if None
-                for cl in ChainLink.objects.filter(start_node=cn):
+                for cl in ChainLink.objects.filter(chain=self.chain, start_node=cn):
                     end_node = cl.end_node
 
                     if not end_node.tier or end_node.tier < (tier + 1): 
@@ -433,11 +433,12 @@ class ChainRetriever():
                         # , moved nodes array is there to prevent an endless loop
                         if end_node.tier < (tier + 1):
                             moved_nodes.append(end_node.id)
-
+                            print 'moved a node'
                         end_node.tier = tier + 1
                         end_node.save()
-
-            if ChainNode.objects.filter(tier=(tier + 1)).exclude(id__in=moved_nodes).exists():
+            print moved_nodes
+            print ChainNode.objects.filter(chain=self.chain, tier=(tier + 1)).exclude(id__in=moved_nodes) 
+            if ChainNode.objects.filter(chain=self.chain, tier=(tier + 1)).exclude(id__in=moved_nodes).exists():
                 calculate_next_tier((tier + 1))
 
         calculate_next_tier(0)
