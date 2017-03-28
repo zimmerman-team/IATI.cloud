@@ -417,7 +417,7 @@ class ActivityPolicyMarker(models.Model):
 
 class ActivitySector(models.Model):
     activity = models.ForeignKey(Activity)
-    sector = models.ForeignKey(Sector, null=True, blank=True, default=None)
+    sector = models.ForeignKey(Sector)
     vocabulary = models.ForeignKey(SectorVocabulary, null=True, blank=True, default=None)
     vocabulary_uri = models.URLField(null=True, blank=True)
     percentage = models.DecimalField(
@@ -428,7 +428,7 @@ class ActivitySector(models.Model):
         default=None)
 
     def __unicode__(self,):
-        return "name: %s" % self.sector
+        return "name: %s" % self.sector.name
 
     class Meta:
         verbose_name = 'Sector'
