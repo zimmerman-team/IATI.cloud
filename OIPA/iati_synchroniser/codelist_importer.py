@@ -32,6 +32,7 @@ class CodeListImporter():
         self.get_codelist_data(name="PolicyMarkerVocabulary")
         self.get_codelist_data(name="IndicatorVocabulary")
         self.get_codelist_data(name="BudgetIdentifierSector-category")
+        self.get_codelist_data(name="BudgetIdentifierSector")
         self.get_codelist_data(name="LocationType-category")
         self.get_codelist_data(name="FinanceType-category")
         self.get_codelist_data(name="AidType-category")
