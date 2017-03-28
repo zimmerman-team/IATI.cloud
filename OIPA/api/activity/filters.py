@@ -486,19 +486,19 @@ class ActivityFilter(TogetherFilterSet):
     #
     # Related to publishing
     #
-    def filter_ready_to_publish(self, queryset, name, value):
+    def filter_ready_to_publish(self, queryset, value):
         return queryset.filter(Q(ready_to_publish=True))
     ready_to_publish = CharFilter(name='ready_to_publish', method=filter_ready_to_publish)
 
-    def filter_modified_ready_to_publish(self, queryset, name, value):
+    def filter_modified_ready_to_publish(self, queryset, value):
         return queryset.filter(Q(modified=True) & Q(ready_to_publish=True))
     modified_ready_to_publish = CharFilter(method=filter_modified_ready_to_publish)
 
-    def filter_modified(self, queryset, name, value):
+    def filter_modified(self, queryset, value):
         return queryset.filter(Q(modified=True))
     modified = CharFilter(method=filter_modified)
 
-    def filter_published(self, queryset, name, value):
+    def filter_published(self, queryset, value):
         if value == "true":
             return queryset.filter(Q(published=True))
         else:
