@@ -31,6 +31,7 @@ class ChainNode(models.Model):
     bol = models.BooleanField(default=False)
     eol = models.BooleanField(default=False)
     checked = models.BooleanField(default=False)
+    treated_as_end_node = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.activity_iati_id

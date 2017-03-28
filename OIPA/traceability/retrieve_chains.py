@@ -2,7 +2,7 @@ from iati.models import Activity
 from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
-from django.db.models import Q
+from django.db.models import Q, Count
 
 
 def find(list, filter):
@@ -33,7 +33,13 @@ class ChainRetriever():
         self.retrieve_chain(activity)
 
     def retrieve_chain_for_all_activities(self):
-        for activity in Activity.objects.iterator():
+        #get all activities that other activities set as provider of funds
+        for activity in Activity.objects.annotate(related_set_as_provider=Count('relatedactivity__ref_activity__transaction_provider_activity')).annotate(set_as_provider=Count('transaction_provider_activity')).filter(Q(related_set_as_provider__gt=0) | Q(set_as_provider__gt=0)):
+            # filter all activities that have  (this was too slow to put in the query above) 
+            if Activity.objects.filter(transaction_provider_activity__transaction__activity=activity).count() > 0:
+                print 'skipped {}'.format(activity.iati_identifier)
+                continue
+
             if self.chain_update_needed(activity):
                 self.retrieve_chain(activity)
     
@@ -68,7 +74,7 @@ class ChainRetriever():
         print 'creating chain {}, started at activity {}'.format(self.chain.id, activity.iati_identifier)
         
         # add all links based upon the current activity
-        self.get_activity_links(activity)
+        self.get_activity_links(activity, False)
 
         # add all links based upon the links within our current activity and do that recursively
         self.walk_the_tree(0)
@@ -105,16 +111,16 @@ class ChainRetriever():
 
     def walk_the_tree(self, loops):
 
-        for cn in ChainNode.objects.filter(checked=False):
+        for cn in ChainNode.objects.filter(checked=False, treated_as_end_node=False):
             cn.checked = True
             cn.save()
-            self.get_activity_links(cn.activity)
+            self.get_activity_links(cn.activity, True)
 
-        if ChainNode.objects.filter(checked=False).count() > 0:
+        if ChainNode.objects.filter(checked=False, treated_as_end_node=False).count() > 0:
             loops += 1
             self.walk_the_tree(loops)
 
-    def get_activity_links(self, activity):
+    def get_activity_links(self, activity, treat_upstream_as_end_node):
         """
         Apply rules defined in the technical design.
 
@@ -241,7 +247,7 @@ class ChainRetriever():
             elif not provider_org.provider_activity:
                 self.add_error(activity_node, '3', provider_org.provider_activity_ref, 'error', t.id)
             else:
-                self.add_link(provider_org.provider_activity, t.activity, 'incoming_fund', 'end_node', t.id)
+                self.add_link(provider_org.provider_activity, t.activity, 'incoming_fund', 'end_node', t.id, treat_upstream_as_end_node)
 
 
         # 2.
@@ -258,7 +264,7 @@ class ChainRetriever():
                 self.add_error(activity_node, '6', receiver_org.receiver_activity_ref, 'error', t.id)
             else:
 
-                self.add_link(t.activity, receiver_org.receiver_activity, 'disbursement', 'start_node', t.id)
+                self.add_link(t.activity, receiver_org.receiver_activity, 'disbursement', 'start_node', t.id, False)
 
 
         # 3 and 4.
@@ -269,13 +275,13 @@ class ChainRetriever():
                 if not ra.ref_activity:
                     self.add_error(activity_node, '7', ra.ref, 'error', ra.id)
                 else:
-                    self.add_link(ra.ref_activity, activity, 'parent', 'end_node', ra.id)
+                    self.add_link(ra.ref_activity, activity, 'parent', 'end_node', ra.id, False)
             # child
             elif ra.type.code == '2':
                 if not ra.ref_activity:
                     self.add_error(activity_node, '8', ra.ref, 'error', ra.id)
                 else:
-                    self.add_link(activity, ra.ref_activity, 'child', 'start_node', ra.id)
+                    self.add_link(activity, ra.ref_activity, 'child', 'start_node', ra.id, False)
 
         # 4.
         # DONE IN #3.
@@ -299,11 +305,11 @@ class ChainRetriever():
 
         # 6. 
         for a in Activity.objects.filter(transaction__transaction_type="1", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do')
+            self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do', False)
 
         # 7.
         for a in Activity.objects.filter(transaction__transaction_type="3", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(a, activity, 'disbursement', 'start_node', 'to do')
+            self.add_link(a, activity, 'disbursement', 'start_node', 'to do', False)
 
         # 8.
         # DONE IN #1
@@ -311,7 +317,7 @@ class ChainRetriever():
         # 9.
         # DONE IN #2
 
-    def add_link(self, start_activity, end_activity, relation, from_node, related_id):
+    def add_link(self, start_activity, end_activity, relation, from_node, related_id, treat_upstream_as_end_node):
         """
         start_activity
         end_activity
@@ -325,6 +331,7 @@ class ChainRetriever():
             activity=start_activity,
             chain=self.chain,
             defaults={
+                'treated_as_end_node': treat_upstream_as_end_node,
                 'activity_oipa_id': start_activity.id,
                 'activity_iati_id': start_activity.iati_identifier
             },
