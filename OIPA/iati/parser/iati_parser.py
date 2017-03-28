@@ -90,8 +90,11 @@ class IatiParser(object):
             return False
 
     def _normalize(self, attr): 
-        attr = attr.strip(' \t\n\r').replace(" ", "")
-        attr = re.sub("[/:&',.+]", "-", attr)
+        # attr = attr.strip(' \t\n\r').replace(" ", "")
+        # attr = re.sub("[/:&',.+]", "-", attr)
+        
+        # normalize for use in the API with comma-separated values
+        attr = re.sub(",", "COMMA", attr)
         return attr
 
     def validate_date(self, unvalidated_date):

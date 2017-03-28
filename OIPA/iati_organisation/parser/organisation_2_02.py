@@ -87,7 +87,8 @@ class Parse(IatiParser):
         return currency
 
     def iati_organisations__iati_organisation(self, element):
-        id = self._normalize(element.xpath('organisation-identifier/text()')[0])
+        id = element.xpath('organisation-identifier/text()')[0]
+        normalized_id = self._normalize(id)
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
@@ -117,6 +118,7 @@ class Parse(IatiParser):
             organisation = Organisation()
 
         organisation.organisation_identifier = id
+        organisation.normalized_organisation_identifier = normalized_id
         organisation.last_updated_datetime = last_updated_datetime
         organisation.default_lang_id = default_lang
         organisation.iati_standard_version_id = self.VERSION

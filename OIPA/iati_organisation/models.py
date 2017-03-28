@@ -57,6 +57,8 @@ class BudgetLineAbstract(models.Model):
 class Organisation(models.Model):
 
     organisation_identifier = models.CharField(max_length=150, unique=True, db_index=True)
+    # normalized for use in the API
+    normalized_organisation_identifier = models.CharField(max_length=150, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
     last_updated_datetime = models.DateTimeField(blank=True, null=True)

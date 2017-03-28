@@ -89,7 +89,8 @@ class Parse(IatiParser):
                 "iati-identifier",
                 "no iati-identifier found")
         
-        activity_id = self._normalize(iati_identifier[0])
+        activity_id = iati_identifier[0]
+        normalized_activity_id = self._normalize(activity_id)
         # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible with per instance)
         default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         if default_lang:
@@ -140,7 +141,8 @@ class Parse(IatiParser):
         # TODO: assert title is in xml, for proper OneToOne relation (only on 2.02)
 
         activity = models.Activity()
-        activity.iati_identifier = iati_identifier[0]
+        activity.iati_identifier = activity_id
+        activity.normalized_iati_identifier = normalized_activity_id
         if default_lang:
             activity.default_lang_id = default_lang
         if hierarchy:

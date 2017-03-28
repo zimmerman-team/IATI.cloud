@@ -44,6 +44,7 @@ class ActivityFactory(NoDatabaseFactory):
         django_get_or_create = ('iati_identifier',)
 
     iati_identifier = 'IATI-0001'
+    normalized_iati_identifier = 'IATI-0001'
 
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
@@ -75,6 +76,7 @@ class OrganisationFactory(NoDatabaseFactory):
         django_get_or_create = ('organisation_identifier',)
 
     organisation_identifier = 'GB-COH-03580586'
+    normalized_organisation_identifier = 'GB-COH-03580586'
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
     default_currency = SubFactory(CurrencyFactory)

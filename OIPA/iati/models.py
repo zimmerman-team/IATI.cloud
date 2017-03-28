@@ -66,6 +66,8 @@ class Activity(models.Model):
     )
 
     iati_identifier = models.CharField(max_length=150, blank=False, unique=True, db_index=True)
+    # normalized for use in the API
+    normalized_iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
     dataset = models.ForeignKey(Dataset, null=True, default=None)
