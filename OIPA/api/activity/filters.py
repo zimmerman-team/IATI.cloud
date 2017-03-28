@@ -6,6 +6,7 @@ from django_filters import FilterSet
 from django_filters import NumberFilter
 from django_filters import DateFilter
 from django_filters import BooleanFilter
+from django_filters import MethodFilter
 from django_filters import TypedChoiceFilter
 
 from distutils.util import strtobool
@@ -14,8 +15,10 @@ from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
+from django.db.models import Q, F
 
 from iati.models import *
 from iati.transaction.models import *
@@ -24,7 +27,7 @@ from iati.transaction.models import *
 class ActivityFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='id',
+        name='iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -89,10 +92,6 @@ class ActivityFilter(TogetherFilterSet):
     end_date_isnull = BooleanFilter(lookup_type='isnull', name='end_date')
     start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity_status',)
@@ -129,7 +128,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='lte',
         name='budget__period_end')
 
-
     humanitarian = TypedChoiceFilter(
         choices=(('0', 'False'), ('1', 'True')),
         coerce=strtobool)
@@ -145,7 +143,7 @@ class ActivityFilter(TogetherFilterSet):
         qs=RelatedActivity,
         fk='current_activity',
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
     )
 
     related_activity_type = ToManyFilter(
@@ -153,6 +151,12 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='in',
         name='type__code',
         fk='current_activity',
+    )
+
+    related_activity_type_not = CommaSeparatedCharFilter(
+        lookup_type='in',
+        name='relatedactivity__type__code',
+        exclude=True
     )
 
     related_activity_transaction_receiver_organisation_name = ToManyFilter(
@@ -205,6 +209,13 @@ class ActivityFilter(TogetherFilterSet):
     )
 
     recipient_region = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
+
+    recipient_region_not = ToManyNotInFilter(
         qs=ActivityRecipientRegion,
         lookup_type='in',
         name='region__code',
@@ -472,6 +483,33 @@ class ActivityFilter(TogetherFilterSet):
         lookup_type='gte',
         name='activity_plus_child_aggregation__commitment_value')
 
+    #
+    # Related to publishing
+    #
+    def filter_ready_to_publish(self, queryset, value):
+        return queryset.filter(Q(ready_to_publish=True))
+    ready_to_publish = MethodFilter(name='ready_to_publish')
+
+    def filter_modified_ready_to_publish(self, queryset, value):
+        return queryset.filter(Q(modified=True) & Q(ready_to_publish=True))
+    modified_ready_to_publish = MethodFilter()
+
+    def filter_modified(self, queryset, value):
+        return queryset.filter(Q(modified=True))
+    modified = MethodFilter()
+
+    def filter_published(self, queryset, value):
+        if value == "true":
+            return queryset.filter(Q(published=True))
+        else:
+            return queryset.filter(Q(published=False))
+
+    published = MethodFilter()
+
+    # modified = BooleanFilter(name='modified')
+    # start_date_isnull = BooleanFilter(lookup_type='isnull', name='start_date')
+
+
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
@@ -514,7 +552,9 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         if ordering: 
             ordering = [order.replace("-", "") for order in ordering]
-            queryset = queryset.distinct(*ordering)
+
+            if not 'iati_identifier' in ordering:
+                queryset = queryset.distinct(*ordering)
 
         return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
 
@@ -541,7 +581,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         except FieldDoesNotExist:
             return False
 
-    def remove_invalid_fields(self, queryset, ordering, view):
+    def remove_invalid_fields(self, queryset, ordering, view, request):
 
         mapped_fields = {
             'title': 'title__narratives__content',

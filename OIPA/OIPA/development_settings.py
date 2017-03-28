@@ -3,6 +3,7 @@
 from OIPA.base_settings import *
 
 DEBUG = True
+FTS_ENABLED = True
 
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -43,8 +44,12 @@ FIXTURE_DIRS = (
      os.path.join(BASE_DIR, '../fixtures/'),
 )
 
+CKAN_URL = "https://iati-staging.ckan.io"
+
+API_CACHE_SECONDS = 0
+
+
 try:
     from local_settings import *
 except ImportError:
     pass
-

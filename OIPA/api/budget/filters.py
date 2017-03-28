@@ -10,6 +10,7 @@ from django_filters import BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
 
@@ -20,7 +21,7 @@ from iati.transaction.models import *
 class BudgetFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -86,10 +87,6 @@ class BudgetFilter(TogetherFilterSet):
         lookup_type='isnull', 
         name='activity__start_date')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity__xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)
@@ -137,7 +134,7 @@ class BudgetFilter(TogetherFilterSet):
         main_fk='activity',
         qs=RelatedActivity,
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
         fk='current_activity',)
 
     related_activity_type = ToManyFilter(
@@ -195,6 +192,14 @@ class BudgetFilter(TogetherFilterSet):
         name='region__code',
         fk='activity__budget',
     )
+
+    recipient_region_not = ToManyFilter(
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity__budget',
+    )
+
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_type='in',

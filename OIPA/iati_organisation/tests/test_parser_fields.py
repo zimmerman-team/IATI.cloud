@@ -14,12 +14,14 @@ from lxml.builder import E
 
 from iati.parser.parse_manager import ParseManager
 
-from iati_synchroniser.models import IatiXmlSource, Publisher
+from iati_synchroniser.models import Dataset, Publisher
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 import iati_organisation.models as org_models
 from geodata.models import Country
 from iati.factory import iati_factory
+
+from iati_synchroniser.factory import synchroniser_factory
 
 from iati_organisation.parser.organisation_2_02 import Parse as OrgParse_202
 
@@ -44,7 +46,7 @@ def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 def setUpModule():
-    fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
+    fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
@@ -62,7 +64,7 @@ class ParserSetupTestCase(DjangoTestCase):
         self.alt_iati_identifier = "NL-KVK-51018586-0667"
 
         self.iati_202 = build_xml("2.02", self.iati_identifier)
-        dummy_source = IatiXmlSource.objects.get(id=2)
+        dummy_source = synchroniser_factory.DatasetFactory.create(filetype=2)
         self.parser_202 = ParseManager(dummy_source, self.iati_202).get_parser()
 
         assert(isinstance(self.parser_202, OrgParse_202))
@@ -117,10 +119,10 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         org = self.parser_202.get_model('Organisation')
         """:type : org_models.Organisation """
-        self.assertEqual(org.id,'AA-AAA-123456789')
+        self.assertEqual(org.organisation_identifier,'AA-AAA-123456789')
         self.assertEqual(org.default_currency_id , attribs['default-currency'])
         self.assertEqual(org.last_updated_datetime,self.parser_202.validate_date(element.attrib.get('last-updated-datetime')))
-        self.assertEqual(org.id,"AA-AAA-123456789")
+        self.assertEqual(org.organisation_identifier,"AA-AAA-123456789")
 
     def test_iati_organisations__iati_organisation__name(self):
         attribs = {
@@ -885,6 +887,11 @@ class OrganisationTestCase(ParserSetupTestCase):
         }
         element = E('category',attribs)
 
+        model = self.parser_202.get_model('DocumentLink')
+        model.organisation.save()
+        model.organisation = model.organisation
+        model.save()
+
         self.parser_202.iati_organisations__iati_organisation__document_link__category(element)
         model = self.parser_202.get_model('DocumentLink')
     
@@ -930,6 +937,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         """
         self.test_iati_organisations__iati_organisation__document_link()
         model = self.parser_202.get_model('DocumentLink')
+        model.organisation.save()
+        model.organisation = model.organisation
         model.save()
         attribs = {
                 'code':'AF',

@@ -23,23 +23,16 @@ class SearchableActivitiesTestCase(TestCase):
 
         version = codelist_factory.VersionFactory(code='2.01')
         self.first_activity = iati_factory.ActivityFactory.create(
-            id='GB-1-1',
             iati_identifier='GB-1-1',
-            iati_standard_version=version,
-            xml_source_ref='source_reference')
+            iati_standard_version=version)
         self.second_activity = iati_factory.ActivityFactory.create(
-            id='GB-CHC-1',
             iati_identifier='GB-CHC-1',
-            iati_standard_version=self.first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
+            iati_standard_version=self.first_activity.iati_standard_version)
         self.third_activity = iati_factory.ActivityFactory.create(
-            id='GB-CHC-2',
             iati_identifier='GB-CHC-2',
-            iati_standard_version=self.first_activity.iati_standard_version,
-            xml_source_ref='source_reference')
+            iati_standard_version=self.first_activity.iati_standard_version)
         organisation_type = codelist_factory.OrganisationTypeFactory()
         organisation = iati_factory.OrganisationFactory(
-            id="org_id", 
             organisation_identifier="org_id")
         iati_factory.ReportingOrganisationFactory.create(
             ref='GB-1',

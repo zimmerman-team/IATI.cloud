@@ -2,6 +2,7 @@ from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import ToManyFilter
+from api.generics.filters import ToManyNotInFilter
 
 from api.activity.filters import ActivityFilter
 
@@ -93,7 +94,7 @@ class TransactionFilter(FilterSet):
     #
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_type='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -151,10 +152,6 @@ class TransactionFilter(FilterSet):
     end_date_isnull = BooleanFilter(name='activity__end_date__isnull')
     start_date_isnull = BooleanFilter(name='activity__start_date__isnull')
 
-    xml_source_ref = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='activity__xml_source_ref',)
-
     activity_status = CommaSeparatedCharFilter(
         lookup_type='in',
         name='activity__activity_status',)
@@ -204,7 +201,7 @@ class TransactionFilter(FilterSet):
         qs=RelatedActivity,
         fk='current_activity',
         lookup_type='in',
-        name='ref_activity__id',
+        name='ref_activity__iati_identifier',
     )
 
     related_activity_type = ToManyFilter(
@@ -276,6 +273,14 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
+    recipient_region_not = ToManyNotInFilter(
+        main_fk='activity',
+        qs=ActivityRecipientRegion,
+        lookup_type='in',
+        name='region__code',
+        fk='activity',
+    )
+
     sector = ToManyFilter(
         main_fk='activity',
         qs=ActivitySector,
@@ -321,7 +326,7 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    participating_organisation = ToManyFilter(
+    participating_organisation_ref = ToManyFilter(
         main_fk='activity',
         qs=ActivityParticipatingOrganisation,
         lookup_type='in',

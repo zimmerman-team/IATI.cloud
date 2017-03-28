@@ -9,6 +9,7 @@ from iati.transaction.factories import TransactionFactory, TransactionTypeFactor
 from iati.transaction.models import TransactionSector, TransactionRecipientCountry, TransactionRecipientRegion
 from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, BudgetTypeFactory, BudgetStatusFactory
 from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
+from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
 from iati.models import BudgetSector
 from iati.parser import post_save
 
@@ -22,20 +23,23 @@ class PostSaveActivityTestCase(TestCase):
         self.parser = Parser_201(None)
 
         version = VersionFactory.create(code='2.01')
+        dataset = DatasetFactory.create()
         self.activity = iati_factory.ActivityFactory.create(
-            id='IATI-0001',
             iati_identifier='IATI-0001',
             iati_standard_version=version,
-            xml_source_ref='source_reference')
+            dataset=dataset)
 
     def setUpCountriesRegionsSectors(self):
-        self.sector_vocabulary = SectorVocabularyFactory()
+        self.sector_vocabulary_1 = SectorVocabularyFactory()
+        self.sector_vocabulary_2 = SectorVocabularyFactory(code="2", name="DAC5")
 
         self.c1 = iati_factory.CountryFactory(code='AF', name='Afghanistan')
         self.c2 = iati_factory.CountryFactory(code='AL', name='Albania')
         self.r1 = iati_factory.RegionFactory(code='998', name='World-wide, unspecified')
-        self.s1 = SectorFactory(code='15160', name='sector A', vocabulary=self.sector_vocabulary)
-        self.s2 = SectorFactory(code='15161', name='sector B', vocabulary=self.sector_vocabulary)
+        self.s1 = SectorFactory(code='15160', name='sector A', vocabulary=self.sector_vocabulary_1)
+        self.s2 = SectorFactory(code='15161', name='sector B', vocabulary=self.sector_vocabulary_1)
+        self.s3 = SectorFactory(code='15162', name='sector C', vocabulary=self.sector_vocabulary_2)
+        self.s4 = SectorFactory(code='15163', name='sector D', vocabulary=self.sector_vocabulary_2)
         self.currency = iati_factory.CurrencyFactory(code='EUR')
 
         self.rc1 = iati_factory.ActivityRecipientCountryFactory.create(
@@ -59,12 +63,28 @@ class PostSaveActivityTestCase(TestCase):
         self.rs1 = iati_factory.ActivitySectorFactory.create(
             activity=self.activity,
             sector=self.s1,
+            vocabulary=self.sector_vocabulary_1,
             percentage=None
         )
 
         self.rs2 = iati_factory.ActivitySectorFactory.create(
             activity=self.activity,
             sector=self.s2,
+            vocabulary=self.sector_vocabulary_1,
+            percentage=None
+        )
+
+        self.rs3 = iati_factory.ActivitySectorFactory.create(
+            activity=self.activity,
+            sector=self.s3,
+            vocabulary=self.sector_vocabulary_2,
+            percentage=None
+        )
+
+        self.rs4 = iati_factory.ActivitySectorFactory.create(
+            activity=self.activity,
+            sector=self.s4,
+            vocabulary=self.sector_vocabulary_2,
             percentage=None
         )
 
@@ -204,18 +224,34 @@ class PostSaveActivityTestCase(TestCase):
         self.rs1.save()
         self.rs2.percentage = 75
         self.rs2.save()
+        self.rs3.percentage = 25
+        self.rs3.save()
+        self.rs4.percentage = 75
+        self.rs4.save()
 
         post_save.set_sector_transaction(self.activity)
 
-        self.assertEqual(TransactionSector.objects.count(), 4)
+        self.assertEqual(TransactionSector.objects.count(), 8)
 
         self.assertEqual(TransactionSector.objects.filter(
             sector=self.s1,
+            vocabulary=self.sector_vocabulary_1,
             transaction=self.t1,
             percentage=25
         ).count(), 1)
         self.assertEqual(TransactionSector.objects.filter(
             sector=self.s2,
+            vocabulary=self.sector_vocabulary_1,
+            transaction=self.t1,
+            percentage=75
+        ).count(), 1)
+        self.assertEqual(TransactionSector.objects.filter(
+            sector=self.s3,
+            transaction=self.t1,
+            percentage=25
+        ).count(), 1)
+        self.assertEqual(TransactionSector.objects.filter(
+            sector=self.s4,
             transaction=self.t1,
             percentage=75
         ).count(), 1)
@@ -227,13 +263,21 @@ class PostSaveActivityTestCase(TestCase):
         """
         self.setUpTransactionModels()
         post_save.set_sector_transaction(self.activity)
-        self.assertEqual(TransactionSector.objects.count(), 4)
+        self.assertEqual(TransactionSector.objects.count(), 8)
 
         ts1 = TransactionSector.objects.filter(sector=self.s1, transaction=self.t1)[0]
         # 10000 / 2
         self.assertEqual(ts1.percentage, 50)
 
-        ts2 = TransactionSector.objects.filter(sector=self.s2,transaction=self.t2)[0]
+        ts2 = TransactionSector.objects.filter(sector=self.s2,transaction=self.t1)[0]
+        # 20000 / 3
+        self.assertEqual(round(ts2.percentage), 50)
+
+        ts3 = TransactionSector.objects.filter(sector=self.s3, transaction=self.t1)[0]
+        # 10000 / 2
+        self.assertEqual(ts1.percentage, 50)
+
+        ts4 = TransactionSector.objects.filter(sector=self.s4,transaction=self.t1)[0]
         # 20000 / 3
         self.assertEqual(round(ts2.percentage), 50)
 
@@ -247,10 +291,14 @@ class PostSaveActivityTestCase(TestCase):
         self.rs1.save()
         self.rs2.percentage = 75
         self.rs2.save()
+        self.rs3.percentage = 25
+        self.rs3.save()
+        self.rs4.percentage = 75
+        self.rs4.save()
 
         post_save.set_sector_budget(self.activity)
 
-        self.assertEqual(BudgetSector.objects.count(), 4)
+        self.assertEqual(BudgetSector.objects.count(), 8)
 
         self.assertEqual(BudgetSector.objects.filter(
             sector=self.s1,
@@ -262,6 +310,16 @@ class PostSaveActivityTestCase(TestCase):
             budget=self.budget1,
             percentage=75
         ).count(), 1)
+        self.assertEqual(BudgetSector.objects.filter(
+            sector=self.s3,
+            budget=self.budget1,
+            percentage=25
+        ).count(), 1)
+        self.assertEqual(BudgetSector.objects.filter(
+            sector=self.s4,
+            budget=self.budget1,
+            percentage=75
+        ).count(), 1)
 
     def test_set_sector_budget_without_percentages(self):
         """
@@ -270,10 +328,16 @@ class PostSaveActivityTestCase(TestCase):
         """
         self.setUpBudgetmodels()
         post_save.set_sector_budget(self.activity)
-        self.assertEqual(BudgetSector.objects.count(), 4)
+        self.assertEqual(BudgetSector.objects.count(), 8)
 
         ts1 = BudgetSector.objects.filter(sector=self.s1, budget=self.budget1)[0]
-        self.assertEqual(ts1.percentage, 50)
+        self.assertEqual(ts1.percentage, 25)
 
         ts2 = BudgetSector.objects.filter(sector=self.s2, budget=self.budget2)[0]
-        self.assertEqual(round(ts2.percentage), 50)
+        self.assertEqual(round(ts2.percentage), 25)
+
+        ts3 = BudgetSector.objects.filter(sector=self.s3, budget=self.budget1)[0]
+        self.assertEqual(ts1.percentage, 25)
+
+        ts4 = BudgetSector.objects.filter(sector=self.s4, budget=self.budget2)[0]
+        self.assertEqual(round(ts2.percentage), 25)
