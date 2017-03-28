@@ -31,7 +31,7 @@ class ChainNodeErrorFilter(FilterSet):
 
     class Meta:
         model = ChainNodeError
-        fields = ['chain']
+        fields = ['chain', 'warning_level']
 
 
 class ChainNodeFilter(FilterSet):
