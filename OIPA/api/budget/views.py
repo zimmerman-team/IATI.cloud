@@ -187,12 +187,12 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="activity__publisher__normalized_ref",
+            fields="activity__reporting_organisations__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier',
-            name_search_field="activity__publisher__organisation__primary_name",
+            serializer_main_field='id',
+            name_search_field="activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
