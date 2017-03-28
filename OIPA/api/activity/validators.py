@@ -4,7 +4,10 @@ def activity_required_fields(activity):
     if not activity.title:
         return False
 
-    if not activity.publisher.organisation.reporting_org:
+    if not activity.publisher:
+        return False
+
+    if not activity.publisher.organisation:
         return False
 
     if not len(activity.title.narratives.all()) > 0:
