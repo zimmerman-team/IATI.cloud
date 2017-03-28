@@ -3,35 +3,47 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from iati_organisation.models import Organisation
+
 
 class Publisher(models.Model):
-    org_id = models.CharField(max_length=100)
-    org_abbreviate = models.CharField(max_length=55, default="")
-    org_name = models.CharField(max_length=255)
+
+    # The IR publisher id
+    id = models.CharField(max_length=255, primary_key=True)
+
+    # the IATI Organisation id
+    publisher_iati_id = models.CharField(max_length=100)
+
+    # name given in the IR API
+    name = models.CharField(max_length=55, default="")
+    display_name = models.CharField(max_length=255)
+
+    organisation = models.ForeignKey(Organisation, default=None, null=True, unique=True)
 
     def __unicode__(self):
-        return self.org_id
+        return self.publisher_iati_id
 
+filetype_choices = (
+    (1, 'Activity'),
+    (2, 'Organisation'),
+)
 
-class IatiXmlSource(models.Model):
-    ref = models.CharField(
-        max_length=255)
+class Dataset(models.Model):
+    
+    # IR fields
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
-    type = models.IntegerField(
-        choices=(
-            (1, 'Activity'),
-            (2, 'Organisation'),
-        ),
-        default=1)
-    publisher = models.ForeignKey(Publisher)
-    source_url = models.URLField(
-        max_length=255,
-        unique=True)
-    date_created = models.DateTimeField(auto_now_add=True, editable=False)
-    date_updated = models.DateTimeField(auto_now_add=True, editable=False)
+    filetype = models.IntegerField(choices=filetype_choices, default=1)
+    publisher = models.ForeignKey(Publisher) # organization.id
+    source_url = models.URLField(max_length=255) # resource.url
+    iati_version = models.CharField(max_length=10, default="")
+    
+    # OIPA related fields
+    date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
     last_found_in_registry = models.DateTimeField(default=None, null=True)
-    iati_standard_version = models.CharField(max_length=10, default="")
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
@@ -39,20 +51,10 @@ class IatiXmlSource(models.Model):
 
     class Meta:
         verbose_name_plural = "IATI XML sources"
-        ordering = ["ref"]
+        ordering = ["name"]
 
     def __unicode__(self):
-        return self.ref
-
-    def get_parse_status(self):
-        return mark_safe("<a data-xml='xml_%i' class='admin-btn parse-btn'>Add to parser queue</a>") % self.id
-    get_parse_status.allow_tags = True
-    get_parse_status.short_description = _(u"Parse")
-
-    def get_parse_activity(self):
-        return mark_safe("<input type='text' name='activity-id' placeholder='activity id'><a data-xml='xml_%i' class='admin-btn parse-activity-btn'>Parse Activity</a>") % self.id
-    get_parse_activity.allow_tags = True
-    get_parse_activity.short_description = _(u"Parse Activity")
+        return self.name
 
     def process(self, force_reparse=False):
         from iati.parser.parse_manager import ParseManager
@@ -85,21 +87,15 @@ class IatiXmlSource(models.Model):
         parser = ParseManager(self)
         parser.parse_activity(activity_id)
 
-    def save(self, process=False, added_manually=True, *args, **kwargs):
-        self.added_manually = added_manually
-        super(IatiXmlSource, self).save()
+    def save(self, process=False, *args, **kwargs):
+        super(Dataset, self).save()
 
         if process:
             self.process()
 
-    def delete(self, *args, **kwargs):
-        from iati.models import Activity
-        Activity.objects.filter(xml_source_ref=self.ref).delete()
-        super(IatiXmlSource, self).delete()
 
-
-class IatiXmlSourceNote(models.Model):
-    source = models.ForeignKey(IatiXmlSource)
+class DatasetNote(models.Model):
+    dataset = models.ForeignKey(Dataset)
     iati_identifier = models.CharField(max_length=140, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)
@@ -113,7 +109,7 @@ class Codelist(models.Model):
     description = models.TextField(max_length=1000, blank=True, null=True)
     count = models.CharField(max_length=10, blank=True, null=True)
     fields = models.CharField(max_length=255, blank=True, null=True)
-    date_updated = models.DateTimeField(auto_now=True, editable=False)
+    date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __unicode__(self,):
         return "%s" % self.name

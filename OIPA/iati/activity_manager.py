@@ -10,9 +10,9 @@ class ActivityQuerySet(SearchQuerySet):
         self = self.order_by().only('id')
         return super(ActivityQuerySet, self).count()
 
+    # TODO: is select_related properly applied to main activity? - 2016-12-23
     # TODO: fix import conflicts - 2016-01-18
     def prefetch_all(self):
-
         return self.prefetch_default_aid_type() \
             .prefetch_default_finance_type() \
             .prefetch_participating_organisations() \
@@ -31,11 +31,42 @@ class ActivityQuerySet(SearchQuerySet):
             .prefetch_related_activities() \
             .prefetch_aggregations()
 
-    def prefetch_default_aid_type(self):
-        return self.select_related('default_aid_type__category')
+    def prefetch_reporting_organisations(self):
+        from iati.models import ActivityReportingOrganisation, Narrative
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
 
-    def prefetch_default_finance_type(self):
-        return self.select_related('default_finance_type__category')
+        return self.prefetch_related(
+            Prefetch(
+                'reporting_organisations',
+                queryset=ActivityReportingOrganisation.objects.all()
+                .select_related('type')
+                .prefetch_related(narrative_prefetch)),)
+
+    def prefetch_title(self):
+        from iati.models import Narrative
+
+        return self.select_related('title').prefetch_related(
+            Prefetch(
+                'title__narratives',
+                queryset=Narrative.objects.all()
+                .select_related('language'))
+        )
+
+    def prefetch_descriptions(self):
+        from iati.models import Description, Narrative
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch(
+                'description_set',
+                queryset=Description.objects.all()
+                .select_related('type')
+                .prefetch_related(narrative_prefetch))
+        )
 
     def prefetch_participating_organisations(self):
         from iati.models import ActivityParticipatingOrganisation, Narrative
@@ -50,18 +81,64 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('type', 'role')
                 .prefetch_related(narrative_prefetch)),)
 
-    def prefetch_reporting_organisations(self):
-        from iati.models import ActivityReportingOrganisation, Narrative
+    def prefetch_other_identifiers(self):
+        from iati.models import OtherIdentifier, Narrative
         narrative_prefetch = Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch(
-                'reporting_organisations',
-                queryset=ActivityReportingOrganisation.objects.all()
+                'otheridentifier_set',
+                queryset=OtherIdentifier.objects.all()
                 .select_related('type')
                 .prefetch_related(narrative_prefetch)),)
+
+
+    def prefetch_activity_dates(self):
+        from iati.models import ActivityDate
+
+        return self.prefetch_related(
+            Prefetch(
+                'activitydate_set',
+                queryset=ActivityDate.objects.all()
+                .select_related('type')))
+
+    def prefetch_contact_info(self):
+        from iati.models import ContactInfo, Narrative
+
+        organisation_prefetch = Prefetch(
+            'organisation__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        department_prefetch = Prefetch(
+            'department__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        person_name_prefetch = Prefetch(
+            'person_name__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        job_title_prefetch = Prefetch(
+            'job_title__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        mailing_address_prefetch = Prefetch(
+            'mailing_address__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch(
+                'contactinfo_set',
+                queryset=ContactInfo.objects.all()
+                .select_related('type', 'organisation', 'department', 'person_name', 'job_title', 'mailing_address')
+                .prefetch_related(organisation_prefetch, department_prefetch, person_name_prefetch, job_title_prefetch, mailing_address_prefetch))
+        )
 
     def prefetch_recipient_countries(self):
         from iati.models import ActivityRecipientCountry
@@ -83,6 +160,50 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('region')
                 .select_related('vocabulary')))
 
+    def prefetch_locations(self):
+        from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
+        from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
+        # from django.contrib.contenttypes.models import ContentType
+
+
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language'))
+
+        location_name_prefetch = Prefetch(
+            'name__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language')
+            )
+
+        location_administrative_prefetch = Prefetch(
+            'locationadministrative_set',
+            queryset=LocationAdministrative.objects.all()
+            .select_related('vocabulary'))
+
+        location_description_prefetch = Prefetch(
+            'description__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        location_activity_description_prefetch = Prefetch(
+            'activity_description__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
+        return self.prefetch_related(
+            Prefetch(
+                'location_set',
+                queryset=Location.objects.all()
+                .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness', 'name', 'description', 'activity_description')
+                .prefetch_related(
+                    location_administrative_prefetch,
+                    location_name_prefetch,
+                    location_description_prefetch,
+                    location_activity_description_prefetch
+                ))
+        )
+
     def prefetch_sectors(self):
         from iati.models import ActivitySector
 
@@ -93,14 +214,23 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('sector')
                 .select_related('vocabulary')))
 
-    def prefetch_activity_dates(self):
-        from iati.models import ActivityDate
+    def prefetch_country_budget_items(self):
+        from iati.models import CountryBudgetItem
 
         return self.prefetch_related(
             Prefetch(
-                'activitydate_set',
-                queryset=ActivityDate.objects.all()
-                .select_related('type')))
+                'country_budget_items',
+                queryset=CountryBudgetItem.objects.all()
+                ))
+
+    def prefetch_humanitarian_scope(self):
+        from iati.models import HumanitarianScope
+
+        return self.prefetch_related(
+            Prefetch(
+                'humanitarianscope_set',
+                queryset=HumanitarianScope.objects.all()
+                ))
 
     def prefetch_policy_markers(self):
         from iati.models import ActivityPolicyMarker, Narrative
@@ -123,50 +253,101 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'budget_set',
                 queryset=Budget.objects.all()
-                .select_related('type', 'currency'))
+                .select_related('type', 'status', 'currency'))
         )
 
-
-    def prefetch_title(self):
-        from iati.models import Narrative
+    def prefetch_planned_disbursement(self):
+        from iati.models import PlannedDisbursement
 
         return self.prefetch_related(
             Prefetch(
-                'title__narratives',
-                queryset=Narrative.objects.all()
-                .select_related('language'))
-        )
+                'planneddisbursement_set',
+                queryset=PlannedDisbursement.objects.all()
+                ))
 
-    def prefetch_descriptions(self):
-        from iati.models import Description, Narrative
-        narrative_prefetch = Prefetch(
-            'narratives',
-            queryset=Narrative.objects.select_related('language'))
+    # def prefetch_transactions(self):
+    #     from iati.transaction.models import Transaction
 
-        return self.prefetch_related(
-            Prefetch(
-                'description_set',
-                queryset=Description.objects.all()
-                .select_related('type')
-                .prefetch_related(narrative_prefetch))
-        )
+    #     # TODO: Nullable foreign keys do not get prefetched in select_related() call - 2016-01-20
+    #     return self.prefetch_related(
+    #         Prefetch(
+    #             'transaction_set',
+    #             queryset=Transaction.objects.all() \
+    #             .select_related('transaction_type')
+    #             .select_related('currency')
+    #             .select_related('disbursement_channel')
+    #             .select_related('flow_type')
+    #             .select_related('finance_type')
+    #             .select_related('aid_type')
+    #             .select_related('tied_status')
+    #             .prefetch_all()
+    #         )
+    #     )
 
     def prefetch_document_links(self):
-        from iati.models import DocumentLink, DocumentLinkCategory
+        from iati.models import DocumentLink, DocumentLinkCategory, DocumentLinkLanguage, Narrative
 
         # TODO: fix category prefetch, not working
+
+        title_prefetch = Prefetch(
+            'documentlinktitle__narratives',
+            queryset=Narrative.objects.all()
+            .select_related('language'))
+
         category_prefetch = Prefetch(
             'documentlinkcategory_set',
             queryset=DocumentLinkCategory.objects.all()
-            .select_related('category'))
+            .select_related('category')
+            )
+
+        language_prefetch = Prefetch(
+            'documentlinklanguage_set',
+            queryset=DocumentLinkLanguage.objects.all()
+            .select_related('language'))
+
 
         return self.prefetch_related(
             Prefetch(
                 'documentlink_set',
                 queryset=DocumentLink.objects.all()
-                .select_related('file_format')
-                .prefetch_related(category_prefetch))
+                .select_related('file_format', 'documentlinktitle')
+                .prefetch_related(
+                    language_prefetch,
+                    category_prefetch,
+                    title_prefetch
+                    )
+                )
         )
+
+        
+    def prefetch_related_activities(self):
+        from iati.models import RelatedActivity
+
+        return self.prefetch_related(
+            Prefetch(
+                'relatedactivity_set',
+                queryset=RelatedActivity.objects.all()
+                .select_related('type'))
+        )
+
+    def prefetch_legacy_data(self):
+        from iati.models import LegacyData
+
+        return self.prefetch_related(
+            Prefetch(
+                'legacydata_set',
+                queryset=LegacyData.objects.all())
+            )
+
+    def prefetch_conditions(self):
+        from iati.models import Conditions, Narrative
+
+        return self.select_related('conditions')
+        # return self.prefetch_related(
+        #     Prefetch(
+        #         'conditions_set',
+        #         queryset=Conditions.objects.all()
+        #         ))
 
     def prefetch_results(self):
         from iati.models import Result, Narrative, ResultIndicatorPeriod, ResultIndicator
@@ -243,113 +424,30 @@ class ActivityQuerySet(SearchQuerySet):
                 ))
         )
 
-    def prefetch_locations(self):
-        from iati.models import Location, LocationName, LocationDescription, LocationAdministrative
-        from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
-
-        narrative_prefetch = Prefetch(
-            'narratives',
-            queryset=Narrative.objects.all().select_related('language'))
-
-        location_name_prefetch = Prefetch(
-            'locationname_set',
-            queryset=LocationName.objects.all()
-            .prefetch_related(narrative_prefetch))
-
-        location_administrative_prefetch = Prefetch(
-            'locationadministrative_set',
-            queryset=LocationAdministrative.objects.all()
-            .select_related('vocabulary'))
-
-
-        location_description_prefetch = Prefetch(
-            'locationdescription_set',
-            queryset=LocationDescription.objects.all()
-            .prefetch_related(narrative_prefetch))
-
-        location_activity_description_prefetch = Prefetch(
-            'locationactivitydescription_set',
-            queryset=LocationActivityDescription.objects.all()
-            .prefetch_related(narrative_prefetch))
+    def prefetch_crs_add(self):
+        from iati.models import CrsAdd
 
         return self.prefetch_related(
             Prefetch(
-                'location_set',
-                queryset=Location.objects.all()
-                .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness')
-                .prefetch_related(
-                    location_name_prefetch,
-                    location_administrative_prefetch,
-                    location_description_prefetch,
-                    location_activity_description_prefetch
+                'crsadd_set',
+                queryset=CrsAdd.objects.all()
                 ))
-        )
 
-    def prefetch_related_activities(self):
-        from iati.models import RelatedActivity
-
-        return self.prefetch_related(
-            Prefetch(
-                'relatedactivity_set',
-                queryset=RelatedActivity.objects.all()
-                .select_related('type'))
-        )
-
-    def prefetch_contact_info(self):
-        from iati.models import ContactInfo, Narrative
-
-        organisation_prefetch = Prefetch(
-            'organisation__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
-        department_prefetch = Prefetch(
-            'department__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
-        person_name_prefetch = Prefetch(
-            'person_name__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
-        job_title_prefetch = Prefetch(
-            'job_title__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
-
-        mailing_address_prefetch = Prefetch(
-            'mailing_address__narratives',
-            queryset=Narrative.objects.all()
-            .select_related('language'))
+    def prefetch_fss(self):
+        from iati.models import Fss
 
         return self.prefetch_related(
             Prefetch(
-                'contactinfo_set',
-                queryset=ContactInfo.objects.all()
-                .select_related('type', 'organisation', 'department', 'person_name', 'job_title', 'mailing_address')
-                .prefetch_related(organisation_prefetch, department_prefetch, person_name_prefetch, job_title_prefetch, mailing_address_prefetch))
-        )
+                'fss_set',
+                queryset=Fss.objects.all()
+                ))
 
+    def prefetch_default_aid_type(self):
+        return self.select_related('default_aid_type__category')
 
-    # def prefetch_transactions(self):
-    #     from iati.transaction.models import Transaction
+    def prefetch_default_finance_type(self):
+        return self.select_related('default_finance_type__category')
 
-    #     # TODO: Nullable foreign keys do not get prefetched in select_related() call - 2016-01-20
-    #     return self.prefetch_related(
-    #         Prefetch(
-    #             'transaction_set',
-    #             queryset=Transaction.objects.all() \
-    #             .select_related('transaction_type')
-    #             .select_related('currency')
-    #             .select_related('disbursement_channel')
-    #             .select_related('flow_type')
-    #             .select_related('finance_type')
-    #             .select_related('aid_type')
-    #             .select_related('tied_status')
-    #             .prefetch_all()
-    #         )
-    #     )
 
     def prefetch_aggregations(self):
         from iati.models import ActivityAggregation, ChildAggregation, ActivityPlusChildAggregation

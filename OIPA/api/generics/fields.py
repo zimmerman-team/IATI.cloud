@@ -49,7 +49,7 @@ class PointField(serializers.Field):
         """
         Parse json data and return a point object
         """
-        if value in EMPTY_VALUES and not self.required:
+        if not value and not self.required:
             return None
 
         if isinstance(value, six.string_types):

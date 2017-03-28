@@ -19,7 +19,6 @@ from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 from iati.parser.parse_manager import ParseManager
 
-from iati_synchroniser.models import IatiXmlSource
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
 
@@ -29,10 +28,11 @@ from iati.parser.post_save import *
 from iati.parser.IATI_1_03 import Parse as Parser_103
 from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_02 import Parse as Parser_202
-from iati.parser.exceptions import ValidationError
+from iati.parser.exceptions import FieldValidationError
 
 from iati_codelists.factory import codelist_factory
 from iati_vocabulary.factory import vocabulary_factory
+from iati_synchroniser.factory import synchroniser_factory
 
 
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
@@ -55,17 +55,6 @@ def build_xml(version, iati_identifier):
     
     return activity
 
-# def create_dummy_source(url, title, name, current_publisher, cur_type):
-#     source = IatiXmlSource(
-#         ref=name,
-#         title=title,
-#         publisher=current_publisher,
-#         source_url=url,
-#         type=cur_type)
-
-#     source.save(process=False, added_manually=False)
-#     return source
-
 
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
@@ -84,7 +73,7 @@ def create_parser(self, version="2.02"):
     iati_identifier = "NL-KVK-51018586-0666"
 
     iati_activities = build_xml(version, iati_identifier)
-    dummy_source = IatiXmlSource.objects.get(id=1)
+    dummy_source = synchroniser_factory.DatasetFactory.create()
 
     return ParseManager(dummy_source, iati_activities).get_parser()
 
@@ -92,9 +81,9 @@ def create_parser(self, version="2.02"):
 def create_parsers(versions=["2.02", "1.05"]):
     return {version: create_parser(version) for version in versions}
 
-
+# TODO: get rid of fixtures
 def setUpModule():
-    fixtures = ['test_publisher.json', 'test_vocabulary', 'test_codelists.json', 'test_geodata.json']
+    fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
@@ -125,7 +114,7 @@ class ParserSetupTestCase(TestCase):
 
         # publisher = Publisher.objects.get(id=1) # from fixture
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
-        dummy_source = IatiXmlSource.objects.get(id=1)
+        dummy_source = synchroniser_factory.DatasetFactory.create()
 
         self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
         self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()
@@ -338,24 +327,24 @@ class ActivityTestCase(ParserSetupTestCase):
 
         self.assertEqual(activity.linked_data_uri, linked_data_default)
 
-    def test_iati_identifier(self):
-        """
-        iati_activities__iati_activity__iati_identifier
-        should raise exception if not present
-        """
-        iati_202 = copy_xml_tree(self.iati_202)
-        iati_identifier = iati_202.find('iati-activity').find('iati-identifier')
+    # def test_iati_identifier(self):
+    #     """
+    #     iati_activities__iati_activity__iati_identifier
+    #     should raise exception if not present
+    #     """
+    #     iati_202 = copy_xml_tree(self.iati_202)
+    #     iati_identifier = iati_202.find('iati-activity').find('iati-identifier')
 
-        self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
-        activity = self.parser_202.get_model('Activity')
+    #     self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
+    #     activity = self.parser_202.get_model('Activity')
 
-        self.assertEqual(activity.iati_identifier, iati_identifier.text)
+    #     self.assertEqual(activity.iati_identifier, iati_identifier.text)
 
-        # empty iati-idenifier should throw exception
-        iati_identifier.text = ""
+    #     # empty iati-idenifier should throw exception
+    #     iati_identifier.text = ""
 
-        with self.assertRaises(Exception):
-            self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
+    #     with self.assertRaises(Exception):
+    #         self.parser_202.iati_activities__iati_activity__iati_identifier(iati_identifier)
 
     def test_humanitarian_flag_true(self):
         """
@@ -767,7 +756,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
         self.attrs = {
-            "ref": "GB-COH-03580586",
+            "ref": "GB-COH-123-reporting-org",
             "type": '40',
             "secondary-reporter": "0",
             "primary_name": "primary_name"
@@ -810,7 +799,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.build()
+        test_organisation = iati_factory.OrganisationFactory.build(id="GB-COH-123-reporting-org")
         test_organisation.save()
 
         self.parser_202.register_model('Activity', activity)
@@ -842,7 +831,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
 
         self.attrs_202 = {
-            "ref": "GB-COH-03580586",
+            "ref": "GB-COH-123-participating-org",
             "type": '40',
             "role": "1",
             "activity-id": "BB-BBB-123456789-1234"
@@ -883,8 +872,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.build()
-        test_organisation.save()
+        test_organisation = iati_factory.OrganisationFactory.create(id="GB-COH-123-participating-org")
 
         self.parser_202.register_model('Activity', activity)
         self.parser_202.register_model('Organisation', test_organisation)
@@ -928,8 +916,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="1.05")
 
-        test_organisation = iati_factory.OrganisationFactory.build()
-        test_organisation.save()
+        test_organisation = iati_factory.OrganisationFactory.create(id="GB-COH-123-participating-org")
 
         self.parser_105.register_model('Activity', activity)
         self.parser_105.register_model('Organisation', test_organisation)
@@ -1450,7 +1437,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     # TODO : test for latlong validation
     # def test_location_pos_pos_invalid_latlong_202(self):
     #     pos = E('pos', '91.616944 328392189031283.716944')
-    #     with self.assertRaises(ValidationError):
+    #     with self.assertRaises(FieldValidationError):
     #         self.parser_202.iati_activities__iati_activity__location__point__pos(pos)
 
     def test_location_exactness_202(self):
@@ -1775,7 +1762,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
 
     def test_activity_policy_marker_202_no_significance_on_oecd_dac(self):
         """
-        No significance on oecd dac voc should raise ValidationError.
+        No significance on oecd dac voc should raise FieldValidationError.
         """
         attrs = self.attrs
         del attrs['significance']
@@ -1946,7 +1933,7 @@ class BudgetTestCase(ParserSetupTestCase):
 
         value = E('value', text, **attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__budget__value(value)
 
 
@@ -2425,7 +2412,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
         self.attrs = {
-            "ref": "GB-COH-03580586",
+            "ref": "GB-COH-123-provider-org",
             "provider-activity-id": 'no constraints on this field',
         }
 
@@ -2505,7 +2492,7 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
 class ReceiverOrganisationTestCase(ParserSetupTestCase):
     def setUp(self):
         self.attrs = {
-            "ref": "GB-COH-03580586",
+            "ref": "GB-COH-123-receiver-org",
             "receiver-activity-id": 'no constraints on this field',
         }
 
@@ -3095,7 +3082,7 @@ class ResultTestCase(ParserSetupTestCase):
 
     def test_result_indicator_period_target_non_existing_location(self):
         """
-        should throw ValidationError
+        should throw FieldValidationError
         """
         self.parser_202.pop_model('Location')
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
@@ -3104,7 +3091,7 @@ class ResultTestCase(ParserSetupTestCase):
         loc_attrs = {'ref': 'AF-KAN'}
         target_location = E('location', **loc_attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
 
     def test_result_indicator_period_target_dimension(self):
@@ -3190,7 +3177,7 @@ class ResultTestCase(ParserSetupTestCase):
 
     def test_result_indicator_period_actual_non_existing_location(self):
         """
-        should throw ValidationError
+        should throw FieldValidationError
         """
         self.parser_202.pop_model('Location')
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
@@ -3199,7 +3186,7 @@ class ResultTestCase(ParserSetupTestCase):
         loc_attrs = {'ref': 'AF-KAN'}
         actual_location = E('location', **loc_attrs)
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(FieldValidationError):
             self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
 
     def test_result_indicator_period_actual_dimension(self):

@@ -8,3 +8,6 @@ DATABASES = {
         'NAME': ':memory:',
     },
 }
+
+FTS_ENABLED = False
+CKAN_URL = "https://iati-staging.ckan.io"

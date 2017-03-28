@@ -20,6 +20,7 @@ def _create_test_activity(
     iati_identifier="IATI-search1",
     title1="title1",
     title2="title2",
+    capital_spend="88.80",
     description1_1="description1_1",
     description1_2="description1_2",
     description2_1="description2_1",
@@ -36,14 +37,45 @@ def _create_test_activity(
     sector2="sector2",
     document_link_title1="document_link_title1",
     document_link_title2="document_link_title2",
+    other_identifier1="other_idenifier1",
+    other_identifier2="other_idenifier2",
+    document_link1="document_link_title1",
+    document_link2="document_link_title2",
+    transaction_description1_1="transaction_description1_1",
+    transaction_description1_2="transaction_description1_2",
+    transaction_description2_1="transaction_description2_1",
+    transaction_description2_2="transaction_description2_2",
+    transaction_provider_org1_1="transaction_provider_org1_1",
+    transaction_provider_org1_2="transaction_provider_org1_2",
+    transaction_provider_org2_1="transaction_provider_org2_1",
+    transaction_provider_org2_2="transaction_provider_org2_2",
+    transaction_receiver_org1_1="transaction_receiver_org1_1",
+    transaction_receiver_org1_2="transaction_receiver_org1_2",
+    transaction_receiver_org2_1="transaction_receiver_org2_1",
+    transaction_receiver_org2_2="transaction_receiver_org2_2",
+    location_name1_1="location_name1_1",
+    location_name1_2="location_name1_2",
+    location_description1_1="location_description1_1",
+    location_description1_2="location_description1_2",
+    location_activity_description1_1="location_activity_description1_1",
+    location_activity_description1_2="location_activity_description1_2",
+    condition1_narrative_1="Conditions text",
+    condition1_narrative_2="Conditions texte",
+    condition2_narrative_1="Conditions text2",
+    condition2_narrative_2="Conditions texte2",
+    condition3_narrative_1="Conditions text3",
+    condition3_narrative_2="Conditions texte3",
+    condition4_narrative_1="Conditions text4",
+    condition4_narrative_2="Conditions texte4",
         ):
     """
     For testing narratives (hence search)
     """
 
     activity = ActivityFactory.create(
-        id=id,
-        iati_identifier=iati_identifier
+        id=iati_identifier,
+        iati_identifier=iati_identifier,
+        capital_spend=capital_spend
     )
 
     title = TitleFactory.create(
@@ -106,12 +138,54 @@ def _create_test_activity(
         activity=activity,
     )
 
-    document_link_title = DocumentLinkTitleFactory.create(
+    document_link_category = DocumentLinkCategoryFactory.create(
+        document_link=document_link,
+    )
+    document_link_language = DocumentLinkLanguageFactory.create(
         document_link=document_link,
     )
 
-    _create_test_narrative(activity, document_link_title, sector1)
-    _create_test_narrative(activity, document_link_title, sector2)
+    _create_test_narrative(activity, document_link.documentlinktitle, document_link1)
+    _create_test_narrative(activity, document_link.documentlinktitle, document_link2)
+
+    other_identifier = OtherIdentifierFactory.create(
+        activity=activity,
+        )
+    _create_test_narrative(activity, other_identifier, other_identifier1)
+    _create_test_narrative(activity, other_identifier, other_identifier2)
+
+    transaction1 = TransactionFactory.create(activity=activity)
+    transaction_description1 = TransactionDescriptionFactory.create(transaction=transaction1)
+    provider_org1 = TransactionProviderFactory.create(transaction=transaction1, provider_activity=activity) 
+    receiver_org1 = TransactionReceiverFactory.create(transaction=transaction1, receiver_activity=activity) 
+    transaction_recipient_country1 = TransactionRecipientCountryFactory.create(transaction=transaction1) 
+    transaction_recipient_region1 = TransactionRecipientRegionFactory.create(transaction=transaction1) 
+    transaction_sector1 = TransactionSectorFactory.create(transaction=transaction1) 
+
+    _create_test_narrative(activity, transaction_description1, transaction_description1_1)
+    _create_test_narrative(activity, transaction_description1, transaction_description1_2)
+    _create_test_narrative(activity, provider_org1, transaction_provider_org1_1)
+    _create_test_narrative(activity, provider_org1, transaction_provider_org1_2)
+    _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_1)
+    _create_test_narrative(activity, receiver_org1, transaction_receiver_org1_2)
+
+    # transaction2 = TransactionFactory.create(activity=activity)
+
+    location = LocationFactory.create(activity=activity)
+    _create_test_narrative(activity, location.name, location_name1_1)
+    _create_test_narrative(activity, location.description, location_description1_1)
+    _create_test_narrative(activity, location.activity_description, location_activity_description1_1)
+    location_administrative = LocationAdministrativeFactory.create(location=location)
+    
+    budget = BudgetFactory.create(activity=activity)
+
+    conditions1 = ConditionsFactory.create(activity=activity)
+    condition1 = ConditionFactory.create(conditions=conditions1)
+    _create_test_narrative(activity, condition1, condition1_narrative_1)
+    _create_test_narrative(activity, condition1, condition1_narrative_2)
+    condition2 = ConditionFactory.create(conditions=conditions1)
+    _create_test_narrative(activity, condition2, condition2_narrative_1)
+    _create_test_narrative(activity, condition2, condition2_narrative_2)
 
     return activity
 

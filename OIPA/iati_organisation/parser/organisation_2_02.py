@@ -1,5 +1,6 @@
 from iati.parser.iati_parser import IatiParser
 from iati_codelists import models as codelist_models
+from django.conf import settings
 
 from iati_organisation.models import (
     Organisation,
@@ -81,7 +82,8 @@ class Parse(IatiParser):
     def iati_organisations__iati_organisation(self, element):
         id = self._normalize(element.xpath('organisation-identifier/text()')[0])
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
+        # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
 
         if not id:
@@ -121,7 +123,7 @@ class Parse(IatiParser):
         name_list = self.get_model_list('OrganisationName')
 
         if name_list and len(name_list) > 0:
-            raise self.ValidationError("name", "Duplicate names are not allowed")
+            raise self.FieldValidationError("name", "Duplicate names are not allowed")
 
         organisation = self.get_model('Organisation')
 
@@ -597,7 +599,7 @@ class Parse(IatiParser):
                 "required element empty")
 
         if not currency:
-            raise ValidationError(
+            raise FieldValidationError(
                 "total-expenditure/value/currency",
                 "code",
                 "not found on the accompanying code list")
@@ -631,7 +633,7 @@ class Parse(IatiParser):
                 "required element empty")
 
         if not currency:
-            raise ValidationError(
+            raise FieldValidationError(
                 "total-expenditure/value/currency",
                 "code",
                 "not found on the accompanying code list")
@@ -724,7 +726,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link/document-date",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -746,13 +748,14 @@ class Parse(IatiParser):
         return element
 
     def post_save_models(self):
-        """Perform all actions that need to happen after a single activity's been parsed."""
+        """Perform all actions that need to happen after a single organisation's been parsed."""
         organisation = self.get_model('Organisation')
 
         if not organisation:
             return False
 
         post_save.set_activity_reporting_organisation(organisation)
+        post_save.set_publisher_fk(organisation)
 
     def post_save_file(self, xml_source):
         pass

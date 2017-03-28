@@ -18,6 +18,8 @@ from decimal import Decimal
 from iati.parser.exceptions import *
 # from iati.parser.higher_order_parser import compose, code
 
+import iati.parser.validators
+
 
 class Parse(IatiParser):
     
@@ -51,7 +53,7 @@ class Parse(IatiParser):
                 "xml:lang",
                 "must specify xml:lang on iati-activity or xml:lang on the element itself")
         if not text:
-            raise EmptyFieldError(
+            raise RequiredFieldError(
                 register_name,
                 "text", 
                 "empty narrative")
@@ -77,14 +79,14 @@ class Parse(IatiParser):
         iati_identifier = element.xpath('iati-identifier/text()')
 
         if len(iati_identifier) < 1:
-            raise ValidationError(
+            raise FieldValidationError(
                 "iati-activity",
                 "iati-identifier",
                 "no iati-identifier found")
         
         activity_id = self._normalize(iati_identifier[0])
-
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', self.default_lang)
+        # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
+        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -99,23 +101,23 @@ class Parse(IatiParser):
 
         old_activity = self.get_or_none(models.Activity, id=activity_id)
 
-        if old_activity and not self.force_reparse:
+        if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
-            # because its not updated (and thereby assumed not found in the source)
+            # because its not updated (and thereby assumed not found in the dataset)
             old_activity.save()
 
             if last_updated_datetime and last_updated_datetime == old_activity.last_updated_datetime:
                 raise NoUpdateRequired('activity', 'already up to date')
 
             if last_updated_datetime and (last_updated_datetime < old_activity.last_updated_datetime):
-                raise ValidationError(
+                raise FieldValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is less than existing activity",
                     iati_identifier)
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
-                raise ValidationError(
+                raise FieldValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is not present, but is present on existing activity",
@@ -133,15 +135,21 @@ class Parse(IatiParser):
         activity = models.Activity()
         activity.id = activity_id
         activity.iati_identifier = iati_identifier[0]
-        activity.default_lang = default_lang
+        if default_lang:
+            activity.default_lang_id = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
         activity.humanitarian = self.makeBoolNone(humanitarian)
-        activity.xml_source_ref = self.iati_source.ref
+        activity.dataset = self.dataset
+        activity.publisher = self.publisher
         activity.last_updated_datetime = last_updated_datetime
         activity.linked_data_uri = linked_data_uri
         activity.default_currency = default_currency
         activity.iati_standard_version_id = self.VERSION
+
+        activity.published = True
+        activity.ready_to_publish = True
+        activity.modified = False
 
         # for later reference
         self.default_lang = default_lang
@@ -296,7 +304,7 @@ class Parse(IatiParser):
         title_list = self.get_model_list('Title')
 
         if title_list and len(title_list) > 0:
-            raise ValidationError(
+            raise FieldValidationError(
                 "title",
                 "title", 
                 "duplicate titles are not allowed")
@@ -417,7 +425,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not activity_status:
-            raise ValidationError(
+            raise FieldValidationError(
                 "activity-status",
                 "code",
                 "not found on the accompanying code list")
@@ -445,7 +453,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "activity-date",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -461,7 +469,7 @@ class Parse(IatiParser):
         type_code = self.get_or_none(codelist_models.ActivityDateType, code=type_code)
 
         if not type_code: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "activity-date",
                 "type",
                 "not found on the accompanying code list")
@@ -593,7 +601,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text: 
-            raise EmptyFieldError(
+            raise RequiredFieldError(
                 "contact-info",
                 "telephone",
                 "empty element")
@@ -610,7 +618,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text: 
-            raise EmptyFieldError(
+            raise RequiredFieldError(
                 "contact-info",
                 "email",
                 "empty element")
@@ -627,7 +635,7 @@ class Parse(IatiParser):
         text = element.text
 
         if not text:
-            raise EmptyFieldError(
+            raise RequiredFieldError(
                 "contact-info",
                 "website", 
                 "empty element")
@@ -671,7 +679,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not activity_scope: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "activity-status",
                 "code",
                 "not found on the accompanying code list")
@@ -698,7 +706,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not country: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "recipient-country",
                 "code",
                 "not found on the accompanying code list")
@@ -740,7 +748,7 @@ class Parse(IatiParser):
                 "not found on the accompanying code list")
 
         if not region and vocabulary.code == '1': 
-            raise ValidationError(
+            raise FieldValidationError(
                 "recipient-region", 
                 "code", 
                 "not found on the accompanying code list")
@@ -922,7 +930,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/administrative",
                 "vocabulary",
                 "not found on the accompanying code list")
@@ -974,7 +982,7 @@ class Parse(IatiParser):
             # geos point = long lat, iati point lat long, hence the latlong[1], latlong[0]
             point = GEOSGeometry(Point(float(latlong[1]), float(latlong[0])), srid=4326)
         except Exception as e:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/point",
                 "pos",
                 "latitude/longitude formatting incorrect")
@@ -999,7 +1007,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not exactness:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/exactness",
                 "code",
                 "not found on the accompanying code list")
@@ -1024,7 +1032,7 @@ class Parse(IatiParser):
                 "required attribute code")
 
         if not location_class:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/location-class",
                 "code",
                 "not found on the accompanying code list")
@@ -1049,7 +1057,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not feature_designation:
-            raise ValidationError(
+            raise FieldValidationError(
                 "location/feature-designation",
                 "code",
                 "not found on the accompanying code list")
@@ -1080,13 +1088,13 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary:
-            raise ValidationError(
+            raise FieldValidationError(
                 "sector",
                 "vocabulary",
                 "not found on the accompanying code list")
 
         if not sector and vocabulary.code == '1': 
-            raise ValidationError(
+            raise FieldValidationError(
                 "sector",
                 "code",
                 "not found on the accompanying code list")
@@ -1122,7 +1130,7 @@ class Parse(IatiParser):
                 "invalid vocabulary")
 
         if not vocabulary: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "country-budget-items",
                 "vocabulary",
                 "not found on the accompanying code list")
@@ -1153,7 +1161,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not budget_identifier: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "country-budget-items/budget-item",
                 "code",
                 "not found on the accompanying code list")
@@ -1209,7 +1217,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not scope_type: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "humanitarian-scope",
                 "type",
                 "not found on the accompanying code list")
@@ -1221,7 +1229,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "humanitarian-scope",
                 "vocabulary",
                 "not found on the accompanying code list")
@@ -1267,13 +1275,13 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary:
-            raise ValidationError(
+            raise FieldValidationError(
                 "policy-marker",
                 "vocabulary",
                 "not found on the accompanying code list")
 
         if not policy_marker_code and vocabulary.code == '1':
-            raise ValidationError(
+            raise FieldValidationError(
                 "policy-marker",
                 "code",
                 "not found on the accompanying code list")
@@ -1322,7 +1330,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not collaboration_type: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "collaboration-type",
                 "code",
                 "not found on the accompanying code list")
@@ -1347,7 +1355,7 @@ class Parse(IatiParser):
                 "code is unspecified or invalid")
 
         if not default_flow_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "default-flow-type",
                 "code",
                 "not found on the accompanying code list")
@@ -1372,7 +1380,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not default_finance_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "default-finance-type",
                 "code",
                 "not found on the accompanying code list")
@@ -1397,7 +1405,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not default_aid_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "default-aid-type",
                 "code",
                 "not found on the accompanying code list")
@@ -1422,7 +1430,7 @@ class Parse(IatiParser):
                 "code is unspecified or invalid")
 
         if not default_tied_status:
-            raise ValidationError(
+            raise FieldValidationError(
                 "default-tied-status",
                 "code",
                 "not found on the accompanying code list")
@@ -1452,7 +1460,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not budget_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "budget",
                 "type",
                 "not found on the accompanying code list")
@@ -1464,7 +1472,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not status:
-            raise ValidationError(
+            raise FieldValidationError(
                 "budget",
                 "status",
                 "not found on the accompanying code list")
@@ -1493,7 +1501,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "budget/period-start",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -1519,7 +1527,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "budget/period-end",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -1556,7 +1564,7 @@ class Parse(IatiParser):
         value_date = self.validate_date(value_date)
 
         if not value_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "budget/value",
                 "value-date",
                 "iso-date not of type xsd:date")
@@ -1613,7 +1621,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "planned-disbursement/period-start",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -1639,7 +1647,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "planned-disbursement/period-end",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -1677,7 +1685,7 @@ class Parse(IatiParser):
         value_date = self.validate_date(value_date)
 
         if not value_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "planned-disbursement/value",
                 "value-date",
                 "iso-date not of type xsd:date")
@@ -1805,7 +1813,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/transaction-date",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -1842,7 +1850,7 @@ class Parse(IatiParser):
         value_date = self.validate_date(value_date)
 
         if not value_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/value",
                 "value-date",
                 "iso-date not of type xsd:date")
@@ -1986,13 +1994,13 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/sector",
                 "vocabulary",
                 "not found on the accompanying code list")
 
         if not sector and vocabulary.code == '1': 
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/sector",
                 "code",
                 "not found on the accompanying code list")
@@ -2029,7 +2037,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not country: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/recipient-country",
                 "code",
                 "not found on the accompanying code list")
@@ -2069,7 +2077,7 @@ class Parse(IatiParser):
                 "not found on the accompanying code list")
 
         if not region and vocabulary.code == '1': 
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/recipient-region", 
                 "code", 
                 "not found on the accompanying code list")
@@ -2105,7 +2113,7 @@ class Parse(IatiParser):
                 "code", 
                 "required attribute missing")
         elif not flow_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/flow-type",
                 "code",
                 "not found on the accompanying code list")
@@ -2128,7 +2136,7 @@ class Parse(IatiParser):
                 "code", 
                 "required attribute missing")
         elif not finance_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/finance-type",
                 "code",
                 "not found on the accompanying code list")
@@ -2152,7 +2160,7 @@ class Parse(IatiParser):
                 "code", 
                 "required attribute missing")
         elif not aid_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/aid-type",
                 "code",
                 "not found on the accompanying code list")
@@ -2176,7 +2184,7 @@ class Parse(IatiParser):
                 "code", 
                 "required attribute missing")
         elif not tied_status:
-            raise ValidationError(
+            raise FieldValidationError(
                 "transaction/tied-status",
                 "code",
                 "not found on the accompanying code list")
@@ -2209,7 +2217,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not file_format:
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link",
                 "format",
                 "not found on the accompanying code list")
@@ -2240,7 +2248,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link/document-date",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -2286,7 +2294,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not category: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link/category",
                 "code",
                 "not found on the accompanying code list")
@@ -2314,7 +2322,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not language:
-            raise ValidationError(
+            raise FieldValidationError(
                 "document-link/language",
                 "code",
                 "not found on the accompanying code list")
@@ -2344,7 +2352,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not related_activity_type:
-            raise ValidationError(
+            raise FieldValidationError(
                 "related-activity",
                 "type",
                 "not found on the accompanying code list")
@@ -2373,15 +2381,17 @@ class Parse(IatiParser):
     # iati-equivalent:activity-status
 
     # tag:legacy-data"""
-    # def iati_activities__iati_activity__legacy_data(self, element):
-    #     model = self.get_func_parent_model()
-    #     legacy_data = models.LegacyData()
-    #     legacy_data.activity = model
-    #     legacy_data.name = element.attrib.get('name')
-    #     legacy_data.value = element.attrib.get('value')
-    #     legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
-    #     legacy_data.save()
-    #     return element
+    def iati_activities__iati_activity__legacy_data(self, element):
+        activity = self.get_model('Activity')
+        legacy_data = models.LegacyData()
+        legacy_data.activity = activity
+        legacy_data.name = element.attrib.get('name')
+        legacy_data.value = element.attrib.get('value')
+        legacy_data.iati_equivalent = element.attrib.get('iati-equivalent')
+
+        self.register_model('LegacyData', legacy_data)
+
+        return element
 
     # """attributes:
     # attached:1
@@ -2430,7 +2440,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not result_type: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "result",
                 "type",
                 "not found on the accompanying code list")
@@ -2521,7 +2531,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         if not vocabulary: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "result/indicator/reference",
                 "vocabulary",
                 "not found on the accompanying code list")
@@ -2667,7 +2677,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "result/indicator/period/period-start",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -2695,7 +2705,7 @@ class Parse(IatiParser):
         iso_date = self.validate_date(iso_date)
 
         if not iso_date:
-            raise ValidationError(
+            raise FieldValidationError(
                 "result/indicator/period/period-end",
                 "iso-date",
                 "iso-date not of type xsd:date")
@@ -2744,7 +2754,7 @@ class Parse(IatiParser):
             location = filter(lambda x: x.ref == ref, locations)
 
         if not len(location): 
-            raise ValidationError(
+            raise FieldValidationError(
                 "result/indicator/period/period/target/location",
                 "ref", 
                 "referenced location does not exist in a location element of this activity")
@@ -2840,7 +2850,7 @@ class Parse(IatiParser):
         location = filter(lambda x: x.ref == ref, locations)
 
         if not len(location): 
-            raise ValidationError(
+            raise FieldValidationError(
                 "result/indicator/period/actual/location",
                 "ref",
                 "referenced location does not exist in a location element of this activity")
@@ -3052,25 +3062,25 @@ class Parse(IatiParser):
         post_save.set_sector_transaction(activity)
         post_save.set_sector_budget(activity)
 
-    def post_save_file(self, xml_source):
-        """Perform all actions that need to happen after a single IATI source's been parsed.
+    def post_save_file(self, dataset):
+        """Perform all actions that need to happen after a single IATI dataset's been parsed.
 
         Keyword arguments:
-        xml_source -- the IatiXmlSource object of the current source
+        dataset -- the Dataset object
         """
-        self.delete_removed_activities(xml_source.ref)
+        self.delete_removed_activities(dataset)
 
-    def delete_removed_activities(self, xml_source_ref):
-        """ Delete activities that were not found in the XML source any longer
+    def delete_removed_activities(self, dataset):
+        """ Delete activities that were not found in the dataset any longer
 
         Keyword arguments:
-        xml_source_ref -- the IatiXmlSource object PK (ref) of the current source
+        dataset -- the Dataset object
 
         Used variables:
         activity.last_updated_model -- the datetime at which this activity was last saved
-        self.parse_start_datetime -- the datetime at which parsing this source started
+        self.parse_start_datetime -- the datetime at which parsing this dataset started
         """
         models.Activity.objects.filter(
-            xml_source_ref=xml_source_ref,
+            dataset=dataset,
             last_updated_model__lt=self.parse_start_datetime).delete()
 

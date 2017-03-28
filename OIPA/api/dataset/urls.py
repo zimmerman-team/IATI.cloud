@@ -15,4 +15,16 @@ urlpatterns = [
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/notes/',
         views.DatasetNotes.as_view(),
         name='dataset-notes'),
+
+    # TODO: temporary soln until we have implemented datasets properly - 2016-10-25
+    url(
+        r'^(?P<publisher_id>[^@$&+,/:;=?]+)/publish_activities/$',
+        views.DatasetPublishActivities.as_view(),
+        name='dataset-publish'
+    ),
+    url(
+        r'^(?P<publisher_id>[^@$&+,/:;=?]+)/publish_activities/(?P<dataset_id>[^@$&+,/:;=?]+)$',
+        views.DatasetPublishActivitiesUpdate.as_view(),
+        name='dataset-publish'
+    ),
 ]

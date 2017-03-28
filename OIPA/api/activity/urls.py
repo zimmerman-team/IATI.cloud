@@ -15,9 +15,15 @@ urlpatterns = [
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/',
-        api.activity.views.ActivityTransactions.as_view(),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/$',
+        api.activity.views.ActivityTransactionList.as_view(),
         name='activity-transactions'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/',
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
+        api.activity.views.ActivityTransactionDetail.as_view(),
+        name='activity-transaction-detail'),
+
+    url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),
         name='provider-activity-tree'),]

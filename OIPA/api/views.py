@@ -90,6 +90,10 @@ def welcome(request, format=None):
                 'budgets:budget-aggregations',
                 request=request,
                 format=format),
+            'codelists': reverse(
+                'codelists:codelist-meta-list',
+                request=request,
+                format=format),
         }
     })
 
