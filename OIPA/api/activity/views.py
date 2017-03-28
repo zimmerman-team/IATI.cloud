@@ -230,6 +230,7 @@ class ActivityAggregations(AggregationView):
 
 
 class ActivityList(DynamicListView):
+
     """
     Returns a list of IATI Activities stored in OIPA.
 
@@ -358,6 +359,7 @@ class ActivityList(DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
+
 # class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
 
 #     def get_queryset(self, *args, **kwargs):
@@ -422,6 +424,7 @@ class ActivityDetail(DynamicDetailView):
     - `fields` (*optional*): List of fields to display
 
     """
+
 
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
