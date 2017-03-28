@@ -184,6 +184,7 @@ def organisation(
             "errors": errors,
             "validated_data": {
                 "organisation_identifier": organisation_identifier,
+                "normalized_organisation_identifier": organisation_identifier,
                 "default_lang": default_lang,
                 "default_currency": default_currency,
                 "iati_standard_version": iati_standard_version,

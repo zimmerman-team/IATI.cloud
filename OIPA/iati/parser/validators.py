@@ -389,6 +389,7 @@ def activity(
             "errors": errors,
             "validated_data": {
                 "iati_identifier": iati_identifier,
+                "normalized_iati_identifier": iati_identifier,
                 "default_lang": default_lang,
                 "hierarchy": hierarchy,
                 "humanitarian": humanitarian,
