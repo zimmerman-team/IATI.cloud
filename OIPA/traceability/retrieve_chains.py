@@ -63,7 +63,7 @@ class ChainRetriever():
 
             if len(node) > 1:
                 print 'Multiple mentions of this chain, should not happen'
-                prin node
+                print node
             node[0].chain.delete()
 
         # create, is saved as self.chain
