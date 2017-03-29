@@ -48,6 +48,10 @@ class ChainNodeFilter(FilterSet):
     tier = NumberFilter(name='tier')
     link_end_node_hierarchy = NumberFilter(name='start_link__end_node__activity__hierarchy', lookup_expr='exact')
     hierarchy = CharFilter(name='activity__hierarchy', lookup_expr='exact')
+    bol = BooleanFilter(name='bol', lookup_expr='exact')
+    eol = BooleanFilter(name='eol', lookup_expr='exact')
+    treated_as_end_node = BooleanFilter(name='treated_as_end_node', lookup_expr='exact')
+
 
     class Meta:
         model = ChainNode
@@ -59,7 +63,10 @@ class ChainNodeFilter(FilterSet):
             'is_start_node',
             'tier',
             'link_end_node_hierarchy',
-            'hierarchy'
+            'hierarchy',
+            'bol',
+            'eol',
+            'treated_as_end_node',
         ]
 
 
