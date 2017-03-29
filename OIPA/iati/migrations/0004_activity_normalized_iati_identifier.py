@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activity',
             name='normalized_iati_identifier',
-            field=models.CharField(db_index=True, default=django.utils.timezone.now, max_length=150),
+            field=models.CharField(db_index=True, default='to be filled', max_length=150),
             preserve_default=False,
         ),
     ]

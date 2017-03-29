@@ -48,12 +48,6 @@ class ChainRetriever():
 
         if len(chain) > 0 and chain[0].last_updated < self.started_at:
             # in a chain, only update if the chain is not created within this run
-            
-            # error catching
-            if len(chain) > 1:
-                print 'activity {} occurs in multiple chains, probably a coding error.'.format(activity.iati_identifier)
-                print chain.values('id')
-            
             return True 
 
         elif len(chain) is 0:
@@ -421,23 +415,23 @@ class ChainRetriever():
         def calculate_next_tier(tier):
 
             moved_nodes = []
-
+            # ChainNode.objects.filter(chain=3725, tier=1)
             for cn in ChainNode.objects.filter(chain=self.chain, tier=tier):
                 # find chainlinks where this node is the start, set the end node as next level if None
                 for cl in ChainLink.objects.filter(chain=self.chain, start_node=cn):
                     end_node = cl.end_node
 
-                    if not end_node.tier or end_node.tier < (tier + 1): 
-
+                    if end_node.tier and end_node.tier < (tier + 1): 
                         # to place activities with cofunding from other activities on the deepest level where they exist, 
                         # , moved nodes array is there to prevent an endless loop
-                        if end_node.tier < (tier + 1):
-                            moved_nodes.append(end_node.id)
-                            print 'moved a node'
+                        moved_nodes.append(end_node.id)
                         end_node.tier = tier + 1
                         end_node.save()
-            print moved_nodes
-            print ChainNode.objects.filter(chain=self.chain, tier=(tier + 1)).exclude(id__in=moved_nodes) 
+
+                    elif not end_node.tier: 
+                        end_node.tier = tier + 1
+                        end_node.save()
+                        
             if ChainNode.objects.filter(chain=self.chain, tier=(tier + 1)).exclude(id__in=moved_nodes).exists():
                 calculate_next_tier((tier + 1))
 

@@ -8,9 +8,14 @@ from traceability.models import Chain, ChainLink, ChainNodeError, ChainNode
 from api.generics.filters import CommaSeparatedCharFilter
 
 
+class IncludesActivityFilter(CharFilter):
+
+    def filter(self, qs, value):
+        qs = qs.filter(**{'%s__%s' % (self.name, self.lookup_expr): value, '%s__%s' % ('chainnode__treated_as_end_node', 'exact'): False})
+        return qs
 
 class ChainFilter(FilterSet):
-    includes_activity = CharFilter(name='chainnode__activity__iati_identifier', lookup_expr='exact')
+    includes_activity = IncludesActivityFilter(name='chainnode__activity__iati_identifier', lookup_expr='exact')
 
     class Meta:
         model = Chain
