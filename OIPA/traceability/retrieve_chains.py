@@ -58,8 +58,13 @@ class ChainRetriever():
     def retrieve_chain(self, activity):
 
         # delete old chain
-        if Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity)).count() > 0:
-            Chain.objects.filter(Q(chainlink__start_node__activity=activity) | Q(chainlink__end_node__activity=activity)).delete()
+        if ChainNode.objects.filter(activity=activity, bol=True, treated_as_end_node=False, tier=0).exists():
+            node = ChainNode.objects.filter(activity=activity, bol=True, treated_as_end_node=False, tier=0)
+
+            if len(node) > 1:
+                print 'Multiple mentions of this chain, should not happen'
+                prin node
+            node[0].chain.delete()
 
         # create, is saved as self.chain
         self.create_chain()
