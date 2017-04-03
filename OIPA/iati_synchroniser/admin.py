@@ -72,7 +72,7 @@ def export_xml_by_source(request, dataset_id):
 
 class DatasetAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
-    search_fields = ['name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
+    search_fields = ['id', 'name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
     list_display = [
         'id',
         'name',
