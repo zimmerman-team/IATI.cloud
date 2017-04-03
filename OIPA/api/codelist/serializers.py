@@ -5,13 +5,15 @@ from iati_synchroniser.models import Codelist
 from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer
 from django.core.urlresolvers import reverse
 
+from api.generics.serializers import ModelSerializerNoValidation
+from api.generics.serializers import SerializerNoValidation
 
-class VocabularySerializer(serializers.Serializer):
+class VocabularySerializer(SerializerNoValidation):
     code = serializers.CharField(required=False, allow_null=True)
     name = serializers.CharField(required=False, allow_null=True)
 
 
-class CodelistSerializer(DynamicFieldsSerializer):
+class CodelistSerializer(SerializerNoValidation):
     code = serializers.CharField(required=False, allow_null=True)
     name = serializers.CharField(required=False, allow_null=True)
 
@@ -24,7 +26,7 @@ class CodelistVocabularySerializer(CodelistSerializer):
     vocabulary = VocabularySerializer(required=False, allow_null=True)
 
 
-class NarrativeSerializer(serializers.ModelSerializer):
+class NarrativeSerializer(ModelSerializerNoValidation):
     text = serializers.CharField(source="content")
     language = CodelistSerializer(required=False)
 
@@ -35,7 +37,7 @@ class NarrativeSerializer(serializers.ModelSerializer):
             'language',
         )
 
-class OrganisationNarrativeSerializer(serializers.ModelSerializer):
+class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
     text = serializers.CharField(source="content")
     language = CodelistSerializer(required=False)
 
@@ -50,14 +52,14 @@ class OrganisationNarrativeSerializer(serializers.ModelSerializer):
     #     print('called validate...')
 
 
-class NarrativeContainerSerializer(serializers.Serializer):
+class NarrativeContainerSerializer(SerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
 
-class OrganisationNarrativeContainerSerializer(serializers.Serializer):
+class OrganisationNarrativeContainerSerializer(SerializerNoValidation):
     narratives = OrganisationNarrativeSerializer(many=True)
 
 
-class DocumentCategorySerializer(serializers.ModelSerializer):
+class DocumentCategorySerializer(ModelSerializerNoValidation):
     class Meta:
         model = DocumentCategory
         fields = ('code', 'name')
