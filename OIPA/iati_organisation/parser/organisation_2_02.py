@@ -45,7 +45,7 @@ class Parse(IatiParser):
         language = self.get_or_none(codelist_models.Language, code=lang)
 
         if not parent:
-            raise self.ParserError(
+            raise ParserError(
                 "Unknown", 
                 "Narrative", 
                 "parent object must be passed")
@@ -53,12 +53,12 @@ class Parse(IatiParser):
         register_name = parent.__class__.__name__ + "Narrative"
 
         if not language:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 register_name,
                 "xml:lang",
                 "must specify xml:lang on iati-activity or xml:lang on the element itself")
         if not text:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 register_name,
                 "text", 
                 "empty narrative")
@@ -79,7 +79,7 @@ class Parse(IatiParser):
         if not currency:
             currency = getattr(self.get_model('Organisation'), 'default_currency')
             if not currency:
-                raise self.RequiredFieldError(
+                raise RequiredFieldError(
                     model_name,
                     "currency",
                     "must specify default-currency on iati-organisation or as currency on the element itself")
@@ -91,11 +91,16 @@ class Parse(IatiParser):
         normalized_id = self._normalize(id)
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
+
+        default_lang = self.get_or_none(
+            codelist_models.Language,
+            code=element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
+        )
+
         default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))
 
         if not id:
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "", 
                 "id", 
                 "organisation: must contain organisation-identifier")
@@ -120,7 +125,7 @@ class Parse(IatiParser):
         organisation.organisation_identifier = id
         organisation.normalized_organisation_identifier = normalized_id
         organisation.last_updated_datetime = last_updated_datetime
-        organisation.default_lang_id = default_lang
+        organisation.default_lang = default_lang
         organisation.iati_standard_version_id = self.VERSION
         organisation.default_currency = default_currency
 
@@ -146,7 +151,7 @@ class Parse(IatiParser):
         name_list = self.get_model_list('OrganisationName')
 
         if name_list and len(name_list) > 0:
-            raise self.FieldValidationError("name", "Duplicate names are not allowed")
+            raise FieldValidationError("name", "Duplicate names are not allowed")
 
         organisation = self.get_model('Organisation')
 
@@ -503,7 +508,7 @@ class Parse(IatiParser):
         vocabulary_uri = element.attrib.get('vocabulary-uri')
 
         if not vocabulary: 
-            raise self.RequiredFieldError(
+            raise RequiredFieldError(
                 "recipient-region-budget", 
                 "recipient-region", 
                 "invalid vocabulary")

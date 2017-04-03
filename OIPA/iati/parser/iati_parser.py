@@ -137,11 +137,13 @@ class IatiParser(object):
             self.model_store = OrderedDict()
             parsed = self.parse(e)
             # only save if the activity is updated
+
             if parsed:
                 self.save_all_models()
                 self.post_save_models()
 
         self.post_save_file(self.dataset)
+
         
         if settings.ERROR_LOGS_ENABLED:
             self.dataset.note_count = len(self.errors)
@@ -229,6 +231,7 @@ class IatiParser(object):
             except Exception as exception:
                 # print exception.message
                 traceback.print_exc()
+                return
 
         for e in element.getchildren():
             self.parse(e)
@@ -300,11 +303,11 @@ class IatiParser(object):
 
                 except ValueError as e:
                     # TO DO; check if we need to do internal logging on these value errors
-                    print e.message
+                    traceback.print_exc()
 
                 except Exception as e:
                     # these stay in the logs until we know what to do with them
-                    print e.message
+                    traceback.print_exc()
                     # self.append_error(str(type(e)), e.message, 'TO DO')
 
     def remove_brackets(self,function_name):
