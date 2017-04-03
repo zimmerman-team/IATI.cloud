@@ -5,6 +5,7 @@ from rest_framework.renderers import BaseRenderer
 from lxml import etree
 from lxml.builder import E
 from django.conf import settings
+from collections import OrderedDict
 
 
 # TODO: Make this more generic - 2016-01-21
@@ -101,6 +102,11 @@ class PaginatedCSVRenderer(CSVRenderer):
         }
 
     def render(self, data, *args, **kwargs):
-        if not isinstance(data, list):
+        # TODO: this is probably a bug in DRF, might get fixed later then need to update this - 2017-04-03
+        actual_kwargs = args[1].get('kwargs', {})
+
+        # this is a list view
+        if not 'pk' in actual_kwargs:
             data = data.get(self.results_field, [])
+
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
