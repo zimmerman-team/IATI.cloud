@@ -1804,13 +1804,13 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         return update_instance
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):
-    year = serializers.CharField(source='baseline_year')
-    value = serializers.CharField(source='baseline_value')
+    year = serializers.CharField(source='baseline_year', required=False)
+    value = serializers.CharField(source='baseline_value', required=False)
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
-    code = serializers.CharField()
+    code = serializers.CharField(required=False)
 
     result_indicator = serializers.CharField(write_only=True)
 
