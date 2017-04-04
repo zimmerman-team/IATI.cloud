@@ -1760,8 +1760,8 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             data.get('actual'),
             data.get('period_start'),
             data.get('period_end'),
-            data.get('resultindicatorperiodtargetcomment').get('narratives'),
-            data.get('resultindicatorperiodactualcomment').get('narratives'),
+            data.get('resultindicatorperiodtargetcomment', {}).get('narratives'),
+            data.get('resultindicatorperiodactualcomment', {}).get('narratives'),
         )
 
         return handle_errors(validated)
