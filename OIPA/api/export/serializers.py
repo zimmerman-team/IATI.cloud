@@ -5,6 +5,8 @@ from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import SkipNullMixin
 import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
+from api.generics.serializers import ModelSerializerNoValidation
+from api.generics.serializers import SerializerNoValidation
 
 from iati import models as iati_models
 
@@ -461,22 +463,21 @@ class ResultIndicatorPeriodTargetDimensionXMLSerializer(XMLMetaMixin, SkipNullMi
         )
 
 
-class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetSerializer):
+class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, SerializerNoValidation):
     xml_meta = {'attributes': ('value',)}
 
+    value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
+    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
     location = ResultIndicatorPeriodTargetLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
     dimension = ResultIndicatorPeriodTargetDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
-    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
 
-
-
-class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualSerializer):
+class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, SerializerNoValidation):
     xml_meta = {'attributes': ('value',)}
 
+    value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
+    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
     location = ResultIndicatorPeriodActualLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
     dimension = ResultIndicatorPeriodActualDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
-    comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
-
 
 class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*", read_only=True)
