@@ -39,10 +39,13 @@ class Parse(IatiParser):
 
     def add_narrative(self, element, parent):
         default_lang = self.default_lang # set on activity (if set)
-        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
+        lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang')
         text = element.text
 
         language = self.get_or_none(codelist_models.Language, code=lang)
+
+        if not language:
+            language = default_lang
 
         if not parent:
             raise ParserError(
@@ -92,9 +95,13 @@ class Parse(IatiParser):
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
         # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible per instance)
 
+        default_lang_code = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
+        if default_lang_code:
+            default_lang_code = default_lang_code.lower()
+
         default_lang = self.get_or_none(
             codelist_models.Language,
-            code=element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
+            code=default_lang_code
         )
 
         default_currency = self.get_or_none(codelist_models.Currency, code=element.attrib.get('default-currency'))

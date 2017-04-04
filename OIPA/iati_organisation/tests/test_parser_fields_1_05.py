@@ -101,7 +101,7 @@ class OrganisationTestCase(ParserSetupTestCase):
 
         self.organisation = iati_factory.OrganisationFactory.create()
 
-        self.parser_105.default_lang = "en"
+        self.parser_105.default_lang = self.organisation.default_lang
         self.parser_105.register_model('Organisation', self.organisation)
 
     def test_iati_organisations__iati_organisation(self):

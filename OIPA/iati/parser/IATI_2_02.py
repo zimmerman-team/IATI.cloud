@@ -92,9 +92,15 @@ class Parse(IatiParser):
         activity_id = iati_identifier[0]
         normalized_activity_id = self._normalize(activity_id)
         # default is here to make it default to settings 'DEFAULT_LANG' on no language set (validation error we want to be flexible with per instance)
-        default_lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
-        if default_lang:
-            default_lang = default_lang.lower()
+        default_lang_code = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', settings.DEFAULT_LANG)
+        if default_lang_code:
+            default_lang_code = default_lang_code.lower()
+
+        default_lang = self.get_or_none(
+            codelist_models.Language,
+            code=default_lang_code
+        )
+
         hierarchy = element.attrib.get('hierarchy')
         humanitarian = element.attrib.get('humanitarian')
         last_updated_datetime = self.validate_date(element.attrib.get('last-updated-datetime'))
@@ -143,8 +149,7 @@ class Parse(IatiParser):
         activity = models.Activity()
         activity.iati_identifier = activity_id
         activity.normalized_iati_identifier = normalized_activity_id
-        if default_lang:
-            activity.default_lang_id = default_lang
+        activity.default_lang = default_lang
         if hierarchy:
             activity.hierarchy = hierarchy
         activity.humanitarian = self.makeBoolNone(humanitarian)

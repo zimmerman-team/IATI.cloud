@@ -101,9 +101,8 @@ class OrganisationTestCase(ParserSetupTestCase):
         self.iati_202.append(iati_organisation)
         self.iati_202.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en" # ISO 639-1:2002
 
-
         self.organisation = iati_factory.OrganisationFactory.create()
-        self.parser_202.default_lang = "en"
+        self.parser_202.default_lang = self.organisation.default_lang
         self.parser_202.register_model('Organisation', self.organisation)
 
     def test_iati_organisations__iati_organisation(self):
