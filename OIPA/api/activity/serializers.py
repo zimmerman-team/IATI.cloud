@@ -1804,8 +1804,8 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         return update_instance
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):
-    year = serializers.CharField(source='baseline_year', required=False)
-    value = serializers.CharField(source='baseline_value', required=False)
+    year = serializers.CharField(source='baseline_year', required=False, allow_null=True)
+    value = serializers.CharField(source='baseline_value', required=False, allow_null=True)
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
