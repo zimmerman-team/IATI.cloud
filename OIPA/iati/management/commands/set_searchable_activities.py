@@ -17,13 +17,13 @@ class Command(BaseCommand):
         Activity.objects.filter(is_searchable=False, reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(is_searchable=True)
 
         # loop through root activities and set children as searchable
-        iati_identifiers = Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).values_list('iati_identifier')
+        activities = Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS)
 
-        for iati_identifier in iati_identifiers:
-            self.set_children_searchable(iati_identifier[0])
+        for activity in activities:
+            self.set_children_searchable(activity)
 
 
-    def set_children_searchable(self, iati_identifier):
+    def set_children_searchable(self, orig_activity):
         """
             sets all the children to searchable
             recursively calls itself but keeps a list of already set activities
@@ -31,14 +31,14 @@ class Command(BaseCommand):
 
         # all transactions where this id is given as provider activity
         provider_activity_transactions = Transaction.objects.filter(
-            provider_organisation__provider_activity_id=iati_identifier)
+            provider_organisation__provider_activity_id=orig_activity.id)
 
         for transaction in provider_activity_transactions:
             activity = transaction.activity
             if not activity.is_searchable:
                 activity.is_searchable = True
                 activity.save()
-                self.set_children_searchable(activity.iati_identifier)
+                self.set_children_searchable(activity)
         return
 
     def handle(self, *args, **options):

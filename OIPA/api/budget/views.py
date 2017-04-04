@@ -182,16 +182,16 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("activity__relatedactivity__ref_activity__id"),
+            fields=("activity__relatedactivity__ref_activity__iati_identifier"),
             renamed_fields="related_activity",
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="activity__reporting_organisations__normalized_ref",
+            fields="activity__reporting_organisations__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier',
+            serializer_main_field='id',
             name_search_field="activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),

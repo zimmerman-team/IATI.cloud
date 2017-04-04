@@ -18,7 +18,6 @@ class PostSaveOrganisationTestCase(TestCase):
         self.parser = Org_Parser_201(None)
         self.version = VersionFactory.create(code='2.01')
         self.organisation = OrganisationFactory.create(
-            id='org1',
             organisation_identifier='org1',
             iati_standard_version=self.version)
 
@@ -30,10 +29,8 @@ class PostSaveOrganisationTestCase(TestCase):
         # create ActivityReportingOrganisation with ref this org, organisation=None
         
         activity = ActivityFactory.create(
-            id='IATI-0001',
             iati_identifier='IATI-0001',
-            iati_standard_version=self.version,
-            xml_source_ref='source_reference')
+            iati_standard_version=self.version)
 
         activity_reporting_organisation = ReportingOrganisationFactory.create(
             activity=activity,

@@ -13,28 +13,30 @@ from api.generics.filters import CommaSeparatedCharFilter
 
 class TestFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
-            lookup_type='gte',
+            lookup_expr='gte',
             name='budget__period_start',)
 
     budget_period_end = DateFilter(
-            lookup_type='lte',
+            lookup_expr='lte',
             name='budget__period_end')
 
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
+        fields = '__all__'
 
 class TestWithoutFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
-            lookup_type='gte',
+            lookup_expr='gte',
             name='budget__period_start',)
 
     budget_period_end = DateFilter(
-            lookup_type='lte',
+            lookup_expr='lte',
             name='budget__period_end')
 
     class Meta:
         model = Activity
+        fields = '__all__'
 
 class TogetherFilterSetTestCase(TestCase):
 

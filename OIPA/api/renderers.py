@@ -4,6 +4,8 @@ from django.utils.six.moves import StringIO
 from rest_framework.renderers import BaseRenderer
 from lxml import etree
 from lxml.builder import E
+from django.conf import settings
+from collections import OrderedDict
 
 
 # TODO: Make this more generic - 2016-01-21
@@ -27,14 +29,16 @@ class XMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        if 'results' in data: # list of items
-            xml = E(self.root_tag_name)
-            xml.set('version', self.version)
-            self._to_xml(xml, data['results'], parent_name=self.item_tag_name)
-        else: # one item
-            xml = E(self.root_tag_name)
-            xml.set('version', self.version)
-            self._to_xml(xml, data, parent_name=self.item_tag_name)
+        if 'results' in data:
+            data = data['results']
+
+        xml = E(self.root_tag_name)
+        xml.set('version', self.version)
+
+        if hasattr(settings, 'EXPORT_COMMENT'):
+            xml.append(etree.Comment(getattr(settings, 'EXPORT_COMMENT')))
+
+        self._to_xml(xml, data, parent_name=self.item_tag_name)
 
         return etree.tostring(xml, encoding=self.charset, pretty_print=True)
 
@@ -98,6 +102,11 @@ class PaginatedCSVRenderer(CSVRenderer):
         }
 
     def render(self, data, *args, **kwargs):
-        if not isinstance(data, list):
+        # TODO: this is probably a bug in DRF, might get fixed later then need to update this - 2017-04-03
+        actual_kwargs = args[1].get('kwargs', {})
+
+        # this is a list view
+        if not 'pk' in actual_kwargs:
             data = data.get(self.results_field, [])
+
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)

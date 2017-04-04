@@ -8,10 +8,9 @@ from iati_organisation.models import (
     OrganisationReportingOrganisation,
     TotalBudget,
     OrganisationNarrative,
-    BudgetLine,
     RecipientOrgBudget,
     RecipientCountryBudget,
-    DocumentLink,
+    OrganisationDocumentLink,
     DocumentLinkTitle)
 
 from geodata.models import Country

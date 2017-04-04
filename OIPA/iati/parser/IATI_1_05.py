@@ -74,6 +74,9 @@ class Parse(IATI_201_Parser):
             self.add_narrative(element, activity_reporting_organisation)
             if activity_reporting_organisation.organisation:
                 activity_reporting_organisation.organisation.primary_name = self.get_primary_name(element, activity_reporting_organisation.organisation.primary_name)
+                if activity_reporting_organisation.organisation.name.narratives.count() == 0:
+                    self.add_narrative(element, activity_reporting_organisation.organisation.name, is_organisation_narrative=True)
+
         return element
 
     def iati_activities__iati_activity__participating_org(self, element):
@@ -94,7 +97,7 @@ class Parse(IATI_201_Parser):
                 "required attribute missing")
 
         if not role: 
-            raise ValidationError(
+            raise FieldValidationError(
                 "participating-org",
                 "role",
                 "not found on the accompanying code list")
@@ -128,7 +131,7 @@ class Parse(IATI_201_Parser):
                 "required element empty")
 
         if identifier and len(identifier) > 200:
-            raise ValidationError(
+            raise FieldValidationError(
                 "other-identifier",
                 "text",
                 "identifier is longer than 200 characters (unlikely and is most often a data bug)")

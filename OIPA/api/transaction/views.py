@@ -1,10 +1,10 @@
-from api.transaction.serializers import TransactionSerializer
+from api.transaction.serializers import TransactionSerializer, TransactionSectorSerializer
 from api.transaction.filters import TransactionFilter, TransactionAggregationFilter
-from iati.transaction.models import Transaction
+from iati.transaction.models import Transaction, TransactionSector
 from api.generics.views import DynamicListView, DynamicDetailView
 
 from rest_framework.filters import DjangoFilterBackend
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.activity.serializers import ActivitySerializer
 
 from geodata.models import Country
@@ -32,6 +32,20 @@ from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
 from api.pagination import CustomTransactionPagination
+
+from django.db.models import Count, Sum, Q, F
+
+from api.generics.filters import SearchFilter
+from api.aggregation.views import AggregationView, Aggregation, GroupBy
+
+from geodata.models import Country, Region
+from api.country.serializers import CountrySerializer
+from api.region.serializers import RegionSerializer
+from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
+
+from iati.models import Activity, RelatedActivity, Sector
+from iati.models import ActivityParticipatingOrganisation
+from iati.models import ActivityReportingOrganisation
 
 
 class TransactionList(DynamicListView):
@@ -109,19 +123,20 @@ class TransactionDetail(DynamicDetailView):
     serializer_class = TransactionSerializer
 
 
-from django.db.models import Count, Sum, Q, F
+class TransactionSectorList(ListCreateAPIView):
+    serializer_class = TransactionSectorSerializer
 
-from api.generics.filters import SearchFilter
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        return Transaction(pk=pk).sectors.all()
 
-from geodata.models import Country, Region
-from api.country.serializers import CountrySerializer
-from api.region.serializers import RegionSerializer
-from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
+class TransactionSectorDetail(RetrieveUpdateDestroyAPIView):
+    serializer_class = TransactionSectorSerializer
 
-from iati.models import Activity, RelatedActivity, Sector
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import ActivityReportingOrganisation
+    def get_object(self):
+        pk = self.kwargs.get('id')
+        return TransactionSector.objects.get(pk=pk)
+
 
 # These are the accepted currencies
 currencies = [
@@ -224,6 +239,9 @@ class TransactionAggregation(AggregationView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
+    - `incoming_commitment`
+    - `disbursement_expenditure` Disbursement and expenditure summed togehther
+
 
     ## Currency options
 
@@ -294,6 +312,18 @@ class TransactionAggregation(AggregationView):
             annotate=annotate_currency,
             extra_filter=Q(transaction_type=4),
         ),
+        Aggregation(
+            query_param='incoming_commitment',
+            field='incoming_commitment',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=11),
+        ),
+        Aggregation(
+            query_param='disbursement_expenditure',
+            field='disbursement_expenditure',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type__in=[3,4]),
+        )
     )
 
     allowed_groupings = (
@@ -329,7 +359,7 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("activity__relatedactivity__ref_activity__id"),
+            fields=("activity__relatedactivity__ref_activity__iati_identifier"),
             renamed_fields="related_activity",
         ),
         GroupBy(
@@ -340,11 +370,11 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields="activity__reporting_organisations__normalized_ref",
+            fields="activity__reporting_organisations__organisation__id",
             renamed_fields="reporting_organisation",
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
-            serializer_main_field='organisation_identifier',
+            serializer_main_field='id',
             name_search_field="activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),

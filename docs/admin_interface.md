@@ -10,7 +10,7 @@ In the following sub-chapters, the most interesting elements of the admin interf
 ## Admin interface
 --------
 
-The admin interface can be found at `http:\\<oipa_url>\admin\`. When you followed the steps at <a href="/installing/">Installing</a> to install OIPA, an account already exists and you can log in with username `vagrant`, password `vagrant`.
+The admin interface can be found at `http://<oipa_url>/admin/`. When you followed the steps at <a href="/installing/">Installing</a> to install OIPA, an account already exists and you can log in with username `vagrant`, password `vagrant`.
 
 When you don't have a log-in yet, a superuser can be created with the Django management command: `python manage.py createsuperuser`. 
 
@@ -46,7 +46,7 @@ The task queues page first shows an overview of active workers and the amount of
 
 **Delete sources not found in registry in x days (and not added manually)** <br>based on the last_found_in_registry column on `http://<oipa_url>/admin/iati_synchroniser/iatixmlsource/`, this deletes all sources (and underlying activities) that are not found in the registry for the amount of days given in the input box thats shown when selecting this option. It does not delete manually added sources (added_manually column) since they never will be on the IATI registry and hence could be deleted accidentally.
 
-**Parse all sources from a publisher** <br>Based on the org_id in `http://<oipa_url>/admin/iati_synchroniser/publisher/` it will parse all sources found in `http://<oipa_url>/admin/iati_synchroniser/iatixmlsource/` that belong to that publisher. The org_id can be given through a input box that shows when selecting this option.
+**Parse all sources from a publisher** <br>Based on the publisher_iati_id in `http://<oipa_url>/admin/iati_synchroniser/publisher/` it will parse all sources found in `http://<oipa_url>/admin/iati_synchroniser/iatixmlsource/` that belong to that publisher. The publisher_iati_id can be given through a input box that shows when selecting this option.
 
 **Force parse all sources currently in OIPA** <br>Same as "Parse all IATI sources currently in OIPA", but this task also re-parses activities that are already in OIPA and that do not require an update (because their last-updated-datetime did not change). This can be necessary when a bug is fixed in the parser or the data source that requires a re-parse of all activities.
 
@@ -55,6 +55,8 @@ The task queues page first shows an overview of active workers and the amount of
 **Update currency exchange rates** <br>Fetches monthly currency exchange rates from the IMF. Does not reparse exchange rates when they already exist in OIPA.
 
 **Force update currency exchange rates** <br> Fetches monthly currency exchange rates from the IMF. <u>Does</u> reparse exchange rates when they already exist in OIPA.
+
+**Collect documents for indexing** <br> Fetches all binary documents (pdf, csv etc.) for scraping and storage. Enables you to search *inside* of documents. Once Task has been executed, update your Index using `python manage.py update_ft_indexes_documents` and access data at `http://<oipa_url>/api/documents/`.
 
 
 --------

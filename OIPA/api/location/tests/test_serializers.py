@@ -24,10 +24,10 @@ class LocationSerializerTestCase(TestCase):
         serializer = serializers.LocationSerializer(
             location, context={'request': self.request_dummy})
 
-        assert 'activity' in serializer.data,\
-            """
-            a serialized location should contain a field 'activity'
-            """
+        # assert 'activity' in serializer.data,\
+        #     """
+        #     a serialized location should contain a field 'activity'
+        #     """
 
         assert serializer.data['ref'] == location.ref,\
             """

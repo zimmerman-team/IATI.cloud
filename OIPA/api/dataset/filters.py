@@ -1,5 +1,5 @@
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
-from iati_synchroniser.models import IatiXmlSource, IatiXmlSourceNote
+from iati_synchroniser.models import Dataset, DatasetNote
 from django_filters import FilterSet, CharFilter, NumberFilter, DateTimeFilter
 
 
@@ -9,89 +9,90 @@ class DatasetFilter(FilterSet):
     """
 
     id = CharFilter(
-        lookup_type='exact',
+        lookup_expr='exact',
         name='id')
 
-    ref = CharFilter(
-        lookup_type='icontains',
-        name='ref')
+    name = CharFilter(
+        lookup_expr='icontains',
+        name='name')
 
     title = CharFilter(
-        lookup_type='icontains',
+        lookup_expr='icontains',
         name='title')
 
-    source_type = CommaSeparatedCharFilter(
-        lookup_type='in',
-        name='type')
+    filetype = CommaSeparatedCharFilter(
+        lookup_expr='in',
+        name='filetype')
 
     publisher_id = CharFilter(
-        lookup_type='exact',
+        lookup_expr='exact',
         name='publisher__id')
 
-    publisher_ref = CharFilter(
-        lookup_type='icontains',
-        name='publisher__org_id')
-
     publisher_name = CharFilter(
-        lookup_type='icontains',
-        name='publisher__org_name')
+        lookup_expr='icontains',
+        name='publisher__publisher_iati_id')
+
+    publisher_title = CharFilter(
+        lookup_expr='icontains',
+        name='publisher__title')
 
     note_exception_type = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='in',
+        qs=DatasetNote,
+        lookup_expr='in',
         name='exception_type',
         fk='source')
 
     note_exception_type_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='icontains',
+        qs=DatasetNote,
+        lookup_expr='icontains',
         name='exception_type',
         fk='source')
 
     note_model = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='in',
+        qs=DatasetNote,
+        lookup_expr='in',
         name='model',
-        fk='source')
+        fk='dataset')
 
     note_model_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='icontains',
+        qs=DatasetNote,
+        lookup_expr='icontains',
         name='model',
-        fk='source')
+        fk='dataset')
 
     note_field = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='in',
+        qs=DatasetNote,
+        lookup_expr='in',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_field_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='icontains',
+        qs=DatasetNote,
+        lookup_expr='icontains',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_message = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='in',
+        qs=DatasetNote,
+        lookup_expr='in',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_message_contains = ToManyFilter(
-        qs=IatiXmlSourceNote,
-        lookup_type='icontains',
+        qs=DatasetNote,
+        lookup_expr='icontains',
         name='field',
-        fk='source')
+        fk='dataset')
 
     note_count_gte = NumberFilter(
-        lookup_type='gte',
+        lookup_expr='gte',
         name='note_count')
 
-    date_updated_gte = DateTimeFilter(
-        lookup_type='gte',
-        name='date_updated')
+    metadata_modified_gte = DateTimeFilter(
+        lookup_expr='gte',
+        name='metadata_modified')
 
 
     class Meta:
-        model = IatiXmlSource
+        model = Dataset
+        fields = '__all__'

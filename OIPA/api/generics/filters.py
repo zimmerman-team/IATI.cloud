@@ -8,11 +8,32 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from rest_framework import filters
 from djorm_pgfulltext.fields import TSConfig
-from iati.models import Activity
+from iati.models import Activity, Document
 from iati.models import Location
 from common.util import combine_filters
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
+
+
+def reduce_comma(arr, value):
+    """
+    urls are already unescaped when arriving in filters.
+
+    In case the filter is on a name that contains a comma, 
+    this should be treated as 1 filter instead of 2:
+
+    Example: "Wageningen, University of"
+
+    before: ["Wageningen", " University of"]
+    after: ["Wageningen, University of"]
+
+    This only works when there's a space behind the comma.
+    """
+    if value[:1] == ' ' and len(arr):
+        arr[len(arr) - 1] = arr[len(arr) - 1] + "," + value
+    else:
+        arr.append(value)
+    return arr
 
 
 class DistanceFilter(filters.BaseFilterBackend):
@@ -42,12 +63,12 @@ class SearchFilter(filters.BaseFilterBackend):
 
         query = request.query_params.get('q', None)
         query_lookup = request.query_params.get('q_lookup', None)
-        lookup_type = 'ft'
+        lookup_expr = 'ft'
         if query_lookup:
             if query_lookup == 'exact':
-                lookup_type = 'ft'
+                lookup_expr = 'ft'
             if query_lookup == 'startswith':
-                lookup_type = 'ft_startswith'
+                lookup_expr = 'ft_startswith'
 
         if query:
 
@@ -69,13 +90,46 @@ class SearchFilter(filters.BaseFilterBackend):
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_type): dict_query_list}) for field in query_fields])
+                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
             else:
-                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_type): dict_query_list})
+                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
 
         return queryset
 
+
+class DocumentSearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+
+        query = request.query_params.get('document_q', None)
+        query_lookup = request.query_params.get('q_lookup', None)
+        lookup_expr = 'ft'
+        if query_lookup:
+            if query_lookup == 'exact':
+                lookup_expr = 'ft'
+            if query_lookup == 'startswith':
+                lookup_expr = 'ft_startswith'
+
+        if query:
+
+            query_fields = request.query_params.get('q_fields')
+            dict_query_list = [TSConfig('simple'), query]
+
+            model_prefix = ''
+
+            # when SearchFilter is used on other endpoints than activities, 
+            # add activity__ to the filter name
+            if Document is not queryset.model:
+                model_prefix = 'document__'
+
+            # if root organisations set, only query searchable activities
+            # if settings.ROOT_ORGANISATIONS:
+            #     queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
+
+
+            return queryset.filter(**{'{0}documentsearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
+
+        return queryset
 
 class CommaSeparatedCharFilter(CharFilter):
 
@@ -83,8 +137,9 @@ class CommaSeparatedCharFilter(CharFilter):
 
         if value:
             value = value.split(',')
+            value = reduce(reduce_comma, value, [])
 
-        self.lookup_type = 'in'
+        self.lookup_expr = 'in'
 
         return super(CommaSeparatedCharFilter, self).filter(qs, value)
 
@@ -102,30 +157,13 @@ class CommaSeparatedStickyCharFilter(CharFilter):
 
         if value:
             value = value.split(',')
+            value = reduce(reduce_comma, value, [])
 
-        self.lookup_type = 'in'
+        self.lookup_expr = 'in'
         qs._next_is_sticky()
 
         return super(CommaSeparatedStickyCharFilter, self).filter(qs, value)
 
-#
-# class CommaSeparatedCharMultipleFilter(CharFilter):
-#     """
-#     Comma separated filter for lookups like 'exact', 'iexact', etc..
-#     """
-#     def filter(self, qs, value):
-#         if not value: return qs
-#
-#         values = value.split(',')
-#
-#         lookup_type = self.lookup_type
-#
-#         filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
-#         final_filters = reduce(lambda a, b: a | b, filters)
-#
-#         return qs.filter(final_filters)
-#
-#
 
 class StickyBooleanFilter(BooleanFilter):
     """
@@ -154,15 +192,15 @@ class TogetherFilter(Filter):
     Used with TogetherFilterSet, always gets called regardless of GET args
     """
     
-    def __init__(self, filters=None, values=None, **kwargs):
+    def __init__(self, filters=None, values=None, *args, **kwargs):
         self.filter_classes = filters
         self.values = values
 
-        super(TogetherFilter, self).__init__(**kwargs)
+        super(TogetherFilter, self).__init__(*args, **kwargs)
 
     def filter(self, qs, values):
         if self.filter_classes:
-            filters = { "%s__%s" % (c[0].name, c[0].lookup_type) : c[1] for c in zip(self.filter_classes, values)}
+            filters = { "%s__%s" % (c[0].name, c[0].lookup_expr) : c[1] for c in zip(self.filter_classes, values)}
             qs = qs.filter(**filters)
 
             return qs
@@ -170,7 +208,7 @@ class TogetherFilter(Filter):
 
 class TogetherFilterSet(FilterSet):
 
-    def __init__(self, data=None, queryset=None, prefix=None, strict=None):
+    def __init__(self, data=None, queryset=None, prefix=None, strict=None, *args, **kwargs):
         """
         Adds a together_exclusive meta option that selects fields that have to 
         be called in the same django filter() call when both present
@@ -194,7 +232,7 @@ class TogetherFilterSet(FilterSet):
                 self.base_filters[uid] = TogetherFilter(filters=filter_classes)
                 data.appendlist(uid, filter_values)
 
-        super(FilterSet, self).__init__(data, queryset, prefix, strict)
+        super(FilterSet, self).__init__(data, queryset, prefix, strict, *args, **kwargs)
 
 
 # class SubFilterSet(FilterSet):
@@ -220,16 +258,18 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
     Comma separated filter for lookups like 'exact', 'iexact', etc..
     """
     def filter(self, qs, value):
-        if not value: return qs
+        if not value: 
+            return qs
 
         values = value.split(',')
+        values = reduce(reduce_comma, values, [])
 
-        lookup_type = self.lookup_type
+        lookup_expr = self.lookup_expr
 
-        if lookup_type is 'in':
-            final_filters = Q(**{"{}__{}".format(self.name, lookup_type): values})
+        if lookup_expr is 'in':
+            final_filters = Q(**{"{}__{}".format(self.name, lookup_expr): values})
         else:
-            filters = [Q(**{"{}__{}".format(self.name, lookup_type): value}) for value in values]
+            filters = [Q(**{"{}__{}".format(self.name, lookup_expr): value}) for value in values]
             final_filters = reduce(lambda a, b: a | b, filters)
 
         return qs.filter(final_filters)
@@ -277,6 +317,36 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         return qs.filter(**in_filter)
 
         # return qs.filter(id__in=nested_qs.values(self.fk))
+
+
+class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
+    """
+    Same as ToManyFilter, but as a not in filter.
+    """
+
+    def __init__(self, qs=None, fk=None, main_fk="id", **kwargs):
+        if not qs:
+            raise ValueError("qs must be specified")
+        if not fk:
+            raise ValueError("fk must be specified, that relates back to the main model")
+
+        self.nested_qs = qs
+        self.fk = fk
+        self.main_fk = main_fk
+
+        super(ToManyNotInFilter, self).__init__(**kwargs)
+
+    def filter(self, qs, value):
+        if not value: return qs
+
+        nested_qs = self.nested_qs.objects.all()
+        nested_qs = super(ToManyNotInFilter, self).filter(nested_qs, value)
+
+        in_filter = {
+            "{}__in".format(self.main_fk): nested_qs.values(self.fk)
+        }
+
+        return qs.exclude(**in_filter)
 
 
 class NestedFilter(CommaSeparatedCharMultipleFilter):

@@ -5,9 +5,16 @@ from functools import partial
 from django.core.exceptions import ObjectDoesNotExist
 from common.util import setInterval, print_progress
 
+import sys, traceback
+
+from django.conf import settings
+
 
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
+    if hasattr(settings, 'FTS_ENABLED') and getattr(settings, 'FTS_ENABLED') == False:
+        return
+
     try:
         activity_search = ActivitySearch.objects.get(activity=activity.id)
     except ObjectDoesNotExist:
@@ -92,7 +99,8 @@ def reindex_activity(activity):
         activity_search.save()
 
     except Exception as e:
-        print("Building ft indexes for {id} raises: {e}".format(id=activity.id, e=e.message))
+        traceback.print_exc(file=sys.stdout)
+        print("Building ft indexes for {id} raises: {e}".format(id=activity.iati_identifier, e=e.message))
 
 
 def reindex_all_activities():
@@ -109,7 +117,7 @@ def reindex_all_activities():
         progress['offset'] += 1
 
 
-def reindex_activity_by_source(source_ref):
-    activities = Activity.objects.all().filter(xml_source_ref=source_ref)
+def reindex_activity_by_source(dataset_id):
+    activities = Activity.objects.all().filter(dataset__id=dataset_id)
     for activity in activities:
         reindex_activity(activity)

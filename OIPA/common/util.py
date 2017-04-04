@@ -7,6 +7,11 @@ from django.db import connection
 from django.utils.text import force_text
 import threading
 
+def get_or_none(model, *args, **kwargs):
+    try:
+        return model.objects.get(*args, **kwargs)
+    except model.DoesNotExist:
+        return None
 
 def print_progress(progress):
     """progress: object with offset and count"""

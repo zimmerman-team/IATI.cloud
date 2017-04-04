@@ -2,8 +2,8 @@ from rest_framework.serializers import HyperlinkedIdentityField
 from rest_framework.serializers import HyperlinkedRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from iati_synchroniser.models import Publisher
-from iati_synchroniser.models import IatiXmlSource
-from iati_synchroniser.models import IatiXmlSourceNote
+from iati_synchroniser.models import Dataset
+from iati_synchroniser.models import DatasetNote
 from api.generics.serializers import DynamicFieldsModelSerializer
 from django.core.urlresolvers import reverse
 from iati.models import Activity
@@ -11,7 +11,7 @@ from iati.models import Activity
 
 class DatasetNoteSerializer(ModelSerializer):
     class Meta:
-        model = IatiXmlSourceNote
+        model = DatasetNote
         fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'message', 'line_number')
 
 
@@ -24,9 +24,9 @@ class SimplePublisherSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'url',
-            'org_id',
-            'org_abbreviate',
-            'org_name')
+            'publisher_iati_id',
+            'display_name',
+            'name')
 
 
 class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
@@ -37,41 +37,43 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
     type = SerializerMethodField()
 
     class Meta:
-        model = IatiXmlSource
+        model = Dataset
         fields = (
             'id',
             'url',
-            'ref',
+            'name',
             'title',
-            'type',
+            'filetype',
             'publisher',
             'source_url',
-            'iati_standard_version')
+            'iati_version',
+            'added_manually',
+            )
 
     def get_type(self, obj):
-        return obj.get_type_display()
+        return obj.get_filetype_display()
 
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='datasets:dataset-detail')
     publisher = SimplePublisherSerializer()
-    type = SerializerMethodField()
+    filetype = SerializerMethodField()
     activities = SerializerMethodField()
     activity_count = SerializerMethodField()
     notes = HyperlinkedIdentityField(
         view_name='datasets:dataset-notes',)
 
 
-    DatasetNoteSerializer(many=True, source="iatixmlsourcenote_set")
+    DatasetNoteSerializer(many=True, source="datasetnote_set")
 
     class Meta:
-        model = IatiXmlSource
+        model = Dataset
         fields = (
             'id',
             'url',
-            'ref',
+            'name',
             'title',
-            'type',
+            'filetype',
             'publisher',
             'source_url',
             'activities',
@@ -79,18 +81,23 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'date_created',
             'date_updated',
             'last_found_in_registry',
-            'iati_standard_version',
+            'iati_version',
             'sha1',
             'note_count',
-            'notes')
+            'notes',
+            'added_manually',
+            'is_parsed',
+            'export_in_progress',
+            'parse_in_progress',
+            )
 
-    def get_type(self, obj):
-        return obj.get_type_display()
+    def get_filetype(self, obj):
+        return obj.get_filetype_display()
 
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?xml_source_ref=' + obj.ref
+        return url + '?dataset=' + obj.id
 
     def get_activity_count(self, obj):
-        return Activity.objects.filter(xml_source_ref=obj.ref).count()
+        return Activity.objects.filter(dataset=obj.id).count()

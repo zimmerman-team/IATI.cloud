@@ -1,0 +1,138 @@
+{
+   "help":"https://iatiregistry.org/api/3/action/help_show?name=package_search",
+   "success":true,
+   "result":{
+      "count":4584,
+      "sort":"title_string asc",
+      "facets":{
+
+      },
+      "results":[
+         {
+            "license_title":"Creative Commons Attribution Share-Alike",
+            "maintainer":null,
+            "relationships_as_object":[
+
+            ],
+            "private":false,
+            "maintainer_email":null,
+            "num_tags":0,
+            "id":"43aa0616-58a4-4d16-b0a9-1181e3871827",
+            "metadata_created":"2015-09-18T09:14:40.284131",
+            "metadata_modified":"2016-05-20T01:10:28.980983",
+            "author":null,
+            "author_email":"",
+            "state":"active",
+            "version":null,
+            "creator_user_id":"e56badb3-5a77-4f18-8f0c-67800c42fbb7",
+            "type":"dataset",
+            "resources":[
+               {
+                  "mimetype":"application/xml",
+                  "cache_url":null,
+                  "hash":"6c9f4391cca58016a95fae3c1823d558bc8eee47",
+                  "description":"",
+                  "name":null,
+                  "format":"iati-xml",
+                  "url":"http://aidstream.org/files/xml/cic-sl.xml",
+                  "cache_last_updated":null,
+                  "package_id":"43aa0616-58a4-4d16-b0a9-1181e3871827",
+                  "created":"2016-05-19T05:29:21.009959",
+                  "state":"active",
+                  "mimetype_inner":null,
+                  "webstore_last_updated":null,
+                  "last_modified":null,
+                  "position":0,
+                  "revision_id":"4bb2f2a3-3a87-4cdf-a37d-36d476dddb6b",
+                  "webstore_url":null,
+                  "url_type":null,
+                  "id":"d1d16891-7f29-47bd-ba1e-21d83f3449cb",
+                  "resource_type":null,
+                  "size":"734694"
+               }
+            ],
+            "num_resources":1,
+            "tags":[
+
+            ],
+            "groups":[
+
+            ],
+            "license_id":"cc-by-sa",
+            "relationships_as_subject":[
+
+            ],
+            "organization":{
+               "description":"",
+               "created":"2014-05-13T07:37:38.110791",
+               "title":"Japan International Cooperation Agency (JICA)",
+               "name":"jica",
+               "is_organization":true,
+               "state":"active",
+               "image_url":"",
+               "revision_id":"4f909c16-9dcc-4c52-8920-ef121150b934",
+               "type":"organization",
+               "id":"8797b894-9858-492e-a109-dc45b75ce27b",
+               "approval_status":"approved"
+            },
+            "name":"cic-sl",
+            "isopen":true,
+            "url":null,
+            "notes":"",
+            "owner_org":"8797b894-9858-492e-a109-dc45b75ce27b",
+            "extras":[
+               {
+                  "key":"activity_count",
+                  "value":"193"
+               },
+               {
+                  "key":"country",
+                  "value":""
+               },
+               {
+                  "key":"data_updated",
+                  "value":"2015-09-25 07:41"
+               },
+               {
+                  "key":"filetype",
+                  "value":"activity"
+               },
+               {
+                  "key":"iati_version",
+                  "value":"1.03"
+               },
+               {
+                  "key":"language",
+                  "value":""
+               },
+               {
+                  "key":"secondary_publisher",
+                  "value":""
+               },
+               {
+                  "key":"publisher_source_type",
+                  "value":"primary_source"
+               },
+               {
+                  "key":"publisher_organization_type",
+                  "value":"10"
+               },
+               {
+                  "key":"publisher_country",
+                  "value":"JP"
+               },
+               {
+                  "key":"publisher_iati_id",
+                  "value":"XM-DAC-701-8"
+               }
+            ],
+            "license_url":"http://www.opendefinition.org/licenses/cc-by-sa",
+            "title":"088States Ex-Yugoslavia unspecified2013",
+            "revision_id":"f0a392f4-8a73-44fd-904f-cc7c7adf1a14"
+         }
+      ],
+      "search_facets":{
+
+      }
+   }
+}

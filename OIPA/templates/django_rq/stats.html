@@ -72,6 +72,9 @@
                         <option value="wait_120">Wait for 2 minutes</option>
                         <option value="wait_300">Wait for 5 minutes</option>
                     </optgroup>
+                    <optgroup label="Docstore tasks">
+                        <option value="collect_files">Collect Documents</option>
+                    </optgroup>
                 </select> <a target="_blank" href="http://docs.oipa.nl/en/latest/admin_interface/">The docs</a> provide more info on task functionality.
 
                 <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
@@ -325,6 +328,9 @@
                                 <option value="wait_300">Wait for 5 minutes</option>
                                 <option value="start_searchable_activities_task">Start searchable test</option>
                             </optgroup>
+                            <optgroup label="Docstore tasks">
+                                <option value="collect_files">Collect Documents</option>
+                            </optgroup>
                         </select>
                 </div>
 
@@ -457,8 +463,17 @@ $(document).ready(function (){
 
 
     $('select[name="new-schedule-task"]').change(function(){
-       if ($(this).val() == "parse_all_not_parsed_in_x_days"){
+       if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref" || $(this).val() == "delete_sources_not_found_in_registry_in_x_days"){
            $('#add-scheduled-task-input-parameters-wrapper').show(500);
+
+
+            if ($(this).val() == "parse_all_sources_by_publisher_ref" || $(this).val() == "force_parse_by_publisher_ref"){
+                $('#add-scheduled-task-input-parameters').attr("placeholder", "organisation ref here");
+            } else{
+                $('#add-scheduled-task-input-parameters').attr("placeholder", "days (only the number)");
+            }
+
+
        } else {
            $("#add-scheduled-task-input-parameters-wrapper").hide(500);
        }
@@ -471,7 +486,7 @@ $(document).ready(function (){
         var period = $('select[name="new-schedule-period"]').val();
         var parameters = null;
 
-        if (task == "parse_all_not_parsed_in_x_days"){
+        if (["parse_all_sources_by_publisher_ref", "force_parse_by_publisher_ref", "delete_sources_not_found_in_registry_in_x_days"].indexOf(task) > -1){
             parameters = $('input[name="add-scheduled-task-default-parameters"]').val();
         }
 

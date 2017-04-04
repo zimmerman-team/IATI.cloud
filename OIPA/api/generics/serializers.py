@@ -101,6 +101,27 @@ class DynamicFieldsSerializer(serializers.Serializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
+class ModelSerializerNoValidation(serializers.ModelSerializer):
+    """
+    Serializer with no validation
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('required', None)
+        super(ModelSerializerNoValidation, self).__init__(required=False, *args, **kwargs)
+
+
+class SerializerNoValidation(serializers.Serializer):
+    """
+    Serializer with no validation
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('required', None)
+        kwargs.pop('allow_null', None)
+        kwargs.pop('allow_blank', None)
+        super(SerializerNoValidation, self).__init__(required=False, allow_null=True, *args, **kwargs)
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     Serializer allowing for dynamic field instantiation

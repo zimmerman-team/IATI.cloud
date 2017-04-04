@@ -18,26 +18,31 @@ def welcome(request, format=None):
 
     * Activities: [`/api/activities`](/api/activities)
 
-    * Sectors: [`/api/sectors`](/api/sectors)
+    * Publishers: [`/api/publishers`](/api/publishers)
 
     * Organisations: [`/api/organisations`](/api/organisations)
+
+    * Results aggregations: [`/api/results/aggregations`](/api/results/aggregations)
+
+    * Locations: [`/api/locations`](/api/locations)
+
+    * Cities: [`/api/cities`](/api/cities)
+
+    * Datasets: [`/api/datasets`](/api/datasets)
+
+    * Sectors: [`/api/sectors`](/api/sectors)
+
+    * Countries: [`/api/countries`](/api/countries)
 
     * Transactions: [`/api/transactions`](/api/transactions)
 
     * Regions: [`/api/regions`](/api/regions)
 
-    * Countries: [`/api/countries`](/api/countries)
+    * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
 
-    * Cities: [`/api/cities`](/api/cities)
-
-    * Publishers: [`/api/publishers`](/api/publishers)
-
-    * Datasets: [`/api/datasets`](/api/datasets)
-
-    ## Legacy API
-
-    The OIPA Tastypie API (v3) is deprecated and removed from the latest releases of OIPA. 
-    It can still be found in release 1.0 on Github. 
+    * Codelists: [`/api/publishers`](/api/codelists)
+    
+    * Chains: [`/api/chains`](/api/chains)
 
     """
     return Response({
@@ -88,6 +93,14 @@ def welcome(request, format=None):
                 format=format),
             'budgets': reverse(
                 'budgets:budget-aggregations',
+                request=request,
+                format=format),
+            'codelists': reverse(
+                'codelists:codelist-meta-list',
+                request=request,
+                format=format),
+            'chains': reverse(
+                'chains:chain-list',
                 request=request,
                 format=format),
         }

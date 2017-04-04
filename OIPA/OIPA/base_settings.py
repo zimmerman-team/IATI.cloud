@@ -9,6 +9,11 @@ LOGIN_URL = reverse_lazy('two_factor:login')
 LOGOUT_URL = '/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
 
+# To use live IATI registry, change to https://iatiregistry.org/ in local settings / production settings 
+CKAN_URL = "https://iati-staging.ckan.io"
+
+SECRET_KEY = 'REPLACE_THIS'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -118,7 +123,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'grappelli',
     'django.contrib.admin',
-    'autocomplete_light',
     'django.contrib.admindocs',
     'django.contrib.gis',
     'corsheaders',
@@ -128,6 +132,7 @@ INSTALLED_APPS = [
     'iati_synchroniser.apps.IatiSynchroniserConfig',
     'geodata.apps.GeodataConfig',
     'currency_convert.apps.CurrencyConvertConfig',
+    'traceability.apps.TraceabilityConfig',
     'api',
     'task_queue',
     'djsupervisor',
@@ -142,9 +147,14 @@ INSTALLED_APPS = [
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
-    'nested_admin',
     'djorm_pgfulltext',
     'admin_reorder',
+    'rest_framework.authtoken',
+    'iati.permissions',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
 
 ADMIN_REORDER = (
@@ -175,8 +185,12 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.PaginatedCSVRenderer',
-        # 'rest_framework_csv.renderers.CSVRenderer',
     ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
 }
 
 RQ_QUEUES = {
@@ -187,6 +201,18 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 3600,
     },
     'parser': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 5400,
+    },
+    'export': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 5400,
+    },
+    'document_collector': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
@@ -209,3 +235,17 @@ ROOT_ORGANISATIONS = []
 ERROR_LOGS_ENABLED = True
 
 DEFAULT_LANG = None
+# django-all-auth
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+# django-rest-auth
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": 'api.permissions.serializers.UserSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'api.permissions.serializers.RegistrationSerializer'
+}
+
+EXPORT_COMMENT = "Published using the IATI Studio publisher"
+

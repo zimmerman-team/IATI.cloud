@@ -32,6 +32,7 @@ class CodeListImporter():
         self.get_codelist_data(name="PolicyMarkerVocabulary")
         self.get_codelist_data(name="IndicatorVocabulary")
         self.get_codelist_data(name="BudgetIdentifierSector-category")
+        self.get_codelist_data(name="BudgetIdentifierSector")
         self.get_codelist_data(name="LocationType-category")
         self.get_codelist_data(name="FinanceType-category")
         self.get_codelist_data(name="AidType-category")
@@ -68,7 +69,7 @@ class CodeListImporter():
         model_name = tag
 
         if tag == "Country":
-            name = name.lower().capitalize()
+            name = name.lower().title()
             item = Country(language=language_name, data_source="IATI")
 
         elif tag == "DocumentCategory-category":
