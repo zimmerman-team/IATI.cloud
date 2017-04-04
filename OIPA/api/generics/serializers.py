@@ -118,7 +118,9 @@ class SerializerNoValidation(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('required', None)
-        super(SerializerNoValidation, self).__init__(required=False, *args, **kwargs)
+        kwargs.pop('allow_null', None)
+        kwargs.pop('allow_blank', None)
+        super(SerializerNoValidation, self).__init__(required=False, allow_null=True, *args, **kwargs)
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """

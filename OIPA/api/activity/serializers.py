@@ -1722,21 +1722,21 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
 class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", required=False)
-    dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", required=False)
+    location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", read_only=True)
+    dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", read_only=True)
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", required=False)
-    dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", required=False)
+    location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", read_only=True)
+    dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", read_only=True)
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
-    period_start = serializers.CharField()
-    period_end = serializers.CharField()
+    period_start = serializers.CharField(required=False)
+    period_end = serializers.CharField(required=False)
 
     result_indicator = serializers.CharField(write_only=True)
 
@@ -1865,9 +1865,9 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
     title = NarrativeContainerSerializer(source="resultindicatortitle")
     description = NarrativeContainerSerializer(source="resultindicatordescription")
     #  TODO 2.02 reference = ? 
-    reference = ResultIndicatorReferenceSerializer(source='resultindicatorreference_set', many=True, required=False)
+    references = ResultIndicatorReferenceSerializer(source='resultindicatorreference_set', many=True, read_only=True)
     baseline = ResultIndicatorBaselineSerializer(source="*")
-    period = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True, required=False)
+    periods = ResultIndicatorPeriodSerializer(source='resultindicatorperiod_set', many=True, read_only=True)
     measure = CodelistSerializer()
 
     result = serializers.CharField(write_only=True)
@@ -1879,9 +1879,9 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             'id',
             'title',
             'description',
-            'reference',
+            'references',
             'baseline',
-            'period',
+            'periods',
             'measure',
             'ascending'
         )
@@ -2133,18 +2133,18 @@ class ResultSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer() 
     title = NarrativeContainerSerializer(source="resulttitle")
     description = NarrativeContainerSerializer(source="resultdescription")
-    indicator = ResultIndicatorSerializer(source='resultindicator_set', many=True, required=False)
+    indicators = ResultIndicatorSerializer(source='resultindicator_set', many=True, read_only=True)
 
     activity = serializers.CharField(write_only=True)
 
     class Meta:
         model = iati_models.Result
         fields = (
-            'activity',
             'id',
+            'activity',
             'title',
             'description',
-            'indicator',
+            'indicators',
             'type',
             'aggregation_status',
         )

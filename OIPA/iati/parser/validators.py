@@ -1962,8 +1962,8 @@ def activity_result_indicator(
 
 def activity_result_indicator_reference(
         result_indicator,
-        indicator_code,
         vocabulary_code,
+        indicator_code,
         indicator_uri,
         instance=None, # only set on update
         ):
@@ -2137,7 +2137,9 @@ def activity_result_indicator_period_location(
         warnings = []
         errors = []
 
-        location = get_or_none(models.Location, ref=ref)
+        activity = result_indicator_period.result_indicator.result.activity
+
+        location = get_or_none(models.Location, activity=activity, ref=ref)
 
         if not ref:
             errors.append(
