@@ -1721,15 +1721,15 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
 
 class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
-    comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", read_only=True)
-    dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", read_only=True)
+    comments = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
+    locations = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", read_only=True)
+    dimensions = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", read_only=True)
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
-    comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", read_only=True)
-    dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", read_only=True)
+    comments = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
+    locations = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", read_only=True)
+    dimensions = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", read_only=True)
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
