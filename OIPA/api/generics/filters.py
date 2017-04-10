@@ -219,7 +219,10 @@ class TogetherFilterSet(FilterSet):
         # fields that must be filtered in the same filter call
         together_exclusive = getattr(meta, 'together_exclusive', [])
 
-        data = data.copy()
+        if data:
+            data = data.copy()
+        else:
+            data = {}
 
         for filterlist in together_exclusive:
             if set(filterlist).issubset(data.keys()):

@@ -72,7 +72,7 @@ class PublisherDetail(DynamicDetailView):
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
 
-class OrganisationAdminGroupView(GenericAPIView):
+class OrganisationAdminGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -103,7 +103,7 @@ class OrganisationAdminGroupView(GenericAPIView):
 
         return Response()
 
-class OrganisationAdminGroupDetailView(GenericAPIView):
+class OrganisationAdminGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -129,7 +129,7 @@ class OrganisationAdminGroupDetailView(GenericAPIView):
 
 
 
-class OrganisationGroupView(GenericAPIView):
+class OrganisationGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -158,7 +158,7 @@ class OrganisationGroupView(GenericAPIView):
 
         return Response()
 
-class OrganisationGroupDetailView(GenericAPIView):
+class OrganisationGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -187,7 +187,7 @@ class OrganisationGroupDetailView(GenericAPIView):
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class OrganisationVerifyApiKey(GenericAPIView):
+class OrganisationVerifyApiKey(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
     serializer_class = OrganisationUserSerializer
@@ -297,7 +297,7 @@ class OrganisationVerifyApiKey(GenericAPIView):
 
         return Response(serializer.data)
 
-class OrganisationRemoveApiKey(GenericAPIView):
+class OrganisationRemoveApiKey(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 

@@ -27,4 +27,5 @@ urlpatterns = [
 
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/provider-activity-tree/$',
         api.activity.views.ActivityProviderActivityTree.as_view(),
-        name='provider-activity-tree'),]
+        name='provider-activity-tree'),
+    ]

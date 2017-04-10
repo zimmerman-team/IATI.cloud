@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
+from rest_framework.views import APIView
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework.exceptions import ValidationError
@@ -368,7 +369,7 @@ class ActivityList(DynamicListView):
 #         # return all activities that are already published but have not been modified yet
 #         return queryset.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
 
-class ActivityMarkReadyToPublish(GenericAPIView, FilterPublisherMixin):
+class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
 
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
