@@ -27,7 +27,7 @@ parse.log
 
 .DS_Store
 
-OIPA/supervisord.log
+OIPA/supervisord.log*
 OIPA/supervisord.pid
 
 
