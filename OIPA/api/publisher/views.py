@@ -84,7 +84,9 @@ class OrganisationAdminGroupView(APIView):
         serializer = OrganisationUserSerializer(
             users, 
             many=True, 
-            context=self.get_serializer_context(),
+            context={
+                'request': request,
+            },
             fields=('username', 'email'),
             )
 
@@ -139,7 +141,9 @@ class OrganisationGroupView(APIView):
         serializer = OrganisationUserSerializer(
                 users, 
                 many=True, 
-                context=self.get_serializer_context(), 
+                context={
+                    'request': request,
+                },
                 fields=('username', 'email')
             )
 
@@ -292,7 +296,9 @@ class OrganisationVerifyApiKey(APIView):
 
         serializer = OrganisationUserSerializer(
             user, 
-            context=self.get_serializer_context(),
+            context={
+                'request': request,
+            }
             )
 
         return Response(serializer.data)
