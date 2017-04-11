@@ -28,10 +28,11 @@ class PublisherList(DynamicListView):
     Returns a list of IATI Publishers stored in OIPA.
 
     ## Request parameters
-
-    - `publisher_iati_id` (*optional*): Publisher id to search for.
-    - `org_abbreviate` (*optional*): Publisher abbreviation to search for.
-    - `name` (*optional*): Filter publishers name to search for.
+    
+    - `id` (*optional*): Publisher id to search for.
+    - `publisher_iati_id` (*optional*): Publisher IATI id to search for.
+    - `display_name` (*optional*): Publisher IATI Registry display name to search for.
+    - `name` (*optional*): Publisher IATI Registry name to search for.
 
     ## Result details
 
