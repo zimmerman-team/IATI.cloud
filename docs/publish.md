@@ -15,7 +15,7 @@ Users that are in the admin group have full permissions for:
 
 Users that are in the organisation group have no extra privileges at this time.
 
-## Authenticating in the API
+## Authenticating for the API
 
 In order for a user to join the admin group, the user must first authenticate with the IATI registry.
 

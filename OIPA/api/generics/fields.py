@@ -84,3 +84,19 @@ class PointField(serializers.Field):
                 "longitude": smart_str(value.x)
             }
         return value
+
+class BoolToNumField(serializers.Field):
+    """
+    represent True and False as "1" and "0"
+    """
+    def to_representation(self, val):
+        if val:
+            return "1"
+        else:
+            return "0"
+
+    # def to_internal_value(self, data):
+    #     data = data.strip('rgb(').rstrip(')')
+    #     red, green, blue = [int(col) for col in data.split(',')]
+    #     return Color(red, green, blue)
+
