@@ -30,7 +30,7 @@ class PublisherList(DynamicListView):
     ## Request parameters
 
     - `publisher_iati_id` (*optional*): Publisher id to search for.
-    - `org_abbreviation` (*optional*): Publisher abbreviation to search for.
+    - `org_abbreviate` (*optional*): Publisher abbreviation to search for.
     - `name` (*optional*): Filter publishers name to search for.
 
     ## Result details
