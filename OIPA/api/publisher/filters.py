@@ -10,6 +10,7 @@ class PublisherFilter(django_filters.FilterSet):
     class Meta:
         model = Publisher
         fields = [
+            'id',
             'publisher_iati_id',
             'display_name',
             'name']
