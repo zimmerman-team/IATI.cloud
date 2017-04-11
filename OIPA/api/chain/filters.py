@@ -11,6 +11,8 @@ from api.generics.filters import CommaSeparatedCharFilter
 class IncludesActivityFilter(CharFilter):
 
     def filter(self, qs, value):
+        if value in ([], (), {}, None, ''):
+            return qs
         qs = qs.filter(**{'%s__%s' % (self.name, self.lookup_expr): value, '%s__%s' % ('chainnode__treated_as_end_node', 'exact'): False})
         return qs
 
