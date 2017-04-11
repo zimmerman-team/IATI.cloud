@@ -2,6 +2,7 @@ from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
 from iati_organisation import models
 
+from rest_framework.views import APIView
 from api.organisation import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.filters import DjangoFilterBackend
@@ -15,6 +16,7 @@ from api.publisher.permissions import OrganisationAdminGroupPermissions, Publish
 from rest_framework.response import Response
 from rest_framework import status
 
+from api.organisation.validators import organisation_required_fields
 
 def custom_get_object(self):
     """
@@ -33,6 +35,14 @@ def custom_get_object_from_queryset(self, queryset):
     filter_kwargs = {self.lookup_field: decoded_lookup_url}
     return get_object_or_404(queryset, **filter_kwargs)
 
+class FilterPublisherMixin(object):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (PublisherPermissions, )
+
+    def get_queryset(self):
+        publisher_id = self.kwargs.get('publisher_id')
+
+        return Organisation.objects.filter(publisher__id=publisher_id)
 
 class OrganisationList(DynamicListView):
     """
@@ -71,6 +81,32 @@ class OrganisationDetail(DynamicDetailView):
     """
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+
+class OrganisationMarkReadyToPublish(APIView, FilterPublisherMixin):
+
+    authentication_classes = (authentication.TokenAuthentication,)
+
+    def post(self, request, publisher_id, pk):
+        organisation = Organisation.objects.get(pk=pk)
+
+        if (organisation.ready_to_publish):
+            organisation.ready_to_publish = False
+            organisation.modified = True
+            organisation.save()
+            return Response(False)
+
+        # TODO: check if organisation is valid for publishing- 2017-01-24
+        if not organisation_required_fields(organisation):
+            return Response({
+                'error': True,
+                'content': 'Not all required fields are on the organisation'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        organisation.ready_to_publish = True
+        organisation.modified = True
+        organisation.save()
+
+        return Response(True)
 
 
 class ParticipatedActivities(ActivityList):
@@ -184,16 +220,6 @@ class ReceivedTransactions(TransactionList):
             self, organisation.models.Organisation.objects.all())
         return organisation.transaction_receiving_organisation.all()
 
-
-
-class FilterPublisherMixin(object):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (PublisherPermissions, )
-
-    def get_queryset(self):
-        publisher_id = self.kwargs.get('publisher_id')
-
-        return Organisation.objects.filter(publisher__id=publisher_id)
 
 class UpdateOrganisationSearchMixin(object):
     authentication_classes = (authentication.TokenAuthentication,)

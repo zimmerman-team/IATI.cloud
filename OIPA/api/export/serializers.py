@@ -7,23 +7,9 @@ import api.activity.serializers as activity_serializers
 import api.transaction.serializers as transaction_serializers
 from api.generics.serializers import ModelSerializerNoValidation
 from api.generics.serializers import SerializerNoValidation
+from api.generics.fields import BoolToNumField
 
 from iati import models as iati_models
-
-class BoolToNumField(serializers.Field):
-    """
-    represent True and False as "1" and "0"
-    """
-    def to_representation(self, val):
-        if val:
-            return "1"
-        else:
-            return "0"
-
-    # def to_internal_value(self, data):
-    #     data = data.strip('rgb(').rstrip(')')
-    #     red, green, blue = [int(col) for col in data.split(',')]
-    #     return Color(red, green, blue)
 
 class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('currency', 'value_date')}

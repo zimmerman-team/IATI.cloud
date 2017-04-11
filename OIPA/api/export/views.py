@@ -65,7 +65,7 @@ class IATIActivityNextExportList(APIView):
     
     def post(self, request, publisher_id):
         try:
-            dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+            dataset = Dataset.objects.get(publisher_id=publisher_id, filetype=1, added_manually=True)
         except Dataset.DoesNotExist:
             return Response({
                 'status': 'failed',
@@ -105,7 +105,7 @@ class IATIActivityNextExportListResult(APIView):
             ret = {'status':'completed', 'result': job.return_value}
 
             try:
-                dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+                dataset = Dataset.objects.get(publisher_id=publisher_id, filetype=1, added_manually=True)
             except Dataset.DoesNotExist:
                 return Response({
                     'status': 'failed',

@@ -88,6 +88,16 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
 
     total_budget = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = org_models.TotalBudgetLine
+        fields = (
+            'total_budget',
+            'id',
+            'ref',
+            'value',
+            'narratives',
+        )
+
     def validate(self, data):
         total_budget = get_or_raise(org_models.TotalBudget, data, 'total_budget')
 
@@ -131,16 +141,6 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
         save_narratives(total_budget, narratives_data, total_budget.organisation)
 
         return update_instance
-
-    class Meta:
-        model = org_models.TotalBudgetLine
-        fields = (
-            'total_budget',
-            'id',
-            'ref',
-            'value',
-            'narratives',
-        )
 
 class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
@@ -215,6 +215,16 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
 
     recipient_org_budget = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = org_models.RecipientOrgBudgetLine
+        fields = (
+            'recipient_org_budget',
+            'id',
+            'ref',
+            'value',
+            'narratives',
+        )
+
     def validate(self, data):
         recipient_org_budget = get_or_raise(org_models.RecipientOrgBudget, data, 'recipient_org_budget')
 
@@ -258,16 +268,6 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
         save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
 
         return update_instance
-
-    class Meta:
-        model = org_models.RecipientOrgBudgetLine
-        fields = (
-            'recipient_org_budget',
-            'id',
-            'ref',
-            'value',
-            'narratives',
-        )
 
 class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     class RecipientOrganisationSerializer(SerializerNoValidation):
@@ -351,6 +351,16 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
 
     recipient_country_budget = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = org_models.RecipientCountryBudgetLine
+        fields = (
+            'recipient_country_budget',
+            'id',
+            'ref',
+            'value',
+            'narratives',
+        )
+
     def validate(self, data):
         recipient_country_budget = get_or_raise(org_models.RecipientCountryBudget, data, 'recipient_country_budget')
 
@@ -394,16 +404,6 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         save_narratives(recipient_country_budget, narratives_data, recipient_country_budget.organisation)
 
         return update_instance
-
-    class Meta:
-        model = org_models.RecipientCountryBudgetLine
-        fields = (
-            'recipient_country_budget',
-            'id',
-            'ref',
-            'value',
-            'narratives',
-        )
 
 class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
@@ -478,6 +478,16 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
 
     recipient_region_budget = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = org_models.RecipientRegionBudgetLine
+        fields = (
+            'recipient_region_budget',
+            'id',
+            'ref',
+            'value',
+            'narratives',
+        )
+
     def validate(self, data):
         recipient_region_budget = get_or_raise(org_models.RecipientRegionBudget, data, 'recipient_region_budget')
 
@@ -521,16 +531,6 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         save_narratives(recipient_region_budget, narratives_data, recipient_region_budget.organisation)
 
         return update_instance
-
-    class Meta:
-        model = org_models.RecipientRegionBudgetLine
-        fields = (
-            'recipient_region_budget',
-            'id',
-            'ref',
-            'value',
-            'narratives',
-        )
 
 class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
@@ -605,6 +605,16 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
 
     total_expenditure = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = org_models.TotalExpenditureLine
+        fields = (
+            'total_expenditure',
+            'id',
+            'ref',
+            'value',
+            'narratives',
+        )
+
     def validate(self, data):
         total_expenditure = get_or_raise(org_models.TotalExpenditure, data, 'total_expenditure')
 
@@ -647,16 +657,6 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
         save_narratives(total_expenditure, narratives_data, total_expenditure.organisation)
 
         return update_instance
-
-    class Meta:
-        model = org_models.TotalExpenditureLine
-        fields = (
-            'total_expenditure',
-            'id',
-            'ref',
-            'value',
-            'narratives',
-        )
 
 class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
