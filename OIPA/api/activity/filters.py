@@ -27,7 +27,11 @@ from iati.transaction.models import *
 class ActivityFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='normalized_iati_identifier',
+        name='id',
+        lookup_expr='in')
+
+    iati_identifier = CommaSeparatedCharFilter(
+        name='iati_identifier',
         lookup_expr='in')
 
     activity_scope = CommaSeparatedCharFilter(
