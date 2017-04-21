@@ -11,6 +11,8 @@ pages:
 - Parser: parser.md
 - API: api.md
 - Publish IATI and permissions: publish.md
+- Docstore: docstore.md
+- Traceability chains: chains.md
 - Glossary: glossary.md
 - Changelog: changelog.md
 - License: license.md
