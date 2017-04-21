@@ -165,7 +165,7 @@ class Parse(IatiParser):
         activity.modified = False
 
         # for later reference
-        self.default_lang = default_lang
+        self.default_lang = default_lang_code
 
         self.register_model('Activity', activity)
         return element
