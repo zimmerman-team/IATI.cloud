@@ -35,3 +35,12 @@ http://localhost:8000/api/documents/
 The Docstore search can be performed using the following query params:
 
 http://localhost:8000/api/documents/?document_q="aids"
+
+As output results, it is returned for instance:
+
+"results": [
+{
+    "id": 5,
+    "document_name": "actionaid_trustees_report_and_accounts_2014.pdf",
+    "long_url": "https://www.actionaid.org.uk/sites/default/files/actionaid_trustees_report_and_accounts_2014.pdf"
+}]
