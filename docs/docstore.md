@@ -8,7 +8,7 @@ For more details about the documents content, it is highly recommended to look a
 
 http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/document-link/
 
-OIPA is a boulding a search engine named "Docstore" that is collecting docs published in IATI activities. It is offering a word look up and generating a list of documents that is matching users queries.
+OIPA is a building a search engine named "Docstore" that is collecting docs published in IATI activities. It is offering a word look up and generating a list of documents that is matching users queries.
 
 --------
 ## Docstore Data Loading and Indexing :
