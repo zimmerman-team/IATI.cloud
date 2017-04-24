@@ -305,16 +305,19 @@ class DatasetPublishActivities(APIView):
 
 
         # 0. create_or_update Dataset object
-        dataset = Dataset.objects.create(
-            id=registry_dataset['id'],
-            name=source_name,
-            title=source_name,
+        dataset = Dataset.objects.get(
             filetype=1,
             publisher=publisher,
             source_url=source_url, # TODO: store in OIPA somewhere, or let user define this? - 2017-01-13
-            is_parsed=False,
-            iati_version="2.02",
+            added_manually=True,
                 )
+
+        dataset.id = registry_dataset['id']
+        dataset.name = source_name
+        dataset.title = source_name
+        dataset.source_url = source_url
+        dataset.is_parsed = False
+        dataset.save()
 
         #  update the affected activities flags
         activities.update(published=True, modified=False, ready_to_publish=True)
