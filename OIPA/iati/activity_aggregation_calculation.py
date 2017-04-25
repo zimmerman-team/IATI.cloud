@@ -186,6 +186,61 @@ class ActivityAggregationCalculation():
             'expenditure_value',
             expenditure_total)
 
+
+
+        interest_payment_total = self.calculate_child_transaction_aggregation(activity, 5)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'interest_payment_currency',
+            'interest_payment_value',
+            interest_payment_total)
+
+        loan_repayment_total = self.calculate_child_transaction_aggregation(activity, 6)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'loan_repayment_currency',
+            'loan_repayment_value',
+            loan_repayment_total)
+
+
+        reimbursement_total = self.calculate_child_transaction_aggregation(activity, 7)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'reimbursement_currency',
+            'reimbursement_value',
+            reimbursement_total)
+
+
+        purchase_of_equity_total = self.calculate_child_transaction_aggregation(activity, 8)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'purchase_of_equity_currency',
+            'purchase_of_equity_value',
+            purchase_of_equity_total)
+
+
+        sale_of_equity_total = self.calculate_child_transaction_aggregation(activity, 9)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'sale_of_equity_currency',
+            'sale_of_equity_value',
+            sale_of_equity_total)
+
+        credit_guarantee_total = self.calculate_child_transaction_aggregation(activity, 10)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'credit_guarantee_currency',
+            'credit_guarantee_value',
+            credit_guarantee_total)
+
+        incoming_commitment_total = self.calculate_child_transaction_aggregation(activity, 11)
+        child_aggregation = self.set_aggregation(
+            child_aggregation,
+            'incoming_commitment_currency',
+            'incoming_commitment_value',
+            incoming_commitment_total)
+
+
         # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
         # TODO find solution that's less ugly
         try:
@@ -233,6 +288,14 @@ class ActivityAggregationCalculation():
         total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'commitment')
         total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'disbursement')
         total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'expenditure')
+
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'interest_payment')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'loan_repayment')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'reimbursement')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'purchase_of_equity')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'sale_of_equity')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'credit_guarantee')
+        total_aggregation = self.update_total_aggregation(activity, total_aggregation, 'incoming_commitment')
 
         # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
         # TODO find solution that's less ugly
