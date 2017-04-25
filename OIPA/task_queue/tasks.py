@@ -133,7 +133,7 @@ def force_parse_source_by_url(url, update_searchable=False):
 
 @job
 def force_parse_source_by_id(source_id, update_searchable=False):
-    if Dataset.objects.filter(pk=source_id).exists():
+    if Dataset.objects.filter(iati_id=source_id).exists():
         xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process(force_reparse=True)
 
@@ -151,7 +151,7 @@ def parse_source_by_url(url):
 
 @job
 def parse_source_by_id(source_id):
-    if Dataset.objects.filter(pk=source_id).exists():
+    if Dataset.objects.filter(iati_id=source_id).exists():
         xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process()
 
@@ -165,7 +165,7 @@ def calculate_activity_aggregations_per_source(source_ref):
 @job
 def delete_source_by_id(source_id):
     try:
-        Dataset.objects.get(id=source_id).delete()
+        Dataset.objects.get(iati_id=source_id).delete()
     except Dataset.DoesNotExist:
         return False
 

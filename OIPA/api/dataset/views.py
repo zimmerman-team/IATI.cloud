@@ -308,11 +308,10 @@ class DatasetPublishActivities(APIView):
         dataset = Dataset.objects.get(
             filetype=1,
             publisher=publisher,
-            source_url=source_url, # TODO: store in OIPA somewhere, or let user define this? - 2017-01-13
             added_manually=True,
                 )
 
-        dataset.id = registry_dataset['id']
+        dataset.iati_id = registry_dataset['id']
         dataset.name = source_name
         dataset.title = source_name
         dataset.source_url = source_url
@@ -453,16 +452,18 @@ class DatasetPublishOrganisations(APIView):
 
 
         # 0. create_or_update Dataset object
-        dataset = Dataset.objects.create(
-            id=registry_dataset['id'],
-            name=source_name,
-            title=source_name,
-            filetype=1,
+        dataset = Dataset.objects.get(
+            filetype=2,
             publisher=publisher,
-            source_url=source_url, # TODO: store in OIPA somewhere, or let user define this? - 2017-01-13
-            is_parsed=False,
-            iati_version="2.02",
+            added_manually=True,
                 )
+
+        dataset.iati_id = registry_dataset['id']
+        dataset.name = source_name
+        dataset.title = source_name
+        dataset.source_url = source_url
+        dataset.is_parsed = False
+        dataset.save()
 
         #  update the affected organisations flags
         organisations.update(published=True, modified=False, ready_to_publish=True)

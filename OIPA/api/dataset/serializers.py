@@ -40,6 +40,7 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
         model = Dataset
         fields = (
             'id',
+            'iati_id',
             'url',
             'name',
             'title',
@@ -70,6 +71,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
         model = Dataset
         fields = (
             'id',
+            'iati_id',
             'url',
             'name',
             'title',
@@ -97,7 +99,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?dataset=' + obj.id
+        return url + '?dataset=' + str(obj.id)
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(dataset=obj.id).count()

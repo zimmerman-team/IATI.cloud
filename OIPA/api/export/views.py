@@ -71,9 +71,6 @@ class IATIActivityNextExportList(APIView):
                     publisher_id=publisher_id,
                     added_manually=True,
                     filetype=1,
-                    defaults={
-                        'id': uuid.uuid4(),
-                    }
                 )
 
         except Dataset.DoesNotExist:

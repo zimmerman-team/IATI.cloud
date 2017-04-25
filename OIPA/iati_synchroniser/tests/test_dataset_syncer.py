@@ -37,11 +37,14 @@ class DatasetSyncerTestCase(TestCase):
 
         """
 
-        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
-            publisher = json.load(fixture).get('result')[0]
+        publisher = synchroniser_factory.PublisherFactory.create()
+        dataset = synchroniser_factory.DatasetFactory.create()
 
-        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
-            dataset = json.load(fixture)['result']['results'][0]
+        # with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+        #     publisher = json.load(fixture).get('result')[0]
+
+        # with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+        #     dataset = json.load(fixture)['result']['results'][0]
 
 
 
@@ -78,7 +81,7 @@ class DatasetSyncerTestCase(TestCase):
 
         """
         publisher = Publisher(
-            id="8797b894-9858-492e-a109-dc45b75ce27b",
+            iati_id="8797b894-9858-492e-a109-dc45b75ce27b",
             publisher_iati_id="",
             display_name="jica",
             name="Japan International Cooperation Agency (JICA)")
@@ -90,8 +93,7 @@ class DatasetSyncerTestCase(TestCase):
             self.datasetSyncer.update_or_create_dataset(data)
 
         dataset = Dataset.objects.all()[0]
-        print dataset.publisher
-        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.id)
+        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
         self.assertEqual("cic-sl", dataset.name)
         self.assertEqual("088States Ex-Yugoslavia unspecified2013", dataset.title)
         self.assertEqual(publisher, dataset.publisher)
