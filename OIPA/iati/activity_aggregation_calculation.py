@@ -114,6 +114,65 @@ class ActivityAggregationCalculation():
             'expenditure_value',
             expenditure_total)
 
+
+
+        interest_payment_total = activity.transaction_set.filter(transaction_type=5).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'interest_payment_currency',
+            'interest_payment_value',
+            interest_payment_total)
+
+        loan_repayment_total = activity.transaction_set.filter(transaction_type=6).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'loan_repayment_currency',
+            'loan_repayment_value',
+            loan_repayment_total)
+
+        reimbursement_total = activity.transaction_set.filter(transaction_type=7).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'reimbursement_currency',
+            'reimbursement_value',
+            reimbursement_total)
+
+        purchase_of_equity_total = activity.transaction_set.filter(transaction_type=8).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'purchase_of_equity_currency',
+            'purchase_of_equity_value',
+            purchase_of_equity_total)
+
+        sale_of_equity_total = activity.transaction_set.filter(transaction_type=9).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'sale_of_equity_currency',
+            'sale_of_equity_value',
+            sale_of_equity_total)
+
+        credit_guarantee_total = activity.transaction_set.filter(transaction_type=10).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'credit_guarantee_currency',
+            'credit_guarantee_value',
+            credit_guarantee_total)
+
+        incoming_commitment_total = activity.transaction_set.filter(transaction_type=11).values_list('currency').annotate(Sum('value'))
+        activity_aggregation = self.set_aggregation(
+            activity_aggregation,
+            'incoming_commitment_currency',
+            'incoming_commitment_value',
+            incoming_commitment_total)
+
+
+
+
+
+
+
+
+
         # raises IntegrityError when an activity appears in multiple sources and they are parsed at the same time
         # TODO find solution that's less ugly
         try:
