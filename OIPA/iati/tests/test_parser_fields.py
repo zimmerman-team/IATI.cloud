@@ -61,7 +61,7 @@ def copy_xml_tree(tree):
 
 
 def build_activity(version="2.02", *args, **kwargs):
-        activity = iati_factory.ActivityFactory.build(
+        activity = iati_factory.ActivityFactory.create(
             iati_standard_version=codelist_models.Version.objects.get(code=version), # TODO: cache this
             *args,
             **kwargs

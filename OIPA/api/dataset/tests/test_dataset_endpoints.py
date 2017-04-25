@@ -22,6 +22,7 @@ class TestDatasetEndpoints(APITestCase):
 
         msg = 'dataset detail endpoint should be localed at {0}'
         expect_url = '/api/datasets/1/'
+        # print(url)
         assert url == expect_url, msg.format(expect_url)
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
