@@ -29,6 +29,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
             'publisher_iati_id',
             'display_name',
             'name',
+            'organisation',
             'activities',
             'activity_count',
             'note_count',

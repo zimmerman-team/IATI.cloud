@@ -38,7 +38,7 @@ class Dataset(models.Model):
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher) # organization.id
     source_url = models.URLField(max_length=255) # resource.url
-    iati_version = models.CharField(max_length=10, default="")
+    iati_version = models.CharField(max_length=10, default="2.02")
     
     # OIPA related fields
     date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
