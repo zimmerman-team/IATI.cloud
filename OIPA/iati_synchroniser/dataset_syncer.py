@@ -76,7 +76,7 @@ class DatasetSyncer():
         
         """
         obj, created = Publisher.objects.update_or_create(
-            id=publisher['id'],
+            iati_id=publisher['id'],
             defaults={
                 'publisher_iati_id': publisher['publisher_iati_id'],
                 'name': publisher['name'], 
@@ -106,13 +106,16 @@ class DatasetSyncer():
         # trololo edge cases
         if not len(dataset['resources']) or not dataset['organization']:
             return
+
+        publisher = Publisher.objects.get(iati_id=dataset['organization']['id'])
+
         obj, created = Dataset.objects.update_or_create(
-            id=dataset['id'],
+            iati_id=dataset['id'],
             defaults={
                 'name': dataset['name'],
                 'title': dataset['title'][0:254],
                 'filetype': filetype,
-                'publisher_id': dataset['organization']['id'],
+                'publisher': publisher,
                 'source_url': dataset['resources'][0]['url'],
                 'iati_version': iati_version,
                 'last_found_in_registry': datetime.datetime.now(),
@@ -126,10 +129,10 @@ class DatasetSyncer():
         instead of the IATI Registry UUID (thats way over string length 5, pretty hacky code here tbh but its a one time solution)
         """
         for p in Publisher.objects.all():
-            if len(p.id) < 5:
+            if len(p.iati_id) < 5:
                 p.delete()
 
         for d in Dataset.objects.all():
-            if len(p.id) < 5:
+            if len(p.iati_id) < 5:
                 p.delete()
 

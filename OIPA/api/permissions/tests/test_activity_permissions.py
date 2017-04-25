@@ -43,7 +43,7 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher), 
+                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
                 data,
                 format='json'
                 )
@@ -71,7 +71,7 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher), 
+                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
                 data,
                 format='json'
                 )
@@ -123,6 +123,9 @@ class TestActivityPermissions(APITestCase):
             "iati_identifier": "WOPA",
             "publisher_id": activity.publisher.id
         }
+
+        print('CALLED')
+        print(activity.publisher.id)
 
         res = self.c.put(
                 "/api/publishers/{}/activities/{}/?format=json".format(activity.publisher.id, activity.id), 

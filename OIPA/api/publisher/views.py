@@ -257,7 +257,7 @@ class OrganisationVerifyApiKey(APIView):
 
         # TODO: add organisation foreign key - 2016-10-25
         publisher = Publisher.objects.update_or_create(
-            pk=primary_org_id,
+            iati_id=primary_org_id,
             publisher_iati_id=primary_org_iati_id,
             defaults={
                 "name": primary_org.get('name'),

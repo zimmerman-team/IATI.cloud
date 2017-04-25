@@ -742,8 +742,8 @@ class ActivityXMLTestCase(TestCase):
 
         parsed_xml = ET.fromstring(res.content)
 
-        print("ORIGINAL")
-        print(ET.tostring(xml, pretty_print=True))
+        # print("ORIGINAL")
+        # print(ET.tostring(xml, pretty_print=True))
 
         # print contact_info1.mailing_address.narratives.all()[0]
         # print budget_item1.description.narratives.all()[0]
@@ -751,8 +751,8 @@ class ActivityXMLTestCase(TestCase):
         # print result1.resulttitle.narratives.all()[0]
 
 
-        print("PARSED")
-        print(ET.tostring(parsed_xml))
+        # print("PARSED")
+        # print(ET.tostring(parsed_xml))
 
         def elements_equal(e1, e2):
             self.assertEqual(e1.tag, e2.tag)

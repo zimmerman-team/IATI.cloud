@@ -43,8 +43,6 @@ class DatasetSyncerTestCase(TestCase):
         with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             dataset = json.load(fixture)['result']['results'][0]
 
-
-
         self.datasetSyncer.get_data = MagicMock(side_effect=[
             {'result': [publisher]}, # first occurance, return 1 publisher
             {'result': []}, # 2nd, return empty publisher db return
@@ -78,7 +76,7 @@ class DatasetSyncerTestCase(TestCase):
 
         """
         publisher = Publisher(
-            id="8797b894-9858-492e-a109-dc45b75ce27b",
+            iati_id="85d72513-66b6-4642-a526-214b1081fff1",
             publisher_iati_id="",
             display_name="jica",
             name="Japan International Cooperation Agency (JICA)")
@@ -90,8 +88,7 @@ class DatasetSyncerTestCase(TestCase):
             self.datasetSyncer.update_or_create_dataset(data)
 
         dataset = Dataset.objects.all()[0]
-        print dataset.publisher
-        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.id)
+        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
         self.assertEqual("cic-sl", dataset.name)
         self.assertEqual("088States Ex-Yugoslavia unspecified2013", dataset.title)
         self.assertEqual(publisher, dataset.publisher)
