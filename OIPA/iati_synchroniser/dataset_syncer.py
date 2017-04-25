@@ -106,13 +106,16 @@ class DatasetSyncer():
         # trololo edge cases
         if not len(dataset['resources']) or not dataset['organization']:
             return
+
+        publisher = Publisher.objects.get(iati_id=dataset['organization']['id'])
+
         obj, created = Dataset.objects.update_or_create(
             iati_id=dataset['id'],
             defaults={
                 'name': dataset['name'],
                 'title': dataset['title'][0:254],
                 'filetype': filetype,
-                'publisher_id': dataset['organization']['id'],
+                'publisher': publisher,
                 'source_url': dataset['resources'][0]['url'],
                 'iati_version': iati_version,
                 'last_found_in_registry': datetime.datetime.now(),

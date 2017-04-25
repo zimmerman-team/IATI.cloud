@@ -37,16 +37,11 @@ class DatasetSyncerTestCase(TestCase):
 
         """
 
-        publisher = synchroniser_factory.PublisherFactory.create()
-        dataset = synchroniser_factory.DatasetFactory.create()
+        with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
+            publisher = json.load(fixture).get('result')[0]
 
-        # with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
-        #     publisher = json.load(fixture).get('result')[0]
-
-        # with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
-        #     dataset = json.load(fixture)['result']['results'][0]
-
-
+        with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
+            dataset = json.load(fixture)['result']['results'][0]
 
         self.datasetSyncer.get_data = MagicMock(side_effect=[
             {'result': [publisher]}, # first occurance, return 1 publisher
@@ -81,7 +76,7 @@ class DatasetSyncerTestCase(TestCase):
 
         """
         publisher = Publisher(
-            iati_id="8797b894-9858-492e-a109-dc45b75ce27b",
+            iati_id="85d72513-66b6-4642-a526-214b1081fff1",
             publisher_iati_id="",
             display_name="jica",
             name="Japan International Cooperation Agency (JICA)")
