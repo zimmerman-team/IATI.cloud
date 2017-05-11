@@ -152,12 +152,12 @@ class ChainRetriever():
 
 
         Rule 6.
-        If it is mentioned as provider-activity-id in incoming funds of activities
+        If it is mentioned as provider-activity-id in incoming funds & incoming commitments of activities
         Then add link that reference as downstream activity (direction is upwards)
 
 
         Rule 7.
-        If it is mentioned as receiver-activity-id in disbursements of activities
+        If it is mentioned as receiver-activity-id in commitments & disbursements of activities
         Then add link that reference as upstream activity (direction is downwards)
 
 
@@ -204,13 +204,13 @@ class ChainRetriever():
             ('error', u"Error")
         
         # error type choices
-            ('1', u"provider-org not set on incoming fund"),
-            ('2', u"provider-activity-id not set on incoming fund"),
-            ('3', u"given provider-activity-id set on incoming fund does not exist"),
+            ('1', u"provider-org not set on incoming fund or incoming commitment"),
+            ('2', u"provider-activity-id not set on incoming fund or incoming commitment"),
+            ('3', u"given provider-activity-id set on incoming fund or incoming commitment does not exist"),
 
-            ('4', u"receiver-org not set on disbursement"),
-            ('5', u"receiver-activity-id not set on disbursement"),
-            ('6', u"given receiver-activity-id set on disbursement does not exist"),
+            ('4', u"receiver-org not set on commitment or disbursement"),
+            ('5', u"receiver-activity-id not set on commitment or disbursement"),
+            ('6', u"given receiver-activity-id set on commitment or disbursement does not exist"),
 
             ('7', u"given related-activity with type parent does not exist"),
             ('8', u"given related-activity with type child does not exist"),
@@ -234,7 +234,7 @@ class ChainRetriever():
         )
 
         # 1.
-        for t in activity.transaction_set.filter(transaction_type='1'):
+        for t in activity.transaction_set.filter(transaction_type__in=['1', '11']):
             try:
                 provider_org = t.provider_organisation
                 provider_org_refs.append(provider_org.ref)
@@ -250,7 +250,7 @@ class ChainRetriever():
 
 
         # 2.
-        for t in activity.transaction_set.filter(transaction_type='3'):
+        for t in activity.transaction_set.filter(transaction_type__in=['2', '3']):
             try:
                 receiver_org = t.receiver_organisation
                 receiver_org_refs.append(receiver_org.ref)
@@ -306,9 +306,15 @@ class ChainRetriever():
         for a in Activity.objects.filter(transaction__transaction_type="1", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
             self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do', False)
 
+        for a in Activity.objects.filter(transaction__transaction_type="11", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
+            self.add_link(activity, a, 'incoming_commitment', 'end_node', 'to do', False)
+
         # 7.
         for a in Activity.objects.filter(transaction__transaction_type="3", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
             self.add_link(a, activity, 'disbursement', 'start_node', 'to do', False)
+
+        for a in Activity.objects.filter(transaction__transaction_type="2", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
+            self.add_link(a, activity, 'commitment', 'start_node', 'to do', False)
 
         # 8.
         # DONE IN #1
