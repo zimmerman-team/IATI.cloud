@@ -132,14 +132,18 @@ def force_parse_source_by_url(url, update_searchable=False):
 
 
 @job
-def force_parse_source_by_id(source_id, update_searchable=False):
-    if Dataset.objects.filter(iati_id=source_id).exists():
+def force_parse_source_by_id(source_id, update_searchable=False):  
+
+    try:
         xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process(force_reparse=True)
 
-    queue = django_rq.get_queue("parser")
-    if update_searchable and settings.ROOT_ORGANISATIONS:
-        queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
+        queue = django_rq.get_queue("parser")
+        if update_searchable and settings.ROOT_ORGANISATIONS:
+            queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
+
+    except Dataset.DoesNotExist:
+        return False
 
 
 @job
@@ -151,10 +155,11 @@ def parse_source_by_url(url):
 
 @job
 def parse_source_by_id(source_id):
-    if Dataset.objects.filter(iati_id=source_id).exists():
+    try:
         xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process()
-
+    except Dataset.DoesNotExist:
+        return False
 
 @job
 def calculate_activity_aggregations_per_source(source_ref):
@@ -165,7 +170,7 @@ def calculate_activity_aggregations_per_source(source_ref):
 @job
 def delete_source_by_id(source_id):
     try:
-        Dataset.objects.get(iati_id=source_id).delete()
+        Dataset.objects.get(pk=source_id).delete()
     except Dataset.DoesNotExist:
         return False
 
