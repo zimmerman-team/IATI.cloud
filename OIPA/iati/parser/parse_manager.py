@@ -47,12 +47,13 @@ class ParseManager():
                 iati_identifier="n/a",
                 model="n/a",
                 field="n/a",
-                message="URL down or does not exist",
+                message="Cannot access the URL",
                 exception_type='UrlError',
                 line_number=None
             )
             note.save()
             self.dataset.note_count = 1
+            self.dataset.sha1 = 'none'
             self.dataset.save()
             return
 
