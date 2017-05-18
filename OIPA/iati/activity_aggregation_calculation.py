@@ -322,9 +322,9 @@ class ActivityAggregationCalculation():
 
         total_aggregation_currency = None
 
-        if activity_value > 0 and child_value == 0 or activity_value == child_value:
+        if activity_value != 0 and child_value == 0 or activity_value == child_value:
             total_aggregation_currency = activity_currency
-        elif activity_value == 0 and child_value > 0:
+        elif activity_value == 0 and child_value != 0:
             total_aggregation_currency = child_currency
 
         total_aggregation_value = activity_value + child_value
