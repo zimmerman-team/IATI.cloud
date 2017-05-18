@@ -1795,6 +1795,15 @@ class Parse(IatiParser):
         ref:1234
 
         tag:transaction"""
+
+        transaction_type = element.findall('transaction-date')
+        if len(transaction_type) is 0:
+            # TODO; pop transaction model to prevent trying to save / 'loss on save'?
+            raise RequiredFieldError(
+                "transaction/transaction-date",
+                "element",
+                "required attribute missing")
+
         ref = element.attrib.get('ref')
         humanitarian = element.attrib.get('humanitarian')
 
