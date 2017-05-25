@@ -124,7 +124,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'grappelli',
+    'grappelli',    
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
+    'django_filters'
 ]
 
 ADMIN_REORDER = (
