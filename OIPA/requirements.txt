@@ -3,7 +3,7 @@ git+https://github.com/zimmerman-zimmerman/fulltext.git
 django-supervisor==0.4.0
 requests==2.14.2
 Django==1.11.1
-django-two-factor-auth==    
+django-two-factor-auth==1.6.1
 django-cors-headers==2.0.2
 django-debug-toolbar==1.8
 sqlparse==0.2.3
