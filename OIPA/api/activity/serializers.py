@@ -558,6 +558,50 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
     expenditure_currency = serializers.CharField()
 
 
+    interest_payment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    interest_payment_currency = serializers.CharField()
+
+    loan_repayment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    loan_repayment_currency = serializers.CharField()
+
+    reimbursement_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    reimbursement_currency = serializers.CharField()
+
+    purchase_of_equity_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    purchase_of_equity_currency = serializers.CharField()
+
+    sale_of_equity_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    sale_of_equity_currency = serializers.CharField()
+
+    credit_guarantee_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    credit_guarantee_currency = serializers.CharField()
+
+    incoming_commitment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    incoming_commitment_currency = serializers.CharField()
+
+
+
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="publisher.organisation.organisation_identifier")

@@ -267,6 +267,97 @@ class AbstractActivityAggregation(models.Model):
         default=None,
         blank=True,
     )
+    interest_payment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    interest_payment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    loan_repayment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    loan_repayment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    reimbursement_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    reimbursement_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    purchase_of_equity_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    purchase_of_equity_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    sale_of_equity_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    sale_of_equity_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    credit_guarantee_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    credit_guarantee_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    incoming_commitment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_commitment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
@@ -277,6 +368,13 @@ class AbstractActivityAggregation(models.Model):
             ["incoming_funds_value", "activity"],
             ["commitment_value", "activity"],
             ["expenditure_value", "activity"],
+            ["interest_payment_value", "activity"],
+            ["loan_repayment_value", "activity"],
+            ["reimbursement_value", "activity"],
+            ["purchase_of_equity_value", "activity"],
+            ["sale_of_equity_value", "activity"],
+            ["credit_guarantee_value", "activity"],
+            ["incoming_commitment_value", "activity"]
         ]
 
 
