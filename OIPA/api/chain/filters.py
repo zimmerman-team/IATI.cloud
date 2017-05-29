@@ -40,7 +40,7 @@ class ChainNodeErrorFilter(FilterSet):
         model = ChainNodeError
         fields = ['chain', 'warning_level']
 
-
+        
 class ChainNodeFilter(FilterSet):
     chain_includes_activity = CharFilter(name='chain__chainnode__activity__iati_identifier', lookup_expr='exact')
     chain_includes_activity_of_reporting_organisation_identifier = CommaSeparatedCharFilter(name='chain__chainnode__activity__reporting_organisations__organisation__organisation_identifier', lookup_expr='in')

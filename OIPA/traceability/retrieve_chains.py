@@ -234,7 +234,8 @@ class ChainRetriever():
         )
 
         # 1.
-        for t in activity.transaction_set.filter(transaction_type__in=['1', '11']):
+        # for t in activity.transaction_set.filter(transaction_type__in=['1', '11']):
+        for t in activity.transaction_set.filter(transaction_type__in=['1']):
             try:
                 provider_org = t.provider_organisation
                 provider_org_refs.append(provider_org.ref)
@@ -250,7 +251,8 @@ class ChainRetriever():
 
 
         # 2.
-        for t in activity.transaction_set.filter(transaction_type__in=['2', '3']):
+        # for t in activity.transaction_set.filter(transaction_type__in=['2', '3']):
+        for t in activity.transaction_set.filter(transaction_type__in=['3']):
             try:
                 receiver_org = t.receiver_organisation
                 receiver_org_refs.append(receiver_org.ref)
@@ -306,15 +308,15 @@ class ChainRetriever():
         for a in Activity.objects.filter(transaction__transaction_type="1", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
             self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do', False)
 
-        for a in Activity.objects.filter(transaction__transaction_type="11", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(activity, a, 'incoming_commitment', 'end_node', 'to do', False)
+        # for a in Activity.objects.filter(transaction__transaction_type="11", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
+        #     self.add_link(activity, a, 'incoming_commitment', 'end_node', 'to do', False)
 
         # 7.
         for a in Activity.objects.filter(transaction__transaction_type="3", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
             self.add_link(a, activity, 'disbursement', 'start_node', 'to do', False)
 
-        for a in Activity.objects.filter(transaction__transaction_type="2", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(a, activity, 'commitment', 'start_node', 'to do', False)
+        # for a in Activity.objects.filter(transaction__transaction_type="2", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
+        #     self.add_link(a, activity, 'commitment', 'start_node', 'to do', False)
 
         # 8.
         # DONE IN #1
