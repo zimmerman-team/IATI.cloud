@@ -22,6 +22,7 @@ from django.db.models import Q, F
 
 from iati.models import *
 from iati.transaction.models import *
+from iati_synchroniser.models import Dataset, Publisher
 
 
 class ActivityFilter(TogetherFilterSet):
@@ -314,6 +315,45 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
+
+
+    #
+    # Publisher meta filters
+    #
+    dataset_id = ToManyFilter(
+        qs=Dataset,
+        lookup_expr='in',
+        name='id',
+        fk='activity'
+    )
+
+    dataset_iati_id = ToManyFilter(
+        qs=Dataset,
+        lookup_expr='in',
+        name='iati_id',
+        fk='activity'
+    )
+
+    publisher_id = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='id',
+        fk='activity'
+    )
+
+    publisher_iati_id = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='iati_id',
+        fk='activity'
+    )
+
+    publisher_organisation_identifier = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='publisher_iati_id',
+        fk='activity'
+    )
 
     #
     # Transaction filters
@@ -612,8 +652,6 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]
-
-
 
 
 class ActivityAggregationFilter(ActivityFilter):
