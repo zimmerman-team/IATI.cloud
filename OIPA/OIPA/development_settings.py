@@ -7,10 +7,12 @@ FTS_ENABLED = True
 
 MIDDLEWARE_CLASSES += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'yet_another_django_profiler.middleware.ProfilerMiddleware'
 ]
 
 INSTALLED_APPS += {
     'debug_toolbar',
+    'yet_another_django_profiler'
 }
 
 def custom_show_toolbar(self):
