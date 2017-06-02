@@ -9,7 +9,7 @@ from iati_organisation.models import Organisation
 class Publisher(models.Model):
 
     # The IR publisher id
-    iati_id = models.CharField(max_length=255)
+    iati_id = models.CharField(max_length=255, unique=True)
 
     # the IATI Organisation id
     publisher_iati_id = models.CharField(max_length=100)
@@ -31,9 +31,9 @@ filetype_choices = (
 class Dataset(models.Model):
     
     # IR fields
-    iati_id = models.CharField(max_length=255)
+    iati_id = models.CharField(max_length=255, unique=True)
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher) # organization.id

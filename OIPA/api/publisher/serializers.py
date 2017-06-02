@@ -26,6 +26,7 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'url',
+            'iati_id',
             'publisher_iati_id',
             'display_name',
             'name',

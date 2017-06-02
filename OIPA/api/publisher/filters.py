@@ -11,6 +11,7 @@ class PublisherFilter(django_filters.FilterSet):
         model = Publisher
         fields = [
             'id',
+            'iati_id',
             'publisher_iati_id',
             'display_name',
             'name']

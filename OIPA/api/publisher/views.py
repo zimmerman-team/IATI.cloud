@@ -49,6 +49,7 @@ class PublisherList(DynamicListView):
     fields = (
         'url',
         'id',
+        'iati_id',
         'publisher_iati_id',
         'display_name',
         'name',

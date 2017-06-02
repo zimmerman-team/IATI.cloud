@@ -222,6 +222,7 @@ class Aggregation():
         annotation = dict([(self.annotate_name, annotate)])
         return queryset.annotate(**annotation)
 
+
 # TODO: seems unnescessary - 2016-04-11
 class Order:
     def __init__(self, query_param=None, fields=None):
@@ -234,6 +235,7 @@ class Order:
 
 def isfunc(obj):
     return hasattr(obj, '__call__')
+
 
 def merge(l):
     """
