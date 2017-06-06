@@ -64,7 +64,7 @@ class ParserSetupTestCase(DjangoTestCase):
         self.alt_iati_identifier = "NL-KVK-51018586-0667"
 
         self.iati_202 = build_xml("2.02", self.iati_identifier)
-        dummy_source = synchroniser_factory.DatasetFactory.create(filetype=2)
+        dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-6", filetype=2)
         self.parser_202 = ParseManager(dummy_source, self.iati_202).get_parser()
 
         assert(isinstance(self.parser_202, OrgParse_202))

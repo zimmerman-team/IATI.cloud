@@ -124,9 +124,6 @@ class TestActivityPermissions(APITestCase):
             "publisher_id": activity.publisher.id
         }
 
-        print('CALLED')
-        print(activity.publisher.id)
-
         res = self.c.put(
                 "/api/publishers/{}/activities/{}/?format=json".format(activity.publisher.id, activity.id), 
                 data,

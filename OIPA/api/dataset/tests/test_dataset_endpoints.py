@@ -17,7 +17,7 @@ class TestDatasetEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_dataset_detail_endpoint(self):
-        dataset = synchroniser_factory.DatasetFactory.create()
+        dataset = synchroniser_factory.DatasetFactory.create(name="dataset-3")
         url = reverse('datasets:dataset-detail', args={dataset.id})
 
         msg = 'dataset detail endpoint should be localed at {0}'

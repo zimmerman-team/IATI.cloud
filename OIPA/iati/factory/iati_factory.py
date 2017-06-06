@@ -138,7 +138,7 @@ class NarrativeFactory(NoDatabaseFactory):
 class NarrativeRelatedFactory(RelatedFactory):
 
     def __init__(self, related_factory=NarrativeFactory, factory_related_name='related_object', **defaults):
-        print(self)
+        # print(self)
         # activity_dummy = factory.LazyAttribute(lambda obj: ActivityDummyFactory())
 
         super(NarrativeRelatedFactory, self).__init__(related_factory,

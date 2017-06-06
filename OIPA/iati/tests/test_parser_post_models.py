@@ -23,7 +23,7 @@ class PostSaveActivityTestCase(TestCase):
         self.parser = Parser_201(None)
 
         version = VersionFactory.create(code='2.01')
-        dataset = DatasetFactory.create()
+        dataset = DatasetFactory.create(name='dataset-4')
         self.activity = iati_factory.ActivityFactory.create(
             iati_identifier='IATI-0001',
             iati_standard_version=version,

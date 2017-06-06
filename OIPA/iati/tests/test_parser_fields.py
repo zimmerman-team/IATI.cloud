@@ -21,6 +21,7 @@ from iati.parser.parse_manager import ParseManager
 
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
+import iati_synchroniser.models as synchroniser_models
 
 from currency_convert import convert
 from iati.parser.post_save import *
@@ -73,7 +74,7 @@ def create_parser(self, version="2.02"):
     iati_identifier = "NL-KVK-51018586-0666"
 
     iati_activities = build_xml(version, iati_identifier)
-    dummy_source = synchroniser_factory.DatasetFactory.create()
+    dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-1")
 
     return ParseManager(dummy_source, iati_activities).get_parser()
 
@@ -114,7 +115,11 @@ class ParserSetupTestCase(TestCase):
 
         # publisher = Publisher.objects.get(id=1) # from fixture
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
-        dummy_source = synchroniser_factory.DatasetFactory.create()
+        
+        if synchroniser_models.Dataset.objects.filter(name="dataset-2").exists():
+            dummy_source = synchroniser_models.Dataset.objects.get(name="dataset-2")
+        else:
+            dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-2")
 
         self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
         self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()
@@ -535,7 +540,7 @@ class TitleTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
-        print(self.parser_105.get_model('Activity'))
+        # print(self.parser_105.get_model('Activity'))
 
 
     def test_title_202(self):
