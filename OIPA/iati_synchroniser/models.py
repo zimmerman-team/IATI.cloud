@@ -104,7 +104,7 @@ class DatasetNote(models.Model):
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=50, null=False, blank=False)
     field = models.CharField(max_length=100, default='')
-    message = models.CharField(max_length=150, default=0, null=False)
+    message = models.CharField(max_length=150, default='', null=False)
     line_number = models.IntegerField(null=True)
 
 
