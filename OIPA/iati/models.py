@@ -466,6 +466,11 @@ class ActivityParticipatingOrganisation(models.Model):
 
     # when organisation is not mentioned in transactions
     org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
+    org_activity_obj = models.ForeignKey(
+        Activity,
+        related_name="participating_activity",
+        null=True,
+        default=None)
 
     narratives = GenericRelation(
         Narrative,
@@ -484,7 +489,6 @@ class ActivityParticipatingOrganisation(models.Model):
 
     def get_activity(self):
         return self.activity
-
 
 
 class ActivityPolicyMarker(models.Model):
