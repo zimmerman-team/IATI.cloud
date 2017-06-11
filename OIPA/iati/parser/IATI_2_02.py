@@ -2449,10 +2449,7 @@ class Parse(IatiParser):
         related_activity.type = related_activity_type
 
         if not related_activity.ref_activity:
-            raise FieldValidationError(
-                "related-activity",
-                "ref",
-                "Must be an existing IATI activity identifier")
+            self.append_error('FieldValidationError',"related-activity", "ref", "Must be an existing IATI activity identifier", element.sourceline)
         
         # update existing related activity foreign keys, happens post save
         self.register_model('RelatedActivity', related_activity)

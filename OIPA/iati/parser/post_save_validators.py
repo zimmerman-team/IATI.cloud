@@ -6,7 +6,10 @@ def identifier_correct_prefix(self, a):
     """
     Rule: Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier, and suffixed with the organisations own activity identifier.
     """
-    if a.iati_identifier.startswith(a.reporting_organisations.first().ref):
+    reporting_org = a.reporting_organisations.first()
+    if not reporting_org:
+        return
+    if a.iati_identifier.startswith(reporting_org.ref):
         return
     else:
         for oi in a.otheridentifier_set.all():
