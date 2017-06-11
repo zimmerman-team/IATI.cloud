@@ -223,7 +223,7 @@ class DatasetNotes(ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Dataset(pk=pk).datasetnote_set.all()
+        return Dataset(pk=pk).datasetnote_set.all().order_by('id')
 
 from api.export.views import IATIActivityList
 export_view = IATIActivityList.as_view()
