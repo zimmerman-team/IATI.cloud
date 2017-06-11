@@ -8,9 +8,14 @@ from decimal import Decimal, InvalidOperation
 
 from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.db.models import Model
-from iati_synchroniser.models import DatasetNote
+
+from iati_codelists import models as codelist_models
 from django.conf import settings
+from iati_synchroniser.models import DatasetNote
 from iati.parser.exceptions import *
+from common.util import findnth_occurence_in_string
+
+codelist_cache = {}
 
 
 class IatiParser(object):
@@ -31,11 +36,36 @@ class IatiParser(object):
         self.model_store = OrderedDict()
         self.root = root
 
+    def check_registration_agency_validity(self, element_name, element, ref):
+        reg_agency_found = False
+        if ref and findnth_occurence_in_string(ref, '-', 1) > -1:
+            index = findnth_occurence_in_string(ref, '-', 1)
+            reg_agency = self.get_or_none(codelist_models.OrganisationRegistrationAgency, code=ref[:index])
+            if reg_agency:
+                reg_agency_found = True
+
+        if not reg_agency_found:
+            self.append_error('FieldValidationError', element_name, "ref", "Must be in the format {Registration Agency} - (Registration Number}", element.sourceline)
+
+
     def get_or_none(self, model, *args, **kwargs):
-        try:
-            return model.objects.get(*args, **kwargs)
-        except model.DoesNotExist:
-            return None
+        # code = kwargs.get('code', None)
+        
+        # if code:
+
+        #     try:
+        #         model_cache = codelist_cache[model.__name__]
+        #     except KeyError:
+        #         model_cache = model.objects.in_bulk()
+        #         codelist_cache[model.__name__] = model_cache
+        #     return model_cache.get(code)
+
+        # else:
+
+            try:
+                return model.objects.get(*args, **kwargs)
+            except model.DoesNotExist:
+                return None
 
     def _get_currency_or_raise(self, model_name, currency):
         """
@@ -146,6 +176,9 @@ class IatiParser(object):
 
         
         if settings.ERROR_LOGS_ENABLED:
+            self.post_save_validators(self.dataset)
+
+
             self.dataset.note_count = len(self.errors)
             self.dataset.save()
             DatasetNote.objects.filter(dataset=self.dataset).delete()

@@ -438,7 +438,7 @@ class OrganisationRegistrationAgency(models.Model):
     public_database = models.BooleanField(default=False)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.activity.id, self.type)
+        return "%s - %s" % (self.code, self.name)
 
 
 # Deliberately not named like the codelist CrsAddOtherFlags

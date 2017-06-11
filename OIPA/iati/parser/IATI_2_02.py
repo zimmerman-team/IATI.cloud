@@ -10,6 +10,7 @@ from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
 from iati.parser import post_save
+from iati.parser import post_save_validators
 from currency_convert import convert
 
 from iati.parser.higher_order_parser import provider_org, receiver_org
@@ -204,6 +205,8 @@ class Parse(IatiParser):
                 "ref",
                 "required attribute missing")
 
+        self.check_registration_agency_validity("reporting-org/ref", element, ref) 
+
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
         secondary_reporter = element.attrib.get('secondary-reporter', '0')
@@ -289,21 +292,33 @@ class Parse(IatiParser):
         ref = element.attrib.get('ref', '')
         activity_id = element.attrib.get('activity-id', None)
 
-        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
+        org_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
+        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
-        # simply because they don't know the ref.
-        # if not ref: raise RequiredFieldError("ref", "participating-org: ref must be specified")
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+
+
         if not role:
             raise RequiredFieldError(
                 "participating-org",
                 "role", 
                 "required attribute missing")
 
-        normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+        # soft validation errors
+        # if not ref:
+            # self.append_error('FieldValidationError', "participating-org", "ref", "ref must be specified", element.sourceline)
+        if ref:
+            self.check_registration_agency_validity("participating-org", element, ref) 
 
+        if ref and not organisation:
+            self.append_error('FieldValidationError',"participating-org", "ref", "Must be an existing IATI organisation", element.sourceline)
+
+        if activity_id and not org_activity:
+            self.append_error('FieldValidationError',"participating-org", "activity-id", "Must be an existing IATI identifier", element.sourceline)
+
+        
         activity = self.get_model('Activity')
         participating_organisation = models.ActivityParticipatingOrganisation()
         participating_organisation.ref = ref
@@ -313,6 +328,7 @@ class Parse(IatiParser):
         participating_organisation.organisation = organisation
         participating_organisation.role = role
         participating_organisation.org_activity_id = activity_id
+        participating_organisation.org_activity_obj = org_activity
 
         self.register_model('ActivityParticipatingOrganisation', participating_organisation)
 
@@ -429,6 +445,12 @@ class Parse(IatiParser):
                 "ref",
                 "required attribute missing")
 
+        owner_ref_org = self.get_or_none(models.Organisation, organisation_identifier=ref)
+
+        if not owner_ref_org:
+            self.append_error('FieldValidationError',"owner_org", "ref", "Must be an existing IATI organisation", element.sourceline)
+
+
         other_identifier = self.get_model('OtherIdentifier')
         other_identifier.owner_ref = ref
 
@@ -505,6 +527,13 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "activity-date",
                 "type",
+                "not found on the accompanying code list")
+
+        if type_code in ['2', '4']:
+            if iso_date > datetime.now():
+                raise FieldValidationError(
+                "activity-date",
+                "iso-date",
                 "not found on the accompanying code list")
 
         activity = self.get_model('Activity')
@@ -1825,6 +1854,7 @@ class Parse(IatiParser):
 
         if not transaction_type:
             # TODO; pop transaction model to prevent trying to save / 'loss on save'?
+            # That might save next sub elemens of the transaction to the previous transaction?
             raise RequiredFieldError(
                 "transaction/transaction-type",
                 "code",
@@ -1856,9 +1886,15 @@ class Parse(IatiParser):
                 "iso-date",
                 "iso-date not of type xsd:date")
 
+        if iso_date > datetime.now():
+            raise FieldValidationError(
+                "transaction/transaction-date",
+                "iso-date",
+                "iso-date not of type xsd:date")
+
         transaction = self.get_model('Transaction')
         transaction.transaction_date = iso_date
-         
+
         return element
 
     def iati_activities__iati_activity__transaction__value(self, element):
@@ -2412,6 +2448,12 @@ class Parse(IatiParser):
         related_activity.ref = ref
         related_activity.type = related_activity_type
 
+        if not related_activity.ref_activity:
+            raise FieldValidationError(
+                "related-activity",
+                "ref",
+                "Must be an existing IATI activity identifier")
+        
         # update existing related activity foreign keys, happens post save
         self.register_model('RelatedActivity', related_activity)
         return element
@@ -3106,7 +3148,7 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
     def post_save_file(self, dataset):
-        """Perform all actions that need to happen after a single IATI dataset's been parsed.
+        """Perform all actions that need to happen after a single IATI datasets has been parsed.
 
         Keyword arguments:
         dataset -- the Dataset object
@@ -3127,3 +3169,14 @@ class Parse(IatiParser):
             dataset=dataset,
             last_updated_model__lt=self.parse_start_datetime).delete()
 
+    def post_save_validators(self, dataset):
+    
+        for a in models.Activity.objects.filter(dataset=dataset):
+
+            post_save_validators.identifier_correct_prefix(self, a)
+            post_save_validators.geo_percentages_add_up(self, a)
+            post_save_validators.sector_percentages_add_up(self, a)
+            post_save_validators.use_sector_or_transaction_sector(self, a)
+            post_save_validators.use_direct_geo_or_transaction_geo(self, a)
+
+        post_save_validators.transactions_at_multiple_levels(self, dataset)
