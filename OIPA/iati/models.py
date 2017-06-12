@@ -20,8 +20,8 @@ from djorm_pgfulltext.models import SearchManager
 from djorm_pgfulltext.fields import VectorField
 from decimal import Decimal
 from iati_synchroniser.models import Dataset
-
 from iati_synchroniser.models import Publisher
+
 
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
