@@ -32,7 +32,8 @@ def provider_org(self, parent_model, provider_model, fk_name):
         if ref and not organisation:
             self.append_error('FieldValidationError',"transaction/provider-org", "ref", "Must be an existing IATI organisation", element.sourceline)
 
-        self.check_registration_agency_validity("transaction/provider-org", element, ref) 
+        if ref:
+            self.check_registration_agency_validity("transaction/provider-org", element, ref) 
 
 
         setattr(provider_model, fk_name, parent_model)
@@ -75,7 +76,8 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
         if ref and not organisation:
             self.append_error('FieldValidationError',"transaction/receiver-org", "ref", "Must be an existing IATI organisation", element.sourceline)
 
-        self.check_registration_agency_validity("transaction/receiver-org", element, ref) 
+        if ref:
+            self.check_registration_agency_validity("transaction/receiver-org", element, ref) 
 
 
         setattr(receiver_model, fk_name, parent_model)

@@ -116,6 +116,9 @@ class Parse(IatiParser):
 
         old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
 
+        if old_activity and old_activity.dataset.id is not self.dataset.id:
+            self.append_error('FieldValidationError',"iati-identifier", "ref", "An activity with the same iati-identifier was found in another dataset ({})".format(old_activity.dataset.name), element.sourceline)
+
         if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the dataset)
@@ -205,7 +208,8 @@ class Parse(IatiParser):
                 "ref",
                 "required attribute missing")
 
-        self.check_registration_agency_validity("reporting-org/ref", element, ref) 
+        if ref:
+            self.check_registration_agency_validity("reporting-org/ref", element, ref) 
 
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
@@ -2734,6 +2738,24 @@ class Parse(IatiParser):
 
     # tag:period"""
     def iati_activities__iati_activity__result__indicator__period(self, element):
+
+        # do validation on "Period-start must be before period-end"
+        start_date = element.find('period-start').get('iso-date')
+        end_date = element.find('period-end').get('iso-date')
+
+        if start_date and end_date:
+            start_date = self.validate_date(start_date)
+            end_date = self.validate_date(end_date)
+
+            if start_date and end_date and (start_date > end_date):
+            
+                raise FieldValidationError(
+                    "result/indicator/period/period-start",
+                    "iso-date", 
+                    "Period-start must be before period-end")
+
+        # start with actual functionality for period
+
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = result_indicator
