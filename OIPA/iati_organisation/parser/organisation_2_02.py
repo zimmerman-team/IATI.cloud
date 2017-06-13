@@ -800,3 +800,6 @@ class Parse(IatiParser):
 
     def post_save_file(self, xml_source):
         pass
+
+    def post_save_validators(self, dataset):
+        pass
