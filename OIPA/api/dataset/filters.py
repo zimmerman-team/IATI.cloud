@@ -75,13 +75,13 @@ class DatasetFilter(FilterSet):
     note_message = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='in',
-        name='field',
+        name='message',
         fk='dataset')
 
     note_message_contains = ToManyFilter(
         qs=DatasetNote,
         lookup_expr='icontains',
-        name='field',
+        name='message',
         fk='dataset')
 
     note_count_gte = NumberFilter(
