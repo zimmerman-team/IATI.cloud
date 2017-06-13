@@ -100,11 +100,11 @@ class Dataset(models.Model):
 
 class DatasetNote(models.Model):
     dataset = models.ForeignKey(Dataset)
-    iati_identifier = models.CharField(max_length=140, null=False, blank=False)
+    iati_identifier = models.CharField(max_length=255, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
-    model = models.CharField(max_length=50, null=False, blank=False)
-    field = models.CharField(max_length=100, default='')
-    message = models.CharField(max_length=150, default='', null=False)
+    model = models.CharField(max_length=255, null=False, blank=False)
+    field = models.CharField(max_length=255, default='')
+    message = models.CharField(max_length=255, default='', null=False)
     line_number = models.IntegerField(null=True)
 
 
