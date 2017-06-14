@@ -2740,19 +2740,24 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__period(self, element):
 
         # do validation on "Period-start must be before period-end"
-        start_date = element.find('period-start').get('iso-date')
-        end_date = element.find('period-end').get('iso-date')
+        try:
+            start_date = element.find('period-start').get('iso-date')
+            end_date = element.find('period-end').get('iso-date')
 
-        if start_date and end_date:
-            start_date = self.validate_date(start_date)
-            end_date = self.validate_date(end_date)
+            if start_date and end_date:
+                start_date = self.validate_date(start_date)
+                end_date = self.validate_date(end_date)
 
-            if start_date and end_date and (start_date > end_date):
-            
-                raise FieldValidationError(
-                    "result/indicator/period/period-start",
-                    "iso-date", 
-                    "Period-start must be before period-end")
+                if start_date and end_date and (start_date > end_date):
+                
+                    raise FieldValidationError(
+                        "result/indicator/period/period-start",
+                        "iso-date", 
+                        "Period-start must be before period-end")
+        
+        except AttributeError:
+            # period start/end dont exist
+            pass 
 
         # start with actual functionality for period
 
