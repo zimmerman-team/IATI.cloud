@@ -12,7 +12,7 @@ from iati.models import Activity
 class DatasetNoteSerializer(ModelSerializer):
     class Meta:
         model = DatasetNote
-        fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'message', 'line_number')
+        fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'message', 'line_number', 'variable')
 
 
 class SimplePublisherSerializer(DynamicFieldsModelSerializer):

@@ -45,7 +45,7 @@ class IatiParser(object):
                 reg_agency_found = True
 
         if not reg_agency_found:
-            self.append_error('FieldValidationError', element_name, "ref", "Must be in the format {Registration Agency} - (Registration Number}", element.sourceline)
+            self.append_error('FieldValidationError', element_name, "ref", "Must be in the format {Registration Agency} - (Registration Number}", element.sourceline, ref)
 
 
     def get_or_none(self, model, *args, **kwargs):
@@ -190,7 +190,7 @@ class IatiParser(object):
     def post_save_file(self, dataset):
         print "override in children"
 
-    def append_error(self, error_type, model, field, message, sourceline, iati_id=None):
+    def append_error(self, error_type, model, field, message, sourceline, variable='', iati_id=None):
         if not settings.ERROR_LOGS_ENABLED:
             return
 
@@ -223,7 +223,8 @@ class IatiParser(object):
             field=field,
             message=message,
             exception_type=error_type,
-            line_number=sourceline
+            line_number=sourceline,
+            variable=variable
         )
 
         self.errors.append(note)
@@ -244,13 +245,13 @@ class IatiParser(object):
             try:
                 element_method(element)
             except RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline)
+                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, '')
                 return
             except FieldValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, '', e.iati_id)
                 return
             except ValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.iati_id)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, '', e.iati_id)
                 return
             except IgnoredVocabularyError as e:
                 # not implemented, ignore for now

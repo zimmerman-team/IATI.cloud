@@ -106,6 +106,7 @@ class DatasetNote(models.Model):
     field = models.CharField(max_length=255, default='')
     message = models.CharField(max_length=255, default='', null=False)
     line_number = models.IntegerField(null=True)
+    variable = models.CharField(max_length=255, default='', null=False)
 
 
 class Codelist(models.Model):
