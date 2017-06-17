@@ -21,6 +21,7 @@ def identifier_correct_prefix(self, a):
         "ref", 
         "Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier", 
         -1, 
+        '-',
         a.iati_identifier)
 
 
@@ -44,6 +45,7 @@ def geo_percentages_add_up(self, a):
             "percentage", 
             "Percentages for all reported countries and regions must add up to 100%", 
             -1, 
+            '-',
             a.iati_identifier)
 
 
@@ -59,7 +61,8 @@ def sector_percentages_add_up(self, a):
             "sector", 
             "percentage", 
             "Percentages for all reported sectors must add up to 100%", 
-            -1, 
+            -1,
+            '-',
             a.iati_identifier)
 
 
@@ -85,6 +88,7 @@ def use_sector_or_transaction_sector(self, a):
             "-", 
             "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used", 
             -1, 
+            '-',
             a.iati_identifier)
 
     if (direct_count + indirect_count) == 0:
@@ -94,6 +98,7 @@ def use_sector_or_transaction_sector(self, a):
             "-", 
             "Either transaction/sector or sector must be present", 
             -1, 
+            '-',
             a.iati_identifier)
 
 
@@ -117,6 +122,7 @@ def use_direct_geo_or_transaction_geo(self, a):
             "-", 
             "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used", 
             -1, 
+            '-',
             a.iati_identifier)
 
     if (direct_count + indirect_count) == 0:
@@ -126,6 +132,7 @@ def use_direct_geo_or_transaction_geo(self, a):
             "-", 
             "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present", 
             -1, 
+            '-',
             a.iati_identifier)
 
 
@@ -143,5 +150,6 @@ def transactions_at_multiple_levels(self, dataset):
             "-", 
             "If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level", 
             -1, 
+            '-',
             "dataset validation error")
 
