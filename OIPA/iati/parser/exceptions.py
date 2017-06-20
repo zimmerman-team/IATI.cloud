@@ -35,15 +35,18 @@ class RequiredFieldError(Exception):
 
 
 class FieldValidationError(Exception):
-    def __init__(self, model, field, msg="Failed to validate a field", apiField=None, iati_id=None):
+    def __init__(self, model, field, msg="Failed to validate a field", apiField=None, iati_id=None, variable=None):
         """
         field: the field that is validated
         msg: explanation what went wrong
         """
+
         self.model = model
         self.field = field
         self.message = msg
         self.iati_id = iati_id
+        self.variable = variable
+
         if not apiField:
             self.apiField = field
         else:
@@ -54,7 +57,7 @@ class FieldValidationError(Exception):
 
 
 class ValidationError(Exception):
-    def __init__(self, model, msg, iati_id=None):
+    def __init__(self, model, msg, iati_id=None, variable=None):
         """
         field: the field that is validated
         msg: explanation what went wrong
@@ -63,6 +66,7 @@ class ValidationError(Exception):
         self.field = field
         self.message = msg
         self.iati_id = iati_id
+        self.variable = variable
 
     def __str__(self):
         return repr(self.field)

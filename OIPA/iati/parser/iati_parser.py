@@ -47,20 +47,19 @@ class IatiParser(object):
         if not reg_agency_found:
             self.append_error('FieldValidationError', element_name, "ref", "Must be in the format {Registration Agency} - (Registration Number}", element.sourceline, ref)
 
-
     def get_or_none(self, model, *args, **kwargs):
-        # code = kwargs.get('code', None)
+        code = kwargs.get('code', None)
         
-        # if code:
+        if code:
 
-        #     try:
-        #         model_cache = codelist_cache[model.__name__]
-        #     except KeyError:
-        #         model_cache = model.objects.in_bulk()
-        #         codelist_cache[model.__name__] = model_cache
-        #     return model_cache.get(code)
+            try:
+                model_cache = codelist_cache[model.__name__]
+            except KeyError:
+                model_cache = model.objects.in_bulk()
+                codelist_cache[model.__name__] = model_cache
+            return model_cache.get(code)
 
-        # else:
+        else:
 
             try:
                 return model.objects.get(*args, **kwargs)
@@ -245,19 +244,19 @@ class IatiParser(object):
             try:
                 element_method(element)
             except RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, '')
+                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, e.variable)
                 return
             except FieldValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, '', e.iati_id)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.variable, e.iati_id)
                 return
             except ValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, '', e.iati_id)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.variable, e.iati_id)
                 return
             except IgnoredVocabularyError as e:
                 # not implemented, ignore for now
                 return
             except ParserError as e:
-                self.append_error('ParserError', 'TO DO', 'TO DO', e.message, None)
+                self.append_error('ParserError', 'TO DO', 'TO DO', e.message, None, element.sourceline)
                 return
             except NoUpdateRequired as e:
                 # do nothing, go to next activity

@@ -26,5 +26,12 @@ def validate(iati_parser, xml_etree):
                 attribute = error.message[(findnth_occurence_in_string(error.message, '\'', 2)+1):findnth_occurence_in_string(error.message, '\'', 3)]
             print element
             print attribute
-            iati_parser.append_error('XsdValidationError',element, attribute, error.message.split(':')[0], error.line, error.message.split(':')[1], 'unkown for XSD validation errors')
+            iati_parser.append_error(
+                'XsdValidationError',
+                element, 
+                attribute, 
+                error.message.split(':')[0], 
+                error.line, 
+                error.message.split(':')[1], 
+                'unkown for XSD validation errors')
 

@@ -27,10 +27,22 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
         # validation
         if provider_activity_id and not provider_activity:
-            self.append_error('FieldValidationError',"transaction/provider-org", "provider-activity-id", "Must be an existing IATI activity", element.sourceline, provider_activity_id)
+            self.append_error(
+                'FieldValidationError',
+                "transaction/provider-org", 
+                "provider-activity-id", 
+                "Must be an existing IATI activity", 
+                element.sourceline, 
+                provider_activity_id)
         
         if ref and not organisation:
-            self.append_error('FieldValidationError',"transaction/provider-org", "ref", "Must be an existing IATI organisation", element.sourceline, ref)
+            self.append_error(
+                'FieldValidationError',
+                "transaction/provider-org", 
+                "ref", 
+                "Must be an existing IATI organisation", 
+                element.sourceline, 
+                ref)
 
         if ref:
             self.check_registration_agency_validity("transaction/provider-org", element, ref) 

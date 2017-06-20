@@ -21,7 +21,7 @@ def identifier_correct_prefix(self, a):
         "ref", 
         "Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier", 
         -1, 
-        '-',
+        reporting_org.ref,
         a.iati_identifier)
 
 
@@ -140,6 +140,9 @@ def transactions_at_multiple_levels(self, dataset):
     """
     Rule: If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level
     """
+
+    # TODO - query this from the Dataset since the query below is presumeably slower - 2017-06-20
+    
     max_hierarchy = Activity.objects.filter(dataset=dataset).aggregate(Max('hierarchy')).get('hierarchy__max')
     
     if Activity.objects.filter(dataset=dataset).exclude(hierarchy=max_hierarchy).filter(transaction__isnull=False).count():
