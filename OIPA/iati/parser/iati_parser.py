@@ -244,13 +244,13 @@ class IatiParser(object):
             try:
                 element_method(element)
             except RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, e.variable)
+                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, None)
                 return
             except FieldValidationError as e:
                 self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.variable, e.iati_id)
                 return
             except ValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.variable, e.iati_id)
+                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, None, e.iati_id)
                 return
             except IgnoredVocabularyError as e:
                 # not implemented, ignore for now
