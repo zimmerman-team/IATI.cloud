@@ -1,6 +1,17 @@
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
 from iati_synchroniser.models import Dataset, DatasetNote
-from django_filters import FilterSet, CharFilter, NumberFilter, DateTimeFilter
+from django_filters import Filter, FilterSet, CharFilter, NumberFilter, DateTimeFilter
+from django.db.models import Q
+
+
+class SearchQueryFilter(Filter):
+
+    def filter(self, qs, value):
+        if value:
+            return qs.filter(
+                Q(publisher__publisher_iati_id__icontains=value) | Q(title__icontains=value) | Q(name__icontains=value)
+            )
+        return qs
 
 
 class DatasetFilter(FilterSet):
@@ -92,7 +103,12 @@ class DatasetFilter(FilterSet):
         lookup_expr='gte',
         name='metadata_modified')
 
+    q = SearchQueryFilter()
+
 
     class Meta:
         model = Dataset
         fields = '__all__'
+
+
+
