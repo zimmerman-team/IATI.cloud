@@ -1,6 +1,8 @@
 from iati_synchroniser.models import Publisher
 from django.db.models import Q
-from django_filters import Filter, FilterSet
+from django_filters import Filter
+from django_filters import FilterSet
+from django_filters import BooleanFilter
 
 
 class SearchQueryFilter(Filter):
@@ -17,6 +19,8 @@ class PublisherFilter(FilterSet):
     """
 
     q = SearchQueryFilter()
+    no_datasets = BooleanFilter(lookup_expr='isnull', name='dataset', distinct=True)
+    
 
     class Meta:
         model = Publisher
@@ -26,5 +30,6 @@ class PublisherFilter(FilterSet):
             'publisher_iati_id',
             'display_name',
             'name',
-            'q']
+            'q',
+            'no_datasets']
 

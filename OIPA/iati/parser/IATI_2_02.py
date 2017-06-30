@@ -122,7 +122,8 @@ class Parse(IatiParser):
                 "iati-identifier", 
                 "ref", 
                 "An activity with the same iati-identifier was found in another dataset", 
-                element.sourceline, 
+                element.sourceline,
+                iati_identifier, 
                 old_activity.dataset.name)
 
         if old_activity and not self.force_reparse and not old_activity.modified:
@@ -140,6 +141,7 @@ class Parse(IatiParser):
                     "last-updated-time is less than existing activity",
                     None,
                     element.sourceline,
+                    iati_identifier,
                     iati_identifier)
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
@@ -149,6 +151,7 @@ class Parse(IatiParser):
                     "last-updated-time is not present, but is present on existing activity",
                     None,
                     element.sourceline,
+                    iati_identifier,
                     iati_identifier)
     
             # TODO: test activity is deleted along with related models

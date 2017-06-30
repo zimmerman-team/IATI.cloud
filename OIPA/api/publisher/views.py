@@ -26,8 +26,6 @@ from iati.permissions.models import OrganisationUser
 from rest_framework import generics, filters, status, pagination
 
 
-
-
 class PublisherList(DynamicListView):
     """
     Returns a list of IATI Publishers stored in OIPA.
@@ -47,7 +45,7 @@ class PublisherList(DynamicListView):
     URI is constructed as follows: `/api/publishers/{publisher_iati_id}`
 
     """
-    queryset = Publisher.objects.all()
+    queryset = Publisher.objects.all().order_by('id')
     serializer_class = serializers.PublisherSerializer
     filter_class = PublisherFilter
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter,)
@@ -87,6 +85,7 @@ class PublisherDetail(DynamicDetailView):
     """
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
+
 
 class OrganisationAdminGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
