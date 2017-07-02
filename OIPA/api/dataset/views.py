@@ -3,7 +3,7 @@ from iati_synchroniser.models import Dataset, Publisher
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter, DjangoFilterBackend
-from api.dataset.filters import DatasetFilter
+from api.dataset.filters import DatasetFilter, NoteFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
@@ -25,6 +25,7 @@ from django.db.models import Q
 from datetime import datetime
 
 from django.conf import settings
+
 
 class DatasetList(DynamicListView):
     """
@@ -220,10 +221,12 @@ class DatasetNotes(ListAPIView):
     serializer_class = DatasetNoteSerializer
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     ordering_fields = '__all__'
+    filter_class = NoteFilter
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Dataset(pk=pk).datasetnote_set.all().order_by('id')
+
 
 from api.export.views import IATIActivityList
 export_view = IATIActivityList.as_view()

@@ -112,3 +112,16 @@ class DatasetFilter(FilterSet):
 
 
 
+
+
+class NoteFilter(FilterSet):
+    """
+    
+    """
+
+    class Meta:
+        model = DatasetNote
+        fields = '__all__'
+
+
+
