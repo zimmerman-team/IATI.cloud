@@ -2,12 +2,12 @@ git+https://github.com/zimmerman-zimmerman/djorm-ext-pgfulltext.git
 git+https://github.com/zimmerman-zimmerman/fulltext.git
 django-supervisor==0.4.0
 requests==2.18.1
-Django==1.11.2
+Django==1.11.3
 django-two-factor-auth==1.6.1
 django-cors-headers==2.1.0
 django-debug-toolbar==1.8
 sqlparse==0.2.3
-django-extensions==1.7.9
+django-extensions==1.8.0
 django-filter==1.0.4
 django-grappelli==2.10.1
 django-otp==0.3.14
@@ -18,7 +18,7 @@ djangorestframework==3.6.3
 factory-boy==2.8.1
 lxml==3.8.0
 Markdown==2.6.8
-mechanize==0.3.3
+mechanize==0.3.5
 mock==2.0.0
 psycopg2==2.7.1
 pysqlite==2.8.3
