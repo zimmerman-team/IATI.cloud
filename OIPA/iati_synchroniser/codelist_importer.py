@@ -150,6 +150,11 @@ class CodeListImporter():
 
         item.code = code
         item.name = name
+
+        if len(item.name) > 200:
+            item.name = item.name[0:200]
+            print "name of code: {} , name: {} shortened to 200".format(item.code, item.name)
+
         item.codelist_iati_version = self.looping_through_version
 
 
