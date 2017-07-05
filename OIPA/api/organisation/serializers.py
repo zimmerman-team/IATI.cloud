@@ -981,6 +981,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             'default_currency',
             'name',
             'published_state',
+            'primary_name'
         )
 
     def validate(self, data):
