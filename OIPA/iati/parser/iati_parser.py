@@ -220,10 +220,10 @@ class IatiParser(object):
             iati_identifier=iati_identifier,
             model=model,
             field=field,
-            message=message,
+            message=message[0:255],
             exception_type=error_type,
             line_number=sourceline,
-            variable=variable
+            variable=variable[0:255]
         )
 
         self.errors.append(note)
