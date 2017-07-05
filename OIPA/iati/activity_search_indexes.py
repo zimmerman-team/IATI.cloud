@@ -79,9 +79,12 @@ def reindex_activity(activity):
         for category in document_link.categories.all():
             document_link_text.append(category.name)
 
-        title = document_link.documentlinktitle
-        for narrative in title.narratives.all():
-            document_link_text.append(narrative.content)
+        try:
+            title = document_link.documentlinktitle
+            for narrative in title.narratives.all():
+                document_link_text.append(narrative.content)
+        except ObjectDoesNotExist as e:
+            pass
 
     activity_search.document_link = " ".join(document_link_text)
 

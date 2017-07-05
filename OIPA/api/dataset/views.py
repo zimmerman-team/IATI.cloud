@@ -233,6 +233,7 @@ export_view = IATIActivityList.as_view()
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
+
 class DatasetPublishActivities(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
