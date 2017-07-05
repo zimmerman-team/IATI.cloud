@@ -216,8 +216,8 @@ class IatiParser(object):
             iati_identifier = 'no-identifier'
 
         if variable:
-            variable[0:255]
-        
+            variable = variable[0:255]
+ 
         note = DatasetNote(
             dataset=self.dataset,
             iati_identifier=iati_identifier,
