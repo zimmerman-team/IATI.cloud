@@ -1,5 +1,5 @@
 from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
-from iati_synchroniser.models import Dataset, Publisher
+from iati_synchroniser.models import Dataset, Publisher, DatasetNote
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter, DjangoFilterBackend
@@ -225,7 +225,7 @@ class DatasetNotes(ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Dataset(pk=pk).datasetnote_set.all().order_by('id')
+        return DatasetNote.objects.filter(dataset=pk).order_by('id')
 
 
 from api.export.views import IATIActivityList
