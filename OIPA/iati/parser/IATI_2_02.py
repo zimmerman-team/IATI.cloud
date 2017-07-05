@@ -123,8 +123,8 @@ class Parse(IatiParser):
                 "ref", 
                 "An activity with the same iati-identifier was found in another dataset", 
                 element.sourceline,
-                iati_identifier, 
-                old_activity.dataset.name)
+                "found in dataset: '{}'".format(fold_activity.dataset.name),
+                activity_id)
 
         if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
@@ -141,8 +141,8 @@ class Parse(IatiParser):
                     "last-updated-time is less than existing activity",
                     None,
                     element.sourceline,
-                    iati_identifier,
-                    iati_identifier)
+                    activity_id,
+                    activity_id)
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise FieldValidationError(
@@ -151,8 +151,8 @@ class Parse(IatiParser):
                     "last-updated-time is not present, but is present on existing activity",
                     None,
                     element.sourceline,
-                    iati_identifier,
-                    iati_identifier)
+                    activity_id,
+                    activity_id)
     
             # TODO: test activity is deleted along with related models
             # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm - 2015-10-01
