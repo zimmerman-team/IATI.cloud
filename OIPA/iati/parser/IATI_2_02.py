@@ -123,7 +123,7 @@ class Parse(IatiParser):
                 "ref", 
                 "An activity with the same iati-identifier was found in another dataset", 
                 element.sourceline,
-                "found in dataset: '{}'".format(fold_activity.dataset.name),
+                "found in dataset: '{}'".format(old_activity.dataset.name),
                 activity_id)
 
         if old_activity and not self.force_reparse and not old_activity.modified:

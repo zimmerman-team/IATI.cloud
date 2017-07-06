@@ -80,6 +80,7 @@ class OrganisationFactory(NoDatabaseFactory):
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
     default_currency = SubFactory(CurrencyFactory)
+    primary_name = 'test1'
 
     # actually defined on reporting-org
     type = SubFactory(OrganisationTypeFactory)

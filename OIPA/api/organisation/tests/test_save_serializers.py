@@ -58,6 +58,7 @@ class OrganisationSaveTestCase(TestCase):
                     }
                 ]
             },
+            "primary_name": "test1",
             "capital_spend": Decimal("20.2")
         }
 
@@ -105,6 +106,7 @@ class OrganisationSaveTestCase(TestCase):
                     }
                 ]
             },
+            "primary_name": "test1",
             "capital_spend": Decimal("20.2")
         }
 

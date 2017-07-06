@@ -117,8 +117,8 @@ class Parse(IatiParser):
         old_organisation = self.get_or_none(Organisation, organisation_identifier=id)
 
         if old_organisation:
-            organisation.name.delete()
-            organisation.reporting_org.delete()
+            old_organisation.name.delete()
+            old_organisation.reporting_org.delete()
             TotalBudget.objects.filter(organisation=old_organisation).delete()
             RecipientOrgBudget.objects.filter(organisation=old_organisation).delete()
             RecipientCountryBudget.objects.filter(organisation=old_organisation).delete()
