@@ -1,5 +1,6 @@
 from django.db.models import Sum, Max
-from iati.models import Activity
+from iati.models import Activity, RelatedActivity, ActivityParticipatingOrganisation
+from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
 def identifier_correct_prefix(self, a):
@@ -155,4 +156,57 @@ def transactions_at_multiple_levels(self, dataset):
             -1, 
             '-',
             "dataset validation error")
+
+
+def unfound_identifiers(self, dataset):
+
+    for ra in RelatedActivity.objects.filter(current_activity__dataset=dataset, ref_activity=None):
+        variable = ra.ref
+        activity_id = ra.current_activity.iati_identifier
+        self.append_error(
+            "FieldValidationError",
+            "related-activity",
+            "ref",
+            "Must be an existing IATI activity",
+            -1,
+            variable,
+            activity_id)
+
+    for tp in TransactionProvider.objects.filter(transaction__activity__dataset=dataset, provider_activity=None, provider_activity_ref__isnull=False):
+        variable = tp.provider_activity_ref
+        activity_id = tp.transaction.activity.iati_identifier
+
+        self.append_error(
+            "FieldValidationError",
+            "transaction/provider-org",
+            "provider-activity-id",
+            "Must be an existing IATI activity",
+            -1,
+            variable,
+            activity_id)
+
+    for tr in TransactionReceiver.objects.filter(transaction__activity__dataset=dataset, receiver_activity=None, receiver_activity_ref__isnull=False):
+        variable = tr.receiver_activity_ref
+        activity_id = tr.transaction.activity.iati_identifier
+
+        self.append_error(
+            "FieldValidationError",
+            "transaction/receiver-org",
+            "receiver-activity-id",
+            "Must be an existing IATI activity",
+            -1,
+            variable,
+            activity_id)
+
+    for po in ActivityParticipatingOrganisation.objects.filter(activity__dataset=dataset, org_activity_id__isnull=False, org_activity_obj=None):
+        variable = po.org_activity_id
+        activity_id = po.activity.iati_identifier
+        self.append_error(
+            "FieldValidationError",
+            "participating-org",
+            "activity-id",
+            "Must be an existing IATI activity",
+            -1,
+            variable,
+            activity_id)
 

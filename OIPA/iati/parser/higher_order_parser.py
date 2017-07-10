@@ -26,23 +26,23 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
 
         # validation
-        if provider_activity_id and not provider_activity:
-            self.append_error(
-                'FieldValidationError',
-                "transaction/provider-org", 
-                "provider-activity-id", 
-                "Must be an existing IATI activity", 
-                element.sourceline, 
-                provider_activity_id)
+        # if provider_activity_id and not provider_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/provider-org", 
+        #         "provider-activity-id", 
+        #         "Must be an existing IATI activity", 
+        #         element.sourceline, 
+        #         provider_activity_id)
         
-        if ref and not organisation:
-            self.append_error(
-                'FieldValidationError',
-                "transaction/provider-org", 
-                "ref", 
-                "Must be an existing IATI organisation", 
-                element.sourceline, 
-                ref)
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/provider-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
 
         if ref:
             self.check_registration_agency_validity("transaction/provider-org", element, ref) 
@@ -82,14 +82,29 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
 
 
         # validation
-        if receiver_activity_id and not receiver_activity:
-            self.append_error('FieldValidationError',"transaction/receiver-org", "receiver-activity-id", "Must be an existing IATI activity", element.sourceline, receiver_activity_id)
+        # if receiver_activity_id and not receiver_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/receiver-org", 
+        #         "receiver-activity-id", 
+        #         "Must be an existing IATI activity", 
+        #         element.sourceline, 
+        #         receiver_activity_id)
         
-        if ref and not organisation:
-            self.append_error('FieldValidationError',"transaction/receiver-org", "ref", "Must be an existing IATI organisation", element.sourceline, ref)
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/receiver-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
 
         if ref:
-            self.check_registration_agency_validity("transaction/receiver-org", element, ref) 
+            self.check_registration_agency_validity(
+                "transaction/receiver-org", 
+                element, 
+                ref) 
 
 
         setattr(receiver_model, fk_name, parent_model)

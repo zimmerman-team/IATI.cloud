@@ -707,7 +707,7 @@ def activity_recipient_country(
                     apiField="country.code",
                     ))
 
-        if type(percentage) is not int and type(percentage) is not Decimal:
+        if type(percentage) != int and type(percentage) != Decimal:
             errors.append(
                 RequiredFieldError(
                     "recipient-country",
@@ -804,7 +804,7 @@ def activity_recipient_region(
                     apiField="vocabulary_uri",
                     ))
 
-        if type(percentage) is not int and type(percentage) is not Decimal:
+        if type(percentage) != int and type(percentage) != Decimal:
             errors.append(
                 FieldValidationError(
                     "recipient-region",
@@ -890,7 +890,7 @@ def activity__sector(
                     apiField="vocabulary_uri",
                     ))
 
-        if type(percentage) is not int and type(percentage) is not Decimal:
+        if type(percentage) != int and type(percentage) != Decimal:
             errors.append(
                 FieldValidationError(
                     "sector",

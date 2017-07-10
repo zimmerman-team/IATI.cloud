@@ -33,7 +33,7 @@ class ParseManager():
         self.hash_changed = True
         self.valid_dataset = True
 
-        if root is not None:
+        if root != None:
             self.root = root
             self.parser = self._prepare_parser(self.root, dataset)
             return

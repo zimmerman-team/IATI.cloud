@@ -116,7 +116,8 @@ class Parse(IatiParser):
 
         old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
 
-        if old_activity and old_activity.dataset.id is not self.dataset.id:
+        if old_activity and (old_activity.dataset.name != self.dataset.name):
+            print 'added'
             self.append_error(
                 'FieldValidationError',
                 "iati-identifier", 
@@ -333,23 +334,23 @@ class Parse(IatiParser):
         if ref:
             self.check_registration_agency_validity("participating-org", element, ref) 
 
-        if ref and not organisation:
-            self.append_error(
-                'FieldValidationError',
-                "participating-org", 
-                "ref", 
-                "Must be an existing IATI organisation", 
-                element.sourceline, 
-                ref)
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "participating-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
 
-        if activity_id and not org_activity:
-            self.append_error(
-                'FieldValidationError',
-                "participating-org", 
-                "activity-id", 
-                "Must be an existing IATI identifier", 
-                element.sourceline, 
-                activity_id)
+        # if activity_id and not org_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "participating-org", 
+        #         "activity-id", 
+        #         "Must be an existing IATI identifier", 
+        #         element.sourceline, 
+        #         activity_id)
 
         
         activity = self.get_model('Activity')
@@ -480,14 +481,14 @@ class Parse(IatiParser):
 
         owner_ref_org = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
-        if not owner_ref_org:
-            self.append_error(
-                'FieldValidationError',
-                "owner_org", 
-                "ref", 
-                "Must be an existing IATI organisation", 
-                element.sourceline, 
-                ref)
+        # if not owner_ref_org:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "owner_org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
 
 
         other_identifier = self.get_model('OtherIdentifier')
@@ -2640,14 +2641,14 @@ class Parse(IatiParser):
         related_activity.ref = ref
         related_activity.type = related_activity_type
 
-        if not related_activity.ref_activity:
-            self.append_error(
-                'FieldValidationError',
-                "related-activity", 
-                "ref", 
-                "Must be an existing IATI activity identifier", 
-                element.sourceline, 
-                ref)
+        # if not related_activity.ref_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "related-activity",
+        #         "ref",
+        #         "Must be an existing IATI activity",
+        #         element.sourceline,
+        #         ref)
         
         # update existing related activity foreign keys, happens post save
         self.register_model('RelatedActivity', related_activity)
@@ -3418,4 +3419,5 @@ class Parse(IatiParser):
             post_save_validators.use_sector_or_transaction_sector(self, a)
             post_save_validators.use_direct_geo_or_transaction_geo(self, a)
 
+        post_save_validators.unfound_identifiers(self, dataset)
         post_save_validators.transactions_at_multiple_levels(self, dataset)
