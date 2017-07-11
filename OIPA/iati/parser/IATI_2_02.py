@@ -117,7 +117,6 @@ class Parse(IatiParser):
         old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
 
         if old_activity and (old_activity.dataset.name != self.dataset.name):
-            print 'added'
             self.append_error(
                 'FieldValidationError',
                 "iati-identifier", 
@@ -1233,13 +1232,16 @@ class Parse(IatiParser):
                 "not found on the accompanying code list",
                 None,
                 None,
-                code)
+                vocabulary.code)
 
         if not sector and vocabulary.code == '1': 
             raise FieldValidationError(
                 "sector",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         elif not sector:
             raise IgnoredVocabularyError(

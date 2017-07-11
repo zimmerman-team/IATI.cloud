@@ -177,9 +177,10 @@ class IatiParser(object):
         if settings.ERROR_LOGS_ENABLED:
             self.post_save_validators(self.dataset)
 
-
+            # TODO - only delete errors on activities that were updated
             self.dataset.note_count = len(self.errors)
             self.dataset.save()
+            
             DatasetNote.objects.filter(dataset=self.dataset).delete()
             DatasetNote.objects.bulk_create(self.errors)
     

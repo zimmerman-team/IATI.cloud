@@ -97,7 +97,7 @@ def use_sector_or_transaction_sector(self, a):
             "FieldValidationError", 
             "sector", 
             "-", 
-            "Either transaction/sector or sector must be present", 
+            "Either transaction/sector or sector must be present (DAC vocabulary)", 
             -1, 
             '-',
             a.iati_identifier)
@@ -131,7 +131,7 @@ def use_direct_geo_or_transaction_geo(self, a):
             "FieldValidationError", 
             "recipient-country/recipient-region", 
             "-", 
-            "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present", 
+            "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present (DAC vocabulary)", 
             -1, 
             '-',
             a.iati_identifier)

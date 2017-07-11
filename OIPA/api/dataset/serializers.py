@@ -41,6 +41,7 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
         fields = (
             'id',
             'iati_id',
+            'type',
             'url',
             'name',
             'title',
