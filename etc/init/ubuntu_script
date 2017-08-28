@@ -116,7 +116,7 @@ sudo systemctl enable nginx;
 
 # eventually; check this for hot reloading Follow https://www.digitalocean.com/community/tutorials/how-to-set-up-master-slave-replication-on-postgresql-on-an-ubuntu-12-04-vps
 
-
+https://www.digitalocean.com/community/tutorials/how-to-use-haproxy-to-set-up-http-load-balancing-on-an-ubuntu-vps
 
 
 
