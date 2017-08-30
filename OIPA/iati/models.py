@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from geodata.models import Country, Region
 from activity_manager import ActivityManager
 from location_manager import LocationManager
@@ -15,12 +17,16 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_vocabulary.models import HumanitarianScopeVocabulary
 from iati_vocabulary.models import IndicatorVocabulary
 from iati_organisation.models import Organisation
-
-from djorm_pgfulltext.models import SearchManager
-from djorm_pgfulltext.fields import VectorField
-from decimal import Decimal
 from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
+
+# deprecated
+from djorm_pgfulltext.models import SearchManager
+from djorm_pgfulltext.fields import VectorField
+
+
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 
 class Narrative(models.Model):
@@ -57,6 +63,12 @@ class ActivitySearch(models.Model):
     sector = VectorField()
     document_link = VectorField()
     last_reindexed = models.DateTimeField()
+    search_vector_text = SearchVectorField(null=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(fields=['search_vector_text'])
+        ]
 
 
 class Activity(models.Model):
