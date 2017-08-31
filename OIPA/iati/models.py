@@ -20,13 +20,12 @@ from iati_organisation.models import Organisation
 from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
 
-# deprecated
-from djorm_pgfulltext.models import SearchManager
-from djorm_pgfulltext.fields import VectorField
-
 
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
+
+from djorm_pgfulltext.models import SearchManager
+from djorm_pgfulltext.fields import VectorField
 
 
 class Narrative(models.Model):
@@ -52,17 +51,17 @@ class Narrative(models.Model):
 
 class ActivitySearch(models.Model):
     activity = models.OneToOneField('Activity')
-    iati_identifier = VectorField()
-    text = VectorField()
-    title = VectorField()
-    description = VectorField()
-    reporting_org = VectorField()
-    participating_org = VectorField()
-    recipient_country = VectorField()
-    recipient_region = VectorField()
-    sector = VectorField()
-    document_link = VectorField()
+    iati_identifier = models.CharField(max_length=255)
+    title = models.TextField(null=True)
+    description = models.TextField(null=True)
+    reporting_org = models.TextField(null=True)
+    participating_org = models.TextField(null=True)
+    recipient_country = models.TextField(null=True)
+    recipient_region = models.TextField(null=True)
+    sector = models.TextField(null=True)
+    document_link = models.TextField(null=True)
     last_reindexed = models.DateTimeField()
+
     search_vector_text = SearchVectorField(null=True)
 
     class Meta:
