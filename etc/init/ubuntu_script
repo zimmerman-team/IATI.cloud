@@ -191,3 +191,8 @@ sudo iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 sudo iptables -A INPUT -s ipadress/32 -p tcp -m tcp --dport 80 -j ACCEPT
 sudo iptables -A INPUT -s ipadress/32 -p tcp -m tcp --dport 443 -j ACCEPT
 ```
+
+
+# For Postgres settings, use http://pgtune.leopard.in.ua/
+
+and set max_parallel_workers_per_gather to amount of cpu's - 1. and max_worker_processes to 8.
