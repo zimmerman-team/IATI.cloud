@@ -63,17 +63,18 @@ class SearchFilter(filters.BaseFilterBackend):
 
         query = request.query_params.get('q', None)
         query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'ft'
+        lookup_expr = 'exact' #'ft'
         if query_lookup:
-            if query_lookup == 'exact':
-                lookup_expr = 'ft'
-            if query_lookup == 'startswith':
-                lookup_expr = 'ft_startswith'
+            lookup_expr = query_lookup
+            #if query_lookup == '':
+            #    lookup_expr = "exact"
+            #if query_lookup == 'startswith':
+            #    lookup_expr = 'ft_startswith'"""
 
         if query:
 
             query_fields = request.query_params.get('q_fields')
-            dict_query_list = [TSConfig('simple'), query]
+            #dict_query_list = [TSConfig('simple'), query]
 
             model_prefix = ''
 
@@ -93,7 +94,13 @@ class SearchFilter(filters.BaseFilterBackend):
                     filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
             else:
-                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
+                print(lookup_expr)
+                """if lookup_expr == '':
+                    print("In lookup expr")
+                    return queryset.filter(**{'{0}activitysearch__search_vector_text'.format(model_prefix): query})
+                """
+                return queryset.filter(**{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
+                #return queryset.filter(**{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
 
         return queryset
 
