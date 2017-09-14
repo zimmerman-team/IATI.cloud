@@ -66,10 +66,6 @@ class SearchFilter(filters.BaseFilterBackend):
         lookup_expr = 'exact' #'ft'
         if query_lookup:
             lookup_expr = query_lookup
-            #if query_lookup == '':
-            #    lookup_expr = "exact"
-            #if query_lookup == 'startswith':
-            #    lookup_expr = 'ft_startswith'"""
 
         if query:
 
@@ -94,13 +90,7 @@ class SearchFilter(filters.BaseFilterBackend):
                     filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
             else:
-                print(lookup_expr)
-                """if lookup_expr == '':
-                    print("In lookup expr")
-                    return queryset.filter(**{'{0}activitysearch__search_vector_text'.format(model_prefix): query})
-                """
                 return queryset.filter(**{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
-                #return queryset.filter(**{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
 
         return queryset
 
