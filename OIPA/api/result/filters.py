@@ -8,6 +8,7 @@ from api.generics.filters import StickyCharFilter
 from django_filters import DateFilter
 from django_filters import BooleanFilter
 from django_filters import NumberFilter
+from django_filters import CharFilter
 
 from iati.models import Result
 from iati.models import ResultTitle
@@ -23,9 +24,9 @@ class ResultFilter(TogetherFilterSet):
         name='activity__id',
         lookup_type='in')
 
-    result_title = CommaSeparatedStickyCharFilter(
-        name='resulttitle__primary_name',
-        lookup_type='in',
+    result_title = CharFilter(
+        lookup_type='exact',
+        name='resulttitle__narratives__content',
     )
 
     indicator_title = CommaSeparatedStickyCharFilter(

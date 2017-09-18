@@ -2,8 +2,8 @@ from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
 from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import CommaSeparatedStickyCharFilter
 from api.generics.filters import ToManyFilter
-
 from api.activity.filters import ActivityFilter
+from django_filters import CharFilter
 
 from iati.models import *
 from iati.transaction.models import *
@@ -353,12 +353,9 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-    result_title = ToManyFilter(
-        main_fk='activity',
-        qs=Result,
-        lookup_type='in',
-        name='resulttitle__narratives__content',
-        fk='activity',
+    result_title = CharFilter(
+        lookup_type='exact',
+        name='activity__result__resulttitle__narratives__content',
     )
 
     # TODO: degrades performance very badly, should probably remove this - 2016-03-02
