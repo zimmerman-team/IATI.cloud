@@ -1,4 +1,7 @@
+from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
+
 from rest_framework import serializers
+from api.generics.utils import get_or_raise, get_or_none
 
 from iati import models as iati_models
 from iati_organisation import models as organisation_models
@@ -6,30 +9,28 @@ from rest_framework.response import Response
 from rest_framework import status
 from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
+from api.generics.fields import PointField
+
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.serializers import ModelSerializerNoValidation
 from api.generics.serializers import SerializerNoValidation
-from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer, BasicRegionSerializer
 from api.country.serializers import CountrySerializer
-from api.activity.filters import RelatedActivityFilter
-
+from api.dataset.serializers import SimpleDatasetSerializer
 from api.codelist.serializers import VocabularySerializer
 from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer, OrganisationNarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
-
 from api.publisher.serializers import PublisherSerializer
+
+from api.activity.filters import RelatedActivityFilter
 
 from iati.parser import validators
 from iati.parser import exceptions
 
-from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
-
-from api.generics.utils import get_or_raise, get_or_none
 
 def save_narratives(instance, data, activity_instance):
     current_narratives = instance.narratives.all()
@@ -70,6 +71,7 @@ def save_narratives(instance, data, activity_instance):
                 **narrative_data)
 
 from api.generics.utils import handle_errors
+
 
 class ValueSerializer(SerializerNoValidation):
     currency = CodelistSerializer()
@@ -2827,6 +2829,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
+
+    dataset = SimpleDatasetSerializer(read_only=True, fields=('id', 'iati_id', 'name', 'title', 'source_url'))
 
     publisher = PublisherSerializer(read_only=True,  fields = ('id', 'url', 'publisher_iati_id', 'display_name', 'name'))
 
