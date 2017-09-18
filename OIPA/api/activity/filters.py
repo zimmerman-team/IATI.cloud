@@ -14,6 +14,8 @@ from api.generics.filters import CommaSeparatedCharFilter
 from api.generics.filters import TogetherFilterSet
 from api.generics.filters import ToManyFilter
 
+from django_filters import CharFilter
+
 from rest_framework import filters
 
 from iati.models import *
@@ -272,12 +274,10 @@ class ActivityFilter(TogetherFilterSet):
         name='normalized_ref',
         fk='activity',
     )
-
-    result_title = ToManyFilter(
-        qs=Result,
-        lookup_type='in',
-        name='resulttitle__narratives__content',
-        fk='activity',
+    
+    result_title = CharFilter(
+        lookup_type='exact',
+        name='result__resulttitle__narratives__content',
     )
 
     indicator_title = ToManyFilter(
