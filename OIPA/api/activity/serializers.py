@@ -970,7 +970,7 @@ class DescriptionSerializer(ModelSerializerNoValidation):
 class RelatedActivitySerializer(ModelSerializerNoValidation):
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = CodelistSerializer()
-
+    ref_activity_id = serializers.CharField(read_only=True, source="ref_activity.id")
     activity = serializers.CharField(write_only=True, source="current_activity")
 
     class Meta:
@@ -980,6 +980,7 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
             'activity',
             'id',
             'ref_activity',
+            'ref_activity_id',
             'ref',
             'type',
         )
