@@ -361,7 +361,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'relatedactivity_set',
                 queryset=RelatedActivity.objects.all()
-                .select_related('type'))
+                .select_related('type', 'ref_activity'))
         )
 
     def prefetch_legacy_data(self):

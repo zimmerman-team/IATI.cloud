@@ -24,22 +24,10 @@ from iati.models import *
 from iati.transaction.models import *
 from iati_synchroniser.models import Dataset, Publisher
 
-from django_filters import Filter
 from django.contrib.postgres.search import SearchQuery
 
 
-class SearchQueryFilter(Filter):
-
-    def filter(self, qs, value):
-        if value:
-            return qs.filter(activitysearch__search_vector_text=SearchQuery(value, config='english'))
-        return qs
-
-
 class ActivityFilter(TogetherFilterSet):
-
-    vector_q = SearchQueryFilter()
-
 
     activity_id = CommaSeparatedCharFilter(
         name='id',
