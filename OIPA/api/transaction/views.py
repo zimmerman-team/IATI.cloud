@@ -356,7 +356,7 @@ class TransactionAggregation(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="sector__name",
+            name_search_field="transactionsector__sector__name",
             renamed_name_search_field="sector_name",
         ),
         GroupBy(
