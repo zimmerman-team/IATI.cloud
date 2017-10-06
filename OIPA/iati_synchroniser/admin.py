@@ -75,6 +75,7 @@ class DatasetAdmin(admin.ModelAdmin):
     search_fields = ['id', 'name', 'title', 'publisher__name', 'publisher__publisher_iati_id']
     list_display = [
         'id',
+        'iati_id',
         'name',
         'publisher',
         'title',
