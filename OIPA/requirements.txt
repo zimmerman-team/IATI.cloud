@@ -16,7 +16,7 @@ django-rq==0.9.6
 django-test-without-migrations==0.6
 djangorestframework==3.7.0
 factory-boy==2.9.2
-lxml==3.8.0
+lxml==4.0.0
 Markdown==2.6.9
 mechanize==0.3.5
 mock==2.0.0
