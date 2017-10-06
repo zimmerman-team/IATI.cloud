@@ -6,7 +6,7 @@ from api.activity import filters
 from api.generics.filters import SearchFilter
 from api.generics.utils import get_serializer_fields
 from common.util import difference
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from api.renderers import XMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
 from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination

@@ -140,9 +140,8 @@ class ActivityXMLTestCase(TestCase):
 
     def test_create_activity(self):
         res = self.c.get(
-                "/api/export/activities/IATI-search1?format=xml", 
-                format='json'
-                )
+                "/api/export/activities/IATI-search1"
+        )
 
         activity = self.activity
         reporting_org1 = activity.publisher.organisation

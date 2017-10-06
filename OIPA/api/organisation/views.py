@@ -5,7 +5,7 @@ from iati_organisation import models
 from rest_framework.views import APIView
 from api.organisation import serializers
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
 

@@ -2,7 +2,8 @@ from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, 
 from iati_synchroniser.models import Dataset, Publisher, DatasetNote
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
-from rest_framework.filters import OrderingFilter, DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from api.dataset.filters import DatasetFilter, NoteFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count

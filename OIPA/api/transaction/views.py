@@ -3,7 +3,7 @@ from api.transaction.filters import TransactionFilter, TransactionAggregationFil
 from iati.transaction.models import Transaction, TransactionSector
 from api.generics.views import DynamicListView, DynamicDetailView
 
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.activity.serializers import ActivitySerializer
 

@@ -24,6 +24,7 @@ from iati.permissions.models import OrganisationUser
 
 
 from rest_framework import generics, filters, status, pagination
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class PublisherList(DynamicListView):
@@ -48,7 +49,7 @@ class PublisherList(DynamicListView):
     queryset = Publisher.objects.all().order_by('id')
     serializer_class = serializers.PublisherSerializer
     filter_class = PublisherFilter
-    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter,)
     ordering_fields = (
         'id', 
         'iati_id',

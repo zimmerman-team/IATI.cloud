@@ -1,5 +1,5 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.documents import serializers as documentSerializers
 from api.documents import filters
