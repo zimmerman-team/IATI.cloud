@@ -489,7 +489,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 
 class ActivityDateSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
-    iso_date = serializers.DateTimeField()
+    iso_date = serializers.DateField()
 
     activity = serializers.CharField(write_only=True)
 

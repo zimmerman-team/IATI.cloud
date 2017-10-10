@@ -19,7 +19,7 @@ class LocationList(DynamicListView):
 
     """
 
-    queryset = Location.objects.all()
+    queryset = Location.objects.all().order_by('id')
     filter_backends = (DjangoFilterBackend, DistanceFilter)
     filter_class = LocationFilter
     serializer_class = LocationSerializer

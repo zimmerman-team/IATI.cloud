@@ -374,7 +374,7 @@ class ActivityDateFactory(NoDatabaseFactory):
         model = iati.models.ActivityDate
 
     activity = SubFactory(ActivityFactory)
-    iso_date = datetime.datetime.now()
+    iso_date = datetime.date.today().isoformat()
     type = SubFactory(ActivityDateTypeFactory)
 
 

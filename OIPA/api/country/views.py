@@ -40,7 +40,7 @@ class CountryList(DynamicListView):
     URI is constructed as follows: `/api/counties/{country_id}`
 
     """
-    queryset = geodata.models.Country.objects.all()
+    queryset = geodata.models.Country.objects.all().order_by('code')
     serializer_class = serializers.CountrySerializer
     filter_class = CountryFilter
 

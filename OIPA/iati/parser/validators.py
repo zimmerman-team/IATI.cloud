@@ -5,7 +5,7 @@ from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 import dateutil.parser
-from datetime import datetime
+from datetime import date as datetime_date
 from decimal import Decimal
 from iati_synchroniser.models import Publisher
 
@@ -91,7 +91,7 @@ def validate_iati_identifier(iati_identifier):
 def validate_date(unvalidated_date):
     # datetime
 
-    if isinstance(unvalidated_date, datetime):
+    if isinstance(unvalidated_date, datetime_date):
         return unvalidated_date
 
     if unvalidated_date:

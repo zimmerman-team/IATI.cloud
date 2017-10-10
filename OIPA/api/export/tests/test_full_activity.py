@@ -140,7 +140,8 @@ class ActivityXMLTestCase(TestCase):
 
     def test_create_activity(self):
         res = self.c.get(
-                "/api/export/activities/IATI-search1"
+                "/api/export/activities/IATI-search1",
+                format="xml"
         )
 
         activity = self.activity
