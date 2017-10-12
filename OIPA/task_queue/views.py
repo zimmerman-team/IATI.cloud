@@ -21,12 +21,15 @@ from math import ceil
 def add_task(request):
     task = request.GET.get('task')
     parameters = request.GET.get('parameters')
+    parameters2 = request.GET.get('parameters2')
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
     func = getattr(tasks, task)
     
-    if parameters:
-        queue.enqueue(func, args=(parameters,))
+    if parameters and parameters2:
+        queue.enqueue(func, args=(parameters, parameters2))
+    elif parameters:
+        queue.enqueue(func, args=(parameters))
     else:
         queue.enqueue(func)
     return HttpResponse(json.dumps(True), content_type='application/json')

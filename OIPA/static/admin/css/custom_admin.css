@@ -164,7 +164,7 @@ a{
     display: block;
 }
 
-#add-task-input-parameters, #add-scheduled-task-input-parameters-wrapper{
+#add-task-input-parameters, #add-task-input-parameters-2, #add-scheduled-task-input-parameters-wrapper{
     display: none;
 }
 
