@@ -45,6 +45,8 @@ class ActivityFactory(NoDatabaseFactory):
 
     iati_identifier = 'IATI-0001'
     normalized_iati_identifier = 'IATI-0001'
+    
+    # default_currency = SubFactory(CurrencyFactory)
 
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)

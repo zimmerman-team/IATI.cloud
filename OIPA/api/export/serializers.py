@@ -980,7 +980,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     humanitarian = serializers.BooleanField()
     
-    default_currency = serializers.CharField(source='default_currency.code')
+    default_currency = serializers.CharField(source='default_currency.code', required=False)
 
 
     class Meta(activity_serializers.ActivitySerializer.Meta):
