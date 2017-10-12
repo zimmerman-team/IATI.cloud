@@ -51,6 +51,10 @@
                         <option value="force_parse_by_publisher_ref">Force parse all sources from a publisher</option>
                     </optgroup>
 
+                    <optgroup label="Dataset management tasks">
+                        <option value="find_replace_source_url">Find and replace dataset URL's</option>
+                    </optgroup>
+
                     <optgroup label="Geographic data tasks">
                         <option value="update_region_data">Add/update region data</option>
                         <option value="update_city_data">Add/update city data</option>
@@ -76,9 +80,11 @@
                         <option value="collect_files">Collect Documents</option>
                     </optgroup>
                 </select> <a target="_blank" href="http://docs.oipa.nl/en/latest/admin_interface/">The docs</a> provide more info on task functionality.
-
+                <br/>&nbsp;<br/>
                 <input id="add-task-input-parameters" name="add-task-default-parameters" value="" placeholder="days">
-
+                <br/>&nbsp;<br/>
+                <input id="add-task-input-parameters-2" name="add-task-default-parameters-2" value="" placeholder="">
+                <br/>&nbsp;<br/>
                 <button id="add-task-button-default" class="task-btn btn-info oipa-admin-button">Add</button>
             </div>
         </div>
@@ -768,8 +774,17 @@ $(document).ready(function (){
                 $('#add-task-input-parameters').attr("placeholder", "days (only the number)");
             }
 
+        } else if ($(this).val() == "find_replace_source_url"){
+
+            $('#add-task-input-parameters').show(500);
+            $('#add-task-input-parameters').attr("placeholder", "find value");
+
+            $('#add-task-input-parameters-2').show(500);
+            $('#add-task-input-parameters-2').attr("placeholder", "replace value");
+
         } else {
             $("#add-task-input-parameters").hide(500);
+            $('#add-task-input-parameters-2').hide(500);
         }
     });
 
@@ -778,6 +793,7 @@ $(document).ready(function (){
         var taskName = $('select[name="add-task-select-default"]').val();
         var btn = $('#add-task-button-default');
         var parameters = $('input[name="add-task-default-parameters"]').val();
+        var parameters2 = $('input[name="add-task-default-parameters-2"]').val();
         var queue =  "default";
 
         $.ajax({
@@ -786,7 +802,8 @@ $(document).ready(function (){
            data: {
                task: taskName,
                queue: queue,
-               parameters: parameters
+               parameters: parameters,
+               parameters2: parameters2
            },
            beforeSend: btnBeforeSend(btn),
         })
