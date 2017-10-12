@@ -301,10 +301,10 @@ class ActivitySaveTestCase(TestCase):
         1. Fetch Activity objects
         2. Fetch ActivityPolicyMarker objects
         3. Fetch content_type objects
-        # 4. Fetch narrative objects
+        4. Fetch narrative objects
         """
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(4):
             queryset = Activity.objects.all().prefetch_policy_markers()
             serializer = ActivitySerializer(
                     queryset, 
