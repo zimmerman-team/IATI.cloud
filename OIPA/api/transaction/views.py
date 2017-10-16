@@ -224,6 +224,13 @@ class TransactionAggregation(AggregationView):
     - `expenditure`
     - `commitment`
     - `incoming_fund`
+    - `interest_repayment`
+    - `loan_repayment`
+    - `reimbursement`
+    - `purchase_of_equity`
+    - `sale_of_equity`
+    - `credit_guarantee`
+    - `incoming_commitment`
 
     ## Currency options
 
