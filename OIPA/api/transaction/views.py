@@ -294,6 +294,48 @@ class TransactionAggregation(AggregationView):
             annotate=annotate_currency,
             extra_filter=Q(transaction_type=4),
         ),
+        Aggregation(
+            query_param='interest_repayment',
+            field='interest_repayment',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=5),
+        ),
+        Aggregation(
+            query_param='loan_repayment',
+            field='loan_repayment',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=6),
+        ),
+        Aggregation(
+            query_param='reimbursement',
+            field='reimbursement',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=7),
+        ),
+        Aggregation(
+            query_param='purchase_of_equity',
+            field='purchase_of_equity',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=8),
+        ),
+        Aggregation(
+            query_param='sale_of_equity',
+            field='sale_of_equity',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=9),
+        ),
+        Aggregation(
+            query_param='credit_guarantee',
+            field='credit_guarantee',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=10),
+        ),
+        Aggregation(
+            query_param='incoming_commitment',
+            field='incoming_commitment',
+            annotate=annotate_currency,
+            extra_filter=Q(transaction_type=11),
+        ),
     )
 
     allowed_groupings = (
