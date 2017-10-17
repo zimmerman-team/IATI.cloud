@@ -26,6 +26,13 @@ from django.db.models import Q
 from datetime import datetime
 
 from django.conf import settings
+from rest_framework import pagination
+
+
+class DatasetPagination(pagination.PageNumberPagination):
+    max_page_size = 10000
+    page_size = 10
+    page_size_query_param = 'page_size'
 
 
 class DatasetList(DynamicListView):
@@ -70,8 +77,8 @@ class DatasetList(DynamicListView):
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
     filter_backends = (OrderingFilter, DjangoFilterBackend)
-    pagination_class = None
     ordering_fields = '__all__'
+    pagination_class = DatasetPagination
 
     fields = (
         'id',
