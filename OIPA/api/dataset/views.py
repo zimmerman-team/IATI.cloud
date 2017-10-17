@@ -70,6 +70,7 @@ class DatasetList(DynamicListView):
     serializer_class = DatasetSerializer
     filter_class = DatasetFilter
     filter_backends = (OrderingFilter, DjangoFilterBackend)
+    pagination_class = None
     ordering_fields = '__all__'
 
     fields = (
