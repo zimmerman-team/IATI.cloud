@@ -8,7 +8,7 @@ django-cors-headers==2.1.0
 django-debug-toolbar==1.8
 sqlparse==0.2.4
 django-extensions==1.9.6
-django-filter==1.0.4
+django-filter==1.1.0
 django-grappelli==2.10.1
 django-otp==0.4.1.1
 django-otp-yubikey==0.4.2
