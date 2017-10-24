@@ -27,6 +27,15 @@ from rest_framework import generics, filters, status, pagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+from rest_framework import pagination
+
+
+class PublisherPagination(pagination.PageNumberPagination):
+    max_page_size = 10000
+    page_size = 10
+    page_size_query_param = 'page_size'
+
+
 class PublisherList(DynamicListView):
     """
     Returns a list of IATI Publishers stored in OIPA.
@@ -50,6 +59,8 @@ class PublisherList(DynamicListView):
     serializer_class = serializers.PublisherSerializer
     filter_class = PublisherFilter
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter,)
+    pagination_class = PublisherPagination
+
     ordering_fields = (
         'id', 
         'iati_id',
