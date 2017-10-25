@@ -19,6 +19,6 @@ class AllDjangoFilterBackend(DjangoFilterBackend):
         class AutoFilterSet(self.default_filter_set):
             class Meta:
                 model = queryset.model
-                fields = ('code', 'name')
+                fields = ('code', 'name', 'vocabulary')
 
         return AutoFilterSet
