@@ -205,6 +205,15 @@ class ActivityAggregations(AggregationView):
             renamed_name_search_field="document_link_category_name"
         ),
         GroupBy(
+            query_param="document_link_file_format",
+            fields="documentlink__file_format",
+            renamed_fields="document_link_file_format",
+            queryset=iati_models.FileFormat.objects.all(),
+            serializer=CodelistSerializer,
+            name_search_field="documentlink__file_format__name",
+            renamed_name_search_field="document_link_file_format"
+        ),
+        GroupBy(
             query_param="activity_status",
             fields="activity_status",
             queryset=ActivityStatus.objects.all(),
