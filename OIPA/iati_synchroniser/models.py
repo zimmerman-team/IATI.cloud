@@ -92,11 +92,6 @@ class IatiXmlSource(models.Model):
         if process:
             self.process()
 
-    def delete(self, *args, **kwargs):
-        from iati.models import Activity
-        Activity.objects.filter(xml_source_ref=self.ref).delete()
-        super(IatiXmlSource, self).delete()
-
 
 class IatiXmlSourceNote(models.Model):
     source = models.ForeignKey(IatiXmlSource)
