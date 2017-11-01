@@ -182,7 +182,7 @@ def update_iati_codelists():
 
 @job
 def find_replace_source_url(find_url, replace_url):
-    for source in Dataset.objects.filter(source_url__icontains=find_url):
+    for source in IatiXmlSource.objects.filter(source_url__icontains=find_url):
         source.source_url = source.source_url.replace(find_url, replace_url)
         source.save()
 
