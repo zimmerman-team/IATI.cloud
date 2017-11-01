@@ -25,11 +25,11 @@ def add_task(request):
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
     func = getattr(tasks, task)
-    
+
     if parameters and parameters2:
         queue.enqueue(func, args=(parameters, parameters2))
     elif parameters:
-        queue.enqueue(func, args=(parameters))
+        queue.enqueue(func, args=(parameters,))
     else:
         queue.enqueue(func)
     return HttpResponse(json.dumps(True), content_type='application/json')
