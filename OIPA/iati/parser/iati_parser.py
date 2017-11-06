@@ -49,9 +49,8 @@ class IatiParser(object):
 
     def get_or_none(self, model, *args, **kwargs):
         code = kwargs.get('code', None)
-        
         if code:
-
+            code = str(code)
             try:
                 model_cache = codelist_cache[model.__name__]
             except KeyError:

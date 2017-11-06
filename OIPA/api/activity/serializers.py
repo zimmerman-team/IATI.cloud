@@ -603,7 +603,6 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
     incoming_commitment_currency = serializers.CharField()
 
 
-
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
     ref = serializers.CharField(source="publisher.organisation.organisation_identifier")

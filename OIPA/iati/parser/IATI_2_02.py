@@ -422,7 +422,7 @@ class Parse(IatiParser):
         tag:description"""
 
         description_type_code = element.attrib.get('type', 1)
-        description_type = self.get_or_none(codelist_models.Language, code=description_type_code)
+        description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
 
         activity = self.get_model('Activity')
         description = models.Description()
