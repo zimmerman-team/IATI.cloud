@@ -33,7 +33,7 @@ class Dataset(models.Model):
     # IR fields
     iati_id = models.CharField(max_length=255, unique=True)
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher) # organization.id
@@ -44,7 +44,7 @@ class Dataset(models.Model):
     date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
-    last_found_in_registry = models.DateTimeField(default=None, null=True)
+    last_found_in_registry = models.DateTimeField(default=None, blank=True, null=True)
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
