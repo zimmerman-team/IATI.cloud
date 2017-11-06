@@ -1,11 +1,14 @@
 import json
-from iati_synchroniser.models import Publisher, Dataset
 import urllib2
 import datetime
 
+from iati_synchroniser.models import Publisher, Dataset
+from iati_organisation.models import Organisation
+from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
 
 DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'
 PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'
+
 
 class DatasetSyncer():
 
@@ -83,6 +86,14 @@ class DatasetSyncer():
                 'display_name': publisher['display_name']
             }
         )
+
+        if not Organisation.objects.filter(organisation_identifier=publisher['publisher_iati_id']).exists():
+            create_publisher_organisation(
+              obj,
+              publisher['publisher_iati_id'],
+              publisher['name'],
+              publisher['publisher_organization_type']
+            )
 
         return obj
 
