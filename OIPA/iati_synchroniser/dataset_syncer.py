@@ -90,8 +90,6 @@ class DatasetSyncer():
         if not Organisation.objects.filter(organisation_identifier=publisher['publisher_iati_id']).exists():
             create_publisher_organisation(
               obj,
-              publisher['publisher_iati_id'],
-              publisher['name'],
               publisher['publisher_organization_type']
             )
 

@@ -8,6 +8,7 @@ from django.core import management
 
 from mock import MagicMock
 import unittest
+from iati.factory import iati_factory
 
 
 class DatasetSyncerTestCase(TestCase):
@@ -17,7 +18,9 @@ class DatasetSyncerTestCase(TestCase):
     def setUp(self):
         management.call_command('flush', interactive=False, verbosity=0)
         self.datasetSyncer = DatasetSyncer()
-
+        iati_factory.LanguageFactory.create(code='en', name='English')
+        iati_factory.VersionFactory.create(code='2.02', name='2.02')
+        iati_factory.OrganisationTypeFactory.create(code='22', name='Multilateral')
 
     def test_get_val_in_list_of_dicts(self):
         """
@@ -34,7 +37,7 @@ class DatasetSyncerTestCase(TestCase):
     # @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
-
+        
         """
 
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
@@ -60,6 +63,7 @@ class DatasetSyncerTestCase(TestCase):
         """
         check if dataset is saved as expected
         """
+        
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
@@ -68,7 +72,6 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual("NP-SWC-27693", publisher.publisher_iati_id)
         self.assertEqual("Aasaman Nepal", publisher.display_name)
         self.assertEqual("aasaman", publisher.name)
-
 
 
     def test_update_or_create_dataset(self):
@@ -94,3 +97,4 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual(publisher, dataset.publisher)
         self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
         self.assertEqual(1, dataset.filetype)
+
