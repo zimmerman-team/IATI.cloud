@@ -323,8 +323,13 @@ class ActivityAggregationCalculation():
         total_aggregation_currency = None
 
         if activity_value != 0 and child_value == 0 or activity_value == child_value:
+            # only the activity has funds
             total_aggregation_currency = activity_currency
         elif activity_value == 0 and child_value != 0:
+            # only the children have funds
+            total_aggregation_currency = child_currency
+        elif activity_currency == child_currency:
+            # both have funds and currencies are the same
             total_aggregation_currency = child_currency
 
         total_aggregation_value = activity_value + child_value
