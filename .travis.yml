@@ -3,7 +3,7 @@ python:
   - "2.7"
 sudo: false
 addons:
-  postgresql: "9.4"
+  postgresql: "9.3"
 services:
   - redis-server
 
@@ -16,6 +16,7 @@ install:
   - "pip install -r OIPA/requirements.txt"
 
 before_script:
+  - sudo apt-get install postgresql-9.3-postgis-2.1 postgis -y -q
   - psql -U postgres -c "create extension postgis"
 
 script:
