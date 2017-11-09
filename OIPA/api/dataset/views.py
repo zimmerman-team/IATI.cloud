@@ -316,13 +316,16 @@ class DatasetPublishActivities(APIView):
                 "url": source_url,
             })
 
+            # over here change the iati_id so we have no uniqueness conflict
+            Dataset.objects.filter(iati_id=old_package.get('id')).update(iati_id=old_package.get('id')+"will_be_removed")
+
 
         # 0. create_or_update Dataset object
         dataset = Dataset.objects.get(
             filetype=1,
             publisher=publisher,
             added_manually=True,
-                )
+        )
 
         dataset.iati_id = registry_dataset['id']
         dataset.name = source_name
@@ -332,7 +335,8 @@ class DatasetPublishActivities(APIView):
         dataset.save()
 
         #  update the affected activities flags
-        activities.update(published=True, modified=False, ready_to_publish=True)
+        activities.update(published=True, modified=False, ready_to_publish=True, dataset=dataset)
+        Dataset.objects.filter(iati_id=old_package.get('id')+"will_be_removed").delete()
 
         # remove the old datasets from the registry
         # TODO: query the registry to remove a dataset - 2017-01-16
