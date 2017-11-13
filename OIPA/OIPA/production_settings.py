@@ -1,6 +1,7 @@
 # Sample production settings, change as required
 
-from OIPA.base_settings import *
+from OIPA.settings import *  # noqa: F401, F403
+import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
@@ -33,7 +34,7 @@ ROOT_ORGANISATIONS = []
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_DIRS = (
-     os.path.join(BASE_DIR, 'static/'),
+    os.path.join(BASE_DIR, 'static/'),
 )
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -42,7 +43,6 @@ WSGI_APPLICATION = 'OIPA.wsgi.application'
 ERROR_LOGS_ENABLED = False
 
 try:
-    from local_settings import *
+    from local_settings import *  # noqa: F401, F403
 except ImportError:
     pass
-
