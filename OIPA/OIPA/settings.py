@@ -214,29 +214,24 @@ REST_FRAMEWORK = {
     )
 }
 
+RQ_REDIS_URL = 'redis://localhost:6379/0'
+
+
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
+        'URL': RQ_REDIS_URL,
         'DEFAULT_TIMEOUT': 3600,
     },
     'parser': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
+        'URL': RQ_REDIS_URL,
         'DEFAULT_TIMEOUT': 5400,
     },
     'export': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
+        'URL': RQ_REDIS_URL,
         'DEFAULT_TIMEOUT': 5400,
     },
     'document_collector': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
+        'URL': RQ_REDIS_URL,
         'DEFAULT_TIMEOUT': 5400,
     }
 }
