@@ -36,3 +36,5 @@ OIPA/supervisord.pid
 
 session.vim
 tags
+.data
+
