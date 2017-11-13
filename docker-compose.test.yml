@@ -1,5 +1,5 @@
-# Docker Compose file for OIPA tests
-#
+# Docker Compose override file for running OIPA tests
+# Extends 'docker-compose.yml'.
 #
 
 version: "2"
@@ -10,11 +10,4 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - etc/env.test
-    volumes:
-      - .:/app/src
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
-      - redis
+      - etc/env/env.test
