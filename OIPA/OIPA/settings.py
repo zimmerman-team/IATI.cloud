@@ -1,7 +1,8 @@
 # Django settings for OIPA project.
 
-import sys
 import os
+import sys
+
 from django.core.urlresolvers import reverse_lazy
 from tzlocal import get_localzone
 
@@ -60,7 +61,6 @@ def rel(*x):
 
 
 sys.path.insert(0, rel('..', 'lib'))
-
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -216,7 +216,6 @@ REST_FRAMEWORK = {
 
 RQ_REDIS_URL = 'redis://localhost:6379/0'
 
-
 RQ_QUEUES = {
     'default': {
         'URL': RQ_REDIS_URL,
@@ -264,7 +263,6 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 
 EXPORT_COMMENT = 'Published using the IATI Studio publisher'
 
-
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, '../fixtures/'),
 )
@@ -272,7 +270,6 @@ FIXTURE_DIRS = (
 CKAN_URL = 'https://iati-staging.ckan.io'
 
 API_CACHE_SECONDS = 0
-
 
 try:
     from local_settings import *  # noqa: F401, F403
