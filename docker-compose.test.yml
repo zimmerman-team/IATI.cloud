@@ -1,0 +1,20 @@
+# Docker Compose file for OIPA tests
+#
+#
+
+version: "2"
+services:
+
+  oipa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - etc/env.test
+    volumes:
+      - .:/app/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
