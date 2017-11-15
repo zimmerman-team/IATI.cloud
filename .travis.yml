@@ -11,9 +11,9 @@ before_install:
 
 script:
   - make migrate
-  - make test-coverage
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST --rm oipa coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --nomigrations
 
 after_success:
-  - make coveralls
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
 after_failure:
-  - make coveralls
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
