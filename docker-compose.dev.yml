@@ -1,0 +1,35 @@
+# Docker Compose override file for OIPA development.
+# Extends 'docker-compose.yml'.
+#
+
+version: "2"
+services:
+
+  postgres:
+    volumes:
+      - ./.data/postgresql:/var/lib/postgresql/data
+
+  redis:
+    volumes:
+      - ./.data/redis:/data
+
+  oipa:
+    env_file:
+      - etc/env/env.dev
+    volumes:
+      - .:/app/src
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    command: ["/app/src/bin/wait-for-postgres.sh", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  oipa-supervisor:
+    env_file:
+      - etc/env/env.dev
+    volumes:
+      - .:/app/src
+    depends_on:
+      - postgres
+      - redis

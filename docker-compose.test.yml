@@ -1,0 +1,16 @@
+# Docker Compose override file for running OIPA tests
+# Extends 'docker-compose.yml'.
+#
+
+version: "2"
+services:
+
+  oipa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - etc/env/env.test
+    # Required for Travis ci (coverage/coveralls)
+    volumes:
+      - .:/app/src

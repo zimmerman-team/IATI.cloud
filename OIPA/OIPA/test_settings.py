@@ -1,4 +1,4 @@
-from OIPA.production_settings import *
+from OIPA.production_settings import *  # noqa: F401, F403
 
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 

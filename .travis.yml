@@ -1,33 +1,19 @@
 dist: trusty
-language: python
-python:
-  - "2.7"
-sudo: false
-addons:
-  postgresql: 9.6
-  apt:
-    packages:
-    - postgresql-9.6-postgis-2.3
+sudo: required
+language: shell
 
 services:
-  - redis-server
+  - docker
 
-cache:
-  directories:
-    - $HOME/.cache/pip
 
-# command to install dependencies
-install:
-  - "pip install -r OIPA/requirements.txt"
-
-before_script:
-  - psql -U postgres -c "create extension postgis"
+before_install:
+  - make build
 
 script:
-  - cd OIPA
-  - python manage.py migrate  --settings=OIPA.travis_db_settings --verbosity 2
-  - coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --settings OIPA.travis_test_settings --nomigrations
+  - make migrate
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST --rm oipa coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --nomigrations
+
 after_success:
-  - coveralls
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
 after_failure:
-  - coveralls
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
