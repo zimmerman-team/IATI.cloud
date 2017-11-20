@@ -5,7 +5,7 @@ requests==2.18.4
 Django==1.11.7
 django-two-factor-auth==1.6.2
 django-cors-headers==2.1.0
-django-debug-toolbar==1.8
+django-debug-toolbar==1.9.1
 sqlparse==0.2.4
 django-extensions==1.9.7
 django-filter==1.1.0
@@ -16,14 +16,14 @@ django-rq==0.9.6
 django-test-without-migrations==0.6
 djangorestframework==3.7.3
 factory-boy==2.9.2
+pytest==3.2.5
+pytest-django==3.1.2
 lxml==4.1.1
 Markdown==2.6.9
 mechanize==0.3.6
 mock==2.0.0
 psycopg2==2.7.3.2
 pysqlite==2.8.3
-pytest==3.2.3
-pytest-django==3.1.2
 python-coveralls==2.9.1
 python-dateutil==2.6.1
 redis==2.10.6
