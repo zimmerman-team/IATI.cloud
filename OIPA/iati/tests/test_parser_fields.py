@@ -529,6 +529,7 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_202.get_model('Activity')
         self.assertEqual(activity.default_tied_status.code, code)
 
+
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
@@ -641,6 +642,7 @@ class DescriptionTestCase(ParserSetupTestCase):
         self.assertEqual(description.activity, self.activity)
         self.assertEqual(narrative.related_object, description)
 
+
 class OtherIdentifierTestCase(ParserSetupTestCase):
     """
     2.02: Freetext support of the other-identifier was removed. A new other-identifier/@ref was added as a replacement.
@@ -707,6 +709,7 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('OtherIdentifierNarrative')
         self.assertEqual(narrative.related_object, other_identifier)
 
+
 class NarrativeTestCase(ParserSetupTestCase):
     """
     Added in 2.02
@@ -742,6 +745,11 @@ class NarrativeTestCase(ParserSetupTestCase):
         The narrative should change its language parameter based on the xml:lang element 
         """
         self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr" # ISO 639-1:2002
+
+        iati_factory.LanguageFactory.create(
+            code="fr",
+            name="French language"
+        )
 
         self.parser_202.add_narrative(self.narrative, self.related_object)
         narrative = self.parser_202.get_model('ActivityNarrative')
@@ -1017,6 +1025,7 @@ class ActivityDateTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ActivityDateNarrative')
         self.assertEqual(narrative.related_object, activity_date)
 
+
 class ContactInfoTestCase(ParserSetupTestCase):
     """
     2.02:  The optional contact-info/department element was added.
@@ -1208,6 +1217,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ContactInfoMailingAddressNarrative')
         self.assertEqual(narrative.related_object, contact_info_mailing_address)
 
+
 class RecipientCountryTestCase(ParserSetupTestCase):
     """
     2.02: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element, but only in particular use-cases.
@@ -1241,6 +1251,7 @@ class RecipientCountryTestCase(ParserSetupTestCase):
         self.assertEqual(recipient_country.percentage, self.attrs['percentage'])
 
         # TODO: needs narrative?
+
 
 class RecipientRegionTestCase(ParserSetupTestCase):
     """
