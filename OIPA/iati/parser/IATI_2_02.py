@@ -34,8 +34,7 @@ class Parse(IatiParser):
         lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', default_lang)
         text = element.text
 
-        if lang:
-            lang = lang.lower()
+        lang = lang.lower() if lang else lang
 
         language = self.get_or_none(codelist_models.Language, code=lang)
 
@@ -52,7 +51,7 @@ class Parse(IatiParser):
                 register_name,
                 "xml:lang",
                 "must specify xml:lang on iati-activity or xml:lang on the element itself")
-        if not text:
+        if not text and not text.isspace():
             raise RequiredFieldError(
                 register_name,
                 "text", 
