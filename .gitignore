@@ -15,6 +15,7 @@ OIPA/media/csv_files/*
 OIPA/static_served/*
 OIPA/supervisord.log*
 OIPA/supervisord.pid
+OIPA/.coverage
 parse.log
 session.vim
 tags
