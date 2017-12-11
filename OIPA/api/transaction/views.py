@@ -78,7 +78,7 @@ class TransactionList(DynamicListView):
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
     """
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by('id')
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
     pagination_class = CustomTransactionPagination
