@@ -49,8 +49,8 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    last_updated_datetime_lt = DateTimeFilter(
-        lookup_expr='lt',
+    last_updated_datetime_gt = DateTimeFilter(
+        lookup_expr='gt',
         name='last_updated_datetime'
     )
 
