@@ -5,6 +5,7 @@ from django.db.models.fields.related import OneToOneRel
 from django_filters import FilterSet
 from django_filters import NumberFilter
 from django_filters import DateFilter
+from django_filters import DateTimeFilter
 from django_filters import BooleanFilter
 from django_filters import TypedChoiceFilter
 from django_filters import CharFilter
@@ -46,6 +47,11 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='categories',
         fk='activity',
+    )
+
+    last_updated_model_lte = DateTimeFilter(
+        lookup_expr='lt',
+        name='last_updated_model'
     )
 
     planned_start_date_lte = DateFilter(
