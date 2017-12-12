@@ -49,9 +49,9 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
-    last_updated_model_lte = DateTimeFilter(
+    last_updated_datetime_lt = DateTimeFilter(
         lookup_expr='lt',
-        name='last_updated_model'
+        name='last_updated_datetime'
     )
 
     planned_start_date_lte = DateFilter(
