@@ -298,6 +298,13 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
+    sector_startswith = ToManyFilter(
+        qs=ActivitySector,
+        lookup_expr='startswith',
+        name='sector__code',
+        fk='activity',
+    )
+
     sector_vocabulary = ToManyFilter(
         main_fk='activity',
         qs=ActivitySector,

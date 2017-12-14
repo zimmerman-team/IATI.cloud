@@ -207,6 +207,13 @@ class BudgetFilter(TogetherFilterSet):
         fk='activity__budget',
     )
 
+    sector_startswith = ToManyFilter(
+        qs=ActivitySector,
+        lookup_expr='startswith',
+        name='sector__code',
+        fk='activity__budget',
+    )
+
     sector_vocabulary = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
