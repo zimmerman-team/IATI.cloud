@@ -299,6 +299,7 @@ class TransactionFilter(FilterSet):
     )
 
     sector_startswith = ToManyFilter(
+        main_fk='activity',
         qs=ActivitySector,
         lookup_expr='startswith',
         name='sector__code',
