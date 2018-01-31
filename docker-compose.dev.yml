@@ -29,9 +29,9 @@ services:
       service: oipa
     env_file:
       - etc/env/env.dev
-    # command: ["/app/src/bin/wait-for-postgres.sh", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
-    # volumes:
-    #   - .:/app/src
+    command: ["/app/src/bin/wait-for-postgres.sh", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - .:/app/src
     depends_on:
       - postgres
       - redis
