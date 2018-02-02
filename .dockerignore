@@ -7,6 +7,7 @@ __pycache__
 .vscode
 *.pyc
 *.swp
+docker-compose*
 local_settings.py
 OIPA/docstore/*
 OIPA/indicators/data_backup/wdi_data/*

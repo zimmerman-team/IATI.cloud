@@ -5,27 +5,8 @@
 version: "2"
 services:
 
-  postgres:
-    image: mdillon/postgis:9.6
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=oipa
-      - POSTGRES_USER=oipa
-      - POSTGRES_PASSWORD=oipa
-
-  redis:
-    image: redis:3.2.11
-    ports:
-      - "6379:6379"
-
   oipa:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
 
   oipa-supervisor:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: ["/app/src/bin/wait-for-postgres.sh", "--", "python", "manage.py", "supervisor"]
+    build: .

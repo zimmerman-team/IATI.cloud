@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-RUN apt-get -y update && apt-get -y upgrade
+RUN apt-get -y clean && apt-get -y update
 
 RUN apt-get -y install python-dev python-virtualenv postgresql-client \
     git \
@@ -52,4 +52,8 @@ ENV PYTHONPATH /app/src
 WORKDIR /app/src/OIPA
 ADD . /app/src
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN groupadd -r uwsgi -g 1000 && useradd -u 1000 -r -g 1000 uwsgi
+RUN mkdir /app/src/public && chown -R uwsgi:uwsgi /app/src/public
+USER 1000
+
+CMD ["/app/src/bin/docker-cmd.sh"]
