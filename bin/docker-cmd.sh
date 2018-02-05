@@ -12,10 +12,14 @@ set -e
     --chdir=/app/src/OIPA \
     --module=OIPA.wsgi:application \
     --env DJANGO_SETTINGS_MODULE=OIPA.settings \
-    --master --pidfile=/tmp/uwsgi.pid \
+    --master \
+    --pidfile=/tmp/uwsgi.pid \
+    --thunder-lock \
     --http 0.0.0.0:8000 \
     --buffer-size 32768 \
-    --processes=5 \
-    --uid=1000 --gid=1000 \
+    --processes=3 \
+    --uid=1000 \
+    --gid=1000 \
     --vacuum \
+    --harakiri=120 \
     --home=/venv
