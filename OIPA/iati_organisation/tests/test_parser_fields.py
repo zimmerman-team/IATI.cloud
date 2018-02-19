@@ -7,7 +7,7 @@ import datetime
 from django.core import management
 
 from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
-from unittest import TestCase
+from django.test import TestCase
 
 from lxml import etree
 from lxml.builder import E
