@@ -1,9 +1,10 @@
 from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
-from iati_synchroniser.models import Dataset, Publisher
+from iati_synchroniser.models import Dataset, Publisher, DatasetNote
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
-from rest_framework.filters import OrderingFilter, DjangoFilterBackend
-from api.dataset.filters import DatasetFilter
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from api.dataset.filters import DatasetFilter, NoteFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
@@ -25,6 +26,14 @@ from django.db.models import Q
 from datetime import datetime
 
 from django.conf import settings
+from rest_framework import pagination
+
+
+class DatasetPagination(pagination.PageNumberPagination):
+    max_page_size = 10000
+    page_size = 10
+    page_size_query_param = 'page_size'
+
 
 class DatasetList(DynamicListView):
     """
@@ -69,6 +78,7 @@ class DatasetList(DynamicListView):
     filter_class = DatasetFilter
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     ordering_fields = '__all__'
+    pagination_class = DatasetPagination
 
     fields = (
         'id',
@@ -220,15 +230,18 @@ class DatasetNotes(ListAPIView):
     serializer_class = DatasetNoteSerializer
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     ordering_fields = '__all__'
+    filter_class = NoteFilter
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Dataset(pk=pk).datasetnote_set.all()
+        return DatasetNote.objects.filter(dataset=pk).order_by('id')
+
 
 from api.export.views import IATIActivityList
 export_view = IATIActivityList.as_view()
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
+
 
 class DatasetPublishActivities(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -303,21 +316,27 @@ class DatasetPublishActivities(APIView):
                 "url": source_url,
             })
 
+            # over here change the iati_id so we have no uniqueness conflict
+            Dataset.objects.filter(iati_id=old_package.get('id')).update(iati_id=old_package.get('id')+"will_be_removed")
+
 
         # 0. create_or_update Dataset object
-        dataset = Dataset.objects.create(
-            id=registry_dataset['id'],
-            name=source_name,
-            title=source_name,
+        dataset = Dataset.objects.get(
             filetype=1,
             publisher=publisher,
-            source_url=source_url, # TODO: store in OIPA somewhere, or let user define this? - 2017-01-13
-            is_parsed=False,
-            iati_version="2.02",
-                )
+            added_manually=True,
+        )
+
+        dataset.iati_id = registry_dataset['id']
+        dataset.name = source_name
+        dataset.title = source_name
+        dataset.source_url = source_url
+        dataset.is_parsed = False
+        dataset.save()
 
         #  update the affected activities flags
-        activities.update(published=True, modified=False, ready_to_publish=True)
+        activities.update(published=True, modified=False, ready_to_publish=True, dataset=dataset)
+        Dataset.objects.filter(iati_id=old_package.get('id')+"will_be_removed").delete()
 
         # remove the old datasets from the registry
         # TODO: query the registry to remove a dataset - 2017-01-16
@@ -367,6 +386,153 @@ class DatasetPublishActivitiesUpdate(APIView):
                 last_updated_datetime=datetime.now().isoformat(' ')
                 )
         non_r2p_activities.update(published=False)
+
+        #  return Dataset object
+        serializer = DatasetSerializer(dataset, context={'request': request})
+        return Response(serializer.data)
+
+
+
+
+class DatasetPublishOrganisations(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def post(self, request, publisher_id):
+        user = request.user.organisationuser
+        iati_user_id = user.iati_user_id
+        publisher = Publisher.objects.get(pk=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
+
+        source_url = request.data.get('source_url', None)
+
+        if not source_url:
+            raise exceptions.APIException(detail="no source_url provided")
+
+        user = request.user
+        organisationuser = user.organisationuser
+        api_key = organisationuser.iati_api_key
+        client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
+
+        # TODO: should this be the name? - 2017-02-20
+        source_name = '{}-organisations'.format(publisher.name)
+
+        # get all published organisations, except for the ones that are just modified
+        organisations = Organisation.objects.filter(ready_to_publish=True, publisher=publisher)
+
+        try:
+            orgList = client.call_action('organization_list_for_user', {})
+        except:
+            raise exceptions.APIException(detail="Can't get organisation list for user".format(user_id))
+
+        primary_org_id = orgList[0]['id']
+
+        try:
+            # sync main datasets to IATI registry
+            registry_dataset = client.call_action('package_create', { 
+                "resources": [
+                    { "url": source_url }
+                ],
+                "name": source_name,
+                "filetype": "organisation",
+                "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                "organisation_count": organisations.count(),
+                "title": source_name,
+                "owner_org": primary_org_id,
+                "url": source_url,
+            })
+
+        except Exception as e:
+            # try to recover from case when the dataset already exists (just update it instead)
+
+            old_package = client.call_action('package_show', { 
+                "name_or_id": source_name,
+            })
+
+            if not old_package:
+                print('exception raised in client_call_action', e, e.error_dict)
+                raise exceptions.APIException(detail="Failed publishing dataset")
+
+            registry_dataset = client.call_action('package_update', { 
+                "id": old_package.get('id'),
+                "resources": [
+                    { "url": source_url }
+                ],
+                "name": source_name,
+                "filetype": "organisation",
+                "date_updated": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                "organisation_count": organisations.count(),
+                "title": source_name,
+                "owner_org": primary_org_id,
+                "url": source_url,
+            })
+
+
+        # 0. create_or_update Dataset object
+        dataset = Dataset.objects.get(
+            filetype=2,
+            publisher=publisher,
+            added_manually=True,
+                )
+
+        dataset.iati_id = registry_dataset['id']
+        dataset.name = source_name
+        dataset.title = source_name
+        dataset.source_url = source_url
+        dataset.is_parsed = False
+        dataset.save()
+
+        #  update the affected organisations flags
+        organisations.update(published=True, modified=False, ready_to_publish=True)
+
+        # remove the old datasets from the registry
+        # TODO: query the registry to remove a dataset - 2017-01-16
+        # TODO: remove old datasets locally as well - 2017-01-16
+        # TODO: Or just ask the user to remove the old datasets by hand? - 2017-02-20
+
+        # return Dataset object
+        serializer = DatasetSerializer(dataset, context={'request': request})
+        return Response(serializer.data)
+
+class DatasetPublishOrganisationsUpdate(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (OrganisationAdminGroupPermissions, )
+
+    def put(self, request, publisher_id, dataset_id):
+        user = request.user.organisationuser
+        publisher = Publisher.objects.get(pk=publisher_id)
+        admin_group = OrganisationAdminGroup.objects.get(publisher_id=publisher_id)
+
+        source_url = request.data.get('source_url', None)
+
+        # TODO: call package_update to update source_url for registry as well - 2017-02-20
+
+        if not source_url:
+            raise exceptions.APIException(detail="no source_url provided")
+
+        user = request.user
+        organisationuser = user.organisationuser
+        api_key = organisationuser.iati_api_key
+        client = RemoteCKAN(settings.CKAN_URL, apikey=api_key)
+
+
+        dataset = Dataset.objects.get(id=dataset_id)
+        dataset.date_updated = datetime.now()
+        dataset.source_url = source_url
+        dataset.save()
+
+        # get all ready to publish organisations
+        organisations = Organisation.objects.filter(ready_to_publish=True, publisher=publisher)
+        non_r2p_organisations = Organisation.objects.filter(ready_to_publish=False, publisher=publisher)
+
+        #  update the affected organisations flags
+        organisations.update(
+                published=True,
+                modified=False,
+                ready_to_publish=True,
+                last_updated_datetime=datetime.now().isoformat(' ')
+                )
+        non_r2p_organisations.update(published=False)
 
         #  return Dataset object
         serializer = DatasetSerializer(dataset, context={'request': request})

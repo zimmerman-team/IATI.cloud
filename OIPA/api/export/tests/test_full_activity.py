@@ -140,9 +140,8 @@ class ActivityXMLTestCase(TestCase):
 
     def test_create_activity(self):
         res = self.c.get(
-                "/api/export/activities/IATI-search1?format=xml", 
-                format='json'
-                )
+                "/api/export/activities/IATI-search1?format=xml"
+        )
 
         activity = self.activity
         reporting_org1 = activity.publisher.organisation
@@ -741,18 +740,6 @@ class ActivityXMLTestCase(TestCase):
                 )
 
         parsed_xml = ET.fromstring(res.content)
-
-        print("ORIGINAL")
-        print(ET.tostring(xml, pretty_print=True))
-
-        # print contact_info1.mailing_address.narratives.all()[0]
-        # print budget_item1.description.narratives.all()[0]
-        #print planned_disbursement_provider1.narratives.all()[0]
-        # print result1.resulttitle.narratives.all()[0]
-
-
-        print("PARSED")
-        print(ET.tostring(parsed_xml))
 
         def elements_equal(e1, e2):
             self.assertEqual(e1.tag, e2.tag)

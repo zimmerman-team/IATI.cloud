@@ -7,7 +7,6 @@ from lxml.builder import E
 from django.conf import settings
 from collections import OrderedDict
 
-
 # TODO: Make this more generic - 2016-01-21
 class XMLRenderer(BaseRenderer):
     """
@@ -110,3 +109,8 @@ class PaginatedCSVRenderer(CSVRenderer):
             data = data.get(self.results_field, [])
 
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
+
+class OrganisationXMLRenderer(XMLRenderer):
+    root_tag_name = 'iati-organisations'
+    item_tag_name = 'iati-organisation'
+

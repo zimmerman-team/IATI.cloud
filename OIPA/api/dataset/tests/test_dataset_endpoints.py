@@ -17,11 +17,12 @@ class TestDatasetEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_dataset_detail_endpoint(self):
-        synchroniser_factory.DatasetFactory.create(id=1)
-        url = reverse('datasets:dataset-detail', args={1})
+        dataset = synchroniser_factory.DatasetFactory.create(name="dataset-3")
+        url = reverse('datasets:dataset-detail', args={dataset.id})
 
         msg = 'dataset detail endpoint should be localed at {0}'
-        expect_url = '/api/datasets/1/'
+        expect_url = '/api/datasets/'+str(dataset.id)+'/'
+        # print(url)
         assert url == expect_url, msg.format(expect_url)
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))

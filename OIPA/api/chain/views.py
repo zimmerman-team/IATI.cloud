@@ -1,6 +1,6 @@
 from django.db.models import Count, Sum
 
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation

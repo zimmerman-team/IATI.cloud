@@ -10,7 +10,7 @@ sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
 
 # postgresql
 sudo apt-get install -y sqlite3 # for tests
-sudo apt-get install -y libsqlite3-dev # for tests
+sudo apt-get install -y libsqlite3-dev libsqlite3-mod-spatialite # for tests
 sudo apt-get install -y postgresql-9.5
 sudo apt-get install -y postgresql-client
 sudo apt-get install -y postgresql-server-dev-9.5
@@ -28,9 +28,5 @@ sudo apt-get install -y redis-server
 # pip dependencies
 sudo pip install ipython
 
-#Unittest dependencies
-sudo apt-get install -y libsqlite3-mod-spatialite
-
 # fulltext Python library for extracting text from various file formats (for indexing).
-sudo apt-get update
 sudo apt-get install -y catdoc odt2txt antiword poppler-utils unrtf perl libimage-exiftool-perl html2text binutils unrar gzip bzip2 unzip docx2txt

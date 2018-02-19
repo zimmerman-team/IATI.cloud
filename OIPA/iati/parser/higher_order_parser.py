@@ -3,6 +3,7 @@ from iati import models
 import iati_codelists.models as codelist_models
 from iati.parser.exceptions import RequiredFieldError
 import functools
+from common.util import findnth_occurence_in_string
 
 
 def provider_org(self, parent_model, provider_model, fk_name):
@@ -22,6 +23,30 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+
+
+        # validation
+        # if provider_activity_id and not provider_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/provider-org", 
+        #         "provider-activity-id", 
+        #         "Must be an existing IATI activity", 
+        #         element.sourceline, 
+        #         provider_activity_id)
+        
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/provider-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
+
+        if ref:
+            self.check_registration_agency_validity("transaction/provider-org", element, ref) 
+
 
         setattr(provider_model, fk_name, parent_model)
         provider_model.ref = ref
@@ -54,6 +79,33 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
 
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+
+
+        # validation
+        # if receiver_activity_id and not receiver_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/receiver-org", 
+        #         "receiver-activity-id", 
+        #         "Must be an existing IATI activity", 
+        #         element.sourceline, 
+        #         receiver_activity_id)
+        
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "transaction/receiver-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
+
+        if ref:
+            self.check_registration_agency_validity(
+                "transaction/receiver-org", 
+                element, 
+                ref) 
+
 
         setattr(receiver_model, fk_name, parent_model)
         receiver_model.ref = ref

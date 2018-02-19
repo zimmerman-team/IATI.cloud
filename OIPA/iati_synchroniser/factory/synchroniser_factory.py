@@ -19,16 +19,16 @@ class PublisherFactory(NoDatabaseFactory):
         django_get_or_create = [ 'publisher_iati_id' ]
 
     organisation = SubFactory(OrganisationFactory)
-    id = 'NL-1'
-    publisher_iati_id = 'NL-1'
-    name = 'Minbuza'
-    display_name = 'Ministry of Foreign Affairs (Netherlands)'
+    iati_id = 'random-string'
+    publisher_iati_id = 'NL-KVK-123456'
+    name = 'dutchorg'
+    display_name = 'Dutch organisation'
 
 class DatasetFactory(NoDatabaseFactory):
     class Meta:
         model = Dataset
 
-    id = '31403-42090-13011-13003'
+    iati_id = '31403-42090-13011-13003'
     name = 'nl-1'
     title = '1998-2008 Activities'
     filetype = 1

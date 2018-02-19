@@ -10,6 +10,7 @@ from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 from geodata.models import Country, Region
 from iati.parser import post_save
+from iati.parser import post_save_validators
 from currency_convert import convert
 
 from iati.parser.higher_order_parser import provider_org, receiver_org
@@ -115,6 +116,16 @@ class Parse(IatiParser):
 
         old_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
 
+        if old_activity and (old_activity.dataset.name != self.dataset.name):
+            self.append_error(
+                'FieldValidationError',
+                "iati-identifier", 
+                "ref", 
+                "An activity with the same iati-identifier was found in another dataset", 
+                element.sourceline,
+                "found in dataset: '{}'".format(old_activity.dataset.name),
+                activity_id)
+
         if old_activity and not self.force_reparse and not old_activity.modified:
             # update last_updated_model to prevent the activity from being deleted
             # because its not updated (and thereby assumed not found in the dataset)
@@ -128,14 +139,20 @@ class Parse(IatiParser):
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is less than existing activity",
-                    iati_identifier)
+                    None,
+                    element.sourceline,
+                    activity_id,
+                    activity_id)
 
             if not last_updated_datetime and old_activity.last_updated_datetime:
                 raise FieldValidationError(
                     "iati-activity",
                     "last-updated-datetime",
                     "last-updated-time is not present, but is present on existing activity",
-                    iati_identifier)
+                    None,
+                    element.sourceline,
+                    activity_id,
+                    activity_id)
     
             # TODO: test activity is deleted along with related models
             # update on TODO above; only iati_title, TransactionReceiver, TransactionProvider are not deleted atm - 2015-10-01
@@ -165,7 +182,11 @@ class Parse(IatiParser):
         activity.modified = False
 
         # for later reference
-        self.default_lang = default_lang
+        self.default_lang = default_lang_code
+
+        # for this validation-only branch we only save activities and organisations
+        # all other elements are not written to the db
+        activity.save()
 
         self.register_model('Activity', activity)
         return element
@@ -203,6 +224,9 @@ class Parse(IatiParser):
                 "reporting-org",
                 "ref",
                 "required attribute missing")
+
+        if ref:
+            self.check_registration_agency_validity("reporting-org/ref", element, ref) 
 
         normalized_ref = self._normalize(ref)
         org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
@@ -289,21 +313,45 @@ class Parse(IatiParser):
         ref = element.attrib.get('ref', '')
         activity_id = element.attrib.get('activity-id', None)
 
-        role = self.get_or_none(codelist_models.OrganisationRole, pk=element.attrib.get('role'))
+        org_activity = self.get_or_none(models.Activity, iati_identifier=activity_id)
+        role = self.get_or_none(codelist_models.OrganisationRole, code=element.attrib.get('role'))
 
-        # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
-        # simply because they don't know the ref.
-        # if not ref: raise RequiredFieldError("ref", "participating-org: ref must be specified")
+        normalized_ref = self._normalize(ref)
+        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
+        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+
+
         if not role:
             raise RequiredFieldError(
                 "participating-org",
                 "role", 
                 "required attribute missing")
 
-        normalized_ref = self._normalize(ref)
-        organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+        # soft validation errors
+        # if not ref:
+            # self.append_error('FieldValidationError', "participating-org", "ref", "ref must be specified", element.sourceline)
+        if ref:
+            self.check_registration_agency_validity("participating-org", element, ref) 
 
+        # if ref and not organisation:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "participating-org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
+
+        # if activity_id and not org_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "participating-org", 
+        #         "activity-id", 
+        #         "Must be an existing IATI identifier", 
+        #         element.sourceline, 
+        #         activity_id)
+
+        
         activity = self.get_model('Activity')
         participating_organisation = models.ActivityParticipatingOrganisation()
         participating_organisation.ref = ref
@@ -313,6 +361,7 @@ class Parse(IatiParser):
         participating_organisation.organisation = organisation
         participating_organisation.role = role
         participating_organisation.org_activity_id = activity_id
+        participating_organisation.org_activity_obj = org_activity
 
         self.register_model('ActivityParticipatingOrganisation', participating_organisation)
 
@@ -373,7 +422,7 @@ class Parse(IatiParser):
         tag:description"""
 
         description_type_code = element.attrib.get('type', 1)
-        description_type = self.get_or_none(codelist_models.Language, code=description_type_code)
+        description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
 
         activity = self.get_model('Activity')
         description = models.Description()
@@ -429,6 +478,18 @@ class Parse(IatiParser):
                 "ref",
                 "required attribute missing")
 
+        owner_ref_org = self.get_or_none(models.Organisation, organisation_identifier=ref)
+
+        # if not owner_ref_org:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "owner_org", 
+        #         "ref", 
+        #         "Must be an existing IATI organisation", 
+        #         element.sourceline, 
+        #         ref)
+
+
         other_identifier = self.get_model('OtherIdentifier')
         other_identifier.owner_ref = ref
 
@@ -461,7 +522,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "activity-status",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.activity_status = activity_status
@@ -489,7 +553,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "activity-date",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         type_code = element.attrib.get('type')
 
@@ -505,7 +572,20 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "activity-date",
                 "type",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                element.attrib.get('type'))
+
+        if type_code in ['2', '4']:
+            if iso_date > datetime.now():
+                raise FieldValidationError(
+                "activity-date",
+                "iso-date",
+                "All instances of the ActivityDateType code 2 & 4 (actual dates) are not expected to be in the future",
+                None,
+                None,
+                str(iso_date))
 
         activity = self.get_model('Activity')
 
@@ -715,7 +795,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "activity-status",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.scope = activity_scope
@@ -742,7 +825,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "recipient-country",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                element.attrib.get('code'))
 
         activity = self.get_model('Activity')
         activity_recipient_country = models.ActivityRecipientCountry()
@@ -784,7 +870,11 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "recipient-region", 
                 "code", 
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
         elif not region:
             raise IgnoredVocabularyError(
                 "recipient-region", 
@@ -966,7 +1056,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "location/administrative",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary_code)
 
         location = self.get_model('Location')
         location_administrative = models.LocationAdministrative()
@@ -1018,7 +1111,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "location/point",
                 "pos",
-                "latitude/longitude formatting incorrect")
+                "latitude/longitude formatting incorrect",
+                None,
+                None,
+                text)
 
         location = self.get_model('Location')
         location.point_pos = point
@@ -1043,7 +1139,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "location/exactness",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         location = self.get_model('Location')
         location.exactness = exactness
@@ -1068,7 +1167,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "location/location-class",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         location = self.get_model('Location')
         location.location_class = location_class
@@ -1093,7 +1195,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "location/feature-designation",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         location = self.get_model('Location')
         location.feature_designation = feature_designation
@@ -1124,13 +1229,20 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "sector",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary.code)
 
         if not sector and vocabulary.code == '1': 
             raise FieldValidationError(
                 "sector",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
         elif not sector:
             raise IgnoredVocabularyError(
                 "sector",
@@ -1166,7 +1278,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "country-budget-items",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         country_budget_item = models.CountryBudgetItem()
@@ -1197,7 +1312,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "country-budget-items/budget-item",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         country_budget_item = self.get_model('CountryBudgetItem')
         budget_item = models.BudgetItem()
@@ -1253,7 +1371,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "humanitarian-scope",
                 "type",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                scope_type_code)
         
         if not vocabulary_code: 
             raise RequiredFieldError(
@@ -1265,7 +1386,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "humanitarian-scope",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary_code)
 
         humanitarian_scope = models.HumanitarianScope()
         humanitarian_scope.activity = activity
@@ -1307,17 +1431,24 @@ class Parse(IatiParser):
                 "code",
                 "required attribute missing")
 
+        # will never happen with the default above
         if not vocabulary:
             raise FieldValidationError(
                 "policy-marker",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                element.attrib.get('vocabulary'))
 
         if not policy_marker_code and vocabulary.code == '1':
             raise FieldValidationError(
                 "policy-marker",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
         elif vocabulary.code == '1' and significance is None: 
             raise RequiredFieldError(
                 "policy-marker",
@@ -1366,7 +1497,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "collaboration-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.collaboration_type = collaboration_type
@@ -1391,7 +1525,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "default-flow-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.default_flow_type = default_flow_type
@@ -1416,7 +1553,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "default-finance-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.default_finance_type = default_finance_type
@@ -1441,7 +1581,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "default-aid-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.default_aid_type = default_aid_type
@@ -1466,7 +1609,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "default-tied-status",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         activity = self.get_model('Activity')
         activity.default_tied_status = default_tied_status
@@ -1496,7 +1642,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "budget",
                 "type",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                budget_type_code)
 
         if not status_code:
             raise RequiredFieldError(
@@ -1508,7 +1657,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "budget",
                 "status",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                status_code)
 
         budget = models.Budget()
         budget.activity = activity
@@ -1537,7 +1689,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "budget/period-start",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         budget = self.get_model('Budget')
         budget.period_start = iso_date
@@ -1563,7 +1718,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "budget/period-end",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         budget = self.get_model('Budget')
         budget.period_end = iso_date
@@ -1600,7 +1758,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "budget/value",
                 "value-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('value-date'))
 
         currency = self._get_currency_or_raise('budget/value', currency)
 
@@ -1657,7 +1818,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "planned-disbursement/period-start",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_start = iso_date
@@ -1683,7 +1847,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "planned-disbursement/period-end",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         planned_disbursement = self.get_model('PlannedDisbursement')
         planned_disbursement.period_end = iso_date
@@ -1721,7 +1888,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "planned-disbursement/value",
                 "value-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('value-date'))
 
         currency = self._get_currency_or_raise('planned-disbursement/value', currency)
 
@@ -1795,6 +1965,17 @@ class Parse(IatiParser):
         ref:1234
 
         tag:transaction"""
+
+        transaction_type = element.findall('transaction-date')
+        if len(transaction_type) is 0:
+            self.append_error(
+                'RequiredFieldError',
+                "transaction/transaction-date", 
+                "element", 
+                "required element missing", 
+                element.sourceline, 
+                "-")
+
         ref = element.attrib.get('ref')
         humanitarian = element.attrib.get('humanitarian')
 
@@ -1820,6 +2001,7 @@ class Parse(IatiParser):
 
         if not transaction_type:
             # TODO; pop transaction model to prevent trying to save / 'loss on save'?
+            # That might save next sub elemens of the transaction to the previous transaction?
             raise RequiredFieldError(
                 "transaction/transaction-type",
                 "code",
@@ -1849,11 +2031,23 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/transaction-date",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
+
+        if iso_date > datetime.now():
+            raise FieldValidationError(
+                "transaction/transaction-date",
+                "iso-date",
+                "Must be today, or in the past",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         transaction = self.get_model('Transaction')
         transaction.transaction_date = iso_date
-         
+
         return element
 
     def iati_activities__iati_activity__transaction__value(self, element):
@@ -1886,7 +2080,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/value",
                 "value-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('value-date'))
 
         currency = self._get_currency_or_raise('transaction/value', currency)
 
@@ -2030,13 +2227,19 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/sector",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                element.attrib.get('vocabulary'))
 
         if not sector and vocabulary.code == '1': 
             raise FieldValidationError(
                 "transaction/sector",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
         elif not sector:
             raise IgnoredVocabularyError(
                 "transaction/sector",
@@ -2074,7 +2277,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/recipient-country",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         transaction = self.get_model('Transaction')
         transaction_country = transaction_models.TransactionRecipientCountry()
@@ -2115,7 +2321,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/recipient-region", 
                 "code", 
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
         elif not region:
             raise IgnoredVocabularyError(
                 "transaction/recipient-region", 
@@ -2152,7 +2361,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/flow-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         transaction = self.get_model('Transaction')
         transaction.flow_type = flow_type
@@ -2175,7 +2387,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/finance-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         transaction = self.get_model('Transaction')
         transaction.finance_type = finance_type
@@ -2199,7 +2414,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/aid-type",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         transaction = self.get_model('Transaction')
         transaction.aid_type = aid_type
@@ -2223,7 +2441,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/tied-status",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         transaction = self.get_model('Transaction')
         transaction.tied_status = tied_status
@@ -2256,7 +2477,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "document-link",
                 "format",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                file_format_code)
 
         activity = self.get_model('Activity')
         document_link = models.DocumentLink()
@@ -2287,7 +2511,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "document-link/document-date",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         document_link = self.pop_model('DocumentLink')
         document_link.iso_date = iso_date
@@ -2333,7 +2560,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "document-link/category",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         document_link = self.get_model('DocumentLink')
         document_link_category = models.DocumentLinkCategory()
@@ -2361,7 +2591,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "document-link/language",
                 "code",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
 
         document_link = self.get_model('DocumentLink')
         document_link_language = models.DocumentLinkLanguage()
@@ -2391,7 +2624,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "related-activity",
                 "type",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                ra_type_code)
         
         if not ref:
             raise RequiredFieldError(
@@ -2407,6 +2643,15 @@ class Parse(IatiParser):
         related_activity.ref = ref
         related_activity.type = related_activity_type
 
+        # if not related_activity.ref_activity:
+        #     self.append_error(
+        #         'FieldValidationError',
+        #         "related-activity",
+        #         "ref",
+        #         "Must be an existing IATI activity",
+        #         element.sourceline,
+        #         ref)
+        
         # update existing related activity foreign keys, happens post save
         self.register_model('RelatedActivity', related_activity)
         return element
@@ -2479,7 +2724,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result",
                 "type",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                result_type_code)
 
         activity = self.get_model('Activity')
         result = models.Result()
@@ -2570,7 +2818,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/reference",
                 "vocabulary",
-                "not found on the accompanying code list")
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary_code)
         
         if not code: 
             raise RequiredFieldError(
@@ -2690,6 +2941,32 @@ class Parse(IatiParser):
 
     # tag:period"""
     def iati_activities__iati_activity__result__indicator__period(self, element):
+
+        # do validation on "Period-start must be before period-end"
+        try:
+            start_date = element.find('period-start').get('iso-date')
+            end_date = element.find('period-end').get('iso-date')
+
+            if start_date and end_date:
+                start_date_iso = self.validate_date(start_date)
+                end_date_iso = self.validate_date(end_date)
+
+                if start_date_iso and end_date_iso and (start_date_iso > end_date_iso):
+                
+                    raise FieldValidationError(
+                        "result/indicator/period/period-start",
+                        "iso-date", 
+                        "Period-start must be before period-end",
+                        None,
+                        None,
+                        "start date: {} , end_date: {}".format(start_date, end_date))
+        
+        except AttributeError:
+            # period start/end dont exist
+            pass 
+
+        # start with actual functionality for period
+
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = result_indicator
@@ -2716,7 +2993,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/period-start",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.period_start = iso_date
@@ -2744,7 +3024,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/period-end",
                 "iso-date",
-                "iso-date not of type xsd:date")
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.period_end = iso_date
@@ -2793,7 +3076,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/period/target/location",
                 "ref", 
-                "referenced location does not exist in a location element of this activity")
+                "referenced location does not exist in a location element of this activity",
+                None,
+                None,
+                ref)
 
         period = self.get_model('ResultIndicatorPeriod')
         target_location = models.ResultIndicatorPeriodTargetLocation()
@@ -2889,7 +3175,10 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/actual/location",
                 "ref",
-                "referenced location does not exist in a location element of this activity")
+                "referenced location does not exist in a location element of this activity",
+                None,
+                None,
+                ref)
 
         period = self.get_model('ResultIndicatorPeriod')
 
@@ -3101,7 +3390,7 @@ class Parse(IatiParser):
         post_save.set_sector_budget(activity)
 
     def post_save_file(self, dataset):
-        """Perform all actions that need to happen after a single IATI dataset's been parsed.
+        """Perform all actions that need to happen after a single IATI datasets has been parsed.
 
         Keyword arguments:
         dataset -- the Dataset object
@@ -3122,3 +3411,15 @@ class Parse(IatiParser):
             dataset=dataset,
             last_updated_model__lt=self.parse_start_datetime).delete()
 
+    def post_save_validators(self, dataset):
+    
+        for a in models.Activity.objects.filter(dataset=dataset):
+
+            post_save_validators.identifier_correct_prefix(self, a)
+            post_save_validators.geo_percentages_add_up(self, a)
+            post_save_validators.sector_percentages_add_up(self, a)
+            post_save_validators.use_sector_or_transaction_sector(self, a)
+            post_save_validators.use_direct_geo_or_transaction_geo(self, a)
+
+        post_save_validators.unfound_identifiers(self, dataset)
+        post_save_validators.transactions_at_multiple_levels(self, dataset)

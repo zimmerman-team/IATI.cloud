@@ -1,6 +1,6 @@
 site_name: OIPA
 site_url: http://www.oipa.nl
-repo_url: http://ww.github.com/zimmerman-zimmerman/OIPA/
+repo_url: http://www.github.com/zimmerman-zimmerman/OIPA/
 theme: readthedocs
 docs_dir: 'docs'
 pages:
@@ -10,6 +10,9 @@ pages:
 - 'Admin interface': admin_interface.md
 - Parser: parser.md
 - API: api.md
+- Publish IATI and permissions: publish.md
+- Docstore: docstore.md
+- Traceability chains: chains.md
 - Glossary: glossary.md
 - Changelog: changelog.md
 - License: license.md

@@ -42,7 +42,7 @@ class OrganisationUser(models.Model):
 
 class OrganisationAdminGroup(Group):
     # every group is associated with exactly one publisher
-    publisher = models.ForeignKey(Publisher, unique=True)
+    publisher = models.OneToOneField(Publisher)
     owner = models.ForeignKey(OrganisationUser, null=True)
 
     class Meta:
@@ -53,7 +53,7 @@ class OrganisationAdminGroup(Group):
 # TODO: when are these created? - 2016-10-24
 class OrganisationGroup(Group):
     # every group is associated with exactly one publisher
-    publisher = models.ForeignKey(Publisher, unique=True)
+    publisher = models.OneToOneField(Publisher)
 
     # TODO: is this nescessary? - 2016-10-24
     # owner = models.ForeignKey(User)

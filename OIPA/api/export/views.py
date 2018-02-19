@@ -6,7 +6,7 @@ from api.activity import filters
 from api.generics.filters import SearchFilter
 from api.generics.utils import get_serializer_fields
 from common.util import difference
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from api.renderers import XMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
 from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination
@@ -56,6 +56,7 @@ from task_queue.tasks import export_publisher_activities
 from rest_framework.response import Response
 from iati_synchroniser.models import Dataset
 
+import uuid
 
 class IATIActivityNextExportList(APIView):
     """IATI representation for activities"""
@@ -64,16 +65,24 @@ class IATIActivityNextExportList(APIView):
     permission_classes = (PublisherPermissions, )
     
     def post(self, request, publisher_id):
+
         try:
-            dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+            dataset, created = Dataset.objects.get_or_create(
+                    publisher_id=publisher_id,
+                    added_manually=True,
+                    filetype=1,
+                )
+
         except Dataset.DoesNotExist:
             return Response({
                 'status': 'failed',
+                'message': 'Dataset does not exist'
             })
 
         if dataset.export_in_progress:
             return Response({
                 'status': 'failed',
+                'message': 'Export already in progress'
             })
 
 
@@ -105,10 +114,11 @@ class IATIActivityNextExportListResult(APIView):
             ret = {'status':'completed', 'result': job.return_value}
 
             try:
-                dataset = Dataset.objects.get(publisher_id=publisher_id, added_manually=True)
+                dataset = Dataset.objects.get(publisher_id=publisher_id, filetype=1, added_manually=True)
             except Dataset.DoesNotExist:
                 return Response({
                     'status': 'failed',
+                    'message': 'Dataset does not exist'
                 })
 
             dataset.export_in_progress = False
@@ -119,9 +129,8 @@ class IATIActivityNextExportListResult(APIView):
         elif job.is_started:
             ret = {'status':'waiting'}
         elif job.is_failed:
-            ret = {'status': 'failed'}
+            ret = {'status': 'failed', 'message': "job failed for unknown reasons"}
             print(job.to_dict())
-
 
         return Response(ret)
 

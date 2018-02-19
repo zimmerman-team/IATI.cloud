@@ -14,13 +14,13 @@ def set_activity_reporting_organisation(organisation):
 def set_publisher_fk(organisation):
     if not organisation:
         return
-    print organisation
-    print(organisation.id)
+
     try:
-        publisher = Publisher.objects.get(pk=organisation.id)
+        publisher = Publisher.objects.get(publisher_iati_id=organisation.organisation_identifier)
         publisher.organisation = organisation
         publisher.save()
-
     except Publisher.DoesNotExist:
+        return
+    except Publisher.MultipleObjectsReturned:
         return
 

@@ -1,0 +1,198 @@
+# Ubuntu install  
+
+## Security settings
+
+See "Basic server security settings"
+
+## virtualenv
+
+```
+sudo apt-get install python-pip;
+sudo pip install virtualenvwrapper;  
+export WORKON_HOME=~/envs;  
+/usr/local/bin/virtualenvwrapper.sh;  
+source /usr/local/bin/virtualenvwrapper.sh;  
+mkvirtualenv oipa;  
+workon oipa;
+```
+### Append to ~/.profile
+```
+WORKON_HOME=~/envs  
+export PROJECT_HOME=$HOME/projects 
+export DJANGO_SETTINGS_MODULE="OIPA.production_settings"
+source /usr/local/bin/virtualenvwrapper.sh  
+workon oipa  
+```
+
+## OIPA + uWSGI
+###Get OIPA
+```
+sudo apt-get install git
+git clone https://github.com/zimmerman-zimmerman/OIPA.git;  
+cd OIPA;  
+git checkout master;
+```
+
+###Install dependencies
+```
+sudo ~/OIPA/bin/setup/install_dependencies.sh;  
+pip install --upgrade pip;  
+pip install -r ~/OIPA/OIPA/requirements.txt;  
+```
+
+###Setup PostgresSQL roles and create database
+```
+sudo -u postgres bash -c "psql -c \"CREATE USER oipa WITH PASSWORD 'oipa';\""  
+sudo -u postgres bash -c "psql -c \"ALTER ROLE oipa SUPERUSER;\""  
+sudo -u postgres bash -c "psql -c \"CREATE DATABASE oipa;\""  
+```
+
+###Install server dependencies
+```
+workon oipa
+pip install uwsgi
+```
+
+###Create uWSGI config
+```
+sudo mkdir -p /etc/uwsgi/vassals  
+sudo cp ~/OIPA/etc/uwsgi/vassals/oipa.ini /etc/uwsgi/vassals/oipa.ini  
+```
+
+
+###Create Nginx config
+```
+sudo rm /etc/nginx/sites-enabled/default;  
+sudo cp ~/OIPA/etc/nginx/oipa /etc/nginx/sites-available;  
+sudo ln -s /etc/nginx/sites-available/oipa /etc/nginx/sites-enabled/oipa;
+```
+
+###User management
+```
+sudo usermod -a -G www-data oipa
+```
+
+###Copy upstart files or systemd files
+```
+sudo cp ~/OIPA/etc/init/uwsgi.conf /etc/init
+sudo cp ~/OIPA/etc/init/supervisor.conf /etc/init
+```
+```
+sudo cp ~/OIPA/etc/systemd/oipa-uwsgi.service /lib/systemd/system
+sudo cp ~/OIPA/etc/systemd/oipa-supervisor.service /lib/systemd/system
+```
+
+###Setup OIPA
+```
+~/OIPA/OIPA/manage.py migrate
+~/OIPA/OIPA/manage.py collectstatic --noinput
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('oipa', '', 'qhB|TnOcwo1ZDJ65U\!d7@f]Qe')" | ~/OIPA/OIPA/manage.py shell
+```
+
+###Add to local settings
+```
+STATIC_ROOT = '/home/oipa/OIPA/OIPA/static_served/'
+```
+
+###Start services
+```
+sudo service uwsgi restart
+sudo service supervisor restart
+sudo service nginx restart
+```
+###Or with systemd
+```
+sudo systemctl start oipa-uwsgi
+sudo systemctl start oipa-supervisor
+sudo systemctl restart nginx
+```
+
+###Enable services
+```
+sudo systemctl enable oipa-uwsgi;
+sudo systemctl enable oipa-supervisor;
+sudo systemctl enable nginx;
+```
+
+# eventually; check this for hot reloading Follow https://www.digitalocean.com/community/tutorials/how-to-set-up-master-slave-replication-on-postgresql-on-an-ubuntu-12-04-vps
+
+https://www.digitalocean.com/community/tutorials/how-to-use-haproxy-to-set-up-http-load-balancing-on-an-ubuntu-vps
+
+
+
+#eventually, server basic secs
+
+# Iptables
+These are basic rules for only allowing http and ssh access, adjust accordingly
+
+```
+sudo iptables -A INPUT -p tcp --dport ssh -j ACCEPT;  
+sudo iptables -A INPUT -p tcp --dport http -j ACCEPT;  
+sudo iptables -A INPUT -p tcp --dport https -j ACCEPT;  
+sudo iptables -I INPUT 1 -i lo -j ACCEPT;  
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT;
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT;
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT;
+sudo iptables --policy INPUT DROP;  
+```
+
+If used in an internal network:
+
+```
+sudo iptables -A INPUT -p tcp --dport http -s 192.168.1.0/24 -j ACCEPT;  
+```
+
+For postgres local access:
+
+```
+sudo iptables -A INPUT -p tcp --dport 5432 -s 192.168.1.0/24 -j ACCEPT;
+```
+
+To delete an iptables rule by pattern:
+
+```
+ sudo iptables -S | grep $pattern | cut -d " " -f 2- | xargs -L1 sudo iptables -D
+```
+
+where $pattern is the matched pattern
+
+## To save
+```
+sudo iptables-save | sudo tee /etc/iptables > /dev/null
+```
+
+## To restore on startup
+Add the following lines to _/etc/rc.local_  
+```
+/sbin/iptables-restore < /etc/iptables
+```
+
+# SSH
+Change PermitRootLogin from yes to no in  
+_/etc/ssh/sshd_config_
+
+For local ssh password access, add this to the end of the file:
+
+```
+Match address 192.168.1.0/24
+    PasswordAuthentication yes
+```
+
+
+# IP Tables whitelist settings
+```
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+
+sudo iptables -A INPUT -s ipadress/32 -p tcp -m tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -s ipadress/32 -p tcp -m tcp --dport 443 -j ACCEPT
+```
+
+
+# For Postgres settings, use http://pgtune.leopard.in.ua/
+
+and set max_parallel_workers_per_gather to amount of cpu's - 1. and max_worker_processes to 8.

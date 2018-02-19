@@ -8,6 +8,7 @@ from django.core import management
 
 from mock import MagicMock
 import unittest
+from iati.factory import iati_factory
 
 
 class DatasetSyncerTestCase(TestCase):
@@ -17,7 +18,9 @@ class DatasetSyncerTestCase(TestCase):
     def setUp(self):
         management.call_command('flush', interactive=False, verbosity=0)
         self.datasetSyncer = DatasetSyncer()
-
+        iati_factory.LanguageFactory.create(code='en', name='English')
+        iati_factory.VersionFactory.create(code='2.02', name='2.02')
+        iati_factory.OrganisationTypeFactory.create(code='22', name='Multilateral')
 
     def test_get_val_in_list_of_dicts(self):
         """
@@ -34,7 +37,7 @@ class DatasetSyncerTestCase(TestCase):
     # @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
-
+        
         """
 
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
@@ -42,8 +45,6 @@ class DatasetSyncerTestCase(TestCase):
 
         with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             dataset = json.load(fixture)['result']['results'][0]
-
-
 
         self.datasetSyncer.get_data = MagicMock(side_effect=[
             {'result': [publisher]}, # first occurance, return 1 publisher
@@ -62,6 +63,7 @@ class DatasetSyncerTestCase(TestCase):
         """
         check if dataset is saved as expected
         """
+        
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
@@ -72,13 +74,12 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual("aasaman", publisher.name)
 
 
-
     def test_update_or_create_dataset(self):
         """
 
         """
         publisher = Publisher(
-            id="8797b894-9858-492e-a109-dc45b75ce27b",
+            iati_id="85d72513-66b6-4642-a526-214b1081fff1",
             publisher_iati_id="",
             display_name="jica",
             name="Japan International Cooperation Agency (JICA)")
@@ -90,10 +91,10 @@ class DatasetSyncerTestCase(TestCase):
             self.datasetSyncer.update_or_create_dataset(data)
 
         dataset = Dataset.objects.all()[0]
-        print dataset.publisher
-        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.id)
+        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
         self.assertEqual("cic-sl", dataset.name)
         self.assertEqual("088States Ex-Yugoslavia unspecified2013", dataset.title)
         self.assertEqual(publisher, dataset.publisher)
         self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
         self.assertEqual(1, dataset.filetype)
+

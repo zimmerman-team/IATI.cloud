@@ -1,6 +1,6 @@
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from iati.models import Location
 
@@ -19,7 +19,7 @@ class LocationList(DynamicListView):
 
     """
 
-    queryset = Location.objects.all()
+    queryset = Location.objects.all().order_by('id')
     filter_backends = (DjangoFilterBackend, DistanceFilter)
     filter_class = LocationFilter
     serializer_class = LocationSerializer

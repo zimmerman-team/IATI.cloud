@@ -1,6 +1,6 @@
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from api.generics.serializers import DynamicFieldsModelSerializer
+from api.generics.serializers import DynamicFieldsModelSerializer, DynamicFieldsSerializer
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
 class DynamicView(GenericAPIView):
@@ -21,7 +21,7 @@ class DynamicView(GenericAPIView):
         serializer = serializer_class() # need an instance to extract fields
         model = serializer_class.Meta.model
 
-        assert issubclass(serializer_class, DynamicFieldsModelSerializer), (
+        assert issubclass(serializer_class, DynamicFieldsModelSerializer) or issubclass(serializer_class, DynamicFieldsSerializer), (
             "serializer class must be an instance of DynamicFieldsModelSerializer "
             "instead got %s") % (serializer_class.__name__,)
 
@@ -34,6 +34,9 @@ class DynamicView(GenericAPIView):
                 if isinstance(field, (ForeignKey, OneToOneField)) }
 
     def _get_query_fields(self):
+        if not self.request:
+            return ()
+
         request_fields = self.request.query_params.get('fields')
 
         if request_fields:

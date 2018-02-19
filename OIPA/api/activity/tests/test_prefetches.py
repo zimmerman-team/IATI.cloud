@@ -297,7 +297,7 @@ class ActivitySaveTestCase(TestCase):
 
         """
         Test if the prefetches are applied correctly
-        Here we expect 2 queries:
+        Here we expect 4 queries:
         1. Fetch Activity objects
         2. Fetch ActivityPolicyMarker objects
         3. Fetch content_type objects

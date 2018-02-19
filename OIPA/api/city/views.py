@@ -35,7 +35,7 @@ class CityList(ListAPIView):
     URI is constructed as follows: `/api/cities/{city_id}`
 
     """
-    queryset = City.objects.all()
+    queryset = City.objects.all().order_by('id')
     serializer_class = serializers.CitySerializer
     fields = ('url', 'id', 'name')
 

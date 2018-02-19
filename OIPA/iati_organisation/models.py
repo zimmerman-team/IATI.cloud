@@ -55,9 +55,14 @@ class BudgetLineAbstract(models.Model):
 
 # organisation base class
 class Organisation(models.Model):
+    """
+    This model is initially filled by the IATI Registry API.
+    Then updated by content of the IATI organisation file if available.
+    Or created by an activity file if the organisation is not the publisher and thereby not initially filled.
+    """
 
     organisation_identifier = models.CharField(max_length=150, unique=True, db_index=True)
-    # normalized for use in the API
+    # normalized for use in the API, should be deprecated and fixed by a proper regex in the URL - 2017-11-06
     normalized_organisation_identifier = models.CharField(max_length=150, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)

@@ -4,7 +4,9 @@ from lxml.builder import E
 from iati import models
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models 
+from iati_organisation import models as organisation_models
 from iati.parser.exceptions import *
+
 
 # TODO: separate validation logic and model saving login in recursive tree walk
 
@@ -74,8 +76,16 @@ class Parse(IATI_201_Parser):
             self.add_narrative(element, activity_reporting_organisation)
             if activity_reporting_organisation.organisation:
                 activity_reporting_organisation.organisation.primary_name = self.get_primary_name(element, activity_reporting_organisation.organisation.primary_name)
-                if activity_reporting_organisation.organisation.name.narratives.count() == 0:
-                    self.add_narrative(element, activity_reporting_organisation.organisation.name, is_organisation_narrative=True)
+                
+                try:
+                    if activity_reporting_organisation.organisation.name.narratives.count() == 0:
+                        self.add_narrative(element, activity_reporting_organisation.organisation.name, is_organisation_narrative=True)
+                except ObjectDoesNotExist as e:
+                    # org has no name, create it
+                    organisation_name = organisation_models.OrganisationName()
+                    organisation_name.organisation = activity_reporting_organisation.organisation
+                    self.register_model('OrganisationName', organisation_name)
+                    self.add_narrative(element, organisation_name, is_organisation_narrative=True)
 
         return element
 

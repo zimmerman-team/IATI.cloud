@@ -83,7 +83,13 @@ class CodelistItemList(DynamicListView):
         except LookupError:
             raise NotFound("Codelist not found")
 
-        return model_cls.objects.all()         
+        queryset = model_cls.objects.all()
+
+        for f in model_cls._meta.get_fields():
+            if f.many_to_one and f.related_model:
+                queryset = queryset.select_related(f.name)
+
+        return queryset
 
     def get_serializer_class(self):
         cms = CodelistItemSerializer

@@ -9,7 +9,7 @@ from iati_organisation.models import Organisation
 class Publisher(models.Model):
 
     # The IR publisher id
-    id = models.CharField(max_length=255, primary_key=True)
+    iati_id = models.CharField(max_length=255, unique=True)
 
     # the IATI Organisation id
     publisher_iati_id = models.CharField(max_length=100)
@@ -31,19 +31,20 @@ filetype_choices = (
 class Dataset(models.Model):
     
     # IR fields
-    id = models.CharField(max_length=255, primary_key=True)
+    iati_id = models.CharField(max_length=255, unique=True)
+
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
     publisher = models.ForeignKey(Publisher) # organization.id
     source_url = models.URLField(max_length=255) # resource.url
-    iati_version = models.CharField(max_length=10, default="")
+    iati_version = models.CharField(max_length=10, default="2.02")
     
     # OIPA related fields
     date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
     time_to_parse = models.CharField(null=True, default=None, max_length=40)
-    last_found_in_registry = models.DateTimeField(default=None, null=True)
+    last_found_in_registry = models.DateTimeField(default=None, blank=True, null=True)
     is_parsed = models.BooleanField(null=False, default=False)
     added_manually = models.BooleanField(null=False, default=True)
     sha1 = models.CharField(max_length=40, default="", null=False, blank=True)
@@ -99,12 +100,13 @@ class Dataset(models.Model):
 
 class DatasetNote(models.Model):
     dataset = models.ForeignKey(Dataset)
-    iati_identifier = models.CharField(max_length=140, null=False, blank=False)
+    iati_identifier = models.CharField(max_length=255, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
-    model = models.CharField(max_length=50, null=False, blank=False)
-    field = models.CharField(max_length=100, default='')
-    message = models.CharField(max_length=150, default=0, null=False)
+    model = models.CharField(max_length=255, null=False, blank=False)
+    field = models.CharField(max_length=255, default='')
+    message = models.CharField(max_length=255, default='', null=False)
     line_number = models.IntegerField(null=True)
+    variable = models.CharField(max_length=255, default=None, null=True)
 
 
 class Codelist(models.Model):

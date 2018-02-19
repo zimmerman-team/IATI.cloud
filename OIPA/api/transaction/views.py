@@ -3,7 +3,7 @@ from api.transaction.filters import TransactionFilter, TransactionAggregationFil
 from iati.transaction.models import Transaction, TransactionSector
 from api.generics.views import DynamicListView, DynamicDetailView
 
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from api.activity.serializers import ActivitySerializer
 
@@ -78,10 +78,12 @@ class TransactionList(DynamicListView):
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
     """
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by('id')
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
     pagination_class = CustomTransactionPagination
+    ordering_fields = '__all__'
+    ordering = ('id',)
 
     fields = (
         'url',
@@ -354,7 +356,7 @@ class TransactionAggregation(AggregationView):
             queryset=Sector.objects.all(),
             serializer=SectorSerializer,
             serializer_fields=('url', 'code', 'name', 'location'),
-            name_search_field="sector__name",
+            name_search_field="transactionsector__sector__name",
             renamed_name_search_field="sector_name",
         ),
         GroupBy(

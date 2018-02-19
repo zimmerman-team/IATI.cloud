@@ -35,7 +35,7 @@ class RegionList(DynamicListView):
     URI is constructed as follows: `/api/regions/{region_id}`
 
     """
-    queryset = geodata.models.Region.objects.all()
+    queryset = geodata.models.Region.objects.all().order_by('code')
     serializer_class = serializers.RegionSerializer
     fields = ('url', 'code', 'name')
 

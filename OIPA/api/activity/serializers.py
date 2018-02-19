@@ -1,4 +1,7 @@
+from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
+
 from rest_framework import serializers
+from api.generics.utils import get_or_raise, get_or_none
 
 from iati import models as iati_models
 from iati_organisation import models as organisation_models
@@ -6,30 +9,28 @@ from rest_framework.response import Response
 from rest_framework import status
 from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
+from api.generics.fields import PointField
+
 from api.generics.serializers import DynamicFieldsSerializer
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.serializers import ModelSerializerNoValidation
 from api.generics.serializers import SerializerNoValidation
-from api.generics.fields import PointField
 from api.sector.serializers import SectorSerializer
 from api.region.serializers import RegionSerializer, BasicRegionSerializer
 from api.country.serializers import CountrySerializer
-from api.activity.filters import RelatedActivityFilter
-
+from api.dataset.serializers import SimpleDatasetSerializer
 from api.codelist.serializers import VocabularySerializer
 from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import NarrativeContainerSerializer
 from api.codelist.serializers import NarrativeSerializer, OrganisationNarrativeSerializer
 from api.codelist.serializers import CodelistCategorySerializer
-
 from api.publisher.serializers import PublisherSerializer
+
+from api.activity.filters import RelatedActivityFilter
 
 from iati.parser import validators
 from iati.parser import exceptions
 
-from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
-
-from api.generics.utils import get_or_raise, get_or_none
 
 def save_narratives(instance, data, activity_instance):
     current_narratives = instance.narratives.all()
@@ -70,6 +71,7 @@ def save_narratives(instance, data, activity_instance):
                 **narrative_data)
 
 from api.generics.utils import handle_errors
+
 
 class ValueSerializer(SerializerNoValidation):
     currency = CodelistSerializer()
@@ -487,7 +489,7 @@ class PlannedDisbursementSerializer(ModelSerializerNoValidation):
 
 class ActivityDateSerializer(ModelSerializerNoValidation):
     type = CodelistSerializer()
-    iso_date = serializers.DateTimeField()
+    iso_date = serializers.DateField()
 
     activity = serializers.CharField(write_only=True)
 
@@ -556,6 +558,49 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
         decimal_places=2,
         coerce_to_string=False)
     expenditure_currency = serializers.CharField()
+
+
+    interest_payment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    interest_payment_currency = serializers.CharField()
+
+    loan_repayment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    loan_repayment_currency = serializers.CharField()
+
+    reimbursement_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    reimbursement_currency = serializers.CharField()
+
+    purchase_of_equity_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    purchase_of_equity_currency = serializers.CharField()
+
+    sale_of_equity_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    sale_of_equity_currency = serializers.CharField()
+
+    credit_guarantee_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    credit_guarantee_currency = serializers.CharField()
+
+    incoming_commitment_value = serializers.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False)
+    incoming_commitment_currency = serializers.CharField()
 
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
@@ -924,7 +969,7 @@ class DescriptionSerializer(ModelSerializerNoValidation):
 class RelatedActivitySerializer(ModelSerializerNoValidation):
     ref_activity = serializers.HyperlinkedRelatedField(view_name='activities:activity-detail', read_only=True)
     type = CodelistSerializer()
-
+    ref_activity_id = serializers.CharField(read_only=True, source="ref_activity.id")
     activity = serializers.CharField(write_only=True, source="current_activity")
 
     class Meta:
@@ -934,6 +979,7 @@ class RelatedActivitySerializer(ModelSerializerNoValidation):
             'activity',
             'id',
             'ref_activity',
+            'ref_activity_id',
             'ref',
             'type',
         )
@@ -1722,14 +1768,14 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
 class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", read_only=True)
-    dimension = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", read_only=True)
+    locations = ResultIndicatorPeriodTargetLocationSerializer(many=True, source="resultindicatorperiodtargetlocation_set", read_only=True)
+    dimensions = ResultIndicatorPeriodTargetDimensionSerializer(many=True, source="resultindicatorperiodtargetdimension_set", read_only=True)
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", read_only=True)
-    dimension = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", read_only=True)
+    locations = ResultIndicatorPeriodActualLocationSerializer(many=True, source="resultindicatorperiodactuallocation_set", read_only=True)
+    dimensions = ResultIndicatorPeriodActualDimensionSerializer(many=True, source="resultindicatorperiodactualdimension_set", read_only=True)
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     target = ResultIndicatorPeriodTargetSerializer(source="*")
@@ -1760,8 +1806,8 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             data.get('actual'),
             data.get('period_start'),
             data.get('period_end'),
-            data.get('resultindicatorperiodtargetcomment').get('narratives'),
-            data.get('resultindicatorperiodactualcomment').get('narratives'),
+            data.get('resultindicatorperiodtargetcomment', {}).get('narratives'),
+            data.get('resultindicatorperiodactualcomment', {}).get('narratives'),
         )
 
         return handle_errors(validated)
@@ -1804,13 +1850,13 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         return update_instance
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):
-    year = serializers.CharField(source='baseline_year')
-    value = serializers.CharField(source='baseline_value')
+    year = serializers.CharField(source='baseline_year', required=False, allow_null=True)
+    value = serializers.CharField(source='baseline_value', required=False, allow_null=True)
     comment = NarrativeContainerSerializer(source="resultindicatorbaselinecomment")
 
 class ResultIndicatorReferenceSerializer(ModelSerializerNoValidation):
     vocabulary = VocabularySerializer()
-    code = serializers.CharField()
+    code = serializers.CharField(required=False)
 
     result_indicator = serializers.CharField(write_only=True)
 
@@ -2783,6 +2829,8 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     # other added data
     aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
+
+    dataset = SimpleDatasetSerializer(read_only=True, fields=('id', 'iati_id', 'name', 'title', 'source_url'))
 
     publisher = PublisherSerializer(read_only=True,  fields = ('id', 'url', 'publisher_iati_id', 'display_name', 'name'))
 

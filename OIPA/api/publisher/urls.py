@@ -5,6 +5,8 @@ import api
 
 from api.transaction.views import TransactionSectorList, TransactionSectorDetail
 
+from api.export_organisation.views import OrganisationNextExportList
+
 urlpatterns = [
     url(r'^$', 
         views.PublisherList.as_view(), 
@@ -65,9 +67,18 @@ urlpatterns = [
         api.export.views.IATIActivityNextExportListResult.as_view(),
         name='activity-nextexport-list'),
     
+    # get all organisations that are ready to be published + the ones that are published
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_organisations/$',
+        OrganisationNextExportList,
+        name='organisation-nextexport-list'),
+
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/mark_ready_to_publish$',
         api.activity.views.ActivityMarkReadyToPublish.as_view(),
         name='activity-mark-ready-to-publish'
+        ),
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/mark_ready_to_publish$',
+        api.organisation.views.OrganisationMarkReadyToPublish.as_view(),
+        name='organisation-mark-ready-to-publish'
         ),
     
     #

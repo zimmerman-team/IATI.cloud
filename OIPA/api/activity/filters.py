@@ -5,6 +5,7 @@ from django.db.models.fields.related import OneToOneRel
 from django_filters import FilterSet
 from django_filters import NumberFilter
 from django_filters import DateFilter
+from django_filters import DateTimeFilter
 from django_filters import BooleanFilter
 from django_filters import TypedChoiceFilter
 from django_filters import CharFilter
@@ -22,12 +23,19 @@ from django.db.models import Q, F
 
 from iati.models import *
 from iati.transaction.models import *
+from iati_synchroniser.models import Dataset, Publisher
+
+from django.contrib.postgres.search import SearchQuery
 
 
 class ActivityFilter(TogetherFilterSet):
 
     activity_id = CommaSeparatedCharFilter(
-        name='normalized_iati_identifier',
+        name='id',
+        lookup_expr='in')
+
+    iati_identifier = CommaSeparatedCharFilter(
+        name='iati_identifier',
         lookup_expr='in')
 
     activity_scope = CommaSeparatedCharFilter(
@@ -39,6 +47,11 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='categories',
         fk='activity',
+    )
+
+    last_updated_datetime_gt = DateTimeFilter(
+        lookup_expr='gt',
+        name='last_updated_datetime'
     )
 
     planned_start_date_lte = DateFilter(
@@ -229,6 +242,13 @@ class ActivityFilter(TogetherFilterSet):
         fk='activity',
     )
 
+    sector_startswith = ToManyFilter(
+        qs=ActivitySector,
+        lookup_expr='startswith',
+        name='sector__code',
+        fk='activity',
+    )
+
     sector_vocabulary = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
@@ -310,6 +330,45 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
+
+
+    #
+    # Publisher meta filters
+    #
+    dataset_id = ToManyFilter(
+        qs=Dataset,
+        lookup_expr='in',
+        name='id',
+        fk='activity'
+    )
+
+    dataset_iati_id = ToManyFilter(
+        qs=Dataset,
+        lookup_expr='in',
+        name='iati_id',
+        fk='activity'
+    )
+
+    publisher_id = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='id',
+        fk='activity'
+    )
+
+    publisher_iati_id = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='iati_id',
+        fk='activity'
+    )
+
+    publisher_organisation_identifier = ToManyFilter(
+        qs=Publisher,
+        lookup_expr='in',
+        name='publisher_iati_id',
+        fk='activity'
+    )
 
     #
     # Transaction filters
@@ -608,8 +667,6 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]
-
-
 
 
 class ActivityAggregationFilter(ActivityFilter):

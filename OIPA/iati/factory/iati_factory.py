@@ -45,6 +45,8 @@ class ActivityFactory(NoDatabaseFactory):
 
     iati_identifier = 'IATI-0001'
     normalized_iati_identifier = 'IATI-0001'
+    
+    # default_currency = SubFactory(CurrencyFactory)
 
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
@@ -80,6 +82,7 @@ class OrganisationFactory(NoDatabaseFactory):
     iati_standard_version = SubFactory(VersionFactory)
     default_lang = SubFactory(LanguageFactory)
     default_currency = SubFactory(CurrencyFactory)
+    primary_name = 'test1'
 
     # actually defined on reporting-org
     type = SubFactory(OrganisationTypeFactory)
@@ -138,7 +141,7 @@ class NarrativeFactory(NoDatabaseFactory):
 class NarrativeRelatedFactory(RelatedFactory):
 
     def __init__(self, related_factory=NarrativeFactory, factory_related_name='related_object', **defaults):
-        print(self)
+        # print(self)
         # activity_dummy = factory.LazyAttribute(lambda obj: ActivityDummyFactory())
 
         super(NarrativeRelatedFactory, self).__init__(related_factory,
@@ -373,7 +376,7 @@ class ActivityDateFactory(NoDatabaseFactory):
         model = iati.models.ActivityDate
 
     activity = SubFactory(ActivityFactory)
-    iso_date = datetime.datetime.now()
+    iso_date = datetime.date.today().isoformat()
     type = SubFactory(ActivityDateTypeFactory)
 
 

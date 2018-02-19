@@ -11,6 +11,8 @@ from api.generics.filters import CommaSeparatedCharFilter
 class IncludesActivityFilter(CharFilter):
 
     def filter(self, qs, value):
+        if value in ([], (), {}, None, ''):
+            return qs
         qs = qs.filter(**{'%s__%s' % (self.name, self.lookup_expr): value, '%s__%s' % ('chainnode__treated_as_end_node', 'exact'): False})
         return qs
 
@@ -38,7 +40,7 @@ class ChainNodeErrorFilter(FilterSet):
         model = ChainNodeError
         fields = ['chain', 'warning_level']
 
-
+        
 class ChainNodeFilter(FilterSet):
     chain_includes_activity = CharFilter(name='chain__chainnode__activity__iati_identifier', lookup_expr='exact')
     chain_includes_activity_of_reporting_organisation_identifier = CommaSeparatedCharFilter(name='chain__chainnode__activity__reporting_organisations__organisation__organisation_identifier', lookup_expr='in')

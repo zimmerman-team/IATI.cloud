@@ -1,3 +1,8 @@
+from lxml import etree
+from django import db
+from django.conf import settings
+import hashlib
+
 from IATI_2_02 import Parse as IATI_202_Parser
 from IATI_2_01 import Parse as IATI_201_Parser
 from IATI_1_05 import Parse as IATI_105_Parser
@@ -5,10 +10,7 @@ from IATI_1_03 import Parse as IATI_103_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati.filegrabber import FileGrabber
-from lxml import etree
-from django import db
-from django.conf import settings
-import hashlib
+from iati.parser import schema_validators
 
 
 class ParserDisabledError(Exception):
@@ -31,28 +33,29 @@ class ParseManager():
         self.hash_changed = True
         self.valid_dataset = True
 
-        if root is not None:
+        if root != None:
             self.root = root
             self.parser = self._prepare_parser(self.root, dataset)
             return
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
+        
         from iati_synchroniser.models import DatasetNote
         if not response or response.code != 200:
             self.valid_dataset = False
-            DatasetNote.objects.filter(dataset=self.dataset).delete()
             note = DatasetNote(
                 dataset=self.dataset,
                 iati_identifier="n/a",
                 model="n/a",
                 field="n/a",
-                message="URL down or does not exist",
+                message="Cannot access the URL",
                 exception_type='UrlError',
                 line_number=None
             )
             note.save()
             self.dataset.note_count = 1
+            self.dataset.sha1 = 'none'
             self.dataset.save()
             return
 
@@ -72,6 +75,10 @@ class ParseManager():
         try:
             self.root = etree.fromstring(iati_file_str)
             self.parser = self._prepare_parser(self.root, dataset)
+            
+            if settings.ERROR_LOGS_ENABLED:
+                self.xsd_validate()
+
         except etree.XMLSyntaxError as e:
             self.valid_dataset = False
             DatasetNote.objects.filter(dataset=self.dataset).delete()
@@ -128,6 +135,10 @@ class ParseManager():
 
         return parser
 
+    def xsd_validate(self):
+        schema_validators.validate(self.parser, self.root)
+
+
     def get_parser(self):
         return self.parser
 
@@ -135,6 +146,7 @@ class ParseManager():
         """
         Parse all activities 
         """
+
         # only start parsing when the file changed (or on force)
         if (self.force_reparse or self.hash_changed) and self.valid_dataset:
             self.parser.load_and_parse(self.root)

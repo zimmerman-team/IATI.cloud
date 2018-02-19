@@ -15,9 +15,9 @@ def error404(request):
     # 2. Generate Content for this view
     template = loader.get_template('404.html')
 
-    context = Context({
+    context = {
         'referrer': request.META.get('HTTP_REFERER', '/'),
-        })
+    }
    
 
     # 3. Return Template for this view + Data
@@ -34,9 +34,9 @@ def error500(request):
     # 2. Generate Content for this view
     template = loader.get_template('500.html')
 
-    context = Context({
+    context = {
         'referrer': request.META.get('HTTP_REFERER', '/'),
-        })
+    }
    
 
     # 3. Return Template for this view + Data

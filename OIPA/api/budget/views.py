@@ -1,5 +1,5 @@
 from rest_framework.generics import ListAPIView
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.budget import filters
 from api.generics.filters import SearchFilter

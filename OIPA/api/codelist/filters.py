@@ -1,5 +1,5 @@
-from rest_framework.filters import DjangoFilterBackend
-
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models.fields.related import ManyToOneRel
 
 class AllDjangoFilterBackend(DjangoFilterBackend):
     """
@@ -19,6 +19,11 @@ class AllDjangoFilterBackend(DjangoFilterBackend):
         class AutoFilterSet(self.default_filter_set):
             class Meta:
                 model = queryset.model
-                fields = None
+                fields = []
+
+                for f in model._meta.get_fields():
+                    if not f.many_to_many and not isinstance(f, ManyToOneRel):
+                        fields.append(f.name)
+                        
 
         return AutoFilterSet

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from geodata.models import Country, Region
 from activity_manager import ActivityManager
 from location_manager import LocationManager
@@ -15,13 +17,16 @@ from iati_vocabulary.models import BudgetIdentifierVocabulary
 from iati_vocabulary.models import HumanitarianScopeVocabulary
 from iati_vocabulary.models import IndicatorVocabulary
 from iati_organisation.models import Organisation
+from iati_synchroniser.models import Dataset
+from iati_synchroniser.models import Publisher
+
+
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 from djorm_pgfulltext.models import SearchManager
 from djorm_pgfulltext.fields import VectorField
-from decimal import Decimal
-from iati_synchroniser.models import Dataset
 
-from iati_synchroniser.models import Publisher
 
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
@@ -46,17 +51,23 @@ class Narrative(models.Model):
 
 class ActivitySearch(models.Model):
     activity = models.OneToOneField('Activity')
-    iati_identifier = VectorField()
-    text = VectorField()
-    title = VectorField()
-    description = VectorField()
-    reporting_org = VectorField()
-    participating_org = VectorField()
-    recipient_country = VectorField()
-    recipient_region = VectorField()
-    sector = VectorField()
-    document_link = VectorField()
+    iati_identifier = models.CharField(max_length=255)
+    title = models.TextField(null=True)
+    description = models.TextField(null=True)
+    reporting_org = models.TextField(null=True)
+    participating_org = models.TextField(null=True)
+    recipient_country = models.TextField(null=True)
+    recipient_region = models.TextField(null=True)
+    sector = models.TextField(null=True)
+    document_link = models.TextField(null=True)
     last_reindexed = models.DateTimeField()
+
+    search_vector_text = SearchVectorField(null=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(fields=['search_vector_text'])
+        ]
 
 
 class Activity(models.Model):
@@ -267,6 +278,97 @@ class AbstractActivityAggregation(models.Model):
         default=None,
         blank=True,
     )
+    interest_payment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    interest_payment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    loan_repayment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    loan_repayment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    reimbursement_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    reimbursement_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    purchase_of_equity_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    purchase_of_equity_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    sale_of_equity_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    sale_of_equity_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    credit_guarantee_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    credit_guarantee_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    incoming_commitment_value = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    incoming_commitment_currency = models.CharField(
+        max_length=3,
+        null=True,
+        default=None,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
@@ -277,6 +379,13 @@ class AbstractActivityAggregation(models.Model):
             ["incoming_funds_value", "activity"],
             ["commitment_value", "activity"],
             ["expenditure_value", "activity"],
+            ["interest_payment_value", "activity"],
+            ["loan_repayment_value", "activity"],
+            ["reimbursement_value", "activity"],
+            ["purchase_of_equity_value", "activity"],
+            ["sale_of_equity_value", "activity"],
+            ["credit_guarantee_value", "activity"],
+            ["incoming_commitment_value", "activity"]
         ]
 
 
@@ -368,6 +477,11 @@ class ActivityParticipatingOrganisation(models.Model):
 
     # when organisation is not mentioned in transactions
     org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
+    org_activity_obj = models.ForeignKey(
+        Activity,
+        related_name="participating_activity",
+        null=True,
+        default=None)
 
     narratives = GenericRelation(
         Narrative,
@@ -386,7 +500,6 @@ class ActivityParticipatingOrganisation(models.Model):
 
     def get_activity(self):
         return self.activity
-
 
 
 class ActivityPolicyMarker(models.Model):

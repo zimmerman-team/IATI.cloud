@@ -43,7 +43,7 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher), 
+                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
                 data,
                 format='json'
                 )
@@ -71,7 +71,7 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher), 
+                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
                 data,
                 format='json'
                 )

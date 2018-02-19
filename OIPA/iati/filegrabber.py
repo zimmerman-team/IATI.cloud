@@ -24,7 +24,7 @@ class FileGrabber():
         browser.set_handle_referer(True)
         browser.set_handle_robots(False)
         browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-        browser.set_debug_http(True)
+        browser.set_debug_http(False)
         browser.set_debug_redirects(True)
         browser.set_debug_responses(True)
 

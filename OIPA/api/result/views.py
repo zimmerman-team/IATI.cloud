@@ -2,7 +2,7 @@ from api.result.filters import ResultFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Func, F, Count
 from iati.models import Result
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from api.generics.filters import SearchFilter
 
 

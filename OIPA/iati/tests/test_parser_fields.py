@@ -21,6 +21,7 @@ from iati.parser.parse_manager import ParseManager
 
 import iati.models as iati_models
 import iati_codelists.models as codelist_models
+import iati_synchroniser.models as synchroniser_models
 
 from currency_convert import convert
 from iati.parser.post_save import *
@@ -61,7 +62,7 @@ def copy_xml_tree(tree):
 
 
 def build_activity(version="2.02", *args, **kwargs):
-        activity = iati_factory.ActivityFactory.build(
+        activity = iati_factory.ActivityFactory.create(
             iati_standard_version=codelist_models.Version.objects.get(code=version), # TODO: cache this
             *args,
             **kwargs
@@ -73,7 +74,7 @@ def create_parser(self, version="2.02"):
     iati_identifier = "NL-KVK-51018586-0666"
 
     iati_activities = build_xml(version, iati_identifier)
-    dummy_source = synchroniser_factory.DatasetFactory.create()
+    dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-1")
 
     return ParseManager(dummy_source, iati_activities).get_parser()
 
@@ -114,7 +115,11 @@ class ParserSetupTestCase(TestCase):
 
         # publisher = Publisher.objects.get(id=1) # from fixture
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
-        dummy_source = synchroniser_factory.DatasetFactory.create()
+        
+        if synchroniser_models.Dataset.objects.filter(name="dataset-2").exists():
+            dummy_source = synchroniser_models.Dataset.objects.get(name="dataset-2")
+        else:
+            dummy_source = synchroniser_factory.DatasetFactory.create(name="dataset-2")
 
         self.parser_103 = ParseManager(dummy_source, self.iati_103).get_parser()
         self.parser_104 = ParseManager(dummy_source, self.iati_104).get_parser()
@@ -524,6 +529,7 @@ class ActivityTestCase(ParserSetupTestCase):
         activity = self.parser_202.get_model('Activity')
         self.assertEqual(activity.default_tied_status.code, code)
 
+
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
@@ -535,7 +541,7 @@ class TitleTestCase(ParserSetupTestCase):
         self.parser_202.register_model('Activity', self.activity)
         self.parser_105.register_model('Activity', self.activity)
 
-        print(self.parser_105.get_model('Activity'))
+        # print(self.parser_105.get_model('Activity'))
 
 
     def test_title_202(self):
@@ -636,6 +642,7 @@ class DescriptionTestCase(ParserSetupTestCase):
         self.assertEqual(description.activity, self.activity)
         self.assertEqual(narrative.related_object, description)
 
+
 class OtherIdentifierTestCase(ParserSetupTestCase):
     """
     2.02: Freetext support of the other-identifier was removed. A new other-identifier/@ref was added as a replacement.
@@ -702,6 +709,7 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('OtherIdentifierNarrative')
         self.assertEqual(narrative.related_object, other_identifier)
 
+
 class NarrativeTestCase(ParserSetupTestCase):
     """
     Added in 2.02
@@ -737,6 +745,11 @@ class NarrativeTestCase(ParserSetupTestCase):
         The narrative should change its language parameter based on the xml:lang element 
         """
         self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr" # ISO 639-1:2002
+
+        iati_factory.LanguageFactory.create(
+            code="fr",
+            name="French language"
+        )
 
         self.parser_202.add_narrative(self.narrative, self.related_object)
         narrative = self.parser_202.get_model('ActivityNarrative')
@@ -1012,6 +1025,7 @@ class ActivityDateTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ActivityDateNarrative')
         self.assertEqual(narrative.related_object, activity_date)
 
+
 class ContactInfoTestCase(ParserSetupTestCase):
     """
     2.02:  The optional contact-info/department element was added.
@@ -1203,6 +1217,7 @@ class ContactInfoTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ContactInfoMailingAddressNarrative')
         self.assertEqual(narrative.related_object, contact_info_mailing_address)
 
+
 class RecipientCountryTestCase(ParserSetupTestCase):
     """
     2.02: Freetext is no longer allowed with this element. It should now be declared with the new child narrative element, but only in particular use-cases.
@@ -1236,6 +1251,7 @@ class RecipientCountryTestCase(ParserSetupTestCase):
         self.assertEqual(recipient_country.percentage, self.attrs['percentage'])
 
         # TODO: needs narrative?
+
 
 class RecipientRegionTestCase(ParserSetupTestCase):
     """

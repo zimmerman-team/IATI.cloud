@@ -46,3 +46,15 @@ def adapt(text):
     a = psycopg2.extensions.adapt(force_text(text))
     a.prepare(connection.connection)
     return a
+
+
+def findnth_occurence_in_string(haystack, needle, n):
+    """
+    returns the index of the nth occurence of the needle in the haystack
+    """
+    parts= haystack.split(needle, n+1)
+    if len(parts)<=n+1:
+        return -1
+    return len(haystack)-len(parts[-1])-len(needle)
+
+

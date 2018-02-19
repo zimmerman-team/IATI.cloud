@@ -138,7 +138,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     description = TransactionDescriptionSerializer()
     humanitarian = serializers.BooleanField()
 
-    activity = ActivitySerializer(read_only=True, fields=('id', 'iati_identifier', 'url'))
+    activity = ActivitySerializer(read_only=True, fields=('id', 'iati_identifier', 'url', 'title'))
     activity_id = serializers.CharField(write_only=True)
 
     class Meta:

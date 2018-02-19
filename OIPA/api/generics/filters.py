@@ -63,17 +63,14 @@ class SearchFilter(filters.BaseFilterBackend):
 
         query = request.query_params.get('q', None)
         query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'ft'
+        lookup_expr = 'exact' #'ft'
         if query_lookup:
-            if query_lookup == 'exact':
-                lookup_expr = 'ft'
-            if query_lookup == 'startswith':
-                lookup_expr = 'ft_startswith'
+            lookup_expr = query_lookup
 
         if query:
 
             query_fields = request.query_params.get('q_fields')
-            dict_query_list = [TSConfig('simple'), query]
+            #dict_query_list = [TSConfig('simple'), query]
 
             model_prefix = ''
 
@@ -93,7 +90,7 @@ class SearchFilter(filters.BaseFilterBackend):
                     filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
                     return queryset.filter(filters)
             else:
-                return queryset.filter(**{'{0}activitysearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
+                return queryset.filter(**{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
 
         return queryset
 
@@ -219,7 +216,10 @@ class TogetherFilterSet(FilterSet):
         # fields that must be filtered in the same filter call
         together_exclusive = getattr(meta, 'together_exclusive', [])
 
-        data = data.copy()
+        if data:
+            data = data.copy()
+        else:
+            data = {}
 
         for filterlist in together_exclusive:
             if set(filterlist).issubset(data.keys()):

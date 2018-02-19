@@ -526,7 +526,7 @@ class ActivityDateSaveTestCase(TestCase):
                 "code": type.code,
                 "name": 'irrelevant',
             },
-            "iso_date": datetime.datetime.now().isoformat(' '),
+            "iso_date": datetime.date.today().isoformat(),
         }
 
         res = self.c.post(
@@ -553,7 +553,7 @@ class ActivityDateSaveTestCase(TestCase):
                 "code": type2.code,
                 "name": 'irrelevant',
             },
-            "iso_date": datetime.datetime.now().isoformat(' '),
+            "iso_date": datetime.date.today().isoformat(),
         }
 
         res = self.c.put(

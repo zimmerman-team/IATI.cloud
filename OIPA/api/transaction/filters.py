@@ -99,6 +99,10 @@ class TransactionFilter(FilterSet):
     #
 
     activity_id = CommaSeparatedCharFilter(
+        name='activity__id',
+        lookup_expr='in')
+
+    iati_identifier = CommaSeparatedCharFilter(
         name='activity__iati_identifier',
         lookup_expr='in')
 
@@ -290,6 +294,14 @@ class TransactionFilter(FilterSet):
         main_fk='activity',
         qs=ActivitySector,
         lookup_expr='in',
+        name='sector__code',
+        fk='activity',
+    )
+
+    sector_startswith = ToManyFilter(
+        main_fk='activity',
+        qs=ActivitySector,
+        lookup_expr='startswith',
         name='sector__code',
         fk='activity',
     )

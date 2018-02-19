@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.03">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      International Aid Transparency Initiative: Common Markup Components
+
+      Release 1.03, 2012-09-06
+
+      This schema is not meant to be used on its own: it contains
+      common shared markup components for the IATI activities and
+      organisations schemas.  It must be in the same directory as
+      iati-activities-schema.xsd and iati-organisations-schema.xsd
+      (together with xml.xsd).
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <!-- for xml:lang -->
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+              schemaLocation="xml.xsd"/>
+
+  <!--
+      Common elements.
+  -->
+
+  <xsd:element name="title" type="textType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A short, human-readable title.  May be repeated for different
+        languages.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="description">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A longer, human-readable description.  May be repeated for
+        different languages.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+      <xsd:sequence>
+        <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="textAtts"/>
+      <xsd:attribute ref="type" use="optional"/>
+      <xsd:anyAttribute processContents="lax" namespace="##other"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="comment" type="textType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A human-readable comment associated with a piece of aid information.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="iati-identifier">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A globally unique identifier for this activity. This should be
+        in the form of the IATI Organisation Identifier (for the
+        reporting organisation) concatenated to that organisation's
+        activity identifier. (NB. Two or more reporting organisations
+        may publish information on the same activity. To
+        cross-reference these reports the other-identifier element
+        should be used.)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+      <xsd:anyAttribute processContents="lax" namespace="##other"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="reporting-org">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The organisation issuing the report. May be a primary source 
+        (reporting on its own activity as donor, implementing agency, 
+        etc) or a secondary source (reporting on the activities of 
+        another organisation). 
+        
+        Specifying the @ref and @role attributes is strongly 
+        recommended. May contain the organisation name as content. 
+        
+        For the value of the @type attribute, 
+        see http://iatistandard.org/codelists/organisation-type. 
+        
+        For guidance on constructing the value of the @ref attribute, 
+        see http://iatistandard.org/org-ref
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="true">
+      <xsd:sequence>
+        <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute ref="ref" use="required"/>
+      <xsd:attribute ref="type" use="optional"/>
+      <xsd:attributeGroup ref="textAtts"/>
+      <xsd:anyAttribute processContents="lax" namespace="##other"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="document-link">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A categorized link to an external document.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded">
+        <xsd:element ref="title"/>
+        <xsd:element name="category" type="codeReqType">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              IATI Document Category Code
+
+              For the value of the @code attribute, see
+              http://iatistandard.org/codelists/document_category
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="language" type="codeType">
+          <xsd:annotation>
+           <xsd:documentation xml:lang="en">
+                The ISO 639 language code for the target document, e.g. "en".
+           </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:any namespace="##other" processContents="lax"/>
+      </xsd:choice>
+      <xsd:attribute name="url" type="xsd:anyURI" use="required">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The target URL of the external document, e.g. "http://www.example.org/doc.html".
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="format" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The MIME type of the external document,
+            e.g. "application/pdf".  A partial list of MIME types
+            appears at http://iatistandard.org/codelists/file_format
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:anyAttribute processContents="lax" namespace="##other"/>
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <!--
+      Frequently-used attributes.
+  -->
+
+  <xsd:attribute name="code" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Machine-readable code for the entity being described.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <xsd:attribute name="ref" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Machine-readable identification string for the business
+        object being described.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <xsd:attribute name="type" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Free text describing the type of thing being referenced.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <xsd:attribute name="percentage" type="xsd:decimal">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The percentage of the budget allocated to this item.  Content
+        must be a positive real number between 0 and 100, with no
+        percentage sign.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <xsd:attribute name="currency" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A three letter ISO 4217 code for the original currency of the 
+        amount.
+        This is required for all currency amounts unless the
+        iati-activity/@default-currency attribute is specified.
+
+        Currency codes are listed at
+        http://iatistandard.org/codelists/currency
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <xsd:attribute name="value-date" type="xsd:date">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The date that this value was set (to allow historical
+        currency conversion).  The date must be in ISO 8601
+        format (YYYY-MM-DD).
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+  <!--
+      Common attribute groups and data types used by the elements above.
+  -->
+
+  <xsd:attributeGroup name="textAtts">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Attribute group for elements containing free text content.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute ref="xml:lang" use="optional"/>
+  </xsd:attributeGroup>
+
+  <xsd:complexType name="plainType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Plain text content with no special attributes (e.g. xml:lang),
+        though extended attributes are still allowed.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="textType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element that may contain human-readable text
+        in different languages.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="textAtts"/>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="codeType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element that refers to an object that can
+        have a code as well as human-readable text in different
+        languages (e.g. a country or status).
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="textAtts"/>
+    <xsd:attribute ref="code" use="optional"/>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="codeReqType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element that refers to an object that must
+        have a code.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="textAtts"/>
+    <xsd:attribute ref="code" use="required"/>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="refType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element that refers to a business object that
+        can have unique identifier as well as human-readable text in
+        different languages (e.g. an organisation).
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="textAtts"/>
+    <xsd:attribute ref="ref" use="optional"/>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="refReqType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element that refers to a business object that
+        can have unique identifier as well as human-readable text in
+        different languages (e.g. an organisation), where the identifier
+        reference is required.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="textAtts"/>
+    <xsd:attribute ref="ref" use="required"/>
+    <xsd:anyAttribute processContents="lax" namespace="##other"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="currencyType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Data type for an element containing a currency value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:decimal">
+        <xsd:attribute ref="currency" use="optional"/>
+        <xsd:attribute ref="value-date" use="required"/>
+        <xsd:anyAttribute processContents="lax" namespace="##other"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="dateType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A date.  The ISO 8601 date goes into the @iso-date attribute.
+        The content may be free-form text.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any processContents="lax" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="iso-date" type="xsd:date" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The ISO 8601 date.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="dateReqType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A date.  The ISO 8601 date goes into the @iso-date attribute.
+        The content may be free-form text.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any processContents="lax" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="iso-date" type="xsd:date" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The ISO 8601 date.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+</xsd:schema>

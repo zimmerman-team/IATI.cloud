@@ -23,15 +23,29 @@ from django.contrib.auth.models import Group
 from iati.permissions.models import OrganisationUser
 
 
+from rest_framework import generics, filters, status, pagination
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+from rest_framework import pagination
+
+
+class PublisherPagination(pagination.PageNumberPagination):
+    max_page_size = 10000
+    page_size = 10
+    page_size_query_param = 'page_size'
+
+
 class PublisherList(DynamicListView):
     """
     Returns a list of IATI Publishers stored in OIPA.
 
     ## Request parameters
-
-    - `publisher_iati_id` (*optional*): Publisher id to search for.
-    - `org_abbreviate` (*optional*): Publisher abbreviation to search for.
-    - `name` (*optional*): Filter publishers name to search for.
+    
+    - `id` (*optional*): Publisher id to search for.
+    - `publisher_iati_id` (*optional*): Publisher IATI id to search for.
+    - `display_name` (*optional*): Publisher IATI Registry display name to search for.
+    - `name` (*optional*): Publisher IATI Registry name to search for.
 
     ## Result details
 
@@ -41,13 +55,25 @@ class PublisherList(DynamicListView):
     URI is constructed as follows: `/api/publishers/{publisher_iati_id}`
 
     """
-    queryset = Publisher.objects.all()
+    queryset = Publisher.objects.all().order_by('id')
     serializer_class = serializers.PublisherSerializer
     filter_class = PublisherFilter
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter,)
+    pagination_class = PublisherPagination
+
+    ordering_fields = (
+        'id', 
+        'iati_id',
+        'publisher_iati_id', 
+        'display_name', 
+        'name', 
+        'note_count')
+
 
     fields = (
         'url',
         'id',
+        'iati_id',
         'publisher_iati_id',
         'display_name',
         'name',
@@ -72,7 +98,8 @@ class PublisherDetail(DynamicDetailView):
     queryset = Publisher.objects.all()
     serializer_class = serializers.PublisherSerializer
 
-class OrganisationAdminGroupView(GenericAPIView):
+
+class OrganisationAdminGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -84,7 +111,9 @@ class OrganisationAdminGroupView(GenericAPIView):
         serializer = OrganisationUserSerializer(
             users, 
             many=True, 
-            context=self.get_serializer_context(),
+            context={
+                'request': request,
+            },
             fields=('username', 'email'),
             )
 
@@ -103,7 +132,7 @@ class OrganisationAdminGroupView(GenericAPIView):
 
         return Response()
 
-class OrganisationAdminGroupDetailView(GenericAPIView):
+class OrganisationAdminGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -129,7 +158,7 @@ class OrganisationAdminGroupDetailView(GenericAPIView):
 
 
 
-class OrganisationGroupView(GenericAPIView):
+class OrganisationGroupView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -139,7 +168,9 @@ class OrganisationGroupView(GenericAPIView):
         serializer = OrganisationUserSerializer(
                 users, 
                 many=True, 
-                context=self.get_serializer_context(), 
+                context={
+                    'request': request,
+                },
                 fields=('username', 'email')
             )
 
@@ -158,7 +189,7 @@ class OrganisationGroupView(GenericAPIView):
 
         return Response()
 
-class OrganisationGroupDetailView(GenericAPIView):
+class OrganisationGroupDetailView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (OrganisationAdminGroupPermissions, )
 
@@ -187,7 +218,7 @@ class OrganisationGroupDetailView(GenericAPIView):
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
-class OrganisationVerifyApiKey(GenericAPIView):
+class OrganisationVerifyApiKey(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
     serializer_class = OrganisationUserSerializer
@@ -252,7 +283,7 @@ class OrganisationVerifyApiKey(GenericAPIView):
 
         # TODO: add organisation foreign key - 2016-10-25
         publisher = Publisher.objects.update_or_create(
-            pk=primary_org_id,
+            iati_id=primary_org_id,
             publisher_iati_id=primary_org_iati_id,
             defaults={
                 "name": primary_org.get('name'),
@@ -292,12 +323,14 @@ class OrganisationVerifyApiKey(GenericAPIView):
 
         serializer = OrganisationUserSerializer(
             user, 
-            context=self.get_serializer_context(),
+            context={
+                'request': request,
+            }
             )
 
         return Response(serializer.data)
 
-class OrganisationRemoveApiKey(GenericAPIView):
+class OrganisationRemoveApiKey(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (OrganisationAdminGroupPermissions, )
 
