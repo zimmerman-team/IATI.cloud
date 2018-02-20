@@ -1,10 +1,11 @@
 from django.conf import settings
-from django.conf.urls import include
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic.base import RedirectView
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
+from two_factor.urls import urlpatterns as tf_urls
+
 from OIPA import views
 
 admin.autodiscover()
@@ -20,7 +21,7 @@ urlpatterns = [
     url(r'^404$', views.error404),
     url(r'^500$', views.error500),
     url(r'^about$', TemplateView.as_view(template_name='home/about.html')),
-    url(r'', include('two_factor.urls', 'two_factor')),
+    url(r'', include(tf_urls, 'two_factor')),
     url(r'^accounts/profile/', RedirectView.as_view(url='/admin')),
     url(r'^$', RedirectView.as_view(url='/home', permanent=True)),
 ]
