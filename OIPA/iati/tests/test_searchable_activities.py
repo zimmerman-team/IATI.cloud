@@ -2,14 +2,14 @@ from django.test import TestCase
 import unittest
 from mock import MagicMock
 from iati.management.commands.set_searchable_activities import *
-from iati_codelists.factory import codelist_factory 
+from iati_codelists.factory import codelist_factory
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
 
 
 class SearchableActivitiesTestCase(TestCase):
     """
-        
+
     """
 
     def setUp(self):
@@ -19,7 +19,7 @@ class SearchableActivitiesTestCase(TestCase):
         # create 3 activities
         # -one reporting-org GB-1
         # -one GB-1 searchable
-        # -one non searchable 
+        # -one non searchable
 
         version = codelist_factory.VersionFactory(code='2.01')
         self.first_activity = iati_factory.ActivityFactory.create(
@@ -56,10 +56,10 @@ class SearchableActivitiesTestCase(TestCase):
             activity=self.second_activity,
         )
         transaction_provider = transaction_factory.TransactionProviderFactory.create(
-            ref = "GB-1",
-            normalized_ref = "GB-1",
-            provider_activity = self.first_activity,
-            provider_activity_ref = "GB-1-1",
+            ref="GB-1",
+            normalized_ref="GB-1",
+            provider_activity=self.first_activity,
+            provider_activity_ref="GB-1-1",
             transaction=transaction
         )
 
@@ -78,4 +78,3 @@ class SearchableActivitiesTestCase(TestCase):
 
         self.third_activity.refresh_from_db()
         self.assertFalse(self.third_activity.is_searchable)
-

@@ -59,4 +59,3 @@ class CityImportTestCase(TestCase):
         self.assertEqual(city.country, self.country)
         self.assertEqual(city.location, longlat)
         self.assertEqual(city, country.capital_city)
-

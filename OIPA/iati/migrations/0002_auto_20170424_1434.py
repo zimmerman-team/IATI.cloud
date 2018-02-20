@@ -24,172 +24,284 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='transactionreceiver',
             name='organisation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transaction_receiving_organisation', to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='transaction_receiving_organisation',
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='transactionreceiver',
             name='receiver_activity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transaction_receiver_activity', to='iati.Activity'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='transaction_receiver_activity',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='transactionreceiver',
             name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='receiver_organisation', to='iati.Transaction'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='receiver_organisation',
+                to='iati.Transaction'),
         ),
         migrations.AddField(
             model_name='transactionreceiver',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='transactionprovider',
             name='organisation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transaction_providing_organisation', to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='transaction_providing_organisation',
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='transactionprovider',
             name='provider_activity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transaction_provider_activity', to='iati.Activity'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='transaction_provider_activity',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='transactionprovider',
             name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='provider_organisation', to='iati.Transaction'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='provider_organisation',
+                to='iati.Transaction'),
         ),
         migrations.AddField(
             model_name='transactionprovider',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='transactiondescription',
             name='transaction',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='description', to='iati.Transaction'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='description',
+                to='iati.Transaction'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='aid_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.AidType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.AidType'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='currency',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='disbursement_channel',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.DisbursementChannel'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.DisbursementChannel'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='finance_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FinanceType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FinanceType'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='flow_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FlowType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FlowType'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='tied_status',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.TiedStatus'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.TiedStatus'),
         ),
         migrations.AddField(
             model_name='transaction',
             name='transaction_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.TransactionType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.TransactionType'),
         ),
         migrations.AddField(
             model_name='title',
             name='activity',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='title', to='iati.Activity'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='title',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='resulttitle',
             name='result',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Result'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Result'),
         ),
         migrations.AddField(
             model_name='resultindicatortitle',
             name='result_indicator',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicator'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicator'),
         ),
         migrations.AddField(
             model_name='resultindicatorreference',
             name='result_indicator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicator'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicator'),
         ),
         migrations.AddField(
             model_name='resultindicatorreference',
             name='vocabulary',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.IndicatorVocabulary'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.IndicatorVocabulary'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodtargetlocation',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Location'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodtargetlocation',
             name='result_indicator_period',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodtargetdimension',
             name='result_indicator_period',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodtargetcomment',
             name='result_indicator_period',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodactuallocation',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Location'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodactuallocation',
             name='result_indicator_period',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodactualdimension',
             name='result_indicator_period',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiodactualcomment',
             name='result_indicator_period',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicatorPeriod'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicatorPeriod'),
         ),
         migrations.AddField(
             model_name='resultindicatorperiod',
             name='result_indicator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicator'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicator'),
         ),
         migrations.AddField(
             model_name='resultindicatordescription',
             name='result_indicator',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicator'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicator'),
         ),
         migrations.AddField(
             model_name='resultindicatorbaselinecomment',
             name='result_indicator',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.ResultIndicator'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.ResultIndicator'),
         ),
         migrations.AddField(
             model_name='resultindicator',
             name='measure',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.IndicatorMeasure'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.IndicatorMeasure'),
         ),
         migrations.AddField(
             model_name='resultindicator',
@@ -199,192 +311,333 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resultdescription',
             name='result',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Result'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Result'),
         ),
         migrations.AddField(
             model_name='result',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='result',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ResultType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ResultType'),
         ),
         migrations.AddField(
             model_name='relatedactivity',
             name='current_activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='relatedactivity',
             name='ref_activity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='ref_activity', to='iati.Activity'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='ref_activity',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='relatedactivity',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, max_length=200, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.RelatedActivityType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                max_length=200,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.RelatedActivityType'),
         ),
         migrations.AddField(
             model_name='planneddisbursementreceiver',
             name='organisation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='planned_disbursement_receiving_organisation', to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='planned_disbursement_receiving_organisation',
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='planneddisbursementreceiver',
             name='planned_disbursement',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='receiver_organisation', to='iati.PlannedDisbursement'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='receiver_organisation',
+                to='iati.PlannedDisbursement'),
         ),
         migrations.AddField(
             model_name='planneddisbursementreceiver',
             name='receiver_activity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='planned_disbursement_receiver_activity', to='iati.Activity'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='planned_disbursement_receiver_activity',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='planneddisbursementreceiver',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='planneddisbursementprovider',
             name='organisation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='planned_disbursement_providing_organisation', to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='planned_disbursement_providing_organisation',
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='planneddisbursementprovider',
             name='planned_disbursement',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='provider_organisation', to='iati.PlannedDisbursement'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='provider_organisation',
+                to='iati.PlannedDisbursement'),
         ),
         migrations.AddField(
             model_name='planneddisbursementprovider',
             name='provider_activity',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='planned_disbursement_provider_activity', to='iati.Activity'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='planned_disbursement_provider_activity',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='planneddisbursementprovider',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='planneddisbursement',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='planneddisbursement',
             name='currency',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='planneddisbursement',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetType'),
         ),
         migrations.AddField(
             model_name='otheridentifier',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='otheridentifier',
             name='type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OtherIdentifierType'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OtherIdentifierType'),
         ),
         migrations.AddField(
             model_name='narrative',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='narrative',
             name='language',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Language'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Language'),
         ),
         migrations.AddField(
             model_name='narrative',
             name='related_content_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='related_agent', to='contenttypes.ContentType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='related_agent',
+                to='contenttypes.ContentType'),
         ),
         migrations.AddField(
             model_name='locationname',
             name='location',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='name', to='iati.Location'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='name',
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='locationdescription',
             name='location',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='description', to='iati.Location'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='description',
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='locationadministrative',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Location'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='locationadministrative',
             name='vocabulary',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='administrative_vocabulary', to='iati_vocabulary.GeographicVocabulary'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='administrative_vocabulary',
+                to='iati_vocabulary.GeographicVocabulary'),
         ),
         migrations.AddField(
             model_name='locationactivitydescription',
             name='location',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='activity_description', to='iati.Location'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='activity_description',
+                to='iati.Location'),
         ),
         migrations.AddField(
             model_name='location',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='location',
             name='exactness',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.GeographicExactness'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.GeographicExactness'),
         ),
         migrations.AddField(
             model_name='location',
             name='feature_designation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='feature_designation', to='iati_codelists.LocationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='feature_designation',
+                to='iati_codelists.LocationType'),
         ),
         migrations.AddField(
             model_name='location',
             name='location_class',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.GeographicLocationClass'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.GeographicLocationClass'),
         ),
         migrations.AddField(
             model_name='location',
             name='location_id_vocabulary',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='location_id_vocabulary', to='iati_vocabulary.GeographicVocabulary'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='location_id_vocabulary',
+                to='iati_vocabulary.GeographicVocabulary'),
         ),
         migrations.AddField(
             model_name='location',
             name='location_reach',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='location_reach', to='iati_codelists.GeographicLocationReach'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='location_reach',
+                to='iati_codelists.GeographicLocationReach'),
         ),
         migrations.AddField(
             model_name='legacydata',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='humanitarianscope',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='humanitarianscope',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.HumanitarianScopeType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.HumanitarianScopeType'),
         ),
         migrations.AddField(
             model_name='humanitarianscope',
             name='vocabulary',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.HumanitarianScopeVocabulary'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.HumanitarianScopeVocabulary'),
         ),
         migrations.AddField(
             model_name='fssforecast',
             name='currency',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='fssforecast',
@@ -394,172 +647,281 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fss',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='documentsearch',
             name='document',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Document'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Document'),
         ),
         migrations.AddField(
             model_name='documentlinktitle',
             name='document_link',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.DocumentLink'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.DocumentLink'),
         ),
         migrations.AddField(
             model_name='documentlinklanguage',
             name='document_link',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.DocumentLink'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.DocumentLink'),
         ),
         migrations.AddField(
             model_name='documentlinklanguage',
             name='language',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Language'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Language'),
         ),
         migrations.AddField(
             model_name='documentlinkcategory',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.DocumentCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.DocumentCategory'),
         ),
         migrations.AddField(
             model_name='documentlinkcategory',
             name='document_link',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.DocumentLink'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.DocumentLink'),
         ),
         migrations.AddField(
             model_name='documentlink',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='documentlink',
             name='categories',
-            field=models.ManyToManyField(through='iati.DocumentLinkCategory', to='iati_codelists.DocumentCategory'),
+            field=models.ManyToManyField(
+                through='iati.DocumentLinkCategory',
+                to='iati_codelists.DocumentCategory'),
         ),
         migrations.AddField(
             model_name='documentlink',
             name='file_format',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FileFormat'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FileFormat'),
         ),
         migrations.AddField(
             model_name='document',
             name='document_link',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.DocumentLink'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.DocumentLink'),
         ),
         migrations.AddField(
             model_name='description',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='description',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='description_type', to='iati_codelists.DescriptionType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='description_type',
+                to='iati_codelists.DescriptionType'),
         ),
         migrations.AddField(
             model_name='crsaddotherflags',
             name='crs_add',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='other_flags', to='iati.CrsAdd'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='other_flags',
+                to='iati.CrsAdd'),
         ),
         migrations.AddField(
             model_name='crsaddotherflags',
             name='other_flags',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OtherFlags'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OtherFlags'),
         ),
         migrations.AddField(
             model_name='crsaddloanterms',
             name='crs_add',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='loan_terms', to='iati.CrsAdd'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='loan_terms',
+                to='iati.CrsAdd'),
         ),
         migrations.AddField(
             model_name='crsaddloanterms',
             name='repayment_plan',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.LoanRepaymentPeriod'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.LoanRepaymentPeriod'),
         ),
         migrations.AddField(
             model_name='crsaddloanterms',
             name='repayment_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.LoanRepaymentType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.LoanRepaymentType'),
         ),
         migrations.AddField(
             model_name='crsaddloanstatus',
             name='crs_add',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='loan_status', to='iati.CrsAdd'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='loan_status',
+                to='iati.CrsAdd'),
         ),
         migrations.AddField(
             model_name='crsaddloanstatus',
             name='currency',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='crsadd',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='countrybudgetitem',
             name='activity',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='country_budget_items', to='iati.Activity'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='country_budget_items',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='countrybudgetitem',
             name='vocabulary',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.BudgetIdentifierVocabulary'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.BudgetIdentifierVocabulary'),
         ),
         migrations.AddField(
             model_name='contactinfopersonname',
             name='contact_info',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='person_name', to='iati.ContactInfo'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='person_name',
+                to='iati.ContactInfo'),
         ),
         migrations.AddField(
             model_name='contactinfoorganisation',
             name='contact_info',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='organisation', to='iati.ContactInfo'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='organisation',
+                to='iati.ContactInfo'),
         ),
         migrations.AddField(
             model_name='contactinfomailingaddress',
             name='contact_info',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='mailing_address', to='iati.ContactInfo'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='mailing_address',
+                to='iati.ContactInfo'),
         ),
         migrations.AddField(
             model_name='contactinfojobtitle',
             name='contact_info',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='job_title', to='iati.ContactInfo'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='job_title',
+                to='iati.ContactInfo'),
         ),
         migrations.AddField(
             model_name='contactinfodepartment',
             name='contact_info',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='department', to='iati.ContactInfo'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='department',
+                to='iati.ContactInfo'),
         ),
         migrations.AddField(
             model_name='contactinfo',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='contactinfo',
             name='type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ContactType'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ContactType'),
         ),
         migrations.AddField(
             model_name='conditions',
             name='activity',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='conditions', to='iati.Activity'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='conditions',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='condition',
             name='conditions',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Conditions'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Conditions'),
         ),
         migrations.AddField(
             model_name='condition',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ConditionType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ConditionType'),
         ),
         migrations.AddField(
             model_name='childaggregation',
             name='activity',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='child_aggregation', to='iati.Activity'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='child_aggregation',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='budgetsector',
@@ -569,252 +931,417 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='budgetsector',
             name='sector',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Sector'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Sector'),
         ),
         migrations.AddField(
             model_name='budgetitemdescription',
             name='budget_item',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='description', to='iati.BudgetItem'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='description',
+                to='iati.BudgetItem'),
         ),
         migrations.AddField(
             model_name='budgetitem',
             name='code',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetIdentifier'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetIdentifier'),
         ),
         migrations.AddField(
             model_name='budgetitem',
             name='country_budget_item',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.CountryBudgetItem'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.CountryBudgetItem'),
         ),
         migrations.AddField(
             model_name='budget',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='budget',
             name='currency',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='budget',
             name='status',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetStatus'),
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetStatus'),
         ),
         migrations.AddField(
             model_name='budget',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetType'),
         ),
         migrations.AddField(
             model_name='activitywebsite',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activitysector',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activitysector',
             name='sector',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Sector'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Sector'),
         ),
         migrations.AddField(
             model_name='activitysector',
             name='vocabulary',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.SectorVocabulary'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.SectorVocabulary'),
         ),
         migrations.AddField(
             model_name='activitysearchdata',
             name='activity',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activitysearch',
             name='activity',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityreportingorganisation',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reporting_organisations', to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='reporting_organisations',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityreportingorganisation',
             name='organisation',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='activityreportingorganisation',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='activityrecipientregion',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityrecipientregion',
             name='region',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geodata.Region'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='geodata.Region'),
         ),
         migrations.AddField(
             model_name='activityrecipientregion',
             name='vocabulary',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.RegionVocabulary'),
+            field=models.ForeignKey(default=1,
+                                    on_delete=django.db.models.deletion.CASCADE,
+                                    to='iati_vocabulary.RegionVocabulary'),
         ),
         migrations.AddField(
             model_name='activityrecipientcountry',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityrecipientcountry',
             name='country',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geodata.Country'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='geodata.Country'),
         ),
         migrations.AddField(
             model_name='activitypolicymarker',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activitypolicymarker',
             name='code',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.PolicyMarker'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.PolicyMarker'),
         ),
         migrations.AddField(
             model_name='activitypolicymarker',
             name='significance',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.PolicySignificance'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.PolicySignificance'),
         ),
         migrations.AddField(
             model_name='activitypolicymarker',
             name='vocabulary',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.PolicyMarkerVocabulary'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.PolicyMarkerVocabulary'),
         ),
         migrations.AddField(
             model_name='activitypluschildaggregation',
             name='activity',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='activity_plus_child_aggregation', to='iati.Activity'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='activity_plus_child_aggregation',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityparticipatingorganisation',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='participating_organisations', to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='participating_organisations',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activityparticipatingorganisation',
             name='organisation',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='iati_organisation.Organisation'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='iati_organisation.Organisation'),
         ),
         migrations.AddField(
             model_name='activityparticipatingorganisation',
             name='role',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationRole'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationRole'),
         ),
         migrations.AddField(
             model_name='activityparticipatingorganisation',
             name='type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.OrganisationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.OrganisationType'),
         ),
         migrations.AddField(
             model_name='activitydate',
             name='activity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Activity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activitydate',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ActivityDateType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ActivityDateType'),
         ),
         migrations.AddField(
             model_name='activityaggregation',
             name='activity',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='activity_aggregation', to='iati.Activity'),
+            field=models.OneToOneField(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='activity_aggregation',
+                to='iati.Activity'),
         ),
         migrations.AddField(
             model_name='activity',
             name='activity_status',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ActivityStatus'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ActivityStatus'),
         ),
         migrations.AddField(
             model_name='activity',
             name='collaboration_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.CollaborationType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.CollaborationType'),
         ),
         migrations.AddField(
             model_name='activity',
             name='dataset',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Dataset'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_synchroniser.Dataset'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_aid_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.AidType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.AidType'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_currency',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='default_currency', to='iati_codelists.Currency'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='default_currency',
+                to='iati_codelists.Currency'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_finance_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FinanceType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FinanceType'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_flow_type',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FlowType'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FlowType'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_lang',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Language'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Language'),
         ),
         migrations.AddField(
             model_name='activity',
             name='default_tied_status',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.TiedStatus'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.TiedStatus'),
         ),
         migrations.AddField(
             model_name='activity',
             name='iati_standard_version',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Version'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.Version'),
         ),
         migrations.AddField(
             model_name='activity',
             name='policy_marker',
-            field=models.ManyToManyField(through='iati.ActivityPolicyMarker', to='iati_codelists.PolicyMarker'),
+            field=models.ManyToManyField(
+                through='iati.ActivityPolicyMarker',
+                to='iati_codelists.PolicyMarker'),
         ),
         migrations.AddField(
             model_name='activity',
             name='publisher',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_synchroniser.Publisher'),
         ),
         migrations.AddField(
             model_name='activity',
             name='recipient_country',
-            field=models.ManyToManyField(through='iati.ActivityRecipientCountry', to='geodata.Country'),
+            field=models.ManyToManyField(
+                through='iati.ActivityRecipientCountry',
+                to='geodata.Country'),
         ),
         migrations.AddField(
             model_name='activity',
             name='recipient_region',
-            field=models.ManyToManyField(through='iati.ActivityRecipientRegion', to='geodata.Region'),
+            field=models.ManyToManyField(
+                through='iati.ActivityRecipientRegion',
+                to='geodata.Region'),
         ),
         migrations.AddField(
             model_name='activity',
             name='scope',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.ActivityScope'),
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.ActivityScope'),
         ),
         migrations.AddField(
             model_name='activity',
             name='sector',
-            field=models.ManyToManyField(through='iati.ActivitySector', to='iati_codelists.Sector'),
+            field=models.ManyToManyField(
+                through='iati.ActivitySector',
+                to='iati_codelists.Sector'),
         ),
         migrations.AlterIndexTogether(
             name='narrative',
@@ -826,18 +1353,22 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterIndexTogether(
             name='childaggregation',
-            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), ('budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
+            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), (
+                'budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
         ),
         migrations.AlterIndexTogether(
             name='activitypluschildaggregation',
-            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), ('budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
+            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), (
+                'budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
         ),
         migrations.AlterIndexTogether(
             name='activityaggregation',
-            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), ('budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
+            index_together=set([('incoming_funds_value', 'activity'), ('expenditure_value', 'activity'), (
+                'budget_value', 'activity'), ('commitment_value', 'activity'), ('disbursement_value', 'activity')]),
         ),
         migrations.AlterIndexTogether(
             name='activity',
-            index_together=set([('actual_end', 'id'), ('actual_start', 'id'), ('start_date', 'id'), ('end_date', 'id'), ('planned_end', 'id'), ('planned_start', 'id')]),
+            index_together=set([('actual_end', 'id'), ('actual_start', 'id'), ('start_date', 'id'),
+                                ('end_date', 'id'), ('planned_end', 'id'), ('planned_start', 'id')]),
         ),
     ]

@@ -42,3 +42,5 @@ ujson==1.35
 uwsgi==2.0.16
 yet_another_django_profiler==1.1.0
 YubiOTP==0.2.1
+flake8
+autopep8

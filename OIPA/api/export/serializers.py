@@ -11,24 +11,25 @@ from api.generics.fields import BoolToNumField
 
 from iati import models as iati_models
 
+
 class ValueSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('currency', 'value_date')}
 
     currency = serializers.CharField(source='currency.code')
     value_date = serializers.CharField()
     text = serializers.DecimalField(
-            source='value',
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-            )
+        source='value',
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False,
+    )
 
     class Meta():
         fields = (
-                'text',
-                'value_date',
-                'currency',
-                )
+            'text',
+            'value_date',
+            'currency',
+        )
 
 
 class IsoDateSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
@@ -51,7 +52,8 @@ class CodelistCategorySerializer(CodelistSerializer):
 
 
 # TODO: separate this
-class NarrativeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.NarrativeSerializer):
+class NarrativeXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                             activity_serializers.NarrativeSerializer):
     xml_meta = {'attributes': ('xml_lang',)}
 
     xml_lang = serializers.CharField(source='language.code')
@@ -67,7 +69,8 @@ class NarrativeContainerXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.S
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
 
 
-class DocumentLinkCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkCategorySerializer):
+class DocumentLinkCategorySerializer(XMLMetaMixin, SkipNullMixin,
+                                     activity_serializers.DocumentLinkCategorySerializer):
     xml_meta = {'attributes': ('code',)}
 
     code = serializers.CharField(source='category.code')
@@ -75,7 +78,9 @@ class DocumentLinkCategorySerializer(XMLMetaMixin, SkipNullMixin, activity_seria
     class Meta(activity_serializers.DocumentLinkCategorySerializer.Meta):
         fields = ('code',)
 
-class DocumentLinkLanguageSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkLanguageSerializer):
+
+class DocumentLinkLanguageSerializer(XMLMetaMixin, SkipNullMixin,
+                                     activity_serializers.DocumentLinkLanguageSerializer):
     xml_meta = {'attributes': ('code',)}
 
     code = serializers.CharField(source='language.code')
@@ -84,7 +89,8 @@ class DocumentLinkLanguageSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
         fields = ('code',)
 
 
-class DocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DocumentLinkSerializer):
+class DocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                activity_serializers.DocumentLinkSerializer):
     xml_meta = {'attributes': ('url', 'format',)}
 
     class DocumentDateSerializer(serializers.Serializer):
@@ -110,7 +116,8 @@ class DocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializer
         )
 
 
-class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CapitalSpendSerializer):
+class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin,
+                             activity_serializers.CapitalSpendSerializer):
     xml_meta = {'attributes': ('percentage',)}
 
     percentage = serializers.DecimalField(
@@ -121,13 +128,13 @@ class CapitalSpendSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.C
     )
 
 
-class LegacyDataXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LegacyDataSerializer):
+class LegacyDataXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                              activity_serializers.LegacyDataSerializer):
     xml_meta = {'attributes': ('name', 'value', 'iati_equivalent', )}
 
     name = serializers.CharField()
     value = serializers.CharField()
     iati_equivalent = serializers.CharField()
-
 
     class Meta(activity_serializers.LegacyDataSerializer.Meta):
         fields = (
@@ -135,6 +142,7 @@ class LegacyDataXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.
             'value',
             'iati_equivalent',
         )
+
 
 class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetSerializer):
     xml_meta = {'attributes': ('type', 'status')}
@@ -156,7 +164,8 @@ class BudgetSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetS
         )
 
 
-class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementSerializer):
+class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin,
+                                    activity_serializers.PlannedDisbursementSerializer):
     xml_meta = {'attributes': ('type',)}
 
     value = ValueSerializer(source='*')
@@ -165,8 +174,11 @@ class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serial
     period_start = IsoDateSerializer()
     period_end = IsoDateSerializer()
 
-    class PlannedDisbursementProviderXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementProviderSerializer):
-        xml_meta = {'attributes': ('type','ref', 'provider_activity_id',)}
+    class PlannedDisbursementProviderXMLSerializer(
+            XMLMetaMixin,
+            SkipNullMixin,
+            activity_serializers.PlannedDisbursementProviderSerializer):
+        xml_meta = {'attributes': ('type', 'ref', 'provider_activity_id',)}
 
         ref = serializers.CharField()
         provider_activity_id = serializers.CharField(source='provider_activity_ref')
@@ -176,16 +188,19 @@ class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serial
         class Meta:
             model = iati_models.PlannedDisbursementProvider
             fields = (
-                    'ref',
-                    'provider_activity_id',
-                    'type',
-                    'narrative',
-                    )
+                'ref',
+                'provider_activity_id',
+                'type',
+                'narrative',
+            )
 
     provider_org = PlannedDisbursementProviderXMLSerializer(source='provider_organisation')
 
-    class PlannedDisbursementReceiverXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.PlannedDisbursementReceiverSerializer):
-        xml_meta = {'attributes': ('type','ref', 'receiver_activity_id',)}
+    class PlannedDisbursementReceiverXMLSerializer(
+            XMLMetaMixin,
+            SkipNullMixin,
+            activity_serializers.PlannedDisbursementReceiverSerializer):
+        xml_meta = {'attributes': ('type', 'ref', 'receiver_activity_id',)}
 
         ref = serializers.CharField()
         receiver_activity_id = serializers.CharField(source='receiver_activity_ref')
@@ -195,12 +210,12 @@ class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serial
         class Meta:
             model = iati_models.PlannedDisbursementReceiver
             fields = (
-                    'ref',
-                    'receiver_activity_id',
-                    'type',
-                    'narrative',
-                    )
-            
+                'ref',
+                'receiver_activity_id',
+                'type',
+                'narrative',
+            )
+
     receiver_org = PlannedDisbursementReceiverXMLSerializer(source='receiver_organisation')
 
     class Meta(activity_serializers.PlannedDisbursementSerializer.Meta):
@@ -214,7 +229,8 @@ class PlannedDisbursementSerializer(XMLMetaMixin, SkipNullMixin, activity_serial
         )
 
 
-class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityDateSerializer):
+class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin,
+                             activity_serializers.ActivityDateSerializer):
     xml_meta = {'attributes': ('type', 'iso_date')}
 
     type = serializers.CharField(source='type.code')
@@ -223,7 +239,8 @@ class ActivityDateSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.A
         fields = ('iso_date', 'type')
 
 
-class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ReportingOrganisationSerializer):
+class ReportingOrganisationSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.ReportingOrganisationSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
 
     ref = serializers.CharField(source="publisher.organisation.organisation_identifier")
@@ -241,7 +258,8 @@ class ReportingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_seri
         )
 
 
-class ParticipatingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ParticipatingOrganisationSerializer):
+class ParticipatingOrganisationSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.ParticipatingOrganisationSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'role', 'activity_id')}
 
     type = serializers.CharField(source='type.code')
@@ -258,7 +276,9 @@ class ParticipatingOrganisationSerializer(XMLMetaMixin, SkipNullMixin, activity_
             'narrative',
         )
 
-class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.OtherIdentifierSerializer):
+
+class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                   activity_serializers.OtherIdentifierSerializer):
     xml_meta = {'attributes': ('ref', 'type',)}
 
     class OwnerOrgSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
@@ -281,7 +301,8 @@ class OtherIdentifierXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seriali
         )
 
 
-class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityPolicyMarkerSerializer):
+class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin,
+                                     activity_serializers.ActivityPolicyMarkerSerializer):
     xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri', 'significance',)}
 
     code = serializers.CharField(source='code.code')
@@ -300,7 +321,8 @@ class ActivityPolicyMarkerSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
         )
 
 
-class DescriptionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.DescriptionSerializer):
+class DescriptionSerializer(XMLMetaMixin, SkipNullMixin,
+                            activity_serializers.DescriptionSerializer):
     xml_meta = {'attributes': ('type',)}
 
     type = serializers.CharField(source='type.code')
@@ -313,9 +335,10 @@ class DescriptionSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.De
         )
 
 
-class RelatedActivitySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RelatedActivitySerializer):
+class RelatedActivitySerializer(XMLMetaMixin, SkipNullMixin,
+                                activity_serializers.RelatedActivitySerializer):
     xml_meta = {'attributes': ('ref', 'type')}
-    
+
     type = serializers.CharField(source='type.code')
 
     class Meta(activity_serializers.RelatedActivitySerializer.Meta):
@@ -325,7 +348,8 @@ class RelatedActivitySerializer(XMLMetaMixin, SkipNullMixin, activity_serializer
         )
 
 
-class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySectorSerializer):
+class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin,
+                               activity_serializers.ActivitySectorSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'code',)}
 
     code = serializers.CharField(source='sector.code')
@@ -341,7 +365,8 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
         )
 
 
-class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySectorSerializer):
+class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin,
+                               activity_serializers.ActivitySectorSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
 
     code = serializers.CharField(source='sector.code')
@@ -357,7 +382,8 @@ class ActivitySectorSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
         )
 
 
-class ActivityRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
+class ActivityRecipientRegionXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.ActivityRecipientRegionSerializer):
     xml_meta = {'attributes': ('percentage', 'vocabulary', 'vocabulary_uri', 'code',)}
 
     code = serializers.CharField(source='region.code')
@@ -374,14 +400,14 @@ class ActivityRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity
         )
 
 
-class HumanitarianScopeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.HumanitarianScopeSerializer):
+class HumanitarianScopeXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                     activity_serializers.HumanitarianScopeSerializer):
     xml_meta = {'attributes': ('type', 'vocabulary', 'code',)}
 
     type = serializers.CharField(source='type.code')
     code = serializers.CharField()
     vocabulary = serializers.CharField(source='vocabulary.code')
     # vocabulary_uri = serializers.URLField()
-
 
     class Meta(activity_serializers.HumanitarianScopeSerializer.Meta):
         fields = (
@@ -392,7 +418,8 @@ class HumanitarianScopeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seria
         )
 
 
-class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.RecipientCountrySerializer):
+class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin,
+                                 activity_serializers.RecipientCountrySerializer):
     xml_meta = {'attributes': ('percentage', 'code')}
 
     code = serializers.CharField(source='country.code')
@@ -405,7 +432,10 @@ class RecipientCountrySerializer(XMLMetaMixin, SkipNullMixin, activity_serialize
         )
 
 
-class ResultIndicatorPeriodActualLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualLocationSerializer):
+class ResultIndicatorPeriodActualLocationXMLSerializer(
+        XMLMetaMixin,
+        SkipNullMixin,
+        activity_serializers.ResultIndicatorPeriodActualLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
     class Meta:
@@ -415,7 +445,11 @@ class ResultIndicatorPeriodActualLocationXMLSerializer(XMLMetaMixin, SkipNullMix
             'ref',
         )
 
-class ResultIndicatorPeriodTargetLocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetLocationSerializer):
+
+class ResultIndicatorPeriodTargetLocationXMLSerializer(
+        XMLMetaMixin,
+        SkipNullMixin,
+        activity_serializers.ResultIndicatorPeriodTargetLocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
     class Meta:
@@ -426,7 +460,10 @@ class ResultIndicatorPeriodTargetLocationXMLSerializer(XMLMetaMixin, SkipNullMix
         )
 
 
-class ResultIndicatorPeriodActualDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodActualDimensionSerializer):
+class ResultIndicatorPeriodActualDimensionXMLSerializer(
+        XMLMetaMixin,
+        SkipNullMixin,
+        activity_serializers.ResultIndicatorPeriodActualDimensionSerializer):
     xml_meta = {'attributes': ('name', 'value')}
 
     class Meta:
@@ -437,7 +474,11 @@ class ResultIndicatorPeriodActualDimensionXMLSerializer(XMLMetaMixin, SkipNullMi
             'value',
         )
 
-class ResultIndicatorPeriodTargetDimensionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer):
+
+class ResultIndicatorPeriodTargetDimensionXMLSerializer(
+        XMLMetaMixin,
+        SkipNullMixin,
+        activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer):
     xml_meta = {'attributes': ('name', 'value')}
 
     class Meta:
@@ -454,18 +495,25 @@ class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin, Seriali
 
     value = serializers.DecimalField(source='target', max_digits=25, decimal_places=10)
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodtargetcomment")
-    location = ResultIndicatorPeriodTargetLocationXMLSerializer(many=True, source="resultindicatorperiodtargetlocation_set")
-    dimension = ResultIndicatorPeriodTargetDimensionXMLSerializer(many=True, source="resultindicatorperiodtargetdimension_set")
+    location = ResultIndicatorPeriodTargetLocationXMLSerializer(
+        many=True, source="resultindicatorperiodtargetlocation_set")
+    dimension = ResultIndicatorPeriodTargetDimensionXMLSerializer(
+        many=True, source="resultindicatorperiodtargetdimension_set")
+
 
 class ResultIndicatorPeriodActualSerializer(XMLMetaMixin, SkipNullMixin, SerializerNoValidation):
     xml_meta = {'attributes': ('value',)}
 
     value = serializers.DecimalField(source='actual', max_digits=25, decimal_places=10)
     comment = NarrativeContainerXMLSerializer(source="resultindicatorperiodactualcomment")
-    location = ResultIndicatorPeriodActualLocationXMLSerializer(many=True, source="resultindicatorperiodactuallocation_set")
-    dimension = ResultIndicatorPeriodActualDimensionXMLSerializer(many=True, source="resultindicatorperiodactualdimension_set")
+    location = ResultIndicatorPeriodActualLocationXMLSerializer(
+        many=True, source="resultindicatorperiodactuallocation_set")
+    dimension = ResultIndicatorPeriodActualDimensionXMLSerializer(
+        many=True, source="resultindicatorperiodactualdimension_set")
 
-class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
+
+class ResultIndicatorPeriodXMLSerializer(
+        SkipNullMixin, activity_serializers.ResultIndicatorPeriodSerializer):
     target = ResultIndicatorPeriodTargetSerializer(source="*", read_only=True)
     actual = ResultIndicatorPeriodActualSerializer(source="*", read_only=True)
 
@@ -482,12 +530,15 @@ class ResultIndicatorPeriodXMLSerializer(SkipNullMixin, activity_serializers.Res
         )
 
 
-class ResultIndicatorBaselineXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorBaselineSerializer):
+class ResultIndicatorBaselineXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorBaselineSerializer):
     xml_meta = {'attributes': ('year', 'value',)}
 
     comment = NarrativeContainerXMLSerializer(source="resultindicatorbaselinecomment")
 
-class ResultIndicatorReferenceXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorReferenceSerializer):
+
+class ResultIndicatorReferenceXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorReferenceSerializer):
     xml_meta = {'attributes': ('vocabulary', 'code', 'indicator_uri',)}
 
     vocabulary = serializers.CharField(source='vocabulary.code')
@@ -501,12 +552,14 @@ class ResultIndicatorReferenceXMLSerializer(XMLMetaMixin, SkipNullMixin, activit
         )
 
 
-class ResultIndicatorXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ResultIndicatorSerializer):
+class ResultIndicatorXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                   activity_serializers.ResultIndicatorSerializer):
     xml_meta = {'attributes': ('measure', 'ascending',)}
 
     title = NarrativeContainerXMLSerializer(source="resultindicatortitle")
     description = NarrativeContainerXMLSerializer(source="resultindicatordescription")
-    reference = ResultIndicatorReferenceXMLSerializer(source='resultindicatorreference_set', many=True, required=False)
+    reference = ResultIndicatorReferenceXMLSerializer(
+        source='resultindicatorreference_set', many=True, required=False)
     baseline = ResultIndicatorBaselineXMLSerializer(source="*")
     period = ResultIndicatorPeriodXMLSerializer(source='resultindicatorperiod_set', many=True)
     measure = serializers.CharField(source='measure.code')
@@ -544,7 +597,8 @@ class ResultXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Resu
         )
 
 
-class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ContactInfoSerializer):
+class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                               activity_serializers.ContactInfoSerializer):
     xml_meta = {'attributes': ('type', )}
 
     type = serializers.CharField(source='type.code')
@@ -568,12 +622,16 @@ class ContactInfoXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers
         )
 
 
-class CountryBudgetItemsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CountryBudgetItemsSerializer):
+class CountryBudgetItemsXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, activity_serializers.CountryBudgetItemsSerializer):
     xml_meta = {'attributes': ('vocabulary',)}
 
     vocabulary = serializers.CharField(source='vocabulary.code')
 
-    class BudgetItemXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.BudgetItemSerializer.BudgetItemDescriptionSerializer):
+    class BudgetItemXMLSerializer(
+            XMLMetaMixin,
+            SkipNullMixin,
+            activity_serializers.BudgetItemSerializer.BudgetItemDescriptionSerializer):
         xml_meta = {'attributes': ('code',)}
 
         code = serializers.CharField(source='code.code')
@@ -597,12 +655,14 @@ class CountryBudgetItemsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_seri
             'budget_item',
         )
 
+
 class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer):
     xml_meta = {'attributes': ('ref',)}
 
     location_reach = CodelistSerializer()
 
-    class LocationIdXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.LocationIdSerializer):
+    class LocationIdXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                  activity_serializers.LocationSerializer.LocationIdSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary', )}
         vocabulary = serializers.CharField(source='location_id_vocabulary.code')
 
@@ -614,7 +674,10 @@ class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Lo
 
     activity_description = NarrativeContainerXMLSerializer()
 
-    class LocationAdministrativeXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.AdministrativeSerializer):
+    class LocationAdministrativeXMLSerializer(
+            XMLMetaMixin,
+            SkipNullMixin,
+            activity_serializers.LocationSerializer.AdministrativeSerializer):
         xml_meta = {'attributes': ('code', 'vocabulary', 'level', )}
         vocabulary = serializers.CharField(source='vocabulary.code')
 
@@ -630,9 +693,10 @@ class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Lo
         many=True,
         source="locationadministrative_set")
 
-    class PointSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.LocationSerializer.PointSerializer):
+    class PointSerializer(XMLMetaMixin, SkipNullMixin,
+                          activity_serializers.LocationSerializer.PointSerializer):
         xml_meta = {'attributes': ('srsName',)}
-        
+
         pos = PointIATIField(source='point_pos')
         #srsName = serializers.CharField(source="point_srs_name")
 
@@ -658,11 +722,14 @@ class LocationXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Lo
             'feature_designation',
         )
 
-class ConditionsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ConditionsSerializer):
+
+class ConditionsXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                              activity_serializers.ConditionsSerializer):
     xml_meta = {'attributes': ('attached',)}
     attached = BoolToNumField()
 
-    class ConditionXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ConditionSerializer):
+    class ConditionXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                 activity_serializers.ConditionSerializer):
         xml_meta = {'attributes': ('type', )}
         type = serializers.CharField(source='type.code')
         #test= NarrativeContainerXMLSerializer()
@@ -685,12 +752,14 @@ class ConditionsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.
             'condition',
         )
 
+
 class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddSerializer):
 
-    class CrsAddOtherFlagsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddOtherFlagsSerializer):
-        xml_meta = {'attributes': ('code',  'significance', )}
+    class CrsAddOtherFlagsXMLSerializer(
+            XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddOtherFlagsSerializer):
+        xml_meta = {'attributes': ('code', 'significance', )}
 
-        code = serializers.CharField(source='other_flags.code') 
+        code = serializers.CharField(source='other_flags.code')
         significance = BoolToNumField()
 
         class Meta:
@@ -702,8 +771,9 @@ class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsA
 
     other_flags = CrsAddOtherFlagsXMLSerializer(many=True, required=False)
 
-    class CrsAddLoanTermsXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddLoanTermsSerializer):
-        xml_meta = {'attributes': ('rate_1',  'rate_2', )}
+    class CrsAddLoanTermsXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                       activity_serializers.CrsAddLoanTermsSerializer):
+        xml_meta = {'attributes': ('rate_1', 'rate_2', )}
 
         rate_1 = serializers.CharField()
         rate_2 = serializers.CharField()
@@ -727,8 +797,9 @@ class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsA
 
     loan_terms = CrsAddLoanTermsXMLSerializer(required=False)
 
-    class CrsAddLoanStatusXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddLoanStatusSerializer):
-        xml_meta = {'attributes': ('year',  'currency', 'value_date' )}
+    class CrsAddLoanStatusXMLSerializer(
+            XMLMetaMixin, SkipNullMixin, activity_serializers.CrsAddLoanStatusSerializer):
+        xml_meta = {'attributes': ('year', 'currency', 'value_date')}
 
         currency = serializers.CharField(source='currency.code')
 
@@ -756,12 +827,14 @@ class CrsAddXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.CrsA
             'channel_code',
         )
 
+
 class FssXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssSerializer):
-    xml_meta = {'attributes': ('extraction_date',  'priority', 'phaseout_year',)}
+    xml_meta = {'attributes': ('extraction_date', 'priority', 'phaseout_year',)}
 
     priority = BoolToNumField()
 
-    class FssForecastXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssForecastSerializer):
+    class FssForecastXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                   activity_serializers.FssForecastSerializer):
         xml_meta = {'attributes': ('year', 'value_date', 'currency',)}
 
         currency = serializers.CharField(source='currency.code')
@@ -771,7 +844,7 @@ class FssXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssSeri
             max_digits=15,
             decimal_places=2,
             coerce_to_string=False,
-            )
+        )
 
         class Meta(activity_serializers.FssForecastSerializer.Meta):
             fields = (
@@ -793,12 +866,12 @@ class FssXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.FssSeri
         )
 
 
-class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionProviderSerializer):
+class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin,
+                                    transaction_serializers.TransactionProviderSerializer):
     xml_meta = {'attributes': ('ref', 'provider_activity_id')}
 
     type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
-
 
     class Meta(transaction_serializers.TransactionProviderSerializer.Meta):
         fields = (
@@ -808,12 +881,12 @@ class TransactionProviderSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
         )
 
 
-class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionReceiverSerializer):
+class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin,
+                                    transaction_serializers.TransactionReceiverSerializer):
     xml_meta = {'attributes': ('ref', 'receiver_activity_id')}
 
     type = CodelistSerializer()
     narrative = NarrativeXMLSerializer(many=True, source='narratives')
-
 
     class Meta(transaction_serializers.TransactionReceiverSerializer.Meta):
         fields = (
@@ -823,7 +896,8 @@ class TransactionReceiverSerializer(XMLMetaMixin, SkipNullMixin, transaction_ser
         )
 
 
-class TransactionSectorXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSectorSerializer):
+class TransactionSectorXMLSerializer(XMLMetaMixin, SkipNullMixin,
+                                     transaction_serializers.TransactionSectorSerializer):
     xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri')}
 
     code = serializers.CharField(source='sector.code')
@@ -837,7 +911,11 @@ class TransactionSectorXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_se
             'vocabulary_uri',
         )
 
-class TransactionRecipientCountryXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionRecipientCountrySerializer):
+
+class TransactionRecipientCountryXMLSerializer(
+        XMLMetaMixin,
+        SkipNullMixin,
+        transaction_serializers.TransactionRecipientCountrySerializer):
     xml_meta = {'attributes': ('code',)}
 
     code = serializers.CharField(source='country.code')
@@ -847,7 +925,9 @@ class TransactionRecipientCountryXMLSerializer(XMLMetaMixin, SkipNullMixin, tran
             'code',
         )
 
-class TransactionRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionRecipientRegionSerializer):
+
+class TransactionRecipientRegionXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionRecipientRegionSerializer):
     xml_meta = {'attributes': ('code', 'vocabulary', 'vocabulary_uri')}
 
     code = serializers.CharField(source='region.code')
@@ -861,7 +941,9 @@ class TransactionRecipientRegionXMLSerializer(XMLMetaMixin, SkipNullMixin, trans
             'vocabulary_uri',
         )
 
-class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers.TransactionSerializer):
+
+class TransactionSerializer(XMLMetaMixin, SkipNullMixin,
+                            transaction_serializers.TransactionSerializer):
     xml_meta = {'attributes': ('ref', 'humanitarian',)}
 
     transaction_type = CodelistSerializer()
@@ -874,9 +956,12 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
-    sector = TransactionSectorXMLSerializer(many=True, required=False, source="transactionsector_set")
-    recipient_country = TransactionRecipientCountryXMLSerializer(many=True, required=False, source="transactionrecipientcountry_set")
-    recipient_region = TransactionRecipientRegionXMLSerializer(many=True, required=False, source="transactionrecipientregion_set")
+    sector = TransactionSectorXMLSerializer(
+        many=True, required=False, source="transactionsector_set")
+    recipient_country = TransactionRecipientCountryXMLSerializer(
+        many=True, required=False, source="transactionrecipientcountry_set")
+    recipient_region = TransactionRecipientRegionXMLSerializer(
+        many=True, required=False, source="transactionrecipientregion_set")
 
     value = ValueSerializer(source='*')
     transaction_date = IsoDateSerializer()
@@ -905,11 +990,18 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin, transaction_serializers
 
 
 class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.ActivitySerializer):
-    xml_meta = {'attributes': ('default_currency', 'last_updated_datetime', 'humanitarian', 'linked_data_uri', 'hierarchy', 'xml_lang')}
+    xml_meta = {
+        'attributes': (
+            'default_currency',
+            'last_updated_datetime',
+            'humanitarian',
+            'linked_data_uri',
+            'hierarchy',
+            'xml_lang')}
 
     reporting_org = ReportingOrganisationSerializer(
         source="*"
-        )
+    )
     title = NarrativeContainerXMLSerializer()
     description = DescriptionSerializer(
         many=True, read_only=True, source='description_set')
@@ -917,7 +1009,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         source='participating_organisations',
         many=True,)
 
-    other_identifier = OtherIdentifierXMLSerializer(many=True,source="otheridentifier_set", required=False)
+    other_identifier = OtherIdentifierXMLSerializer(
+        many=True, source="otheridentifier_set", required=False)
 
     activity_status = CodelistSerializer()
     activity_date = ActivityDateSerializer(
@@ -940,7 +1033,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
 
     country_budget_items = CountryBudgetItemsXMLSerializer()
 
-    humanitarian_scope = HumanitarianScopeXMLSerializer(many=True,source='humanitarianscope_set')
+    humanitarian_scope = HumanitarianScopeXMLSerializer(many=True, source='humanitarianscope_set')
 
     policy_marker = ActivityPolicyMarkerSerializer(
         many=True,
@@ -952,8 +1045,9 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     default_tied_status = CodelistSerializer()
 
     budget = BudgetSerializer(many=True, source='budget_set')
-    planned_disbursement = PlannedDisbursementSerializer(many=True, source='planneddisbursement_set')
-    
+    planned_disbursement = PlannedDisbursementSerializer(
+        many=True, source='planneddisbursement_set')
+
     capital_spend = CapitalSpendSerializer()
     transaction = TransactionSerializer(
         many=True,
@@ -963,7 +1057,7 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
         many=True,
         source='documentlink_set')
     related_activity = RelatedActivitySerializer(
-        many=True, 
+        many=True,
         source='relatedactivity_set')
 
     legacy_data = LegacyDataXMLSerializer(many=True, source="legacydata_set")
@@ -979,9 +1073,8 @@ class ActivityXMLSerializer(XMLMetaMixin, SkipNullMixin, activity_serializers.Ac
     fss = FssXMLSerializer(many=True, source="fss_set")
 
     humanitarian = serializers.BooleanField()
-    
-    default_currency = serializers.CharField(source='default_currency.code', required=False)
 
+    default_currency = serializers.CharField(source='default_currency.code', required=False)
 
     class Meta(activity_serializers.ActivitySerializer.Meta):
         fields = (

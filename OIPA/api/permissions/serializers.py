@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 
 from rest_auth.registration.serializers import RegisterSerializer
 
+
 class OrganisationGroupSerializer(serializers.ModelSerializer):
     publisher = PublisherSerializer()
 
@@ -15,12 +16,14 @@ class OrganisationGroupSerializer(serializers.ModelSerializer):
         model = OrganisationGroup
         fields = ('name', 'publisher')
 
+
 class OrganisationAdminGroupSerializer(serializers.ModelSerializer):
     publisher = PublisherSerializer()
 
     class Meta:
         model = OrganisationAdminGroup
         fields = ('name', 'publisher',)
+
 
 class UserSerializer(DynamicFieldsModelSerializer):
 
@@ -32,8 +35,10 @@ class UserSerializer(DynamicFieldsModelSerializer):
 
     is_validated = serializers.SerializerMethodField()
 
-    admin_groups = OrganisationAdminGroupSerializer(many=True, source="organisationuser.organisation_admin_groups")
-    organisation_groups = OrganisationGroupSerializer(many=True, source="organisationuser.organisation_groups")
+    admin_groups = OrganisationAdminGroupSerializer(
+        many=True, source="organisationuser.organisation_admin_groups")
+    organisation_groups = OrganisationGroupSerializer(
+        many=True, source="organisationuser.organisation_groups")
 
 #     def get_admin_groups(self, user):
 #         qs = OrganisationAdminGroup.objects.filter(user=user)
@@ -55,6 +60,7 @@ class UserSerializer(DynamicFieldsModelSerializer):
         # model = OrganisationUser
         model = User
         fields = ('username', 'email', 'organisation_groups', 'admin_groups', 'is_validated')
+
 
 class OrganisationUserSerializer(DynamicFieldsModelSerializer):
 
@@ -84,10 +90,9 @@ class OrganisationUserSerializer(DynamicFieldsModelSerializer):
         model = OrganisationUser
         fields = ('username', 'email', 'organisation_groups', 'admin_groups', 'is_validated')
 
+
 class RegistrationSerializer(RegisterSerializer):
 
     def custom_signup(self, request, user):
         print('called custom signup!')
         OrganisationUser.objects.create(user=user)
-
-

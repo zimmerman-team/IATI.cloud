@@ -18,10 +18,10 @@ def identifier_correct_prefix(self, a):
                 return
     self.append_error(
         "FieldValidationError",
-        "iati-identifier", 
-        "ref", 
-        "Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier", 
-        -1, 
+        "iati-identifier",
+        "ref",
+        "Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier",
+        -1,
         reporting_org.ref,
         a.iati_identifier)
 
@@ -30,8 +30,10 @@ def geo_percentages_add_up(self, a):
     """
     Rule: Percentages for all reported countries and regions must add up to 100%
     """
-    recipient_country_sum = a.activityrecipientcountry_set.all().aggregate(Sum('percentage')).get('percentage__sum')
-    recipient_region_sum = a.activityrecipientregion_set.all().aggregate(Sum('percentage')).get('percentage__sum')
+    recipient_country_sum = a.activityrecipientcountry_set.all().aggregate(Sum('percentage')
+                                                                           ).get('percentage__sum')
+    recipient_region_sum = a.activityrecipientregion_set.all(
+    ).aggregate(Sum('percentage')).get('percentage__sum')
 
     total_sum = 0
     if recipient_country_sum:
@@ -41,11 +43,11 @@ def geo_percentages_add_up(self, a):
 
     if not (total_sum == 0 or total_sum == 100):
         self.append_error(
-            "FieldValidationError", 
-            "recipient-country/recipient-region", 
-            "percentage", 
-            "Percentages for all reported countries and regions must add up to 100%", 
-            -1, 
+            "FieldValidationError",
+            "recipient-country/recipient-region",
+            "percentage",
+            "Percentages for all reported countries and regions must add up to 100%",
+            -1,
             '-',
             a.iati_identifier)
 
@@ -55,13 +57,13 @@ def sector_percentages_add_up(self, a):
     Rule: Percentages for all reported sectors must add up to 100%
     """
     sector_sum = a.activitysector_set.all().aggregate(Sum('percentage')).get('percentage__sum')
-    
+
     if not (sector_sum is None or sector_sum == 0 or sector_sum == 100):
         self.append_error(
-            "FieldValidationError", 
-            "sector", 
-            "percentage", 
-            "Percentages for all reported sectors must add up to 100%", 
+            "FieldValidationError",
+            "sector",
+            "percentage",
+            "Percentages for all reported sectors must add up to 100%",
             -1,
             '-',
             a.iati_identifier)
@@ -69,7 +71,7 @@ def sector_percentages_add_up(self, a):
 
 def use_sector_or_transaction_sector(self, a):
     """
-    Rules: 
+    Rules:
     If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used
     Either transaction/sector or sector must be present.
 
@@ -79,26 +81,26 @@ def use_sector_or_transaction_sector(self, a):
     direct_count = a.activitysector_set.filter(sector__vocabulary='1').count()
     indirect_count = a.transaction_set.filter(
         transaction_sector__isnull=False,
-        transaction_sector__sector__vocabulary='1', 
-        ).count()
+        transaction_sector__sector__vocabulary='1',
+    ).count()
 
     if direct_count and indirect_count:
         self.append_error(
-            "FieldValidationError", 
-            "transaction/sector", 
-            "-", 
-            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used", 
-            -1, 
+            "FieldValidationError",
+            "transaction/sector",
+            "-",
+            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used",
+            -1,
             '-',
             a.iati_identifier)
 
     if (direct_count + indirect_count) == 0:
         self.append_error(
-            "FieldValidationError", 
-            "sector", 
-            "-", 
-            "Either transaction/sector or sector must be present (DAC vocabulary)", 
-            -1, 
+            "FieldValidationError",
+            "sector",
+            "-",
+            "Either transaction/sector or sector must be present (DAC vocabulary)",
+            -1,
             '-',
             a.iati_identifier)
 
@@ -114,25 +116,26 @@ def use_direct_geo_or_transaction_geo(self, a):
     only a recipient-region OR a recipient-country is expected
     """
     direct_count = a.activityrecipientcountry_set.count() + a.activityrecipientregion_set.count()
-    indirect_count = a.transaction_set.filter(transaction_recipient_country__isnull=False).count() + a.transaction_set.filter(transaction_recipient_region__isnull=False).count()
+    indirect_count = a.transaction_set.filter(transaction_recipient_country__isnull=False).count(
+    ) + a.transaction_set.filter(transaction_recipient_region__isnull=False).count()
 
     if direct_count and indirect_count:
         self.append_error(
-            "FieldValidationError", 
-            "transaction/sector", 
-            "-", 
-            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used", 
-            -1, 
+            "FieldValidationError",
+            "transaction/sector",
+            "-",
+            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used",
+            -1,
             '-',
             a.iati_identifier)
 
     if (direct_count + indirect_count) == 0:
         self.append_error(
-            "FieldValidationError", 
-            "recipient-country/recipient-region", 
-            "-", 
-            "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present (DAC vocabulary)", 
-            -1, 
+            "FieldValidationError",
+            "recipient-country/recipient-region",
+            "-",
+            "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present (DAC vocabulary)",
+            -1,
             '-',
             a.iati_identifier)
 
@@ -143,17 +146,20 @@ def transactions_at_multiple_levels(self, dataset):
     """
 
     # TODO - query this from the Dataset since the query below is presumeably slower - 2017-06-20
-    
-    max_hierarchy = Activity.objects.filter(dataset=dataset).aggregate(Max('hierarchy')).get('hierarchy__max')
-    
-    if Activity.objects.filter(dataset=dataset).exclude(hierarchy=max_hierarchy).filter(transaction__isnull=False).count():
+
+    max_hierarchy = Activity.objects.filter(
+        dataset=dataset).aggregate(
+        Max('hierarchy')).get('hierarchy__max')
+
+    if Activity.objects.filter(dataset=dataset).exclude(
+            hierarchy=max_hierarchy).filter(transaction__isnull=False).count():
 
         self.append_error(
-            "FieldValidationError", 
-            "transaction", 
-            "-", 
-            "If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level", 
-            -1, 
+            "FieldValidationError",
+            "transaction",
+            "-",
+            "If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level",
+            -1,
             '-',
             "dataset validation error")
 
@@ -172,7 +178,10 @@ def unfound_identifiers(self, dataset):
             variable,
             activity_id)
 
-    for tp in TransactionProvider.objects.filter(transaction__activity__dataset=dataset, provider_activity=None, provider_activity_ref__isnull=False):
+    for tp in TransactionProvider.objects.filter(
+            transaction__activity__dataset=dataset,
+            provider_activity=None,
+            provider_activity_ref__isnull=False):
         variable = tp.provider_activity_ref
         activity_id = tp.transaction.activity.iati_identifier
 
@@ -185,7 +194,10 @@ def unfound_identifiers(self, dataset):
             variable,
             activity_id)
 
-    for tr in TransactionReceiver.objects.filter(transaction__activity__dataset=dataset, receiver_activity=None, receiver_activity_ref__isnull=False):
+    for tr in TransactionReceiver.objects.filter(
+            transaction__activity__dataset=dataset,
+            receiver_activity=None,
+            receiver_activity_ref__isnull=False):
         variable = tr.receiver_activity_ref
         activity_id = tr.transaction.activity.iati_identifier
 
@@ -198,7 +210,8 @@ def unfound_identifiers(self, dataset):
             variable,
             activity_id)
 
-    for po in ActivityParticipatingOrganisation.objects.filter(activity__dataset=dataset, org_activity_id__isnull=False, org_activity_obj=None):
+    for po in ActivityParticipatingOrganisation.objects.filter(
+            activity__dataset=dataset, org_activity_id__isnull=False, org_activity_obj=None):
         variable = po.org_activity_id
         activity_id = po.activity.iati_identifier
         self.append_error(
@@ -209,4 +222,3 @@ def unfound_identifiers(self, dataset):
             -1,
             variable,
             activity_id)
-

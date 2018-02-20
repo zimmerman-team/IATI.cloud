@@ -42,14 +42,15 @@ currencies = [
     'cad'
 ]
 
+
 def annotate_currency(query_params, groupings):
     """
     Choose the right currency field, and aggregate differently based on group_by
     """
     currency = query_params.get('convert_to')
     currency_field = None
-    
-    if currency: 
+
+    if currency:
         currency = currency.lower()
 
     if currency is None or currency not in currencies:
@@ -80,7 +81,6 @@ def annotate_currency(query_params, groupings):
     return Sum(annotation_components)
 
 
-
 class BudgetAggregations(AggregationView):
     """
     Returns aggregations based on the item grouped by, and the selected aggregation.
@@ -88,7 +88,7 @@ class BudgetAggregations(AggregationView):
     ## Group by options
 
     API request has to include `group_by` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -112,7 +112,7 @@ class BudgetAggregations(AggregationView):
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -321,4 +321,3 @@ class BudgetAggregations(AggregationView):
             fields=("budget_period_end_year", "budget_period_end_month")
         ),
     )
-

@@ -238,7 +238,6 @@ class ResultFilter(TogetherFilterSet):
         lookup_expr='gte',
         name='activity__activity_aggregation__incoming_funds_value')
 
-
     class Meta:
         model = Result
         fields = '__all__'

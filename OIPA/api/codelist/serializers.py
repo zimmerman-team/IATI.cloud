@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from api.generics.serializers import ModelSerializerNoValidation
 from api.generics.serializers import SerializerNoValidation
 
+
 class VocabularySerializer(SerializerNoValidation):
     code = serializers.CharField(required=False, allow_null=True)
     name = serializers.CharField(required=False, allow_null=True)
@@ -37,6 +38,7 @@ class NarrativeSerializer(ModelSerializerNoValidation):
             'language',
         )
 
+
 class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
     text = serializers.CharField(source="content")
     language = CodelistSerializer(required=False)
@@ -54,6 +56,7 @@ class OrganisationNarrativeSerializer(ModelSerializerNoValidation):
 
 class NarrativeContainerSerializer(SerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
+
 
 class OrganisationNarrativeContainerSerializer(SerializerNoValidation):
     narratives = OrganisationNarrativeSerializer(many=True)
@@ -82,7 +85,11 @@ class CodelistMetaSerializer(DynamicFieldsModelSerializer):
 
     def get_items(self, obj):
         request = self.context.get('request')
-        url = request.build_absolute_uri(reverse('codelists:codelist-items-list', kwargs={'codelist': obj.name}))
+        url = request.build_absolute_uri(
+            reverse(
+                'codelists:codelist-items-list',
+                kwargs={
+                    'codelist': obj.name}))
         return url
 
     class Meta:

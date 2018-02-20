@@ -28,8 +28,6 @@ class DocumentQuerySet(SearchQuerySet):
 class DocumentManager(SearchManagerMixIn, models.Manager):
 
     """Document manager with search capabilities"""
-    
+
     def get_queryset(self):
         return DocumentQuerySet(self.model, using=self._db)
-        
-        

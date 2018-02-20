@@ -19,24 +19,24 @@ class Adm1RegionAdminTestCase(TestCase):
         data = {
             "type": "FeatureCollection",
             "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "adm1_code": "ABW-5150",
-                    "OBJECTID_1": 3604,
-                    "diss_me": 5150,
-                    "adm1_cod_1": "ABW-5150",
-                    "iso_3166_2": "AW-",
-                    "wikipedia": "",
-                    "iso_a2": "AF",
-                    "adm0_sr": 3,
-                    "name": "State in AF",
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[[-69.996938, 12.577582], [-69.936391, 12.531724], ]]
-                }
-            }]
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "adm1_code": "ABW-5150",
+                        "OBJECTID_1": 3604,
+                        "diss_me": 5150,
+                        "adm1_cod_1": "ABW-5150",
+                        "iso_3166_2": "AW-",
+                        "wikipedia": "",
+                        "iso_a2": "AF",
+                        "adm0_sr": 3,
+                        "name": "State in AF",
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[-69.996938, 12.577582], [-69.936391, 12.531724], ]]
+                    }
+                }]
         }
 
         self.adm1_region_import.get_json_data = MagicMock(return_value=data)
@@ -45,4 +45,3 @@ class Adm1RegionAdminTestCase(TestCase):
         self.assertEqual(adm1_region.country.code, 'AF')
         self.assertEqual(adm1_region.name, "State in AF")
         self.assertIsNotNone(adm1_region.polygon)
-

@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
+
 class PointIATIField(serializers.Field):
     """
     A field for handling GeoDjango Point fields in IATI format.
@@ -28,6 +29,7 @@ class PointIATIField(serializers.Field):
         if isinstance(value, GEOSGeometry):
             value = " ".join([smart_str(value.y), smart_str(value.x)])
         return value
+
 
 class PointField(serializers.Field):
     """
@@ -85,10 +87,12 @@ class PointField(serializers.Field):
             }
         return value
 
+
 class BoolToNumField(serializers.Field):
     """
     represent True and False as "1" and "0"
     """
+
     def to_representation(self, val):
         if val:
             return "1"
@@ -99,4 +103,3 @@ class BoolToNumField(serializers.Field):
     #     data = data.strip('rgb(').rstrip(')')
     #     red, green, blue = [int(col) for col in data.split(',')]
     #     return Color(red, green, blue)
-

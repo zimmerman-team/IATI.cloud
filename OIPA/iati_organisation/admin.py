@@ -30,7 +30,7 @@ class OrganisationAdmin(admin.ModelAdmin):
         return data
 
     def update_primary_names(self, request):
-    	org_names = self.get_json_data("/data/organisation_name_mapping.json")
+        org_names = self.get_json_data("/data/organisation_name_mapping.json")
 
         for o in org_names:
             if Organisation.objects.filter(organisation_identifier=o).exists():
@@ -42,6 +42,3 @@ class OrganisationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Organisation, OrganisationAdmin)
-
-
-

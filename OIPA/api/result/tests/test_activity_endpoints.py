@@ -12,6 +12,7 @@ class TestResultEndpoints(APITestCase):
         msg = 'result aggregations endpoint should be located at {0}'
         expect_url = '/api/results/aggregations/'
         assert url == expect_url, msg.format(expect_url)
-        response = self.client.get(expect_url, {'group_by':'result_indicator_title', 'aggregations':'actual'}, format='json')
+        response = self.client.get(
+            expect_url, {
+                'group_by': 'result_indicator_title', 'aggregations': 'actual'}, format='json')
         self.assertTrue(status.is_success(response.status_code))
-

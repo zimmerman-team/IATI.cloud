@@ -19,7 +19,7 @@ from iati.parser.exceptions import *
 
 
 class Parse(IATI_202_Parser):
-    
+
     organisation_identifier = ''
 
     def __init__(self, *args, **kwargs):

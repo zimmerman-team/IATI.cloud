@@ -8,7 +8,7 @@ from iati_organisation.models import OrganisationNarrative
 def create_publisher_organisation(publisher, publisher_organization_type):
     version = Version.objects.get(code="2.02")
     language = Language.objects.get(code='en')
-    
+
     try:
         org_type = OrganisationType.objects.get(code=publisher_organization_type)
     except OrganisationType.DoesNotExist:
@@ -20,7 +20,7 @@ def create_publisher_organisation(publisher, publisher_organization_type):
         iati_standard_version=version,
         type=org_type,
         primary_name=publisher.display_name,
-        published = True
+        published=True
     )
 
     org_name = OrganisationName.objects.create(organisation=org)

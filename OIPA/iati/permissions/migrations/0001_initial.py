@@ -21,7 +21,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OrganisationAdminGroup',
             fields=[
-                ('group_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.Group')),
+                ('group_ptr',
+                 models.OneToOneField(auto_created=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      parent_link=True,
+                                      primary_key=True,
+                                      serialize=False,
+                                      to='auth.Group')),
             ],
             options={
                 'ordering': ['name'],
@@ -32,8 +38,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OrganisationGroup',
             fields=[
-                ('group_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.Group')),
-                ('publisher', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher')),
+                ('group_ptr',
+                 models.OneToOneField(auto_created=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      parent_link=True,
+                                      primary_key=True,
+                                      serialize=False,
+                                      to='auth.Group')),
+                ('publisher', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher')),
             ],
             options={
                 'ordering': ['name'],
@@ -44,12 +57,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OrganisationUser',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_api_key', models.CharField(blank=True, max_length=255, null=True)),
                 ('iati_user_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('organisation_admin_groups', models.ManyToManyField(blank=True, related_name='organisationuser_set', to='permissions.OrganisationAdminGroup', verbose_name=b'Organisation Admin Groups')),
-                ('organisation_groups', models.ManyToManyField(blank=True, related_name='organisationuser_set', to='permissions.OrganisationGroup', verbose_name=b'Organisation Groups')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='organisationuser', to=settings.AUTH_USER_MODEL)),
+                ('organisation_admin_groups',
+                 models.ManyToManyField(blank=True,
+                                        related_name='organisationuser_set',
+                                        to='permissions.OrganisationAdminGroup',
+                                        verbose_name=b'Organisation Admin Groups')),
+                ('organisation_groups',
+                 models.ManyToManyField(blank=True,
+                                        related_name='organisationuser_set',
+                                        to='permissions.OrganisationGroup',
+                                        verbose_name=b'Organisation Groups')),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE,
+                                              related_name='organisationuser', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name_plural': 'Organisation users',
@@ -58,11 +81,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organisationadmingroup',
             name='owner',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='permissions.OrganisationUser'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='permissions.OrganisationUser'),
         ),
         migrations.AddField(
             model_name='organisationadmingroup',
             name='publisher',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_synchroniser.Publisher'),
         ),
     ]

@@ -6,12 +6,15 @@ from django.db.models import Q
 from django.db import connection
 from django.utils.text import force_text
 import threading
+from functools import reduce
+
 
 def get_or_none(model, *args, **kwargs):
     try:
         return model.objects.get(*args, **kwargs)
     except model.DoesNotExist:
         return None
+
 
 def print_progress(progress):
     """progress: object with offset and count"""
@@ -38,8 +41,9 @@ def difference(list1, list2):
 
 def combine_filters(filters):
     ### combine Q objects ###
-    if len(filters) == 1: return filters[0]
-    return reduce(lambda q1,q2: q1 | q2, filters, Q())
+    if len(filters) == 1:
+        return filters[0]
+    return reduce(lambda q1, q2: q1 | q2, filters, Q())
 
 
 def adapt(text):
@@ -52,9 +56,7 @@ def findnth_occurence_in_string(haystack, needle, n):
     """
     returns the index of the nth occurence of the needle in the haystack
     """
-    parts= haystack.split(needle, n+1)
-    if len(parts)<=n+1:
+    parts = haystack.split(needle, n + 1)
+    if len(parts) <= n + 1:
         return -1
-    return len(haystack)-len(parts[-1])-len(needle)
-
-
+    return len(haystack) - len(parts[-1]) - len(needle)

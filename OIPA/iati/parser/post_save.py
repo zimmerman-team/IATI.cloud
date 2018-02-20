@@ -15,12 +15,16 @@ from iati.parser.exceptions import *
 
 def set_related_activities(activity):
     """ update related-activity references to this activity """
-    models.RelatedActivity.objects.filter(ref=activity.iati_identifier).update(ref_activity=activity)
+    models.RelatedActivity.objects.filter(
+        ref=activity.iati_identifier).update(
+        ref_activity=activity)
+
 
 def set_participating_organisation_activity_id(participating_organisation):
     """ update activity_id references to this activity """
     # TODO: add reverse relation for participating organisation activity_id - 2016-05-31
     pass
+
 
 def set_transaction_provider_receiver_activity(activity):
     """ update transaction-provider, transaction-receiver references to this activity """
@@ -31,6 +35,7 @@ def set_transaction_provider_receiver_activity(activity):
     transaction_models.TransactionReceiver.objects.filter(
         receiver_activity_ref=activity.iati_identifier
     ).update(receiver_activity=activity)
+
 
 def set_derived_activity_dates(activity):
     """Set derived activity dates
@@ -51,6 +56,7 @@ def set_derived_activity_dates(activity):
         activity.end_date = activity.planned_end
     activity.save()
 
+
 def set_activity_aggregations(activity):
     """
     set total activity aggregations for the different transaction types and budget
@@ -58,11 +64,13 @@ def set_activity_aggregations(activity):
     aac = ActivityAggregationCalculation()
     aac.parse_activity_aggregations(activity)
 
+
 def update_activity_search_index(activity):
     """
     Update the Postgres FTS indexes
     """
     activity_search_indexes.reindex_activity(activity)
+
 
 def set_country_region_transaction(activity):
     """
@@ -134,6 +142,7 @@ def set_country_region_transaction(activity):
                 )
                 trr.save()
 
+
 def set_sector_transaction(activity):
     """
     IATI business rule: If this element is used then ALL transaction elements should contain
@@ -163,15 +172,16 @@ def set_sector_transaction(activity):
             for val in activity.activitysector_set.values('vocabulary__code'):
                 if not val['vocabulary__code'] in vocabulary_codes:
                     vocabulary_codes.append(val['vocabulary__code'])
- 
+
             for vocabulary_code in vocabulary_codes:
-                sectors_filtred = activity.activitysector_set.filter(vocabulary__code=vocabulary_code)
+                sectors_filtred = activity.activitysector_set.filter(
+                    vocabulary__code=vocabulary_code)
                 total_count = sectors_filtred.count()
                 percentage = Decimal(100) / Decimal(total_count)
                 for s in sectors_filtred:
                     s.percentage = percentage
 
-        # create TransactionSector for each sector for each transaction with correct xdr_value  
+        # create TransactionSector for each sector for each transaction with correct xdr_value
 
                 for t in activity.transaction_set.all():
                     for recipient_sector in sectors_filtred:
@@ -192,7 +202,7 @@ def set_sector_transaction(activity):
                         vocabulary=recipient_sector.sector.vocabulary,
                         reported_on_transaction=False
                     ).save()
-        
+
 
 def set_sector_budget(activity):
     """
@@ -221,7 +231,3 @@ def set_sector_budget(activity):
                 sector=recipient_sector.sector,
                 percentage=recipient_sector.percentage
             ).save()
-
-
-
-

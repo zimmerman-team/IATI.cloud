@@ -10,4 +10,3 @@ def organisation_required_fields(organisation):
         return False
 
     return True
-

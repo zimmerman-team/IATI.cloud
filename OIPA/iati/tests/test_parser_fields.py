@@ -11,7 +11,7 @@ from lxml import etree
 from lxml.builder import E
 
 from django.core import management
-from django.test import TestCase # Runs each test in a transaction and flushes database
+from django.test import TestCase  # Runs each test in a transaction and flushes database
 from unittest import skip
 from mock import MagicMock
 
@@ -53,7 +53,7 @@ def build_xml(version, iati_identifier):
     }
 
     activity = E("iati-activities", **activities_attrs)
-    
+
     return activity
 
 
@@ -62,12 +62,13 @@ def copy_xml_tree(tree):
 
 
 def build_activity(version="2.02", *args, **kwargs):
-        activity = iati_factory.ActivityFactory.create(
-            iati_standard_version=codelist_models.Version.objects.get(code=version), # TODO: cache this
-            *args,
-            **kwargs
-        )
-        return activity
+    activity = iati_factory.ActivityFactory.create(
+        iati_standard_version=codelist_models.Version.objects.get(
+            code=version),  # TODO: cache this
+        *args,
+        **kwargs
+    )
+    return activity
 
 
 def create_parser(self, version="2.02"):
@@ -83,6 +84,8 @@ def create_parsers(versions=["2.02", "1.05"]):
     return {version: create_parser(version) for version in versions}
 
 # TODO: get rid of fixtures
+
+
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
@@ -104,7 +107,7 @@ class ParserSetupTestCase(TestCase):
     @classmethod
     def setUpClass(self):
         # for fixture in self.fixtures:
-        #     management.call_command("loaddata", fixture) 
+        #     management.call_command("loaddata", fixture)
         self.iati_identifier = "NL-KVK-51018586-0666"
         self.alt_iati_identifier = "NL-KVK-51018586-0667"
 
@@ -115,7 +118,7 @@ class ParserSetupTestCase(TestCase):
 
         # publisher = Publisher.objects.get(id=1) # from fixture
         # dummy_source = create_dummy_source("http://zimmermanzimmerman.org/iati", "ZnZ", "Zimmerman", publisher, 1)
-        
+
         if synchroniser_models.Dataset.objects.filter(name="dataset-2").exists():
             dummy_source = synchroniser_models.Dataset.objects.get(name="dataset-2")
         else:
@@ -148,6 +151,7 @@ class GenericMethodsTestCase(ParserSetupTestCase):
     """
     test of helper methods available in the parser
     """
+
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -166,6 +170,7 @@ class ActivityTestCase(ParserSetupTestCase):
     2.02: The version attribute was removed.
     1.02: Introduced the linked-data-uri attribute on iati-activity element
     """
+
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -186,7 +191,7 @@ class ActivityTestCase(ParserSetupTestCase):
         iati_activity = E("iati-activity", **self.attrs)
         iati_activity.append(E("iati-identifier", self.iati_identifier))
         self.iati_202.append(iati_activity)
-        self.iati_202.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en" # ISO 639-1:2002
+        self.iati_202.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "en"  # ISO 639-1:2002
         # print(etree.tostring(self.iati_202, pretty_print=True))
 
         activity = build_activity(version="2.02")
@@ -196,7 +201,7 @@ class ActivityTestCase(ParserSetupTestCase):
     @skip('NotImplemented')
     def test_add_narrative(self):
         """
-        Check if the narrative element is parsed correctly 
+        Check if the narrative element is parsed correctly
         """
 
     def test_activity_202(self):
@@ -220,11 +225,11 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         iati_202 = copy_xml_tree(self.iati_202)
 
-        iati_activity = iati_202.find('iati-activity') 
-        del iati_activity.attrib[ 'default-currency' ]
-        del iati_activity.attrib[ 'last-updated-datetime' ]
-        del iati_activity.attrib[ 'hierarchy' ]
-        del iati_activity.attrib[ 'linked-data-uri' ]
+        iati_activity = iati_202.find('iati-activity')
+        del iati_activity.attrib['default-currency']
+        del iati_activity.attrib['last-updated-datetime']
+        del iati_activity.attrib['hierarchy']
+        del iati_activity.attrib['linked-data-uri']
 
         self.parser_202.iati_activities__iati_activity(iati_activity)
         activity = self.parser_202.get_model('Activity')
@@ -233,7 +238,6 @@ class ActivityTestCase(ParserSetupTestCase):
             self.assertEqual(getattr(activity, field), default)
         self.assertEqual(activity.iati_standard_version.code, "2.02")
 
-
     def check_parsed(self, old_activity, new_activity, overwrites=True):
         """
         helper method for 4 tests below, which determine whether the activity should be parsed or not
@@ -241,7 +245,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_202.iati_activities__iati_activity(old_activity)
         self.parser_202.get_model('Activity').save()
 
-        if overwrites: 
+        if overwrites:
             self.parser_202.iati_activities__iati_activity(new_activity)
             self.parser_202.get_model('Activity').save()
         else:
@@ -266,7 +270,8 @@ class ActivityTestCase(ParserSetupTestCase):
         new_activity = copy_xml_tree(self.iati_202).find('iati-activity')
 
         # case 1 (greater)
-        old_activity.attrib["last-updated-datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
+        old_activity.attrib["last-updated-datetime"] = (
+            datetime.datetime.now() - datetime.timedelta(days=1)).isoformat()
         new_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
         self.check_parsed(old_activity, new_activity, True)
 
@@ -285,7 +290,8 @@ class ActivityTestCase(ParserSetupTestCase):
 
         # case 2
         old_activity.attrib["last-updated-datetime"] = datetime.datetime.now().isoformat()
-        new_activity.attrib["last-updated-datetime"] = (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat() 
+        new_activity.attrib["last-updated-datetime"] = (
+            datetime.datetime.now() - datetime.timedelta(days=1)).isoformat()
         self.check_parsed(old_activity, new_activity, False)
 
     def test_activity_last_updated_time_absent_old_activity_present_should_not_parse(self):
@@ -319,7 +325,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         raise NotImplementedError()
 
-        linked_data_default ="http://zimmermanzimmerman.org/"
+        linked_data_default = "http://zimmermanzimmerman.org/"
 
         iati_202 = copy_xml_tree(self.iati_202)
         iati_202.set("linked-data-default", linked_data_default)
@@ -357,7 +363,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         iati_202 = copy_xml_tree(self.iati_202)
 
-        iati_activity = iati_202.find('iati-activity') 
+        iati_activity = iati_202.find('iati-activity')
         iati_activity.attrib['humanitarian'] = '1'
 
         self.parser_202.iati_activities__iati_activity(iati_activity)
@@ -370,7 +376,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         iati_202 = copy_xml_tree(self.iati_202)
 
-        iati_activity = iati_202.find('iati-activity') 
+        iati_activity = iati_202.find('iati-activity')
         iati_activity.attrib['humanitarian'] = '0'
 
         self.parser_202.iati_activities__iati_activity(iati_activity)
@@ -419,7 +425,7 @@ class ActivityTestCase(ParserSetupTestCase):
         # iati_activity = copy_xml_tree(self.iati_202).find("iati-activity")
         # iati_activity.append(E('conditions', attached=attached))
         # conditions = iati_activity.find('conditions')
-        
+
         # activity = build_activity(version="2.02")
 
         # self.parser_202.register_model('Activity', activity)
@@ -437,7 +443,7 @@ class ActivityTestCase(ParserSetupTestCase):
         # iati_activity = copy_xml_tree(self.iati_202).find("iati-activity")
         # iati_activity.append(E('conditions', attached=attached))
         # conditions = iati_activity.find('conditions')
-        
+
         # activity = build_activity(version="2.02")
 
         # self.parser_202.register_model('Activity', activity)
@@ -448,7 +454,7 @@ class ActivityTestCase(ParserSetupTestCase):
         # self.assertEqual(activity.has_conditions, False)
 
     def test_activity_status(self):
-        code = '1' # Pipeline/identification
+        code = '1'  # Pipeline/identification
 
         activity_status = E('activity-status', code=code)
         self.parser_202.iati_activities__iati_activity__activity_status(activity_status)
@@ -461,7 +467,7 @@ class ActivityTestCase(ParserSetupTestCase):
         2.02: Freetext is no longer allowed within this element.
         1.03: This is a new element, introduced in version 1.03 of the standard
         """
-        code = '1' # Global
+        code = '1'  # Global
 
         activity_scope = E('activity-scope', code=code)
         self.parser_202.iati_activities__iati_activity__activity_scope(activity_scope)
@@ -473,7 +479,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         2.02: Freetext is no longer allowed within this element.
         """
-        code = '1' # Global
+        code = '1'  # Global
 
         collaboration_type = E('collaboration-type', code=code)
         self.parser_202.iati_activities__iati_activity__collaboration_type(collaboration_type)
@@ -485,7 +491,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         2.02: Freetext is no longer allowed within this element.
         """
-        code = '10' # ODA
+        code = '10'  # ODA
 
         default_flow_type = E('default-flow-type', code=code)
         self.parser_202.iati_activities__iati_activity__default_flow_type(default_flow_type)
@@ -497,7 +503,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         2.02: Freetext is no longer allowed within this element.
         """
-        code = '310' # Deposit basis
+        code = '310'  # Deposit basis
 
         default_finance_type = E('default-finance-type', code=code)
         self.parser_202.iati_activities__iati_activity__default_finance_type(default_finance_type)
@@ -509,7 +515,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         2.02: Freetext is no longer allowed within this element.
         """
-        code = 'A01' # General Budget Support
+        code = 'A01'  # General Budget Support
 
         default_aid_type = E('default-aid-type', code=code)
         self.parser_202.iati_activities__iati_activity__default_aid_type(default_aid_type)
@@ -521,7 +527,7 @@ class ActivityTestCase(ParserSetupTestCase):
         """
         2.02: Freetext is no longer allowed within this element.
         """
-        code = '4' # Tied
+        code = '4'  # Tied
 
         default_tied_status = E('default-tied-status', code=code)
         self.parser_202.iati_activities__iati_activity__default_tied_status(default_tied_status)
@@ -543,7 +549,6 @@ class TitleTestCase(ParserSetupTestCase):
 
         # print(self.parser_105.get_model('Activity'))
 
-
     def test_title_202(self):
         self.parser_202.iati_activities__iati_activity__title(self.title)
 
@@ -556,7 +561,7 @@ class TitleTestCase(ParserSetupTestCase):
 
         # TODO: refactor so this isnt nescessary
         title = self.parser_202.pop_model('Title')
-        
+
     def test_title_duplicate(self):
         """
         Duplicates are not allowed
@@ -573,8 +578,8 @@ class TitleTestCase(ParserSetupTestCase):
         """
         An activity should not be parseable without a title
         """
-        # TODO: problem because OneToOne is on Title, which is a workaround for django's poor admin handling of oneToOne relations
-        
+        # TODO: problem because OneToOne is on Title, which is a workaround for
+        # django's poor admin handling of oneToOne relations
 
     def test_title_105(self):
         self.title.text = "random text"
@@ -609,7 +614,7 @@ class TitleTestCase(ParserSetupTestCase):
         # TODO: refactor so this isnt nescessary
         title = self.parser_105.pop_model('Title')
 
-        
+
 class DescriptionTestCase(ParserSetupTestCase):
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
@@ -650,6 +655,7 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
     2.02: The other-identifier/@owner-ref and other-identifier/@owner-name attributes were removed.
     2.02: The owner-org child element was added.
     """
+
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -690,7 +696,8 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
 
         self.assertEqual(other_identifier.owner_ref, self.owner_org_xml['ref'])
 
-        self.parser_202.iati_activities__iati_activity__other_identifier__owner_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__other_identifier__owner_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('OtherIdentifierNarrative')
 
         self.assertEqual(narrative.related_object, other_identifier)
@@ -714,6 +721,7 @@ class NarrativeTestCase(ParserSetupTestCase):
     """
     Added in 2.02
     """
+
     def setUp(self):
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -742,9 +750,9 @@ class NarrativeTestCase(ParserSetupTestCase):
 
     def test_addForeignKeyNonDefaultLanguageNarrative(self):
         """
-        The narrative should change its language parameter based on the xml:lang element 
+        The narrative should change its language parameter based on the xml:lang element
         """
-        self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr" # ISO 639-1:2002
+        self.narrative.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = "fr"  # ISO 639-1:2002
 
         iati_factory.LanguageFactory.create(
             code="fr",
@@ -769,7 +777,7 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
         self.attrs = {
             "ref": "GB-COH-123-reporting-org",
             "type": '40',
@@ -793,8 +801,10 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(reporting_organisation.ref, self.attrs["ref"])
         self.assertEqual(reporting_organisation.type.code, self.attrs["type"])
         self.assertEqual(reporting_organisation.activity, activity)
-        self.assertEqual(reporting_organisation.activity.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
-        self.assertEqual(reporting_organisation.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
+        self.assertEqual(reporting_organisation.activity.secondary_reporter,
+                         bool(int(self.attrs["secondary-reporter"])))
+        self.assertEqual(reporting_organisation.secondary_reporter,
+                         bool(int(self.attrs["secondary-reporter"])))
 
         # should create an organisation
         organisation = self.parser_202.get_model('Organisation')
@@ -815,14 +825,14 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         # organisation_name.save()
         # organisation_narrative.save()
 
-
     def test_reporting_organisation_already_parsed(self):
         """
         Check complete element is parsed correctly, excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.build(organisation_identifier="GB-COH-123-reporting-org")
+        test_organisation = iati_factory.OrganisationFactory.build(
+            organisation_identifier="GB-COH-123-reporting-org")
         test_organisation.save()
 
         self.parser_202.register_model('Activity', activity)
@@ -837,8 +847,10 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(reporting_organisation.activity, activity)
         self.assertEqual(reporting_organisation.organisation.id, test_organisation.id)
         self.assertEqual(reporting_organisation.type.code, self.attrs["type"])
-        self.assertEqual(reporting_organisation.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
-        self.assertEqual(reporting_organisation.activity.secondary_reporter, bool(int(self.attrs["secondary-reporter"])))
+        self.assertEqual(reporting_organisation.secondary_reporter,
+                         bool(int(self.attrs["secondary-reporter"])))
+        self.assertEqual(reporting_organisation.activity.secondary_reporter,
+                         bool(int(self.attrs["secondary-reporter"])))
 
     @skip('NotImplemented')
     def test_reporting_organisation_narrative(self):
@@ -852,7 +864,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs_202 = {
             "ref": "GB-COH-123-participating-org",
@@ -861,7 +873,7 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
             "activity-id": "BB-BBB-123456789-1234"
         }
         self.attrs_105 = copy.deepcopy(self.attrs_202)
-        self.attrs_105['role'] = "Funding" 
+        self.attrs_105['role'] = "Funding"
 
         self.participating_org_202 = E('participating-org', **self.attrs_202)
         self.participating_org_105 = E('participating-org', "some text", **self.attrs_105)
@@ -875,7 +887,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         activity = build_activity(version="2.02")
         self.parser_202.register_model('Activity', activity)
 
-        self.parser_202.iati_activities__iati_activity__participating_org(self.participating_org_202)
+        self.parser_202.iati_activities__iati_activity__participating_org(
+            self.participating_org_202)
         participating_organisation = self.parser_202.get_model('ActivityParticipatingOrganisation')
 
         self.assertEqual(participating_organisation.ref, self.attrs_202["ref"])
@@ -885,7 +898,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(participating_organisation.role.code, self.attrs_202["role"])
         self.assertEqual(participating_organisation.org_activity_id, self.attrs_202["activity-id"])
 
-        self.parser_202.iati_activities__iati_activity__participating_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__participating_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ActivityParticipatingOrganisationNarrative')
         self.assertEqual(narrative.related_object, participating_organisation)
         self.assertEqual(participating_organisation.primary_name, 'random text')
@@ -896,12 +910,14 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         """
         activity = build_activity(version="2.02")
 
-        test_organisation = iati_factory.OrganisationFactory.create(organisation_identifier="GB-COH-123-participating-org")
+        test_organisation = iati_factory.OrganisationFactory.create(
+            organisation_identifier="GB-COH-123-participating-org")
 
         self.parser_202.register_model('Activity', activity)
         self.parser_202.register_model('Organisation', test_organisation)
 
-        self.parser_202.iati_activities__iati_activity__participating_org(self.participating_org_202)
+        self.parser_202.iati_activities__iati_activity__participating_org(
+            self.participating_org_202)
 
         # activity = self.parser_202.get_model('Activity')
         organisation = self.parser_202.get_model('Organisation')
@@ -919,7 +935,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         activity = build_activity(version="1.05")
         self.parser_105.register_model('Activity', activity)
 
-        self.parser_105.iati_activities__iati_activity__participating_org(self.participating_org_105)
+        self.parser_105.iati_activities__iati_activity__participating_org(
+            self.participating_org_105)
 
         participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
 
@@ -935,17 +952,19 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
 
     def test_participating_organisation_already_parsed_105(self):
         """
-        Check complete element is parsed correctly, 
+        Check complete element is parsed correctly,
         excluding narratives when the organisation is available in the Organisation standard (and hence is pared)
         """
         activity = build_activity(version="1.05")
 
-        test_organisation = iati_factory.OrganisationFactory.create(organisation_identifier="GB-COH-123-participating-org")
+        test_organisation = iati_factory.OrganisationFactory.create(
+            organisation_identifier="GB-COH-123-participating-org")
 
         self.parser_105.register_model('Activity', activity)
         self.parser_105.register_model('Organisation', test_organisation)
 
-        self.parser_105.iati_activities__iati_activity__participating_org(self.participating_org_105)
+        self.parser_105.iati_activities__iati_activity__participating_org(
+            self.participating_org_105)
 
         # activity = self.parser_105.get_model('Activity')
         organisation = self.parser_105.get_model('Organisation')
@@ -963,7 +982,8 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
         activity = build_activity(version="1.05")
         self.parser_105.register_model('Activity', activity)
 
-        self.parser_105.iati_activities__iati_activity__participating_org(self.participating_org_105)
+        self.parser_105.iati_activities__iati_activity__participating_org(
+            self.participating_org_105)
 
         participating_organisation = self.parser_105.get_model('ActivityParticipatingOrganisation')
 
@@ -977,10 +997,10 @@ class ActivityDateTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs_202 = {
-            "type": "1", # planned-start
+            "type": "1",  # planned-start
             "iso-date": datetime.datetime.now().isoformat(' '),
         }
         self.attrs_105 = copy.deepcopy(self.attrs_202)
@@ -1039,10 +1059,10 @@ class ContactInfoTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "type": "1", # General Enquiries
+            "type": "1",  # General Enquiries
         }
 
         self.contact_info = E('contact-info', **self.attrs)
@@ -1065,20 +1085,28 @@ class ContactInfoTestCase(ParserSetupTestCase):
         self.parser_202.iati_activities__iati_activity__contact_info(self.contact_info)
         contact_info = self.parser_202.get_model('ContactInfo')
 
-        self.assertEqual(contact_info.activity, self.activity, 'contact info activity should match')
-        self.assertEqual(contact_info.type.code, self.attrs['type'], 'contact info type code should match')
+        self.assertEqual(
+            contact_info.activity,
+            self.activity,
+            'contact info activity should match')
+        self.assertEqual(
+            contact_info.type.code,
+            self.attrs['type'],
+            'contact info type code should match')
 
     def test_contact_info_organisation_202(self):
         """
         Along with narrative
         """
         contact_organisation = E('organisation', **self.attrs)
-        self.parser_202.iati_activities__iati_activity__contact_info__organisation(contact_organisation)
+        self.parser_202.iati_activities__iati_activity__contact_info__organisation(
+            contact_organisation)
         contact_info_organisation = self.parser_202.get_model('ContactInfoOrganisation')
 
         self.assertEqual(contact_info_organisation.contact_info, self.test_contact_info)
 
-        self.parser_202.iati_activities__iati_activity__contact_info__organisation__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__contact_info__organisation__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ContactInfoOrganisationNarrative')
         self.assertEqual(narrative.related_object, contact_info_organisation)
 
@@ -1087,7 +1115,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_organisation = E('organisation', 'some description')
-        self.parser_105.iati_activities__iati_activity__contact_info__organisation(contact_organisation)
+        self.parser_105.iati_activities__iati_activity__contact_info__organisation(
+            contact_organisation)
         contact_info_organisation = self.parser_105.get_model('ContactInfoOrganisation')
 
         self.assertEqual(contact_info_organisation.contact_info, self.test_contact_info)
@@ -1099,12 +1128,14 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_department = E('department', **self.attrs)
-        self.parser_202.iati_activities__iati_activity__contact_info__department(contact_department)
+        self.parser_202.iati_activities__iati_activity__contact_info__department(
+            contact_department)
         contact_info_department = self.parser_202.get_model('ContactInfoDepartment')
 
         self.assertEqual(contact_info_department.contact_info, self.test_contact_info)
 
-        self.parser_202.iati_activities__iati_activity__contact_info__department__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__contact_info__department__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ContactInfoDepartmentNarrative')
         self.assertEqual(narrative.related_object, contact_info_department)
 
@@ -1113,7 +1144,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_department = E('department', 'some description')
-        self.parser_105.iati_activities__iati_activity__contact_info__department(contact_department)
+        self.parser_105.iati_activities__iati_activity__contact_info__department(
+            contact_department)
         contact_info_department = self.parser_105.get_model('ContactInfoDepartment')
 
         self.assertEqual(contact_info_department.contact_info, self.test_contact_info)
@@ -1124,12 +1156,14 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_person_name = E('person-name', **self.attrs)
-        self.parser_202.iati_activities__iati_activity__contact_info__person_name(contact_person_name)
+        self.parser_202.iati_activities__iati_activity__contact_info__person_name(
+            contact_person_name)
         contact_info_person_name = self.parser_202.get_model('ContactInfoPersonName')
 
         self.assertEqual(contact_info_person_name.contact_info, self.test_contact_info)
 
-        self.parser_202.iati_activities__iati_activity__contact_info__person_name__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__contact_info__person_name__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ContactInfoPersonNameNarrative')
         self.assertEqual(narrative.related_object, contact_info_person_name)
 
@@ -1138,7 +1172,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_person_name = E('person_name', 'some description')
-        self.parser_105.iati_activities__iati_activity__contact_info__person_name(contact_person_name)
+        self.parser_105.iati_activities__iati_activity__contact_info__person_name(
+            contact_person_name)
         contact_info_person_name = self.parser_105.get_model('ContactInfoPersonName')
 
         self.assertEqual(contact_info_person_name.contact_info, self.test_contact_info)
@@ -1154,7 +1189,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         self.assertEqual(contact_info_job_title.contact_info, self.test_contact_info)
 
-        self.parser_202.iati_activities__iati_activity__contact_info__job_title__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__contact_info__job_title__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ContactInfoJobTitleNarrative')
         self.assertEqual(narrative.related_object, contact_info_job_title)
 
@@ -1195,12 +1231,14 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_mailing_address = E('mailing-address', **self.attrs)
-        self.parser_202.iati_activities__iati_activity__contact_info__mailing_address(contact_mailing_address)
+        self.parser_202.iati_activities__iati_activity__contact_info__mailing_address(
+            contact_mailing_address)
         contact_info_mailing_address = self.parser_202.get_model('ContactInfoMailingAddress')
 
         self.assertEqual(contact_info_mailing_address.contact_info, self.test_contact_info)
 
-        self.parser_202.iati_activities__iati_activity__contact_info__mailing_address__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__contact_info__mailing_address__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ContactInfoMailingAddressNarrative')
         self.assertEqual(narrative.related_object, contact_info_mailing_address)
 
@@ -1209,7 +1247,8 @@ class ContactInfoTestCase(ParserSetupTestCase):
         Along with narrative
         """
         contact_mailing_address = E('mailing_address', 'some description')
-        self.parser_105.iati_activities__iati_activity__contact_info__mailing_address(contact_mailing_address)
+        self.parser_105.iati_activities__iati_activity__contact_info__mailing_address(
+            contact_mailing_address)
         contact_info_mailing_address = self.parser_105.get_model('ContactInfoMailingAddress')
 
         self.assertEqual(contact_info_mailing_address.contact_info, self.test_contact_info)
@@ -1225,7 +1264,7 @@ class RecipientCountryTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
             "code": "AF",
@@ -1260,11 +1299,11 @@ class RecipientRegionTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "code": "89", # Europe, regional
-            "vocabulary": "1", # OECD-DAC
+            "code": "89",  # Europe, regional
+            "vocabulary": "1",  # OECD-DAC
             "percentage": "50.5",
             "vocabulary-uri": "http://example.com/vocab.html"
         }
@@ -1301,6 +1340,7 @@ class RecipientRegionTestCase(ParserSetupTestCase):
 
         self.assertEqual(recipient_region.vocabulary.code, "1")
 
+
 class ActivityLocationTestCase(ParserSetupTestCase):
     """
     2.02: The following child elements were removed: coordinates; gazetteer-entry; location-type.
@@ -1315,11 +1355,12 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     1.04: The @percentage attribute was deemed unworkable and deprecated in 1.04
     1.03: Where used, the @percentage attribute is now designated as a decimal value and no longer as a positive Integer
     """
+
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs_202 = {
-            "ref": "some-ref", # Europe, regional
+            "ref": "some-ref",  # Europe, regional
         }
         self.attrs_105 = copy.deepcopy(self.attrs_202)
         self.attrs_105['percentage'] = '50.2'
@@ -1348,14 +1389,15 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         self.assertEqual(location.ref, self.attrs_202['ref'])
 
     def test_location_reach_202(self):
-        location_reach = E('location-reach', code="1") # Activity
+        location_reach = E('location-reach', code="1")  # Activity
         self.parser_202.iati_activities__iati_activity__location__location_reach(location_reach)
         location = self.parser_202.get_model('Location')
 
         self.assertEqual(location.location_reach.code, "1")
 
     def test_location_id_202(self):
-        location_id = E('location-id', code="test", vocabulary="A1") # Global Administrative Unit layers
+        # Global Administrative Unit layers
+        location_id = E('location-id', code="test", vocabulary="A1")
         self.parser_202.iati_activities__iati_activity__location__location_id(location_id)
         location = self.parser_202.get_model('Location')
 
@@ -1395,7 +1437,8 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.assertEqual(location_description.location, self.test_location)
 
-        self.parser_202.iati_activities__iati_activity__location__description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__location__description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('LocationDescriptionNarrative')
         self.assertEqual(narrative.related_object, location_description)
 
@@ -1404,17 +1447,20 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         Including narratives
         """
         activity_description = E('activity-description')
-        self.parser_202.iati_activities__iati_activity__location__activity_description(activity_description)
+        self.parser_202.iati_activities__iati_activity__location__activity_description(
+            activity_description)
         activity_description = self.parser_202.get_model('LocationActivityDescription')
 
         self.assertEqual(activity_description.location, self.test_location)
 
-        self.parser_202.iati_activities__iati_activity__location__activity_description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__location__activity_description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('LocationActivityDescriptionNarrative')
         self.assertEqual(narrative.related_object, activity_description)
 
     def test_location_administrative_202(self):
-        administrative = E('administrative', code="test", vocabulary="A1", level="1") # Global Administrative Unit layers
+        administrative = E('administrative', code="test", vocabulary="A1",
+                           level="1")  # Global Administrative Unit layers
         self.parser_202.iati_activities__iati_activity__location__administrative(administrative)
         location_administrative = self.parser_202.get_model('LocationAdministrative')
 
@@ -1423,7 +1469,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         self.assertEqual(location_administrative.level, "1")
 
     def test_location_administrative_103(self):
-        administrative = E('administrative', country="test", adm1="test", adm2="test") 
+        administrative = E('administrative', country="test", adm1="test", adm2="test")
         self.parser_103.iati_activities__iati_activity__location__administrative(administrative)
 
         # adm2
@@ -1444,7 +1490,8 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         self.assertEqual(administrative.vocabulary.code, "A4")
 
     def test_location_point_202(self):
-        point = E('point', srsName="http://www.opengis.net/def/crs/EPSG/0/4326") # Global Point Unit layers
+        # Global Point Unit layers
+        point = E('point', srsName="http://www.opengis.net/def/crs/EPSG/0/4326")
         self.parser_202.iati_activities__iati_activity__location__point(point)
         location = self.parser_202.get_model('Location')
 
@@ -1467,28 +1514,29 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     #         self.parser_202.iati_activities__iati_activity__location__point__pos(pos)
 
     def test_location_exactness_202(self):
-        exactness = E('exactness', code="1") # Exact
+        exactness = E('exactness', code="1")  # Exact
         self.parser_202.iati_activities__iati_activity__location__exactness(exactness)
         location = self.parser_202.get_model('Location')
 
         self.assertEqual(location.exactness.code, "1")
 
     def test_location_location_class_202(self):
-        location_class = E('location-class', code="1") # Administrative region
+        location_class = E('location-class', code="1")  # Administrative region
         self.parser_202.iati_activities__iati_activity__location__location_class(location_class)
         location = self.parser_202.get_model('Location')
 
         self.assertEqual(location.location_class.code, "1")
 
     def test_location_feature_designation_202(self):
-        feature_designation = E('feature-designation', code="AIRQ") # Abandoned airfield
-        self.parser_202.iati_activities__iati_activity__location__feature_designation(feature_designation)
+        feature_designation = E('feature-designation', code="AIRQ")  # Abandoned airfield
+        self.parser_202.iati_activities__iati_activity__location__feature_designation(
+            feature_designation)
         location = self.parser_202.get_model('Location')
 
         self.assertEqual(location.feature_designation.code, "AIRQ")
 
     def test_location_coordinates_103(self):
-        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='1') # exact
+        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='1')  # exact
         self.parser_103.iati_activities__iati_activity__location__coordinates(coordinates)
         location = self.parser_103.get_model('Location')
 
@@ -1503,7 +1551,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         http://iatistandard.org/201/codelists/GeographicExactness/
         http://iatistandard.org/201/codelists/GeographicalPrecision/
         """
-        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='5') # exact
+        coordinates = E('pos', latitude='31.616944', longitude='65.716944', precision='5')  # exact
         self.parser_103.iati_activities__iati_activity__location__coordinates(coordinates)
         location = self.parser_103.get_model('Location')
 
@@ -1516,10 +1564,10 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         props = {
             "gazetteer-ref": "OSM"
         }
-        gazetteer = E('gazetteer-entry', "some code", **props) # Geonames.org
+        gazetteer = E('gazetteer-entry', "some code", **props)  # Geonames.org
         self.parser_103.iati_activities__iati_activity__location__gazetteer_entry(gazetteer)
         location = self.parser_103.get_model('Location')
-        
+
         self.assertEqual(location.location_id_code, "some code")
         self.assertEqual(location.location_id_vocabulary.code, "G2")
 
@@ -1530,7 +1578,7 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         props = {
             "gazetteer-ref": "2"
         }
-        gazetteer = E('gazetteer-entry', "some code", **props) # Geonames.org
+        gazetteer = E('gazetteer-entry', "some code", **props)  # Geonames.org
 
         with self.assertRaises(Exception):
             self.parser_103.iati_activities__iati_activity__location__gazetteer_entry(gazetteer)
@@ -1539,11 +1587,12 @@ class ActivityLocationTestCase(ParserSetupTestCase):
         """
         Maps to 201 feature_designation field
         """
-        location_type = E('location-type', code="AIRQ") # Abandoned airfield
+        location_type = E('location-type', code="AIRQ")  # Abandoned airfield
         self.parser_103.iati_activities__iati_activity__location__location_type(location_type)
         location = self.parser_103.get_model('Location')
 
         self.assertEqual(location.feature_designation.code, "AIRQ")
+
 
 class SectorTestCase(ParserSetupTestCase):
     """
@@ -1551,11 +1600,11 @@ class SectorTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "code": "11110", # Education Policy and administrative management
-            "vocabulary": "1", # OECD-DAC-5
+            "code": "11110",  # Education Policy and administrative management
+            "vocabulary": "1",  # OECD-DAC-5
             "percentage": "50.5",
             "vocabulary-uri": "http://example.com/vocab.html"
         }
@@ -1597,7 +1646,7 @@ class SectorTestCase(ParserSetupTestCase):
         """
         Using the sectorvocabulary mappings
         """
-        self.sector.attrib['vocabulary'] = 'DAC' # should map to 1
+        self.sector.attrib['vocabulary'] = 'DAC'  # should map to 1
         self.parser_105.iati_activities__iati_activity__sector(self.sector)
         sector = self.parser_105.get_model('ActivitySector')
 
@@ -1606,16 +1655,17 @@ class SectorTestCase(ParserSetupTestCase):
         self.assertEqual(sector.percentage, self.attrs['percentage'])
         self.assertEqual(sector.vocabulary.code, self.attrs['vocabulary'])
 
+
 class CountryBudgetItemsTestCase(ParserSetupTestCase):
     """
     1.03: This is a new element, introduced in version 1.03 of the standard.
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "vocabulary": "1", # IATI
+            "vocabulary": "1",  # IATI
         }
 
         self.country_budget_items = E('country_budget_items', **self.attrs)
@@ -1633,7 +1683,8 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         """
         Along with its narrative(s)
         """
-        self.parser_202.iati_activities__iati_activity__country_budget_items(self.country_budget_items)
+        self.parser_202.iati_activities__iati_activity__country_budget_items(
+            self.country_budget_items)
         country_budget_item = self.parser_202.get_model('CountryBudgetItem')
 
         self.assertEqual(country_budget_item.activity, self.activity)
@@ -1643,8 +1694,9 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         """
         Along with its narrative(s)
         """
-        budget_item = E('budget-item', code="1.1.1", percentage="50.21") # Executive - executive
-        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item(budget_item)
+        budget_item = E('budget-item', code="1.1.1", percentage="50.21")  # Executive - executive
+        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item(
+            budget_item)
         budget_item = self.parser_202.get_model('BudgetItem')
 
         self.assertEqual(budget_item.code.code, "1.1.1")
@@ -1658,13 +1710,18 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         budget_item = iati_factory.BudgetItemFactory.build()
         self.parser_202.register_model('BudgetItem', budget_item)
 
-        budget_item_description = E('description', code="1.1.1", percentage="50.21") # Executive - executive
-        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item__description(budget_item_description)
+        budget_item_description = E(
+            'description',
+            code="1.1.1",
+            percentage="50.21")  # Executive - executive
+        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item__description(
+            budget_item_description)
         budget_item_description = self.parser_202.get_model('BudgetItemDescription')
 
         self.assertEqual(budget_item_description.budget_item, budget_item)
 
-        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('BudgetItemDescriptionNarrative')
         self.assertEqual(narrative.related_object, budget_item_description)
 
@@ -1672,8 +1729,13 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         budget_item = iati_factory.BudgetItemFactory.build()
         self.parser_105.register_model('BudgetItem', budget_item)
 
-        budget_item_description = E('description', "some text", code="1.1.1", percentage="50.21") # Executive - executive
-        self.parser_105.iati_activities__iati_activity__country_budget_items__budget_item__description(budget_item_description)
+        budget_item_description = E(
+            'description',
+            "some text",
+            code="1.1.1",
+            percentage="50.21")  # Executive - executive
+        self.parser_105.iati_activities__iati_activity__country_budget_items__budget_item__description(
+            budget_item_description)
         budget_item_description = self.parser_105.get_model('BudgetItemDescription')
 
         self.assertEqual(budget_item_description.budget_item, budget_item)
@@ -1729,7 +1791,8 @@ class HumanitarianScopeTestCase(ParserSetupTestCase):
         self.assertEqual(humanitarian_scope.code, self.attrs['code'])
         self.assertEqual(humanitarian_scope.vocabulary_uri, self.attrs['vocabulary-uri'])
 
-        self.parser_202.iati_activities__iati_activity__humanitarian_scope__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__humanitarian_scope__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('HumanitarianScopeNarrative')
         self.assertEqual(narrative.related_object, humanitarian_scope)
         self.assertEqual(narrative.content, self.narrative.text)
@@ -1741,13 +1804,13 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "code": "1", # Gender Equality
-            "vocabulary": "1", # OECD-DAC CRS
+            "code": "1",  # Gender Equality
+            "vocabulary": "1",  # OECD-DAC CRS
             "vocabulary-uri": "http://example.com/vocab.html",
-            "significance": "1", # Significant objective
+            "significance": "1",  # Significant objective
         }
 
         self.activity_policy_marker = E('policy-marker', **self.attrs)
@@ -1776,7 +1839,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
 
     def test_activity_policy_marker_202_vocabulary_ommited(self):
         """
-        An IATI code for the vocabulary to be used to define policy markers. 
+        An IATI code for the vocabulary to be used to define policy markers.
         If omitted then the OECD DAC vocabulary is assumed.
         """
         attrs = self.attrs
@@ -1808,7 +1871,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         activity_policy_marker = self.parser_202.get_model('ActivityPolicyMarker')
         self.assertEqual(activity_policy_marker.significance, None)
         self.assertEqual(activity_policy_marker.vocabulary.code, attrs['vocabulary'])
-        
+
     def test_activity_policy_marker_105(self):
         """
         Should perform the (less than ideal) mapping from 105 Vocabulary to 201 PolicyMarkerVocabulary
@@ -1829,16 +1892,17 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('ActivityPolicyMarkerNarrative')
         self.assertEqual(narrative.related_object, activity_policy_marker)
 
+
 class BudgetTestCase(ParserSetupTestCase):
     """
     No changes
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "type": "1", # Original
+            "type": "1",  # Original
             "status": "1"
         }
 
@@ -1882,7 +1946,7 @@ class BudgetTestCase(ParserSetupTestCase):
             "iso-date": datetime.datetime.now().isoformat(' ')
         }
 
-        period_start = E('period-start', **attrs) 
+        period_start = E('period-start', **attrs)
         self.parser_202.iati_activities__iati_activity__budget__period_start(period_start)
         budget = self.parser_202.get_model('Budget')
 
@@ -1895,7 +1959,7 @@ class BudgetTestCase(ParserSetupTestCase):
             "iso-date": datetime.datetime.now().isoformat(' ')
         }
 
-        period_end = E('period-end', **attrs) 
+        period_end = E('period-end', **attrs)
         self.parser_202.iati_activities__iati_activity__budget__period_end(period_end)
         budget = self.parser_202.get_model('Budget')
 
@@ -1915,7 +1979,7 @@ class BudgetTestCase(ParserSetupTestCase):
         currency_from_to = convert.currency_from_to
         convert.currency_from_to = MagicMock(return_value=xdr_value)
 
-        value = E('value', text, **attrs) 
+        value = E('value', text, **attrs)
         self.parser_202.iati_activities__iati_activity__budget__value(value)
         budget = self.parser_202.get_model('Budget')
         budget.activity.save()
@@ -1973,10 +2037,10 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "type": "1", # Original
+            "type": "1",  # Original
         }
 
         self.planned_disbursement = E('planned-disbursement', **self.attrs)
@@ -1989,7 +2053,8 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
     def test_planned_disbursement_202(self):
         """
         """
-        self.parser_202.iati_activities__iati_activity__planned_disbursement(self.planned_disbursement)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement(
+            self.planned_disbursement)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
 
         self.assertEqual(planned_disbursement.activity, self.activity)
@@ -2002,8 +2067,9 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
             "iso-date": datetime.datetime.now().isoformat(' ')
         }
 
-        period_start = E('period-start', **attrs) 
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__period_start(period_start)
+        period_start = E('period-start', **attrs)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__period_start(
+            period_start)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
 
         self.assertEqual(str(planned_disbursement.period_start), attrs['iso-date'])
@@ -2015,8 +2081,9 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
             "iso-date": datetime.datetime.now().isoformat(' ')
         }
 
-        period_end = E('period-end', **attrs) 
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__period_end(period_end)
+        period_end = E('period-end', **attrs)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__period_end(
+            period_end)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
 
         self.assertEqual(str(planned_disbursement.period_end), attrs['iso-date'])
@@ -2031,7 +2098,7 @@ class PlannedDisbursementTestCase(ParserSetupTestCase):
         }
         text = "2000.2"
 
-        value = E('value', text, **attrs) 
+        value = E('value', text, **attrs)
         self.parser_202.iati_activities__iati_activity__planned_disbursement__value(value)
         planned_disbursement = self.parser_202.get_model('PlannedDisbursement')
         planned_disbursement.activity.save()
@@ -2079,20 +2146,26 @@ class PlannedDisbursementProviderOrganisationTestCase(ParserSetupTestCase):
 
     def test_provider_organisation_not_parsed_yet_202(self):
         """
-        Check element is parsed correctly, excluding narratives, 
+        Check element is parsed correctly, excluding narratives,
         when organisation is not in the organisation API,
         this results in the organisation field being empty.
         """
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org(self.provider_org)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org(
+            self.provider_org)
         provider_organisation = self.parser_202.get_model('PlannedDisbursementProvider')
 
         self.assertEqual(provider_organisation.ref, self.attrs['ref'])
         self.assertEqual(provider_organisation.organisation, None)
-        self.assertEqual(provider_organisation.provider_activity_ref, self.attrs['provider-activity-id'])
+        self.assertEqual(
+            provider_organisation.provider_activity_ref,
+            self.attrs['provider-activity-id'])
         self.assertEqual(provider_organisation.type.code, self.attrs['type'])
-        self.assertEqual(provider_organisation.planned_disbursement, self.test_planned_disbursement)
+        self.assertEqual(
+            provider_organisation.planned_disbursement,
+            self.test_planned_disbursement)
 
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__provider_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('PlannedDisbursementProviderNarrative')
         self.assertEqual(narrative.related_object, provider_organisation)
         self.assertEqual(provider_organisation.primary_name, 'random text')
@@ -2123,20 +2196,26 @@ class PlannedDisbursementReceiverOrganisationTestCase(ParserSetupTestCase):
 
     def test_receiver_organisation_not_parsed_yet_202(self):
         """
-        Check element is parsed correctly, excluding narratives, 
+        Check element is parsed correctly, excluding narratives,
         when organisation is not in the organisation API,
         this results in the organisation field being empty.
         """
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org(self.receiver_org)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org(
+            self.receiver_org)
         receiver_organisation = self.parser_202.get_model('PlannedDisbursementReceiver')
 
         self.assertEqual(receiver_organisation.ref, self.attrs['ref'])
         self.assertEqual(receiver_organisation.organisation, None)
-        self.assertEqual(receiver_organisation.receiver_activity_ref, self.attrs['receiver-activity-id'])
+        self.assertEqual(
+            receiver_organisation.receiver_activity_ref,
+            self.attrs['receiver-activity-id'])
         self.assertEqual(receiver_organisation.type.code, self.attrs['type'])
-        self.assertEqual(receiver_organisation.planned_disbursement, self.test_planned_disbursement)
+        self.assertEqual(
+            receiver_organisation.planned_disbursement,
+            self.test_planned_disbursement)
 
-        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__planned_disbursement__receiver_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('PlannedDisbursementReceiverNarrative')
         self.assertEqual(narrative.related_object, receiver_organisation)
         self.assertEqual(receiver_organisation.primary_name, 'random text')
@@ -2153,10 +2232,10 @@ class TransactionTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "ref": "12345", # Internal reference
+            "ref": "12345",  # Internal reference
         }
 
         self.transaction = E('transaction', **self.attrs)
@@ -2191,15 +2270,17 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertEqual(transaction.humanitarian, False)
 
     def test_transaction_transaction_type_105(self):
-        transaction_type = E('transaction-type', code="1") # Incoming funds
-        self.parser_105.iati_activities__iati_activity__transaction__transaction_type(transaction_type)
+        transaction_type = E('transaction-type', code="1")  # Incoming funds
+        self.parser_105.iati_activities__iati_activity__transaction__transaction_type(
+            transaction_type)
         transaction = self.parser_105.get_model('Transaction')
 
         self.assertEqual(transaction.transaction_type.code, "1")
 
     def test_transaction_transaction_type_105(self):
-        transaction_type = E('transaction-type', code="IF") # Incoming funds
-        self.parser_105.iati_activities__iati_activity__transaction__transaction_type(transaction_type)
+        transaction_type = E('transaction-type', code="IF")  # Incoming funds
+        self.parser_105.iati_activities__iati_activity__transaction__transaction_type(
+            transaction_type)
         transaction = self.parser_105.get_model('Transaction')
 
         self.assertEqual(transaction.transaction_type.code, "1")
@@ -2209,7 +2290,8 @@ class TransactionTestCase(ParserSetupTestCase):
             "iso-date": datetime.datetime.now().isoformat(' ')
         }
         transaction_date = E('transaction-date', **attrs)
-        self.parser_202.iati_activities__iati_activity__transaction__transaction_date(transaction_date)
+        self.parser_202.iati_activities__iati_activity__transaction__transaction_date(
+            transaction_date)
         transaction = self.parser_202.get_model('Transaction')
 
         self.assertEqual(str(transaction.transaction_date), attrs['iso-date'])
@@ -2270,7 +2352,8 @@ class TransactionTestCase(ParserSetupTestCase):
 
         self.assertEqual(transaction_description.transaction, self.test_transaction)
 
-        self.parser_202.iati_activities__iati_activity__transaction__description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__transaction__description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('TransactionDescriptionNarrative')
         self.assertEqual(narrative.related_object, transaction_description)
 
@@ -2288,8 +2371,9 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         """
 
-        disbursement_channel = E('disbursement_channel', code="1") 
-        self.parser_202.iati_activities__iati_activity__transaction__disbursement_channel(disbursement_channel)
+        disbursement_channel = E('disbursement_channel', code="1")
+        self.parser_202.iati_activities__iati_activity__transaction__disbursement_channel(
+            disbursement_channel)
         transaction = self.parser_202.get_model('Transaction')
 
         self.assertEqual(transaction.disbursement_channel.code, "1")
@@ -2298,12 +2382,12 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         """
         attrs = {
-            "code": "11110", # Education Policy and administrative management
-            "vocabulary": "1", # OECD-DAC-5
+            "code": "11110",  # Education Policy and administrative management
+            "vocabulary": "1",  # OECD-DAC-5
             "vocabulary-uri": "http://example.com/vocab.html"
         }
 
-        sector = E('sector', **attrs) 
+        sector = E('sector', **attrs)
         self.parser_202.iati_activities__iati_activity__transaction__sector(sector)
         transaction_sector = self.parser_202.get_model('TransactionSector')
 
@@ -2321,8 +2405,9 @@ class TransactionTestCase(ParserSetupTestCase):
             "percentage": "50.5",
         }
 
-        recipient_country = E('recipient_country', **attrs) 
-        self.parser_202.iati_activities__iati_activity__transaction__recipient_country(recipient_country)
+        recipient_country = E('recipient_country', **attrs)
+        self.parser_202.iati_activities__iati_activity__transaction__recipient_country(
+            recipient_country)
         transaction_recipient_country = self.parser_202.get_model('TransactionRecipientCountry')
 
         self.assertEqual(transaction_recipient_country.transaction, self.test_transaction)
@@ -2334,14 +2419,15 @@ class TransactionTestCase(ParserSetupTestCase):
 
         """
         attrs = {
-            "code": "89", # Europe, regional
-            "vocabulary": "1", # OECD-DAC
+            "code": "89",  # Europe, regional
+            "vocabulary": "1",  # OECD-DAC
             "percentage": "50.5",
             "vocabulary-uri": "http://example.com/vocab.html"
         }
 
-        recipient_region = E('recipient_region', **attrs) 
-        self.parser_202.iati_activities__iati_activity__transaction__recipient_region(recipient_region)
+        recipient_region = E('recipient_region', **attrs)
+        self.parser_202.iati_activities__iati_activity__transaction__recipient_region(
+            recipient_region)
         transaction_recipient_region = self.parser_202.get_model('TransactionRecipientRegion')
 
         self.assertEqual(transaction_recipient_region.transaction, self.test_transaction)
@@ -2353,7 +2439,7 @@ class TransactionTestCase(ParserSetupTestCase):
     def test_transaction_flow_type_202(self):
         """
         """
-        flow_type = E('flow-type', code="10") # ODA
+        flow_type = E('flow-type', code="10")  # ODA
         self.parser_202.iati_activities__iati_activity__transaction__flow_type(flow_type)
         transaction = self.parser_202.get_model('Transaction')
 
@@ -2363,7 +2449,7 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         must inherit from the corresponding activity field
         """
-        attrs = {'code':'10'}
+        attrs = {'code': '10'}
         default_flow_type = E('default-flow-type', **attrs)
         self.parser_202.iati_activities__iati_activity__default_flow_type(default_flow_type)
 
@@ -2375,7 +2461,7 @@ class TransactionTestCase(ParserSetupTestCase):
     def test_transaction_finance_type_activity_202(self):
         """
         """
-        finance_type = E('finance-type', code="110") # Aid grant excl.
+        finance_type = E('finance-type', code="110")  # Aid grant excl.
         self.parser_202.iati_activities__iati_activity__transaction__finance_type(finance_type)
         transaction = self.parser_202.get_model('Transaction')
 
@@ -2385,7 +2471,7 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         must inherit from the corresponding activity field
         """
-        attrs = {'code':'310'}
+        attrs = {'code': '310'}
         default_finance_type = E('default-finance-type', **attrs)
         self.parser_202.iati_activities__iati_activity__default_finance_type(default_finance_type)
 
@@ -2395,7 +2481,7 @@ class TransactionTestCase(ParserSetupTestCase):
         self.assertEqual(transaction.finance_type.code, attrs['code'])
 
     def test_transaction_aid_type_activity_202(self):
-        aid_type = E('aid-type', code="A01") # General budget support
+        aid_type = E('aid-type', code="A01")  # General budget support
         self.parser_202.iati_activities__iati_activity__transaction__aid_type(aid_type)
         transaction = self.parser_202.get_model('Transaction')
 
@@ -2405,7 +2491,7 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         must inherit from the corresponding activity field
         """
-        attrs = {'code':'A01'}
+        attrs = {'code': 'A01'}
         default_aid_type = E('default-aid-type', **attrs)
         self.parser_202.iati_activities__iati_activity__default_aid_type(default_aid_type)
 
@@ -2417,7 +2503,7 @@ class TransactionTestCase(ParserSetupTestCase):
     def test_transaction_tied_status_activity_202(self):
         """
         """
-        tied_status = E('tied-status', code="4") # Tied
+        tied_status = E('tied-status', code="4")  # Tied
         self.parser_202.iati_activities__iati_activity__transaction__tied_status(tied_status)
         transaction = self.parser_202.get_model('Transaction')
 
@@ -2427,7 +2513,7 @@ class TransactionTestCase(ParserSetupTestCase):
         """
         must inherit from the corresponding activity field
         """
-        attrs = {'code':'4'}
+        attrs = {'code': '4'}
         default_tied_status = E('default-tied-status', **attrs)
         self.parser_202.iati_activities__iati_activity__default_tied_status(default_tied_status)
 
@@ -2463,7 +2549,8 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
 
-        self.parser_202.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+        self.parser_202.iati_activities__iati_activity__transaction__provider_org(
+            self.provider_org)
         provider_organisation = self.parser_202.get_model('TransactionProvider')
 
         self.assertEqual(provider_organisation.ref, self.attrs['ref'])
@@ -2471,7 +2558,8 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(provider_organisation.transaction, self.test_transaction)
         # self.assertEqual(provider_organisation.provider_activity_id, self.attrs['provider-activity-id'])
 
-        self.parser_202.iati_activities__iati_activity__transaction__provider_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__transaction__provider_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('TransactionProviderNarrative')
         self.assertEqual(narrative.related_object, provider_organisation)
         self.assertEqual(provider_organisation.primary_name, 'random text')
@@ -2479,16 +2567,17 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_202.pop_model('TransactionProvider')
 
-    
     @skip('NotImplemented')
     def test_provider_organisation_duplicate(self):
         """
         Duplicates are not allowed
         """
-        self.parser_202.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+        self.parser_202.iati_activities__iati_activity__transaction__provider_org(
+            self.provider_org)
 
         with self.assertRaises(Exception):
-            self.parser_202.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+            self.parser_202.iati_activities__iati_activity__transaction__provider_org(
+                self.provider_org)
 
         # TODO: refactor so this isnt nescessary
         provider_organisation = self.parser_202.pop_model('TransactionProvider')
@@ -2498,7 +2587,8 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
         self.provider_org.text = "random text"
-        self.parser_105.iati_activities__iati_activity__transaction__provider_org(self.provider_org)
+        self.parser_105.iati_activities__iati_activity__transaction__provider_org(
+            self.provider_org)
         provider_organisation = self.parser_105.get_model('TransactionProvider')
 
         self.test_transaction = transaction_factory.TransactionFactory.build()
@@ -2544,7 +2634,8 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         """
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
-        self.parser_202.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+        self.parser_202.iati_activities__iati_activity__transaction__receiver_org(
+            self.receiver_org)
         receiver_organisation = self.parser_202.get_model('TransactionReceiver')
 
         self.assertEqual(receiver_organisation.ref, self.attrs['ref'])
@@ -2552,7 +2643,8 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         self.assertEqual(receiver_organisation.receiver_activity_id, None)
         self.assertEqual(receiver_organisation.transaction, self.test_transaction)
 
-        self.parser_202.iati_activities__iati_activity__transaction__receiver_org__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__transaction__receiver_org__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('TransactionReceiverNarrative')
         self.assertEqual(narrative.related_object, receiver_organisation)
         self.assertEqual(receiver_organisation.primary_name, 'random text')
@@ -2565,10 +2657,12 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         """
         Duplicates are not allowed
         """
-        self.parser_202.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+        self.parser_202.iati_activities__iati_activity__transaction__receiver_org(
+            self.receiver_org)
 
         with self.assertRaises(Exception):
-            self.parser_202.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+            self.parser_202.iati_activities__iati_activity__transaction__receiver_org(
+                self.receiver_org)
 
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_202.pop_model('TransactionReceiver')
@@ -2586,7 +2680,8 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         Check element is parsed correctly, excluding narratives when organisation is not in the organisation API. This results in the organisation field being empty
         """
         self.receiver_org.text = 'random text'
-        self.parser_105.iati_activities__iati_activity__transaction__receiver_org(self.receiver_org)
+        self.parser_105.iati_activities__iati_activity__transaction__receiver_org(
+            self.receiver_org)
         receiver_organisation = self.parser_105.get_model('TransactionReceiver')
 
         narrative = self.parser_105.get_model('TransactionReceiverNarrative')
@@ -2596,13 +2691,14 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
         # TODO: refactor so this isnt nescessary
         receiver_organisation = self.parser_105.pop_model('TransactionReceiver')
 
+
 class DocumentLinkTestCase(ParserSetupTestCase):
     """
     1.02: Removed @language attribute from, and introduced an new language child element to, the document-link element.
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
             "url": "http://zimmermanzimmerman.nl/",
@@ -2634,13 +2730,14 @@ class DocumentLinkTestCase(ParserSetupTestCase):
         """
         """
 
-        title = E('title') 
+        title = E('title')
         self.parser_202.iati_activities__iati_activity__document_link__title(title)
         document_link_title = self.parser_202.get_model('DocumentLinkTitle')
 
         self.assertEqual(document_link_title.document_link, self.test_document_link)
 
-        self.parser_202.iati_activities__iati_activity__document_link__title__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__document_link__title__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('DocumentLinkTitleNarrative')
         self.assertEqual(narrative.related_object, document_link_title)
 
@@ -2648,7 +2745,7 @@ class DocumentLinkTestCase(ParserSetupTestCase):
         """
         """
 
-        category = E('category', code="A04") # conditions
+        category = E('category', code="A04")  # conditions
         self.parser_202.iati_activities__iati_activity__document_link__category(category)
         document_link_category = self.parser_202.get_model('DocumentLinkCategory')
 
@@ -2659,7 +2756,7 @@ class DocumentLinkTestCase(ParserSetupTestCase):
         """
         """
 
-        language = E('language', code="en") # english
+        language = E('language', code="en")  # english
         self.parser_202.iati_activities__iati_activity__document_link__language(language)
         document_link_language = self.parser_202.get_model('DocumentLinkLanguage')
 
@@ -2688,11 +2785,11 @@ class RelatedActivityTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
             "ref": "IATI-0002",
-            "type": "1", # parent
+            "type": "1",  # parent
         }
 
         self.related_activity = E('related-activity', **self.attrs)
@@ -2736,7 +2833,8 @@ class RelatedActivityTestCase(ParserSetupTestCase):
         """
 
         self.activity.save()
-        test_related_activity = iati_factory.RelatedActivityFactory.build(ref="IATI-0001", current_activity=self.activity, ref_activity=None)
+        test_related_activity = iati_factory.RelatedActivityFactory.build(
+            ref="IATI-0001", current_activity=self.activity, ref_activity=None)
         test_related_activity.save()
         self.assertEqual(test_related_activity.ref_activity, None)
 
@@ -2754,11 +2852,11 @@ class ResultTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.iati_202 = copy_xml_tree(self.iati_202) # sample attributes on iati-activity xml
+        self.iati_202 = copy_xml_tree(self.iati_202)  # sample attributes on iati-activity xml
 
         self.attrs = {
-            "type": "1", # output
-            "aggregation-status": "1", # suitable for aggregation
+            "type": "1",  # output
+            "aggregation-status": "1",  # suitable for aggregation
         }
 
         self.result = E('result', **self.attrs)
@@ -2796,7 +2894,7 @@ class ResultTestCase(ParserSetupTestCase):
         test for result_title + accompanying narrative
         """
 
-        title = E('title') 
+        title = E('title')
         self.parser_202.iati_activities__iati_activity__result__title(title)
         result_title = self.parser_202.get_model('ResultTitle')
 
@@ -2810,7 +2908,7 @@ class ResultTestCase(ParserSetupTestCase):
         """
         test for result_title + accompanying narrative
         """
-        title = E('title', 'some title') 
+        title = E('title', 'some title')
         self.parser_105.iati_activities__iati_activity__result__title(title)
 
         result_title = self.parser_105.get_model('ResultTitle')
@@ -2823,8 +2921,8 @@ class ResultTestCase(ParserSetupTestCase):
         """
         Check that adding two result title elements in 105 gets added as narratives on the same result_title object
         """
-        title1 = E('title', 'some title') 
-        title2 = E('title', 'some title') 
+        title1 = E('title', 'some title')
+        title2 = E('title', 'some title')
 
         self.parser_105.iati_activities__iati_activity__result__title(title1)
         self.parser_105.iati_activities__iati_activity__result__title(title2)
@@ -2842,13 +2940,14 @@ class ResultTestCase(ParserSetupTestCase):
         test for result_description + accompanying narrative
         """
 
-        description = E('description') 
+        description = E('description')
         self.parser_202.iati_activities__iati_activity__result__description(description)
         result_description = self.parser_202.get_model('ResultDescription')
 
         self.assertEquals(result_description.result, self.test_result)
 
-        self.parser_202.iati_activities__iati_activity__result__description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultDescriptionNarrative')
         self.assertEquals(narrative.related_object, result_description)
 
@@ -2856,7 +2955,7 @@ class ResultTestCase(ParserSetupTestCase):
         """
         test for result_description + accompanying narrative
         """
-        result_description = E('description', 'some description') 
+        result_description = E('description', 'some description')
         self.parser_105.iati_activities__iati_activity__result__description(result_description)
 
         result_description = self.parser_105.get_model('ResultDescription')
@@ -2869,8 +2968,8 @@ class ResultTestCase(ParserSetupTestCase):
         """
         Check that adding two result description elements in 105 gets added as narratives on the same result_description object
         """
-        description1 = E('description', 'some description') 
-        description2 = E('description', 'some description') 
+        description1 = E('description', 'some description')
+        description2 = E('description', 'some description')
 
         self.parser_105.iati_activities__iati_activity__result__description(description1)
         self.parser_105.iati_activities__iati_activity__result__description(description2)
@@ -2888,10 +2987,10 @@ class ResultTestCase(ParserSetupTestCase):
         test for result_indicator + accompanying narrative
         """
         attrs = {
-            'measure': '1', # unit
-            'ascending': '1' # ascending           
+            'measure': '1',  # unit
+            'ascending': '1'  # ascending
         }
-        result_indicator = E('indicator', **attrs) 
+        result_indicator = E('indicator', **attrs)
         self.parser_202.iati_activities__iati_activity__result__indicator(result_indicator)
 
         result_indicator = self.parser_202.get_model('ResultIndicator')
@@ -2899,19 +2998,19 @@ class ResultTestCase(ParserSetupTestCase):
         self.assertEquals(result_indicator.measure.code, attrs['measure'])
         self.assertEquals(result_indicator.ascending, bool(int(attrs['ascending'])))
 
-
     def test_result_indicator_title_202(self):
         """
         test for result_indicator_title + accompanying narrative
         """
 
-        indicator_title = E('indicator-title') 
+        indicator_title = E('indicator-title')
         self.parser_202.iati_activities__iati_activity__result__indicator__title(indicator_title)
         result_indicator_title = self.parser_202.get_model('ResultIndicatorTitle')
 
         self.assertEquals(result_indicator_title.result_indicator, self.test_result_indicator)
 
-        self.parser_202.iati_activities__iati_activity__result__indicator__title__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__indicator__title__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorTitleNarrative')
         self.assertEquals(narrative.related_object, result_indicator_title)
 
@@ -2919,8 +3018,9 @@ class ResultTestCase(ParserSetupTestCase):
         """
         """
 
-        result_indicator_title = E('indicator-title', 'some indicator_title') 
-        self.parser_105.iati_activities__iati_activity__result__indicator__title(result_indicator_title)
+        result_indicator_title = E('indicator-title', 'some indicator_title')
+        self.parser_105.iati_activities__iati_activity__result__indicator__title(
+            result_indicator_title)
 
         result_indicator_title = self.parser_105.get_model('ResultIndicatorTitle')
         self.assertEquals(result_indicator_title.result_indicator, self.test_result_indicator)
@@ -2933,13 +3033,17 @@ class ResultTestCase(ParserSetupTestCase):
         test for result_indicator_description + accompanying narrative
         """
 
-        indicator_description = E('indicator-description') 
-        self.parser_202.iati_activities__iati_activity__result__indicator__description(indicator_description)
+        indicator_description = E('indicator-description')
+        self.parser_202.iati_activities__iati_activity__result__indicator__description(
+            indicator_description)
         result_indicator_description = self.parser_202.get_model('ResultIndicatorDescription')
 
-        self.assertEquals(result_indicator_description.result_indicator, self.test_result_indicator)
+        self.assertEquals(
+            result_indicator_description.result_indicator,
+            self.test_result_indicator)
 
-        self.parser_202.iati_activities__iati_activity__result__indicator__description__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__indicator__description__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorDescriptionNarrative')
         self.assertEquals(narrative.related_object, result_indicator_description)
 
@@ -2947,11 +3051,14 @@ class ResultTestCase(ParserSetupTestCase):
         """
         """
 
-        result_indicator_description = E('indicator-description', 'some indicator_description') 
-        self.parser_105.iati_activities__iati_activity__result__indicator__description(result_indicator_description)
+        result_indicator_description = E('indicator-description', 'some indicator_description')
+        self.parser_105.iati_activities__iati_activity__result__indicator__description(
+            result_indicator_description)
 
         result_indicator_description = self.parser_105.get_model('ResultIndicatorDescription')
-        self.assertEquals(result_indicator_description.result_indicator, self.test_result_indicator)
+        self.assertEquals(
+            result_indicator_description.result_indicator,
+            self.test_result_indicator)
 
         narrative = self.parser_105.get_model('ResultIndicatorDescriptionNarrative')
         self.assertEquals(narrative.related_object, result_indicator_description)
@@ -2961,10 +3068,10 @@ class ResultTestCase(ParserSetupTestCase):
         code, voc, indicator-uri
         """
         attrs = {
-            'measure': '1', # unit
-            'ascending': '1' # ascending           
+            'measure': '1',  # unit
+            'ascending': '1'  # ascending
         }
-        result_indicator = E('indicator', **attrs) 
+        result_indicator = E('indicator', **attrs)
         self.parser_202.iati_activities__iati_activity__result__indicator(result_indicator)
         result_indicator = self.parser_202.get_model('ResultIndicator')
 
@@ -2973,11 +3080,11 @@ class ResultTestCase(ParserSetupTestCase):
             'vocabulary': '99',
             'indicator-uri': 'http://example.com/indicators.html'
         }
-        reference = E('reference', **attrs) 
+        reference = E('reference', **attrs)
 
         self.parser_202.iati_activities__iati_activity__result__indicator__reference(reference)
         reference = self.parser_202.get_model('ResultIndicatorReference')
-        
+
         self.assertEqual(reference.result_indicator, result_indicator)
         self.assertEqual(reference.code, attrs['code'])
         self.assertEqual(reference.vocabulary.code, attrs['vocabulary'])
@@ -2991,8 +3098,9 @@ class ResultTestCase(ParserSetupTestCase):
             'year': '1992',
             'value': '100'
         }
-        result_indicator_baseline = E('indicator-baseline', **attrs) 
-        self.parser_202.iati_activities__iati_activity__result__indicator__baseline(result_indicator_baseline)
+        result_indicator_baseline = E('indicator-baseline', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__baseline(
+            result_indicator_baseline)
 
         result_indicator = self.parser_202.get_model('ResultIndicator')
         self.assertEquals(result_indicator.baseline_year, int(attrs['year']))
@@ -3006,13 +3114,16 @@ class ResultTestCase(ParserSetupTestCase):
         test_target_comment = iati_factory.ResultIndicatorFactory.build()
         self.parser_202.register_model('ResultIndicator', test_target_comment)
 
-        result_indicator_baseline_comment = E('comment') 
-        self.parser_202.iati_activities__iati_activity__result__indicator__baseline__comment(result_indicator_baseline_comment)
+        result_indicator_baseline_comment = E('comment')
+        self.parser_202.iati_activities__iati_activity__result__indicator__baseline__comment(
+            result_indicator_baseline_comment)
 
-        result_indicator_baseline_comment = self.parser_202.get_model('ResultIndicatorBaselineComment')
+        result_indicator_baseline_comment = self.parser_202.get_model(
+            'ResultIndicatorBaselineComment')
         self.assertEquals(result_indicator_baseline_comment.result_indicator, test_target_comment)
 
-        self.parser_202.iati_activities__iati_activity__result__indicator__baseline__comment__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__indicator__baseline__comment__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorBaselineCommentNarrative')
         self.assertEquals(narrative.related_object, result_indicator_baseline_comment)
 
@@ -3024,10 +3135,12 @@ class ResultTestCase(ParserSetupTestCase):
         test_target_comment = iati_factory.ResultIndicatorFactory.build()
         self.parser_105.register_model('ResultIndicator', test_target_comment)
 
-        result_indicator_baseline_comment = E('comment', 'arie bombarie') 
-        self.parser_105.iati_activities__iati_activity__result__indicator__baseline__comment(result_indicator_baseline_comment)
+        result_indicator_baseline_comment = E('comment', 'arie bombarie')
+        self.parser_105.iati_activities__iati_activity__result__indicator__baseline__comment(
+            result_indicator_baseline_comment)
 
-        result_indicator_baseline_comment = self.parser_105.get_model('ResultIndicatorBaselineComment')
+        result_indicator_baseline_comment = self.parser_105.get_model(
+            'ResultIndicatorBaselineComment')
         self.assertEquals(result_indicator_baseline_comment.result_indicator, test_target_comment)
 
         narrative = self.parser_105.get_model('ResultIndicatorBaselineCommentNarrative')
@@ -3040,8 +3153,9 @@ class ResultTestCase(ParserSetupTestCase):
         test_target_comment = iati_factory.ResultIndicatorFactory.build()
         self.parser_105.register_model('ResultIndicator', test_target_comment)
 
-        result_indicator_period = E('period') 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period(result_indicator_period)
+        result_indicator_period = E('period')
+        self.parser_202.iati_activities__iati_activity__result__indicator__period(
+            result_indicator_period)
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         result_period.result_indicator = test_target_comment
@@ -3057,8 +3171,9 @@ class ResultTestCase(ParserSetupTestCase):
             'iso-date': datetime.datetime.now().isoformat(' ')
         }
 
-        result_period_start = E('period-start', **attrs) 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__period_start(result_period_start)
+        result_period_start = E('period-start', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__period_start(
+            result_period_start)
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.period_start), attrs['iso-date'])
@@ -3074,8 +3189,9 @@ class ResultTestCase(ParserSetupTestCase):
             'iso-date': datetime.datetime.now().isoformat(' ')
         }
 
-        result_period_end = E('period-end', **attrs) 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__period_end(result_period_end)
+        result_period_end = E('period-end', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__period_end(
+            result_period_end)
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.period_end), attrs['iso-date'])
@@ -3089,8 +3205,9 @@ class ResultTestCase(ParserSetupTestCase):
             'value': '100'
         }
 
-        result_indicator_period_target = E('target', **attrs) 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__target(result_indicator_period_target)
+        result_indicator_period_target = E('target', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target(
+            result_indicator_period_target)
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.target), attrs['value'])
@@ -3104,7 +3221,8 @@ class ResultTestCase(ParserSetupTestCase):
 
         loc_attrs = {'ref': 'AF-KAN'}
         target_location = E('location', **loc_attrs)
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(
+            target_location)
         target_location = self.parser_202.get_model('ResultIndicatorPeriodTargetLocation')
 
         self.assertEquals(target_location.ref, loc_attrs['ref'])
@@ -3122,7 +3240,8 @@ class ResultTestCase(ParserSetupTestCase):
         target_location = E('location', **loc_attrs)
 
         with self.assertRaises(FieldValidationError):
-            self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(target_location)
+            self.parser_202.iati_activities__iati_activity__result__indicator__period__target__location(
+                target_location)
 
     def test_result_indicator_period_target_dimension(self):
 
@@ -3134,7 +3253,8 @@ class ResultTestCase(ParserSetupTestCase):
             'value': 'female'
         }
         dimension = E('dimension', **attrs)
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__dimension(dimension)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__dimension(
+            dimension)
         dimension = self.parser_202.get_model('ResultIndicatorPeriodTargetDimension')
 
         self.assertEquals(dimension.name, attrs['name'])
@@ -3148,13 +3268,18 @@ class ResultTestCase(ParserSetupTestCase):
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
         self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
 
-        result_indicator_period_target_comment = E('comment') 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__comment(result_indicator_period_target_comment)
+        result_indicator_period_target_comment = E('comment')
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__comment(
+            result_indicator_period_target_comment)
 
-        result_indicator_period_target_comment = self.parser_202.get_model('ResultIndicatorPeriodTargetComment')
-        self.assertEquals(result_indicator_period_target_comment.result_indicator_period, test_result_indicator_period)
+        result_indicator_period_target_comment = self.parser_202.get_model(
+            'ResultIndicatorPeriodTargetComment')
+        self.assertEquals(
+            result_indicator_period_target_comment.result_indicator_period,
+            test_result_indicator_period)
 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__comment__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__target__comment__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorPeriodTargetCommentNarrative')
         self.assertEquals(narrative.related_object, result_indicator_period_target_comment)
 
@@ -3166,11 +3291,15 @@ class ResultTestCase(ParserSetupTestCase):
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
         self.parser_105.register_model('ResultIndicatorPeriod', test_result_indicator_period)
 
-        result_indicator_period_target_comment = E('comment', 'some description') 
-        self.parser_105.iati_activities__iati_activity__result__indicator__period__target__comment(result_indicator_period_target_comment)
+        result_indicator_period_target_comment = E('comment', 'some description')
+        self.parser_105.iati_activities__iati_activity__result__indicator__period__target__comment(
+            result_indicator_period_target_comment)
 
-        result_indicator_period_target_comment = self.parser_105.get_model('ResultIndicatorPeriodTargetComment')
-        self.assertEquals(result_indicator_period_target_comment.result_indicator_period, test_result_indicator_period)
+        result_indicator_period_target_comment = self.parser_105.get_model(
+            'ResultIndicatorPeriodTargetComment')
+        self.assertEquals(
+            result_indicator_period_target_comment.result_indicator_period,
+            test_result_indicator_period)
 
         narrative = self.parser_105.get_model('ResultIndicatorPeriodTargetCommentNarrative')
         self.assertEquals(narrative.related_object, result_indicator_period_target_comment)
@@ -3184,8 +3313,9 @@ class ResultTestCase(ParserSetupTestCase):
             'value': '100'
         }
 
-        result_indicator_period_actual = E('actual', **attrs) 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual(result_indicator_period_actual)
+        result_indicator_period_actual = E('actual', **attrs)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual(
+            result_indicator_period_actual)
 
         result_period = self.parser_202.get_model('ResultIndicatorPeriod')
         self.assertEquals(str(result_period.actual), attrs['value'])
@@ -3199,7 +3329,8 @@ class ResultTestCase(ParserSetupTestCase):
 
         loc_attrs = {'ref': 'AF-KAN'}
         actual_location = E('location', **loc_attrs)
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(
+            actual_location)
         actual_location = self.parser_202.get_model('ResultIndicatorPeriodActualLocation')
 
         self.assertEquals(actual_location.ref, loc_attrs['ref'])
@@ -3217,7 +3348,8 @@ class ResultTestCase(ParserSetupTestCase):
         actual_location = E('location', **loc_attrs)
 
         with self.assertRaises(FieldValidationError):
-            self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(actual_location)
+            self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__location(
+                actual_location)
 
     def test_result_indicator_period_actual_dimension(self):
 
@@ -3229,7 +3361,8 @@ class ResultTestCase(ParserSetupTestCase):
             'value': 'female'
         }
         dimension = E('dimension', **attrs)
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__dimension(dimension)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__dimension(
+            dimension)
         dimension = self.parser_202.get_model('ResultIndicatorPeriodActualDimension')
 
         self.assertEquals(dimension.name, attrs['name'])
@@ -3243,13 +3376,18 @@ class ResultTestCase(ParserSetupTestCase):
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
         self.parser_202.register_model('ResultIndicatorPeriod', test_result_indicator_period)
 
-        result_indicator_period_actual_comment = E('comment') 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__comment(result_indicator_period_actual_comment)
+        result_indicator_period_actual_comment = E('comment')
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__comment(
+            result_indicator_period_actual_comment)
 
-        result_indicator_period_actual_comment = self.parser_202.get_model('ResultIndicatorPeriodActualComment')
-        self.assertEquals(result_indicator_period_actual_comment.result_indicator_period, test_result_indicator_period)
+        result_indicator_period_actual_comment = self.parser_202.get_model(
+            'ResultIndicatorPeriodActualComment')
+        self.assertEquals(
+            result_indicator_period_actual_comment.result_indicator_period,
+            test_result_indicator_period)
 
-        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(self.narrative)
+        self.parser_202.iati_activities__iati_activity__result__indicator__period__actual__comment__narrative(
+            self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorPeriodActualCommentNarrative')
         self.assertEquals(narrative.related_object, result_indicator_period_actual_comment)
 
@@ -3261,12 +3399,15 @@ class ResultTestCase(ParserSetupTestCase):
         test_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.build()
         self.parser_105.register_model('ResultIndicatorPeriod', test_result_indicator_period)
 
-        result_indicator_period_actual_comment = E('comment', 'some description') 
-        self.parser_105.iati_activities__iati_activity__result__indicator__period__actual__comment(result_indicator_period_actual_comment)
+        result_indicator_period_actual_comment = E('comment', 'some description')
+        self.parser_105.iati_activities__iati_activity__result__indicator__period__actual__comment(
+            result_indicator_period_actual_comment)
 
-        result_indicator_period_actual_comment = self.parser_105.get_model('ResultIndicatorPeriodActualComment')
-        self.assertEquals(result_indicator_period_actual_comment.result_indicator_period, test_result_indicator_period)
+        result_indicator_period_actual_comment = self.parser_105.get_model(
+            'ResultIndicatorPeriodActualComment')
+        self.assertEquals(
+            result_indicator_period_actual_comment.result_indicator_period,
+            test_result_indicator_period)
 
         narrative = self.parser_105.get_model('ResultIndicatorPeriodActualCommentNarrative')
         self.assertEquals(narrative.related_object, result_indicator_period_actual_comment)
-

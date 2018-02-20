@@ -15,17 +15,18 @@ from django.db.models import Q
 from rest_framework import authentication, permissions
 from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
 
+
 class IATIActivityList(ListAPIView):
 
     """IATI representation for activities"""
-        
+
     queryset = Activity.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = export_serializers.ActivityXMLSerializer
     pagination_class = IatiXMLPagination
 
-    renderer_classes = (BrowsableAPIRenderer, XMLRenderer )
+    renderer_classes = (BrowsableAPIRenderer, XMLRenderer)
 
     fields = difference(
         get_serializer_fields(serializer_class),
@@ -51,6 +52,7 @@ class IATIActivityList(ListAPIView):
     def get_queryset(self):
         return super(IATIActivityList, self).get_queryset().prefetch_all()
 
+
 import django_rq
 from task_queue.tasks import export_publisher_activities
 from rest_framework.response import Response
@@ -58,20 +60,21 @@ from iati_synchroniser.models import Dataset
 
 import uuid
 
+
 class IATIActivityNextExportList(APIView):
     """IATI representation for activities"""
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
-    
+
     def post(self, request, publisher_id):
 
         try:
             dataset, created = Dataset.objects.get_or_create(
-                    publisher_id=publisher_id,
-                    added_manually=True,
-                    filetype=1,
-                )
+                publisher_id=publisher_id,
+                added_manually=True,
+                filetype=1,
+            )
 
         except Dataset.DoesNotExist:
             return Response({
@@ -84,7 +87,6 @@ class IATIActivityNextExportList(APIView):
                 'status': 'failed',
                 'message': 'Export already in progress'
             })
-
 
         dataset.export_in_progress = True
         dataset.save()
@@ -103,7 +105,7 @@ class IATIActivityNextExportListResult(APIView):
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
-    
+
     def get(self, request, publisher_id, job_id):
         job_id = job_id.split(':')[2]
 
@@ -111,10 +113,11 @@ class IATIActivityNextExportListResult(APIView):
         job = queue.fetch_job(job_id)
 
         if job.is_finished:
-            ret = {'status':'completed', 'result': job.return_value}
+            ret = {'status': 'completed', 'result': job.return_value}
 
             try:
-                dataset = Dataset.objects.get(publisher_id=publisher_id, filetype=1, added_manually=True)
+                dataset = Dataset.objects.get(
+                    publisher_id=publisher_id, filetype=1, added_manually=True)
             except Dataset.DoesNotExist:
                 return Response({
                     'status': 'failed',
@@ -125,12 +128,11 @@ class IATIActivityNextExportListResult(APIView):
             dataset.save()
 
         elif job.is_queued:
-            ret = {'status':'in-queue'}
+            ret = {'status': 'in-queue'}
         elif job.is_started:
-            ret = {'status':'waiting'}
+            ret = {'status': 'waiting'}
         elif job.is_failed:
             ret = {'status': 'failed', 'message': "job failed for unknown reasons"}
             print(job.to_dict())
 
         return Response(ret)
-

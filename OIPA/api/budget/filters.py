@@ -81,10 +81,10 @@ class BudgetFilter(TogetherFilterSet):
         name='activity__start_date')
 
     end_date_isnull = BooleanFilter(
-        lookup_expr='isnull', 
+        lookup_expr='isnull',
         name='activity__end_date')
     start_date_isnull = BooleanFilter(
-        lookup_expr='isnull', 
+        lookup_expr='isnull',
         name='activity__start_date')
 
     activity_status = CommaSeparatedCharFilter(

@@ -12,12 +12,14 @@ from factory import SubFactory, RelatedFactory
 
 from iati_synchroniser.factory import synchroniser_factory
 
+
 class OrganisationUserFactory(DjangoModelFactory):
     user = SubFactory('iati.permissions.factories.UserFactory', organisationuser=None)
 
     class Meta:
         model = OrganisationUser  # Equivalent to ``model = myapp.models.User``
         # django_get_or_create = ('user.username',)
+
 
 class UserFactory(DjangoModelFactory):
     username = 'john'
@@ -27,6 +29,7 @@ class UserFactory(DjangoModelFactory):
         model = User  # Equivalent to ``model = myapp.models.User``
         django_get_or_create = ('username',)
 
+
 class OrganisationAdminGroupFactory(DjangoModelFactory):
     name = "DFID Organisation Admin Group"
     publisher = SubFactory(synchroniser_factory.PublisherFactory)
@@ -35,10 +38,10 @@ class OrganisationAdminGroupFactory(DjangoModelFactory):
     class Meta:
         model = OrganisationAdminGroup
 
+
 class OrganisationGroupFactory(DjangoModelFactory):
     name = "DFID Organisation Organisation Group"
     publisher = SubFactory(synchroniser_factory.PublisherFactory)
 
     class Meta:
         model = OrganisationGroup
-

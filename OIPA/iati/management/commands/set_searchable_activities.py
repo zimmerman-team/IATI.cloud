@@ -5,23 +5,29 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
-    
+
     def update_searchable_activities(self):
         """
             Set all activities to searchable if the reporting org is in the settings.ROOT_ORGANISATIONS list
         """
         # set all activities as non searchable
-        Activity.objects.filter(is_searchable=True).exclude(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(is_searchable=False)
+        Activity.objects.filter(
+            is_searchable=True).exclude(
+            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(
+            is_searchable=False)
 
         # set all root activities as searchable
-        Activity.objects.filter(is_searchable=False, reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(is_searchable=True)
+        Activity.objects.filter(
+            is_searchable=False,
+            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS).update(
+            is_searchable=True)
 
         # loop through root activities and set children as searchable
-        activities = Activity.objects.filter(reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS)
+        activities = Activity.objects.filter(
+            reporting_organisations__ref__in=settings.ROOT_ORGANISATIONS)
 
         for activity in activities:
             self.set_children_searchable(activity)
-
 
     def set_children_searchable(self, orig_activity):
         """
@@ -43,5 +49,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.update_searchable_activities()
-
-

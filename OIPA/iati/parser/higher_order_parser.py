@@ -15,7 +15,9 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
     def func(element):
         ref = element.attrib.get('ref', '')
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+        org_type = self.get_or_none(
+            codelist_models.OrganisationType,
+            code=element.attrib.get('type'))
         provider_activity_id = element.attrib.get('provider-activity-id', None)
         if provider_activity_id:
             provider_activity_id = provider_activity_id.strip()
@@ -24,29 +26,27 @@ def provider_org(self, parent_model, provider_model, fk_name):
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
-
         # validation
         # if provider_activity_id and not provider_activity:
         #     self.append_error(
         #         'FieldValidationError',
-        #         "transaction/provider-org", 
-        #         "provider-activity-id", 
-        #         "Must be an existing IATI activity", 
-        #         element.sourceline, 
+        #         "transaction/provider-org",
+        #         "provider-activity-id",
+        #         "Must be an existing IATI activity",
+        #         element.sourceline,
         #         provider_activity_id)
-        
+
         # if ref and not organisation:
         #     self.append_error(
         #         'FieldValidationError',
-        #         "transaction/provider-org", 
-        #         "ref", 
-        #         "Must be an existing IATI organisation", 
-        #         element.sourceline, 
+        #         "transaction/provider-org",
+        #         "ref",
+        #         "Must be an existing IATI organisation",
+        #         element.sourceline,
         #         ref)
 
         if ref:
-            self.check_registration_agency_validity("transaction/provider-org", element, ref) 
-
+            self.check_registration_agency_validity("transaction/provider-org", element, ref)
 
         setattr(provider_model, fk_name, parent_model)
         provider_model.ref = ref
@@ -62,6 +62,7 @@ def provider_org(self, parent_model, provider_model, fk_name):
 
     return func
 
+
 def receiver_org(self, parent_model, receiver_model, fk_name):
     """
     parent_model: the model to which the receiver_org will be applied
@@ -71,7 +72,9 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
 
     def func(element):
         ref = element.attrib.get('ref', '')
-        org_type = self.get_or_none(codelist_models.OrganisationType, code=element.attrib.get('type'))
+        org_type = self.get_or_none(
+            codelist_models.OrganisationType,
+            code=element.attrib.get('type'))
         receiver_activity_id = element.attrib.get('receiver-activity-id', None)
         if receiver_activity_id:
             receiver_activity_id = receiver_activity_id.strip()
@@ -80,32 +83,30 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
         normalized_ref = self._normalize(ref)
         organisation = self.get_or_none(models.Organisation, organisation_identifier=ref)
 
-
         # validation
         # if receiver_activity_id and not receiver_activity:
         #     self.append_error(
         #         'FieldValidationError',
-        #         "transaction/receiver-org", 
-        #         "receiver-activity-id", 
-        #         "Must be an existing IATI activity", 
-        #         element.sourceline, 
+        #         "transaction/receiver-org",
+        #         "receiver-activity-id",
+        #         "Must be an existing IATI activity",
+        #         element.sourceline,
         #         receiver_activity_id)
-        
+
         # if ref and not organisation:
         #     self.append_error(
         #         'FieldValidationError',
-        #         "transaction/receiver-org", 
-        #         "ref", 
-        #         "Must be an existing IATI organisation", 
-        #         element.sourceline, 
+        #         "transaction/receiver-org",
+        #         "ref",
+        #         "Must be an existing IATI organisation",
+        #         element.sourceline,
         #         ref)
 
         if ref:
             self.check_registration_agency_validity(
-                "transaction/receiver-org", 
-                element, 
-                ref) 
-
+                "transaction/receiver-org",
+                element,
+                ref)
 
         setattr(receiver_model, fk_name, parent_model)
         receiver_model.ref = ref
@@ -121,6 +122,7 @@ def receiver_org(self, parent_model, receiver_model, fk_name):
 
     return func
 
+
 def activity_field(self, model, activity_model):
     def func(element):
 
@@ -131,6 +133,7 @@ def activity_field(self, model, activity_model):
 
     return func
 
+
 def codelist_field(self, model, codelist_model):
     def func(element):
         code = element.attrib.get('code')
@@ -139,7 +142,7 @@ def codelist_field(self, model, codelist_model):
         if not code_model:
             raise RequiredFieldError(
                 model,
-                "code", 
+                "code",
                 "Unspecified or invalid.")
 
         model.code = code_model
@@ -148,8 +151,10 @@ def codelist_field(self, model, codelist_model):
 
     return func
 
+
 def compose(*functions):
     return functools.reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
+
 
 def parent(parent_model, fk):
     """
@@ -161,12 +166,13 @@ def parent(parent_model, fk):
 
     return func
 
+
 def code(self, codelist_model):
     def func(model, element):
         code = element.attrib.get('code')
         code_model = self.get_or_none(codelist_model, code=code)
 
-        if not code_model: 
+        if not code_model:
             raise RequiredFieldError(
                 model,
                 "code",
@@ -177,4 +183,3 @@ def code(self, codelist_model):
         return model
 
     return func
-

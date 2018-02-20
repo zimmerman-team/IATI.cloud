@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group, User, AbstractUser
 
 from iati_synchroniser.models import Publisher
 
+
 class OrganisationUser(models.Model):
 
     # the IR API key
@@ -61,4 +62,3 @@ class OrganisationGroup(Group):
     class Meta:
         verbose_name_plural = "Organisation groups"
         ordering = ['name']
-

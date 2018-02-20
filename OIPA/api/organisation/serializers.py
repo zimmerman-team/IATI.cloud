@@ -19,11 +19,12 @@ from iati.parser import exceptions
 from api.generics.utils import handle_errors
 from api.generics.utils import get_or_raise, get_or_none
 
+
 def save_narratives(instance, data, organisation_instance):
     current_narratives = instance.narratives.all()
 
-    current_ids = set([ i.id for i in current_narratives ])
-    old_ids = set(filter(lambda x: x is not None, [ i.get('id') for i in data ]))
+    current_ids = set([i.id for i in current_narratives])
+    old_ids = set(filter(lambda x: x is not None, [i.get('id') for i in data]))
     new_data = filter(lambda x: x.get('id') is None, data)
 
     # print(current_ids)
@@ -53,33 +54,37 @@ def save_narratives(instance, data, organisation_instance):
         # narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         org_models.OrganisationNarrative.objects.create(
-                related_object=instance, 
-                organisation=organisation_instance,
-                **narrative_data)
+            related_object=instance,
+            organisation=organisation_instance,
+            **narrative_data)
+
 
 class ValueSerializer(SerializerNoValidation):
     currency = CodelistSerializer()
     date = serializers.CharField(source='value_date')
     value = serializers.DecimalField(
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-            )
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False,
+    )
 
     class Meta:
         fields = (
-                'value',
-                'date',
-                'currency',
-                )
+            'value',
+            'date',
+            'currency',
+        )
 
 # TODO: change to NarrativeContainer
+
+
 class OrganisationNameSerializer(SerializerNoValidation):
     narratives = OrganisationNarrativeSerializer(many=True)
 
     class Meta:
         model = org_models.OrganisationName
         fields = ('narratives',)
+
 
 class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
@@ -126,7 +131,6 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         total_budget = validated_data.get('total_budget')
         narratives_data = validated_data.pop('narratives', [])
@@ -142,6 +146,7 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
 
         return update_instance
 
+
 class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
     organisation = serializers.CharField(write_only=True)
@@ -153,7 +158,8 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
-    budget_lines = TotalBudgetBudgetLineSerializer(many=True, source="totalbudgetbudgetline_set", required=False)
+    budget_lines = TotalBudgetBudgetLineSerializer(
+        many=True, source="totalbudgetbudgetline_set", required=False)
 
     class Meta:
         model = org_models.TotalBudget
@@ -194,7 +200,6 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
 
@@ -226,7 +231,8 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        recipient_org_budget = get_or_raise(org_models.RecipientOrgBudget, data, 'recipient_org_budget')
+        recipient_org_budget = get_or_raise(
+            org_models.RecipientOrgBudget, data, 'recipient_org_budget')
 
         validated = validators.organisation_recipient_org_budget_line(
             recipient_org_budget,
@@ -253,7 +259,6 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         recipient_org_budget = validated_data.get('recipient_org_budget')
         narratives_data = validated_data.pop('narratives', [])
@@ -268,6 +273,7 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
         save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
 
         return update_instance
+
 
 class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     class RecipientOrganisationSerializer(SerializerNoValidation):
@@ -289,7 +295,8 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
 
     recipient_org = RecipientOrganisationSerializer(source="*")
 
-    budget_lines = RecipientOrgBudgetLineSerializer(many=True, source="recipientorgbudgetline_set", required=False)
+    budget_lines = RecipientOrgBudgetLineSerializer(
+        many=True, source="recipientorgbudgetline_set", required=False)
 
     class Meta:
         model = org_models.RecipientOrgBudget
@@ -330,7 +337,6 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
 
@@ -362,7 +368,8 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        recipient_country_budget = get_or_raise(org_models.RecipientCountryBudget, data, 'recipient_country_budget')
+        recipient_country_budget = get_or_raise(
+            org_models.RecipientCountryBudget, data, 'recipient_country_budget')
 
         validated = validators.organisation_recipient_country_budget_line(
             recipient_country_budget,
@@ -385,10 +392,12 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_country_budget.organisation.modified = True
         recipient_country_budget.organisation.save()
 
-        save_narratives(recipient_country_budget, narratives_data, recipient_country_budget.organisation)
+        save_narratives(
+            recipient_country_budget,
+            narratives_data,
+            recipient_country_budget.organisation)
 
         return instance
-
 
     def update(self, instance, validated_data):
         recipient_country_budget = validated_data.get('recipient_country_budget')
@@ -401,9 +410,13 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_country_budget.organisation.modified = True
         recipient_country_budget.organisation.save()
 
-        save_narratives(recipient_country_budget, narratives_data, recipient_country_budget.organisation)
+        save_narratives(
+            recipient_country_budget,
+            narratives_data,
+            recipient_country_budget.organisation)
 
         return update_instance
+
 
 class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
@@ -417,7 +430,8 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
 
     recipient_country = CountrySerializer(source="country", fields=('url', 'code', 'name'))
 
-    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
+    budget_lines = RecipientCountryBudgetLineSerializer(
+        many=True, source="recipientcountrybudgetline_set", required=False)
 
     class Meta:
         model = org_models.RecipientCountryBudget
@@ -458,7 +472,6 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
 
@@ -470,6 +483,7 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
         organisation.save()
 
         return update_instance
+
 
 class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
@@ -489,7 +503,8 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        recipient_region_budget = get_or_raise(org_models.RecipientRegionBudget, data, 'recipient_region_budget')
+        recipient_region_budget = get_or_raise(
+            org_models.RecipientRegionBudget, data, 'recipient_region_budget')
 
         validated = validators.organisation_recipient_region_budget_line(
             recipient_region_budget,
@@ -512,10 +527,12 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_region_budget.organisation.modified = True
         recipient_region_budget.organisation.save()
 
-        save_narratives(recipient_region_budget, narratives_data, recipient_region_budget.organisation)
+        save_narratives(
+            recipient_region_budget,
+            narratives_data,
+            recipient_region_budget.organisation)
 
         return instance
-
 
     def update(self, instance, validated_data):
         recipient_region_budget = validated_data.get('recipient_region_budget')
@@ -528,9 +545,13 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_region_budget.organisation.modified = True
         recipient_region_budget.organisation.save()
 
-        save_narratives(recipient_region_budget, narratives_data, recipient_region_budget.organisation)
+        save_narratives(
+            recipient_region_budget,
+            narratives_data,
+            recipient_region_budget.organisation)
 
         return update_instance
+
 
 class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
@@ -544,7 +565,8 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
 
     recipient_region = BasicRegionSerializer(source="region", fields=('url', 'code', 'name'))
 
-    budget_lines = RecipientRegionBudgetLineSerializer(many=True, source="recipientregionbudgetline_set", required=False)
+    budget_lines = RecipientRegionBudgetLineSerializer(
+        many=True, source="recipientregionbudgetline_set", required=False)
 
     class Meta:
         model = org_models.RecipientRegionBudget
@@ -585,7 +607,6 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
 
@@ -597,6 +618,7 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
         organisation.save()
 
         return update_instance
+
 
 class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
     ref = serializers.CharField()
@@ -642,7 +664,6 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         total_expenditure = validated_data.get('total_expenditure')
         narratives_data = validated_data.pop('narratives', [])
@@ -658,6 +679,7 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
 
         return update_instance
 
+
 class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
 
@@ -667,7 +689,8 @@ class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
-    expense_line = TotalExpenditureLineSerializer(many=True, source="totalexpenditureline_set", required=False)
+    expense_line = TotalExpenditureLineSerializer(
+        many=True, source="totalexpenditureline_set", required=False)
 
     class Meta:
         model = org_models.TotalExpenditure
@@ -704,7 +727,6 @@ class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
 
         return instance
 
-
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
 
@@ -718,7 +740,6 @@ class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
-
 class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
     category = CodelistSerializer()
 
@@ -729,8 +750,8 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
         fields = (
             'document_link',
             'id',
-            'category', 
-            )
+            'category',
+        )
 
     def validate(self, data):
         document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
@@ -742,7 +763,6 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
@@ -752,7 +772,6 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
         document_link.organisation.save()
 
         return instance
-
 
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
@@ -777,8 +796,8 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
         fields = (
             'document_link',
             'id',
-            'language', 
-            )
+            'language',
+        )
 
     def validate(self, data):
         document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
@@ -790,7 +809,6 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
@@ -800,7 +818,6 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
         document_link.organisation.save()
 
         return instance
-
 
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
@@ -814,21 +831,23 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
 
         return update_instance
 
+
 class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValidation):
     recipient_country = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
 
-    budget_lines = RecipientCountryBudgetLineSerializer(many=True, source="recipientcountrybudgetline_set", required=False)
+    budget_lines = RecipientCountryBudgetLineSerializer(
+        many=True, source="recipientcountrybudgetline_set", required=False)
 
     class Meta:
         model = org_models.DocumentLinkRecipientCountry
         fields = (
             'document_link',
             'id',
-            'recipient_country', 
+            'recipient_country',
             'budget_lines',
-            )
+        )
 
     def validate(self, data):
         document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
@@ -840,7 +859,6 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
@@ -850,7 +868,6 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
         document_link.organisation.save()
 
         return instance
-
 
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
@@ -864,6 +881,7 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
 
         return update_instance
 
+
 class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
 
     class DocumentDateSerializer(SerializerNoValidation):
@@ -873,22 +891,22 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
     format = CodelistSerializer(source='file_format')
 
     categories = OrganisationDocumentLinkCategorySerializer(
-            many=True,
-            required=False,
-            source="documentlinkcategory_set"
-            )
+        many=True,
+        required=False,
+        source="documentlinkcategory_set"
+    )
 
     languages = OrganisationDocumentLinkLanguageSerializer(
-            many=True,
-            required=False,
-            source="documentlinklanguage_set"
-            )
+        many=True,
+        required=False,
+        source="documentlinklanguage_set"
+    )
 
     recipient_countries = OrganisationDocumentLinkRecipientCountrySerializer(
-            many=True,
-            required=False,
-            source="documentlinkrecipientcountry_set"
-            )
+        many=True,
+        required=False,
+        source="documentlinkrecipientcountry_set"
+    )
 
     title = OrganisationNarrativeContainerSerializer(source="documentlinktitle")
 
@@ -923,7 +941,6 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
         organisation = validated_data.get('organisation')
         title_narratives_data = validated_data.pop('title_narratives', [])
@@ -938,7 +955,6 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         organisation.save()
 
         return instance
-
 
     def update(self, instance, validated_data):
         organisation = validated_data.get('organisation')
@@ -955,13 +971,15 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
 
         return update_instance
 
+
 class OrganisationSerializer(DynamicFieldsModelSerializer):
     class PublishedStateSerializer(DynamicFieldsSerializer):
         published = serializers.BooleanField()
         ready_to_publish = serializers.BooleanField()
         modified = serializers.BooleanField()
 
-    url = EncodedHyperlinkedIdentityField(view_name='organisations:organisation-detail', read_only=True)
+    url = EncodedHyperlinkedIdentityField(
+        view_name='organisations:organisation-detail', read_only=True)
 
     last_updated_datetime = serializers.DateTimeField(required=False)
     xml_lang = serializers.CharField(source='default_lang.code', required=False)
@@ -994,9 +1012,11 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
-        old_organisation = get_or_none(org_models.Organisation, validated_data, 'organisation_identifier')
+        old_organisation = get_or_none(
+            org_models.Organisation,
+            validated_data,
+            'organisation_identifier')
 
         if old_organisation:
             raise ValidationError({
@@ -1006,7 +1026,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         name_data = validated_data.pop('name', None)
         name_narratives_data = validated_data.pop('name_narratives', None)
 
-        # TODO: only allow user to create the organisation he is validated with on the IATI registry - 2017-03-06
+        # TODO: only allow user to create the organisation he is validated with on
+        # the IATI registry - 2017-03-06
 
         instance = org_models.Organisation.objects.create(**validated_data)
         instance.publisher_id = self.context['view'].kwargs.get('publisher_id')
@@ -1037,4 +1058,3 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
             save_narratives(update_instance.name, name_narratives_data, instance)
 
         return update_instance
-

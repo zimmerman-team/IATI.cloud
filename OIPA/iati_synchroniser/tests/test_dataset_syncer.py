@@ -15,6 +15,7 @@ class DatasetSyncerTestCase(TestCase):
     """
     Test DatasetSyncer functionality
     """
+
     def setUp(self):
         management.call_command('flush', interactive=False, verbosity=0)
         self.datasetSyncer = DatasetSyncer()
@@ -37,7 +38,7 @@ class DatasetSyncerTestCase(TestCase):
     # @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
-        
+
         """
 
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
@@ -47,10 +48,10 @@ class DatasetSyncerTestCase(TestCase):
             dataset = json.load(fixture)['result']['results'][0]
 
         self.datasetSyncer.get_data = MagicMock(side_effect=[
-            {'result': [publisher]}, # first occurance, return 1 publisher
-            {'result': []}, # 2nd, return empty publisher db return
-            {'result': {'results': [dataset]}}, # 3rd, return 1 dataset
-            {'result': {'results': []}} # 4th, return empty dataset db return
+            {'result': [publisher]},  # first occurance, return 1 publisher
+            {'result': []},  # 2nd, return empty publisher db return
+            {'result': {'results': [dataset]}},  # 3rd, return 1 dataset
+            {'result': {'results': []}}  # 4th, return empty dataset db return
         ])
 
         self.datasetSyncer.synchronize_with_iati_api()
@@ -58,12 +59,11 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual(Publisher.objects.count(), 1)
         self.assertEqual(Dataset.objects.count(), 1)
 
-
     def test_update_or_create_publisher(self):
         """
         check if dataset is saved as expected
         """
-        
+
         with open('iati_synchroniser/fixtures/test_publisher.json') as fixture:
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
@@ -72,7 +72,6 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual("NP-SWC-27693", publisher.publisher_iati_id)
         self.assertEqual("Aasaman Nepal", publisher.display_name)
         self.assertEqual("aasaman", publisher.name)
-
 
     def test_update_or_create_dataset(self):
         """
@@ -85,7 +84,7 @@ class DatasetSyncerTestCase(TestCase):
             name="Japan International Cooperation Agency (JICA)")
 
         publisher.save()
-        
+
         with open('iati_synchroniser/fixtures/test_dataset.json') as fixture:
             data = json.load(fixture)['result']['results'][0]
             self.datasetSyncer.update_or_create_dataset(data)
@@ -97,4 +96,3 @@ class DatasetSyncerTestCase(TestCase):
         self.assertEqual(publisher, dataset.publisher)
         self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
         self.assertEqual(1, dataset.filetype)
-

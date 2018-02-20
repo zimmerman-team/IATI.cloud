@@ -79,9 +79,9 @@ class TransactionProvider(models.Model):
         default=None)
 
     type = models.ForeignKey(
-        OrganisationType, 
-        null=True, 
-        default=None, 
+        OrganisationType,
+        null=True,
+        default=None,
         blank=True)
 
     provider_activity = models.ForeignKey(
@@ -138,9 +138,9 @@ class TransactionReceiver(models.Model):
         default=None)
 
     type = models.ForeignKey(
-        OrganisationType, 
-        null=True, 
-        default=None, 
+        OrganisationType,
+        null=True,
+        default=None,
         blank=True)
 
     receiver_activity = models.ForeignKey(
@@ -202,14 +202,14 @@ class TransactionSector(models.Model):
     transaction = models.ForeignKey(
         Transaction,
         on_delete=models.CASCADE
-        )
+    )
 
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_sector",
         null=True
-        )
-    
+    )
+
     sector = models.ForeignKey(
         Sector,
         on_delete=models.CASCADE)
@@ -220,7 +220,7 @@ class TransactionSector(models.Model):
         blank=True,
         default=None,
         on_delete=models.CASCADE)
-    
+
     vocabulary_uri = models.URLField(null=True, blank=True)
 
     reported_on_transaction = models.BooleanField(default=True)
@@ -241,14 +241,14 @@ class TransactionRecipientCountry(models.Model):
         Transaction,
         on_delete=models.CASCADE,
         # related_name="recipient_country"
-        )
+    )
 
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_recipient_country",
         null=True
-        )
-    
+    )
+
     country = models.ForeignKey(
         Country,
         on_delete=models.CASCADE)
@@ -271,13 +271,13 @@ class TransactionRecipientRegion(models.Model):
         Transaction,
         on_delete=models.CASCADE,
         # related_name="recipient_region"
-        )
+    )
 
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_recipient_region",
         null=True
-        )
+    )
 
     region = models.ForeignKey(
         Region,
@@ -285,8 +285,8 @@ class TransactionRecipientRegion(models.Model):
 
     vocabulary = models.ForeignKey(
         RegionVocabulary,
-        null=True, 
-        blank=True, 
+        null=True,
+        blank=True,
         default=1,
         on_delete=models.CASCADE)
 
@@ -303,4 +303,3 @@ class TransactionRecipientRegion(models.Model):
 
     def get_publisher(self):
         return self.transaction.activity.publisher
-

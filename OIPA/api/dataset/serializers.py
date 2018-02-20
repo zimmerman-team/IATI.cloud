@@ -12,7 +12,15 @@ from iati.models import Activity
 class DatasetNoteSerializer(ModelSerializer):
     class Meta:
         model = DatasetNote
-        fields = ('model', 'iati_identifier', 'exception_type', 'model', 'field', 'message', 'line_number', 'variable')
+        fields = (
+            'model',
+            'iati_identifier',
+            'exception_type',
+            'model',
+            'field',
+            'message',
+            'line_number',
+            'variable')
 
 
 class SimplePublisherSerializer(DynamicFieldsModelSerializer):
@@ -50,10 +58,11 @@ class SimpleDatasetSerializer(DynamicFieldsModelSerializer):
             'source_url',
             'iati_version',
             'added_manually',
-            )
+        )
 
     def get_type(self, obj):
         return obj.get_filetype_display()
+
 
 class DatasetSerializer(DynamicFieldsModelSerializer):
 
@@ -64,7 +73,6 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
     activity_count = SerializerMethodField()
     notes = HyperlinkedIdentityField(
         view_name='datasets:dataset-notes',)
-
 
     DatasetNoteSerializer(many=True, source="datasetnote_set")
 
@@ -92,7 +100,7 @@ class DatasetSerializer(DynamicFieldsModelSerializer):
             'is_parsed',
             'export_in_progress',
             'parse_in_progress',
-            )
+        )
 
     def get_filetype(self, obj):
         return obj.get_filetype_display()

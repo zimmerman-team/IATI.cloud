@@ -62,7 +62,8 @@ class ChainNodeError(models.Model):
 
     chain_node = models.ForeignKey(ChainNode)
     error_type = models.CharField(choices=level_choices, max_length=10, null=False)
-    mentioned_activity_or_org = models.CharField(max_length=255, null=True, blank=False, default=None)
+    mentioned_activity_or_org = models.CharField(
+        max_length=255, null=True, blank=False, default=None)
     related_id = models.CharField(max_length=100)
     warning_level = models.CharField(choices=level_choices, max_length=255, null=False)
 
@@ -94,4 +95,3 @@ class ChainLinkRelation(models.Model):
     relation = models.CharField(choices=relation_choices, max_length=30)
     from_node = models.CharField(choices=from_choices, max_length=10)
     related_id = models.CharField(max_length=100)
-

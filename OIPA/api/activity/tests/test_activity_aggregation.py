@@ -141,4 +141,3 @@ class ActivityAggregationTestCase(TestCase):
         ])
         response = self.api_client.get(url)
         return list(response.data['results'])
-

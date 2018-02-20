@@ -13,7 +13,7 @@ from iati.parser.exceptions import *
 
 
 class Parse(Parse_2_01):
-    
+
     organisation_identifier = None
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +27,7 @@ class Parse(Parse_2_01):
         if not org_id:
             raise self.RequiredFieldError(
                 "iati-identifier",
-                "text", 
+                "text",
                 "Unspecified.")
 
         # add as organisation-identifier to be able to use in super of this def
@@ -44,9 +44,6 @@ class Parse(Parse_2_01):
         super(Parse, self).iati_organisations__iati_organisation__name(element)
         name = self.get_model('OrganisationName')
 
-
-
-
         # check if names exist, if so remove and add all new ones + set primary_name
 
         if element.text:
@@ -60,29 +57,16 @@ class Parse(Parse_2_01):
 
         # reporting_org = element.xpath('reporting-org/@ref')
 
-
         super(Parse, self).iati_organisations__iati_organisation__reporting_org(element)
 
-
-
-
-
-
-        # check if name element exists, If not and no org and org has no name, add this as org name + primary name
-
-
-
-
-
-
+        # check if name element exists, If not and no org and org has no name, add
+        # this as org name + primary name
 
         organisation_reporting_organisation = self.get_model('OrganisationReportingOrganisation')
 
         if element.text:
             organisation_reporting_organisation.primary_name = element.text
             self.add_narrative(element, organisation_reporting_organisation)
-
-
 
         activity_reporting_organisation = self.get_model('ActivityReportingOrganisation')
 
@@ -98,8 +82,4 @@ class Parse(Parse_2_01):
                 self.add_narrative(element, organisation.name, is_organisation_narrative=True)
                 organisation.save()
 
-
-
         return element
-
-

@@ -17,7 +17,7 @@ class RateBrowserTestCase(TestCase):
 
     def setUp(self):
         """
-        
+
         """
         self.rate_browser = RateBrowser()
 
@@ -68,9 +68,9 @@ class RateParserTestCase(TestCase):
         url = self.rate_parser.prepare_url()
 
         self.assertTrue('8888' in url,
-            "From not set in url")
+                        "From not set in url")
         self.assertTrue('7777' in url,
-            "To not set in url")
+                        "To not set in url")
 
     def test_parse_day_rates(self):
         self.rate_parser.parse_day_rates(self.effective_date)
@@ -106,7 +106,7 @@ class RateParserTestCase(TestCase):
         self.assertEqual(self.rate_parser.max_tick, 628955712000000000)
 
     def test_reset_data(self):
-        self.rate_parser.rates = {'currencies':'averages'}
+        self.rate_parser.rates = {'currencies': 'averages'}
         self.rate_parser.reset_data()
         self.assertEqual(self.rate_parser.rates, {})
 
@@ -160,7 +160,6 @@ class ConvertTestCase(TestCase):
         value_date = datetime(1994, 1, 1)
         rate = convert.currency_from_to('USD', 'XDR', value_date, 100)
         self.assertEqual(rate, 300)
-
 
     def test_currency_from_to_does_not_exist(self):
         """

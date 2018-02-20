@@ -9,7 +9,8 @@ class SearchQueryFilter(Filter):
     def filter(self, qs, value):
         if value:
             return qs.filter(
-                Q(publisher__publisher_iati_id__icontains=value) | Q(title__icontains=value) | Q(name__icontains=value)
+                Q(publisher__publisher_iati_id__icontains=value) | Q(
+                    title__icontains=value) | Q(name__icontains=value)
             )
         return qs
 
@@ -105,23 +106,16 @@ class DatasetFilter(FilterSet):
 
     q = SearchQueryFilter()
 
-
     class Meta:
         model = Dataset
         fields = '__all__'
 
 
-
-
-
 class NoteFilter(FilterSet):
     """
-    
+
     """
 
     class Meta:
         model = DatasetNote
         fields = '__all__'
-
-
-

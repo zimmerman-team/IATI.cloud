@@ -31,7 +31,7 @@ class LocationQuerySet(models.QuerySet):
                 'locationadministrative_set',
                 queryset=LocationAdministrative.objects
                 .select_related('vocabulary')),)
-    
+
     def prefetch_name(self):
         from iati.models import LocationName, Narrative
         narrative_prefetch = Prefetch(
@@ -81,8 +81,8 @@ class LocationQuerySet(models.QuerySet):
                 .select_related('language'))
         )
 
+
 class LocationManager(models.Manager):
 
     def get_queryset(self):
         return LocationQuerySet(self.model, using=self._db)
-

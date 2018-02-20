@@ -16,15 +16,15 @@ class Command(BaseCommand):
             iati_id=options['identifier'][0],
             defaults={
                 'publisher_iati_id': options['identifier'][0],
-                'name': options['name'][0], 
+                'name': options['name'][0],
                 'display_name': options['name'][0]
             }
         )
 
         publisher.save()
         create_publisher_organisation(
-          publisher,
-          options['identifier'][0],
-          options['name'][0],
-          options['organisation_type'][0]
+            publisher,
+            options['identifier'][0],
+            options['name'][0],
+            options['organisation_type'][0]
         )

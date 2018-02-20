@@ -17,7 +17,7 @@ class ParserError(Exception):
 class RequiredFieldError(Exception):
     def __init__(self, model, field, msg="required attribute/element missing", apiField=None):
         """
-        This error 
+        This error
 
         field: the field that is required
         msg: explanation why
@@ -35,7 +35,8 @@ class RequiredFieldError(Exception):
 
 
 class FieldValidationError(Exception):
-    def __init__(self, model, field, msg="Failed to validate a field", apiField=None, iati_id=None, variable=None):
+    def __init__(self, model, field, msg="Failed to validate a field",
+                 apiField=None, iati_id=None, variable=None):
         """
         field: the field that is validated
         msg: explanation what went wrong
@@ -71,6 +72,7 @@ class ValidationError(Exception):
     def __str__(self):
         return repr(self.field)
 
+
 class IgnoredVocabularyError(Exception):
     def __init__(self, model, field, msg):
         """
@@ -90,6 +92,6 @@ class NoUpdateRequired(Exception):
         field: the field that is validated
         msg: explanation what went wrong
         """
+
     def __str__(self):
         return 'Current version of activity exists'
-

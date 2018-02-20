@@ -234,7 +234,7 @@ class ActivityFilter(TogetherFilterSet):
         name='region__code',
         fk='activity',
     )
-    
+
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
@@ -330,7 +330,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
-
 
     #
     # Publisher meta filters
@@ -567,7 +566,6 @@ class ActivityFilter(TogetherFilterSet):
     # modified = BooleanFilter(name='modified')
     # start_date_isnull = BooleanFilter(lookup_expr='isnull', name='start_date')
 
-
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
@@ -601,7 +599,7 @@ class RelatedOrderingFilter(filters.OrderingFilter):
         always_ordering = getattr(view, 'always_ordering', None)
 
         if ordering and always_ordering:
-            ordering = ordering + [always_ordering] 
+            ordering = ordering + [always_ordering]
             queryset.distinct(always_ordering)
 
         return ordering
@@ -610,10 +608,10 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         ordering = self.get_ordering(request, queryset, view)
 
-        if ordering: 
+        if ordering:
             ordering = [order.replace("-", "") for order in ordering]
 
-            if not 'iati_identifier' in ordering:
+            if 'iati_identifier' not in ordering:
                 queryset = queryset.distinct(*ordering)
 
         return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
@@ -663,7 +661,8 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         for i, term in enumerate(ordering):
             if term.lstrip('-') in mapped_fields:
-                ordering[i] = ordering[i].replace(term.lstrip('-'), mapped_fields[term.lstrip('-')])
+                ordering[i] = ordering[i].replace(
+                    term.lstrip('-'), mapped_fields[term.lstrip('-')])
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]

@@ -14,4 +14,3 @@ class ActivityManagerTestCase(TestCase):
         """
 
         """
-

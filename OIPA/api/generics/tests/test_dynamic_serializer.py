@@ -19,8 +19,8 @@ class SimpleModelSerializer(DynamicFieldsSerializer):
 
 class SimpleView(APIView):
     fields = (
-            'id',
-            )
+        'id',
+    )
 
 
 class TestDynamicFields(TestCase):
@@ -29,21 +29,21 @@ class TestDynamicFields(TestCase):
             'description': 'DESC-10A',
             'type': {
                 'code': 'CODE-10A'
-                }
+            }
             }
 
     def test_fields_serializer(self):
         request = RequestFactory().get('/')
 
         context = {
-                'view': SimpleView,
-                'request': request
-                }
+            'view': SimpleView,
+            'request': request
+        }
         serializer = SimpleModelSerializer(
-                data=self.data,
-                context=context,
-                fields=('id','name')
-                )
+            data=self.data,
+            context=context,
+            fields=('id', 'name')
+        )
         serializer.is_valid()
 
         self.assertIn('id', serializer.data)
@@ -61,13 +61,11 @@ class TestDynamicFields(TestCase):
     @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
     def test_view_fields_serializer(self):
         context = {
-                'view': SimpleView
-                }
+            'view': SimpleView
+        }
         serializer = SimpleModelSerializer(data=self.data, context=context)
         serializer.is_valid()
 
         self.assertIn('id', serializer.data)
         self.assertNotIn('name', serializer.data)
         self.assertNotIn('description', serializer.data)
-
-

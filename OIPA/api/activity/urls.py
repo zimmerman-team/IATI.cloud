@@ -24,4 +24,4 @@ urlpatterns = [
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityTransactionDetail.as_view(),
         name='activity-transaction-detail'),
-    ]
+]

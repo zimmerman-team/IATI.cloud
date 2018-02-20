@@ -5,7 +5,10 @@ from currency_convert.models import MonthlyAverage
 
 def get_monthly_average(currency_iso, value_date):
     try:
-        ma = MonthlyAverage.objects.get(year=value_date.year, month=value_date.month, currency=currency_iso)
+        ma = MonthlyAverage.objects.get(
+            year=value_date.year,
+            month=value_date.month,
+            currency=currency_iso)
         return ma.value
     except ObjectDoesNotExist:
         # print 'exchange rate for %s does not exist for year %s and month %s' % (
@@ -13,6 +16,7 @@ def get_monthly_average(currency_iso, value_date):
         #     value_date.year,
         #     value_date.month)
         return False
+
 
 def currency_from_to(from_currency_iso, to_currency_iso, value_date, value):
     if from_currency_iso is to_currency_iso:
@@ -26,6 +30,7 @@ def currency_from_to(from_currency_iso, to_currency_iso, value_date, value):
     requested_value = from_xdr(to_currency_iso, value_date, xdr_value)
     return requested_value
 
+
 def to_xdr(currency_iso, value_date, value):
     if None in (currency_iso, value_date, value):
         return 0
@@ -35,6 +40,7 @@ def to_xdr(currency_iso, value_date, value):
         return value * exchange_rate_to_xdr
     else:
         return 0
+
 
 def from_xdr(currency_iso, value_date, value):
     if None in (currency_iso, value_date, value):
