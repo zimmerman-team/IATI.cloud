@@ -37,7 +37,7 @@ class TransactionQuerySet(query.QuerySet):
                 .prefetch_tied_status() \
                 .prefetch_sector() \
                 .prefetch_recipient_country() \
-                .prefetch_recipient_region() \
+                .prefetch_recipient_region()
 
     def prefetch_activity(self):
         from iati.models import Narrative
@@ -106,16 +106,15 @@ class TransactionQuerySet(query.QuerySet):
 
     def prefetch_aid_type(self):
         return self.select_related('aid_type')
-    
+
     def prefetch_tied_status(self):
         return self.select_related('tied_status')
-    
+
     def prefetch_sector(self):
         return self.prefetch_related('transaction_sector')
-    
+
     def prefetch_recipient_country(self):
         return self.prefetch_related('transaction_recipient_country')
-    
+
     def prefetch_recipient_region(self):
         return self.prefetch_related('transaction_recipient_region')
-    
