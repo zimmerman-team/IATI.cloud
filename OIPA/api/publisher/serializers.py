@@ -14,9 +14,20 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
 
     url = HyperlinkedIdentityField(view_name='publishers:publisher-detail')
     datasets = DatasetSerializer(
-        many=True, 
+        many=True,
         source="dataset_set",
-        fields=('id', 'iati_id', 'url', 'name', 'title', 'filetype', 'source_url', 'added_manually', 'is_parsed', 'export_in_progress', 'parse_in_progress'))
+        fields=(
+            'id',
+            'iati_id',
+            'url',
+            'name',
+            'title',
+            'filetype',
+            'source_url',
+            'added_manually',
+            'is_parsed',
+            'export_in_progress',
+            'parse_in_progress'))
     activity_count = SerializerMethodField()
     note_count = SerializerMethodField()
     activities = SerializerMethodField()
@@ -42,7 +53,8 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
         return url + '?reporting_organisation=' + obj.publisher_iati_id
 
     def get_activity_count(self, obj):
-        return Activity.objects.filter(reporting_organisations__normalized_ref=obj.publisher_iati_id).count()
+        return Activity.objects.filter(
+            reporting_organisations__normalized_ref=obj.publisher_iati_id).count()
 
     def get_note_count(self, obj):
         sum_queryset = Dataset.objects.filter(publisher=obj.id).aggregate(Sum('note_count'))
@@ -56,6 +68,3 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
 #         fields = ('name', )
 
 #     def create(self, validated_data):
-
-
-

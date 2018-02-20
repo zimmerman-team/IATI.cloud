@@ -1,6 +1,7 @@
 def get_serializer_fields(serializer):
     return serializer().get_fields().keys()
 
+
 def parameter_from_type_query_param(query_param):
     """Returns type name from query_param string."""
     is_type = False
@@ -45,18 +46,21 @@ def get_type_parameters(name, query_params):
 
 from iati.parser import validators
 from iati.parser import exceptions
+
+
 def get_or_raise(model, validated_data, attr, default=None):
     try:
         pk = validated_data.get(attr)
     except KeyError:
         raise exceptions.RequiredFieldError(
-                model.__name__,
-                attr,
-                )
+            model.__name__,
+            attr,
+        )
 
     return model.objects.get(pk=pk)
     # except model.DoesNotExist:
     #     return default
+
 
 def get_or_none(model, validated_data, attr, default=None):
     pk = validated_data.get(attr, None)
@@ -69,7 +73,6 @@ def get_or_none(model, validated_data, attr, default=None):
         return default
 
 
-
 def set_deep(d, key_string, value):
     dd = d
     keys = key_string.split('.')
@@ -80,6 +83,8 @@ def set_deep(d, key_string, value):
 
 
 from rest_framework.exceptions import ValidationError
+
+
 def handle_errors(*validated):
     validated_data = {}
     error_dict = {}
@@ -95,7 +100,5 @@ def handle_errors(*validated):
 
     if len(error_dict):
         raise ValidationError(error_dict)
-        
+
     return validated_data
-
-

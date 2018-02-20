@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from iati_synchroniser.models import Publisher
 from iati.permissions.models import OrganisationAdminGroup
 
+
 class TestOrganisationAdminGroupAPI(APITestCase):
     rf = RequestFactory()
     c = APIClient()
@@ -31,8 +32,8 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         self.c.force_authenticate(user.user)
 
         res = self.c.get(
-                "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id), 
-                )
+            "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id),
+        )
 
         self.assertEquals(res.data, [
             OrderedDict([('username', u'test1'), ('email', u'')]),
@@ -56,13 +57,12 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 403)
-
 
     def test_add_user_to_admin_group_success(self):
         """
@@ -81,13 +81,14 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200)
-        self.assertEquals(len(OrganisationAdminGroup.objects.get(pk=admin_group.id).organisationuser_set.all()), 2)
+        self.assertEquals(len(OrganisationAdminGroup.objects.get(
+            pk=admin_group.id).organisationuser_set.all()), 2)
 
     def test_remove_user_from_admin_group_fail(self):
         """
@@ -109,9 +110,10 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         }
 
         res = self.c.delete(
-                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
-                format='json'
-                )
+            "/api/publishers/{}/admin-group/{}?format=json".format(
+                admin_group.publisher.id, new_user.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 403)
 
@@ -131,9 +133,10 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         self.c.force_authenticate(user.user)
 
         res = self.c.delete(
-                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
-                format='json'
-                )
+            "/api/publishers/{}/admin-group/{}?format=json".format(
+                admin_group.publisher.id, new_user.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200)
 
@@ -157,9 +160,9 @@ class TestOrganisationAdminGroupAPI(APITestCase):
         }
 
         res = self.c.delete(
-                "/api/publishers/{}/admin-group/{}?format=json".format(admin_group.publisher.id, new_user.id), 
-                format='json'
-                )
+            "/api/publishers/{}/admin-group/{}?format=json".format(
+                admin_group.publisher.id, new_user.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 401)
-

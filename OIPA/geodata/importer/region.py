@@ -7,6 +7,7 @@ class RegionImport():
     """
     Wrapper class for all import methods used on the Region model
     """
+
     def __init__(self):
         self.get_json_data = get_json_data
 
@@ -15,8 +16,8 @@ class RegionImport():
         for r in region_centers:
             if Region.objects.filter(code=r).exists():
                 current_region = Region.objects.get(code=r)
-                point_loc_str = 'POINT(%s %s)' % (str(region_centers[r]["longitude"]), str(region_centers[r]["latitude"]))
+                point_loc_str = 'POINT(%s %s)' % (
+                    str(region_centers[r]["longitude"]), str(region_centers[r]["latitude"]))
                 longlat = fromstr(point_loc_str, srid=4326)
                 current_region.center_longlat = longlat
                 current_region.save()
-

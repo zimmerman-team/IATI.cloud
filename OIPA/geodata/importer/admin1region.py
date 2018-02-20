@@ -9,6 +9,7 @@ class Adm1RegionImport():
     """
     Wrapper class for all import methods used on the Adm1Region model
     """
+
     def __init__(self):
         self.get_json_data = get_json_data
 

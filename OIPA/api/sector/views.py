@@ -53,4 +53,3 @@ class SectorDetail(RetrieveAPIView):
     """
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
-

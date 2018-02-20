@@ -41,7 +41,7 @@ def welcome(request, format=None):
     * Budget aggregations: [`/api/budgets/aggregations`](/api/budgets/aggregations)
 
     * Codelists: [`/api/publishers`](/api/codelists)
-    
+
     * Chains: [`/api/chains`](/api/chains)
 
     """

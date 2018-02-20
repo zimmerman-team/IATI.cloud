@@ -2,10 +2,14 @@
 from rest_framework import pagination
 from rest_framework.response import Response
 
-# TODO: Include 'last' link, see https://developer.github.com/guides/traversing-with-pagination/ - 2016-01-20
+# TODO: Include 'last' link, see
+# https://developer.github.com/guides/traversing-with-pagination/ -
+# 2016-01-20
+
+
 class CustomPagination(pagination.PageNumberPagination):
     page_size = 10
-    max_page_size = 400 # TODO: change this to 100, makes more sense against ddos and such - 2016-01-20
+    max_page_size = 400  # TODO: change this to 100, makes more sense against ddos and such - 2016-01-20
     page_size_query_param = 'page_size'
 
 
@@ -36,7 +40,7 @@ class IatiXMLPagination(pagination.PageNumberPagination):
 
         return Response(data, headers=headers)
 
+
 class IatiXMLUnlimitedPagination(IatiXMLPagination):
     page_size = 0
     max_page_size = 0
-

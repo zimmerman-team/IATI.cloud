@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^add_scheduled_task/', add_scheduled_task),
     url(r'^cancel_scheduled_task/', cancel_scheduled_task),
     url(r'^get_scheduled_tasks/', get_scheduled_tasks),
-    #Failed task management
+    # Failed task management
     url(r'^get_failed_tasks/', get_failed_tasks),
     url(r'^reschedule_all_failed/', reschedule_all_failed),
     # Finished tasks

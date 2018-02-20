@@ -33,4 +33,4 @@ urlpatterns = [
     url(r'^(?P<pk>[^@$&+,/:;=?]+)/',
         api.chain.views.ChainDetail.as_view(),
         name='chain-detail'),
-    ]
+]

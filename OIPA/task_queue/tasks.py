@@ -179,7 +179,8 @@ def delete_source_by_id(source_id):
 @job
 def delete_sources_not_found_in_registry_in_x_days(days):
     if int(days) < 6:
-        raise Exception("The task queue only allows deletion of sources when not found for +5 days")
+        raise Exception(
+            "The task queue only allows deletion of sources when not found for +5 days")
 
     for source in Dataset.objects.all():
         current_date = float(datetime.datetime.now().strftime('%s'))
@@ -340,7 +341,8 @@ def start_searchable_activities_task(counter=0):
                         already_running_update = True
 
     if already_running_update:
-        # update_searchable_activities already running or other start_searchable_activities_task running, invalidate task
+        # update_searchable_activities already running or other
+        # start_searchable_activities_task running, invalidate task
         pass
     elif not has_other_jobs:
         queue.enqueue(update_searchable_activities)
@@ -362,7 +364,6 @@ def update_searchable_activities():
 #############################################
 ############# Docstore TASKS ################
 #############################################
-
 
 
 @job

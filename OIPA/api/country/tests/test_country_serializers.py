@@ -4,6 +4,7 @@ from geodata.factory import geodata_factory
 from api.country import serializers
 from django.test import TestCase
 
+
 class TestCountrySerializers(TestCase):
     request_dummy = RequestFactory().get('/')
 

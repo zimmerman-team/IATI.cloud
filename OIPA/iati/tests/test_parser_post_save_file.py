@@ -53,7 +53,8 @@ class PostSaveFileTestCase(TestCase):
 
         self.parser = Parser_201(root)
         self.parser.dataset = self.dataset
-        # mock non related functions that are called (and that use postgres fts which makes the test fail on sqlite)
+        # mock non related functions that are called (and that use postgres fts
+        # which makes the test fail on sqlite)
         self.parser.update_activity_search_index = MagicMock()
         self.parser.post_save_models = MagicMock()
 

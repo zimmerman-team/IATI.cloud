@@ -74,7 +74,19 @@ class AggregationView(GenericAPIView):
 
 
 class GroupBy():
-    def __init__(self, query_param=None, fields=None, queryset=None, serializer=None, serializer_main_field="code", serializer_fk="pk", serializer_fields=(), extra=None, renamed_fields=None, name_search_field='', renamed_name_search_field=''):
+    def __init__(
+            self,
+            query_param=None,
+            fields=None,
+            queryset=None,
+            serializer=None,
+            serializer_main_field="code",
+            serializer_fk="pk",
+            serializer_fields=(),
+            extra=None,
+            renamed_fields=None,
+            name_search_field='',
+            renamed_name_search_field=''):
         """
         fields should be a dictionary of field: rendered_field_name
         """
@@ -90,17 +102,17 @@ class GroupBy():
         else:
             self.renamed_name_search_field = self.name_search_field
 
-        if type(fields) is str:
+        if isinstance(fields, str):
             self.fields = (fields,)
-        elif type(fields) is not tuple:
+        elif not isinstance(fields, tuple):
             raise ValueError("fields must be either a string or a tuple of values")
         else:
             self.fields = fields
 
         if renamed_fields:
-            if type(renamed_fields) is str:
+            if isinstance(renamed_fields, str):
                 self.renamed_fields = (renamed_fields,)
-            elif type(renamed_fields) is not tuple:
+            elif not isinstance(renamed_fields, tuple):
                 raise ValueError("renamed_fields must be either a string or a tuple of values")
             else:
                 if len(renamed_fields) > len(fields):
@@ -123,7 +135,7 @@ class GroupBy():
         """
 
         if self.renamed_fields:
-            return { zipped[0]:F(zipped[1]) for zipped in zip(self.renamed_fields, self.fields) }
+            return {zipped[0]: F(zipped[1]) for zipped in zip(self.renamed_fields, self.fields)}
 
         return dict()
 
@@ -143,7 +155,7 @@ class GroupBy():
         """
 
         # TODO: Merge serializer results on queryset instead of on the joined result - 2016-04-08
-        
+
         if not self.serializer:
             return l
 
@@ -175,22 +187,22 @@ class GroupBy():
 
         result = map(lambda i: merge([i, dict([
             (
-                field, 
+                field,
                 data_dict.get(str(i[field]))
             )
-            ])
-            ]), l)
+        ])
+        ]), l)
 
         return result
 
 
 class Aggregation():
 
-    def __init__(self, query_param=None, field=None, annotate=None, extra_filter=None, annotate_name=None, extra=None):
+    def __init__(self, query_param=None, field=None, annotate=None,
+                 extra_filter=None, annotate_name=None, extra=None):
 
         if not (query_param and field and annotate):
             raise ValueError("not all required params were passed")
-
 
         if extra_filter and not isinstance(extra_filter, Q):
             raise ValueError("extra_filter must be a django Q() object")
@@ -228,7 +240,7 @@ class Order:
     def __init__(self, query_param=None, fields=None):
         if not (query_param or field):
             raise ValueError("not all required params were passed")
-        
+
         self.query_param = query_param
         self.fields = fields
 
@@ -249,4 +261,3 @@ def merge(l):
         result.update(d)
 
     return result
-

@@ -9,6 +9,7 @@ class DacSectorImporter():
     """
     Wrapper class for all import methods used on the Country model
     """
+
     def __init__(self):
         """
         """
@@ -33,17 +34,17 @@ class DacSectorImporter():
                 current_dac3, created = SectorCategory.objects.get_or_create(
                     code=key,
                     defaults={
-                        'name':value,
-                        'description':''
-                })
+                        'name': value,
+                        'description': ''
+                    })
 
             if len(key) == 5:
                 # dac 5
                 Sector.objects.get_or_create(
                     code=key,
                     defaults={
-                     'name': value,
-                     'description': '',
-                     'category': current_dac3,
-                     'vocabulary': dac5_vocabulary
+                        'name': value,
+                        'description': '',
+                        'category': current_dac3,
+                        'vocabulary': dac5_vocabulary
                     })

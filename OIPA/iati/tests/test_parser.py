@@ -14,7 +14,7 @@ from lxml.builder import E
 
 # TODO: use factories instead of these fixtures
 def setUpModule():
-    fixtures = ['test_vocabulary', 'test_codelists.json',]
+    fixtures = ['test_vocabulary', 'test_codelists.json', ]
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
@@ -27,7 +27,8 @@ def tearDownModule():
 # TODO: refactor in test util module
 def build_activity(version="2.01", *args, **kwargs):
     activity = iati_factory.ActivityFactory.build(
-        iati_standard_version=codelist_models.Version.objects.get(code=version), # requires Version codelist
+        iati_standard_version=codelist_models.Version.objects.get(
+            code=version),  # requires Version codelist
         *args,
         **kwargs
     )
@@ -49,7 +50,7 @@ class IatiParserTestCase(DjangoTestCase):
 
     def test_register_model_stores_model_by_name(self):
         parser = Parser_201(None)
-        
+
         activity = build_activity()
         parser.register_model(activity, activity)
         self.assertTrue(parser.model_store['Activity'][0] == activity)
@@ -148,13 +149,13 @@ class ParserTestCase(DjangoTestCase):
     """
     Integration tests for the parser
     """
+
     def setUp(self):
         pass
 
     @skip('NotImplemented')
     def test_parse_url_parses_test_file(self):
         """
-        Test a sample activity file gets parsed accordingly 
+        Test a sample activity file gets parsed accordingly
         """
         raise NotImplementedError()
-

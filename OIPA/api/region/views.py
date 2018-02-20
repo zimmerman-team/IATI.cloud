@@ -4,6 +4,7 @@ from rest_framework.generics import RetrieveAPIView
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
+
 class RegionList(DynamicListView):
     """
     Returns a list of IATI Regions stored in OIPA.
@@ -61,4 +62,3 @@ class RegionDetail(RetrieveAPIView):
     """
     queryset = geodata.models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
-

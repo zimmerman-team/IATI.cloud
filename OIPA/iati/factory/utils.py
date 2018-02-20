@@ -2,22 +2,27 @@
 from iati.factory.iati_factory import *
 from iati.transaction.factories import *
 
+
 def _create_test_narrative(activity, related_object, content, is_organisation_narrative=False):
     if not is_organisation_narrative:
         NarrativeFactory.create(activity=activity, related_object=related_object, content=content)
     else:
-        OrganisationNarrativeFactory.create(organisation=activity, related_object=related_object, content=content)
+        OrganisationNarrativeFactory.create(
+            organisation=activity,
+            related_object=related_object,
+            content=content)
 
 
 def _create_test_transaction(
-    activity,
-    transaction_type,
-    value):
+        activity,
+        transaction_type,
+        value):
 
     TransactionFactory.create(
         activity=second_activity,
         value=25000,
         transaction_type=first_transaction.transaction_type)
+
 
 def _create_test_activity(
     id="IATI-search1",
@@ -86,7 +91,7 @@ def _create_test_activity(
     resultindicatorbaselinecomment_narrative_1="Baseline comment text",
     resultindicatorperiodtargetcomment_narrative_1="Target comment text",
     resultindicatorperiodactualcomment_narrative_1="Actual comment text",
-        ):
+):
     """
     For testing narratives (hence search)
     """
@@ -98,21 +103,21 @@ def _create_test_activity(
 
     title = TitleFactory.create(
         activity=activity,
-        )
+    )
 
     _create_test_narrative(activity, title, title1)
     _create_test_narrative(activity, title, title2)
 
     description1 = DescriptionFactory.create(
         activity=activity,
-        )
+    )
 
     _create_test_narrative(activity, description1, description1_1)
     _create_test_narrative(activity, description1, description1_2)
 
     description2 = DescriptionFactory.create(
         activity=activity,
-        )
+    )
 
     _create_test_narrative(activity, description2, description2_1)
     _create_test_narrative(activity, description2, description2_2)
@@ -120,7 +125,6 @@ def _create_test_activity(
     # reporting_organisation = ReportingOrganisationFactory.create(
     #     activity=activity,
     # )
-
 
     # organisation = OrganisationReportingOrganisationFactory.create()
     # reporting_organisation = OrganisationReportingOrganisationFactory.create()
@@ -177,17 +181,21 @@ def _create_test_activity(
 
     other_identifier = OtherIdentifierFactory.create(
         activity=activity,
-        )
+    )
     _create_test_narrative(activity, other_identifier, other_identifier1)
     _create_test_narrative(activity, other_identifier, other_identifier2)
 
     transaction1 = TransactionFactory.create(activity=activity)
     transaction_description1 = TransactionDescriptionFactory.create(transaction=transaction1)
-    provider_org1 = TransactionProviderFactory.create(transaction=transaction1, provider_activity=activity) 
-    receiver_org1 = TransactionReceiverFactory.create(transaction=transaction1, receiver_activity=activity) 
-    transaction_recipient_country1 = TransactionRecipientCountryFactory.create(transaction=transaction1) 
-    transaction_recipient_region1 = TransactionRecipientRegionFactory.create(transaction=transaction1) 
-    transaction_sector1 = TransactionSectorFactory.create(transaction=transaction1) 
+    provider_org1 = TransactionProviderFactory.create(
+        transaction=transaction1, provider_activity=activity)
+    receiver_org1 = TransactionReceiverFactory.create(
+        transaction=transaction1, receiver_activity=activity)
+    transaction_recipient_country1 = TransactionRecipientCountryFactory.create(
+        transaction=transaction1)
+    transaction_recipient_region1 = TransactionRecipientRegionFactory.create(
+        transaction=transaction1)
+    transaction_sector1 = TransactionSectorFactory.create(transaction=transaction1)
 
     _create_test_narrative(activity, transaction_description1, transaction_description1_1)
     _create_test_narrative(activity, transaction_description1, transaction_description1_2)
@@ -201,9 +209,12 @@ def _create_test_activity(
     location = LocationFactory.create(activity=activity)
     _create_test_narrative(activity, location.name, location_name1_1)
     _create_test_narrative(activity, location.description, location_description1_1)
-    _create_test_narrative(activity, location.activity_description, location_activity_description1_1)
+    _create_test_narrative(
+        activity,
+        location.activity_description,
+        location_activity_description1_1)
     location_administrative = LocationAdministrativeFactory.create(location=location)
-    
+
     budget = BudgetFactory.create(activity=activity)
 
     conditions1 = ConditionsFactory.create(activity=activity)
@@ -230,7 +241,8 @@ def _create_test_activity(
     _create_test_narrative(activity, contactinfopersonname1, person_name_narrative_1)
     contactinfojobtitle1 = ContactInfoJobTitleFactory.create(contact_info=contact_info1)
     _create_test_narrative(activity, contactinfojobtitle1, job_title_narrative_1)
-    contactinfomailingaddress1 = ContactInfoMailingAddressFactory.create(contact_info=contact_info1)
+    contactinfomailingaddress1 = ContactInfoMailingAddressFactory.create(
+        contact_info=contact_info1)
     _create_test_narrative(activity, contactinfomailingaddress1, mailing_address_narrative_1)
 
     country_budget_item = CountryBudgetItemFactory.create(activity=activity)
@@ -254,31 +266,53 @@ def _create_test_activity(
     activity_date = ActivityDateFactory.create(activity=activity)
 
     planned_disbursement = PlannedDisbursementFactory.create(activity=activity)
-    planned_disbursement_provider = PlannedDisbursementProviderFactory.create(planned_disbursement=planned_disbursement)
-    _create_test_narrative(activity, planned_disbursement_provider, planned_disbursement_provider_narrative_1)
-    planned_disbursement_receiver = PlannedDisbursementReceiverFactory.create(planned_disbursement=planned_disbursement)
-    _create_test_narrative(activity, planned_disbursement_receiver, planned_disbursement_receiver_narrative_1)
+    planned_disbursement_provider = PlannedDisbursementProviderFactory.create(
+        planned_disbursement=planned_disbursement)
+    _create_test_narrative(activity, planned_disbursement_provider,
+                           planned_disbursement_provider_narrative_1)
+    planned_disbursement_receiver = PlannedDisbursementReceiverFactory.create(
+        planned_disbursement=planned_disbursement)
+    _create_test_narrative(activity, planned_disbursement_receiver,
+                           planned_disbursement_receiver_narrative_1)
 
     result = ResultFactory(activity=activity)
     _create_test_narrative(activity, result.resulttitle, resulttitle_narrative_1)
     _create_test_narrative(activity, result.resultdescription, resultdescription_narrative_1)
     result_indicator = ResultIndicatorFactory.create(result=result)
-    _create_test_narrative(activity, result_indicator.resultindicatortitle, resultindicatortitle_narrative_1)
-    _create_test_narrative(activity, result_indicator.resultindicatordescription, resultindicatordescription_narrative_1)
-    result_indicator_reference = ResultIndicatorReferenceFactory.create(result_indicator=result_indicator)
-    _create_test_narrative(activity, result_indicator.resultindicatorbaselinecomment, resultindicatorbaselinecomment_narrative_1)
-    result_indicator_period = ResultIndicatorPeriodFactory.create(result_indicator=result_indicator)
-    result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create(result_indicator_period=result_indicator_period)
-    result_indicator_period_target_dimension = ResultIndicatorPeriodTargetDimensionFactory.create(result_indicator_period=result_indicator_period)
-    _create_test_narrative(activity, result_indicator_period.resultindicatorperiodtargetcomment, resultindicatorperiodtargetcomment_narrative_1)
-    result_indicator_period_actual_location = ResultIndicatorPeriodActualLocationFactory.create(result_indicator_period=result_indicator_period)
-    result_indicator_period_actual_dimension = ResultIndicatorPeriodActualDimensionFactory.create(result_indicator_period=result_indicator_period)
-    _create_test_narrative(activity, result_indicator_period.resultindicatorperiodactualcomment, resultindicatorperiodactualcomment_narrative_1)
+    _create_test_narrative(
+        activity,
+        result_indicator.resultindicatortitle,
+        resultindicatortitle_narrative_1)
+    _create_test_narrative(
+        activity,
+        result_indicator.resultindicatordescription,
+        resultindicatordescription_narrative_1)
+    result_indicator_reference = ResultIndicatorReferenceFactory.create(
+        result_indicator=result_indicator)
+    _create_test_narrative(
+        activity,
+        result_indicator.resultindicatorbaselinecomment,
+        resultindicatorbaselinecomment_narrative_1)
+    result_indicator_period = ResultIndicatorPeriodFactory.create(
+        result_indicator=result_indicator)
+    result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create(
+        result_indicator_period=result_indicator_period)
+    result_indicator_period_target_dimension = ResultIndicatorPeriodTargetDimensionFactory.create(
+        result_indicator_period=result_indicator_period)
+    _create_test_narrative(
+        activity,
+        result_indicator_period.resultindicatorperiodtargetcomment,
+        resultindicatorperiodtargetcomment_narrative_1)
+    result_indicator_period_actual_location = ResultIndicatorPeriodActualLocationFactory.create(
+        result_indicator_period=result_indicator_period)
+    result_indicator_period_actual_dimension = ResultIndicatorPeriodActualDimensionFactory.create(
+        result_indicator_period=result_indicator_period)
+    _create_test_narrative(
+        activity,
+        result_indicator_period.resultindicatorperiodactualcomment,
+        resultindicatorperiodactualcomment_narrative_1)
 
     fss = FssFactory.create(activity=activity)
     fss_forecast = FssForecastFactory.create(fss=fss)
 
-
     return activity
-
-

@@ -12,7 +12,7 @@ import time
 
 
 class RateBrowser():
-    
+
     def __init__(self):
         self.browser = self.prepare_browser()
 
@@ -35,10 +35,8 @@ class RateBrowser():
 
         # User-Agent
         browser.addheaders = [
-            (
-                'User-agent',
-                'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1'
-            )]
+            ('User-agent',
+             'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
 
         return browser
 
@@ -55,7 +53,7 @@ class RateBrowser():
             return etree.fromstring(str(xml_data))
         except URLError as e:
             # retry once
-            self.get_xml_data(url, download_url, retry_count=retry_count+1)
+            self.get_xml_data(url, download_url, retry_count=retry_count + 1)
 
 
 class RateParser():
@@ -129,7 +127,7 @@ class RateParser():
         Stores the results into the MonthlyAverage model.
         """
         for currency_iso, cur_obj in self.rates.iteritems():
-            average_value = sum(cur_obj['values'])/len(cur_obj['values'])
+            average_value = sum(cur_obj['values']) / len(cur_obj['values'])
             currency, created = Currency.objects.get_or_create(
                 code=currency_iso,
                 defaults={'name': cur_obj['name']})
@@ -180,7 +178,8 @@ class RateParser():
                 self.month = 1
             else:
                 self.month += 1
-            if not force and MonthlyAverage.objects.filter(year=self.year, month=self.month).count():
+            if not force and MonthlyAverage.objects.filter(
+                    year=self.year, month=self.month).count():
                 continue
             count += 1
             self.set_tick_rates()

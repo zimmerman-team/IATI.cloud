@@ -34,7 +34,7 @@ class TransactionSerializerTestCase(APITestCase):
 
         expected_url = "http://testserver{reverse}".format(
             reverse=reverse('transactions:transaction-detail',
-            args=(self.transaction.id,)))
+                            args=(self.transaction.id,)))
         assert serializer.data.get('url', '') == expected_url, \
             """serialized url should point to transaction detail page"""
 

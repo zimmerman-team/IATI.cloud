@@ -102,10 +102,18 @@ USE_TZ = False
 
 # URL for static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.environ.get('OIPA_STATIC_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'public/static'))
+STATIC_ROOT = os.environ.get(
+    'OIPA_STATIC_ROOT',
+    os.path.join(
+        os.path.dirname(BASE_DIR),
+        'public/static'))
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.environ.get('OIPA_MEDIA_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'public/media'))
+MEDIA_ROOT = os.environ.get(
+    'OIPA_MEDIA_ROOT',
+    os.path.join(
+        os.path.dirname(BASE_DIR),
+        'public/media'))
 
 # Additional locations of static files
 STATICFILES_DIRS = (

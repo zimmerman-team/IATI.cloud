@@ -19,11 +19,11 @@ class ActivityQuerySet(SearchQuerySet):
                 try:
                     pk_int = int(pk)
 
-                    return super(ActivityQuerySet, self).get(Q(pk=pk_int) | Q(iati_identifier=pk_int))
+                    return super(ActivityQuerySet, self).get(
+                        Q(pk=pk_int) | Q(iati_identifier=pk_int))
 
                 except ValueError:
                     return super(ActivityQuerySet, self).get(Q(iati_identifier=pk))
-
 
         return super(ActivityQuerySet, self).get(*args, **kwargs)
 
@@ -126,7 +126,6 @@ class ActivityQuerySet(SearchQuerySet):
                 .select_related('type')
                 .prefetch_related(narrative_prefetch)),)
 
-
     def prefetch_activity_dates(self):
         from iati.models import ActivityDate
 
@@ -167,10 +166,18 @@ class ActivityQuerySet(SearchQuerySet):
         return self.prefetch_related(
             Prefetch(
                 'contactinfo_set',
-                queryset=ContactInfo.objects.all()
-                .select_related('type', 'organisation', 'department', 'person_name', 'job_title', 'mailing_address')
-                .prefetch_related(organisation_prefetch, department_prefetch, person_name_prefetch, job_title_prefetch, mailing_address_prefetch))
-        )
+                queryset=ContactInfo.objects.all() .select_related(
+                    'type',
+                    'organisation',
+                    'department',
+                    'person_name',
+                    'job_title',
+                    'mailing_address') .prefetch_related(
+                    organisation_prefetch,
+                    department_prefetch,
+                    person_name_prefetch,
+                    job_title_prefetch,
+                    mailing_address_prefetch)))
 
     def prefetch_recipient_countries(self):
         from iati.models import ActivityRecipientCountry
@@ -197,7 +204,6 @@ class ActivityQuerySet(SearchQuerySet):
         from iati.models import LocationActivityDescription, Narrative, GeographicVocabulary
         # from django.contrib.contenttypes.models import ContentType
 
-
         narrative_prefetch = Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
@@ -206,7 +212,7 @@ class ActivityQuerySet(SearchQuerySet):
             'name__narratives',
             queryset=Narrative.objects.all()
             .select_related('language')
-            )
+        )
 
         location_administrative_prefetch = Prefetch(
             'locationadministrative_set',
@@ -226,15 +232,19 @@ class ActivityQuerySet(SearchQuerySet):
         return self.prefetch_related(
             Prefetch(
                 'location_set',
-                queryset=Location.objects.all()
-                .select_related('location_reach', 'location_id_vocabulary', 'location_class', 'feature_designation__category', 'exactness', 'name', 'description', 'activity_description')
-                .prefetch_related(
+                queryset=Location.objects.all() .select_related(
+                    'location_reach',
+                    'location_id_vocabulary',
+                    'location_class',
+                    'feature_designation__category',
+                    'exactness',
+                    'name',
+                    'description',
+                    'activity_description') .prefetch_related(
                     location_administrative_prefetch,
                     location_name_prefetch,
                     location_description_prefetch,
-                    location_activity_description_prefetch
-                ))
-        )
+                    location_activity_description_prefetch)))
 
     def prefetch_sectors(self):
         from iati.models import ActivitySector
@@ -254,7 +264,7 @@ class ActivityQuerySet(SearchQuerySet):
                 'country_budget_items',
                 queryset=CountryBudgetItem.objects.all()
                 .select_related('vocabulary')
-                ))
+            ))
 
     def prefetch_humanitarian_scope(self):
         from iati.models import HumanitarianScope
@@ -264,7 +274,7 @@ class ActivityQuerySet(SearchQuerySet):
                 'humanitarianscope_set',
                 queryset=HumanitarianScope.objects.all()
                 .select_related('type', 'vocabulary')
-                ))
+            ))
 
     def prefetch_policy_markers(self):
         from iati.models import ActivityPolicyMarker, Narrative
@@ -297,7 +307,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'planneddisbursement_set',
                 queryset=PlannedDisbursement.objects.all()
-                ))
+            ))
 
     # def prefetch_transactions(self):
     #     from iati.transaction.models import Transaction
@@ -332,13 +342,12 @@ class ActivityQuerySet(SearchQuerySet):
             'documentlinkcategory_set',
             queryset=DocumentLinkCategory.objects.all()
             .select_related('category')
-            )
+        )
 
         language_prefetch = Prefetch(
             'documentlinklanguage_set',
             queryset=DocumentLinkLanguage.objects.all()
             .select_related('language'))
-
 
         return self.prefetch_related(
             Prefetch(
@@ -349,11 +358,10 @@ class ActivityQuerySet(SearchQuerySet):
                     language_prefetch,
                     category_prefetch,
                     title_prefetch
-                    )
                 )
+            )
         )
 
-        
     def prefetch_related_activities(self):
         from iati.models import RelatedActivity
 
@@ -371,7 +379,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'legacydata_set',
                 queryset=LegacyData.objects.all())
-            )
+        )
 
     def prefetch_conditions(self):
         from iati.models import Conditions, Narrative
@@ -429,12 +437,12 @@ class ActivityQuerySet(SearchQuerySet):
         indicator_period_target_dimension_prefetch = Prefetch(
             'resultindicatorperiodtargetdimension_set',
             queryset=ResultIndicatorPeriodTargetDimension.objects.all()
-            )
+        )
 
         indicator_period_actual_dimension_prefetch = Prefetch(
             'resultindicatorperiodactualdimension_set',
             queryset=ResultIndicatorPeriodActualDimension.objects.all()
-            )
+        )
 
         indicator_period_target_comment_prefetch = Prefetch(
             'resultindicatorperiodtargetcomment__narratives',
@@ -452,7 +460,7 @@ class ActivityQuerySet(SearchQuerySet):
             .select_related(
                 'resultindicatorperiodtargetcomment',
                 'resultindicatorperiodactualcomment'
-                )
+            )
             .prefetch_related(
                 indicator_period_target_location_prefetch,
                 indicator_period_actual_location_prefetch,
@@ -460,8 +468,8 @@ class ActivityQuerySet(SearchQuerySet):
                 indicator_period_actual_dimension_prefetch,
                 indicator_period_target_comment_prefetch,
                 indicator_period_actual_comment_prefetch,
-                )
             )
+        )
 
         indicator_prefetch = Prefetch(
             'resultindicator_set',
@@ -478,8 +486,8 @@ class ActivityQuerySet(SearchQuerySet):
                 indicator_description_prefetch,
                 indicator_baseline_comment_prefetch,
                 indicator_period_prefetch,
-                )
             )
+        )
 
         return self.prefetch_related(
             Prefetch(
@@ -500,7 +508,7 @@ class ActivityQuerySet(SearchQuerySet):
             'other_flags',
             queryset=CrsAddOtherFlags.objects.all()
             .select_related('other_flags')
-            )
+        )
 
         return self.prefetch_related(
             Prefetch(
@@ -513,8 +521,8 @@ class ActivityQuerySet(SearchQuerySet):
                     'loan_terms__repayment_plan',
                     'loan_status',
                     'loan_status__currency',
-                    )
-                ))
+                )
+            ))
 
     def prefetch_fss(self):
         from iati.models import Fss
@@ -523,7 +531,7 @@ class ActivityQuerySet(SearchQuerySet):
             Prefetch(
                 'fss_set',
                 queryset=Fss.objects.all()
-                ))
+            ))
 
     def prefetch_default_aid_type(self):
         return self.select_related('default_aid_type__category')
@@ -531,22 +539,19 @@ class ActivityQuerySet(SearchQuerySet):
     def prefetch_default_finance_type(self):
         return self.select_related('default_finance_type__category')
 
-
     def prefetch_aggregations(self):
         from iati.models import ActivityAggregation, ChildAggregation, ActivityPlusChildAggregation
 
         return self.select_related(
-                'activity_aggregation',
-                'child_aggregation',
-                'activity_plus_child_aggregation',
+            'activity_aggregation',
+            'child_aggregation',
+            'activity_plus_child_aggregation',
         )
 
 
 class ActivityManager(SearchManagerMixIn, models.Manager):
 
     """Activity manager with search capabilities"""
-    
+
     def get_queryset(self):
         return ActivityQuerySet(self.model, using=self._db)
-        
-        

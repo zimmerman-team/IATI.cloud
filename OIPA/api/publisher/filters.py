@@ -9,7 +9,8 @@ class SearchQueryFilter(Filter):
 
     def filter(self, qs, value):
         if value:
-            return qs.filter(Q(publisher_iati_id__icontains=value) | Q(display_name__icontains=value))
+            return qs.filter(Q(publisher_iati_id__icontains=value)
+                             | Q(display_name__icontains=value))
         return qs
 
 
@@ -20,7 +21,6 @@ class PublisherFilter(FilterSet):
 
     q = SearchQueryFilter()
     no_datasets = BooleanFilter(lookup_expr='isnull', name='dataset', distinct=True)
-    
 
     class Meta:
         model = Publisher
@@ -32,4 +32,3 @@ class PublisherFilter(FilterSet):
             'name',
             'q',
             'no_datasets']
-

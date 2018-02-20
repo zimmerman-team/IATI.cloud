@@ -9,6 +9,7 @@ from iati.factory.iati_factory import ActivityFactory, OrganisationFactory, Repo
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati.models import ActivityReportingOrganisation
 
+
 class PostSaveOrganisationTestCase(TestCase):
     """
     2.01: post organisation actions called
@@ -27,7 +28,7 @@ class PostSaveOrganisationTestCase(TestCase):
         """
 
         # create ActivityReportingOrganisation with ref this org, organisation=None
-        
+
         activity = ActivityFactory.create(
             iati_identifier='IATI-0001',
             iati_standard_version=self.version)
@@ -43,8 +44,3 @@ class PostSaveOrganisationTestCase(TestCase):
 
         aro = ActivityReportingOrganisation.objects.all()[0]
         self.assertEqual(aro.organisation.id, self.organisation.id)
-     
-
-
-
-

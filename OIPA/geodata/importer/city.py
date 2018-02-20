@@ -10,6 +10,7 @@ class CityImport():
     """
     Wrapper class for all import methods used on the City model
     """
+
     def __init__(self):
         self.get_json_data = get_json_data
 
@@ -54,6 +55,6 @@ class CityImport():
                         the_country.capital_city = new_city
                         the_country.save()
 
-            except AttributeError, e:
+            except AttributeError as e:
                 print "error in update_cities ", sys.exc_info()[0]
                 print e.message

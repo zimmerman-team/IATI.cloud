@@ -17,7 +17,8 @@ class Adm1RegionAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.exclude = ('polygon', 'center_location', )
-        return super(Adm1RegionAdmin, self).change_view(request, object_id, form_url, extra_context)
+        return super(Adm1RegionAdmin, self).change_view(
+            request, object_id, form_url, extra_context)
 
 
 class CityAdmin(admin.ModelAdmin):
@@ -60,4 +61,3 @@ admin.site.register(City, CityAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Adm1Region, Adm1RegionAdmin)
-

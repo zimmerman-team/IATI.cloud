@@ -15,6 +15,7 @@ from django.test.client import RequestFactory
 
 from collections import OrderedDict
 
+
 class AggregationInstanceTestCase(DjangoTestCase):
     """
     Check the Aggregation class construction and methods behave correctly
@@ -33,49 +34,46 @@ class AggregationInstanceTestCase(DjangoTestCase):
 
         with self.assertRaises(ValueError):
             aggregation = Aggregation(
-                    field='count',
-                    annotate=Count('id'),
-                    )
+                field='count',
+                annotate=Count('id'),
+            )
 
         with self.assertRaises(ValueError):
             aggregation = Aggregation(
-                    query_param='count',
-                    annotate=Count('id'),
-                    )
+                query_param='count',
+                annotate=Count('id'),
+            )
 
         with self.assertRaises(ValueError):
             aggregation = Aggregation(
-                    query_param='count',
-                    field='count',
-                    )
-        
+                query_param='count',
+                field='count',
+            )
+
     def test_required_params_passes(self):
         """
         Test giving required params constructs succesfully
         """
         aggregation = Aggregation(
-                query_param='count',
-                field='count',
-                annotate=Count('id'),
-                )
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+        )
 
     def test_apply_annotation_applies_annotation(self):
         """
         Test apply_annotation applies the annotation given in the constructor
         """
         aggregation = Aggregation(
-                query_param='count',
-                field='count',
-                annotate=Count('id'),
-                )
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+        )
 
         aggregation.apply_annotation(self.queryset)
 
         # TODO: test for count - 2016-04-11
         # print(self.queryset)
-
-
-
 
     def test_extra_filter_non_Q_object_raises(self):
         """
@@ -85,12 +83,11 @@ class AggregationInstanceTestCase(DjangoTestCase):
         # TODO: Should we allow key-value dicts as well? - 2016-04-11
         with self.assertRaises(ValueError):
             aggregation = Aggregation(
-                    query_param='count',
-                    field='count',
-                    annotate=Count('id'),
-                    extra_filter={'key': "value"},
-                    )
-
+                query_param='count',
+                field='count',
+                annotate=Count('id'),
+                extra_filter={'key': "value"},
+            )
 
     def test_extra_filter_is_applied(self):
         """
@@ -98,11 +95,11 @@ class AggregationInstanceTestCase(DjangoTestCase):
         """
 
         aggregation = Aggregation(
-                query_param='count',
-                field='count',
-                annotate=Count('id'),
-                extra_filter=Q(iati_identifier="test")
-                )
+            query_param='count',
+            field='count',
+            annotate=Count('id'),
+            extra_filter=Q(iati_identifier="test")
+        )
 
         queryset = aggregation.apply_extra_filter(self.queryset)
 
@@ -131,12 +128,12 @@ class GroupByInstanceTestCase(DjangoTestCase):
         with self.assertRaises(ValueError):
             group_by = GroupBy(
                 fields="id",
-                )
+            )
 
         with self.assertRaises(ValueError):
             group_by = GroupBy(
                 query_param="test",
-                )
+            )
 
     def test_required_params_passes(self):
         """
@@ -147,7 +144,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
             query_param="test",
             fields="id",
             queryset=self.queryset,
-            )
+        )
 
     def test_renamed_fields_exceeds_fields_len_raises(self):
         """
@@ -159,7 +156,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
                 fields=("id", "name"),
                 renamed_fields=("id_renamed", "name_renamed", "ew_renamed"),
                 queryset=self.queryset,
-                )
+            )
 
     def test_get_renamed_fields_no_renaming(self):
         """
@@ -170,14 +167,13 @@ class GroupByInstanceTestCase(DjangoTestCase):
             query_param="test",
             fields="id",
             queryset=self.queryset,
-            )
+        )
 
         self.assertEquals(bool(group_by.get_renamed_fields()), False)
 
-
     def test_get_renamed_fields_with_renaming(self):
         """
-        Test when renaming fields, returns a key-value with renamed-actual 
+        Test when renaming fields, returns a key-value with renamed-actual
         """
 
         group_by = GroupBy(
@@ -185,17 +181,16 @@ class GroupByInstanceTestCase(DjangoTestCase):
             fields="id",
             renamed_fields="id_renamed",
             queryset=self.queryset,
-            )
+        )
 
         renamed_fields = group_by.get_renamed_fields()
 
         self.assertEqual(len(renamed_fields), 1)
         self.assertItemsEqual(renamed_fields.keys(), ["id_renamed"])
 
-
     def test_get_renamed_fields_with_multiple_renaming(self):
         """
-        Test when renaming multiple fields, returns a key-value with renamed-actual 
+        Test when renaming multiple fields, returns a key-value with renamed-actual
         """
 
         group_by = GroupBy(
@@ -203,7 +198,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
             fields=("id", "name"),
             renamed_fields=("id_renamed", "name_renamed"),
             queryset=self.queryset,
-            )
+        )
 
         renamed_fields = group_by.get_renamed_fields()
 
@@ -220,7 +215,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
             fields=("id", "name"),
             renamed_fields="id_renamed",
             queryset=self.queryset,
-            )
+        )
 
         renamed_fields = group_by.get_renamed_fields()
 
@@ -234,27 +229,26 @@ class GroupByInstanceTestCase(DjangoTestCase):
         """
         Test get_fields() returns original fields if no renaming is done.
         """
-        
+
         group_by = GroupBy(
             query_param="test",
             fields=("id", "name"),
             queryset=self.queryset,
-            )
+        )
 
         self.assertEqual(group_by.get_fields(), group_by.fields)
-
 
     def test_get_fields_with_renaming(self):
         """
         Test get_fields() returns renamed fields when renaming.
         """
-        
+
         group_by = GroupBy(
             query_param="test",
             fields=("id", "name"),
             renamed_fields=("id_renamed", "name_renamed"),
             queryset=self.queryset,
-            )
+        )
 
         self.assertEqual(group_by.get_fields(), group_by.renamed_fields)
 
@@ -262,13 +256,13 @@ class GroupByInstanceTestCase(DjangoTestCase):
         """
         Test get_fields() returns renamed fields when renaming only part of the fields.
         """
-        
+
         group_by = GroupBy(
             query_param="test",
             fields=("id", "name"),
             renamed_fields="id_renamed",
             queryset=self.queryset,
-            )
+        )
 
         self.assertItemsEqual(group_by.get_fields(), ["id_renamed", "name"])
 
@@ -277,7 +271,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
         When calling serialize_results with an array of results, should serialize the result[key] with the given serializer and queryset from the constructor and return the resulting array.
         Here {key} is the first field given in the fields tuple in the constructor
         """
-        
+
         class DummySerializer(DynamicFieldsSerializer):
             id = serializers.CharField()
             iati_identifier = serializers.CharField()
@@ -290,18 +284,18 @@ class GroupByInstanceTestCase(DjangoTestCase):
             serializer_main_field='iati_identifier',
             serializer_fk='iati_identifier',
             serializer_fields=['iati_identifier']
-            )
+        )
 
         results = [
-                {
-                    "key": "test",
-                    "count": 12345,
-                },
-                {
-                    "key": "test2",
-                    "count": 67890,
-                }
-                ]
+            {
+                "key": "test",
+                "count": 12345,
+            },
+            {
+                "key": "test2",
+                "count": 67890,
+            }
+        ]
 
         rf = RequestFactory()
         request = rf.get('/api/activities/')
@@ -310,18 +304,18 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         self.assertEqual(new_results, [
             {
-                    "key": OrderedDict([
+                "key": OrderedDict([
                         ('iati_identifier', 'test'),
-                    ]),
-                    "count": 12345,
+                ]),
+                "count": 12345,
             },
             {
-                    "key": OrderedDict([
-                        ('iati_identifier', 'test2'),
-                    ]),
-                    "count": 67890,
+                "key": OrderedDict([
+                    ('iati_identifier', 'test2'),
+                ]),
+                "count": 67890,
             }
-            ])
+        ])
 
     def test_serializer_fields_limits_serializer_fields(self):
         """
@@ -339,18 +333,18 @@ class GroupByInstanceTestCase(DjangoTestCase):
             serializer_main_field='iati_identifier',
             serializer_fk='iati_identifier',
             serializer_fields=['iati_identifier']
-            )
+        )
 
         results = [
-                {
-                    "key": "test",
-                    "count": 12345,
-                },
-                {
-                    "key": "test2",
-                    "count": 67890,
-                }
-                ]
+            {
+                "key": "test",
+                "count": 12345,
+            },
+            {
+                "key": "test2",
+                "count": 67890,
+            }
+        ]
 
         rf = RequestFactory()
         request = rf.get('/api/activities/')
@@ -359,18 +353,19 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         self.assertItemsEqual(new_results, [
             {
-                    "key": {
-                        "iati_identifier": "test",
-                    },
-                    "count": 12345,
+                "key": {
+                    "iati_identifier": "test",
+                },
+                "count": 12345,
             },
             {
-                    "key": {
-                        "iati_identifier": "test2",
-                    },
-                    "count": 67890,
+                "key": {
+                    "iati_identifier": "test2",
+                },
+                "count": 67890,
             }
-            ])
+        ])
+
 
 class AggregationViewTestCase(DjangoTestCase):
     """
@@ -384,5 +379,3 @@ class AggregationViewTestCase(DjangoTestCase):
         test for view construction
         """
         raise NotImplementedError()
-
-

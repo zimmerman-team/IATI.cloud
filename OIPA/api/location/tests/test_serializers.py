@@ -1,6 +1,8 @@
-# TODO: no need to test codelist fields separately; instead test the whole serializer in once along with the code and vocabulary fields. Or is testing the fields separately preferable?
+# TODO: no need to test codelist fields separately; instead test the whole
+# serializer in once along with the code and vocabulary fields. Or is
+# testing the fields separately preferable?
 
-from django.test import TestCase # Runs each test in a transaction and flushes database
+from django.test import TestCase  # Runs each test in a transaction and flushes database
 from unittest import skip
 import datetime
 
@@ -59,5 +61,3 @@ class LocationSerializerTestCase(TestCase):
             """
             a serialized location should contain a field 'feature_designation'
             """
-
-

@@ -211,7 +211,7 @@ class PostSaveActivityTestCase(TestCase):
         # 10000 / 3
         self.assertEqual(round(trc1.percentage), 33)
 
-        trr1 = TransactionRecipientRegion.objects.filter(region=self.r1,transaction=self.t2)[0]
+        trr1 = TransactionRecipientRegion.objects.filter(region=self.r1, transaction=self.t2)[0]
         # 20000 / 3
         self.assertEqual(round(trr1.percentage), 33)
 
@@ -269,7 +269,7 @@ class PostSaveActivityTestCase(TestCase):
         # 10000 / 2
         self.assertEqual(ts1.percentage, 50)
 
-        ts2 = TransactionSector.objects.filter(sector=self.s2,transaction=self.t1)[0]
+        ts2 = TransactionSector.objects.filter(sector=self.s2, transaction=self.t1)[0]
         # 20000 / 3
         self.assertEqual(round(ts2.percentage), 50)
 
@@ -277,10 +277,9 @@ class PostSaveActivityTestCase(TestCase):
         # 10000 / 2
         self.assertEqual(ts1.percentage, 50)
 
-        ts4 = TransactionSector.objects.filter(sector=self.s4,transaction=self.t1)[0]
+        ts4 = TransactionSector.objects.filter(sector=self.s4, transaction=self.t1)[0]
         # 20000 / 3
         self.assertEqual(round(ts2.percentage), 50)
-
 
     def test_set_sector_budget_with_percentages(self):
         """

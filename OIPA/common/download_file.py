@@ -12,21 +12,22 @@ import hashlib
 
 from time import time, sleep
 
+
 class DownloadFile(object):
     """This class is used for downloading files from the internet via http or ftp.
-    It supports basic http authentication and ftp accounts, and supports resuming downloads. 
+    It supports basic http authentication and ftp accounts, and supports resuming downloads.
     It does not support https or sftp at this time.
-    
-    The main advantage of this class is it's ease of use, and pure pythoness. It only uses the Python standard library, 
+
+    The main advantage of this class is it's ease of use, and pure pythoness. It only uses the Python standard library,
     so no dependencies to deal with, and no C to compile.
-    
+
     #####
     If a non-standard port is needed just include it in the url (http://example.com:7632).
-    
+
     #Rate Limiting:
         rate_limit = the average download rate in Bps
         rate_burst = the largest allowable burst in bytes
-    
+
     Basic usage:
         Simple
             downloader = fileDownloader.DownloadFile('http://example.com/file.zip')
@@ -40,11 +41,24 @@ class DownloadFile(object):
          Resume
              downloader = fileDownloader.DownloadFile('http://example.com/file.zip')
             downloader.resume()
-    """        
-    
-    def __init__(self, url=None, localFileName=None, auth=None, timeout=120.0, autoretry=False, retries=5,
-                 fast_start=False, aws_key=None, aws_secret_key=None, aws_bucket_name=None, aws_file_key=None,
-                 rate_limit_on=False, rate_limit=500, rate_burst=1000):
+    """
+
+    def __init__(
+            self,
+            url=None,
+            localFileName=None,
+            auth=None,
+            timeout=120.0,
+            autoretry=False,
+            retries=5,
+            fast_start=False,
+            aws_key=None,
+            aws_secret_key=None,
+            aws_bucket_name=None,
+            aws_file_key=None,
+            rate_limit_on=False,
+            rate_limit=500,
+            rate_burst=1000):
         """Note that auth argument expects a tuple, ('username','password')."""
         self.url = url
         self.urlFileName = None
@@ -72,20 +86,19 @@ class DownloadFile(object):
                 self.urlFilesize = None
         else:
             self.urlFilesize = None
-        if not self.localFileName: #if no filename given pulls filename from the url
+        if not self.localFileName:  # if no filename given pulls filename from the url
             self.localFileName = self.getUrlFilename(self.url)
         self.rate_limit_on = rate_limit_on
         self.rate_limit = rate_limit
         self.rate_burst = rate_burst
         if self.rate_limit_on:
             self.bucket = TokenBucket(self.rate_burst, self.rate_limit)
-            
-        
+
     def __downloadFile__(self, urlObj, fileObj, callBack=None):
         """starts the download loop"""
         if not self.fast_start:
             self.fileSize = self.getUrlFileSize()
-        while 1:
+        while True:
             if self.rate_limit_on:
                 if not self.bucket.spend(8192):
                     sleep(1)
@@ -103,18 +116,17 @@ class DownloadFile(object):
             self.cur += 8192
             if callBack:
                 callBack(cursize=self.cur)
-            
-            
+
     def __retry__(self):
         """auto-resumes up to self.retries"""
         if self.retries > self.curretry:
-                self.curretry += 1
-                if self.getLocalFileSize() != self.urlFilesize:
-                    self.resume()
+            self.curretry += 1
+            if self.getLocalFileSize() != self.urlFilesize:
+                self.resume()
         else:
             print 'retries all used up'
             return False, "Retries Exhausted"
-                    
+
     def __authHttp__(self):
         """handles http basic authentication"""
         passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -126,25 +138,25 @@ class DownloadFile(object):
         # create the AuthHandler
         opener = urllib2.build_opener(authhandler)
         urllib2.install_opener(opener)
-        
+
     def __authFtp__(self):
         """handles ftp authentication"""
         ftped = urllib2.FTPHandler()
         ftpUrl = self.url.replace('ftp://', '')
-        req = urllib2.Request("ftp://%s:%s@%s"%(self.auth[0], self.auth[1], ftpUrl))
+        req = urllib2.Request("ftp://%s:%s@%s" % (self.auth[0], self.auth[1], ftpUrl))
         req.timeout = self.timeout
         ftpObj = ftped.ftp_open(req)
         return ftpObj
-        
+
     def __startHttpPartial__(self, startPos, endPos, callBack=None):
-        f = open(self.localFileName , "wb")
+        f = open(self.localFileName, "wb")
         if self.auth:
             self.__authHttp__()
         req = urllib2.Request(self.url)
         req.headers['Range'] = 'bytes=%s-%s' % (startPos, endPos)
         urllib2Obj = urllib2.urlopen(req, timeout=self.timeout)
         self.__downloadFile__(urllib2Obj, f, callBack=callBack)
-    
+
     def __startHttpResume__(self, restart=None, callBack=None):
         """starts to resume HTTP"""
         curSize = self.getLocalFileSize()
@@ -152,9 +164,9 @@ class DownloadFile(object):
             return False
         self.cur = curSize
         if restart:
-            f = open(self.localFileName , "wb")
+            f = open(self.localFileName, "wb")
         else:
-            f = open(self.localFileName , "ab")
+            f = open(self.localFileName, "ab")
         if self.auth:
             self.__authHttp__()
         req = urllib2.Request(self.url)
@@ -168,12 +180,12 @@ class DownloadFile(object):
         if curSize >= self.urlFilesize:
             return False
         if restart:
-            f = open(self.localFileName , "wb")
+            f = open(self.localFileName, "wb")
         else:
-            f = open(self.localFileName , "ab")
+            f = open(self.localFileName, "ab")
         ftper = ftplib.FTP(timeout=60)
         parseObj = urlparse.urlparse(self.url)
-        baseUrl= parseObj.hostname
+        baseUrl = parseObj.hostname
         urlPort = parseObj.port
         bPath = os.path.basename(parseObj.path)
         gPath = parseObj.path.replace(bPath, "")
@@ -185,13 +197,13 @@ class DownloadFile(object):
             ftper.cwd(unEncgPath)
         ftper.sendcmd("TYPE I")
         ftper.sendcmd("REST " + str(curSize))
-        downCmd = "RETR "+ fileName
+        downCmd = "RETR " + fileName
         ftper.retrbinary(downCmd, f.write)
-        
+
     def getUrlFilename(self, url):
         """returns filename from url"""
         return urllib.unquote(os.path.basename(url))
-        
+
     def getUrlFileSize(self):
         """gets filesize of remote file from ftp or http server"""
         if self.type == 'http':
@@ -200,17 +212,17 @@ class DownloadFile(object):
             urllib2Obj = urllib2.urlopen(self.url, timeout=self.timeout)
             size = urllib2Obj.headers.get('content-length')
             return size
-        
+
     def getLocalFileSize(self):
         """gets filesize of local file"""
         size = os.stat(self.localFileName).st_size
         return size
-        
+
     def getType(self):
         """returns protocol of url (ftp or http)"""
         type = urlparse.urlparse(self.url).scheme
-        return type	
-        
+        return type
+
     def checkExists(self):
         """Checks to see if the file in the url in self.url exists"""
         if self.auth:
@@ -235,7 +247,7 @@ class DownloadFile(object):
         """starts the file download"""
         self.curretry = 0
         self.cur = 0
-        f = open(self.localFileName , "wb")
+        f = open(self.localFileName, "wb")
         if self.auth:
             if self.type == 'http':
                 self.__authHttp__()
@@ -257,7 +269,7 @@ class DownloadFile(object):
             self.__startHttpResume__(callBack=callBack)
         elif type == 'ftp':
             self.__startFtpResume__()
-            
+
     def partialDownload(self, startPos, endPos, callBack=None):
         """downloads a piece of a file, only supports HTTP"""
         if self.type == 'http':
@@ -265,16 +277,16 @@ class DownloadFile(object):
         elif self.type == 'ftp':
             raise FileDownloaderError("Partial download doesn't support ftp.")
 
-            
+
 class FileDownloaderError(Exception):
     def __init(self, message=''):
         self.message = message
-        
+
 
 class TokenBucket(object):
     """An implementation of the token bucket algorithm.
        Slightly modified from http://code.activestate.com/recipes/511490-implementation-of-the-token-bucket-algorithm/"""
-    
+
     def __init__(self, bucket_size, fill_rate):
         """tokens is the total tokens in the bucket. fill_rate is the
         rate in tokens/second that the bucket will be refilled."""
@@ -300,9 +312,10 @@ class TokenBucket(object):
         self.timestamp = now
         return self._tokens
 
+
 def hash_file(filename):
     h = hashlib.sha1()
-    with open(filename,'rb') as file:
+    with open(filename, 'rb') as file:
         chunk = 0
         chunk = file.read(1024)
         h.update(chunk)

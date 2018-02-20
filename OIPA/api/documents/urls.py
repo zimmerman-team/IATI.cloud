@@ -6,4 +6,4 @@ urlpatterns = [
     url(r'^$',
         api.documents.views.DocumentList.as_view(),
         name='document-list'),
-    ]
+]

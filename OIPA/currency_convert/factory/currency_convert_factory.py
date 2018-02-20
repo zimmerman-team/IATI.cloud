@@ -4,6 +4,7 @@ from iati_codelists.factory.codelist_factory import CurrencyFactory
 from factory import SubFactory
 from decimal import Decimal
 
+
 class MonthlyAverageFactory(DjangoModelFactory):
     class Meta:
         model = MonthlyAverage

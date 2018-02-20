@@ -3,8 +3,9 @@ from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
 from api.generics.serializers import DynamicFieldsModelSerializer, DynamicFieldsSerializer
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
+
 class DynamicView(GenericAPIView):
-            
+
     # foreign / one-to-one fields that can be used with select_related()
     select_related_fields = []
     serializer_fields = []
@@ -17,21 +18,21 @@ class DynamicView(GenericAPIView):
         # TODO: move this to a meta class, to evaluate once when defining the class
         # TODO: This is not efficient - 2016-01-20
 
-        serializer_class = self.get_serializer_class() 
-        serializer = serializer_class() # need an instance to extract fields
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class()  # need an instance to extract fields
         model = serializer_class.Meta.model
 
         assert issubclass(serializer_class, DynamicFieldsModelSerializer) or issubclass(serializer_class, DynamicFieldsSerializer), (
-            "serializer class must be an instance of DynamicFieldsModelSerializer "
-            "instead got %s") % (serializer_class.__name__,)
+            "serializer class must be an instance of DynamicFieldsModelSerializer " "instead got %s") % (serializer_class.__name__,)
 
         self.serializer_fields = serializer.fields.keys()
 
-        self.select_related_fields = [ field.name for field in model._meta.fields \
-                if isinstance(field, (ForeignKey, OneToOneField)) ]
+        self.select_related_fields = [field.name for field in model._meta.fields
+                                      if isinstance(field, (ForeignKey, OneToOneField))]
 
-        self.field_source_mapping = { field.field_name: field.source for field in serializer.fields.values() \
-                if isinstance(field, (ForeignKey, OneToOneField)) }
+        self.field_source_mapping = {
+            field.field_name: field.source for field in serializer.fields.values() if isinstance(
+                field, (ForeignKey, OneToOneField))}
 
     def _get_query_fields(self):
         if not self.request:
@@ -50,7 +51,8 @@ class DynamicView(GenericAPIView):
         """
 
         fields = self._get_query_fields(*args, **kwargs)
-        if not fields: fields = self.serializer_fields
+        if not fields:
+            fields = self.serializer_fields
 
         select_related_fields = list(set(self.select_related_fields) & set(fields))
 
@@ -66,7 +68,6 @@ class DynamicView(GenericAPIView):
 
         return queryset
 
-
     def get_serializer(self, *args, **kwargs):
         """
         Apply 'fields' to dynamic fields serializer
@@ -75,10 +76,12 @@ class DynamicView(GenericAPIView):
         kwargs['context'] = self.get_serializer_context()
         return super(DynamicView, self).get_serializer(fields=fields, *args, **kwargs)
 
+
 class DynamicListView(DynamicView, ListAPIView):
     """
     List view with dynamic properties
     """
+
 
 class DynamicDetailView(DynamicView, RetrieveAPIView):
     """
@@ -91,16 +94,18 @@ class DynamicListCRUDView(DynamicView, ListCreateAPIView):
     List view with dynamic properties
     """
 
+
 class DynamicDetailCRUDView(DynamicView, RetrieveUpdateDestroyAPIView):
     """
     List view with dynamic properties
     """
 
+
 class SaveAllSerializer(mixins.RetrieveModelMixin,
-                          mixins.UpdateModelMixin,
-                          mixins.DestroyModelMixin,
-                          mixins.CreateModelMixin,
-                          GenericAPIView):
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin,
+                        mixins.CreateModelMixin,
+                        GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -116,4 +121,3 @@ class SaveAllSerializer(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-

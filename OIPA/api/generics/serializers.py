@@ -39,7 +39,7 @@ class SkipNullMixin(object):
             elif instance == attribute:
                 result = field.to_representation(attribute)
 
-                if not bool(result): 
+                if not bool(result):
                     continue
                 else:
                     ret[field.field_name] = result
@@ -65,7 +65,7 @@ class FilteredListSerializer(serializers.ListSerializer):
 
         if self.filter_class:
             queryset = self.filter_class(request.query_params, queryset=queryset).qs
-        
+
         return super(FilteredListSerializer, self).to_representation(queryset)
 
 
@@ -78,8 +78,9 @@ class FilterableModelSerializer(serializers.ModelSerializer):
 
         kwargs['child'] = cls()
         kwargs['filter_class'] = filter_class
- 
+
         return FilteredListSerializer(*args, **kwargs)
+
 
 class DynamicFieldsSerializer(serializers.Serializer):
     """
@@ -100,6 +101,7 @@ class DynamicFieldsSerializer(serializers.Serializer):
 
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
+
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
@@ -141,4 +143,11 @@ class SerializerNoValidation(DynamicFieldsSerializer):
         kwargs.pop('required', None)
         kwargs.pop('allow_null', None)
         kwargs.pop('allow_blank', None)
-        super(SerializerNoValidation, self).__init__(required=False, allow_null=True, *args, **kwargs)
+        super(
+            SerializerNoValidation,
+            self).__init__(
+            required=False,
+            allow_null=True,
+            *
+            args,
+            **kwargs)

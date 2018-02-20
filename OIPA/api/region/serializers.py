@@ -4,6 +4,7 @@ import iati.models
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.fields import GeometryField
 
+
 class RegionVocabularySerializer(serializers.ModelSerializer):
     code = serializers.CharField()
 
@@ -25,6 +26,7 @@ class BasicRegionSerializer(DynamicFieldsModelSerializer):
             'name',
             'region_vocabulary'
         )
+
 
 class RegionSerializer(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='regions:region-detail')

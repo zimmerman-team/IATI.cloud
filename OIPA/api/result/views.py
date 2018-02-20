@@ -13,7 +13,7 @@ class ResultAggregations(AggregationView):
     ## Group by options
 
     API request has to include `group_by` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -39,22 +39,22 @@ class ResultAggregations(AggregationView):
     queryset = Result.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend,)
     filter_class = ResultFilter
-    
+
     allowed_aggregations = (
         Aggregation(
             query_param='target',
             field='target',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__target'), 
-                function='CAST', 
+                F('resultindicator__resultindicatorperiod__target'),
+                function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
         Aggregation(
             query_param='actual',
             field='actual',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__actual'), 
-                function='CAST', 
+                F('resultindicator__resultindicatorperiod__actual'),
+                function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
         Aggregation(
@@ -76,4 +76,3 @@ class ResultAggregations(AggregationView):
             renamed_fields="result_title"
         ),
     )
-

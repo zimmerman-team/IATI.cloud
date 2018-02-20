@@ -18,6 +18,7 @@ from rest_framework import status
 
 from api.organisation.validators import organisation_required_fields
 
+
 def custom_get_object(self):
     """
     a custom version of view.get_object, to decode the url encoded by the
@@ -35,6 +36,7 @@ def custom_get_object_from_queryset(self, queryset):
     filter_kwargs = {self.lookup_field: decoded_lookup_url}
     return get_object_or_404(queryset, **filter_kwargs)
 
+
 class FilterPublisherMixin(object):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
@@ -43,6 +45,7 @@ class FilterPublisherMixin(object):
         publisher_id = self.kwargs.get('publisher_id')
 
         return Organisation.objects.filter(publisher__id=publisher_id)
+
 
 class OrganisationList(DynamicListView):
     """
@@ -58,7 +61,8 @@ class OrganisationList(DynamicListView):
     """
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
-    fields = ('url', 'organisation_identifier','last_updated_datetime', 'name')
+    fields = ('url', 'organisation_identifier', 'last_updated_datetime', 'name')
+
 
 class OrganisationDetail(DynamicDetailView):
     """
@@ -81,6 +85,7 @@ class OrganisationDetail(DynamicDetailView):
     """
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
+
 
 class OrganisationMarkReadyToPublish(APIView, FilterPublisherMixin):
 
@@ -131,6 +136,7 @@ class ParticipatedActivities(ActivityList):
     URI is constructed as follows: `/api/activities/{activity_id}`
 
     """
+
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, organisation.models.Organisation.objects.all())
@@ -159,6 +165,7 @@ class ReportedActivities(ActivityList):
     URI is constructed as follows: `/api/activities/{activity_id}`
 
     """
+
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, organisation.models.Organisation.objects.all())
@@ -187,6 +194,7 @@ class ProvidedTransactions(TransactionList):
     URI is constructed as follows: `/api/transactions/{activity_id}`
 
     """
+
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, organisation.models.Organisation.objects.all())
@@ -215,6 +223,7 @@ class ReceivedTransactions(TransactionList):
     URI is constructed as follows: `/api/transactions/{activity_id}`
 
     """
+
     def get_queryset(self):
         organisation = custom_get_object_from_queryset(
             self, organisation.models.Organisation.objects.all())
@@ -236,7 +245,6 @@ class UpdateOrganisationSearchMixin(object):
     def perform_update(self, serializer):
         serializer.save()
         self.reindex_organisation(serializer)
-
 
 
 class OrganisationListCRUD(FilterPublisherMixin, DynamicListCRUDView):
@@ -316,6 +324,7 @@ class OrganisationTotalBudgetListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationTotalBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationTotalBudgetSerializer
 
@@ -325,6 +334,7 @@ class OrganisationTotalBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.TotalBudget.objects.get(pk=pk)
+
 
 class OrganisationTotalBudgetBudgetLineListCRUD(ListCreateAPIView):
     serializer_class = serializers.TotalBudgetBudgetLineSerializer
@@ -339,6 +349,7 @@ class OrganisationTotalBudgetBudgetLineListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationTotalBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.TotalBudgetBudgetLineSerializer
 
@@ -348,6 +359,7 @@ class OrganisationTotalBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.TotalBudgetLine.objects.get(pk=pk)
+
 
 class OrganisationRecipientOrgBudgetListCRUD(ListCreateAPIView):
     serializer_class = serializers.OrganisationRecipientOrgBudgetSerializer
@@ -362,6 +374,7 @@ class OrganisationRecipientOrgBudgetListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationRecipientOrgBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationRecipientOrgBudgetSerializer
 
@@ -371,6 +384,7 @@ class OrganisationRecipientOrgBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.RecipientOrgBudget.objects.get(pk=pk)
+
 
 class OrganisationRecipientOrgBudgetBudgetLineListCRUD(ListCreateAPIView):
     serializer_class = serializers.RecipientOrgBudgetLineSerializer
@@ -385,6 +399,7 @@ class OrganisationRecipientOrgBudgetBudgetLineListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationRecipientOrgBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RecipientOrgBudgetLineSerializer
 
@@ -394,6 +409,7 @@ class OrganisationRecipientOrgBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAP
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.RecipientOrgBudgetLine.objects.get(pk=pk)
+
 
 class OrganisationRecipientCountryBudgetListCRUD(ListCreateAPIView):
     serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
@@ -408,6 +424,7 @@ class OrganisationRecipientCountryBudgetListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationRecipientCountryBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationRecipientCountryBudgetSerializer
 
@@ -418,6 +435,7 @@ class OrganisationRecipientCountryBudgetDetailCRUD(RetrieveUpdateDestroyAPIView)
         pk = self.kwargs.get('id')
         return models.RecipientCountryBudget.objects.get(pk=pk)
 
+
 class OrganisationRecipientCountryBudgetBudgetLineListCRUD(ListCreateAPIView):
     serializer_class = serializers.RecipientCountryBudgetLineSerializer
 
@@ -427,9 +445,11 @@ class OrganisationRecipientCountryBudgetBudgetLineListCRUD(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('recipient_country_budget_id')
         try:
-            return models.RecipientCountryBudget.objects.get(pk=pk).recipientcountrybudgetline_set.all()
+            return models.RecipientCountryBudget.objects.get(
+                pk=pk).recipientcountrybudgetline_set.all()
         except Organisation.DoesNotExist:
             return None
+
 
 class OrganisationRecipientCountryBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RecipientCountryBudgetLineSerializer
@@ -440,6 +460,7 @@ class OrganisationRecipientCountryBudgetBudgetLineDetailCRUD(RetrieveUpdateDestr
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.RecipientCountryBudgetLine.objects.get(pk=pk)
+
 
 class OrganisationRecipientRegionBudgetListCRUD(ListCreateAPIView):
     serializer_class = serializers.OrganisationRecipientRegionBudgetSerializer
@@ -453,6 +474,7 @@ class OrganisationRecipientRegionBudgetListCRUD(ListCreateAPIView):
             return models.Organisation.objects.get(pk=pk).recipientregionbudget_set.all()
         except Organisation.DoesNotExist:
             return None
+
 
 class OrganisationRecipientRegionBudgetDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationRecipientRegionBudgetSerializer
@@ -474,9 +496,11 @@ class OrganisationRecipientRegionBudgetBudgetLineListCRUD(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('recipient_region_budget_id')
         try:
-            return models.RecipientRegionBudget.objects.get(pk=pk).recipientregionbudgetline_set.all()
+            return models.RecipientRegionBudget.objects.get(
+                pk=pk).recipientregionbudgetline_set.all()
         except Organisation.DoesNotExist:
             return None
+
 
 class OrganisationRecipientRegionBudgetBudgetLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RecipientRegionBudgetLineSerializer
@@ -487,6 +511,7 @@ class OrganisationRecipientRegionBudgetBudgetLineDetailCRUD(RetrieveUpdateDestro
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.RecipientRegionBudgetLine.objects.get(pk=pk)
+
 
 class OrganisationTotalExpenditureListCRUD(ListCreateAPIView):
     serializer_class = serializers.OrganisationTotalExpenditureSerializer
@@ -500,6 +525,7 @@ class OrganisationTotalExpenditureListCRUD(ListCreateAPIView):
             return models.Organisation.objects.get(pk=pk).totalexpenditure_set.all()
         except Organisation.DoesNotExist:
             return None
+
 
 class OrganisationTotalExpenditureDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationTotalExpenditureSerializer
@@ -525,6 +551,7 @@ class OrganisationTotalExpenditureExpenseLineListCRUD(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationTotalExpenditureExpenseLineDetailCRUD(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.TotalExpenditureLineSerializer
 
@@ -549,6 +576,7 @@ class OrganisationDocumentLinkList(ListCreateAPIView):
         except Organisation.DoesNotExist:
             return None
 
+
 class OrganisationDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationDocumentLinkSerializer
 
@@ -558,6 +586,7 @@ class OrganisationDocumentLinkDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('id')
         return models.OrganisationDocumentLink.objects.get(pk=pk)
+
 
 class OrganisationDocumentLinkCategoryList(ListCreateAPIView):
     serializer_class = serializers.OrganisationDocumentLinkCategorySerializer
@@ -569,6 +598,7 @@ class OrganisationDocumentLinkCategoryList(ListCreateAPIView):
         pk = self.kwargs.get('document_link_id')
         return models.OrganisationDocumentLink(pk=pk).documentlinkcategory_set.all()
 
+
 class OrganisationDocumentLinkCategoryDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationDocumentLinkCategorySerializer
 
@@ -578,6 +608,7 @@ class OrganisationDocumentLinkCategoryDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('category_id')
         return models.OrganisationDocumentLinkCategory.objects.get(pk=pk)
+
 
 class OrganisationDocumentLinkLanguageList(ListCreateAPIView):
     serializer_class = serializers.OrganisationDocumentLinkLanguageSerializer
@@ -589,6 +620,7 @@ class OrganisationDocumentLinkLanguageList(ListCreateAPIView):
         pk = self.kwargs.get('document_link_id')
         return models.OrganisationDocumentLink(pk=pk).documentlinklanguage_set.all()
 
+
 class OrganisationDocumentLinkLanguageDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationDocumentLinkLanguageSerializer
 
@@ -599,6 +631,7 @@ class OrganisationDocumentLinkLanguageDetail(RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get('language_id')
         return models.OrganisationDocumentLinkLanguage.objects.get(pk=pk)
 
+
 class OrganisationDocumentLinkRecipientCountryList(ListCreateAPIView):
     serializer_class = serializers.OrganisationDocumentLinkRecipientCountrySerializer
 
@@ -608,6 +641,7 @@ class OrganisationDocumentLinkRecipientCountryList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('document_link_id')
         return models.OrganisationDocumentLink(pk=pk).documentlinkrecipient_country_set.all()
+
 
 class OrganisationDocumentLinkRecipientCountryDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganisationDocumentLinkRecipientCountrySerializer

@@ -5,6 +5,7 @@ from django.conf import settings
 from iati.models import Document
 from iati.document_search_indexes import reindex_all_documents, reindex_document
 
+
 class Command(BaseCommand):
     """
         Reindex full text search values for all documents
@@ -12,11 +13,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, document_collector):
         document_collector.add_argument('--document',
-            action='store',
-            dest='document',
-            default=None,
-            help='Reindex only this document')
-
+                                        action='store',
+                                        dest='document',
+                                        default=None,
+                                        help='Reindex only this document')
 
     def handle(self, *args, **options):
         if options['document']:

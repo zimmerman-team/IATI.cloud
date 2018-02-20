@@ -23,10 +23,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Activity',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_identifier', models.CharField(db_index=True, max_length=150, unique=True)),
                 ('normalized_iati_identifier', models.CharField(db_index=True, max_length=150)),
-                ('hierarchy', models.SmallIntegerField(blank=True, choices=[(1, 'Parent'), (2, 'Child')], db_index=True, default=1)),
+                ('hierarchy', models.SmallIntegerField(blank=True, choices=[
+                 (1, 'Parent'), (2, 'Child')], db_index=True, default=1)),
                 ('last_updated_model', models.DateTimeField(auto_now=True, null=True)),
                 ('last_updated_datetime', models.DateTimeField(blank=True, null=True)),
                 ('linked_data_uri', models.CharField(blank=True, default=b'', max_length=100, null=True)),
@@ -36,7 +38,8 @@ class Migration(migrations.Migration):
                 ('planned_end', models.DateField(blank=True, db_index=True, default=None, null=True)),
                 ('actual_end', models.DateField(blank=True, db_index=True, default=None, null=True)),
                 ('end_date', models.DateField(blank=True, db_index=True, default=None, null=True)),
-                ('capital_spend', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('capital_spend', models.DecimalField(blank=True,
+                                                      decimal_places=2, default=None, max_digits=5, null=True)),
                 ('has_conditions', models.BooleanField(default=False)),
                 ('humanitarian', models.NullBooleanField()),
                 ('secondary_reporter', models.BooleanField(default=False)),
@@ -53,17 +56,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityAggregation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('budget_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('budget_value', models.DecimalField(blank=True,
+                                                     db_index=True, decimal_places=2, max_digits=15, null=True)),
                 ('budget_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('disbursement_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('disbursement_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('incoming_funds_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('incoming_funds_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('commitment_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('commitment_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('expenditure_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('expenditure_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
+                ('disbursement_value', models.DecimalField(blank=True,
+                                                           db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('disbursement_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('incoming_funds_value', models.DecimalField(blank=True,
+                                                             db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('incoming_funds_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('commitment_value', models.DecimalField(blank=True,
+                                                         db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('commitment_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('expenditure_value', models.DecimalField(blank=True,
+                                                          db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('expenditure_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
             ],
             options={
                 'abstract': False,
@@ -72,16 +85,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityDate',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iso_date', models.DateField()),
             ],
         ),
         migrations.CreateModel(
             name='ActivityParticipatingOrganisation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=250, null=True)),
-                ('normalized_ref', models.CharField(blank=True, db_index=True, default=None, max_length=120, null=True)),
+                ('normalized_ref', models.CharField(blank=True,
+                                                    db_index=True, default=None, max_length=120, null=True)),
                 ('org_activity_id', models.CharField(db_index=True, max_length=150, null=True)),
                 ('primary_name', models.TextField(blank=True)),
             ],
@@ -93,17 +109,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityPlusChildAggregation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('budget_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('budget_value', models.DecimalField(blank=True,
+                                                     db_index=True, decimal_places=2, max_digits=15, null=True)),
                 ('budget_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('disbursement_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('disbursement_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('incoming_funds_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('incoming_funds_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('commitment_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('commitment_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('expenditure_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('expenditure_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
+                ('disbursement_value', models.DecimalField(blank=True,
+                                                           db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('disbursement_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('incoming_funds_value', models.DecimalField(blank=True,
+                                                             db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('incoming_funds_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('commitment_value', models.DecimalField(blank=True,
+                                                         db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('commitment_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('expenditure_value', models.DecimalField(blank=True,
+                                                          db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('expenditure_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
             ],
             options={
                 'abstract': False,
@@ -112,7 +138,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityPolicyMarker',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
             ],
             options={
@@ -123,8 +150,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityRecipientCountry',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('percentage', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('percentage', models.DecimalField(blank=True,
+                                                   decimal_places=2, default=None, max_digits=5, null=True)),
             ],
             options={
                 'verbose_name': 'Recipient country',
@@ -134,9 +163,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityRecipientRegion',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
-                ('percentage', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('percentage', models.DecimalField(blank=True,
+                                                   decimal_places=2, default=None, max_digits=5, null=True)),
             ],
             options={
                 'verbose_name': 'Recipient region',
@@ -146,9 +177,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityReportingOrganisation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(db_index=True, max_length=250)),
-                ('normalized_ref', models.CharField(blank=True, db_index=True, default=b'', max_length=120)),
+                ('normalized_ref', models.CharField(blank=True,
+                                                    db_index=True, default=b'', max_length=120)),
                 ('secondary_reporter', models.BooleanField(default=False)),
             ],
             options={
@@ -159,7 +192,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivitySearch',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_identifier', djorm_pgfulltext.fields.VectorField()),
                 ('text', djorm_pgfulltext.fields.VectorField()),
                 ('title', djorm_pgfulltext.fields.VectorField()),
@@ -176,7 +210,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivitySearchData',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('search_identifier', models.CharField(db_index=True, max_length=150)),
                 ('search_description', models.TextField(max_length=80000)),
                 ('search_title', models.TextField(max_length=80000)),
@@ -191,9 +226,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivitySector',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
-                ('percentage', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('percentage', models.DecimalField(blank=True,
+                                                   decimal_places=2, default=None, max_digits=5, null=True)),
             ],
             options={
                 'verbose_name': 'Sector',
@@ -203,14 +240,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityWebsite',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.URLField()),
             ],
         ),
         migrations.CreateModel(
             name='Budget',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('period_start', models.DateField(blank=True, default=None)),
                 ('period_end', models.DateField(blank=True, default=None)),
                 ('value', models.DecimalField(blank=True, decimal_places=2, max_digits=15, null=True)),
@@ -227,37 +266,51 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BudgetItem',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('percentage', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('percentage', models.DecimalField(blank=True,
+                                                   decimal_places=2, default=None, max_digits=5, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='BudgetItemDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='BudgetSector',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('percentage', models.DecimalField(decimal_places=2, max_digits=5)),
             ],
         ),
         migrations.CreateModel(
             name='ChildAggregation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('budget_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('budget_value', models.DecimalField(blank=True,
+                                                     db_index=True, decimal_places=2, max_digits=15, null=True)),
                 ('budget_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('disbursement_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('disbursement_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('incoming_funds_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('incoming_funds_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('commitment_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('commitment_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
-                ('expenditure_value', models.DecimalField(blank=True, db_index=True, decimal_places=2, max_digits=15, null=True)),
-                ('expenditure_currency', models.CharField(blank=True, default=None, max_length=3, null=True)),
+                ('disbursement_value', models.DecimalField(blank=True,
+                                                           db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('disbursement_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('incoming_funds_value', models.DecimalField(blank=True,
+                                                             db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('incoming_funds_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('commitment_value', models.DecimalField(blank=True,
+                                                         db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('commitment_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
+                ('expenditure_value', models.DecimalField(blank=True,
+                                                          db_index=True, decimal_places=2, max_digits=15, null=True)),
+                ('expenditure_currency', models.CharField(
+                    blank=True, default=None, max_length=3, null=True)),
             ],
             options={
                 'abstract': False,
@@ -266,20 +319,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Condition',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Conditions',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('attached', models.BooleanField()),
             ],
         ),
         migrations.CreateModel(
             name='ContactInfo',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('telephone', models.CharField(blank=True, default=b'', max_length=100, null=True)),
                 ('email', models.TextField(blank=True, default=b'', null=True)),
                 ('website', models.CharField(blank=True, default=b'', max_length=255, null=True)),
@@ -288,64 +344,79 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ContactInfoDepartment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ContactInfoJobTitle',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ContactInfoMailingAddress',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ContactInfoOrganisation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ContactInfoPersonName',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='CountryBudgetItem',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='CrsAdd',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('channel_code', models.CharField(blank=True, max_length=50, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='CrsAddLoanStatus',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('year', models.IntegerField(blank=True, default=None, null=True)),
                 ('value_date', models.DateField(blank=True, default=None, null=True)),
-                ('interest_received', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=15, null=True)),
-                ('principal_outstanding', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=15, null=True)),
-                ('principal_arrears', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=15, null=True)),
-                ('interest_arrears', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=15, null=True)),
+                ('interest_received', models.DecimalField(blank=True,
+                                                          decimal_places=2, default=None, max_digits=15, null=True)),
+                ('principal_outstanding', models.DecimalField(blank=True,
+                                                              decimal_places=2, default=None, max_digits=15, null=True)),
+                ('principal_arrears', models.DecimalField(blank=True,
+                                                          decimal_places=2, default=None, max_digits=15, null=True)),
+                ('interest_arrears', models.DecimalField(blank=True,
+                                                         decimal_places=2, default=None, max_digits=15, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='CrsAddLoanTerms',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('rate_1', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
-                ('rate_2', models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=5, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('rate_1', models.DecimalField(blank=True,
+                                               decimal_places=2, default=None, max_digits=5, null=True)),
+                ('rate_2', models.DecimalField(blank=True,
+                                               decimal_places=2, default=None, max_digits=5, null=True)),
                 ('repayment_plan_text', models.TextField(blank=True, default=b'', null=True)),
                 ('commitment_date', models.DateField(blank=True, default=None, null=True)),
                 ('repayment_first_date', models.DateField(blank=True, default=None, null=True)),
@@ -355,20 +426,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CrsAddOtherFlags',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('significance', models.BooleanField()),
             ],
         ),
         migrations.CreateModel(
             name='Description',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Document',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('long_url', models.TextField(default=b'', max_length=500)),
                 ('url_is_valid', models.BooleanField(default=False)),
                 ('document_name', models.CharField(default=b'', max_length=500)),
@@ -388,7 +462,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DocumentLink',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.TextField(max_length=500)),
                 ('iso_date', models.DateField(blank=True, null=True)),
             ],
@@ -396,7 +471,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DocumentLinkCategory',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
             options={
                 'verbose_name_plural': 'Document link categories',
@@ -405,19 +481,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DocumentLinkLanguage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='DocumentLinkTitle',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='DocumentSearch',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', djorm_pgfulltext.fields.VectorField()),
                 ('text', djorm_pgfulltext.fields.VectorField()),
                 ('last_reindexed', models.DateTimeField()),
@@ -426,7 +505,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Fss',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('extraction_date', models.DateField()),
                 ('priority', models.BooleanField(default=False)),
                 ('phaseout_year', models.IntegerField(blank=True, null=True)),
@@ -435,7 +515,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FssForecast',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('year', models.IntegerField()),
                 ('value_date', models.DateField()),
                 ('value', models.DecimalField(decimal_places=2, max_digits=15)),
@@ -444,7 +525,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HumanitarianScope',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('code', models.CharField(max_length=100)),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
             ],
@@ -452,7 +534,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LegacyData',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, max_length=150, null=True)),
                 ('value', models.CharField(blank=True, max_length=200, null=True)),
                 ('iati_equivalent', models.CharField(blank=True, max_length=150, null=True)),
@@ -461,23 +544,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Location',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=200, null=True)),
                 ('location_id_code', models.CharField(blank=True, default=b'', max_length=255)),
                 ('point_srs_name', models.CharField(blank=True, default=b'', max_length=255)),
-                ('point_pos', django.contrib.gis.db.models.fields.PointField(default=None, geography=True, null=True, srid=4326)),
+                ('point_pos', django.contrib.gis.db.models.fields.PointField(
+                    default=None, geography=True, null=True, srid=4326)),
             ],
         ),
         migrations.CreateModel(
             name='LocationActivityDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='LocationAdministrative',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('code', models.CharField(max_length=255)),
                 ('level', models.IntegerField(blank=True, default=None, null=True)),
             ],
@@ -485,27 +572,32 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LocationDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='LocationName',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Narrative',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('related_object_id', models.IntegerField(db_index=True, null=True, verbose_name=b'related object')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('related_object_id', models.IntegerField(
+                    db_index=True, null=True, verbose_name=b'related object')),
                 ('content', models.TextField()),
             ],
         ),
         migrations.CreateModel(
             name='OtherIdentifier',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('identifier', models.CharField(max_length=100)),
                 ('owner_ref', models.CharField(default=b'', max_length=100)),
             ],
@@ -513,7 +605,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlannedDisbursement',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('period_start', models.DateField(blank=True, default=None)),
                 ('period_end', models.DateField(blank=True, default=None, null=True)),
                 ('value', models.DecimalField(blank=True, decimal_places=2, max_digits=15, null=True)),
@@ -530,27 +623,32 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlannedDisbursementProvider',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('provider_activity_ref', models.CharField(blank=True, db_index=True, default=b'', max_length=200, null=True, verbose_name=b'provider-activity-id')),
+                ('provider_activity_ref', models.CharField(blank=True, db_index=True,
+                                                           default=b'', max_length=200, null=True, verbose_name=b'provider-activity-id')),
                 ('primary_name', models.CharField(blank=True, db_index=True, default=b'', max_length=250)),
             ],
         ),
         migrations.CreateModel(
             name='PlannedDisbursementReceiver',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('receiver_activity_ref', models.CharField(blank=True, db_index=True, default=b'', max_length=200, null=True, verbose_name=b'receiver-activity-id')),
+                ('receiver_activity_ref', models.CharField(blank=True, db_index=True,
+                                                           default=b'', max_length=200, null=True, verbose_name=b'receiver-activity-id')),
                 ('primary_name', models.CharField(blank=True, db_index=True, default=b'', max_length=250)),
             ],
         ),
         migrations.CreateModel(
             name='RelatedActivity',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, db_index=True, default=b'', max_length=200)),
             ],
             options={
@@ -560,20 +658,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Result',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('aggregation_status', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
             name='ResultDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicator',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('baseline_year', models.IntegerField(blank=True, default=None, null=True)),
                 ('baseline_value', models.CharField(blank=True, default=None, max_length=100, null=True)),
                 ('ascending', models.BooleanField(default=True)),
@@ -582,19 +683,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultIndicatorBaselineComment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorPeriod',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('period_start', models.DateField(blank=True, null=True)),
                 ('period_end', models.DateField(blank=True, null=True)),
                 ('target', models.DecimalField(blank=True, decimal_places=10, max_digits=25, null=True)),
@@ -604,13 +708,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultIndicatorPeriodActualComment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorPeriodActualDimension',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
                 ('value', models.CharField(max_length=100)),
             ],
@@ -618,20 +724,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultIndicatorPeriodActualLocation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorPeriodTargetComment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorPeriodTargetDimension',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
                 ('value', models.CharField(max_length=100)),
             ],
@@ -639,14 +748,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultIndicatorPeriodTargetLocation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
             name='ResultIndicatorReference',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('code', models.CharField(max_length=255)),
                 ('indicator_uri', models.URLField(blank=True, null=True)),
             ],
@@ -654,26 +765,30 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResultIndicatorTitle',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('primary_name', models.CharField(blank=True, db_index=True, default=b'', max_length=255)),
             ],
         ),
         migrations.CreateModel(
             name='ResultTitle',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Title',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Transaction',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=255, null=True)),
                 ('transaction_date', models.DateField(db_index=True)),
                 ('value', models.DecimalField(decimal_places=2, max_digits=15)),
@@ -691,64 +806,95 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TransactionDescription',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='TransactionProvider',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('provider_activity_ref', models.CharField(blank=True, db_index=True, default=b'', max_length=200, null=True, verbose_name=b'provider-activity-id')),
+                ('provider_activity_ref', models.CharField(blank=True, db_index=True,
+                                                           default=b'', max_length=200, null=True, verbose_name=b'provider-activity-id')),
                 ('primary_name', models.CharField(blank=True, db_index=True, default=b'', max_length=250)),
             ],
         ),
         migrations.CreateModel(
             name='TransactionReceiver',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('ref', models.CharField(blank=True, default=b'', max_length=250)),
                 ('normalized_ref', models.CharField(default=b'', max_length=120)),
-                ('receiver_activity_ref', models.CharField(blank=True, db_index=True, default=b'', max_length=200, null=True, verbose_name=b'receiver-activity-id')),
+                ('receiver_activity_ref', models.CharField(blank=True, db_index=True,
+                                                           default=b'', max_length=200, null=True, verbose_name=b'receiver-activity-id')),
                 ('primary_name', models.CharField(blank=True, db_index=True, default=b'', max_length=250)),
             ],
         ),
         migrations.CreateModel(
             name='TransactionRecipientCountry',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('reported_on_transaction', models.BooleanField(default=True)),
                 ('percentage', models.DecimalField(decimal_places=2, max_digits=5)),
-                ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geodata.Country')),
-                ('reported_transaction', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='transaction_recipient_country', to='iati.Transaction')),
-                ('transaction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
+                ('country', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='geodata.Country')),
+                ('reported_transaction',
+                 models.OneToOneField(null=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      related_name='transaction_recipient_country',
+                                      to='iati.Transaction')),
+                ('transaction', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
             ],
         ),
         migrations.CreateModel(
             name='TransactionRecipientRegion',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
                 ('reported_on_transaction', models.BooleanField(default=True)),
                 ('percentage', models.DecimalField(decimal_places=2, max_digits=5)),
                 ('region', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geodata.Region')),
-                ('reported_transaction', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='transaction_recipient_region', to='iati.Transaction')),
-                ('transaction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
-                ('vocabulary', models.ForeignKey(blank=True, default=1, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.RegionVocabulary')),
+                ('reported_transaction',
+                 models.OneToOneField(null=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      related_name='transaction_recipient_region',
+                                      to='iati.Transaction')),
+                ('transaction', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
+                ('vocabulary',
+                 models.ForeignKey(blank=True,
+                                   default=1,
+                                   null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='iati_vocabulary.RegionVocabulary')),
             ],
         ),
         migrations.CreateModel(
             name='TransactionSector',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('vocabulary_uri', models.URLField(blank=True, null=True)),
                 ('reported_on_transaction', models.BooleanField(default=True)),
                 ('percentage', models.DecimalField(decimal_places=2, max_digits=5)),
-                ('reported_transaction', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='transaction_sector', to='iati.Transaction')),
-                ('sector', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Sector')),
-                ('transaction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
-                ('vocabulary', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.SectorVocabulary')),
+                ('reported_transaction',
+                 models.OneToOneField(null=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      related_name='transaction_sector',
+                                      to='iati.Transaction')),
+                ('sector', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Sector')),
+                ('transaction', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati.Transaction')),
+                ('vocabulary', models.ForeignKey(blank=True, default=None, null=True,
+                                                 on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.SectorVocabulary')),
             ],
         ),
     ]

@@ -23,7 +23,11 @@ class Country(models.Model):
     capital_city = models.OneToOneField("City", related_name='capital_of', null=True, blank=True)
     region = models.ForeignKey(Region, null=True, blank=True)
     un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_countries')
-    unesco_region = models.ForeignKey('Region', null=True, blank=True, related_name='unesco_countries')
+    unesco_region = models.ForeignKey(
+        'Region',
+        null=True,
+        blank=True,
+        related_name='unesco_countries')
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)
@@ -128,5 +132,3 @@ class Adm1Region(models.Model):
 
     class Meta:
         verbose_name_plural = "admin1 regions"
-
-

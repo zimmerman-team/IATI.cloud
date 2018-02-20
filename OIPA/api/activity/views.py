@@ -86,7 +86,7 @@ class ActivityAggregations(AggregationView):
     ## Group by options
 
     API request has to include `group_by` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -104,7 +104,7 @@ class ActivityAggregations(AggregationView):
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -144,7 +144,7 @@ class ActivityAggregations(AggregationView):
             serializer_fields=('url', 'code', 'name', 'location'),
             name_search_field='recipient_country__name',
             renamed_name_search_field='recipient_country_name',
-        ),  
+        ),
         GroupBy(
             query_param="recipient_region",
             fields="recipient_region",
@@ -180,7 +180,8 @@ class ActivityAggregations(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields=("participating_organisations__primary_name", "participating_organisations__normalized_ref"),
+            fields=("participating_organisations__primary_name",
+                    "participating_organisations__normalized_ref"),
             renamed_fields=("participating_organisation", "participating_organisation_ref"),
             queryset=ActivityParticipatingOrganisation.objects.all(),
             name_search_field="participating_organisations__primary_name",
@@ -297,11 +298,11 @@ class ActivityList(DynamicListView):
     To search on subset of these fields the `q_fields` parameter can be used, like so;
     `q_fields=iati_identifier,title,description`
 
-    By default, search only return results if the hit resembles a full word. 
+    By default, search only return results if the hit resembles a full word.
     This can be altered through the `q_lookup` parameter. Options for this parameter are:
 
     - `exact` (default): Only return results when the query hit is a full word.
-    - `startswith`: Also returns results when the word stars with the query. 
+    - `startswith`: Also returns results when the word stars with the query.
 
     ## Ordering
 
@@ -334,23 +335,28 @@ class ActivityList(DynamicListView):
     ## Result details
 
     Each item contains summarized information on the activity being shown,
-    including the URI to activity details, which contain all information. 
+    including the URI to activity details, which contain all information.
     To show more information in list view the `fields` parameter can be used. Example;
     `fields=activity_id,title,country,any_field`.
 
     """
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+        DistanceFilter,
+        filters.RelatedOrderingFilter,
+    )
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
     fields = (
-        'url', 
-        'iati_identifier', 
-        'title', 
-        'descriptions', 
-        'transactions', 
+        'url',
+        'iati_identifier',
+        'title',
+        'descriptions',
+        'transactions',
         'reporting_organisations')
 
     always_ordering = 'id'
@@ -437,7 +443,6 @@ class ActivityDetail(DynamicDetailView):
 
     """
 
-
     queryset = Activity.objects.all()
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
@@ -510,7 +515,12 @@ class ActivityTransactionDetail(DynamicDetailView):
 class ActivityListCRUD(UpdateActivitySearchMixin, FilterPublisherMixin, DynamicListCRUDView):
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, DistanceFilter, filters.RelatedOrderingFilter,)
+    filter_backends = (
+        SearchFilter,
+        DjangoFilterBackend,
+        DistanceFilter,
+        filters.RelatedOrderingFilter,
+    )
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
@@ -570,6 +580,7 @@ class ActivityDetailCRUD(UpdateActivitySearchMixin, DynamicDetailCRUDView):
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
+
 
 class ActivityTransactionListCRUD(ListCreateAPIView):
     serializer_class = TransactionSerializer
@@ -661,7 +672,8 @@ class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin, ListCreat
             return None
 
 
-class ActivityParticipatingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityParticipatingOrganisationDetail(
+        UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ParticipatingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -861,7 +873,8 @@ class ActivityBudgetItemList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).country_budget_items.budgetitem_set.all()
+            return iati_models.Activity.objects.get(
+                pk=pk).country_budget_items.budgetitem_set.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1233,7 +1246,8 @@ class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_locations.all()
+            return iati_models.Activity.objects.get(
+                pk=pk).result_indicator_period_actual_locations.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1258,7 +1272,8 @@ class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_locations.all()
+            return iati_models.Activity.objects.get(
+                pk=pk).result_indicator_period_target_locations.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1283,7 +1298,8 @@ class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_actual_dimensions.all()
+            return iati_models.Activity.objects.get(
+                pk=pk).result_indicator_period_actual_dimensions.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1308,7 +1324,8 @@ class ResultIndicatorPeriodTargetDimensionList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_period_target_dimensions.all()
+            return iati_models.Activity.objects.get(
+                pk=pk).result_indicator_period_target_dimensions.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1455,4 +1472,3 @@ class ActivityFssForecastDetail(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         pk = self.kwargs.get('forecast_id')
         return iati_models.FssForecast.objects.get(pk=pk)
-

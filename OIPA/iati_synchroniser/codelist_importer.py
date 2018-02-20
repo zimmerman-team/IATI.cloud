@@ -22,7 +22,7 @@ class CodeListImporter():
 
     def __init__(self):
         self.looping_through_version = "2.02"
-        self.iati_versions = ["2.02",]
+        self.iati_versions = ["2.02", ]
 
     def synchronise_with_codelists(self):
         # Do categories first
@@ -120,10 +120,10 @@ class CodeListImporter():
 
         elif tag == "Version":
             if url is None:
-                url = 'http://iatistandard.org/'+self.looping_through_version.replace('.','')
+                url = 'http://iatistandard.org/' + self.looping_through_version.replace('.', '')
 
         if name is None or name == '':
-            logger.log(0, 'name is null in '+tag)
+            logger.log(0, 'name is null in ' + tag)
             name = code
 
         model = None
@@ -157,7 +157,6 @@ class CodeListImporter():
             print "name of code: {} , name: {} shortened to 200".format(item.code, item.name)
 
         item.codelist_iati_version = self.looping_through_version
-
 
         item = self.add_to_model_if_field_exists(model, item, 'description', description)
         item = self.add_to_model_if_field_exists(model, item, 'url', url)
@@ -227,7 +226,7 @@ class CodeListImporter():
                 new_codelist.save()
 
         cur_downloaded_xml = ("http://iatistandard.org/"
-                              + self.looping_through_version.replace('.','') +
+                              + self.looping_through_version.replace('.', '') +
                               "/codelists/downloads/clv1/"
                               "codelist/" + name + ".xml")
 
@@ -240,7 +239,7 @@ class CodeListImporter():
     def loop_through_codelists(self, version):
         downloaded_xml = urllib2.Request(
             "http://iatistandard.org/"
-            + version.replace('.','') +
+            + version.replace('.', '') +
             "/codelists/downloads/clv1/codelist.xml")
 
         file_opener = urllib2.build_opener()
@@ -254,4 +253,3 @@ class CodeListImporter():
 
         ssi = SdgSectorImporter()
         ssi.update()
-

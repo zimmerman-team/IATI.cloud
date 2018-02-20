@@ -16,13 +16,14 @@ class NoDatabaseFactory(DjangoModelFactory):
 class PublisherFactory(NoDatabaseFactory):
     class Meta:
         model = Publisher
-        django_get_or_create = [ 'publisher_iati_id' ]
+        django_get_or_create = ['publisher_iati_id']
 
     organisation = SubFactory(OrganisationFactory)
     iati_id = 'random-string'
     publisher_iati_id = 'NL-KVK-123456'
     name = 'dutchorg'
     display_name = 'Dutch organisation'
+
 
 class DatasetFactory(NoDatabaseFactory):
     class Meta:

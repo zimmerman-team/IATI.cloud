@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Chain',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('last_updated', models.DateTimeField(default=django.utils.timezone.now)),
             ],
@@ -27,24 +28,47 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChainLink',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('chain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='traceability.Chain')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('chain', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='traceability.Chain')),
             ],
         ),
         migrations.CreateModel(
             name='ChainLinkRelation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('relation', models.CharField(choices=[(b'incoming_fund', 'Incoming Fund'), (b'disbursement', 'Disbursement'), (b'expenditure', 'Expenditure'), (b'incoming_commitment', 'Incoming commitment'), (b'outgoing_commitment', 'Outgoing commitment'), (b'expenditure', 'Expenditure'), (b'parent', 'Parent'), (b'child', 'Child')], max_length=30)),
-                ('from_node', models.CharField(choices=[(b'start_node', 'Start node'), (b'end_node', 'End node')], max_length=10)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('relation',
+                 models.CharField(choices=[(b'incoming_fund',
+                                            'Incoming Fund'),
+                                           (b'disbursement',
+                                            'Disbursement'),
+                                           (b'expenditure',
+                                            'Expenditure'),
+                                           (b'incoming_commitment',
+                                            'Incoming commitment'),
+                                           (b'outgoing_commitment',
+                                            'Outgoing commitment'),
+                                           (b'expenditure',
+                                            'Expenditure'),
+                                           (b'parent',
+                                            'Parent'),
+                                           (b'child',
+                                            'Child')],
+                                  max_length=30)),
+                ('from_node', models.CharField(choices=[
+                 (b'start_node', 'Start node'), (b'end_node', 'End node')], max_length=10)),
                 ('related_id', models.CharField(max_length=100)),
-                ('chain_link', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='relations', to='traceability.ChainLink')),
+                ('chain_link', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                 related_name='relations', to='traceability.ChainLink')),
             ],
         ),
         migrations.CreateModel(
             name='ChainNode',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('activity_oipa_id', models.IntegerField()),
                 ('activity_iati_id', models.CharField(max_length=255)),
                 ('tier', models.IntegerField(default=None, null=True)),
@@ -52,29 +76,44 @@ class Migration(migrations.Migration):
                 ('eol', models.BooleanField(default=False)),
                 ('checked', models.BooleanField(default=False)),
                 ('treated_as_end_node', models.BooleanField(default=False)),
-                ('activity', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='iati.Activity')),
-                ('chain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='traceability.Chain')),
+                ('activity',
+                 models.ForeignKey(null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='iati.Activity')),
+                ('chain', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='traceability.Chain')),
             ],
         ),
         migrations.CreateModel(
             name='ChainNodeError',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('error_type', models.CharField(choices=[(b'info', 'Info'), (b'warning', 'Warning'), (b'error', 'Error')], max_length=10)),
-                ('mentioned_activity_or_org', models.CharField(default=None, max_length=255, null=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('error_type', models.CharField(choices=[
+                 (b'info', 'Info'), (b'warning', 'Warning'), (b'error', 'Error')], max_length=10)),
+                ('mentioned_activity_or_org', models.CharField(
+                    default=None, max_length=255, null=True)),
                 ('related_id', models.CharField(max_length=100)),
-                ('warning_level', models.CharField(choices=[(b'info', 'Info'), (b'warning', 'Warning'), (b'error', 'Error')], max_length=255)),
-                ('chain_node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='traceability.ChainNode')),
+                ('warning_level', models.CharField(choices=[
+                 (b'info', 'Info'), (b'warning', 'Warning'), (b'error', 'Error')], max_length=255)),
+                ('chain_node', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='traceability.ChainNode')),
             ],
         ),
         migrations.AddField(
             model_name='chainlink',
             name='end_node',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='end_link', to='traceability.ChainNode'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='end_link',
+                to='traceability.ChainNode'),
         ),
         migrations.AddField(
             model_name='chainlink',
             name='start_node',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='start_link', to='traceability.ChainNode'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='start_link',
+                to='traceability.ChainNode'),
         ),
     ]

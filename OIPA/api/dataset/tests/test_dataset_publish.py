@@ -7,6 +7,7 @@ from api.dataset.serializers import DatasetSerializer
 
 from iati.permissions.factories import OrganisationAdminGroupFactory, UserFactory
 
+
 class TestDatasetPublish(TestCase):
     request_dummy = RequestFactory().get('/')
 
@@ -25,6 +26,5 @@ class TestDatasetPublish(TestCase):
         self.c.force_authenticate(user)
 
         res = self.c.get(
-                "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id), 
-                )
-
+            "/api/publishers/{}/admin-group/?format=json".format(admin_group.publisher.id),
+        )

@@ -26,4 +26,3 @@ def activity_required_fields(activity):
         return False
 
     return True
-

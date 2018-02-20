@@ -1,4 +1,4 @@
-import iati 
+import iati
 from iati_codelists import models as codelist_models
 
 from factory import SubFactory, RelatedFactory
@@ -10,8 +10,10 @@ class NoDatabaseFactory(DjangoModelFactory):
     def _setup_next_sequence(cls):
         return 0
 
+
 class GetOrCreateMetaMixin():
     django_get_or_create = ('code',)
+
 
 class VersionFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -21,6 +23,7 @@ class VersionFactory(NoDatabaseFactory):
     code = '2.02'
     name = 'IATI version 2.01'
 
+
 class LanguageFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.Language
@@ -29,6 +32,7 @@ class LanguageFactory(NoDatabaseFactory):
     code = 'en'
     name = 'english'
 
+
 class FileFormatFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FileFormat
@@ -36,12 +40,14 @@ class FileFormatFactory(NoDatabaseFactory):
     code = 'application/pdf'
     name = ''
 
+
 class DocumentCategoryCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.DocumentCategoryCategory
 
     code = 'A'
     name = 'Activity Level'
+
 
 class DocumentCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -74,6 +80,7 @@ class ActivityDateTypeFactory(NoDatabaseFactory):
 
     code = '1'
     name = 'Planned start'
+
 
 class CurrencyFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -195,6 +202,7 @@ class BudgetIdentifierSectorFactory(NoDatabaseFactory):
     name = "Executive"
     category = SubFactory(BudgetIdentifierSectorCategoryFactory)
 
+
 class BudgetIdentifierFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.BudgetIdentifier
@@ -228,6 +236,7 @@ class FinanceTypeCategoryFactory(NoDatabaseFactory):
     code = "100"
     name = "GRANT"
 
+
 class FinanceTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = iati.models.FinanceType
@@ -251,6 +260,7 @@ class ResultTypeFactory(NoDatabaseFactory):
 
     code = "2"
     name = 'ResultType'
+
 
 class GeographicLocationClassFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -310,7 +320,9 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
     code = "1"
     name = 'Emergency'
 
+
 from iati.transaction.models import TransactionType
+
 
 class TransactionTypeFactory(NoDatabaseFactory):
     code = "1"
@@ -319,6 +331,7 @@ class TransactionTypeFactory(NoDatabaseFactory):
 
     class Meta:
         model = TransactionType
+
 
 class DisbursementChannelFactory(NoDatabaseFactory):
     code = "1"
@@ -329,12 +342,14 @@ class DisbursementChannelFactory(NoDatabaseFactory):
         django_get_or_create = ('code',)
         model = codelist_models.DisbursementChannel
 
+
 class IndicatorMeasureFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.IndicatorMeasure
 
     code = "1"
     name = "Unit"
+
 
 class OtherIdentifierTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -351,12 +366,14 @@ class ConditionTypeFactory(NoDatabaseFactory):
     code = '1'
     name = 'Policy'
 
+
 class LoanRepaymentTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.LoanRepaymentType
 
     code = '1'
     name = 'Equal Principal Payments'
+
 
 class LoanRepaymentPeriodFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
@@ -365,11 +382,13 @@ class LoanRepaymentPeriodFactory(NoDatabaseFactory):
     code = '1'
     name = 'Annual'
 
+
 class OtherFlagsFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
         model = codelist_models.OtherFlags
 
     code = '1'
+
 
 class RelatedActivityTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):

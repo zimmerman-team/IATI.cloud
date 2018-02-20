@@ -24,7 +24,7 @@ class TestDatasetSerializers(TestCase):
         #     'dataset.date_created' should be serialized to a field called 'date_created'
         #     """
         # assert serializer.data['date_updated'] == dataset.date_updated,\
-        #     """   
+        #     """
         #     'dataset.date_updated' should be serialized to a field called 'date_updated'
         #     """
         # assert serializer.data['last_found_in_registry'] == dataset.last_found_in_registry,\

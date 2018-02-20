@@ -17,6 +17,7 @@ from iati.factory.iati_factory import CountryFactory
 
 from iati_codelists.factory.codelist_factory import *
 
+
 class TransactionTypeFactory(NoDatabaseFactory):
     code = "1"
     name = "Incoming Funds"
@@ -74,12 +75,14 @@ class TransactionReceiverFactory(NoDatabaseFactory):
 
     class Meta:
         model = TransactionReceiver
-        
+
+
 class TransactionDescriptionFactory(NoDatabaseFactory):
     transaction = SubFactory(TransactionFactory)
 
     class Meta:
         model = TransactionDescription
+
 
 class TransactionSectorFactory(NoDatabaseFactory):
 
@@ -96,7 +99,7 @@ class TransactionSectorFactory(NoDatabaseFactory):
 
 
 class TransactionRecipientCountryFactory(NoDatabaseFactory):
-    
+
     transaction = SubFactory(TransactionFactory)
     reported_transaction = SubFactory(TransactionFactory)
     country = SubFactory(CountryFactory)
@@ -120,4 +123,3 @@ class TransactionRecipientRegionFactory(NoDatabaseFactory):
 
     class Meta:
         model = TransactionRecipientRegion
-

@@ -68,4 +68,3 @@ class CityDetail(RetrieveAPIView):
     """
     queryset = City.objects.all()
     serializer_class = serializers.CitySerializer
-
