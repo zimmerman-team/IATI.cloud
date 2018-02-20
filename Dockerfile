@@ -54,6 +54,7 @@ ADD . /app/src
 
 RUN groupadd -r uwsgi -g 1000 && useradd -u 1000 -r -g 1000 uwsgi
 RUN mkdir -p /app/src/public && chown -R uwsgi:uwsgi /app/src/public
+
 USER 1000
 
 CMD ["/app/src/bin/docker-cmd.sh"]

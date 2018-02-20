@@ -13,8 +13,8 @@ services:
     env_file:
       - etc/env/env.test
     # Required for Travis ci (coverage/coveralls)
-    volumes:
-      - .:/app/src
+    # volumes:
+    #   - .:/app/src
 
   # DockerHub Autotest service
   sut:
