@@ -20,3 +20,9 @@ test-coverage: build
 coveralls: build
 	docker-compose -f docker-compose.test.yml run --rm oipa coveralls
 
+lint:
+	flake8 OIPA --statistics
+
+format-code:
+	autopep8 -i -r -a OIPA --max-line-length 99
+
