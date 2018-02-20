@@ -9,12 +9,12 @@ services:
     extends:
       file: docker-compose.yml
       service: oipa
-    command: python manage.py test
+    command: python manage.py test --nomigrations
     env_file:
       - etc/env/env.test
     # Required for Travis ci (coverage/coveralls)
-    volumes:
-      - .:/app/src
+    # volumes:
+    #   - .:/app/src
 
   # DockerHub Autotest service
   sut:

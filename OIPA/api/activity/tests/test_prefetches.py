@@ -22,12 +22,14 @@ from decimal import Decimal
 from iati.models import Activity
 from iati.factory.utils import _create_test_activity
 from api.activity.serializers import ActivitySerializer
+from django.core import management
 
 class ActivitySaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
 
     def setUp(self):
+        management.call_command('flush', interactive=False, verbosity=0)
         self.activity1 = _create_test_activity(id="0001", iati_identifier="0001")
         self.activity2 = _create_test_activity(id="0002", iati_identifier="0002")
         self.activity3 = _create_test_activity(id="0003", iati_identifier="0003")

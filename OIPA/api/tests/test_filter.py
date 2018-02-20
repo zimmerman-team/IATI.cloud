@@ -1,5 +1,5 @@
 from django.db import models
-from unittest import TestCase
+from django.test import TestCase
 from unittest import skip
 
 

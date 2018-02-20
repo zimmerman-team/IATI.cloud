@@ -7,13 +7,8 @@ services:
 
 
 before_install:
+  - docker-compose --version
   - make build
 
 script:
-  - make migrate
-  - docker-compose -f docker-compose.test.yml run -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST --rm oipa coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --nomigrations --verbosity 3
-
-after_success:
-  - docker-compose -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
-after_failure:
-  - docker-compose -f docker-compose.test.yml run  -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST  --rm oipa coveralls
+  - docker-compose -f docker-compose.test.yml run -e TRAVIS=$TRAVIS -e TRAVIS_BRANCH=$TRAVIS_BRANCH -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST oipa /app/src/bin/ci-run.sh

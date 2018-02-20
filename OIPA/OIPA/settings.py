@@ -147,6 +147,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     'grappelli',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -178,8 +183,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'iati.permissions',
     'rest_auth',
-    'allauth',
-    'allauth.account',
     'rest_auth.registration',
     'django_filters'
 ]
