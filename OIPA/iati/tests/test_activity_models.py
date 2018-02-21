@@ -1,5 +1,5 @@
 from django.test import TestCase
-from iati.models import Activity
+from iati.models import Activity, RelatedActivity
 from iati.factory.utils import _create_test_activity
 
 
@@ -22,8 +22,11 @@ class ActivityModelTestCase(TestCase):
         # save related activity pk to query fresh object after deleting main activity
         related_activity = activity.relatedactivity_set.all()[0]
         related_activity_pk = related_activity.pk
+        ref_activity_pk = related_activity.ref_activity.pk
 
         # Deleting an activity also deletes RelatedActivity but not the RelatedActivity.ref_activity instance
         activity.delete()
+
         self.assertEqual(Activity.objects.filter(pk='100000').count(), 0)
-        self.assertEqual(Activity.objects.filter(pk=related_activity_pk).count(), 0)
+        self.assertEqual(RelatedActivity.objects.filter(pk=related_activity_pk).count(), 0)
+        self.assertEqual(Activity.objects.filter(pk=ref_activity_pk).count(), 1)
