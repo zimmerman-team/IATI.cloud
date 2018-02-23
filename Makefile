@@ -12,10 +12,17 @@ runserver: migrate
 	docker-compose -f docker-compose.dev.yml up
 
 test: build
-	docker-compose -f docker-compose.test.yml run --rm oipa python manage.py test
+	docker-compose -f docker-compose.test.yml build
+	docker-compose -f docker-compose.test.yml run --rm oipa python manage.py test --nomigrations
 
 test-coverage: build
 	docker-compose -f docker-compose.test.yml run --rm oipa coverage run --source=. --omit=*__init__*,*data_backup* manage.py test --nomigrations
+
+test-docker-cloud: build
+	@# run 'sut' service
+	docker-compose -f docker-compose.test.yml build
+	docker-compose -f docker-compose.test.yml run --rm sut
+
 
 coveralls: build
 	docker-compose -f docker-compose.test.yml run --rm oipa coveralls

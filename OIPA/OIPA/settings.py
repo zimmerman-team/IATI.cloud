@@ -299,20 +299,51 @@ CACHES = {
     }
 }
 
+OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
         'console': {
+            'level': OIPA_LOG_LEVEL,
+            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
+        'file': {
+            'level': OIPA_LOG_LEVEL,
+            'class': 'logging.FileHandler',
+            'filename': 'oipa.log',
+            'formatter': 'verbose'
+        }
     },
     'loggers': {
+        '': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': OIPA_LOG_LEVEL
+        },
+
         'django': {
             'handlers': ['console'],
-            'level': env.get('OIPA_LOG_LEVEL', 'ERROR'),
-        },
-    },
+            'propagate': True,
+            'level': OIPA_LOG_LEVEL
+        }
+    }
 }
 
 try:

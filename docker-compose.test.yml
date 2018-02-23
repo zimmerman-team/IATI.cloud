@@ -14,11 +14,10 @@ services:
       - etc/env/env.test
     # Required for Travis ci (coverage/coveralls)
     # volumes:
-    #   - .:/app/src
+    #    - .:/app/src
 
   # DockerHub Autotest service
   sut:
     extends:
       service: oipa
-    # dummy command because unit tests are failing inside docker atm.
-    command: /bin/true
+    command:  python manage.py test --nomigrations
