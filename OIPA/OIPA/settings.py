@@ -323,12 +323,6 @@ LOGGING = {
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
-        },
-        'file': {
-            'level': OIPA_LOG_LEVEL,
-            'class': 'logging.FileHandler',
-            'filename': 'oipa.log',
-            'formatter': 'verbose'
         }
     },
     'loggers': {
