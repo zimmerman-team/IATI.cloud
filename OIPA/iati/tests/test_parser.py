@@ -43,6 +43,12 @@ class IatiParserTestCase(DjangoTestCase):
     def setUp(self):
         self.parser = IatiParser(None)
 
+    def test_get_or_none_charset_encoding(self):
+        self.assertIsNone(self.parser.get_or_none(Activity, code=u'Default-aid-type: [code="D02"\xa0]\xa0'))
+        self.assertIsNone(self.parser.get_or_none(Activity, code=u'\xa0'))
+        self.assertIsNone(self.parser.get_or_none(codelist_models.AidType, code=u''))
+        self.assertIsNone(self.parser.get_or_none(codelist_models.AidType, code=''))
+
     def test_register_model_stores_model(self):
         activity = build_activity()
         self.parser.register_model('Activity', activity)

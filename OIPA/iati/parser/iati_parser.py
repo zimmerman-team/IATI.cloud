@@ -1,21 +1,23 @@
-from lxml import etree
-from collections import OrderedDict
 import datetime
-import traceback
-import dateutil.parser
+import logging
 import re
+from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 
-from django.db.models.fields.related import ForeignKey, OneToOneField
-from django.db.models import Model
-
-from iati_codelists import models as codelist_models
+import dateutil.parser
 from django.conf import settings
-from iati_synchroniser.models import DatasetNote
+from django.db.models import Model
+from django.db.models.fields.related import ForeignKey, OneToOneField
+from lxml import etree
+
+from common.util import findnth_occurence_in_string, normalise_unicode_string
 from iati.parser.exceptions import *
-from common.util import findnth_occurence_in_string
+from iati_codelists import models as codelist_models
+from iati_synchroniser.models import DatasetNote
 
 codelist_cache = {}
+
+log = logging.getLogger(__name__)
 
 
 class IatiParser(object):
@@ -57,7 +59,7 @@ class IatiParser(object):
     def get_or_none(self, model, *args, **kwargs):
         code = kwargs.get('code', None)
         if code:
-            code = str(code)
+            code = normalise_unicode_string(code)
             try:
                 model_cache = codelist_cache[model.__name__]
             except KeyError:
@@ -257,6 +259,7 @@ class IatiParser(object):
             try:
                 element_method(element)
             except RequiredFieldError as e:
+                log.exception(e)
                 self.append_error(
                     'RequiredFieldError',
                     e.model,
@@ -266,6 +269,7 @@ class IatiParser(object):
                     None)
                 return
             except FieldValidationError as e:
+                log.exception(e)
                 self.append_error(
                     'FieldValidationError',
                     e.model,
@@ -276,6 +280,7 @@ class IatiParser(object):
                     e.iati_id)
                 return
             except ValidationError as e:
+                log.exception(e)
                 self.append_error(
                     'FieldValidationError',
                     e.model,
@@ -289,6 +294,7 @@ class IatiParser(object):
                 # not implemented, ignore for now
                 return
             except ParserError as e:
+                log.exception(e)
                 self.append_error(
                     'ParserError',
                     'TO DO',
@@ -300,9 +306,8 @@ class IatiParser(object):
             except NoUpdateRequired as e:
                 # do nothing, go to next activity
                 return
-            except Exception as exception:
-                # print exception.message
-                traceback.print_exc()
+            except Exception as e:
+                log.exception(e)
                 return
 
         for e in element.getchildren():
@@ -376,12 +381,10 @@ class IatiParser(object):
 
                 except ValueError as e:
                     # TO DO; check if we need to do internal logging on these value errors
-                    traceback.print_exc()
+                    log.exception(e)
 
                 except Exception as e:
-                    # these stay in the logs until we know what to do with them
-                    traceback.print_exc()
-                    # self.append_error(str(type(e)), e.message, 'TO DO')
+                    log.exception(e)
 
     def remove_brackets(self, function_name):
         result = ""
