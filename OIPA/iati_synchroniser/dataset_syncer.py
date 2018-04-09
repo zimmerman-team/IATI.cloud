@@ -82,7 +82,7 @@ class DatasetSyncer():
             defaults={
                 'publisher_iati_id': publisher['publisher_iati_id'],
                 'name': publisher['name'],
-                'display_name': publisher['display_name']
+                'display_name': publisher['title']
             }
         )
 

@@ -1,4 +1,3 @@
-from rest_framework.generics import ListAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.budget import filters
@@ -10,17 +9,11 @@ from django.db.models import Count, Sum, F
 
 from geodata.models import Country
 from geodata.models import Region
-from iati.models import Activity
 from iati.models import Budget
 from iati.models import Sector
 from iati.models import ActivityStatus
-from iati.models import PolicyMarker
 from iati.models import CollaborationType
 from iati.models import DocumentCategory
-from iati.models import FlowType
-from iati.models import AidType
-from iati.models import FinanceType
-from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import OrganisationType
 from iati.models import Organisation
@@ -45,10 +38,10 @@ currencies = [
 
 def annotate_currency(query_params, groupings):
     """
-    Choose the right currency field, and aggregate differently based on group_by
+    Choose the right currency field, 
+    and aggregate differently based on group_by
     """
     currency = query_params.get('convert_to')
-    currency_field = None
 
     if currency:
         currency = currency.lower()
@@ -83,7 +76,8 @@ def annotate_currency(query_params, groupings):
 
 class BudgetAggregations(AggregationView):
     """
-    Returns aggregations based on the item grouped by, and the selected aggregation.
+    Returns aggregations based on the item grouped by,
+    and the selected aggregation.
 
     ## Group by options
 
@@ -182,7 +176,8 @@ class BudgetAggregations(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("activity__relatedactivity__ref_activity__iati_identifier"),
+            fields=(
+                "activity__relatedactivity__ref_activity__iati_identifier"),
             renamed_fields="related_activity",
         ),
         GroupBy(
@@ -192,7 +187,8 @@ class BudgetAggregations(AggregationView):
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field="activity__reporting_organisations__organisation__primary_name",
+            name_search_field=
+            "activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
@@ -201,7 +197,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
             # serializer=OrganisationSerializer,
-            name_search_field="activity__participating_organisations__primary_name",
+            name_search_field=
+            "activity__participating_organisations__primary_name",
             renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
@@ -210,7 +207,8 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
-            name_search_field="activity__participating_organisations__type__name",
+            name_search_field=
+            "activity__participating_organisations__type__name",
             renamed_name_search_field="participating_organisations_type_name"
         ),
         GroupBy(
@@ -244,7 +242,8 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_start_year",
             extra={
                 'select': {
-                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_period_start_year':
+                        'EXTRACT(YEAR FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
@@ -256,7 +255,8 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_end_year",
             extra={
                 'select': {
-                    'budget_period_end_year': 'EXTRACT(YEAR FROM "period_end")::integer',
+                    'budget_period_end_year':
+                        'EXTRACT(YEAR FROM "period_end")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',
@@ -268,12 +268,14 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_start_quarter",
             extra={
                 'select': {
-                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                    'budget_period_start_quarter': 'EXTRACT(QUARTER FROM "period_start")::integer',
+                    'budget_period_start_year':
+                        'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_period_start_quarter':
+                        'EXTRACT(QUARTER FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
-                    'EXTRACT(QUARTER FROM "period_start")::integer IS NOT NULL',
+                    'EXTRACT(QUARTER FROM "period_start")::integer IS NOT NULL'
                 ],
             },
             fields=("budget_period_start_year", "budget_period_start_quarter")
@@ -282,8 +284,10 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_end_quarter",
             extra={
                 'select': {
-                    'budget_period_end_year': 'EXTRACT(YEAR FROM "period_end")::integer',
-                    'budget_period_end_quarter': 'EXTRACT(QUARTER FROM "period_end")::integer',
+                    'budget_period_end_year':
+                        'EXTRACT(YEAR FROM "period_end")::integer',
+                    'budget_period_end_quarter':
+                        'EXTRACT(QUARTER FROM "period_end")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',
@@ -296,8 +300,10 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_start_month",
             extra={
                 'select': {
-                    'budget_period_start_year': 'EXTRACT(YEAR FROM "period_start")::integer',
-                    'budget_period_start_month': 'EXTRACT(MONTH FROM "period_start")::integer',
+                    'budget_period_start_year':
+                        'EXTRACT(YEAR FROM "period_start")::integer',
+                    'budget_period_start_month':
+                        'EXTRACT(MONTH FROM "period_start")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_start")::integer IS NOT NULL',
@@ -310,8 +316,10 @@ class BudgetAggregations(AggregationView):
             query_param="budget_period_end_month",
             extra={
                 'select': {
-                    'budget_period_end_yer': 'EXTRACT(YEAR FROM "period_end")::integer',
-                    'budget_period_end_month': 'EXTRACT(MONTH FROM "period_end")::integer',
+                    'budget_period_end_yer':
+                        'EXTRACT(YEAR FROM "period_end")::integer',
+                    'budget_period_end_month':
+                        'EXTRACT(MONTH FROM "period_end")::integer',
                 },
                 'where': [
                     'EXTRACT(YEAR FROM "period_end")::integer IS NOT NULL',

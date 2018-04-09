@@ -4,11 +4,13 @@ from api.sector import serializers
 from api.activity.views import ActivityList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
 
-class SectorList(DynamicListView):
+class SectorList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Sectors stored in OIPA.
 
@@ -32,7 +34,7 @@ class SectorList(DynamicListView):
     fields = ('url', 'code', 'name')
 
 
-class SectorDetail(RetrieveAPIView):
+class SectorDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about Sector.
 

@@ -9,6 +9,7 @@ from api.generics.views import DynamicListView, DynamicDetailView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from common.util import get_or_none
 
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -36,7 +37,7 @@ class PublisherPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
 
 
-class PublisherList(DynamicListView):
+class PublisherList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Publishers stored in OIPA.
 
@@ -79,7 +80,7 @@ class PublisherList(DynamicListView):
         'activities')
 
 
-class PublisherDetail(DynamicDetailView):
+class PublisherDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about a publisher.
 

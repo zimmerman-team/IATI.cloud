@@ -1,11 +1,12 @@
 import geodata
 from api.region import serializers
 from rest_framework.generics import RetrieveAPIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
 
-class RegionList(DynamicListView):
+class RegionList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Regions stored in OIPA.
 
@@ -41,7 +42,7 @@ class RegionList(DynamicListView):
     fields = ('url', 'code', 'name')
 
 
-class RegionDetail(RetrieveAPIView):
+class RegionDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about Region.
 

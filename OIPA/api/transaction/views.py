@@ -5,6 +5,8 @@ from api.generics.views import DynamicListView, DynamicDetailView
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 from api.activity.serializers import ActivitySerializer
 
 from geodata.models import Country
@@ -48,7 +50,7 @@ from iati.models import ActivityParticipatingOrganisation
 from iati.models import ActivityReportingOrganisation
 
 
-class TransactionList(DynamicListView):
+class TransactionList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
@@ -103,7 +105,7 @@ class TransactionList(DynamicListView):
     )
 
 
-class TransactionDetail(DynamicDetailView):
+class TransactionDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about Transaction.
 

@@ -1,21 +1,23 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
+from rest_framework.generics import \
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
-from rest_framework.exceptions import ValidationError
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
 from api.activity import filters
 from api.generics.filters import DistanceFilter
 from api.generics.filters import SearchFilter
-from api.generics.views import DynamicListView, DynamicDetailView, DynamicListCRUDView, DynamicDetailCRUDView
+from api.generics.views import DynamicListView, DynamicDetailView, \
+    DynamicListCRUDView, DynamicDetailCRUDView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
-from django.db.models import Count, Sum, F
+from django.db.models import Count
 
 from geodata.models import Country
 from geodata.models import Region
@@ -25,13 +27,8 @@ from iati.transaction.models import Transaction
 from iati.models import Activity, ActivityReportingOrganisation
 from iati.models import Sector
 from iati.models import ActivityStatus
-from iati.models import PolicyMarker
 from iati.models import CollaborationType
 from iati.models import DocumentCategory
-from iati.models import FlowType
-from iati.models import AidType
-from iati.models import FinanceType
-from iati.models import TiedStatus
 from iati.models import ActivityParticipatingOrganisation
 from iati.models import OrganisationType
 from iati.models import Organisation
@@ -43,8 +40,8 @@ from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
 from api.organisation.serializers import OrganisationSerializer
 
-from rest_framework import authentication, permissions
-from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
+from rest_framework import authentication
+from api.publisher.permissions import PublisherPermissions
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -81,7 +78,8 @@ class UpdateActivitySearchMixin(object):
 
 class ActivityAggregations(AggregationView):
     """
-    Returns aggregations based on the item grouped by, and the selected aggregation.
+    Returns aggregations based on the item grouped by,
+    and the selected aggregation.
 
     ## Group by options
 
@@ -175,14 +173,16 @@ class ActivityAggregations(AggregationView):
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field="reporting_organisations__organisation__primary_name",
+            name_search_field=
+            "reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation",
             fields=("participating_organisations__primary_name",
                     "participating_organisations__normalized_ref"),
-            renamed_fields=("participating_organisation", "participating_organisation_ref"),
+            renamed_fields=("participating_organisation",
+                            "participating_organisation_ref"),
             queryset=ActivityParticipatingOrganisation.objects.all(),
             name_search_field="participating_organisations__primary_name",
             renamed_name_search_field="participating_organisation_name"
@@ -241,7 +241,7 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(DynamicListView):
+class ActivityList(CacheResponseMixin, DynamicListView):
 
     """
     Returns a list of IATI Activities stored in OIPA.
@@ -377,19 +377,9 @@ class ActivityList(DynamicListView):
         'activity_plus_child_budget_value')
 
 
-# class ActivityListNextPublished(ActivityList, FilterPublisherMixin):
-
-#     def get_queryset(self, *args, **kwargs):
-#         queryset = super(ActivityListNextPublished, self).__init__(*args, **kwargs)
-
-#         # return all activities that are already published but have not been modified yet
-#         return queryset.filter(Q(published=True, modified=False) | Q(ready_to_publish=True))
-
-
 class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
 
     authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (OrganisationAdminGroupPermissions, )
 
     def post(self, request, publisher_id, pk):
         activity = Activity.objects.get(pk=pk)
@@ -414,7 +404,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
         return Response(True)
 
 
-class ActivityDetail(DynamicDetailView):
+class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about Activity.
 
@@ -450,7 +440,7 @@ class ActivityDetail(DynamicDetailView):
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
 
-class ActivityTransactionList(DynamicListView):
+class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
 
@@ -499,12 +489,13 @@ class ActivityTransactionList(DynamicListView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return Activity.objects.get(pk=pk).transaction_set.all().order_by('id')
+            return Activity.objects.get(pk=pk).\
+                transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return Transaction.objects.none().order_by('id')
 
 
-class ActivityTransactionDetail(DynamicDetailView):
+class ActivityTransactionDetail(CacheResponseMixin, DynamicDetailView):
     serializer_class = TransactionSerializer
 
     def get_object(self):
@@ -512,7 +503,8 @@ class ActivityTransactionDetail(DynamicDetailView):
         return Transaction.objects.get(pk=pk)
 
 
-class ActivityListCRUD(UpdateActivitySearchMixin, FilterPublisherMixin, DynamicListCRUDView):
+class ActivityListCRUD(UpdateActivitySearchMixin, FilterPublisherMixin,
+                       DynamicListCRUDView):
 
     queryset = Activity.objects.all()
     filter_backends = (
@@ -567,7 +559,8 @@ class ActivityDetailCRUD(UpdateActivitySearchMixin, DynamicDetailCRUDView):
     - `/api/activities/{activity_id}/transactions/`:
         List of transactions.
     - `/api/activities/{activity_id}/provider-activity-tree/`:
-        The upward and downward provider-activity-id traceability tree of this activity.
+        The upward and downward provider-activity-id
+        traceability tree of this activity.
 
     ## Request parameters
 
@@ -592,7 +585,8 @@ class ActivityTransactionListCRUD(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return Activity.objects.get(pk=pk).transaction_set.all().order_by('id')
+            return Activity.objects.get(pk=pk).\
+                transaction_set.all().order_by('id')
         except Activity.DoesNotExist:
             return None
 
@@ -608,7 +602,8 @@ class ActivityTransactionDetailCRUD(RetrieveUpdateDestroyAPIView):
         return Transaction.objects.get(pk=pk)
 
 
-class ActivityReportingOrganisationList(UpdateActivitySearchMixin, ListCreateAPIView):
+class ActivityReportingOrganisationList(UpdateActivitySearchMixin,
+                                        ListCreateAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -622,7 +617,8 @@ class ActivityReportingOrganisationList(UpdateActivitySearchMixin, ListCreateAPI
             return None
 
 
-class ActivityReportingOrganisationDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityReportingOrganisationDetail(UpdateActivitySearchMixin,
+                                          RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ReportingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -647,7 +643,8 @@ class ActivityDescriptionList(UpdateActivitySearchMixin, ListCreateAPIView):
             return None
 
 
-class ActivityDescriptionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityDescriptionDetail(UpdateActivitySearchMixin,
+                                RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DescriptionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -658,7 +655,8 @@ class ActivityDescriptionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroy
         return iati_models.Description.objects.get(pk=pk)
 
 
-class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin, ListCreateAPIView):
+class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin,
+                                            ListCreateAPIView):
     serializer_class = activity_serializers.ParticipatingOrganisationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -667,7 +665,8 @@ class ActivityParticipatingOrganisationList(UpdateActivitySearchMixin, ListCreat
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).participating_organisations.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                participating_organisations.all()
         except Activity.DoesNotExist:
             return None
 
@@ -768,12 +767,14 @@ class ActivityRecipientCountryList(UpdateActivitySearchMixin, ListCreateAPIView)
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).activityrecipientcountry_set.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                activityrecipientcountry_set.all()
         except Activity.DoesNotExist:
             return None
 
 
-class ActivityRecipientCountryDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityRecipientCountryDetail(UpdateActivitySearchMixin,
+                                     RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.RecipientCountrySerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -793,12 +794,14 @@ class ActivityRecipientRegionList(UpdateActivitySearchMixin, ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).activityrecipientregion_set.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                activityrecipientregion_set.all()
         except Activity.DoesNotExist:
             return None
 
 
-class ActivityRecipientRegionDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityRecipientRegionDetail(UpdateActivitySearchMixin,
+                                    RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivityRecipientRegionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -823,7 +826,8 @@ class ActivitySectorList(UpdateActivitySearchMixin, ListCreateAPIView):
             return None
 
 
-class ActivitySectorDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivitySectorDetail(UpdateActivitySearchMixin,
+                           RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.ActivitySectorSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -924,7 +928,8 @@ class ActivityHumanitarianScopeList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).humanitarianscope_set.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                humanitarianscope_set.all()
         except Activity.DoesNotExist:
             return None
 
@@ -949,7 +954,8 @@ class ActivityPolicyMarkerList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).activitypolicymarker_set.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                activitypolicymarker_set.all()
         except Activity.DoesNotExist:
             return None
 
@@ -999,7 +1005,8 @@ class ActivityPlannedDisbursementList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).planned_disbursements.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                planned_disbursements.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1024,12 +1031,14 @@ class ActivityDocumentLinkList(UpdateActivitySearchMixin, ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).documentlink_set.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                documentlink_set.all()
         except Activity.DoesNotExist:
             return None
 
 
-class ActivityDocumentLinkDetail(UpdateActivitySearchMixin, RetrieveUpdateDestroyAPIView):
+class ActivityDocumentLinkDetail(UpdateActivitySearchMixin,
+                                 RetrieveUpdateDestroyAPIView):
     serializer_class = activity_serializers.DocumentLinkSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
@@ -1093,7 +1102,8 @@ class ActivityRelatedActivityList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).related_activities.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                related_activities.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1171,7 +1181,8 @@ class ResultIndicatorList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('activity_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicators.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                result_indicators.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1196,7 +1207,8 @@ class ResultIndicatorReferenceList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_references.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                result_indicator_references.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1221,7 +1233,8 @@ class ResultIndicatorPeriodList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('resultindicator_id')
         try:
-            return iati_models.Activity.objects.get(pk=pk).result_indicator_periods.all()
+            return iati_models.Activity.objects.get(pk=pk).\
+                result_indicator_periods.all()
         except Activity.DoesNotExist:
             return None
 
@@ -1238,7 +1251,8 @@ class ResultIndicatorPeriodDetail(RetrieveUpdateDestroyAPIView):
 
 
 class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodActualLocationSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodActualLocationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
@@ -1253,18 +1267,21 @@ class ResultIndicatorPeriodActualLocationList(ListCreateAPIView):
 
 
 class ResultIndicatorPeriodActualLocationDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodActualLocationSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodActualLocationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('actual_location_id')
-        return iati_models.ResultIndicatorPeriodActualLocation.objects.get(pk=pk)
+        return iati_models.\
+            ResultIndicatorPeriodActualLocation.objects.get(pk=pk)
 
 
 class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodTargetLocationSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodTargetLocationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
@@ -1279,18 +1296,21 @@ class ResultIndicatorPeriodTargetLocationList(ListCreateAPIView):
 
 
 class ResultIndicatorPeriodTargetLocationDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodTargetLocationSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodTargetLocationSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('target_location_id')
-        return iati_models.ResultIndicatorPeriodTargetLocation.objects.get(pk=pk)
+        return iati_models.\
+            ResultIndicatorPeriodTargetLocation.objects.get(pk=pk)
 
 
 class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodActualDimensionSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodActualDimensionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
@@ -1305,18 +1325,21 @@ class ResultIndicatorPeriodActualDimensionList(ListCreateAPIView):
 
 
 class ResultIndicatorPeriodActualDimensionDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodActualDimensionSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodActualDimensionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('actual_dimension_id')
-        return iati_models.ResultIndicatorPeriodActualDimension.objects.get(pk=pk)
+        return iati_models.\
+            ResultIndicatorPeriodActualDimension.objects.get(pk=pk)
 
 
 class ResultIndicatorPeriodTargetDimensionList(ListCreateAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodTargetDimensionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
@@ -1331,14 +1354,16 @@ class ResultIndicatorPeriodTargetDimensionList(ListCreateAPIView):
 
 
 class ResultIndicatorPeriodTargetDimensionDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = activity_serializers.ResultIndicatorPeriodTargetDimensionSerializer
+    serializer_class = activity_serializers.\
+        ResultIndicatorPeriodTargetDimensionSerializer
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (PublisherPermissions, )
 
     def get_object(self):
         pk = self.kwargs.get('target_dimension_id')
-        return iati_models.ResultIndicatorPeriodTargetDimension.objects.get(pk=pk)
+        return iati_models.\
+            ResultIndicatorPeriodTargetDimension.objects.get(pk=pk)
 
 
 class ActivityConditionsDetail(SaveAllSerializer):
@@ -1361,7 +1386,8 @@ class ActivityConditionList(ListCreateAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         try:
-            return iati_models.Activity.objects.get(pk=pk).conditions.condition_set.all()
+            return iati_models.Activity.objects.get(pk=pk).conditions.\
+                condition_set.all()
         except Activity.DoesNotExist:
             return None
 
