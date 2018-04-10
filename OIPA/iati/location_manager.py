@@ -37,7 +37,6 @@ class LocationQuerySet(models.QuerySet):
         narrative_prefetch = Prefetch(
             'narratives',
             queryset=Narrative.objects.select_related('language'))
-
         return self.prefetch_related(
             Prefetch(
                 'name',
