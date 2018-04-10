@@ -296,6 +296,10 @@ CACHES = {
     'default': {
         'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
+    },
+    'api': {
+        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     }
 }
 
@@ -338,6 +342,10 @@ LOGGING = {
             'level': OIPA_LOG_LEVEL
         }
     }
+}
+
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_USE_CACHE': 'api'
 }
 
 try:

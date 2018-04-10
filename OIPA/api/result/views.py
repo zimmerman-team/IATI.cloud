@@ -8,7 +8,8 @@ from api.generics.filters import SearchFilter
 
 class ResultAggregations(AggregationView):
     """
-    Returns aggregations based on the item grouped by, and the selected aggregation.
+    Returns aggregations based on the item grouped by, 
+    and the selected aggregation.
 
     ## Group by options
 
@@ -18,6 +19,7 @@ class ResultAggregations(AggregationView):
     can be one or more (comma separated values) of:
 
     - `result_indicator_title`
+    - `result_title`
 
 
     ## Aggregation options

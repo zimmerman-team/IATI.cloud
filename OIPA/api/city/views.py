@@ -2,9 +2,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from geodata.models import City
 from api.city import serializers
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 
-class CityList(ListAPIView):
+class CityList(CacheResponseMixin, ListAPIView):
     """
     Returns a list of IATI Cities stored in OIPA.
 
@@ -40,7 +41,7 @@ class CityList(ListAPIView):
     fields = ('url', 'id', 'name')
 
 
-class CityDetail(RetrieveAPIView):
+class CityDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about City.
 

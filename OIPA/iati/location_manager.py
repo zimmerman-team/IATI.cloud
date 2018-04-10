@@ -40,7 +40,7 @@ class LocationQuerySet(models.QuerySet):
 
         return self.prefetch_related(
             Prefetch(
-                'locationname_set',
+                'name',
                 queryset=LocationName.objects
                 .prefetch_related(narrative_prefetch)),)
 
@@ -52,7 +52,7 @@ class LocationQuerySet(models.QuerySet):
 
         return self.prefetch_related(
             Prefetch(
-                'locationdescription_set',
+                'description',
                 queryset=LocationDescription.objects
                 .prefetch_related(narrative_prefetch)),)
 
@@ -64,7 +64,7 @@ class LocationQuerySet(models.QuerySet):
 
         return self.prefetch_related(
             Prefetch(
-                'locationactivitydescription_set',
+                'activity_description',
                 queryset=LocationActivityDescription.objects.all()
                 .prefetch_related(narrative_prefetch)),)
 

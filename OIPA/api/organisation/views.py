@@ -1,5 +1,7 @@
 from django.utils.http import urlunquote
 from django.shortcuts import get_object_or_404
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 from iati_organisation import models
 
 from rest_framework.views import APIView
@@ -47,7 +49,7 @@ class FilterPublisherMixin(object):
         return Organisation.objects.filter(publisher__id=publisher_id)
 
 
-class OrganisationList(DynamicListView):
+class OrganisationList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Organisations stored in OIPA.
 
@@ -64,7 +66,7 @@ class OrganisationList(DynamicListView):
     fields = ('url', 'organisation_identifier', 'last_updated_datetime', 'name')
 
 
-class OrganisationDetail(DynamicDetailView):
+class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about Organisation.
 

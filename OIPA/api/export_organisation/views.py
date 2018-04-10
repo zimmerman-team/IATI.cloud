@@ -13,6 +13,8 @@ from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination
 from django.db.models import Q
 
 from rest_framework import authentication, permissions
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 from api.publisher.permissions import PublisherPermissions
 
 import django_rq
@@ -20,7 +22,7 @@ from rest_framework.response import Response
 from iati_synchroniser.models import Dataset, Publisher
 
 
-class OrganisationList(ListAPIView):
+class OrganisationList(CacheResponseMixin, ListAPIView):
     """
     Returns a list of IATI Organisations stored in OIPA.
 

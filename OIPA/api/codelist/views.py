@@ -8,9 +8,10 @@ from api.codelist.serializers import CodelistMetaSerializer, CodelistItemSeriali
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import NotFound
 from django.apps import apps
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 
-class CodelistMetaList(DynamicListView):
+class CodelistMetaList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI codelists stored in OIPA.
 
@@ -27,7 +28,7 @@ class CodelistMetaList(DynamicListView):
     pagination_class = None
 
 
-class CodelistItemList(DynamicListView):
+class CodelistItemList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI codelist values stored in OIPA.
 

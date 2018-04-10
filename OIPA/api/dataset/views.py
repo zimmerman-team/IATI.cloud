@@ -9,6 +9,7 @@ from api.aggregation.views import AggregationView, Aggregation, GroupBy
 from django.db.models import Sum, Count
 from api.generics.views import DynamicListView, DynamicDetailView
 from rest_framework.response import Response
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from iati.models import Activity
 
@@ -35,7 +36,7 @@ class DatasetPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
 
 
-class DatasetList(DynamicListView):
+class DatasetList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI datasets stored in OIPA.
 
@@ -99,7 +100,7 @@ class DatasetList(DynamicListView):
     )
 
 
-class DatasetDetail(RetrieveAPIView):
+class DatasetDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about the dataset.
 
@@ -220,7 +221,7 @@ class DatasetAggregations(AggregationView):
     )
 
 
-class DatasetNotes(ListAPIView):
+class DatasetNotes(CacheResponseMixin, ListAPIView):
     """
     Returns a list of Dataset notes stored in OIPA.
 
