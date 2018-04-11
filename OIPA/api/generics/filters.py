@@ -1,4 +1,5 @@
 import uuid
+import operator
 from django.conf import settings
 from django.db.models.sql.constants import QUERY_TERMS
 from django.db.models import Q
@@ -77,7 +78,7 @@ class SearchFilter(filters.BaseFilterBackend):
 
             query_fields = request.query_params.get('q_fields')
             #dict_query_list = [TSConfig('simple'), query]
-
+            #print(dict_query_list)
             model_prefix = ''
 
             # when SearchFilter is used on other endpoints than activities,
@@ -93,9 +94,12 @@ class SearchFilter(filters.BaseFilterBackend):
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = combine_filters([Q(**{'{0}activitysearch__{1}__{2}'.format(
-                        model_prefix, field, lookup_expr): dict_query_list}) for field in query_fields])
-                    return queryset.filter(filters)
+                    filters = ([{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr) : query}for field in query_fields])
+                    temp = Q(**filters.pop())
+                    
+                    for f in filters:
+                        temp |= Q(**f)                    
+                    return queryset.filter(temp)
             else:
                 return queryset.filter(
                     **{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
