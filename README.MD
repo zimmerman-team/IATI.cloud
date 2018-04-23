@@ -63,7 +63,8 @@ To run the tests, log into the vagrant machine and run:
 * Dutch Ministry of Foreign Affairs:         <a href="https://www.openaid.nl" target="_blank">www.openaid.nl</a>
 * IATI Studio:                               <a href="https://www.iatistudio.com/" target="_blank">www.iatistudio.com</a>
 * DFID Devtracker:                           <a href="https://devtracker.dfid.gov.uk/" target="_blank">devtracker.dfid.gov.uk</a>
-* UNESCO Transparency Portal:                <a href="http://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
+* UNESCO Transparency Portal:                <a href="https://opendata.unesco.org" target="_blank">opendata.unesco.org</a>
 * UN-Habitat:                                <a href="http://open.unhabitat.org" target="_blank">open.unhabitat.org</a>
 * Netherlands Enterprise Agency:             <a href="https://aiddata.rvo.nl/" target="_blank">aiddata.rvo.nl</a>
 * Mohinga AIMS:                              <a href="http://mohinga.info/en/" target="_blank">mohinga.info</a>
+* Overseas Development Institute:            <a href="https://transparency.odi.org/" target="_blank">ODI.org</a>
