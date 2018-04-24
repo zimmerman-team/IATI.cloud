@@ -9,6 +9,7 @@ from api.activity.filters import ActivityFilter
 from iati.models import *
 from iati.transaction.models import *
 
+
 class TransactionFilter(FilterSet):
     """
     Transaction filter class
@@ -35,10 +36,9 @@ class TransactionFilter(FilterSet):
         lookup_expr='gte',
         name='transaction_date')
 
-
     min_value = NumberFilter(name='value', lookup_expr='gte')
     max_value = NumberFilter(name='value', lookup_expr='lte')
-    
+
     value_not = NumberFilter(lookup_expr='exact', name='value', exclude=True)
     xdr_value_not = NumberFilter(lookup_expr='exact', name='xdr_value', exclude=True)
     usd_value_not = NumberFilter(lookup_expr='exact', name='usd_value', exclude=True)
@@ -263,8 +263,8 @@ class TransactionFilter(FilterSet):
 
     # makes no
     # TO DO: check if this also influences other filters
-    # for example, sector_category should probably filter through transactionsector__sector__category 
-    # in the transaction endpoint 
+    # for example, sector_category should probably filter through transactionsector__sector__category
+    # in the transaction endpoint
 
     recipient_country = ToManyFilter(
         main_fk='activity',
@@ -399,8 +399,6 @@ class TransactionFilter(FilterSet):
         fk='activity',
     )
 
-
-
     # activity aggregation filters
     total_budget_lte = NumberFilter(
         lookup_expr='lte',
@@ -482,7 +480,6 @@ class TransactionFilter(FilterSet):
         lookup_expr='gte',
         name='activity__activity_plus_child_aggregation__commitment_value')
 
-
     class Meta:
         model = Transaction
         fields = [
@@ -544,4 +541,3 @@ class TransactionAggregationFilter(TransactionFilter):
         name='activity__activitypolicymarker__significance',
         lookup_expr='in',
     )
-

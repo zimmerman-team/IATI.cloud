@@ -1,4 +1,6 @@
 from operator import itemgetter
+from functools import reduce
+
 
 def apply_annotations(queryset, selected_groupings, selected_aggregations, query_params):
     """
@@ -10,19 +12,21 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     # Apply group_by fields and renames
     #
 
-    group_fields = flatten([ grouping.get_fields() for grouping in selected_groupings ])
-    rename_annotations = merge([ grouping.get_renamed_fields() for grouping in selected_groupings ])
-    group_extras = merge([ grouping.extra for grouping in selected_groupings if grouping.extra is not None])
+    group_fields = flatten([grouping.get_fields() for grouping in selected_groupings])
+    rename_annotations = merge([grouping.get_renamed_fields() for grouping in selected_groupings])
+    group_extras = merge(
+        [grouping.extra for grouping in selected_groupings if grouping.extra is not None])
 
     queryset = queryset \
         .extra(**group_extras) \
-        .annotate(**rename_annotations) 
+        .annotate(**rename_annotations)
 
     # null filter should not be applied to:
     # - group by's that also has a filter on the group by
     # - group by's that have extra's (null filter would not be correct)
-    # TODO: do this different or rewrite the if part, too complicated 23-06-2016 
-    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (grouping.extra is None and grouping.query_param not in query_params and grouping.renamed_name_search_field not in query_params) ])
+    # TODO: do this different or rewrite the if part, too complicated 23-06-2016
+    nullable_group_fields = flatten([grouping.get_fields() for grouping in selected_groupings if (
+        grouping.extra is None and grouping.query_param not in query_params and grouping.renamed_name_search_field not in query_params)])
     eliminate_nulls = {"{}__isnull".format(grouping): False for grouping in nullable_group_fields}
 
     queryset = queryset \
@@ -49,9 +53,9 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         # print str(next_result.query)
         return next_result
 
-    aggregation_querysets = [ 
+    aggregation_querysets = [
         get_aggregation_queryset(queryset, group_fields, aggregation)
-            for aggregation in selected_aggregations 
+        for aggregation in selected_aggregations
     ]
 
     def merge_results(querysets, group_fields):
@@ -68,9 +72,9 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         result_dict = {}
 
         def set_item_keys(item, group_fields):
-            
+
             for aggregation in selected_aggregations:
-                if not aggregation.field in item:
+                if aggregation.field not in item:
                     item[aggregation.field] = 0
             return item
 
@@ -88,7 +92,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
                     if isinstance(item[group_field], unicode):
                         group_keys.append(item[group_field].encode('utf-8'))
                 return '__'.join(group_keys)
-        
+
         for item in iter(first_queryset):
             group_key = get_group_key(item, group_fields)
             result_dict[group_key] = set_item_keys(item.copy(), group_fields)
@@ -96,7 +100,6 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
         for queryset in next_querysets:
             for item in iter(queryset):
                 group_key = get_group_key(item, group_fields)
-
 
                 # new key not previously seen
                 if group_key not in result_dict:
@@ -109,6 +112,7 @@ def apply_annotations(queryset, selected_groupings, selected_aggregations, query
     result = merge_results(aggregation_querysets, group_fields)
 
     return result
+
 
 def serialize_foreign_keys(result, selected_groupings, request):
     """
@@ -127,6 +131,7 @@ def serialize_foreign_keys(result, selected_groupings, request):
         result = grouping.serialize_results(result, request)
 
     return result
+
 
 def apply_ordering(result, orderings):
     """
@@ -152,6 +157,7 @@ def apply_ordering(result, orderings):
 
     return result
 
+
 def apply_group_filters(queryset, selected_groupings, params):
     """
     Filters that are applied only to filter direct visible results as returned
@@ -173,7 +179,7 @@ def apply_group_filters(queryset, selected_groupings, params):
             continue
 
         # the one giving the relation from activity to id of item
-        main_field = group.fields[0] 
+        main_field = group.fields[0]
         value = params[group.query_param]
 
         # TODO: We assume here all item filters are IN filters - 2016-03-07
@@ -189,8 +195,8 @@ def apply_group_filters(queryset, selected_groupings, params):
             queryset._next_is_sticky()
             queryset = queryset.filter(**{"{}__icontains".format(main_field): value})
 
-
     return queryset
+
 
 def aggregate(queryset, request, selected_groupings, selected_aggregations, selected_orderings):
     """
@@ -203,9 +209,13 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
     # TODO: just throw exceptions here and catch in view - 2016-04-08
 
     if not len(selected_groupings):
-        raise ValueError("Invalid value {} for mandatory field 'group_by'".format(params.get('group_by')))
+        raise ValueError(
+            "Invalid value {} for mandatory field 'group_by'".format(
+                params.get('group_by')))
     elif not len(selected_aggregations):
-        raise ValueError("Invalid value {} for mandatory field 'aggregations'".format(params.get('aggregations')))
+        raise ValueError(
+            "Invalid value {} for mandatory field 'aggregations'".format(
+                params.get('aggregations')))
 
     # filters that reduce the amount of "items" returned in the group_by
     # These filters must be applied directly instead of through "activity id" IN filters
@@ -226,11 +236,13 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
         'results': result
     }
 
+
 def intersection(list1, list2):
     """
     Return the intersection of two lists
     """
     return list(set(list1) & set(list2))
+
 
 def flatten(l):
     """
@@ -238,7 +250,8 @@ def flatten(l):
     """
     if len(l) is 0:
         return ()
-    return reduce(lambda x, y: x+y, l)
+    return reduce(lambda x, y: x + y, l)
+
 
 def merge(l):
     """
@@ -252,4 +265,3 @@ def merge(l):
         result.update(d)
 
     return result
-

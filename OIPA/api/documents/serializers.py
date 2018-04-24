@@ -32,6 +32,7 @@ class DocumentLinkSerializer(serializers.ModelSerializer):
             'document_date',
         )
 
+
 class DocumentSerializer(DynamicFieldsModelSerializer):
     document_link = DocumentLinkSerializer()
 

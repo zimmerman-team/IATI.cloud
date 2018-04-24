@@ -26,17 +26,17 @@ class ChainAggregations(AggregationView):
     ## Group by options
 
     API request has to include `group_by` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
     - `tier`
-    - `reporting_org`    
+    - `reporting_org`
 
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -67,7 +67,8 @@ class ChainAggregations(AggregationView):
         ),
         GroupBy(
             query_param="reporting_organisation",
-            fields=("activity__reporting_organisations__organisation__organisation_identifier", "activity__reporting_organisations__organisation__primary_name"),
+            fields=("activity__reporting_organisations__organisation__organisation_identifier",
+                    "activity__reporting_organisations__organisation__primary_name"),
             renamed_fields=("reporting_organisation_ref", "reporting_organisation_name"),
         ),
     )
@@ -154,7 +155,8 @@ class ChainTransactionList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return Transaction.objects.filter(activity__id__in=Activity.objects.filter(chainnode__chain=pk))
+        return Transaction.objects.filter(
+            activity__id__in=Activity.objects.filter(chainnode__chain=pk))
 
 
 class ChainDetail(DynamicDetailView):
@@ -212,7 +214,8 @@ class ChainLinkList(DynamicListView):
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
-        return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related('relations').prefetch_related('start_node').prefetch_related('end_node')
+        return ChainLink.objects.filter(chain=Chain.objects.get(pk=pk)).prefetch_related(
+            'relations').prefetch_related('start_node').prefetch_related('end_node')
 
 
 class ChainNodeList(DynamicListView):
@@ -334,6 +337,3 @@ class ChainActivities(ActivityList):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         return Activity.objects.filter(id__in=Activity.objects.filter(chainnode__chain=pk))
-
-
-

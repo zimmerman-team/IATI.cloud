@@ -3,7 +3,7 @@ from lxml.builder import E
 
 from iati import models
 from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models 
+from iati_vocabulary import models as vocabulary_models
 from iati_organisation import models as organisation_models
 from iati.parser.exceptions import *
 
@@ -13,8 +13,8 @@ from iati.parser.exceptions import *
 
 class Parse(IATI_201_Parser):
 
-    #version of iati standard
-    
+    # version of iati standard
+
     activity_date_type_mapping = {
         "start-planned": "1",
         "start-actual": "2",
@@ -37,12 +37,12 @@ class Parse(IATI_201_Parser):
         'COFOG': "3",
         'DAC': "1",
         'DAC-3': "2",
-        'ISO': None, # has no mapping
+        'ISO': None,  # has no mapping
         'NACE': "4",
         'NTEE': "5",
         'RO': "99",
         'RO2': "98",
-        'WB': None, # has no mapping
+        'WB': None,  # has no mapping
     }
 
     transaction_type_mapping = {
@@ -61,12 +61,12 @@ class Parse(IATI_201_Parser):
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
         self.VERSION = '1.05'
-        
+
     def iati_activities__iati_activity__reporting_org(self, element):
         """atributes:
         ref:AA-AAA-123456789
         type:21
-    
+
         tag:reporting-org"""
         super(Parse, self).iati_activities__iati_activity__reporting_org(element)
 
@@ -75,11 +75,15 @@ class Parse(IATI_201_Parser):
         if element.text:
             self.add_narrative(element, activity_reporting_organisation)
             if activity_reporting_organisation.organisation:
-                activity_reporting_organisation.organisation.primary_name = self.get_primary_name(element, activity_reporting_organisation.organisation.primary_name)
-                
+                activity_reporting_organisation.organisation.primary_name = self.get_primary_name(
+                    element, activity_reporting_organisation.organisation.primary_name)
+
                 try:
                     if activity_reporting_organisation.organisation.name.narratives.count() == 0:
-                        self.add_narrative(element, activity_reporting_organisation.organisation.name, is_organisation_narrative=True)
+                        self.add_narrative(
+                            element,
+                            activity_reporting_organisation.organisation.name,
+                            is_organisation_narrative=True)
                 except ObjectDoesNotExist as e:
                     # org has no name, create it
                     organisation_name = organisation_models.OrganisationName()
@@ -94,19 +98,19 @@ class Parse(IATI_201_Parser):
         ref:BB-BBB-123456789
         role:Funding
         type:40
-    
+
         tag:participating-org"""
 
         role_name = element.attrib.get('role')
         role = self.get_or_none(codelist_models.OrganisationRole, name=role_name)
 
-        if not role_name: 
+        if not role_name:
             raise RequiredFieldError(
                 "participating-org",
                 "role",
                 "required attribute missing")
 
-        if not role: 
+        if not role:
             raise FieldValidationError(
                 "participating-org",
                 "role",
@@ -121,7 +125,8 @@ class Parse(IATI_201_Parser):
         if element.text:
             self.add_narrative(element, participating_organisation)
             # workaround for IATI ref uniqueness limitation
-            participating_organisation.primary_name = self.get_primary_name(element, participating_organisation.primary_name)
+            participating_organisation.primary_name = self.get_primary_name(
+                element, participating_organisation.primary_name)
 
         return element
 
@@ -149,7 +154,7 @@ class Parse(IATI_201_Parser):
         if not (owner_ref or owner_name):
             raise RequiredFieldError(
                 "other-identifier",
-                "owner-ref/owner-name", 
+                "owner-ref/owner-name",
                 "either owner_ref or owner_name must be set")
 
         activity = self.get_model('Activity')
@@ -194,11 +199,13 @@ class Parse(IATI_201_Parser):
 
         if not text:
             raise RequiredFieldError(
-                "description", 
-                "text", 
+                "description",
+                "text",
                 "required element empty")
 
-        description_type = self.get_or_none(codelist_models.DescriptionType, code=description_type_code)
+        description_type = self.get_or_none(
+            codelist_models.DescriptionType,
+            code=description_type_code)
 
         activity = self.get_model('Activity')
         description = models.Description()
@@ -246,7 +253,6 @@ class Parse(IATI_201_Parser):
             self.add_narrative(element, activity_date)
 
         return element
-
 
     def iati_activities__iati_activity__contact_info__organisation(self, element):
         """atributes:
@@ -345,11 +351,14 @@ class Parse(IATI_201_Parser):
 
         return element
 
-    def iati_activities__iati_activity__country_budget_items__budget_item__description(self, element):
+    def iati_activities__iati_activity__country_budget_items__budget_item__description(
+            self, element):
         """atributes:
 
         tag:description"""
-        super(Parse, self).iati_activities__iati_activity__country_budget_items__budget_item__description(element)
+        super(
+            Parse,
+            self).iati_activities__iati_activity__country_budget_items__budget_item__description(element)
         budget_item_description = self.get_model('BudgetItemDescription')
 
         if element.text:
@@ -409,7 +418,7 @@ class Parse(IATI_201_Parser):
 
     tag:description"""
         super(Parse, self).iati_activities__iati_activity__transaction__description(element)
-    
+
         transaction_description = self.get_model('TransactionDescription')
 
         if element.text:
@@ -424,13 +433,14 @@ class Parse(IATI_201_Parser):
 
     tag:provider-org"""
         super(Parse, self).iati_activities__iati_activity__transaction__provider_org(element)
-    
+
         # transaction_provider = self.get_model('Transaction', index=-2)
         transaction_provider = self.get_model('TransactionProvider')
 
         if element.text:
             self.add_narrative(element, transaction_provider)
-            transaction_provider.primary_name = self.get_primary_name(element, transaction_provider.primary_name)
+            transaction_provider.primary_name = self.get_primary_name(
+                element, transaction_provider.primary_name)
 
         return element
 
@@ -438,16 +448,17 @@ class Parse(IATI_201_Parser):
         """atributes:
         receiver-activity-id:AA-AAA-123456789-1234
         ref:AA-AAA-123456789
-    
+
         tag:receiver-org"""
         super(Parse, self).iati_activities__iati_activity__transaction__receiver_org(element)
-    
+
         # transaction_receiver = self.get_model('Transaction', index=-2)
         transaction_receiver = self.get_model('TransactionReceiver')
 
         if element.text:
             self.add_narrative(element, transaction_receiver)
-            transaction_receiver.primary_name = self.get_primary_name(element, transaction_receiver.primary_name)
+            transaction_receiver.primary_name = self.get_primary_name(
+                element, transaction_receiver.primary_name)
 
         return element
 
@@ -473,7 +484,7 @@ class Parse(IATI_201_Parser):
 #         website.activity = model
 #         website.url = element.text
 #         website.save()
-#         #store element 
+#         #store element
 #         return element
 
 #     """atributes:
@@ -487,7 +498,6 @@ class Parse(IATI_201_Parser):
 #         condition.type = self.cached_db_call(models.ConditionType,element.attrib.get('type'))
 #         self.add_narrative(element, condition)
 #         return element
-
 
     def check_narrative_duplicate(self, parent, child, fk_field):
         """
@@ -548,7 +558,8 @@ class Parse(IATI_201_Parser):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_title = self.get_model('ResultIndicatorTitle')
 
-        if self.check_narrative_duplicate(result_indicator, result_indicator_title, 'result_indicator'):
+        if self.check_narrative_duplicate(
+                result_indicator, result_indicator_title, 'result_indicator'):
             self.add_narrative(element, result_indicator_title)
             return element
 
@@ -558,7 +569,8 @@ class Parse(IATI_201_Parser):
 
         if element.text:
             self.add_narrative(element, result_indicator_title)
-            result_indicator_title.primary_name = self.get_primary_name(element, result_indicator_title.primary_name)
+            result_indicator_title.primary_name = self.get_primary_name(
+                element, result_indicator_title.primary_name)
 
         return element
 
@@ -570,7 +582,8 @@ class Parse(IATI_201_Parser):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_description = self.get_model('ResultIndicatorDescription')
 
-        if self.check_narrative_duplicate(result_indicator, result_indicator_description, 'result_indicator'):
+        if self.check_narrative_duplicate(
+                result_indicator, result_indicator_description, 'result_indicator'):
             self.add_narrative(element, result_indicator_description)
             return element
 
@@ -592,7 +605,8 @@ class Parse(IATI_201_Parser):
         result_indicator = self.get_model('ResultIndicator')
         result_indicator_baseline_comment = self.get_model('ResultIndicatorBaselineComment')
 
-        if self.check_narrative_duplicate(result_indicator, result_indicator_baseline_comment, 'result_indicator'):
+        if self.check_narrative_duplicate(
+                result_indicator, result_indicator_baseline_comment, 'result_indicator'):
             self.add_narrative(element, result_indicator_baseline_comment)
             return element
 
@@ -611,15 +625,21 @@ class Parse(IATI_201_Parser):
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):
 
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
-        result_indicator_period_target_comment = self.get_model('ResultIndicatorPeriodTargetComment')
+        result_indicator_period_target_comment = self.get_model(
+            'ResultIndicatorPeriodTargetComment')
 
-        if self.check_narrative_duplicate(result_indicator_period, result_indicator_period_target_comment, 'result_indicator_period'):
+        if self.check_narrative_duplicate(
+                result_indicator_period,
+                result_indicator_period_target_comment,
+                'result_indicator_period'):
             self.add_narrative(element, result_indicator_period_target_comment)
             return element
 
         result_indicator_period_target_comment = models.ResultIndicatorPeriodTargetComment()
         result_indicator_period_target_comment.result_indicator_period = result_indicator_period
-        self.register_model('ResultIndicatorPeriodTargetComment', result_indicator_period_target_comment)
+        self.register_model(
+            'ResultIndicatorPeriodTargetComment',
+            result_indicator_period_target_comment)
 
         if element.text:
             self.add_narrative(element, result_indicator_period_target_comment)
@@ -631,15 +651,21 @@ class Parse(IATI_201_Parser):
 #     tag:comment"""
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
-        result_indicator_period_actual_comment = self.get_model('ResultIndicatorPeriodActualComment')
+        result_indicator_period_actual_comment = self.get_model(
+            'ResultIndicatorPeriodActualComment')
 
-        if self.check_narrative_duplicate(result_indicator_period, result_indicator_period_actual_comment, 'result_indicator_period'):
+        if self.check_narrative_duplicate(
+                result_indicator_period,
+                result_indicator_period_actual_comment,
+                'result_indicator_period'):
             self.add_narrative(element, result_indicator_period_actual_comment)
             return element
 
         result_indicator_period_actual_comment = models.ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment.result_indicator_period = result_indicator_period
-        self.register_model('ResultIndicatorPeriodActualComment', result_indicator_period_actual_comment)
+        self.register_model(
+            'ResultIndicatorPeriodActualComment',
+            result_indicator_period_actual_comment)
 
         if element.text:
             self.add_narrative(element, result_indicator_period_actual_comment)
@@ -658,7 +684,7 @@ class Parse(IATI_201_Parser):
 #         crs_other_flags.other_flags = self.cached_db_call_no_version(models.OtherFlags,element.attrib.get('code'))
 #         crs_other_flags.significance = element.attrib.get('significance')
 #         crs_other_flags.save()
-#         #store element 
+#         #store element
 #         return element
 
 

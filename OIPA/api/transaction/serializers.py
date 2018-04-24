@@ -18,6 +18,7 @@ from api.activity.serializers import save_narratives, handle_errors
 from iati.parser import validators
 from iati.parser import exceptions
 
+
 class TransactionProviderSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
     type = CodelistSerializer()
@@ -36,6 +37,7 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
             'provider_activity_id',
             'narratives'
         )
+
 
 class TransactionReceiverSerializer(serializers.ModelSerializer):
     ref = serializers.CharField()
@@ -56,6 +58,7 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
             'narratives'
         )
 
+
 class TransactionDescriptionSerializer(serializers.ModelSerializer):
     narratives = NarrativeSerializer(many=True)
 
@@ -64,6 +67,7 @@ class TransactionDescriptionSerializer(serializers.ModelSerializer):
         fields = (
             'narratives',
         )
+
 
 class TransactionSectorSerializer(serializers.ModelSerializer):
     sector = SectorSerializer(fields=('url', 'code', 'name'))
@@ -78,7 +82,6 @@ class TransactionSectorSerializer(serializers.ModelSerializer):
             'vocabulary',
             'vocabulary_uri',
         )
-
 
 
 class TransactionRecipientCountrySerializer(DynamicFieldsModelSerializer):
@@ -109,7 +112,6 @@ class TransactionRecipientRegionSerializer(DynamicFieldsModelSerializer):
         )
 
 
-
 class TransactionSerializer(DynamicFieldsModelSerializer):
     """
     Transaction serializer class
@@ -118,7 +120,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         view_name='transactions:transaction-detail',
         lookup_field='pk',
         read_only=True
-        )
+    )
 
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
@@ -130,8 +132,10 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     receiver_organisation = TransactionReceiverSerializer(required=False)
     disbursement_channel = CodelistSerializer()
     sector = TransactionSectorSerializer(required=False, source="transaction_sector")
-    recipient_country = TransactionRecipientCountrySerializer(required=False, source="transaction_recipient_country")
-    recipient_region = TransactionRecipientRegionSerializer(required=False, source="transaction_recipient_region")
+    recipient_country = TransactionRecipientCountrySerializer(
+        required=False, source="transaction_recipient_country")
+    recipient_region = TransactionRecipientRegionSerializer(
+        required=False, source="transaction_recipient_region")
     tied_status = CodelistSerializer()
     transaction_type = CodelistSerializer()
     currency = CodelistSerializer()
@@ -206,7 +210,6 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
         return handle_errors(validated)
 
-
     def create(self, validated_data):
         activity = validated_data.get('activity')
         description_narratives_data = validated_data.pop('description_narratives', [])
@@ -222,15 +225,15 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
         if provider_data.get('ref'):
             provider_org = models.TransactionProvider.objects.create(
-                    transaction=instance,
-                    **provider_data)
+                transaction=instance,
+                **provider_data)
             save_narratives(provider_org, provider_narratives_data, activity)
             validated_data['provider_organisation'] = provider_org
 
         if receiver_data.get('ref'):
             receiver_org = models.TransactionReceiver.objects.create(
-                    transaction=instance,
-                    **receiver_data)
+                transaction=instance,
+                **receiver_data)
             save_narratives(receiver_org, receiver_narratives_data, activity)
             validated_data['receiver_organisation'] = receiver_org
 
@@ -240,7 +243,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 reported_transaction=instance,
                 percentage=100,
                 **sector_data
-                )
+            )
 
         if recipient_country_data.get('country'):
             models.TransactionRecipientCountry.objects.create(
@@ -248,7 +251,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 reported_transaction=instance,
                 percentage=100,
                 **recipient_country_data
-                )
+            )
 
         if recipient_region_data.get('region'):
             models.TransactionRecipientRegion.objects.create(
@@ -256,10 +259,9 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 reported_transaction=instance,
                 percentage=100,
                 **recipient_region_data
-                )
+            )
 
         return instance
-
 
     def update(self, instance, validated_data):
         activity = validated_data.get('activity')
@@ -276,12 +278,11 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
         update_instance.id = instance.id
         update_instance.save()
 
-
         if provider_data.get('ref'):
             try:
                 provider_org = models.TransactionProvider.objects.get(
-                        transaction=instance)
-            except:
+                    transaction=instance)
+            except BaseException:
                 provider_org = models.TransactionProvider.objects.create(
                     transaction=instance,
                     **provider_data)
@@ -292,7 +293,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             try:
                 receiver_org = models.TransactionReceiver.objects.get(
                     transaction=instance)
-            except:
+            except BaseException:
                 receiver_org = models.TransactionReceiver.objects.create(
                     transaction=instance,
                     **receiver_data)
@@ -304,20 +305,20 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 models.TransactionSector.objects.get(
                     transaction=instance,
                     reported_transaction=instance)
-            except:
+            except BaseException:
                 models.TransactionSector.objects.create(
                     transaction=instance,
                     reported_transaction=instance,
                     percentage=100,
                     **sector_data
-                    )
+                )
 
         if recipient_country_data.get('country'):
             try:
                 models.TransactionRecipientCountry.objects.get(
                     reported_transaction=instance,
                 )
-            except:
+            except BaseException:
                 models.TransactionRecipientCountry.objects.create(
                     transaction=instance,
                     reported_transaction=instance,
@@ -330,15 +331,12 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
                 models.TransactionRecipientRegion.objects.get(
                     transaction=instance,
                     reported_transaction=instance)
-            except:
+            except BaseException:
                 models.TransactionRecipientRegion.objects.create(
                     transaction=instance,
                     reported_transaction=instance,
                     percentage=100,
                     **recipient_region_data
-                    )
-
+                )
 
         return update_instance
-
-

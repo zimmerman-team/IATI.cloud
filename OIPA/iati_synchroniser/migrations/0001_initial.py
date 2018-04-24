@@ -29,11 +29,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Dataset',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_id', models.CharField(max_length=255)),
                 ('name', models.CharField(max_length=255)),
                 ('title', models.CharField(default=b'', max_length=255)),
-                ('filetype', models.IntegerField(choices=[(1, b'Activity'), (2, b'Organisation')], default=1)),
+                ('filetype', models.IntegerField(choices=[
+                 (1, b'Activity'), (2, b'Organisation')], default=1)),
                 ('source_url', models.URLField(max_length=255)),
                 ('iati_version', models.CharField(default=b'', max_length=10)),
                 ('date_created', models.DateTimeField(default=datetime.datetime.now, editable=False)),
@@ -55,30 +57,39 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DatasetNote',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_identifier', models.CharField(max_length=140)),
                 ('exception_type', models.CharField(max_length=100)),
                 ('model', models.CharField(max_length=50)),
                 ('field', models.CharField(default=b'', max_length=100)),
                 ('message', models.CharField(default=0, max_length=150)),
                 ('line_number', models.IntegerField(null=True)),
-                ('dataset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Dataset')),
+                ('dataset', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Dataset')),
             ],
         ),
         migrations.CreateModel(
             name='Publisher',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('iati_id', models.CharField(max_length=255)),
                 ('publisher_iati_id', models.CharField(max_length=100)),
                 ('name', models.CharField(default=b'', max_length=55)),
                 ('display_name', models.CharField(max_length=255)),
-                ('organisation', models.OneToOneField(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='iati_organisation.Organisation')),
+                ('organisation',
+                 models.OneToOneField(default=None,
+                                      null=True,
+                                      on_delete=django.db.models.deletion.SET_NULL,
+                                      to='iati_organisation.Organisation')),
             ],
         ),
         migrations.AddField(
             model_name='dataset',
             name='publisher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_synchroniser.Publisher'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_synchroniser.Publisher'),
         ),
     ]

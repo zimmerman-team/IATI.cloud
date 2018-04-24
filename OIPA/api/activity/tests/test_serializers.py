@@ -1,6 +1,8 @@
-# TODO: no need to test codelist fields separately; instead test the whole serializer in once along with the code and vocabulary fields. Or is testing the fields separately preferable?
+# TODO: no need to test codelist fields separately; instead test the whole
+# serializer in once along with the code and vocabulary fields. Or is
+# testing the fields separately preferable?
 
-from django.test import TestCase # Runs each test in a transaction and flushes database
+from django.test import TestCase  # Runs each test in a transaction and flushes database
 from unittest import skip
 import datetime
 
@@ -8,6 +10,7 @@ from django.test import RequestFactory
 from iati.factory import iati_factory
 from iati_codelists.factory import codelist_factory
 from api.activity import serializers
+
 
 class CodelistSerializerTestCase(TestCase):
     def test_codelist_serializer(self):
@@ -22,6 +25,7 @@ class CodelistSerializerTestCase(TestCase):
             """
             'codelist.name' should be serialized to a field called 'name'
             """
+
 
 class NarrativeSerializerTestCase(TestCase):
 
@@ -58,23 +62,22 @@ class ActivitySerializerTestCase(TestCase):
             'category' and 'title'
             """
 
-        assert type(serializer.fields['format']) is serializers.CodelistSerializer,\
+        assert isinstance(serializer.fields['format'], serializers.CodelistSerializer),\
             """
             the field 'format' should be a CodelistSerializer
             """
 
-        assert type(serializer.fields['categories'].child) is serializers.\
-            DocumentLinkCategorySerializer,\
+        assert isinstance(serializer.fields['categories'].child, serializers.
+                          DocumentLinkCategorySerializer),\
             """
             the field 'categories' should be a DocumentLinkCategorySerializer
             """
 
-        assert type(serializer.fields['title']) is serializers.\
-            NarrativeContainerSerializer,\
+        assert isinstance(serializer.fields['title'], serializers.
+                          NarrativeContainerSerializer),\
             """
             the field 'title' should be a TitleSerializer
             """
-
 
     def test_FileFormatSerializer(self):
         file_format = iati_factory.FileFormatFactory.build()
@@ -88,7 +91,7 @@ class ActivitySerializerTestCase(TestCase):
     def test_DocumentLinkCategorySerializer(self):
 
         doc_category = iati_factory.DocumentCategoryFactory.create()
-        serializer = serializers.DocumentLinkCategorySerializer({ "category": doc_category})
+        serializer = serializers.DocumentLinkCategorySerializer({"category": doc_category})
 
         self.assertEquals(serializer.data['category']['code'], doc_category.code),\
             """
@@ -211,7 +214,7 @@ class ActivitySerializerTestCase(TestCase):
         serializer = serializers.ActivityDateSerializer(date_type)
 
         self.assertTrue('iso_date' in serializer.data)
-        self.assertTrue(type(serializer.fields['type']) is serializers.CodelistSerializer)
+        self.assertTrue(isinstance(serializer.fields['type'], serializers.CodelistSerializer))
 
     def test_ActivityDateTypeSerializer(self):
         activity_date_type = iati_factory.ActivityDateTypeFactory.build(code='1')
@@ -346,6 +349,7 @@ class ActivitySerializerTestCase(TestCase):
             the serialized sector should contain the fields 'url, 'code', and
             'name'
             """
+
     def test_SectorVocabularySerializer(self):
         vocabulary = iati_factory.SectorVocabularyFactory.build()
         serializer = serializers.CodelistSerializer(vocabulary)
@@ -356,9 +360,8 @@ class ActivitySerializerTestCase(TestCase):
 
     def test_ActivityRecipientRegionSerializer(self):
         recipient_region = iati_factory.ActivityRecipientRegionFactory.build()
-        serializer = serializers.ActivityRecipientRegionSerializer(recipient_region, 
-            context={'request': self.request_dummy}
-        )
+        serializer = serializers.ActivityRecipientRegionSerializer(
+            recipient_region, context={'request': self.request_dummy})
 
         assert serializer.data['percentage'] == recipient_region.percentage,\
             """
@@ -458,7 +461,7 @@ class ActivitySerializerTestCase(TestCase):
     def test_CapitalSpendSerializer(self):
         activity = iati_factory.ActivityFactory.build(capital_spend=80)
         serializer = serializers.CapitalSpendSerializer(activity.capital_spend)
-        
+
         self.assertEqual(serializer.data['percentage'], activity.capital_spend)
 
     def test_ResultTypeSerializer(self):
@@ -476,7 +479,7 @@ class ActivitySerializerTestCase(TestCase):
         # TODO add all other fields here
         assert serializer.data['type']['code'] == contact_info.type.code,\
             "type should be serialized to a field called 'type'"
-        
+
         assert serializer.data['telephone'] == contact_info.telephone,\
             "telephone text should be serialized to a field called 'telephone'"
 
@@ -639,7 +642,9 @@ class ActivitySerializerTestCase(TestCase):
             contains the data in activity.iati_identifier
             """
 
-        self.assertEqual(serializer.data['last_updated_datetime'], activity.last_updated_datetime.isoformat())
+        self.assertEqual(
+            serializer.data['last_updated_datetime'],
+            activity.last_updated_datetime.isoformat())
 
         assert serializer.data['hierarchy'] == activity.hierarchy,\
             """

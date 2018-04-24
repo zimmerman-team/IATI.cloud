@@ -6,8 +6,9 @@ import copy
 import datetime
 from django.core import management
 
-from django.test import TestCase as DjangoTestCase # Runs each test in a transaction and flushes database
-from unittest import TestCase
+# Runs each test in a transaction and flushes database
+from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 
 from lxml import etree
 from lxml.builder import E
@@ -32,29 +33,34 @@ def build_xml(version, organisation_identifier):
         Construct a base activity file to work with in the tests
     """
 
-    activities_attrs = { "generated-datetime": datetime.datetime.now().isoformat(),
-        "version": version,
+    activities_attrs = {"generated-datetime": datetime.datetime.now().isoformat(),
+                        "version": version,
 
-    }
+                        }
 
     activity = E("iati-organisations",
-        **activities_attrs
-    )
+                 **activities_attrs
+                 )
 
     return activity
+
 
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 # TODO: Get rid of fixtures - 2016-04-21
+
+
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
     for fixture in fixtures:
         management.call_command("loaddata", fixture)
 
+
 def tearDownModule():
     management.call_command('flush', interactive=False, verbosity=0)
+
 
 class ParserSetupTestCase(DjangoTestCase):
 
@@ -77,6 +83,7 @@ class ParserSetupTestCase(DjangoTestCase):
     def tearDownClass(self):
         pass
 
+
 class OrganisationTestCase(ParserSetupTestCase):
     """
     iati_activities__iati_activity
@@ -84,6 +91,7 @@ class OrganisationTestCase(ParserSetupTestCase):
     2.01: The version attribute was removed.
     1.02: Introduced the linked-data-uri attribute on iati-activity element
     """
+
     def setUp(self):
         # sample attributes on iati-activity xml
         self.attrs = {
@@ -106,20 +114,23 @@ class OrganisationTestCase(ParserSetupTestCase):
 
     def test_iati_organisations__iati_organisation(self):
         attribs = {
-                'default-currency':'EUR',
-                'last-updated-datetime':'2014-09-10T07:15:37Z',
-                '{http://www.w3.org/XML/1998/namespace}lang':'en',
-                }
+            'default-currency': 'EUR',
+            'last-updated-datetime': '2014-09-10T07:15:37Z',
+            '{http://www.w3.org/XML/1998/namespace}lang': 'en',
+        }
 
-        element = E('iati-organisation', E('iati-identifier','test-id',{}),attribs)
+        element = E('iati-organisation', E('iati-identifier', 'test-id', {}), attribs)
 
         self.parser_105.iati_organisations__iati_organisation(element)
 
         organisation = self.parser_105.get_model('Organisation')
 
         self.assertEqual(organisation.organisation_identifier, 'test-id')
-        self.assertEqual(organisation.default_currency_id , attribs['default-currency'])
-        self.assertEqual(organisation.last_updated_datetime, self.parser_105.validate_date(attribs['last-updated-datetime']))
+        self.assertEqual(organisation.default_currency_id, attribs['default-currency'])
+        self.assertEqual(
+            organisation.last_updated_datetime,
+            self.parser_105.validate_date(
+                attribs['last-updated-datetime']))
 
     def test_iati_organisations__iati_organisation__name(self):
         element = E('name', 'test narrative name')
@@ -129,4 +140,3 @@ class OrganisationTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('OrganisationNameNarrative')
 
         self.assertEqual('test narrative name', narrative.content)
-

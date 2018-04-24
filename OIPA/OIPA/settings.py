@@ -102,10 +102,18 @@ USE_TZ = False
 
 # URL for static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.environ.get('OIPA_STATIC_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'public/static'))
+STATIC_ROOT = os.environ.get(
+    'OIPA_STATIC_ROOT',
+    os.path.join(
+        os.path.dirname(BASE_DIR),
+        'public/static'))
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.environ.get('OIPA_MEDIA_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'public/media'))
+MEDIA_ROOT = os.environ.get(
+    'OIPA_MEDIA_ROOT',
+    os.path.join(
+        os.path.dirname(BASE_DIR),
+        'public/media'))
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -147,6 +155,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     'grappelli',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -178,8 +191,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'iati.permissions',
     'rest_auth',
-    'allauth',
-    'allauth.account',
     'rest_auth.registration',
     'django_filters'
 ]
@@ -285,23 +296,56 @@ CACHES = {
     'default': {
         'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
+    },
+    'api': {
+        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     }
 }
+
+OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'INFO')
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
         'console': {
+            'level': OIPA_LOG_LEVEL,
+            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-        },
+            'formatter': 'verbose'
+        }
     },
     'loggers': {
+        '': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': OIPA_LOG_LEVEL
+        },
+
         'django': {
             'handlers': ['console'],
-            'level': env.get('OIPA_LOG_LEVEL', 'ERROR'),
-        },
-    },
+            'propagate': True,
+            'level': OIPA_LOG_LEVEL
+        }
+    }
+}
+
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_USE_CACHE': 'api'
 }
 
 try:

@@ -169,7 +169,7 @@
 #     #         group_by='sector',
 #     #         aggregations='sector_percentage_weighted_budget',
 #     #         order_by='sector')
-        
+
 #     #     self.assertTrue(len(results) == 2)
 #     #     self.assertEqual(results[0]['budget'], Decimal(110000))
 #     #     self.assertEqual(results[1]['budget'], Decimal(40000))

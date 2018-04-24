@@ -1,6 +1,5 @@
 
 
-
 from collections import OrderedDict
 from django.core.urlresolvers import reverse
 
@@ -19,6 +18,7 @@ from iati_synchroniser.factory.synchroniser_factory import PublisherFactory
 
 from iati_codelists.factory import codelist_factory
 from iati.factory import iati_factory
+
 
 class TestActivityPermissions(APITestCase):
     rf = RequestFactory()
@@ -43,10 +43,10 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201)
 
@@ -71,13 +71,12 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/activities/?format=json".format(admin_group.publisher.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 403)
-
 
     def test_update_activity_success(self):
         """
@@ -98,13 +97,13 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/activities/{}/?format=json".format(activity.publisher.id, activity.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/activities/{}/?format=json".format(
+                activity.publisher.id, activity.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200)
-
 
     def test_update_activity_fail_if_not_in_admin_group(self):
         """
@@ -125,13 +124,13 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/activities/{}/?format=json".format(activity.publisher.id, activity.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/activities/{}/?format=json".format(
+                activity.publisher.id, activity.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 403)
-
 
     def test_get_activity_success(self):
         """
@@ -152,10 +151,10 @@ class TestActivityPermissions(APITestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/activities/{}/?format=json".format(activity.publisher.id, activity.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/activities/{}/?format=json".format(
+                activity.publisher.id, activity.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200)
-

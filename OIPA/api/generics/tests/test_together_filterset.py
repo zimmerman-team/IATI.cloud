@@ -11,32 +11,35 @@ from django.test.client import RequestFactory
 from django_filters import DateFilter
 from api.generics.filters import CommaSeparatedCharFilter
 
+
 class TestFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
-            lookup_expr='gte',
-            name='budget__period_start',)
+        lookup_expr='gte',
+        name='budget__period_start',)
 
     budget_period_end = DateFilter(
-            lookup_expr='lte',
-            name='budget__period_end')
+        lookup_expr='lte',
+        name='budget__period_end')
 
     class Meta:
         model = Activity
         together_exclusive = [('budget_period_start', 'budget_period_end')]
         fields = '__all__'
 
+
 class TestWithoutFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
-            lookup_expr='gte',
-            name='budget__period_start',)
+        lookup_expr='gte',
+        name='budget__period_start',)
 
     budget_period_end = DateFilter(
-            lookup_expr='lte',
-            name='budget__period_end')
+        lookup_expr='lte',
+        name='budget__period_end')
 
     class Meta:
         model = Activity
         fields = '__all__'
+
 
 class TogetherFilterSetTestCase(TestCase):
 
@@ -68,5 +71,3 @@ class TogetherFilterSetTestCase(TestCase):
 
         # table joined twice, hence 3 aliases
         self.assertEqual(len(query.__dict__['alias_map']), 3)
-
-

@@ -18,28 +18,34 @@ class Publisher(models.Model):
     name = models.CharField(max_length=55, default="")
     display_name = models.CharField(max_length=255)
 
-    organisation = models.OneToOneField(Organisation, default=None, null=True, on_delete=models.SET_NULL)
+    organisation = models.OneToOneField(
+        Organisation,
+        default=None,
+        null=True,
+        on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return self.publisher_iati_id
+
 
 filetype_choices = (
     (1, 'Activity'),
     (2, 'Organisation'),
 )
 
+
 class Dataset(models.Model):
-    
+
     # IR fields
     iati_id = models.CharField(max_length=255, unique=True)
 
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
-    publisher = models.ForeignKey(Publisher) # organization.id
-    source_url = models.URLField(max_length=255) # resource.url
+    publisher = models.ForeignKey(Publisher)  # organization.id
+    source_url = models.URLField(max_length=255)  # resource.url
     iati_version = models.CharField(max_length=10, default="2.02")
-    
+
     # OIPA related fields
     date_created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     date_updated = models.DateTimeField(default=datetime.datetime.now, editable=False)
@@ -63,11 +69,11 @@ class Dataset(models.Model):
     def process(self, force_reparse=False):
         from iati.parser.parse_manager import ParseManager
         start_datetime = datetime.datetime.now()
-        
+
         parser = ParseManager(self, force_reparse=force_reparse)
         parser.parse_all()
         self.is_parsed = True
-        
+
         self.date_updated = datetime.datetime.now()
 
         time_diff = self.date_updated - start_datetime
@@ -79,7 +85,8 @@ class Dataset(models.Model):
                 return '0' + str(time_period)
             return time_period
 
-        self.time_to_parse = '%s:%s:%s' % (prepend_zero(hours), prepend_zero(minutes), prepend_zero(seconds))
+        self.time_to_parse = '%s:%s:%s' % (prepend_zero(
+            hours), prepend_zero(minutes), prepend_zero(seconds))
 
         self.save(process=False)
 
@@ -118,4 +125,3 @@ class Codelist(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.name
-

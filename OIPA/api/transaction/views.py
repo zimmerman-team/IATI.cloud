@@ -5,6 +5,8 @@ from api.generics.views import DynamicListView, DynamicDetailView
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 from api.activity.serializers import ActivitySerializer
 
 from geodata.models import Country
@@ -48,7 +50,7 @@ from iati.models import ActivityParticipatingOrganisation
 from iati.models import ActivityReportingOrganisation
 
 
-class TransactionList(DynamicListView):
+class TransactionList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Transactions stored in OIPA.
 
@@ -102,7 +104,8 @@ class TransactionList(DynamicListView):
         'receiver_organisation',
     )
 
-class TransactionDetail(DynamicDetailView):
+
+class TransactionDetail(CacheResponseMixin, DynamicDetailView):
     """
     Returns detailed information about Transaction.
 
@@ -132,6 +135,7 @@ class TransactionSectorList(ListCreateAPIView):
         pk = self.kwargs.get('pk')
         return Transaction(pk=pk).sectors.all()
 
+
 class TransactionSectorDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSectorSerializer
 
@@ -150,14 +154,16 @@ currencies = [
     'cad'
 ]
 
+
 def annotate_currency(query_params, groupings):
     """
     Choose the right currency field, and aggregate differently based on group_by
     """
     currency = query_params.get('convert_to')
     currency_field = None
-    
-    if currency: currency = currency.lower()
+
+    if currency:
+        currency = currency.lower()
 
     if currency is None or currency not in currencies:
         currency_field = 'value'
@@ -202,7 +208,7 @@ class TransactionAggregation(AggregationView):
     ## Group by options
 
     API request has to include `group_by` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -230,7 +236,7 @@ class TransactionAggregation(AggregationView):
     ## Aggregation options
 
     API request has to include `aggregations` parameter.
-    
+
     This parameter controls result aggregations and
     can be one or more (comma separated values) of:
 
@@ -258,7 +264,7 @@ class TransactionAggregation(AggregationView):
     - `jpy`
     - `cad`
 
-    This results in converted values when the original value was in another currency. 
+    This results in converted values when the original value was in another currency.
 
     Information on used exchange rates can be found <a href='https://docs.oipa.nl/'>in the docs</a>.
 
@@ -324,7 +330,7 @@ class TransactionAggregation(AggregationView):
             query_param='disbursement_expenditure',
             field='disbursement_expenditure',
             annotate=annotate_currency,
-            extra_filter=Q(transaction_type__in=[3,4]),
+            extra_filter=Q(transaction_type__in=[3, 4]),
         )
     )
 
@@ -335,7 +341,7 @@ class TransactionAggregation(AggregationView):
             renamed_fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
-            serializer_fields=('url', 'code', 'name', 'location'),
+            serializer_fields=('url', 'code', 'name', 'location', 'region'),
             name_search_field='transactionrecipientcountry__country__name',
             renamed_name_search_field='recipient_country_name',
         ),
@@ -382,7 +388,8 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="participating_organisation",
-            fields=("activity__participating_organisations__primary_name", "activity__participating_organisations__normalized_ref"),
+            fields=("activity__participating_organisations__primary_name",
+                    "activity__participating_organisations__normalized_ref"),
             renamed_fields=("participating_organisation", "participating_organisation_ref"),
             queryset=ActivityParticipatingOrganisation.objects.all(),
             name_search_field="activity__participating_organisations__primary_name",
@@ -514,4 +521,3 @@ class TransactionAggregation(AggregationView):
             fields=("transaction_date_year", "transaction_date_month")
         ),
     )
-

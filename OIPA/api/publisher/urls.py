@@ -8,10 +8,10 @@ from api.transaction.views import TransactionSectorList, TransactionSectorDetail
 from api.export_organisation.views import OrganisationNextExportList
 
 urlpatterns = [
-    url(r'^$', 
-        views.PublisherList.as_view(), 
+    url(r'^$',
+        views.PublisherList.as_view(),
         name='publisher-list'
-    ),
+        ),
     url(
         r'^(?P<pk>[^@$&+,/:;=?]+)/$',
         views.PublisherDetail.as_view(),
@@ -66,7 +66,7 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_activities/(?P<job_id>[^@$+,/;=?]+)$',
         api.export.views.IATIActivityNextExportListResult.as_view(),
         name='activity-nextexport-list'),
-    
+
     # get all organisations that are ready to be published + the ones that are published
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/next_published_organisations/$',
         OrganisationNextExportList,
@@ -80,7 +80,7 @@ urlpatterns = [
         api.organisation.views.OrganisationMarkReadyToPublish.as_view(),
         name='organisation-mark-ready-to-publish'
         ),
-    
+
     #
     # Activity CRUD
     #
@@ -313,7 +313,7 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/dimension/(?P<target_dimension_id>[^@$&+,/:;=?]+)$',
         api.activity.views.ResultIndicatorPeriodTargetDimensionDetail.as_view(),
         name='activity-result_indicator_period_target_dimension-detail'),
-    
+
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/crs_add/$',
         api.activity.views.ActivityCrsAddList.as_view(),
@@ -362,70 +362,70 @@ urlpatterns = [
     #
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/$',
-            api.organisation.views.OrganisationListCRUD.as_view(),
-            name='organisation-list'),
+        api.organisation.views.OrganisationListCRUD.as_view(),
+        name='organisation-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/$',
-            api.organisation.views.OrganisationDetailCRUD.as_view(),
-            name='organisation-detail'),
+        api.organisation.views.OrganisationDetailCRUD.as_view(),
+        name='organisation-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_budgets/$',
-            api.organisation.views.OrganisationTotalBudgetListCRUD.as_view(),
-            name='organisation-total_budget-list'),
+        api.organisation.views.OrganisationTotalBudgetListCRUD.as_view(),
+        name='organisation-total_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_budgets/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationTotalBudgetDetailCRUD.as_view(),
-            name='organisation-total_budget-detail'),
+        api.organisation.views.OrganisationTotalBudgetDetailCRUD.as_view(),
+        name='organisation-total_budget-detail'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_budgets/(?P<total_budget_id>[^@$&+,/:;=?]+)/budget_lines/$',
-            api.organisation.views.OrganisationTotalBudgetBudgetLineListCRUD.as_view(),
-            name='organisation-total_budget-list'),
+        api.organisation.views.OrganisationTotalBudgetBudgetLineListCRUD.as_view(),
+        name='organisation-total_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_budgets/(?P<total_budget_id>[^@$&+,/:;=?]+)/budget_lines/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationTotalBudgetBudgetLineDetailCRUD.as_view(),
-            name='organisation-total_budget-detail'),
+        api.organisation.views.OrganisationTotalBudgetBudgetLineDetailCRUD.as_view(),
+        name='organisation-total_budget-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_org_budgets/$',
-            api.organisation.views.OrganisationRecipientOrgBudgetListCRUD.as_view(),
-            name='organisation-recipient_org_budget-list'),
+        api.organisation.views.OrganisationRecipientOrgBudgetListCRUD.as_view(),
+        name='organisation-recipient_org_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_org_budgets/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientOrgBudgetDetailCRUD.as_view(),
-            name='organisation-recipient_org_budget-detail'),
+        api.organisation.views.OrganisationRecipientOrgBudgetDetailCRUD.as_view(),
+        name='organisation-recipient_org_budget-detail'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_org_budgets/(?P<recipient_org_budget_id>[^@$&+,/:;=?]+)/budget_lines/$',
-            api.organisation.views.OrganisationRecipientOrgBudgetBudgetLineListCRUD.as_view(),
-            name='organisation-recipient_org_budget-list'),
+        api.organisation.views.OrganisationRecipientOrgBudgetBudgetLineListCRUD.as_view(),
+        name='organisation-recipient_org_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_org_budgets/(?P<recipient_org_budget_id>[^@$&+,/:;=?]+)/budget_lines/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientOrgBudgetBudgetLineDetailCRUD.as_view(),
-            name='organisation-recipient_org_budget-detail'),
+        api.organisation.views.OrganisationRecipientOrgBudgetBudgetLineDetailCRUD.as_view(),
+        name='organisation-recipient_org_budget-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/$',
-            api.organisation.views.OrganisationRecipientCountryBudgetListCRUD.as_view(),
-            name='organisation-recipient_country_budget-list'),
+        api.organisation.views.OrganisationRecipientCountryBudgetListCRUD.as_view(),
+        name='organisation-recipient_country_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientCountryBudgetDetailCRUD.as_view(),
-            name='organisation-recipient_country_budget-detail'),
+        api.organisation.views.OrganisationRecipientCountryBudgetDetailCRUD.as_view(),
+        name='organisation-recipient_country_budget-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/$',
-            api.organisation.views.OrganisationRecipientRegionBudgetListCRUD.as_view(),
-            name='organisation-recipient_region_budget-list'),
+        api.organisation.views.OrganisationRecipientRegionBudgetListCRUD.as_view(),
+        name='organisation-recipient_region_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientRegionBudgetDetailCRUD.as_view(),
-            name='organisation-recipient_region_budget-detail'),
+        api.organisation.views.OrganisationRecipientRegionBudgetDetailCRUD.as_view(),
+        name='organisation-recipient_region_budget-detail'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/(?P<recipient_region_budget_id>[^@$&+,/:;=?]+)/budget_lines/$',
-            api.organisation.views.OrganisationRecipientRegionBudgetBudgetLineListCRUD.as_view(),
-            name='organisation-recipient_region_budget-list'),
+        api.organisation.views.OrganisationRecipientRegionBudgetBudgetLineListCRUD.as_view(),
+        name='organisation-recipient_region_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_region_budgets/(?P<recipient_region_budget_id>[^@$&+,/:;=?]+)/budget_lines/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientRegionBudgetBudgetLineDetailCRUD.as_view(),
-            name='organisation-recipient_region_budget-detail'),
+        api.organisation.views.OrganisationRecipientRegionBudgetBudgetLineDetailCRUD.as_view(),
+        name='organisation-recipient_region_budget-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/$',
-            api.organisation.views.OrganisationTotalExpenditureListCRUD.as_view(),
-            name='organisation-total_expenditure-list'),
+        api.organisation.views.OrganisationTotalExpenditureListCRUD.as_view(),
+        name='organisation-total_expenditure-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationTotalExpenditureDetailCRUD.as_view(),
-            name='organisation-total_expenditure-detail'),
+        api.organisation.views.OrganisationTotalExpenditureDetailCRUD.as_view(),
+        name='organisation-total_expenditure-detail'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/(?P<total_expenditure_id>[^@$&+,/:;=?]+)/expense_lines/$',
-            api.organisation.views.OrganisationTotalExpenditureExpenseLineListCRUD.as_view(),
-            name='organisation-total_expenditure-list'),
+        api.organisation.views.OrganisationTotalExpenditureExpenseLineListCRUD.as_view(),
+        name='organisation-total_expenditure-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/total_expenditures/(?P<total_expenditure_id>[^@$&+,/:;=?]+)/expense_lines/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationTotalExpenditureExpenseLineDetailCRUD.as_view(),
-            name='organisation-total_expenditure-detail'),
+        api.organisation.views.OrganisationTotalExpenditureExpenseLineDetailCRUD.as_view(),
+        name='organisation-total_expenditure-detail'),
 
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/document_links/$',
@@ -456,10 +456,9 @@ urlpatterns = [
         api.organisation.views.OrganisationDocumentLinkRecipientCountryDetail.as_view(),
         name='organisation-document_link_recipient_country-detail'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/(?P<recipient_country_budget_id>[^@$&+,/:;=?]+)/budget_lines/$',
-            api.organisation.views.OrganisationRecipientCountryBudgetBudgetLineListCRUD.as_view(),
-            name='organisation-recipient_country_budget-list'),
+        api.organisation.views.OrganisationRecipientCountryBudgetBudgetLineListCRUD.as_view(),
+        name='organisation-recipient_country_budget-list'),
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/organisations/(?P<pk>[^@$&+,/:;=?]+)/recipient_country_budgets/(?P<recipient_country_budget_id>[^@$&+,/:;=?]+)/budget_lines/(?P<id>[^@$&+,/:;=?]+)$',
-            api.organisation.views.OrganisationRecipientCountryBudgetBudgetLineDetailCRUD.as_view(),
-            name='organisation-recipient_country_budget-detail'),
+        api.organisation.views.OrganisationRecipientCountryBudgetBudgetLineDetailCRUD.as_view(),
+        name='organisation-recipient_country_budget-detail'),
 ]
-

@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.core.urlresolvers import reverse
 import django_rq
 from task_queue.tasks import force_parse_source_by_url
+from functools import reduce
 
 
 class CodeListAdmin(admin.ModelAdmin):
@@ -27,8 +28,10 @@ def export_xml_by_source(request, dataset_id):
 
     if not dataset_id:
         return
-        
-    base_url = request.build_absolute_uri(reverse('export:activity-export')) + "?dataset={dataset_id}&format=xml&page_size=100&page={page}".format(dataset_id=dataset_id, page="{page}")
+
+    base_url = request.build_absolute_uri(
+        reverse('export:activity-export')) + "?dataset={dataset_id}&format=xml&page_size=100&page={page}".format(
+        dataset_id=dataset_id, page="{page}")
 
     def get_result(xml, page_num):
         print('making request, page: ' + str(page_num))
@@ -37,7 +40,7 @@ def export_xml_by_source(request, dataset_id):
 
         view = IATIActivityList.as_view()(req).render()
         xml.extend(etree.fromstring(view.content).getchildren())
-        
+
         link_header = view.get('link')
 
         if not link_header:
@@ -47,7 +50,7 @@ def export_xml_by_source(request, dataset_id):
         has_next = reduce(lambda acc, x: acc or (x['rel'] == 'next'), link, False)
 
         if has_next:
-            return get_result(xml, page_num+1)
+            return get_result(xml, page_num + 1)
         else:
             return xml
 
@@ -68,7 +71,7 @@ def export_xml_by_source(request, dataset_id):
     xml_file.close()
 
     return file_name
-    
+
 
 class DatasetAdmin(admin.ModelAdmin):
     actions = ['really_delete_selected']
@@ -90,22 +93,27 @@ class DatasetAdmin(admin.ModelAdmin):
         'time_to_parse']
 
     def show_source_url(self, obj):
-        return format_html('<a target="_blank" href="{url}">Open file in new window</a>', url=obj.source_url)
+        return format_html(
+            '<a target="_blank" href="{url}">Open file in new window</a>', url=obj.source_url)
     show_source_url.allow_tags = True
     show_source_url.short_description = "URL"
 
     def export_btn(self, obj):
-        return format_html('<a data-id="{id}" class="admin-btn export-btn" target="_blank">Export</a>', id=obj.id)
+        return format_html(
+            '<a data-id="{id}" class="admin-btn export-btn" target="_blank">Export</a>', id=obj.id)
     export_btn.short_description = 'Export XML'
     export_btn.allow_tags = True
 
     def get_parse_status(self, obj):
-        return format_html('<a data-id="{id}" class="admin-btn parse-btn">Add to parser queue</a>', id=obj.id)
+        return format_html(
+            '<a data-id="{id}" class="admin-btn parse-btn">Add to parser queue</a>', id=obj.id)
     get_parse_status.allow_tags = True
     get_parse_status.short_description = "Parse"
 
     def get_parse_activity(self, obj):
-        return format_html("<input type='text' name='activity-id' placeholder='activity id'><a data-id='{id}' class='admin-btn parse-activity-btn'>Parse Activity</a>", id=obj.id)
+        return format_html(
+            "<input type='text' name='activity-id' placeholder='activity id'><a data-id='{id}' class='admin-btn parse-activity-btn'>Parse Activity</a>",
+            id=obj.id)
     get_parse_activity.allow_tags = True
     get_parse_activity.short_description = "Parse Activity"
 
@@ -119,10 +127,10 @@ class DatasetAdmin(admin.ModelAdmin):
                 r'^add-to-parse-queue/$',
                 self.admin_site.admin_view(self.add_to_parse_queue)),
             url(
-                r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$', 
+                r'^parse-xml/(?P<activity_id>[^@$&+,/:;=?]+)$',
                 self.admin_site.admin_view(self.parse_activity_view)),
             url(
-                r'^export-xml/(?P<id>[^@$&+,/:;=?]+)$', 
+                r'^export-xml/(?P<id>[^@$&+,/:;=?]+)$',
                 self.admin_site.admin_view(self.export_xml),
                 name='export-xml'),
         ]
@@ -183,25 +191,24 @@ class PublisherAdmin(admin.ModelAdmin):
     inlines = [DatasetInline]
 
     list_display = (
-        'publisher_iati_id', 
-        'display_name', 
+        'publisher_iati_id',
+        'display_name',
         'name')
 
     class Media:
         js = (
             'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js',
             '/static/js/publisher_admin.js',
-            )
+        )
 
     def get_urls(self):
         urls = super(PublisherAdmin, self).get_urls()
         extra_urls = [
             url(
-                r'^parse-publisher/$', 
+                r'^parse-publisher/$',
                 self.admin_site.admin_view(self.parse_view)),
         ]
         return extra_urls + urls
-
 
     def parse_view(self, request):
         publisher_id = request.GET.get('publisher_id')
@@ -210,6 +217,6 @@ class PublisherAdmin(admin.ModelAdmin):
         return HttpResponse('Success')
 
 
-admin.site.register(Codelist,CodeListAdmin)
+admin.site.register(Codelist, CodeListAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(Dataset, DatasetAdmin)

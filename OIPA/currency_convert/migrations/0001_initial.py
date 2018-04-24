@@ -18,11 +18,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MonthlyAverage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('month', models.IntegerField()),
                 ('year', models.IntegerField()),
-                ('value', models.DecimalField(blank=True, decimal_places=10, default=None, max_digits=20, null=True)),
-                ('currency', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency')),
+                ('value',
+                 models.DecimalField(blank=True,
+                                     decimal_places=10,
+                                     default=None,
+                                     max_digits=20,
+                                     null=True)),
+                ('currency', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.Currency')),
             ],
         ),
         migrations.AlterUniqueTogether(

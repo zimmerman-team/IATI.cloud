@@ -2,6 +2,14 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from django.db.models import Q, F
 from api.aggregation.aggregation import aggregate
+from rest_framework_extensions.key_constructor.constructors \
+    import DefaultKeyConstructor
+from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
+from rest_framework_extensions.cache.decorators import cache_response
+
+
+class QueryParamsKeyConstructor(DefaultKeyConstructor):
+    all_query_params = QueryParamsKeyBit()
 
 
 class AggregationView(GenericAPIView):
@@ -10,7 +18,8 @@ class AggregationView(GenericAPIView):
         """
         limit the results to the amount set by page_size
 
-        The results are all queried so this gives at most a small performance boost
+        The results are all queried so this gives
+        at most a small performance boost
         because there's less data to serialize.
         """
         if page_size:
@@ -27,6 +36,7 @@ class AggregationView(GenericAPIView):
 
         return results
 
+    @cache_response(key_func=QueryParamsKeyConstructor())
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -37,9 +47,13 @@ class AggregationView(GenericAPIView):
         orderings = filter(None, params.get('order_by', "").split(','))
 
         if not len(groupings):
-            return Response({'error_message': "Invalid value for mandatory field 'group_by'"})
+            return Response({
+                'error_message':
+                    "Invalid value for mandatory field 'group_by'"})
         elif not len(aggregations):
-            return Response({'error_message': "Invalid value for mandatory field 'aggregations'"})
+            return Response({
+                'error_message':
+                    "Invalid value for mandatory field 'aggregations'"})
 
         selected_groupings = filter(
             lambda x: x.query_param in groupings,
@@ -51,10 +65,6 @@ class AggregationView(GenericAPIView):
             self.allowed_aggregations
         )
 
-        # selected_orderings = filter(
-        #     lambda x: x.query_param in orderings or '-' + x.query_param in orderings,
-        #     self.allowed_groupings + self.allowed_aggregations
-        # )
         selected_orderings = orderings
 
         result = aggregate(
@@ -68,13 +78,26 @@ class AggregationView(GenericAPIView):
         page_size = params.get('page_size', None)
         page = params.get('page', None)
 
-        result['results'] = self.apply_limit_offset_filters(result['results'], page_size, page)
+        result['results'] = \
+            self.apply_limit_offset_filters(result['results'], page_size, page)
 
         return Response(result)
 
 
 class GroupBy():
-    def __init__(self, query_param=None, fields=None, queryset=None, serializer=None, serializer_main_field="code", serializer_fk="pk", serializer_fields=(), extra=None, renamed_fields=None, name_search_field='', renamed_name_search_field=''):
+    def __init__(
+            self,
+            query_param=None,
+            fields=None,
+            queryset=None,
+            serializer=None,
+            serializer_main_field="code",
+            serializer_fk="pk",
+            serializer_fields=(),
+            extra=None,
+            renamed_fields=None,
+            name_search_field='',
+            renamed_name_search_field=''):
         """
         fields should be a dictionary of field: rendered_field_name
         """
@@ -90,21 +113,25 @@ class GroupBy():
         else:
             self.renamed_name_search_field = self.name_search_field
 
-        if type(fields) is str:
+        if isinstance(fields, str):
             self.fields = (fields,)
-        elif type(fields) is not tuple:
-            raise ValueError("fields must be either a string or a tuple of values")
+        elif not isinstance(fields, tuple):
+            raise ValueError(
+                "fields must be either a string or a tuple of values")
         else:
             self.fields = fields
 
         if renamed_fields:
-            if type(renamed_fields) is str:
+            if isinstance(renamed_fields, str):
                 self.renamed_fields = (renamed_fields,)
-            elif type(renamed_fields) is not tuple:
-                raise ValueError("renamed_fields must be either a string or a tuple of values")
+            elif not isinstance(renamed_fields, tuple):
+                raise ValueError(
+                    "renamed_fields must be either "
+                    "a string or a tuple of values")
             else:
                 if len(renamed_fields) > len(fields):
-                    raise ValueError("renamed fields length must be lte to fields length")
+                    raise ValueError(
+                        "renamed fields length must be lte to fields length")
                 self.renamed_fields = renamed_fields
         else:
             self.renamed_fields = renamed_fields
@@ -123,7 +150,9 @@ class GroupBy():
         """
 
         if self.renamed_fields:
-            return { zipped[0]:F(zipped[1]) for zipped in zip(self.renamed_fields, self.fields) }
+            return {
+                zipped[0]: F(zipped[1])
+                for zipped in zip(self.renamed_fields, self.fields)}
 
         return dict()
 
@@ -142,8 +171,9 @@ class GroupBy():
         this mutates the input list #{l}
         """
 
-        # TODO: Merge serializer results on queryset instead of on the joined result - 2016-04-08
-        
+        # TODO: Merge serializer results on queryset
+        # TODO: instead of on the joined result - 2016-04-08
+
         if not self.serializer:
             return l
 
@@ -175,22 +205,22 @@ class GroupBy():
 
         result = map(lambda i: merge([i, dict([
             (
-                field, 
+                field,
                 data_dict.get(str(i[field]))
             )
-            ])
-            ]), l)
+        ])
+        ]), l)
 
         return result
 
 
 class Aggregation():
 
-    def __init__(self, query_param=None, field=None, annotate=None, extra_filter=None, annotate_name=None, extra=None):
+    def __init__(self, query_param=None, field=None, annotate=None,
+                 extra_filter=None, annotate_name=None, extra=None):
 
         if not (query_param and field and annotate):
             raise ValueError("not all required params were passed")
-
 
         if extra_filter and not isinstance(extra_filter, Q):
             raise ValueError("extra_filter must be a django Q() object")
@@ -228,7 +258,7 @@ class Order:
     def __init__(self, query_param=None, fields=None):
         if not (query_param or field):
             raise ValueError("not all required params were passed")
-        
+
         self.query_param = query_param
         self.fields = fields
 
@@ -249,4 +279,3 @@ def merge(l):
         result.update(d)
 
     return result
-

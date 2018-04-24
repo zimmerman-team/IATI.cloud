@@ -1,6 +1,7 @@
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from iati.models import Location
 
@@ -46,7 +47,7 @@ class LocationList(DynamicListView):
     ordering_fields = ()
 
 
-class LocationDetail(RetrieveAPIView):
+class LocationDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about a Location.
 

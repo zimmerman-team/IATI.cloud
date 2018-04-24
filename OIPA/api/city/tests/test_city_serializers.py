@@ -45,4 +45,3 @@ class TestCitySerializers(TestCase):
             """
             a serialized city should contain a field called 'is_capital'
             """
-

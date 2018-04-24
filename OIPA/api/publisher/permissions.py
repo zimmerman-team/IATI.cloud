@@ -5,6 +5,7 @@ from common.util import get_or_none
 from iati_synchroniser.models import Publisher
 from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 
+
 class OrganisationAdminGroupPermissions(permissions.BasePermission):
     message = 'You have no admin priviledges for this organisation'
 
@@ -24,7 +25,7 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
             return False
 
         publisher_id = view.kwargs.get('publisher_id')
-        
+
         try:
             publisher = Publisher.objects.get(pk=publisher_id)
         except Publisher.DoesNotExist:
@@ -75,6 +76,7 @@ class ActivityCreatePermissions(permissions.BasePermission):
 
         return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
 
+
 class PublisherPermissions(permissions.BasePermission):
     message = 'You have no admin priviledges for the publisher defined on the activity'
 
@@ -103,4 +105,3 @@ class PublisherPermissions(permissions.BasePermission):
 
         # check if this user is in the admin group
         return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
-

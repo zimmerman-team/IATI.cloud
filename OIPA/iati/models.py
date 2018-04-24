@@ -84,8 +84,17 @@ class Activity(models.Model):
     dataset = models.ForeignKey(Dataset, null=True, default=None)
     publisher = models.ForeignKey(Publisher, null=True, default=None)
 
-    default_currency = models.ForeignKey(Currency, null=True, blank=True, default=None, related_name="default_currency")
-    hierarchy = models.SmallIntegerField(choices=hierarchy_choices, default=1, blank=True, db_index=True)
+    default_currency = models.ForeignKey(
+        Currency,
+        null=True,
+        blank=True,
+        default=None,
+        related_name="default_currency")
+    hierarchy = models.SmallIntegerField(
+        choices=hierarchy_choices,
+        default=1,
+        blank=True,
+        db_index=True)
     last_updated_model = models.DateTimeField(null=True, blank=True, auto_now=True)
 
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
@@ -159,17 +168,13 @@ class Activity(models.Model):
     # is this activity changed from the originally parsed version?
     modified = models.BooleanField(default=False, db_index=True)
 
-
-
     objects = ActivityManager(
-        ft_model = ActivitySearch, # model that contains the ft indexes
-        fields = ('title', 'description'), # fields on the model 
-        config = 'pg_catalog.simple', # default dictionary to use
-        search_field = 'text', # text field for all search fields,
-        auto_update_search_field = False, # TODO: make this compatible with M2M - 2016-01-11
+        ft_model=ActivitySearch,  # model that contains the ft indexes
+        fields=('title', 'description'),  # fields on the model
+        config='pg_catalog.simple',  # default dictionary to use
+        search_field='text',  # text field for all search fields,
+        auto_update_search_field=False,  # TODO: make this compatible with M2M - 2016-01-11
     )
-
-
 
     def __unicode__(self):
         return self.iati_identifier
@@ -209,7 +214,9 @@ class Activity(models.Model):
 
     @property
     def get_provided_activities(self):
-        return Activity.objects.filter(transaction__provider_organisation__provider_activity=self.id).exclude(id=self.id).distinct()
+        return Activity.objects.filter(
+            transaction__provider_organisation__provider_activity=self.id).exclude(
+            id=self.id).distinct()
 
 
 class AbstractActivityAggregation(models.Model):
@@ -222,15 +229,15 @@ class AbstractActivityAggregation(models.Model):
     )
     budget_currency = models.CharField(
         max_length=3,
-        null=True, 
-        default=None, 
+        null=True,
+        default=None,
         blank=True,
     )
     disbursement_value = models.DecimalField(
         max_digits=15,
         decimal_places=2,
         null=True,
-        blank=True, 
+        blank=True,
         db_index=True,
     )
     disbursement_currency = models.CharField(
@@ -398,7 +405,10 @@ class ChildAggregation(AbstractActivityAggregation):
 
 
 class ActivityPlusChildAggregation(AbstractActivityAggregation):
-    activity = models.OneToOneField(Activity, related_name="activity_plus_child_aggregation", default=None)
+    activity = models.OneToOneField(
+        Activity,
+        related_name="activity_plus_child_aggregation",
+        default=None)
 
 
 class Title(models.Model):
@@ -444,7 +454,11 @@ class ActivityReportingOrganisation(models.Model):
         related_name="reporting_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation, null=True, default=None, on_delete=models.SET_NULL)
+    organisation = models.ForeignKey(
+        Organisation,
+        null=True,
+        default=None,
+        on_delete=models.SET_NULL)
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     secondary_reporter = models.BooleanField(default=False)
@@ -460,17 +474,26 @@ class ActivityReportingOrganisation(models.Model):
         return self.activity
 
 
-
 class ActivityParticipatingOrganisation(models.Model):
     ref = models.CharField(max_length=250, null=True, blank=True, default="")
-    normalized_ref = models.CharField(blank=True, max_length=120, null=True, default=None, db_index=True)
+    normalized_ref = models.CharField(
+        blank=True,
+        max_length=120,
+        null=True,
+        default=None,
+        db_index=True)
 
     activity = models.ForeignKey(
         Activity,
         related_name="participating_organisations")
 
     # if in organisation standard
-    organisation = models.ForeignKey(Organisation, null=True, blank=True, default=None, on_delete=models.SET_NULL)
+    organisation = models.ForeignKey(
+        Organisation,
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL)
 
     type = models.ForeignKey(OrganisationType, null=True, blank=True, default=None)
     role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
@@ -487,7 +510,7 @@ class ActivityParticipatingOrganisation(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-    
+
     # TODO: Workaround for IATI ref limitation - 2015-11-26
     primary_name = models.TextField(blank=True)
 
@@ -511,7 +534,7 @@ class ActivityPolicyMarker(models.Model):
         PolicySignificance,
         null=True,
         blank=True,
-        )
+    )
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -551,7 +574,6 @@ class ActivitySector(models.Model):
         return self.activity
 
 
-
 class ActivityRecipientCountry(models.Model):
     activity = models.ForeignKey(Activity)
     country = models.ForeignKey(Country)
@@ -571,7 +593,6 @@ class ActivityRecipientCountry(models.Model):
 
     def get_activity(self):
         return self.activity
-
 
 
 class CountryBudgetItem(models.Model):
@@ -596,11 +617,15 @@ class HumanitarianScope(models.Model):
 class BudgetItem(models.Model):
     country_budget_item = models.ForeignKey(CountryBudgetItem)
     code = models.ForeignKey(BudgetIdentifier)
-    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=None)
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        default=None)
 
     def get_activity(self):
         return self.country_budget_item.activity
-
 
 
 class BudgetItemDescription(models.Model):
@@ -609,7 +634,6 @@ class BudgetItemDescription(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-
 
     def get_activity(self):
         return self.budget_item.country_budget_item.activity
@@ -673,7 +697,7 @@ class ContactInfo(models.Model):
     telephone = models.CharField(max_length=100, default="", null=True, blank=True)
     email = models.TextField(default="", null=True, blank=True)
     website = models.CharField(max_length=255, default="", null=True, blank=True)
-   
+
     def __unicode__(self,):
         return "type: %s" % self.type
 
@@ -711,7 +735,6 @@ class ContactInfoPersonName(models.Model):
         return self.contact_info.activity
 
 
-
 class ContactInfoJobTitle(models.Model):
     contact_info = models.OneToOneField(ContactInfo, related_name="job_title", default=None)
     narratives = GenericRelation(
@@ -723,7 +746,6 @@ class ContactInfoJobTitle(models.Model):
         return self.contact_info.activity
 
 
-
 class ContactInfoMailingAddress(models.Model):
     contact_info = models.OneToOneField(ContactInfo, related_name="mailing_address", default=None)
     narratives = GenericRelation(
@@ -733,7 +755,6 @@ class ContactInfoMailingAddress(models.Model):
 
     def get_activity(self):
         return self.contact_info.activity
-
 
 
 class RelatedActivity(models.Model):
@@ -782,6 +803,8 @@ class DocumentLink(models.Model):
 
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
+
+
 class DocumentLinkCategory(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     category = models.ForeignKey(DocumentCategory)
@@ -792,12 +815,14 @@ class DocumentLinkCategory(models.Model):
     def get_activity(self):
         return self.document_link.activity
 
+
 class DocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(DocumentLink)
     language = models.ForeignKey(Language, null=True, blank=True, default=None)
 
     def get_activity(self):
         return self.document_link.activity
+
 
 class DocumentLinkTitle(models.Model):
     document_link = models.OneToOneField(DocumentLink)
@@ -816,6 +841,7 @@ class DocumentSearch(models.Model):
     text = VectorField()
     last_reindexed = models.DateTimeField()
 
+
 class Document(models.Model):
     document_link = models.OneToOneField(DocumentLink)
     long_url = models.TextField(max_length=500, default='')
@@ -830,11 +856,11 @@ class Document(models.Model):
     modified_at = models.DateTimeField(auto_now_add=True)
 
     objects = DocumentManager(
-        ft_model = DocumentSearch, # model that contains the ft indexes
-        fields = ('content'), # fields on the model 
-        config = 'pg_catalog.simple', # default dictionary to use
-        search_field = 'text', # text field for all search fields,
-        auto_update_search_field = False, # TODO: make this compatible with M2M - 2016-01-11
+        ft_model=DocumentSearch,  # model that contains the ft indexes
+        fields=('content'),  # fields on the model
+        config='pg_catalog.simple',  # default dictionary to use
+        search_field='text',  # text field for all search fields,
+        auto_update_search_field=False,  # TODO: make this compatible with M2M - 2016-01-11
     )
 
     def __unicode__(self):
@@ -850,6 +876,7 @@ class Document(models.Model):
 
     def get_activity(self):
         return self.document_link.activity
+
 
 class Result(models.Model):
     activity = models.ForeignKey(Activity)
@@ -902,6 +929,7 @@ class ResultIndicator(models.Model):
     def __unicode__(self,):
         return "baseline year: %s" % self.baseline_year
 
+
 class ResultIndicatorReference(models.Model):
     result_indicator = models.ForeignKey(ResultIndicator)
     code = models.CharField(max_length=255)
@@ -930,7 +958,6 @@ class ResultIndicatorTitle(models.Model):
         return self.result_indicator.result.activity
 
 
-
 class ResultIndicatorDescription(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
     narratives = GenericRelation(
@@ -942,7 +969,6 @@ class ResultIndicatorDescription(models.Model):
         return self.result_indicator.result.activity
 
 
-
 class ResultIndicatorBaselineComment(models.Model):
     result_indicator = models.OneToOneField(ResultIndicator)
     narratives = GenericRelation(
@@ -952,7 +978,6 @@ class ResultIndicatorBaselineComment(models.Model):
 
     def get_activity(self):
         return self.result_indicator.result.activity
-
 
 
 class ResultIndicatorPeriod(models.Model):
@@ -994,7 +1019,6 @@ class ResultIndicatorPeriodActualLocation(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
-
 class ResultIndicatorPeriodTargetDimension(models.Model):
     result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
     name = models.CharField(max_length=100)
@@ -1030,7 +1054,6 @@ class ResultIndicatorPeriodTargetComment(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
-
 class ResultIndicatorPeriodActualComment(models.Model):
     result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
     narratives = GenericRelation(
@@ -1040,7 +1063,6 @@ class ResultIndicatorPeriodActualComment(models.Model):
 
     def get_activity(self):
         return self.result_indicator_period.result_indicator.result.activity
-
 
 
 class Description(models.Model):
@@ -1065,7 +1087,6 @@ class Description(models.Model):
         return self.activity
 
 
-
 class Budget(models.Model):
     activity = models.ForeignKey(Activity)
     type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
@@ -1085,12 +1106,11 @@ class Budget(models.Model):
     cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
 
     def __unicode__(self,):
-        return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
+        return "value: %s - period_start: %s - period_end: %s" % (
+            str(self.value), self.period_start, self.period_end)
 
     def get_activity(self):
         return self.activity
-
-
 
 
 # same as TransactionSector, to set percentages per budget item per sector
@@ -1099,7 +1119,7 @@ class BudgetSector(models.Model):
     budget = models.ForeignKey(
         Budget,
         on_delete=models.CASCADE)
-    
+
     sector = models.ForeignKey(
         Sector,
         on_delete=models.CASCADE)
@@ -1113,8 +1133,6 @@ class BudgetSector(models.Model):
 
     def get_activity(self):
         return self.budget.activity
-
-
 
 
 class PlannedDisbursement(models.Model):
@@ -1136,11 +1154,11 @@ class PlannedDisbursement(models.Model):
     cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
 
     def __unicode__(self,):
-        return "value: %s - period_start: %s - period_end: %s" % (str(self.value), self.period_start, self.period_end)
+        return "value: %s - period_start: %s - period_end: %s" % (
+            str(self.value), self.period_start, self.period_end)
 
     def get_activity(self):
         return self.activity
-
 
     # budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
     # activity = models.ForeignKey(Activity)
@@ -1154,7 +1172,9 @@ class PlannedDisbursement(models.Model):
     # # updated = models.DateField(null=True, default=None) deprecated
 
     # def __unicode__(self,):
-    #     return "value: %s - period_start: %s - period_end: %s" % (self.value, self.period_start, self.period_end)
+    # return "value: %s - period_start: %s - period_end: %s" % (self.value,
+    # self.period_start, self.period_end)
+
 
 class PlannedDisbursementProvider(models.Model):
     ref = models.CharField(blank=True, default="", max_length=250)
@@ -1167,11 +1187,11 @@ class PlannedDisbursementProvider(models.Model):
         null=True,
         blank=True,
         default=None)
-    
+
     type = models.ForeignKey(
-        OrganisationType, 
-        null=True, 
-        default=None, 
+        OrganisationType,
+        null=True,
+        default=None,
         blank=True
     )
 
@@ -1211,7 +1231,6 @@ class PlannedDisbursementProvider(models.Model):
         return "%s - %s" % (self.ref,
                             self.provider_activity_ref,)
 
-
     def get_activity(self):
         return self.planned_disbursement.activity
 
@@ -1228,9 +1247,9 @@ class PlannedDisbursementReceiver(models.Model):
         blank=True,
         default=None)
     type = models.ForeignKey(
-        OrganisationType, 
-        null=True, 
-        default=None, 
+        OrganisationType,
+        null=True,
+        default=None,
         blank=True
     )
 
@@ -1273,6 +1292,7 @@ class PlannedDisbursementReceiver(models.Model):
     def get_activity(self):
         return self.planned_disbursement.activity
 
+
 class Conditions(models.Model):
     activity = models.OneToOneField(Activity, related_name="conditions")
     attached = models.BooleanField()
@@ -1282,6 +1302,7 @@ class Conditions(models.Model):
 
     def get_activity(self):
         return self.activity
+
 
 class Condition(models.Model):
     conditions = models.ForeignKey(Conditions)
@@ -1332,7 +1353,7 @@ class Location(models.Model):
 
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
     point_pos = PointField(
-        null=True, 
+        null=True,
         blank=False,
         default=None,
         spatial_index=True,
@@ -1360,6 +1381,7 @@ class LocationAdministrative(models.Model):
 
     def get_activity(self):
         return self.location.activity
+
 
 class LocationName(models.Model):
     location = models.OneToOneField(Location, related_name="name")
@@ -1540,4 +1562,3 @@ class LegacyData(models.Model):
 
     def get_activity(self):
         return self.activity
-

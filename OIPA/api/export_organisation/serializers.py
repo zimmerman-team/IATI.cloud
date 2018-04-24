@@ -12,24 +12,25 @@ from iati_organisation import models as org_models
 
 from geodata.models import Region, Country
 
+
 class ValueXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     xml_meta = {'attributes': ('currency', 'value_date')}
 
     currency = serializers.CharField(source='currency.code')
     value_date = serializers.CharField()
     text = serializers.DecimalField(
-            source='value',
-            max_digits=15,
-            decimal_places=2,
-            coerce_to_string=False,
-            )
+        source='value',
+        max_digits=15,
+        decimal_places=2,
+        coerce_to_string=False,
+    )
 
     class Meta():
         fields = (
-                'text',
-                'value_date',
-                'currency',
-                )
+            'text',
+            'value_date',
+            'currency',
+        )
 
 
 class IsoDateXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
@@ -59,9 +60,11 @@ class OrganisationNarrativeXMLSerializer(XMLMetaMixin, SkipNullMixin, serializer
         fields = (
             'text',
             'xml_lang',
-            )
+        )
 
-class OrganisationNarrativeContainerXMLSerializer(XMLMetaMixin, SkipNullMixin, serializers.Serializer):
+
+class OrganisationNarrativeContainerXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, serializers.Serializer):
     narrative = OrganisationNarrativeXMLSerializer(many=True, source='narratives')
 
 
@@ -80,6 +83,7 @@ class RegionXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
             'code',
         )
 
+
 class CountryXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('code', )}
 
@@ -90,6 +94,7 @@ class CountryXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
         fields = (
             'code',
         )
+
 
 class TotalBudgetBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('ref', )}
@@ -145,6 +150,7 @@ class RecipientOrgBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSeri
             'narratives',
         )
 
+
 class OrganisationRecipientOrgBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('status', )}
 
@@ -165,7 +171,8 @@ class OrganisationRecipientOrgBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin, M
 
     recipient_org = RecipientOrganisationXMLSerializer(source="*")
 
-    budget_lines = RecipientOrgBudgetLineXMLSerializer(many=True, source="recipientorgbudgetline_set")
+    budget_lines = RecipientOrgBudgetLineXMLSerializer(
+        many=True, source="recipientorgbudgetline_set")
 
     class Meta:
         model = org_models.RecipientOrgBudget
@@ -177,7 +184,6 @@ class OrganisationRecipientOrgBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin, M
             'value',
             'budget_lines',
         )
-
 
 
 class RecipientCountryBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
@@ -195,7 +201,9 @@ class RecipientCountryBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, Model
             'narratives',
         )
 
-class OrganisationRecipientCountryBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
+
+class OrganisationRecipientCountryBudgetXMLSerializer(
+        XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('status', )}
 
     value = ValueXMLSerializer(source='*')
@@ -206,7 +214,8 @@ class OrganisationRecipientCountryBudgetXMLSerializer(XMLMetaMixin, SkipNullMixi
 
     recipient_country = CountryXMLSerializer(source="country")
 
-    budget_lines = RecipientCountryBudgetLineXMLSerializer(many=True, source="recipientcountrybudgetline_set")
+    budget_lines = RecipientCountryBudgetLineXMLSerializer(
+        many=True, source="recipientcountrybudgetline_set")
 
     class Meta:
         model = org_models.RecipientCountryBudget
@@ -218,6 +227,7 @@ class OrganisationRecipientCountryBudgetXMLSerializer(XMLMetaMixin, SkipNullMixi
             'value',
             'budget_lines',
         )
+
 
 class RecipientRegionBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('ref', )}
@@ -234,6 +244,7 @@ class RecipientRegionBudgetLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelS
             'narratives',
         )
 
+
 class OrganisationRecipientRegionBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('status', )}
 
@@ -245,7 +256,8 @@ class OrganisationRecipientRegionBudgetXMLSerializer(XMLMetaMixin, SkipNullMixin
 
     recipient_region = RegionXMLSerializer(source="region")
 
-    budget_lines = RecipientRegionBudgetLineXMLSerializer(many=True, source="recipientregionbudgetline_set")
+    budget_lines = RecipientRegionBudgetLineXMLSerializer(
+        many=True, source="recipientregionbudgetline_set")
 
     class Meta:
         model = org_models.RecipientRegionBudget
@@ -274,6 +286,7 @@ class TotalExpenditureLineXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerial
             'narratives',
         )
 
+
 class OrganisationTotalExpenditureXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     value = ValueXMLSerializer(source='*')
 
@@ -290,6 +303,7 @@ class OrganisationTotalExpenditureXMLSerializer(XMLMetaMixin, SkipNullMixin, Mod
             'value',
             'expense_line',
         )
+
 
 class DocumentLinkCategoryXMLSerializer(XMLMetaMixin, SkipNullMixin, Serializer):
     """
@@ -308,22 +322,23 @@ class DocumentLinkRecipientCountryXMLSerializer(XMLMetaMixin, SkipNullMixin, Ser
 
     code = serializers.CharField(source="recipient_country.code")
 
+
 class OrganisationDocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('url', 'format')}
 
     format = serializers.CharField(source='file_format.code')
 
     category = DocumentLinkCategoryXMLSerializer(
-            many=True,
-            source="categories"
-            )
+        many=True,
+        source="categories"
+    )
 
     language = CodelistXMLSerializer()
 
     recipient_country = DocumentLinkRecipientCountryXMLSerializer(
-            many=True,
-            source="recipient_countries"
-            )
+        many=True,
+        source="recipient_countries"
+    )
 
     title = OrganisationNarrativeContainerXMLSerializer(source="documentlinktitle")
 
@@ -340,6 +355,7 @@ class OrganisationDocumentLinkXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSe
             'document_date',
             'recipient_country',
         )
+
 
 class OrganisationReportingOrganisationXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
     xml_meta = {'attributes': ('ref', 'type', 'secondary_reporter')}
@@ -370,11 +386,14 @@ class OrganisationXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
 
     reporting_org = OrganisationReportingOrganisationXMLSerializer()
     total_budget = OrganisationTotalBudgetXMLSerializer(many=True, source="total_budgets")
-    recipient_org_budget = OrganisationRecipientOrgBudgetXMLSerializer(many=True, source="recipientorgbudget_set")
+    recipient_org_budget = OrganisationRecipientOrgBudgetXMLSerializer(
+        many=True, source="recipientorgbudget_set")
     recipient_region_budget = OrganisationRecipientRegionBudgetXMLSerializer(many=True)
-    recipient_country_budget = OrganisationRecipientCountryBudgetXMLSerializer(many=True, source="recipient_country_budgets")
+    recipient_country_budget = OrganisationRecipientCountryBudgetXMLSerializer(
+        many=True, source="recipient_country_budgets")
     total_expenditure = OrganisationTotalExpenditureXMLSerializer(many=True)
-    document_link = OrganisationDocumentLinkXMLSerializer(many=True, source="organisationdocumentlink_set")
+    document_link = OrganisationDocumentLinkXMLSerializer(
+        many=True, source="organisationdocumentlink_set")
 
     class Meta:
         model = org_models.Organisation
@@ -392,4 +411,3 @@ class OrganisationXMLSerializer(XMLMetaMixin, SkipNullMixin, ModelSerializer):
             'total_expenditure',
             'document_link',
         )
-

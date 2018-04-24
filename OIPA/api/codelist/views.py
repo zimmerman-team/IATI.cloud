@@ -8,12 +8,13 @@ from api.codelist.serializers import CodelistMetaSerializer, CodelistItemSeriali
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import NotFound
 from django.apps import apps
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 
-class CodelistMetaList(DynamicListView):
+class CodelistMetaList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI codelists stored in OIPA.
-   
+
     ## Result details
 
     Each result item contains full information about codelist including URI to codelist items.
@@ -27,12 +28,12 @@ class CodelistMetaList(DynamicListView):
     pagination_class = None
 
 
-class CodelistItemList(DynamicListView):
+class CodelistItemList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI codelist values stored in OIPA.
-    
+
     ## request parameters
-    
+
     - `code` (*optional*): Comma separated list of codes on the codelist.
     - `vocabulary` (*optional*): Comma separated list of .
     - `category` (*optional*): Comma separated list of categories (if applicable for the codelist).
@@ -45,7 +46,7 @@ class CodelistItemList(DynamicListView):
     Results can be ordered by:
 
     - `name`
-    
+
     The user may also specify reverse orderings by prefixing the field name with '-', like so: `-name`
 
     ## Result details
@@ -93,7 +94,8 @@ class CodelistItemList(DynamicListView):
 
     def get_serializer_class(self):
         cms = CodelistItemSerializer
-        # dummy, for some reason this method is called multiple times, first time without a request class.
+        # dummy, for some reason this method is called multiple times, first time
+        # without a request class.
         cms.Meta.model = Region
 
         if hasattr(self, 'request'):
@@ -105,4 +107,3 @@ class CodelistItemList(DynamicListView):
             cms.Meta.model = apps.get_model(app_label, model_name)
 
         return cms
-

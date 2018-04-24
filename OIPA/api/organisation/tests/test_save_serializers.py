@@ -1,4 +1,4 @@
-from django.test import TestCase # Runs each test in a transaction and flushes database
+from django.test import TestCase  # Runs each test in a transaction and flushes database
 from unittest import skip
 import datetime
 
@@ -63,10 +63,10 @@ class OrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/?format=json".format(self.publisher.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/?format=json".format(self.publisher.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -111,10 +111,11 @@ class OrganisationSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -133,14 +134,16 @@ class OrganisationSaveTestCase(TestCase):
         organisation = iati_factory.OrganisationFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/?format=json".format(self.publisher.id, organisation.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/?format=json".format(
+                self.publisher.id, organisation.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = iati_models.Organisation.objects.get(pk=organisation.id)
+
 
 class OrganisationTotalBudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -181,10 +184,11 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/total_budgets/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -222,10 +226,11 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/total_budgets/{}?format=json".format(self.publisher.id, total_budget.organisation.id, total_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/{}?format=json".format(
+                self.publisher.id, total_budget.organisation.id, total_budget.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -243,14 +248,16 @@ class OrganisationTotalBudgetSaveTestCase(TestCase):
         total_budget = iati_factory.OrganisationTotalBudgetFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/total_budgets/{}?format=json".format(self.publisher.id, total_budget.organisation.id, total_budget.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/{}?format=json".format(
+                self.publisher.id, total_budget.organisation.id, total_budget.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = org_models.TotalBudget.objects.get(pk=total_budget.id)
+
 
 class OrganisationTotalBudgetLineSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -293,10 +300,12 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/?format=json".format(self.publisher.id, total_budget.organisation.id, total_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/?format=json".format(
+                self.publisher.id,
+                total_budget.organisation.id,
+                total_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -333,10 +342,13 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, total_budget_line.total_budget.organisation.id, total_budget_line.total_budget.id, total_budget_line.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                total_budget_line.total_budget.organisation.id,
+                total_budget_line.total_budget.id,
+                total_budget_line.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -351,14 +363,18 @@ class OrganisationTotalBudgetLineSaveTestCase(TestCase):
         total_budget_line = iati_factory.OrganisationTotalBudgetLineFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, total_budget_line.total_budget.organisation.id, total_budget_line.total_budget.id, total_budget_line.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                total_budget_line.total_budget.organisation.id,
+                total_budget_line.total_budget.id,
+                total_budget_line.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = org_models.TotalBudgetLine.objects.get(pk=total_budget_line.id)
+
 
 class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -403,10 +419,11 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -414,7 +431,9 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
 
         self.assertEqual(instance.organisation.id, data['organisation'])
         self.assertEqual(instance.recipient_org_identifier, data['recipient_org']['ref'])
-        self.assertEqual(instance.recipient_org.organisation_identifier, data['recipient_org']['ref'])
+        self.assertEqual(
+            instance.recipient_org.organisation_identifier,
+            data['recipient_org']['ref'])
         self.assertEqual(instance.status.code, data['status']['code'])
         self.assertEqual(instance.period_start.isoformat(), data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
@@ -450,10 +469,11 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}?format=json".format(self.publisher.id, recipient_org_budget.organisation.id, recipient_org_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}?format=json".format(
+                self.publisher.id, recipient_org_budget.organisation.id, recipient_org_budget.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -462,7 +482,9 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
         self.assertEqual(instance.organisation.id, data['organisation'])
         self.assertEqual(instance.status.code, data['status']['code'])
         self.assertEqual(instance.recipient_org_identifier, data['recipient_org']['ref'])
-        self.assertEqual(instance.recipient_org.organisation_identifier, data['recipient_org']['ref'])
+        self.assertEqual(
+            instance.recipient_org.organisation_identifier,
+            data['recipient_org']['ref'])
         self.assertEqual(instance.period_start.isoformat(), data['period_start'])
         self.assertEqual(instance.period_end.isoformat(), data['period_end'])
         self.assertEqual(instance.value, data['value']['value'])
@@ -473,9 +495,10 @@ class OrganisationRecipientOrgBudgetSaveTestCase(TestCase):
         recipient_org_budget = iati_factory.OrganisationRecipientOrgBudgetFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}?format=json".format(self.publisher.id, recipient_org_budget.organisation.id, recipient_org_budget.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}?format=json".format(
+                self.publisher.id, recipient_org_budget.organisation.id, recipient_org_budget.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 204)
 
@@ -524,10 +547,12 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/?format=json".format(self.publisher.id, recipient_org_budget.organisation.id, recipient_org_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/?format=json".format(
+                self.publisher.id,
+                recipient_org_budget.organisation.id,
+                recipient_org_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -564,10 +589,13 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_org_budget_line.recipient_org_budget.organisation.id, recipient_org_budget_line.recipient_org_budget.id, recipient_org_budget_line.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_org_budget_line.recipient_org_budget.organisation.id,
+                recipient_org_budget_line.recipient_org_budget.id,
+                recipient_org_budget_line.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -582,14 +610,19 @@ class OrganisationRecipientOrgBudgetLineSaveTestCase(TestCase):
         recipient_org_budget_line = iati_factory.OrganisationRecipientOrgBudgetLineFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_org_budget_line.recipient_org_budget.organisation.id, recipient_org_budget_line.recipient_org_budget.id, recipient_org_budget_line.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_org_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_org_budget_line.recipient_org_budget.organisation.id,
+                recipient_org_budget_line.recipient_org_budget.id,
+                recipient_org_budget_line.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.RecipientOrgBudgetLine.objects.get(pk=recipient_org_budget_line.id)
+            instance = org_models.RecipientOrgBudgetLine.objects.get(
+                pk=recipient_org_budget_line.id)
+
 
 class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -635,10 +668,11 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -682,10 +716,12 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(self.publisher.id, recipient_country_budget.organisation.id, recipient_country_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(
+                self.publisher.id,
+                recipient_country_budget.organisation.id,
+                recipient_country_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -704,14 +740,17 @@ class OrganisationRecipientCountryBudgetSaveTestCase(TestCase):
         recipient_country_budget = iati_factory.OrganisationRecipientCountryBudgetFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(self.publisher.id, recipient_country_budget.organisation.id, recipient_country_budget.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}?format=json".format(
+                self.publisher.id,
+                recipient_country_budget.organisation.id,
+                recipient_country_budget.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.RecipientCountryBudget.objects.get(pk=recipient_country_budget.id)
+            instance = org_models.RecipientCountryBudget.objects.get(
+                pk=recipient_country_budget.id)
 
 
 class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
@@ -755,10 +794,12 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/?format=json".format(self.publisher.id, recipient_country_budget.organisation.id, recipient_country_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/?format=json".format(
+                self.publisher.id,
+                recipient_country_budget.organisation.id,
+                recipient_country_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -795,10 +836,13 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_country_budget_line.recipient_country_budget.organisation.id, recipient_country_budget_line.recipient_country_budget.id, recipient_country_budget_line.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_country_budget_line.recipient_country_budget.organisation.id,
+                recipient_country_budget_line.recipient_country_budget.id,
+                recipient_country_budget_line.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -813,14 +857,19 @@ class OrganisationRecipientCountryBudgetLineSaveTestCase(TestCase):
         recipient_country_budget_line = iati_factory.OrganisationRecipientCountryBudgetLineFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_country_budget_line.recipient_country_budget.organisation.id, recipient_country_budget_line.recipient_country_budget.id, recipient_country_budget_line.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_country_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_country_budget_line.recipient_country_budget.organisation.id,
+                recipient_country_budget_line.recipient_country_budget.id,
+                recipient_country_budget_line.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.RecipientCountryBudgetLine.objects.get(pk=recipient_country_budget_line.id)
+            instance = org_models.RecipientCountryBudgetLine.objects.get(
+                pk=recipient_country_budget_line.id)
+
 
 class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -866,10 +915,11 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -913,10 +963,12 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(self.publisher.id, recipient_region_budget.organisation.id, recipient_region_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(
+                self.publisher.id,
+                recipient_region_budget.organisation.id,
+                recipient_region_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -935,14 +987,17 @@ class OrganisationRecipientRegionBudgetSaveTestCase(TestCase):
         recipient_region_budget = iati_factory.OrganisationRecipientRegionBudgetFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(self.publisher.id, recipient_region_budget.organisation.id, recipient_region_budget.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}?format=json".format(
+                self.publisher.id,
+                recipient_region_budget.organisation.id,
+                recipient_region_budget.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             instance = org_models.RecipientRegionBudget.objects.get(pk=recipient_region_budget.id)
+
 
 class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -985,10 +1040,12 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/?format=json".format(self.publisher.id, recipient_region_budget.organisation.id, recipient_region_budget.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/?format=json".format(
+                self.publisher.id,
+                recipient_region_budget.organisation.id,
+                recipient_region_budget.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1025,10 +1082,13 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_region_budget_line.recipient_region_budget.organisation.id, recipient_region_budget_line.recipient_region_budget.id, recipient_region_budget_line.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_region_budget_line.recipient_region_budget.organisation.id,
+                recipient_region_budget_line.recipient_region_budget.id,
+                recipient_region_budget_line.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1043,14 +1103,19 @@ class OrganisationRecipientRegionBudgetLineSaveTestCase(TestCase):
         recipient_region_budget_line = iati_factory.OrganisationRecipientRegionBudgetLineFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/{}?format=json".format(self.publisher.id, recipient_region_budget_line.recipient_region_budget.organisation.id, recipient_region_budget_line.recipient_region_budget.id, recipient_region_budget_line.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/recipient_region_budgets/{}/budget_lines/{}?format=json".format(
+                self.publisher.id,
+                recipient_region_budget_line.recipient_region_budget.organisation.id,
+                recipient_region_budget_line.recipient_region_budget.id,
+                recipient_region_budget_line.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.RecipientRegionBudgetLine.objects.get(pk=recipient_region_budget_line.id)
+            instance = org_models.RecipientRegionBudgetLine.objects.get(
+                pk=recipient_region_budget_line.id)
+
 
 class OrganisationTotalExpenditureSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
@@ -1086,10 +1151,11 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/total_expenditures/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1121,10 +1187,11 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(self.publisher.id, total_expenditure.organisation.id, total_expenditure.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(
+                self.publisher.id, total_expenditure.organisation.id, total_expenditure.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1141,9 +1208,10 @@ class OrganisationTotalExpenditureSaveTestCase(TestCase):
         total_expenditure = iati_factory.OrganisationTotalExpenditureFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(self.publisher.id, total_expenditure.organisation.id, total_expenditure.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/{}?format=json".format(
+                self.publisher.id, total_expenditure.organisation.id, total_expenditure.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 204)
 
@@ -1192,10 +1260,12 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/?format=json".format(self.publisher.id, total_expenditure.organisation.id, total_expenditure.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/?format=json".format(
+                self.publisher.id,
+                total_expenditure.organisation.id,
+                total_expenditure.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1232,10 +1302,13 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/{}?format=json".format(self.publisher.id, total_expenditure_line.total_expenditure.organisation.id, total_expenditure_line.total_expenditure.id, total_expenditure_line.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/{}?format=json".format(
+                self.publisher.id,
+                total_expenditure_line.total_expenditure.organisation.id,
+                total_expenditure_line.total_expenditure.id,
+                total_expenditure_line.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1250,9 +1323,12 @@ class OrganisationTotalExpenditureLineSaveTestCase(TestCase):
         total_expenditure_line = iati_factory.OrganisationTotalExpenditureLineFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/{}?format=json".format(self.publisher.id, total_expenditure_line.total_expenditure.organisation.id, total_expenditure_line.total_expenditure.id, total_expenditure_line.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/total_expenditures/{}/expense_lines/{}?format=json".format(
+                self.publisher.id,
+                total_expenditure_line.total_expenditure.organisation.id,
+                total_expenditure_line.total_expenditure.id,
+                total_expenditure_line.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
@@ -1301,10 +1377,11 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/document_links/?format=json".format(self.publisher.id, organisation.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/?format=json".format(
+                self.publisher.id, organisation.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1347,10 +1424,11 @@ class DocumentLinkSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(
+                self.publisher.id, document_link.organisation.id, document_link.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1370,9 +1448,10 @@ class DocumentLinkSaveTestCase(TestCase):
         document_links = iati_factory.OrganisationDocumentLinkFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(self.publisher.id, document_links.organisation.id, document_links.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}?format=json".format(
+                self.publisher.id, document_links.organisation.id, document_links.id),
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 204)
 
@@ -1407,10 +1486,11 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/document_links/{}/categories/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/categories/?format=json".format(
+                self.publisher.id, document_link.organisation.id, document_link.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1432,10 +1512,13 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.organisation.id, document_link_category.document_link.id, document_link_category.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(
+                self.publisher.id,
+                document_link_category.document_link.organisation.id,
+                document_link_category.document_link.id,
+                document_link_category.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1448,14 +1531,18 @@ class DocumentLinkCategorySaveTestCase(TestCase):
         document_link_category = iati_factory.OrganisationDocumentLinkCategoryFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(self.publisher.id, document_link_category.document_link.organisation.id, document_link_category.document_link.id, document_link_category.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/categories/{}?format=json".format(
+                self.publisher.id,
+                document_link_category.document_link.organisation.id,
+                document_link_category.document_link.id,
+                document_link_category.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.OrganisationDocumentLinkCategory.objects.get(pk=document_link_category.id)
+            instance = org_models.OrganisationDocumentLinkCategory.objects.get(
+                pk=document_link_category.id)
 
 
 class DocumentLinkLanguageSaveTestCase(TestCase):
@@ -1485,10 +1572,11 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/document_links/{}/languages/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/languages/?format=json".format(
+                self.publisher.id, document_link.organisation.id, document_link.id),
+            data,
+            format='json'
+        )
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1510,10 +1598,13 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.organisation.id, document_link_language.document_link.id, document_link_language.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(
+                self.publisher.id,
+                document_link_language.document_link.organisation.id,
+                document_link_language.document_link.id,
+                document_link_language.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1526,15 +1617,18 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
         document_link_language = iati_factory.OrganisationDocumentLinkLanguageFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(self.publisher.id, document_link_language.document_link.organisation.id, document_link_language.document_link.id, document_link_language.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/languages/{}?format=json".format(
+                self.publisher.id,
+                document_link_language.document_link.organisation.id,
+                document_link_language.document_link.id,
+                document_link_language.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.OrganisationDocumentLinkLanguage.objects.get(pk=document_link_language.id)
-
+            instance = org_models.OrganisationDocumentLinkLanguage.objects.get(
+                pk=document_link_language.id)
 
 
 class DocumentLinkRecipientCountrySaveTestCase(TestCase):
@@ -1564,10 +1658,12 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.post(
-                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/?format=json".format(self.publisher.id, document_link.organisation.id, document_link.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/?format=json".format(
+                self.publisher.id,
+                document_link.organisation.id,
+                document_link.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 201, res.json())
 
@@ -1589,10 +1685,13 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
         }
 
         res = self.c.put(
-                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(self.publisher.id, document_link_recipient_country.document_link.organisation.id, document_link_recipient_country.document_link.id, document_link_recipient_country.id), 
-                data,
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(
+                self.publisher.id,
+                document_link_recipient_country.document_link.organisation.id,
+                document_link_recipient_country.document_link.id,
+                document_link_recipient_country.id),
+            data,
+            format='json')
 
         self.assertEquals(res.status_code, 200, res.json())
 
@@ -1605,11 +1704,15 @@ class DocumentLinkRecipientCountrySaveTestCase(TestCase):
         document_link_recipient_country = iati_factory.OrganisationDocumentLinkRecipientCountryFactory.create()
 
         res = self.c.delete(
-                "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(self.publisher.id, document_link_recipient_country.document_link.organisation.id, document_link_recipient_country.document_link.id, document_link_recipient_country.id), 
-                format='json'
-                )
+            "/api/publishers/{}/organisations/{}/document_links/{}/recipient_countries/{}?format=json".format(
+                self.publisher.id,
+                document_link_recipient_country.document_link.organisation.id,
+                document_link_recipient_country.document_link.id,
+                document_link_recipient_country.id),
+            format='json')
 
         self.assertEquals(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
-            instance = org_models.DocumentLinkRecipientCountry.objects.get(pk=document_link_recipient_country.id)
+            instance = org_models.DocumentLinkRecipientCountry.objects.get(
+                pk=document_link_recipient_country.id)

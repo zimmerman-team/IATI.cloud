@@ -16,6 +16,7 @@ class MockSuperUser(object):
     def has_perm(self, perm):
         return True
 
+
 request = MockRequest()
 request.user = MockSuperUser()
 
@@ -25,7 +26,7 @@ class OrganisationAdminTestCase(TestCase):
     def setUp(self):
         self.site = AdminSite()
         self.organisation = OrganisationFactory.create(
-        	organisation_identifier='org-12345')
+            organisation_identifier='org-12345')
 
     def test_get_urls(self):
 
@@ -41,7 +42,7 @@ class OrganisationAdminTestCase(TestCase):
 
     def test_update_primary_names(self):
         organisation_admin = OrganisationAdmin(self.organisation, self.site)
-        
+
         data = {
             "org-12345": "Org. name",
         }
@@ -50,4 +51,3 @@ class OrganisationAdminTestCase(TestCase):
 
         org = Organisation.objects.all()[0]
         self.assertEqual(org.primary_name, "Org. name")
-

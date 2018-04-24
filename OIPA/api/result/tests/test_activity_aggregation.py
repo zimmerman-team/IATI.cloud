@@ -15,16 +15,16 @@ class ResultAggregationTestCase(TestCase):
         """
         activity = iati_factory.ActivityFactory.create()
         result_type = iati_factory.ResultTypeFactory.create()
-        
-        first_result = iati_factory.ResultFactory.create(activity=activity,type=result_type)
-        second_result = iati_factory.ResultFactory.create(activity=activity,type=result_type)
+
+        first_result = iati_factory.ResultFactory.create(activity=activity, type=result_type)
+        second_result = iati_factory.ResultFactory.create(activity=activity, type=result_type)
 
         first_result_indicator = iati_factory.ResultIndicatorFactory.create(
             result=first_result,
-            )
+        )
         second_result_indicator = iati_factory.ResultIndicatorFactory.create(
             result=second_result,
-            )
+        )
 
         date_now = datetime.datetime.now()
 

@@ -2,6 +2,7 @@ from django.db.models import query, Q
 import operator
 
 from django.db.models import Prefetch
+from functools import reduce
 
 
 class TransactionQuerySet(query.QuerySet):
@@ -25,19 +26,19 @@ class TransactionQuerySet(query.QuerySet):
 
     def prefetch_all(self):
         return self.prefetch_activity() \
-                .prefetch_description() \
-                .prefetch_provider_organisation() \
-                .prefetch_receiver_organisation() \
-                .prefetch_transaction_type() \
-                .prefetch_currency() \
-                .prefetch_disbursement_channel() \
-                .prefetch_flow_type() \
-                .prefetch_finance_type() \
-                .prefetch_aid_type() \
-                .prefetch_tied_status() \
-                .prefetch_sector() \
-                .prefetch_recipient_country() \
-                .prefetch_recipient_region() \
+            .prefetch_description() \
+            .prefetch_provider_organisation() \
+            .prefetch_receiver_organisation() \
+            .prefetch_transaction_type() \
+            .prefetch_currency() \
+            .prefetch_disbursement_channel() \
+            .prefetch_flow_type() \
+            .prefetch_finance_type() \
+            .prefetch_aid_type() \
+            .prefetch_tied_status() \
+            .prefetch_sector() \
+            .prefetch_recipient_country() \
+            .prefetch_recipient_region()
 
     def prefetch_activity(self):
         from iati.models import Narrative
@@ -70,7 +71,8 @@ class TransactionQuerySet(query.QuerySet):
     def prefetch_provider_organisation(self):
         from iati.transaction.models import TransactionProvider
         from iati.models import Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        narrative_prefetch = Prefetch('narratives',
+                                      queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch(
@@ -84,7 +86,8 @@ class TransactionQuerySet(query.QuerySet):
     def prefetch_receiver_organisation(self):
         from iati.transaction.models import TransactionReceiver
         from iati.models import Narrative
-        narrative_prefetch = Prefetch('narratives', queryset=Narrative.objects.select_related('language'))
+        narrative_prefetch = Prefetch('narratives',
+                                      queryset=Narrative.objects.select_related('language'))
 
         return self.prefetch_related(
             Prefetch(
@@ -106,16 +109,15 @@ class TransactionQuerySet(query.QuerySet):
 
     def prefetch_aid_type(self):
         return self.select_related('aid_type')
-    
+
     def prefetch_tied_status(self):
         return self.select_related('tied_status')
-    
+
     def prefetch_sector(self):
         return self.prefetch_related('transaction_sector')
-    
+
     def prefetch_recipient_country(self):
         return self.prefetch_related('transaction_recipient_country')
-    
+
     def prefetch_recipient_region(self):
         return self.prefetch_related('transaction_recipient_region')
-    

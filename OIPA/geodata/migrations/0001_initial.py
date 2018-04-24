@@ -56,7 +56,8 @@ class Migration(migrations.Migration):
                 ('woe_id', models.IntegerField(blank=True, null=True)),
                 ('woe_label', models.CharField(blank=True, max_length=100, null=True)),
                 ('woe_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('center_location', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
+                ('center_location', django.contrib.gis.db.models.fields.PointField(
+                    blank=True, null=True, srid=4326)),
                 ('sov_a3', models.CharField(blank=True, max_length=3, null=True)),
                 ('adm0_a3', models.CharField(blank=True, max_length=3, null=True)),
                 ('adm0_label', models.IntegerField(blank=True, null=True)),
@@ -86,10 +87,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='City',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('geoname_id', models.IntegerField(blank=True, null=True)),
                 ('name', models.CharField(max_length=200)),
-                ('location', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
+                ('location', django.contrib.gis.db.models.fields.PointField(
+                    blank=True, null=True, srid=4326)),
                 ('ascii_name', models.CharField(blank=True, max_length=200, null=True)),
                 ('alt_name', models.CharField(blank=True, max_length=200, null=True)),
                 ('namepar', models.CharField(blank=True, max_length=200, null=True)),
@@ -110,10 +113,16 @@ class Migration(migrations.Migration):
                 ('iso3', models.CharField(blank=True, max_length=3, null=True)),
                 ('alpha3', models.CharField(blank=True, max_length=3, null=True)),
                 ('fips10', models.CharField(blank=True, max_length=2, null=True)),
-                ('center_longlat', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
+                ('center_longlat', django.contrib.gis.db.models.fields.PointField(
+                    blank=True, null=True, srid=4326)),
                 ('polygon', models.TextField(blank=True, null=True)),
                 ('data_source', models.CharField(blank=True, max_length=20, null=True)),
-                ('capital_city', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='capital_of', to='geodata.City')),
+                ('capital_city',
+                 models.OneToOneField(blank=True,
+                                      null=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      related_name='capital_of',
+                                      to='geodata.City')),
             ],
             options={
                 'verbose_name_plural': 'countries',
@@ -124,34 +133,61 @@ class Migration(migrations.Migration):
             fields=[
                 ('code', models.CharField(max_length=100, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=80)),
-                ('center_longlat', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
-                ('parental_region', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='geodata.Region')),
-                ('region_vocabulary', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.RegionVocabulary')),
+                ('center_longlat', django.contrib.gis.db.models.fields.PointField(
+                    blank=True, null=True, srid=4326)),
+                ('parental_region', models.ForeignKey(blank=True, null=True,
+                                                      on_delete=django.db.models.deletion.CASCADE, to='geodata.Region')),
+                ('region_vocabulary',
+                 models.ForeignKey(default=1,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='iati_vocabulary.RegionVocabulary')),
             ],
         ),
         migrations.AddField(
             model_name='country',
             name='region',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='geodata.Region'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='geodata.Region'),
         ),
         migrations.AddField(
             model_name='country',
             name='un_region',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='un_countries', to='geodata.Region'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='un_countries',
+                to='geodata.Region'),
         ),
         migrations.AddField(
             model_name='country',
             name='unesco_region',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='unesco_countries', to='geodata.Region'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='unesco_countries',
+                to='geodata.Region'),
         ),
         migrations.AddField(
             model_name='city',
             name='country',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='geodata.Country'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='geodata.Country'),
         ),
         migrations.AddField(
             model_name='adm1region',
             name='country',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='geodata.Country'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='geodata.Country'),
         ),
     ]

@@ -25,4 +25,3 @@ class TestPublisherEndpoints(APITestCase):
         assert url == expect_url, msg.format(expect_url)
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
-

@@ -8,7 +8,7 @@ from iati.transaction import factories as transaction_factory
 
 
 class TransactionAggregationTestCase(TestCase):
-    
+
     def setUp(self):
         """
         set up 2 activities. then create individual tests to check most used aggregation / group by combinations.
@@ -127,7 +127,7 @@ class TransactionAggregationTestCase(TestCase):
             group_by='sector',
             aggregations='incoming_fund',
             order_by='sector')
-        
+
         self.assertTrue(len(results) == 2)
 
         self.assertEqual(results[0]['incoming_fund'], Decimal(67500))
@@ -140,7 +140,7 @@ class TransactionAggregationTestCase(TestCase):
             sector 11000 = 67500 (t1 50000 + t2 5000 + t3 12500)
             sector 11001 = 17500 (t2 5000 + t3 12500)
             country KE = 17500 (t1 0% + t2 50% + t3 50%)
-            
+
             so:
             secor 11000 with filter KE = 8750 (t1 0 + t2 2500 + t3 6250)
             secor 11001 with filter KE = 8750 (t1 0 + t2 2500 + t3 6250)
@@ -151,12 +151,12 @@ class TransactionAggregationTestCase(TestCase):
             order_by='sector',
             filter_name='recipient_country',
             filter_value='KE')
-        
+
         self.assertTrue(len(results) == 2)
 
         self.assertEqual(results[0]['incoming_fund'], Decimal(8750))
         self.assertEqual(results[1]['incoming_fund'], Decimal(8750))
-        
+
     def test_recipient_country_incoming_fund_group_by(self):
         """group incoming funds by recipient country (percentage weighted)
 
@@ -172,4 +172,3 @@ class TransactionAggregationTestCase(TestCase):
         self.assertTrue(len(results) == 2)
         self.assertEqual(results[0]['incoming_fund'], Decimal(67500))
         self.assertEqual(results[1]['incoming_fund'], Decimal(17500))
-

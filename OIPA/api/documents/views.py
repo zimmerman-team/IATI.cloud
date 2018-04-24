@@ -10,7 +10,6 @@ from api.generics.views import DynamicListView
 from iati.models import Document
 
 
-
 class DocumentList(DynamicListView):
     """
     Returns a list of IATI DocumentLinks stored in OIPA.
@@ -22,11 +21,11 @@ class DocumentList(DynamicListView):
 
     By default, searching is performed on `document_content` the document content
 
-    By default, search only return results if the hit resembles a full word. 
+    By default, search only return results if the hit resembles a full word.
     This can be altered through the `q_lookup` parameter. Options for this parameter are:
 
     - `exact` (default): Only return results when the query hit is a full word.
-    - `startswith`: Also returns results when the word stars with the query. 
+    - `startswith`: Also returns results when the word stars with the query.
 
 
     """
@@ -40,11 +39,10 @@ class DocumentList(DynamicListView):
         'id',
         'document_name',
         'long_url')
-        #'document_content',
-        #'document_link')
+    #'document_content',
+    #'document_link')
 
     always_ordering = 'id'
 
     ordering_fields = (
         'document_name')
-

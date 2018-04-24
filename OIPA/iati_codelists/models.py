@@ -10,6 +10,7 @@ class Language(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class ActivityDateType(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
@@ -17,6 +18,7 @@ class ActivityDateType(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.name
+
 
 class ActivityStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -26,6 +28,7 @@ class ActivityStatus(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class AidTypeCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
@@ -33,6 +36,7 @@ class AidTypeCategory(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class AidType(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -43,6 +47,7 @@ class AidType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class BudgetType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -50,6 +55,7 @@ class BudgetType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class BudgetStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=1)
@@ -59,6 +65,7 @@ class BudgetStatus(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class CollaborationType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -67,6 +74,7 @@ class CollaborationType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class ConditionType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -74,6 +82,7 @@ class ConditionType(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.name
+
 
 class Currency(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -86,6 +95,7 @@ class Currency(models.Model):
     class Meta:
         verbose_name_plural = "Currencies"
 
+
 class DescriptionType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -93,6 +103,7 @@ class DescriptionType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class DisbursementChannel(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -102,6 +113,7 @@ class DisbursementChannel(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class DocumentCategoryCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
@@ -109,6 +121,7 @@ class DocumentCategoryCategory(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class DocumentCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -123,6 +136,7 @@ class DocumentCategory(models.Model):
         verbose_name = "Document category"
         verbose_name_plural = "Document categories"
 
+
 class FileFormat(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
@@ -132,29 +146,34 @@ class FileFormat(models.Model):
     def __unicode__(self,):
         return self.name
 
+
 class FinanceTypeCategory(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class FinanceType(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=220)
     description = models.TextField(default="")
     category = models.ForeignKey(FinanceTypeCategory)
+
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class FlowType(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class GazetteerAgency(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
@@ -164,6 +183,7 @@ class GazetteerAgency(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class GeographicalPrecision(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -171,6 +191,7 @@ class GeographicalPrecision(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class GeographicLocationClass(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -180,6 +201,7 @@ class GeographicLocationClass(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class GeographicLocationReach(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -187,6 +209,7 @@ class GeographicLocationReach(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class GeographicExactness(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -196,6 +219,7 @@ class GeographicExactness(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class HumanitarianScopeType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -204,6 +228,7 @@ class HumanitarianScopeType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class LocationTypeCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=200)
@@ -211,6 +236,7 @@ class LocationTypeCategory(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class LocationType(models.Model):
     code = models.CharField(primary_key=True, max_length=10)
@@ -222,6 +248,8 @@ class LocationType(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 # renamed but unused in 201 (renamed to IATIOrganisationIdentifier)
+
+
 class OrganisationIdentifier(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     abbreviation = models.CharField(max_length=30, default=None, null=True)
@@ -239,6 +267,7 @@ class OrganisationRole(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class OrganisationType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -246,6 +275,7 @@ class OrganisationType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class PolicyMarker(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
@@ -256,6 +286,7 @@ class PolicyMarker(models.Model):
     def __unicode__(self,):
         return "%s" % self.name
 
+
 class PolicySignificance(models.Model):
     code = models.CharField(primary_key=True, max_length=1)
     name = models.CharField(max_length=200)
@@ -263,6 +294,7 @@ class PolicySignificance(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class PublisherType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -272,6 +304,7 @@ class PublisherType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class RelatedActivityType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -279,6 +312,7 @@ class RelatedActivityType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class ResultType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -288,13 +322,15 @@ class ResultType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class SectorCategory(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class Sector(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
@@ -304,12 +340,14 @@ class Sector(models.Model):
     vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
     # check why percentage is here, looks like an error - 2016-07-22
     percentage = models.DecimalField(
-            max_digits=5,
-            decimal_places=2,
-            null=True,
-            default=None)
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        default=None)
+
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class TiedStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -320,6 +358,8 @@ class TiedStatus(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 # deprecated in 201
+
+
 class ValueType(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=200)
@@ -328,6 +368,7 @@ class ValueType(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class VerificationStatus(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -335,6 +376,7 @@ class VerificationStatus(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class ActivityScope(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -345,6 +387,8 @@ class ActivityScope(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 # deprecated in 201
+
+
 class AidTypeFlag(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -352,6 +396,7 @@ class AidTypeFlag(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class BudgetIdentifierSectorCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -361,6 +406,7 @@ class BudgetIdentifierSectorCategory(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class BudgetIdentifierSector(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
@@ -369,6 +415,7 @@ class BudgetIdentifierSector(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class BudgetIdentifier(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -380,6 +427,7 @@ class BudgetIdentifier(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class ContactType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -387,6 +435,7 @@ class ContactType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class LoanRepaymentPeriod(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
@@ -396,6 +445,7 @@ class LoanRepaymentPeriod(models.Model):
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
+
 class LoanRepaymentType(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -403,6 +453,7 @@ class LoanRepaymentType(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class Version(models.Model):
     code = models.CharField(primary_key=True, max_length=4, default="")
@@ -413,6 +464,7 @@ class Version(models.Model):
     def __unicode__(self,):
         return self.code
 
+
 class OtherIdentifierType(models.Model):
     code = models.CharField(primary_key=True, max_length=3, default="")
     name = models.CharField(max_length=200, default="")
@@ -421,6 +473,7 @@ class OtherIdentifierType(models.Model):
     def __unicode__(self,):
         return self.name
 
+
 class IndicatorMeasure(models.Model):
     code = models.CharField(primary_key=True, max_length=40)
     name = models.CharField(max_length=200)
@@ -428,6 +481,7 @@ class IndicatorMeasure(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
 
 class OrganisationRegistrationAgency(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
@@ -444,7 +498,7 @@ class OrganisationRegistrationAgency(models.Model):
 # Deliberately not named like the codelist CrsAddOtherFlags
 # since this would conflict with the M2M rel CrsAddOtherFlags
 class OtherFlags(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
@@ -453,7 +507,7 @@ class OtherFlags(models.Model):
 
 
 class CRSChannelCode(models.Model):
-    code = models.CharField(max_length=10,  primary_key=True)
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField(default="")
 
@@ -468,4 +522,3 @@ class TransactionType(models.Model):
 
     def __unicode__(self,):
         return "%s" % self.name
-

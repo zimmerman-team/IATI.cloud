@@ -18,14 +18,16 @@ def error404(request):
     context = {
         'referrer': request.META.get('HTTP_REFERER', '/'),
     }
-   
 
     # 3. Return Template for this view + Data
-    return HttpResponse(content=template.render(context), content_type='text/html; charset=utf-8', status=404)
+    return HttpResponse(content=template.render(context),
+                        content_type='text/html; charset=utf-8', status=404)
 
 ##
 # Handle 500 Errors
 # @param request WSGIRequest list with all HTTP Request
+
+
 def error500(request):
 
     # 1. Load models for this view
@@ -37,7 +39,7 @@ def error500(request):
     context = {
         'referrer': request.META.get('HTTP_REFERER', '/'),
     }
-   
 
     # 3. Return Template for this view + Data
-    return HttpResponse(content=template.render(context), content_type='text/html; charset=utf-8', status=500)
+    return HttpResponse(content=template.render(context),
+                        content_type='text/html; charset=utf-8', status=500)

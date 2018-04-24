@@ -27,7 +27,8 @@ class CodelistImporterTestCase(TestCase):
         description_text = 'For contributions under this category...'
 
         # use factory to create AidTypeCategory, check if set on model
-        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(code=code_text, name=name_text, description=description_text)
+        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(
+            code=code_text, name=name_text, description=description_text)
 
         element = Element('AidType-category')
         code = Element('code')
@@ -45,10 +46,10 @@ class CodelistImporterTestCase(TestCase):
         importer.add_code_list_item(element)
 
         self.assertEqual(1, AidTypeCategory.objects.count(),
-            "New AidTypeCategory should be added into database")
+                         "New AidTypeCategory should be added into database")
 
         self.assertEqual(aidTypeCategory, AidTypeCategory.objects.all()[0],
-            "New AidTypeCategory should match input")
+                         "New AidTypeCategory should match input")
 
     def test_add_aid_type_item(self):
         """
@@ -80,10 +81,10 @@ class CodelistImporterTestCase(TestCase):
         importer.add_code_list_item(element)
 
         self.assertEqual(1, AidType.objects.count(),
-            "New AidType should be added into database")
+                         "New AidType should be added into database")
 
         self.assertEqual(aidTypeCategory, AidType.objects.all()[0].category,
-            "New AidType should be added into database")
+                         "New AidType should be added into database")
 
     def test_add_missing_items(self):
 
@@ -122,7 +123,6 @@ class CodelistImporterTestCase(TestCase):
         # and the function should still return the item
         self.assertEqual(aid_type_item, aid_type_item2)
 
-
     @unittest.skip("Not implemented")
     def test_loop_through_codelists(self):
         return False
@@ -143,5 +143,3 @@ class CodelistImporterTestCase(TestCase):
         self.assertEqual(len(importer.iati_versions), importer.loop_through_codelists.call_count)
         importer.get_codelist_data.assert_called_with(name='DocumentCategory-category')
         importer.loop_through_codelists.assert_called_with('2.02')
-
-

@@ -25,7 +25,7 @@ def add_task(request):
     queue_to_be_added_to = request.GET.get('queue')
     queue = django_rq.get_queue(queue_to_be_added_to)
     func = getattr(tasks, task)
-    
+
     if parameters and parameters2:
         queue.enqueue(func, args=(parameters, parameters2))
     elif parameters:
@@ -92,7 +92,6 @@ def get_current_job(request):
     return HttpResponse(data, content_type='application/json')
 
 
-
 @staff_member_required
 def add_scheduled_task(request):
     from rq_scheduler import Scheduler
@@ -109,15 +108,19 @@ def add_scheduled_task(request):
             scheduled_time=datetime.utcnow(),   # Time for first execution
             func=getattr(tasks, task),       # Function to be queued
             args=(parameters,),
-            interval=int(period),                 # Time before the function is called again, in seconds
-            repeat=None                      # Repeat this number of times (None means repeat forever)
+            # Time before the function is called again, in seconds
+            interval=int(period),
+            # Repeat this number of times (None means repeat forever)
+            repeat=None
         )
     else:
         scheduler.schedule(
             scheduled_time=datetime.utcnow(),   # Time for first execution
             func=getattr(tasks, task),       # Function to be queued
-            interval=int(period),                 # Time before the function is called again, in seconds
-            repeat=None                      # Repeat this number of times (None means repeat forever)
+            # Time before the function is called again, in seconds
+            interval=int(period),
+            # Repeat this number of times (None means repeat forever)
+            repeat=None
         )
     return HttpResponse('Success')
 
@@ -257,4 +260,3 @@ def reschedule_all_failed(request):
         requeue_job(job.id, connection=queue.connection)
 
     return HttpResponse('Success')
-

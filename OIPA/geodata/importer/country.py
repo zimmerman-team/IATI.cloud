@@ -10,6 +10,7 @@ class CountryImport():
     """
     Wrapper class for all import methods used on the Country model
     """
+
     def __init__(self):
         self.get_json_data = get_json_data
 
@@ -57,4 +58,3 @@ class CountryImport():
             if the_country.region is None and the_country is not None and the_region is not None:
                 the_country.region = the_region
                 the_country.save()
-

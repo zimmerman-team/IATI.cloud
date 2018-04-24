@@ -21,13 +21,6 @@ DATABASES = {
     },
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'localhost:6379',
-    }
-}
-
 API_CACHE_SECONDS = 60 * 60 * 24
 
 ROOT_ORGANISATIONS = []

@@ -17,7 +17,7 @@ class CountryImportTestCase(TestCase):
     def test_update_polygon(self):
 
         data = {
-            "type": "FeatureCollection","features": [{
+            "type": "FeatureCollection", "features": [{
                 "type": "Feature",
                 "id": "AFG",
                 "properties": {
@@ -27,7 +27,7 @@ class CountryImportTestCase(TestCase):
                 "geometry": {
                     "type": "Polygon",
                     "coordinates": [[[61.210817, 35.650072], [62.230651, 35.270664]]]}},
-        ]}
+            ]}
         self.country_import.get_json_data = MagicMock(return_value=data)
         self.country_import.update_polygon()
 
@@ -39,7 +39,7 @@ class CountryImportTestCase(TestCase):
         self.assertEqual(country.code, self.country.code)
 
     def test_update_country_center(self):
-        data = {"AF": {"latitude": "42.30", "longitude": "1.30"},}
+        data = {"AF": {"latitude": "42.30", "longitude": "1.30"}, }
         self.country_import.get_json_data = MagicMock(return_value=data)
         self.country_import.update_country_center()
         country = Country.objects.all()[0]
@@ -57,4 +57,3 @@ class CountryImportTestCase(TestCase):
         self.country_import.update_regions()
         country = Country.objects.all()[0]
         self.assertEqual(country.region, region)
-

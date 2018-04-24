@@ -74,6 +74,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='activitysearch',
-            index=django.contrib.postgres.indexes.GinIndex(fields=[b'search_vector_text'], name='iati_activi_search__168aa4_gin'),
+            index=django.contrib.postgres.indexes.GinIndex(
+                fields=[b'search_vector_text'], name='iati_activi_search__168aa4_gin'),
         ),
     ]

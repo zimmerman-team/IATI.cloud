@@ -36,23 +36,23 @@ class ChainSerializer(DynamicFieldsModelSerializer):
     links = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='chains:chain-link-list',
-        )
+    )
     errors = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='chains:chain-error-list',
-        )
+    )
     activities = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='chains:chain-activity-list',
-        )
+    )
     transactions = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='chains:chain-transaction-list',
-        )
+    )
     nodes = serializers.HyperlinkedIdentityField(
         read_only=True,
         view_name='chains:chain-node-list',
-        )
+    )
 
     url = serializers.HyperlinkedIdentityField(view_name='chains:chain-detail', read_only=True)
 
@@ -72,7 +72,7 @@ class ChainSerializer(DynamicFieldsModelSerializer):
 
 
 class ChainLinkRelationSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = chain_models.ChainLinkRelation
         fields = (
@@ -83,8 +83,22 @@ class ChainLinkRelationSerializer(serializers.ModelSerializer):
 
 
 class ChainLinkSerializer(DynamicFieldsModelSerializer):
-    start_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'tier', 'eol', 'bol'))
-    end_node = ChainNodeSerializer(fields=('id', 'activity_oipa_id', 'activity_iati_id', 'tier', 'eol', 'bol'))
+    start_node = ChainNodeSerializer(
+        fields=(
+            'id',
+            'activity_oipa_id',
+            'activity_iati_id',
+            'tier',
+            'eol',
+            'bol'))
+    end_node = ChainNodeSerializer(
+        fields=(
+            'id',
+            'activity_oipa_id',
+            'activity_iati_id',
+            'tier',
+            'eol',
+            'bol'))
     relations = ChainLinkRelationSerializer(many=True)
 
     class Meta:
@@ -108,4 +122,3 @@ class ChainNodeErrorSerializer(DynamicFieldsModelSerializer):
             'related_id',
             'warning_level'
         )
-

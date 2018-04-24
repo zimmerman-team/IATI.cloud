@@ -12,5 +12,3 @@ from api.activity.serializers import ActivitySerializer
 from iati import models as iati_models
 
 from api.activity.serializers import LocationSerializer
-
-

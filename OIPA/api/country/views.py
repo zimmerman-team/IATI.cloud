@@ -4,9 +4,10 @@ from geodata.models import Country
 from rest_framework.generics import RetrieveAPIView
 from api.country.filters import CountryFilter
 from api.generics.views import DynamicListView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 
-class CountryList(DynamicListView):
+class CountryList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Countries stored in OIPA.
 
@@ -47,7 +48,7 @@ class CountryList(DynamicListView):
     fields = ('url', 'code', 'name',)
 
 
-class CountryDetail(RetrieveAPIView):
+class CountryDetail(CacheResponseMixin, RetrieveAPIView):
     """
     Returns detailed information about Country.
 

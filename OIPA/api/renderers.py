@@ -8,6 +8,8 @@ from django.conf import settings
 from collections import OrderedDict
 
 # TODO: Make this more generic - 2016-01-21
+
+
 class XMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -54,16 +56,19 @@ class XMLRenderer(BaseRenderer):
 
                 for attr in attributes:
 
-                    renamed_attr = attr.replace('xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
+                    renamed_attr = attr.replace(
+                        'xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
 
                     value = data[attr]
                     if value is not None:
-                        xml.set(renamed_attr, six.text_type(value).lower() if type(value) == bool else six.text_type(value))
-
+                        xml.set(
+                            renamed_attr, six.text_type(value).lower() if isinstance(
+                                value, bool) else six.text_type(value))
 
             for key, value in six.iteritems(data):
 
-                if key in attributes: continue
+                if key in attributes:
+                    continue
 
                 if key == 'text':
                     self._to_xml(xml, value)
@@ -71,8 +76,9 @@ class XMLRenderer(BaseRenderer):
                     self._to_xml(xml, value, parent_name=key)
                 else:
                     # TODO remove this ugly hack by adjusting the resultindicatorperiod actual / target models. 30-08-16
-                    # currently actuals are stored on the resultindicatorperiod, hence we need to remove empty actuals here.
-                    if key in ['actual','target']:
+                    # currently actuals are stored on the resultindicatorperiod, hence we need
+                    # to remove empty actuals here.
+                    if key in ['actual', 'target']:
                         if value.items()[0][0] != 'value':
                             continue
 
@@ -85,8 +91,10 @@ class XMLRenderer(BaseRenderer):
             xml.text = six.text_type(data)
             pass
 
+
 import csv
 from rest_framework_csv.renderers import CSVRenderer
+
 
 class PaginatedCSVRenderer(CSVRenderer):
     results_field = 'results'
@@ -95,22 +103,23 @@ class PaginatedCSVRenderer(CSVRenderer):
     def __init__(self, *args, **kwargs):
         super(PaginatedCSVRenderer, self).__init__(*args, **kwargs)
         self.writer_opts = {
-          'quoting': csv.QUOTE_ALL,
-          'quotechar': '"'.encode('utf-8'),
-          'delimiter': ';'.encode('utf-8')
+            'quoting': csv.QUOTE_ALL,
+            'quotechar': '"'.encode('utf-8'),
+            'delimiter': ';'.encode('utf-8')
         }
 
     def render(self, data, *args, **kwargs):
-        # TODO: this is probably a bug in DRF, might get fixed later then need to update this - 2017-04-03
+        # TODO: this is probably a bug in DRF, might get fixed later then need to
+        # update this - 2017-04-03
         actual_kwargs = args[1].get('kwargs', {})
 
         # this is a list view
-        if not 'pk' in actual_kwargs:
+        if 'pk' not in actual_kwargs:
             data = data.get(self.results_field, [])
 
         return super(PaginatedCSVRenderer, self).render(data, *args, **kwargs)
 
+
 class OrganisationXMLRenderer(XMLRenderer):
     root_tag_name = 'iati-organisations'
     item_tag_name = 'iati-organisation'
-

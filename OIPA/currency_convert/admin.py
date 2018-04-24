@@ -15,4 +15,5 @@ class MonthlyAverageAdmin(admin.ModelAdmin):
         'value']
     ordering = ['currency', 'year', 'month']
 
+
 admin.site.register(MonthlyAverage, MonthlyAverageAdmin)

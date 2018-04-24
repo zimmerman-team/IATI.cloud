@@ -1,21 +1,23 @@
-from lxml import etree
-from collections import OrderedDict
 import datetime
-import traceback
-import dateutil.parser
+import logging
 import re
+from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 
-from django.db.models.fields.related import ForeignKey, OneToOneField
-from django.db.models import Model
-
-from iati_codelists import models as codelist_models
+import dateutil.parser
 from django.conf import settings
-from iati_synchroniser.models import DatasetNote
+from django.db.models import Model
+from django.db.models.fields.related import ForeignKey, OneToOneField
+from lxml import etree
+
+from common.util import findnth_occurence_in_string, normalise_unicode_string
 from iati.parser.exceptions import *
-from common.util import findnth_occurence_in_string
+from iati_codelists import models as codelist_models
+from iati_synchroniser.models import DatasetNote
 
 codelist_cache = {}
+
+log = logging.getLogger(__name__)
 
 
 class IatiParser(object):
@@ -40,17 +42,24 @@ class IatiParser(object):
         reg_agency_found = False
         if ref and findnth_occurence_in_string(ref, '-', 1) > -1:
             index = findnth_occurence_in_string(ref, '-', 1)
-            reg_agency = self.get_or_none(codelist_models.OrganisationRegistrationAgency, code=ref[:index])
+            reg_agency = self.get_or_none(
+                codelist_models.OrganisationRegistrationAgency, code=ref[:index])
             if reg_agency:
                 reg_agency_found = True
 
         if not reg_agency_found:
-            self.append_error('FieldValidationError', element_name, "ref", "Must be in the format {Registration Agency} - (Registration Number}", element.sourceline, ref)
+            self.append_error(
+                'FieldValidationError',
+                element_name,
+                "ref",
+                "Must be in the format {Registration Agency} - (Registration Number}",
+                element.sourceline,
+                ref)
 
     def get_or_none(self, model, *args, **kwargs):
         code = kwargs.get('code', None)
         if code:
-            code = str(code)
+            code = normalise_unicode_string(code)
             try:
                 model_cache = codelist_cache[model.__name__]
             except KeyError:
@@ -69,7 +78,8 @@ class IatiParser(object):
         """
         get default currency if not available for currency-related fields
         """
-        # TO DO; this does not invalidate the whole element (budget, transaction, planned disbursement) while it should
+        # TO DO; this does not invalidate the whole element (budget, transaction,
+        # planned disbursement) while it should
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
             if not currency:
@@ -94,7 +104,7 @@ class IatiParser(object):
         return None
 
     def guess_number(self, model_name, number_string):
-        #first strip non numeric values, except for -.,
+        # first strip non numeric values, except for -.,
         decimal_string = re.sub(r'[^\d.,-]+', '', number_string)
 
         try:
@@ -114,13 +124,13 @@ class IatiParser(object):
         try:
             int(obj)
             return True
-        except:
+        except BaseException:
             return False
 
-    def _normalize(self, attr): 
+    def _normalize(self, attr):
         # attr = attr.strip(' \t\n\r').replace(" ", "")
         # attr = re.sub("[/:&',.+]", "-", attr)
-        
+
         # normalize for use in the API with comma-separated values
         attr = re.sub(",", "COMMA", attr)
         return attr
@@ -132,14 +142,14 @@ class IatiParser(object):
         else:
             return None
 
-        #check if standard data parser works
+        # check if standard data parser works
         try:
             date = dateutil.parser.parse(unvalidated_date, ignoretz=True)
             if date.year >= 1900 and date.year <= 2100:
                 return date
             else:
                 return None
-        except:
+        except BaseException:
             raise RequiredFieldError(
                 "TO DO",
                 "iso-date",
@@ -147,7 +157,9 @@ class IatiParser(object):
 
     def get_primary_name(self, element, primary_name):
         if primary_name:
-            lang = element.attrib.get('{http://www.w3.org/XML/1998/namespace}lang', self.default_lang)
+            lang = element.attrib.get(
+                '{http://www.w3.org/XML/1998/namespace}lang',
+                self.default_lang)
             if lang == 'en':
                 primary_name = element.text
         else:
@@ -172,24 +184,24 @@ class IatiParser(object):
 
         self.post_save_file(self.dataset)
 
-        
         if settings.ERROR_LOGS_ENABLED:
             self.post_save_validators(self.dataset)
 
             # TODO - only delete errors on activities that were updated
             self.dataset.note_count = len(self.errors)
             self.dataset.save()
-            
+
             DatasetNote.objects.filter(dataset=self.dataset).delete()
             DatasetNote.objects.bulk_create(self.errors)
-    
+
     def post_save_models(self):
         print "override in children"
 
     def post_save_file(self, dataset):
         print "override in children"
 
-    def append_error(self, error_type, model, field, message, sourceline, variable='', iati_id=None):
+    def append_error(self, error_type, model, field, message,
+                     sourceline, variable='', iati_id=None):
         if not settings.ERROR_LOGS_ENABLED:
             return
 
@@ -209,7 +221,7 @@ class IatiParser(object):
                 iati_identifier = organisation.organisation_identifier
             # elif organisation:
             #     iati_identifier = organisation.id
-        
+
         if not iati_identifier and hasattr(self, 'identifier'):
             iati_identifier = self.identifier
         elif not iati_identifier:
@@ -217,7 +229,7 @@ class IatiParser(object):
 
         if variable:
             variable = variable[0:255]
- 
+
         note = DatasetNote(
             dataset=self.dataset,
             iati_identifier=iati_identifier,
@@ -247,26 +259,55 @@ class IatiParser(object):
             try:
                 element_method(element)
             except RequiredFieldError as e:
-                self.append_error('RequiredFieldError', e.model, e.field, e.message, element.sourceline, None)
+                log.exception(e)
+                self.append_error(
+                    'RequiredFieldError',
+                    e.model,
+                    e.field,
+                    e.message,
+                    element.sourceline,
+                    None)
                 return
             except FieldValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, e.variable, e.iati_id)
+                log.exception(e)
+                self.append_error(
+                    'FieldValidationError',
+                    e.model,
+                    e.field,
+                    e.message,
+                    element.sourceline,
+                    e.variable,
+                    e.iati_id)
                 return
             except ValidationError as e:
-                self.append_error('FieldValidationError', e.model, e.field, e.message, element.sourceline, None, e.iati_id)
+                log.exception(e)
+                self.append_error(
+                    'FieldValidationError',
+                    e.model,
+                    e.field,
+                    e.message,
+                    element.sourceline,
+                    None,
+                    e.iati_id)
                 return
             except IgnoredVocabularyError as e:
                 # not implemented, ignore for now
                 return
             except ParserError as e:
-                self.append_error('ParserError', 'TO DO', 'TO DO', e.message, None, element.sourceline)
+                log.exception(e)
+                self.append_error(
+                    'ParserError',
+                    'TO DO',
+                    'TO DO',
+                    e.message,
+                    None,
+                    element.sourceline)
                 return
             except NoUpdateRequired as e:
                 # do nothing, go to next activity
                 return
-            except Exception as exception:
-                # print exception.message
-                traceback.print_exc()
+            except Exception as e:
+                log.exception(e)
                 return
 
         for e in element.getchildren():
@@ -303,7 +344,7 @@ class IatiParser(object):
             key = key.__class__.__name__
 
         if key in self.model_store:
-            if len(self.model_store[key]) > 0: 
+            if len(self.model_store[key]) > 0:
                 return self.model_store[key][index]
         return None
 
@@ -312,7 +353,7 @@ class IatiParser(object):
             key = key.__class__.__name__
 
         if key in self.model_store:
-            if len(self.model_store[key]) > 0: 
+            if len(self.model_store[key]) > 0:
                 return self.model_store[key].pop()
         return None
 
@@ -330,7 +371,8 @@ class IatiParser(object):
                 setattr(model, field.name, getattr(model, field.name))
 
     def save_all_models(self):
-        # TODO: problem: assigning unsaved model to foreign key results in error because field_id has not been set (see issue )
+        # TODO: problem: assigning unsaved model to foreign key results in error
+        # because field_id has not been set (see issue )
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
@@ -339,19 +381,19 @@ class IatiParser(object):
 
                 except ValueError as e:
                     # TO DO; check if we need to do internal logging on these value errors
-                    traceback.print_exc()
+                    log.exception(e)
 
                 except Exception as e:
-                    # these stay in the logs until we know what to do with them
-                    traceback.print_exc()
-                    # self.append_error(str(type(e)), e.message, 'TO DO')
+                    log.exception(e)
 
-    def remove_brackets(self,function_name):
+    def remove_brackets(self, function_name):
         result = ""
         flag = True
         for c in function_name:
-            if c == "[": flag = False
-            if flag: result += c
-            if c == "]": flag = True
+            if c == "[":
+                flag = False
+            if flag:
+                result += c
+            if c == "]":
+                flag = True
         return result
-

@@ -5,6 +5,7 @@ from django.conf import settings
 from iati.models import Activity
 from iati.activity_search_indexes import reindex_all_activities, reindex_activity, reindex_activity_by_source
 
+
 class Command(BaseCommand):
     """
         Reindex full text search values for all activities
@@ -12,17 +13,16 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--activity',
-            action='store',
-            dest='activity',
-            default=None,
-            help='Reindex only this activity')
+                            action='store',
+                            dest='activity',
+                            default=None,
+                            help='Reindex only this activity')
 
         parser.add_argument('--source',
-            action='store',
-            dest='source',
-            default=None,
-            help='Reindex only activities with this dataset_id')
-
+                            action='store',
+                            dest='source',
+                            default=None,
+                            help='Reindex only activities with this dataset_id')
 
     def handle(self, *args, **options):
         if options['activity']:
@@ -32,4 +32,3 @@ class Command(BaseCommand):
             reindex_activity_by_source(options['source'])
         else:
             reindex_all_activities()
-

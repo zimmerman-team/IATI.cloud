@@ -18,11 +18,15 @@ from iati_vocabulary.models import *
 
 from organisation_manager import OrganisationManager
 
-#function for making url
-def make_abs_url(org_identifier):
-    return '/api/organisation/'+org_identifier
+# function for making url
 
-#narrative for adding free text to elements
+
+def make_abs_url(org_identifier):
+    return '/api/organisation/' + org_identifier
+
+# narrative for adding free text to elements
+
+
 class OrganisationNarrative(models.Model):
 
     content_type = models.ForeignKey(ContentType)
@@ -43,9 +47,10 @@ class OrganisationNarrative(models.Model):
     class Meta:
         index_together = [('content_type', 'object_id')]
 
+
 class BudgetLineAbstract(models.Model):
     ref = models.CharField(max_length=150)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
@@ -54,6 +59,8 @@ class BudgetLineAbstract(models.Model):
         abstract = True
 
 # organisation base class
+
+
 class Organisation(models.Model):
     """
     This model is initially filled by the IATI Registry API.
@@ -62,7 +69,8 @@ class Organisation(models.Model):
     """
 
     organisation_identifier = models.CharField(max_length=150, unique=True, db_index=True)
-    # normalized for use in the API, should be deprecated and fixed by a proper regex in the URL - 2017-11-06
+    # normalized for use in the API, should be deprecated and fixed by a
+    # proper regex in the URL - 2017-11-06
     normalized_organisation_identifier = models.CharField(max_length=150, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version)
@@ -73,7 +81,8 @@ class Organisation(models.Model):
 
     reported_in_iati = models.BooleanField(default=True)
 
-    # this is actually reported on activity/reporting-org but we store it here so we can simultaneously update it for all activities
+    # this is actually reported on activity/reporting-org but we store it here
+    # so we can simultaneously update it for all activities
     type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
 
     # first narrative
@@ -92,7 +101,7 @@ class Organisation(models.Model):
         return self.organisation_identifier
 
 
-#class for narrative
+# class for narrative
 class OrganisationName(models.Model):
     organisation = models.OneToOneField(Organisation, related_name="name")
     narratives = GenericRelation(OrganisationNarrative)
@@ -101,43 +110,52 @@ class OrganisationName(models.Model):
 class OrganisationReportingOrganisation(models.Model):
     organisation = models.OneToOneField(Organisation, related_name='reporting_org')
     org_type = models.ForeignKey(OrganisationType, null=True, default=None)
-    reporting_org = models.ForeignKey(Organisation,related_name='reported_by_orgs',null=True, db_constraint=False)
-    reporting_org_identifier = models.CharField(max_length=250,null=True)
+    reporting_org = models.ForeignKey(
+        Organisation,
+        related_name='reported_by_orgs',
+        null=True,
+        db_constraint=False)
+    reporting_org_identifier = models.CharField(max_length=250, null=True)
     secondary_reporter = models.BooleanField(default=False)
 
     narratives = GenericRelation(OrganisationNarrative)
 
 
 class TotalBudget(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name="total_budgets")
+    organisation = models.ForeignKey(Organisation, related_name="total_budgets")
     status = models.ForeignKey(BudgetStatus, default=1)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
+
 
 class TotalBudgetLine(BudgetLineAbstract):
     total_budget = models.ForeignKey(TotalBudget)
 
+
 class RecipientOrgBudget(models.Model):
     organisation = models.ForeignKey(Organisation)
     status = models.ForeignKey(BudgetStatus, default=1)
-    recipient_org_identifier = models.CharField(max_length=150, verbose_name='recipient_org_identifier', null=True)
+    recipient_org_identifier = models.CharField(
+        max_length=150, verbose_name='recipient_org_identifier', null=True)
     recipient_org = models.ForeignKey(Organisation, related_name='recieving_org', null=True)
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     narratives = GenericRelation(OrganisationNarrative)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+
 
 class RecipientOrgBudgetLine(BudgetLineAbstract):
     recipient_org_budget = models.ForeignKey(RecipientOrgBudget)
 
+
 class RecipientCountryBudget(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name='recipient_country_budgets')
+    organisation = models.ForeignKey(Organisation, related_name='recipient_country_budgets')
     status = models.ForeignKey(BudgetStatus, default=1)
     country = models.ForeignKey(Country, null=True)
     period_start = models.DateField(null=True)
@@ -147,8 +165,10 @@ class RecipientCountryBudget(models.Model):
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
 
+
 class RecipientCountryBudgetLine(BudgetLineAbstract):
     recipient_country_budget = models.ForeignKey(RecipientCountryBudget)
+
 
 class RecipientRegionBudget(models.Model):
     organisation = models.ForeignKey(Organisation, related_name='recipient_region_budget')
@@ -159,30 +179,34 @@ class RecipientRegionBudget(models.Model):
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
+
 
 class RecipientRegionBudgetLine(BudgetLineAbstract):
     recipient_region_budget = models.ForeignKey(RecipientRegionBudget)
 
+
 class TotalExpenditure(models.Model):
-    organisation = models.ForeignKey(Organisation,related_name="total_expenditure")
+    organisation = models.ForeignKey(Organisation, related_name="total_expenditure")
     period_start = models.DateField(null=True)
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
+
 
 class TotalExpenditureLine(models.Model):
     total_expenditure = models.ForeignKey(TotalExpenditure)
 
     ref = models.CharField(max_length=150)
-    currency = models.ForeignKey(Currency,null=True)
+    currency = models.ForeignKey(Currency, null=True)
     value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
+
 
 class OrganisationDocumentLink(models.Model):
     organisation = models.ForeignKey(Organisation)
@@ -196,11 +220,11 @@ class OrganisationDocumentLink(models.Model):
     language = models.ForeignKey(Language, null=True, default=None)
 
     recipient_countries = models.ManyToManyField(
-        Country, 
+        Country,
         blank=True,
         related_name='recipient_countries',
         through="DocumentLinkRecipientCountry"
-        )
+    )
 
     iso_date = models.DateField(null=True, blank=True)
 
@@ -212,6 +236,8 @@ class OrganisationDocumentLink(models.Model):
 
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
+
+
 class OrganisationDocumentLinkCategory(models.Model):
     document_link = models.ForeignKey(OrganisationDocumentLink)
     category = models.ForeignKey(DocumentCategory)
@@ -221,6 +247,8 @@ class OrganisationDocumentLinkCategory(models.Model):
 
 # enables saving before parent object is saved (workaround)
 # TODO: eliminate the need for this
+
+
 class DocumentLinkRecipientCountry(models.Model):
     document_link = models.ForeignKey(OrganisationDocumentLink)
     recipient_country = models.ForeignKey(Country)
@@ -230,11 +258,12 @@ class DocumentLinkRecipientCountry(models.Model):
     class Meta:
         verbose_name_plural = "Document link categories"
 
+
 class DocumentLinkTitle(models.Model):
     document_link = models.OneToOneField(OrganisationDocumentLink)
     narratives = GenericRelation(OrganisationNarrative)
 
+
 class OrganisationDocumentLinkLanguage(models.Model):
     document_link = models.ForeignKey(OrganisationDocumentLink)
     language = models.ForeignKey(Language, null=True, blank=True, default=None)
-

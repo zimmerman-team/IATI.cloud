@@ -10,6 +10,7 @@ class SdgSectorImporter():
     Wrapper class for all import methods used on the sector model.
     Only imports SDG targets for now.
     """
+
     def __init__(self):
         """
         """
@@ -34,9 +35,8 @@ class SdgSectorImporter():
             Sector.objects.get_or_create(
                 code=code,
                 defaults={
-                    'name':description[:60] + '...',
-                    'description':description,
+                    'name': description[:60] + '...',
+                    'description': description,
                     'vocabulary': vocabulary
                 }
             )
-

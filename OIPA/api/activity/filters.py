@@ -25,8 +25,6 @@ from iati.models import *
 from iati.transaction.models import *
 from iati_synchroniser.models import Dataset, Publisher
 
-from django.contrib.postgres.search import SearchQuery
-
 
 class ActivityFilter(TogetherFilterSet):
 
@@ -234,7 +232,7 @@ class ActivityFilter(TogetherFilterSet):
         name='region__code',
         fk='activity',
     )
-    
+
     sector = ToManyFilter(
         qs=ActivitySector,
         lookup_expr='in',
@@ -330,7 +328,6 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
-
 
     #
     # Publisher meta filters
@@ -547,11 +544,13 @@ class ActivityFilter(TogetherFilterSet):
     #
     def filter_ready_to_publish(self, queryset, name, value):
         return queryset.filter(Q(ready_to_publish=True))
-    ready_to_publish = CharFilter(name='ready_to_publish', method='filter_ready_to_publish')
+    ready_to_publish = CharFilter(
+        name='ready_to_publish', method='filter_ready_to_publish')
 
     def filter_modified_ready_to_publish(self, queryset, name, value):
         return queryset.filter(Q(modified=True) & Q(ready_to_publish=True))
-    modified_ready_to_publish = CharFilter(method='filter_modified_ready_to_publish')
+    modified_ready_to_publish = CharFilter(
+        method='filter_modified_ready_to_publish')
 
     def filter_modified(self, queryset, name, value):
         return queryset.filter(Q(modified=True))
@@ -563,10 +562,6 @@ class ActivityFilter(TogetherFilterSet):
         else:
             return queryset.filter(Q(published=False))
     published = CharFilter(method='filter_published')
-
-    # modified = BooleanFilter(name='modified')
-    # start_date_isnull = BooleanFilter(lookup_expr='isnull', name='start_date')
-
 
     class Meta:
         model = Activity
@@ -596,12 +591,13 @@ class RelatedOrderingFilter(filters.OrderingFilter):
     """
 
     def get_ordering(self, request, queryset, view):
-        ordering = super(RelatedOrderingFilter, self).get_ordering(request, queryset, view)
+        ordering = super(RelatedOrderingFilter, self).get_ordering(
+            request, queryset, view)
 
         always_ordering = getattr(view, 'always_ordering', None)
 
         if ordering and always_ordering:
-            ordering = ordering + [always_ordering] 
+            ordering = ordering + [always_ordering]
             queryset.distinct(always_ordering)
 
         return ordering
@@ -610,13 +606,14 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         ordering = self.get_ordering(request, queryset, view)
 
-        if ordering: 
+        if ordering:
             ordering = [order.replace("-", "") for order in ordering]
 
-            if not 'iati_identifier' in ordering:
+            if 'iati_identifier' not in ordering:
                 queryset = queryset.distinct(*ordering)
 
-        return super(RelatedOrderingFilter, self).filter_queryset(request, queryset, view)
+        return super(RelatedOrderingFilter, self).filter_queryset(
+            request, queryset, view)
 
     def is_valid_field(self, model, field):
         """
@@ -663,7 +660,8 @@ class RelatedOrderingFilter(filters.OrderingFilter):
 
         for i, term in enumerate(ordering):
             if term.lstrip('-') in mapped_fields:
-                ordering[i] = ordering[i].replace(term.lstrip('-'), mapped_fields[term.lstrip('-')])
+                ordering[i] = ordering[i].replace(
+                    term.lstrip('-'), mapped_fields[term.lstrip('-')])
 
         return [term for term in ordering
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]

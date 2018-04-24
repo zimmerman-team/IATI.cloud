@@ -18,12 +18,26 @@ from iati.activity_aggregation_calculation import ActivityAggregationCalculation
 from iati.models import DocumentLink, Document
 from iati_synchroniser.models import Dataset
 
+from rest_framework_extensions.settings import extensions_api_settings
+from django.core.cache import caches
+
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
 
 ###############################
 #### TASK QUEUE MANAGEMENT ####
 ###############################
+
+
+def remove_all_api_caches():
+    """
+    Call this function after the API data has been changed,
+    to remove all cached of the API data
+
+    TODO: remove just for a specific of the API data which has been changed
+    """
+    api_caches = caches[extensions_api_settings.DEFAULT_USE_CACHE]
+    api_caches.clear()
 
 
 @job
@@ -59,12 +73,16 @@ def get_new_sources_from_iati_api():
     from django.core import management
     management.call_command('get_new_sources_from_iati_registry', verbosity=0, interactive=False)
 
+    remove_all_api_caches()
+
 
 @job
 def add_new_sources_from_registry_and_parse_all():
     queue = django_rq.get_queue("default")
     queue.enqueue(get_new_sources_from_iati_api)
     queue.enqueue(parse_all_existing_sources)
+
+    remove_all_api_caches()
 
 
 @job
@@ -83,6 +101,8 @@ def force_parse_all_existing_sources():
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
+    remove_all_api_caches()
+
 
 @job
 def parse_all_existing_sources():
@@ -100,6 +120,8 @@ def parse_all_existing_sources():
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
+    remove_all_api_caches()
+
 
 @job
 def parse_all_sources_by_publisher_ref(org_ref):
@@ -110,6 +132,8 @@ def parse_all_sources_by_publisher_ref(org_ref):
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
+    remove_all_api_caches()
+
 
 @job
 def force_parse_by_publisher_ref(org_ref):
@@ -119,6 +143,8 @@ def force_parse_by_publisher_ref(org_ref):
 
     if settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
+
+    remove_all_api_caches()
 
 
 @job
@@ -131,6 +157,8 @@ def force_parse_source_by_url(url, update_searchable=False):
     if update_searchable and settings.ROOT_ORGANISATIONS:
         queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
+    remove_all_api_caches()
+
 
 @job
 def force_parse_source_by_id(source_id, update_searchable=False):
@@ -142,6 +170,7 @@ def force_parse_source_by_id(source_id, update_searchable=False):
         if update_searchable and settings.ROOT_ORGANISATIONS:
             queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
 
+        remove_all_api_caches()
     except Dataset.DoesNotExist:
         return False
 
@@ -158,6 +187,8 @@ def parse_source_by_id(source_id):
     try:
         xml_source = Dataset.objects.get(pk=source_id)
         xml_source.process()
+
+        remove_all_api_caches()
     except Dataset.DoesNotExist:
         return False
 
@@ -167,11 +198,15 @@ def calculate_activity_aggregations_per_source(source_ref):
     aac = ActivityAggregationCalculation()
     aac.parse_activity_aggregations_by_source(source_ref)
 
+    remove_all_api_caches()
+
 
 @job
 def delete_source_by_id(source_id):
     try:
         Dataset.objects.get(pk=source_id).delete()
+        remove_all_api_caches()
+
     except Dataset.DoesNotExist:
         return False
 
@@ -179,7 +214,8 @@ def delete_source_by_id(source_id):
 @job
 def delete_sources_not_found_in_registry_in_x_days(days):
     if int(days) < 6:
-        raise Exception("The task queue only allows deletion of sources when not found for +5 days")
+        raise Exception(
+            "The task queue only allows deletion of sources when not found for +5 days")
 
     for source in Dataset.objects.all():
         current_date = float(datetime.datetime.now().strftime('%s'))
@@ -197,6 +233,8 @@ def delete_sources_not_found_in_registry_in_x_days(days):
                 queue = django_rq.get_queue("parser")
                 queue.enqueue(delete_source_by_id, args=(source.id,))
 
+    remove_all_api_caches()
+
 
 ###############################
 #### IATI MANAGEMENT TASKS ####
@@ -208,12 +246,16 @@ def update_iati_codelists():
     syncer = CodeListImporter()
     syncer.synchronise_with_codelists()
 
+    remove_all_api_caches()
+
 
 @job
 def find_replace_source_url(find_url, replace_url):
     for source in Dataset.objects.filter(source_url__icontains=find_url):
         source.source_url = source.source_url.replace(find_url, replace_url)
         source.save()
+
+    remove_all_api_caches()
 
 
 ###############################
@@ -237,6 +279,8 @@ def export_publisher_activities(publisher_id):
     xml_renderer = XMLRenderer()
     xml = xml_renderer.render(serializer.data)
 
+    remove_all_api_caches()
+
     return xml
 
 
@@ -250,12 +294,16 @@ def update_exchange_rates():
     r = RateParser()
     r.update_rates(force=False)
 
+    remove_all_api_caches()
+
 
 @job
 def force_update_exchange_rates():
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=True)
+
+    remove_all_api_caches()
 
 
 ###############################
@@ -270,12 +318,16 @@ def update_all_geo_data():
     queue.enqueue(update_adm1_region_data)
     queue.enqueue(update_city_data)
 
+    remove_all_api_caches()
+
 
 @job
 def update_region_data():
     from geodata.importer.region import RegionImport
     ri = RegionImport()
     ri.update_region_center()
+
+    remove_all_api_caches()
 
 
 @job
@@ -286,6 +338,8 @@ def update_country_data():
     ci.update_polygon()
     ci.update_regions()
 
+    remove_all_api_caches()
+
 
 @job
 def update_adm1_region_data():
@@ -293,12 +347,16 @@ def update_adm1_region_data():
     ai = Adm1RegionImport()
     ai.update_from_json()
 
+    remove_all_api_caches()
+
 
 @job
 def update_city_data():
     from geodata.importer.city import CityImport
     ci = CityImport()
     ci.update_cities()
+
+    remove_all_api_caches()
 
 
 #############################################
@@ -340,7 +398,8 @@ def start_searchable_activities_task(counter=0):
                         already_running_update = True
 
     if already_running_update:
-        # update_searchable_activities already running or other start_searchable_activities_task running, invalidate task
+        # update_searchable_activities already running or other
+        # start_searchable_activities_task running, invalidate task
         pass
     elif not has_other_jobs:
         queue.enqueue(update_searchable_activities)
@@ -352,11 +411,15 @@ def start_searchable_activities_task(counter=0):
         time.sleep(120)
         queue.enqueue(start_searchable_activities_task, args=(counter,), timeout=300)
 
+    remove_all_api_caches()
+
 
 @job
 def update_searchable_activities():
     from django.core import management
     management.call_command('set_searchable_activities', verbosity=0, interactive=False)
+
+    remove_all_api_caches()
 
 
 #############################################
@@ -364,12 +427,13 @@ def update_searchable_activities():
 #############################################
 
 
-
 @job
 def collect_files():
     queue = django_rq.get_queue("document_collector")
     for d in DocumentLink.objects.all():
         queue.enqueue(download_file, args=(d,))
+
+    remove_all_api_caches()
 
 
 @job
@@ -452,3 +516,5 @@ def download_file(d):
         print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
+
+    remove_all_api_caches()

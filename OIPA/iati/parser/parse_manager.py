@@ -33,14 +33,14 @@ class ParseManager():
         self.hash_changed = True
         self.valid_dataset = True
 
-        if root != None:
+        if root is not None:
             self.root = root
             self.parser = self._prepare_parser(self.root, dataset)
             return
 
         file_grabber = FileGrabber()
         response = file_grabber.get_the_file(self.url)
-        
+
         from iati_synchroniser.models import DatasetNote
         if not response or response.code != 200:
             self.valid_dataset = False
@@ -75,7 +75,7 @@ class ParseManager():
         try:
             self.root = etree.fromstring(iati_file_str)
             self.parser = self._prepare_parser(self.root, dataset)
-            
+
             if settings.ERROR_LOGS_ENABLED:
                 self.xsd_validate()
 
@@ -118,7 +118,7 @@ class ParseManager():
                 parser = IATI_105_Parser(root)
                 parser.VERSION = '1.05'
 
-        #organisation file
+        # organisation file
         elif dataset.filetype == 2:
             if iati_version == '2.02':
                 parser = Org_2_01_Parser(root)
@@ -138,13 +138,12 @@ class ParseManager():
     def xsd_validate(self):
         schema_validators.validate(self.parser, self.root)
 
-
     def get_parser(self):
         return self.parser
 
     def parse_all(self):
         """
-        Parse all activities 
+        Parse all activities
         """
 
         # only start parsing when the file changed (or on force)
@@ -161,7 +160,8 @@ class ParseManager():
         """
 
         try:
-            (activity,) = self.root.xpath('//iati-activity/iati-identifier[text()="{}"]'.format(activity_id))
+            (activity,) = self.root.xpath(
+                '//iati-activity/iati-identifier[text()="{}"]'.format(activity_id))
         except ValueError:
             raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
 
@@ -169,4 +169,3 @@ class ParseManager():
         self.parser.parse(activity.getparent())
         self.parser.save_all_models()
         self.parser.post_save_models()
-

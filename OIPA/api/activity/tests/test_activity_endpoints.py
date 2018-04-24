@@ -8,6 +8,7 @@ from iati.factory import iati_factory
 
 from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
 
+
 class TestActivityEndpoints(APITestCase):
     rf = RequestFactory()
     c = APIClient()
@@ -38,7 +39,9 @@ class TestActivityEndpoints(APITestCase):
         msg = 'activity aggregations endpoint should be located at {0}'
         expect_url = '/api/activities/aggregations/'
         assert url == expect_url, msg.format(expect_url)
-        response = self.c.get(expect_url, {'group_by':'recipient_country', 'aggregations':'count'}, format='json')
+        response = self.c.get(
+            expect_url, {
+                'group_by': 'recipient_country', 'aggregations': 'count'}, format='json')
         self.assertTrue(status.is_success(response.status_code))
 
     def test_transactions_endpoint(self):

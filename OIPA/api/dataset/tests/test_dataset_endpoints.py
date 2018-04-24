@@ -21,9 +21,8 @@ class TestDatasetEndpoints(APITestCase):
         url = reverse('datasets:dataset-detail', args={dataset.id})
 
         msg = 'dataset detail endpoint should be localed at {0}'
-        expect_url = '/api/datasets/'+str(dataset.id)+'/'
+        expect_url = '/api/datasets/' + str(dataset.id) + '/'
         # print(url)
         assert url == expect_url, msg.format(expect_url)
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
-

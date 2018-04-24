@@ -22,7 +22,6 @@ class DatasetSyncer():
     #     publisher_id_tuples = Publisher.objects.values_list('id')
     #     self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
-
     def get_data(self, url):
         req = urllib2.Request(url)
         opener = urllib2.build_opener()
@@ -35,7 +34,7 @@ class DatasetSyncer():
 
     def synchronize_with_iati_api(self):
         """
-        First update all publishers. 
+        First update all publishers.
         Then all datasets.
         """
 
@@ -76,36 +75,37 @@ class DatasetSyncer():
 
     def update_or_create_publisher(self, publisher):
         """
-        
+
         """
         obj, created = Publisher.objects.update_or_create(
             iati_id=publisher['id'],
             defaults={
                 'publisher_iati_id': publisher['publisher_iati_id'],
-                'name': publisher['name'], 
-                'display_name': publisher['display_name']
+                'name': publisher['name'],
+                'display_name': publisher['title']
             }
         )
 
-        if not Organisation.objects.filter(organisation_identifier=publisher['publisher_iati_id']).exists():
+        if not Organisation.objects.filter(
+                organisation_identifier=publisher['publisher_iati_id']).exists():
             create_publisher_organisation(
-              obj,
-              publisher['publisher_organization_type']
+                obj,
+                publisher['publisher_organization_type']
             )
 
         return obj
 
     def update_or_create_dataset(self, dataset):
         """
-        
+
         """
         filetype_name = self.get_val_in_list_of_dicts('filetype', dataset['extras'])
-        
-        if  filetype_name and filetype_name.get('value') == 'organisation':
+
+        if filetype_name and filetype_name.get('value') == 'organisation':
             filetype = 2
         else:
             filetype = 1
-        
+
         iati_version = self.get_val_in_list_of_dicts('iati_version', dataset['extras'])
         if iati_version:
             iati_version = iati_version.get('value')
@@ -134,7 +134,7 @@ class DatasetSyncer():
 
     def remove_deprecated(self):
         """
-        remove old publishers and datasets that used an id between 1-5000 
+        remove old publishers and datasets that used an id between 1-5000
         instead of the IATI Registry UUID (thats way over string length 5, pretty hacky code here tbh but its a one time solution)
         """
         for p in Publisher.objects.all():
@@ -144,4 +144,3 @@ class DatasetSyncer():
         for d in Dataset.objects.all():
             if len(p.iati_id) < 5:
                 p.delete()
-

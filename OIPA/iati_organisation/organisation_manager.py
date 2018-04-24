@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Prefetch, Q
 from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
+
 class OrganisationQuerySet(models.QuerySet):
 
     def get(self, *args, **kwargs):
@@ -18,11 +19,11 @@ class OrganisationQuerySet(models.QuerySet):
                 try:
                     pk_int = int(pk)
 
-                    return super(OrganisationQuerySet, self).get(Q(pk=pk_int) | Q(organisation_identifier=pk_int))
+                    return super(OrganisationQuerySet, self).get(
+                        Q(pk=pk_int) | Q(organisation_identifier=pk_int))
 
                 except ValueError:
                     return super(OrganisationQuerySet, self).get(Q(organisation_identifier=pk))
-
 
         return super(OrganisationQuerySet, self).get(*args, **kwargs)
 
@@ -35,8 +36,6 @@ class OrganisationQuerySet(models.QuerySet):
 class OrganisationManager(models.Manager):
 
     """Organisation manager """
-    
+
     def get_queryset(self):
         return OrganisationQuerySet(self.model, using=self._db)
-        
-        

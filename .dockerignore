@@ -1,5 +1,6 @@
 __pycache__
 .cache
+.coverage
 .data
 .DS_Store
 .idea

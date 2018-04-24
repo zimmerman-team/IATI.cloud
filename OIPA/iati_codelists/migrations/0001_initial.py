@@ -368,7 +368,11 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=100, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(default=b'')),
-                ('vocabulary', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.PolicyMarkerVocabulary')),
+                ('vocabulary',
+                 models.ForeignKey(default=None,
+                                   null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='iati_vocabulary.PolicyMarkerVocabulary')),
             ],
         ),
         migrations.CreateModel(
@@ -464,46 +468,70 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sector',
             name='category',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.SectorCategory'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.SectorCategory'),
         ),
         migrations.AddField(
             model_name='sector',
             name='vocabulary',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.SectorVocabulary'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.SectorVocabulary'),
         ),
         migrations.AddField(
             model_name='locationtype',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.LocationTypeCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.LocationTypeCategory'),
         ),
         migrations.AddField(
             model_name='financetype',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.FinanceTypeCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.FinanceTypeCategory'),
         ),
         migrations.AddField(
             model_name='documentcategory',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.DocumentCategoryCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.DocumentCategoryCategory'),
         ),
         migrations.AddField(
             model_name='budgetidentifiersector',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetIdentifierSectorCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetIdentifierSectorCategory'),
         ),
         migrations.AddField(
             model_name='budgetidentifier',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.BudgetIdentifierSector'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.BudgetIdentifierSector'),
         ),
         migrations.AddField(
             model_name='budgetidentifier',
             name='vocabulary',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='iati_vocabulary.BudgetIdentifierVocabulary'),
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_vocabulary.BudgetIdentifierVocabulary'),
         ),
         migrations.AddField(
             model_name='aidtype',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='iati_codelists.AidTypeCategory'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='iati_codelists.AidTypeCategory'),
         ),
     ]
