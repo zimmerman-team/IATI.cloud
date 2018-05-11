@@ -10,6 +10,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIV
 from django_filters.rest_framework import DjangoFilterBackend
 from api.activity.views import ActivityList
 from api.transaction.views import TransactionList
+from api.cache import QueryParamsKeyConstructor
 
 from api.generics.views import DynamicListView, DynamicDetailView, DynamicListCRUDView, DynamicDetailCRUDView
 
@@ -64,6 +65,7 @@ class OrganisationList(CacheResponseMixin, DynamicListView):
     queryset = models.Organisation.objects.all()
     serializer_class = serializers.OrganisationSerializer
     fields = ('url', 'organisation_identifier', 'last_updated_datetime', 'name')
+    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class OrganisationDetail(CacheResponseMixin, DynamicDetailView):
