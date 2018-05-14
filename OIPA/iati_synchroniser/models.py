@@ -42,7 +42,7 @@ class Dataset(models.Model):
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255, default="")
     filetype = models.IntegerField(choices=filetype_choices, default=1)
-    publisher = models.ForeignKey(Publisher)  # organization.id
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     source_url = models.URLField(max_length=255)  # resource.url
     iati_version = models.CharField(max_length=10, default="2.02")
 
@@ -106,7 +106,7 @@ class Dataset(models.Model):
 
 
 class DatasetNote(models.Model):
-    dataset = models.ForeignKey(Dataset)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     iati_identifier = models.CharField(max_length=255, null=False, blank=False)
     exception_type = models.CharField(max_length=100, blank=False, null=False)
     model = models.CharField(max_length=255, null=False, blank=False)

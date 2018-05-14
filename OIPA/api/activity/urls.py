@@ -5,7 +5,7 @@ from django.views.decorators.cache import cache_page
 
 from django.conf import settings
 
-
+app_name = 'api'
 urlpatterns = [
     url(r'^$',
         api.activity.views.ActivityList.as_view(),

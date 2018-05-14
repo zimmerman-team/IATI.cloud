@@ -22,16 +22,17 @@ from iati.models import Narrative
 
 
 class Transaction(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
 
     ref = models.CharField(max_length=255, null=True, blank=True, default="")
 
-    transaction_type = models.ForeignKey(TransactionType)
+    transaction_type = models.ForeignKey(
+        TransactionType, on_delete=models.CASCADE)
     transaction_date = models.DateField(db_index=True)
 
     value = models.DecimalField(max_digits=15, decimal_places=2)
     value_string = models.CharField(max_length=50)
-    currency = models.ForeignKey(Currency)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     value_date = models.DateField()
 
     humanitarian = models.NullBooleanField(null=True, blank=True)
@@ -47,12 +48,19 @@ class Transaction(models.Model):
         DisbursementChannel,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
 
-    flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
-    finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
-    aid_type = models.ForeignKey(AidType, null=True, blank=True, default=None)
-    tied_status = models.ForeignKey(TiedStatus, null=True, blank=True, default=None)
+    flow_type = models.ForeignKey(
+        FlowType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
+    finance_type = models.ForeignKey(
+        FinanceType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
+    aid_type = models.ForeignKey(
+        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+    tied_status = models.ForeignKey(
+        TiedStatus, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
 
     objects = TransactionQuerySet.as_manager()
 
@@ -82,7 +90,7 @@ class TransactionProvider(models.Model):
         OrganisationType,
         null=True,
         default=None,
-        blank=True)
+        blank=True, on_delete=models.CASCADE)
 
     provider_activity = models.ForeignKey(
         Activity,
@@ -102,7 +110,7 @@ class TransactionProvider(models.Model):
 
     transaction = models.OneToOneField(
         Transaction,
-        related_name="provider_organisation")
+        related_name="provider_organisation", on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -141,7 +149,7 @@ class TransactionReceiver(models.Model):
         OrganisationType,
         null=True,
         default=None,
-        blank=True)
+        blank=True, on_delete=models.CASCADE)
 
     receiver_activity = models.ForeignKey(
         Activity,
@@ -161,7 +169,7 @@ class TransactionReceiver(models.Model):
 
     transaction = models.OneToOneField(
         Transaction,
-        related_name="receiver_organisation")
+        related_name="receiver_organisation", on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -187,7 +195,7 @@ class TransactionReceiver(models.Model):
 class TransactionDescription(models.Model):
     transaction = models.OneToOneField(
         Transaction,
-        related_name="description")
+        related_name="description", on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -207,7 +215,7 @@ class TransactionSector(models.Model):
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_sector",
-        null=True
+        null=True, on_delete=models.CASCADE
     )
 
     sector = models.ForeignKey(
@@ -246,7 +254,7 @@ class TransactionRecipientCountry(models.Model):
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_recipient_country",
-        null=True
+        null=True, on_delete=models.CASCADE
     )
 
     country = models.ForeignKey(
@@ -276,7 +284,7 @@ class TransactionRecipientRegion(models.Model):
     reported_transaction = models.OneToOneField(
         Transaction,
         related_name="transaction_recipient_region",
-        null=True
+        null=True, on_delete=models.CASCADE
     )
 
     region = models.ForeignKey(

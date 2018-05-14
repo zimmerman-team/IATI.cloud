@@ -5,7 +5,7 @@ from iati_synchroniser.models import Publisher
 from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import DatasetNote
 from api.generics.serializers import DynamicFieldsModelSerializer
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from iati.models import Activity
 
 

@@ -5,10 +5,12 @@ from iati_vocabulary.models import RegionVocabulary
 class Region(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=80)
-    region_vocabulary = models.ForeignKey(RegionVocabulary, default=1)
-    parental_region = models.ForeignKey('self', null=True, blank=True)
+    region_vocabulary = models.ForeignKey(
+        RegionVocabulary, default=1, on_delete=models.CASCADE)
+    parental_region = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE)
     center_longlat = models.PointField(null=True, blank=True)
-    objects = models.GeoManager()
+    objects = models.Manager()
 
     def __unicode__(self):
         return self.name
@@ -20,14 +22,19 @@ class Country(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     alt_name = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True)
-    capital_city = models.OneToOneField("City", related_name='capital_of', null=True, blank=True)
-    region = models.ForeignKey(Region, null=True, blank=True)
-    un_region = models.ForeignKey('Region', null=True, blank=True, related_name='un_countries')
+    capital_city = models.OneToOneField("City", related_name='capital_of',
+                                        null=True,
+                                        blank=True, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, null=True,
+                               blank=True, on_delete=models.CASCADE)
+    un_region = models.ForeignKey('Region', null=True, blank=True,
+                                  related_name='un_countries',
+                                  on_delete=models.CASCADE)
     unesco_region = models.ForeignKey(
         'Region',
         null=True,
         blank=True,
-        related_name='unesco_countries')
+        related_name='unesco_countries', on_delete=models.CASCADE)
     dac_country_code = models.IntegerField(null=True, blank=True)
     iso3 = models.CharField(max_length=3, null=True, blank=True)
     alpha3 = models.CharField(max_length=3, null=True, blank=True)
@@ -35,7 +42,7 @@ class Country(models.Model):
     center_longlat = models.PointField(null=True, blank=True)
     polygon = models.TextField(null=True, blank=True)
     data_source = models.CharField(max_length=20, null=True, blank=True)
-    objects = models.GeoManager()
+    objects = models.Manager()
 
     class Meta:
         verbose_name_plural = "countries"
@@ -47,12 +54,13 @@ class Country(models.Model):
 class City(models.Model):
     geoname_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=200)
-    country = models.ForeignKey(Country, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True,
+                                on_delete=models.CASCADE)
     location = models.PointField(null=True, blank=True)
     ascii_name = models.CharField(max_length=200, null=True, blank=True)
     alt_name = models.CharField(max_length=200, null=True, blank=True)
     namepar = models.CharField(max_length=200, null=True, blank=True)
-    objects = models.GeoManager()
+    objects = models.Manager()
 
     @property
     def is_capital(self):
@@ -72,7 +80,8 @@ class Adm1Region(models.Model):
     adm1_cod_1 = models.CharField(null=True, blank=True, max_length=20)
     iso_3166_2 = models.CharField(null=True, blank=True, max_length=2)
     wikipedia = models.CharField(null=True, blank=True, max_length=150)
-    country = models.ForeignKey(Country, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True,
+                                on_delete=models.CASCADE)
     adm0_sr = models.IntegerField(null=True, blank=True)
     name = models.CharField(null=True, blank=True, max_length=100)
     name_alt = models.CharField(null=True, blank=True, max_length=200)

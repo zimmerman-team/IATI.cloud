@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Prefetch, Q
-from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
+from .djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 
 class ActivityQuerySet(SearchQuerySet):

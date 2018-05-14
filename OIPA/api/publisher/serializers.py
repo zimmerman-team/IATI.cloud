@@ -5,7 +5,7 @@ from api.generics.serializers import DynamicFieldsModelSerializer
 from api.dataset.serializers import DatasetSerializer
 from rest_framework.serializers import SerializerMethodField
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from iati.models import Activity
 from django.db.models import Sum
 

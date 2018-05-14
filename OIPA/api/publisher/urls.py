@@ -7,6 +7,7 @@ from api.transaction.views import TransactionSectorList, TransactionSectorDetail
 
 from api.export_organisation.views import OrganisationNextExportList
 
+app_name = 'api'
 urlpatterns = [
     url(r'^$',
         views.PublisherList.as_view(),

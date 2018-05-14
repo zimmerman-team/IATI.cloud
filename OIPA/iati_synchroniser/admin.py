@@ -1,10 +1,10 @@
 from django.conf.urls import url
 from django.contrib import admin
-from models import *
+from .models import *
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import django_rq
 from task_queue.tasks import force_parse_source_by_url
 from functools import reduce
@@ -162,7 +162,7 @@ class DatasetAdmin(admin.ModelAdmin):
 
     def export_xml(self, request, id):
         xml_response = export_xml_by_source(request, id)
-        print xml_response
+        # print xml_response
         return HttpResponse(xml_response, content_type='application/xml')
 
     def get_actions(self, request):

@@ -1,0 +1,1447 @@
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+	
+	    
+			<meta charset="utf-8" />
+	        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	    
+	    <title>OIPA: The IATI Data-engine</title>
+		
+		    <link rel="stylesheet" type="text/css" href="/static/rest_framework/css/prettify.css"/>
+		    <link rel="stylesheet" href="/static/foundation/stylesheets/app.css" />
+		    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		    <script src="/static/foundation/bower_components/modernizr/modernizr.js"></script>
+		
+        
+    
+
+		
+    <link rel="stylesheet" type="text/css" href="/static/css/drf_customizations.css" />
+
+
+	
+	</head>
+	
+	<body class="api">
+		
+		<header>
+	        <div class="row">
+	        	<!-- <div class="small-7 medium-6 large-5 columns small-centered text-center logostatic">
+	        		<img src="/static/foundation/img/oipa.svg" >
+	        	</div> -->
+	            <div class="small-12 columns small-centered text-center logo">
+	                <span class="haakje">[</span>
+	                <span class="letter">O</span>
+	                <span class="letter">I</span>
+	                <span class="letter">P</span>
+	                <span class="letter">A</span>
+	                <span class="blink flash infinite">|</span>
+	                <span class="haakje">]</span>
+	                <!-- <span class="zimmer animated zoomIn">by zimmerman & zimmerman</span> -->
+	            </div>
+	        </div>
+	        <div class="row">
+	            <div class="columns large-8 medium-10 small-12 small-centered text-center">
+	                <h1>Openaid IATI Parser and API</h1>
+	                <p>OIPA is an IATI data-engine providing a rich and usable API for managing IATI compliant data.</p>
+	                <p class="buttons">
+	                	<a href="https://github.com/zimmerman-zimmerman/OIPA" target="_blank" class="button radius roze">OIPA on Github</a>
+	                </p>
+	            </div>
+	        </div>
+	    </header>
+	    
+	    
+
+	    <nav>
+	    	<div class="row">
+	    		<div class="columns small-12 text-center">
+	    			<div id="logo" class="visible">
+	    				<a href="https://github.com/zimmerman-zimmerman/OIPA" target="_blank"></a><img src="/static/foundation/img/oipa.svg" > on Github
+    				</div>
+			    	<ul class="tabs">
+			    		<li class="tab-title"><a href="/home">Home</a></li>
+			    		<li class="tab-title active"><a href="/api">The API</a></li>
+			    		<li class="tab-title"><a href="/about">About us</a></li>
+		    		</ul>
+	    		</div>
+    		</div>
+	    </nav>
+
+
+
+		
+<section class="middle">
+	<div class="row">
+		<div class="columns small-12">
+			
+			<ul class="breadcrumbs">
+				
+				
+				<li><a href="/api/">Welcome</a></li>
+				
+				
+				
+				<li class="current"><a href="/api/activities/">Activity List</a></li>
+				
+				
+			</ul>
+			
+		</div>
+	</div>
+	<div class="row">
+		<div class="columns small-12">
+			<div class="action-buttons right">
+				
+				<form class="button-form " id="get-form">
+					
+					<button class="button dropdown" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" title="Specify a format for the GET request">GET</button>
+					<ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true">
+						
+						<li>
+							<a href="/api/activities/?convert_to=usd&amp;fields=id%2Ciati_identifier%2Cactivity_dates%2Caggregations%2Ctitle%2Ctransactions&amp;format=api&amp;recipient_country=SS&amp;reporting_organisation_identifier=XM-DAC-47066" rel="nofollow" title="Make a GET request on the Activity List resource with the format set to `api`">api</a>
+						</li>
+						
+						<li>
+							<a href="/api/activities/?convert_to=usd&amp;fields=id%2Ciati_identifier%2Cactivity_dates%2Caggregations%2Ctitle%2Ctransactions&amp;format=json&amp;recipient_country=SS&amp;reporting_organisation_identifier=XM-DAC-47066" rel="nofollow" title="Make a GET request on the Activity List resource with the format set to `json`">json</a>
+						</li>
+						
+						<li>
+							<a href="/api/activities/?convert_to=usd&amp;fields=id%2Ciati_identifier%2Cactivity_dates%2Caggregations%2Ctitle%2Ctransactions&amp;format=csv&amp;recipient_country=SS&amp;reporting_organisation_identifier=XM-DAC-47066" rel="nofollow" title="Make a GET request on the Activity List resource with the format set to `csv`">csv</a>
+						</li>
+						
+					</ul>
+					
+				</form>
+				
+
+				
+				<form class="button-form" action="/api/activities/?fields=id%2Ciati_identifier%2Cactivity_dates%2Caggregations%2Ctitle,transactions&amp;convert_to=usd&amp;recipient_country=SS&amp;reporting_organisation_identifier=XM-DAC-47066" method="POST">
+					<input type='hidden' name='csrfmiddlewaretoken' value='YD0rn3MCirtXpt7f8ddhoHOjIQuZaoTMHXqyi4rjvTYYAlo7PsJeOKD9VNVtuntH' />
+					<input type="hidden" name="" value="OPTIONS" />
+					<button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the Activity List resource">OPTIONS</button>
+				</form>
+				
+
+				
+			</div>
+
+			<div class="content-main">
+				<h1>Activity List</h1>
+				
+				<p>Returns a list of IATI Activities stored in OIPA.</p>
+<h3 id="request-parameters">Request parameters</h3>
+<ul>
+<li><code>activity_id</code> (<em>optional</em>): Comma separated list of activity id's.</li>
+<li><code>activity_scope</code> (<em>optional</em>): Comma separated list of iso2 country codes.</li>
+<li><code>recipient_country</code> (<em>optional</em>): Comma separated list of iso2 country codes.</li>
+<li><code>recipient_region</code> (<em>optional</em>): Comma separated list of region codes.</li>
+<li><code>sector</code> (<em>optional</em>): Comma separated list of 5-digit sector codes.</li>
+<li><code>sector_category</code> (<em>optional</em>): Comma separated list of 3-digit sector codes.</li>
+<li><code>reporting_organisation</code> (<em>optional</em>): Comma separated list of organisation id's.</li>
+<li><code>participating_organisation</code> (<em>optional</em>): Comma separated list of organisation id's.</li>
+<li><code>total_budget_value_lte</code> (<em>optional</em>): Less then or equal total budget value</li>
+<li><code>total_budget_value_gte</code> (<em>optional</em>): Greater then or equal total budget value</li>
+<li><code>total_child_budget_value_lte</code> (<em>optional</em>): Less then or equal total child budget value</li>
+<li><code>total_child_budget_value_gte</code> (<em>optional</em>): Greater then or equal total child budget value</li>
+<li><code>planned_start_date_lte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.</li>
+<li><code>planned_start_date_gte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.</li>
+<li><code>actual_start_date_lte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.</li>
+<li><code>actual_start_date_gte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.</li>
+<li><code>planned_end_date_lte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.</li>
+<li><code>planned_end_date_gte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.</li>
+<li><code>actual_end_date_lte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.</li>
+<li><code>actual_end_date_gte</code> (<em>optional</em>): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.</li>
+<li><code>activity_status</code> (<em>optional</em>): Comma separated list of activity statuses.</li>
+<li><code>hierarchy</code> (<em>optional</em>): Comma separated list of activity hierarchies.</li>
+<li><code>related_activity_id</code> (<em>optional</em>): Comma separated list of activity ids. Returns a list of all activities mentioning these activity id's.</li>
+<li><code>related_activity_type</code> (<em>optional</em>): Comma separated list of RelatedActivityType codes.</li>
+<li><code>related_activity_recipient_country</code> (<em>optional</em>): Comma separated list of iso2 country codes.</li>
+<li><code>related_activity_recipient_region</code> (<em>optional</em>): Comma separated list of region codes.</li>
+<li><code>related_activity_sector</code> (<em>optional</em>): Comma separated list of 5-digit sector codes.</li>
+<li><code>related_activity_sector_category</code> (<em>optional</em>): Comma separated list of 3-digit sector codes.</li>
+<li><code>transaction_provider_activity</code> (<em>optional</em>): Comma separated list of activity id's.</li>
+<li><code>transaction_date_year</code> (<em>optional</em>): Comma separated list of years in which the activity should have transactions.</li>
+</ul>
+<h3 id="text-search">Text search</h3>
+<p>API request may include <code>q</code> parameter. This parameter controls text search
+and contains expected value.</p>
+<p>By default, searching is performed on:</p>
+<ul>
+<li><code>iati_identifier</code> the IATI identifier</li>
+<li><code>title</code> narratives</li>
+<li><code>description</code> narratives</li>
+<li><code>recipient_country</code> recipient country code and name</li>
+<li><code>recipient_region</code> recipient region code and name</li>
+<li><code>reporting_org</code> ref and narratives</li>
+<li><code>sector</code> sector code and name</li>
+<li><code>document_link</code> url, category and title narratives</li>
+<li><code>participating_org</code> ref and narratives</li>
+</ul>
+<p>To search on subset of these fields the <code>q_fields</code> parameter can be used, like so;
+<code>q_fields=iati_identifier,title,description</code></p>
+<p>By default, search only return results if the hit resembles a full word.
+This can be altered through the <code>q_lookup</code> parameter. Options for this parameter are:</p>
+<ul>
+<li><code>exact</code> (default): Only return results when the query hit is a full word.</li>
+<li><code>startswith</code>: Also returns results when the word stars with the query.</li>
+</ul>
+<h3 id="ordering">Ordering</h3>
+<p>API request may include <code>ordering</code> parameter. This parameter controls the order in which
+results are returned.</p>
+<p>Results can be ordered by:</p>
+<ul>
+<li><code>title</code></li>
+<li><code>planned_start_date</code></li>
+<li><code>actual_start_date</code></li>
+<li><code>planned_end_date</code></li>
+<li><code>actual_end_date</code></li>
+<li><code>start_date</code></li>
+<li><code>end_date</code></li>
+<li><code>activity_budget_value</code></li>
+<li><code>activity_incoming_funds_value</code></li>
+<li><code>activity_disbursement_value</code></li>
+<li><code>activity_expenditure_value</code></li>
+<li><code>activity_plus_child_budget_value</code></li>
+</ul>
+<p>The user may also specify reverse orderings by prefixing the field name with '-', like so: <code>-title</code></p>
+<h3 id="aggregations">Aggregations</h3>
+<p>At the moment there's no direct aggregations on this endpoint.</p>
+<p>The /activities/aggregations endpoint can be used for activity based aggregations.</p>
+<h3 id="result-details">Result details</h3>
+<p>Each item contains summarized information on the activity being shown,
+including the URI to activity details, which contain all information.
+To show more information in list view the <code>fields</code> parameter can be used. Example;
+<code>fields=activity_id,title,country,any_field</code>.</p>
+				
+
+				<div class="request-info" style="clear: both" >
+					<pre class="prettyprint"><b>GET</b> /api/activities/?fields=id%2Ciati_identifier%2Cactivity_dates%2Caggregations%2Ctitle,transactions&amp;convert_to=usd&amp;recipient_country=SS&amp;reporting_organisation_identifier=XM-DAC-47066</pre>
+				</div>
+
+				<div class="response-info">
+					<pre class="prettyprint"><span class="meta nocode"><b>HTTP 200 OK</b>
+						<b>Allow:</b> <span class="lit">GET, HEAD, OPTIONS</span>
+						<b>Content-Type:</b> <span class="lit">application/json</span>
+						<b>Vary:</b> <span class="lit">Accept</span>
+						
+					</span>{
+    &quot;count&quot;: 9,
+    &quot;next&quot;: null,
+    &quot;previous&quot;: null,
+    &quot;results&quot;: [
+        {
+            &quot;id&quot;: &quot;3305390&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1466&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303478,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Humanitarian Assistance to conflict affected households in Greater Upper Nile, South Sudan&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143269,
+                    &quot;iso_date&quot;: &quot;2016-04-21&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143270,
+                    &quot;iso_date&quot;: &quot;2016-04-21&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143271,
+                    &quot;iso_date&quot;: &quot;2017-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143272,
+                    &quot;iso_date&quot;: &quot;2017-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305390/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305390/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 33914577.37,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 33914577.37,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 33914577.37,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 33914577.37,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305398&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1531&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303486,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Humanitarian Assistance to conflict affected households in Greater Upper Nile, South Sudan&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143293,
+                    &quot;iso_date&quot;: &quot;2016-07-17&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143294,
+                    &quot;iso_date&quot;: &quot;2016-07-17&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143295,
+                    &quot;iso_date&quot;: &quot;2017-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143296,
+                    &quot;iso_date&quot;: &quot;2017-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305398/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305398/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 2384586.19,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 2384586.19,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 2384586.19,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 2384586.19,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305406&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1567&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303494,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Regional Information and Co-ordination Mechanisms for South Sudan Displacement Dynamics&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143317,
+                    &quot;iso_date&quot;: &quot;2017-02-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143318,
+                    &quot;iso_date&quot;: &quot;2017-02-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143319,
+                    &quot;iso_date&quot;: &quot;2018-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305406/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305406/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 500500.7,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 500500.7,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 500500.7,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 500500.7,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305441&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1703&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303529,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Humanitarian Assistance to Conflict Affected Households in Greater Upper Nile, South Sudan (2017-2018)&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143420,
+                    &quot;iso_date&quot;: &quot;2017-04-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143421,
+                    &quot;iso_date&quot;: &quot;2017-04-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143422,
+                    &quot;iso_date&quot;: &quot;2018-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305441/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305441/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 12404110.06,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 12404110.06,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 12404110.06,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 12404110.06,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305445&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1711&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303533,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Provision of adapted inter-cluster survival kits, standard shelter materials and non-food items&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143431,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143432,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143433,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143434,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305445/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305445/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 2000818.98,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 2000818.98,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 2000818.98,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 2000818.98,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305447&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1712&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303535,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Core camp management activities for Internally Displaced People (IDP) settlements in Fashoda County&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143437,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143438,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143439,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143440,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305447/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305447/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 250000.08,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 250000.08,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 250000.08,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 250000.08,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305457&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1723&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303545,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Augmenting the Logistics response to meet increasing needs&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143467,
+                    &quot;iso_date&quot;: &quot;2017-03-30&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143468,
+                    &quot;iso_date&quot;: &quot;2017-03-30&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143469,
+                    &quot;iso_date&quot;: &quot;2017-09-29&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143470,
+                    &quot;iso_date&quot;: &quot;2017-09-29&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305457/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305457/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 299999.02,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 299999.02,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 299999.02,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 299999.02,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305459&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1724&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303547,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Provision and Management of Common WASH Core Pipeline Supplies for WASH Cluster Partners&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143473,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143474,
+                    &quot;iso_date&quot;: &quot;2017-05-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143475,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143476,
+                    &quot;iso_date&quot;: &quot;2017-10-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;4&quot;,
+                        &quot;name&quot;: &quot;Actual end&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305459/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305459/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 1250560.08,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 1250560.08,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 1250560.08,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 1250560.08,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        },
+        {
+            &quot;id&quot;: &quot;3305469&quot;,
+            &quot;iati_identifier&quot;: &quot;XM-DAC-47066-DP.1750&quot;,
+            &quot;title&quot;: {
+                &quot;id&quot;: 3303557,
+                &quot;narratives&quot;: [
+                    {
+                        &quot;text&quot;: &quot;Humanitarian Assistance to conflict affected households in Greater Upper Nile, South Sudan&quot;,
+                        &quot;language&quot;: {
+                            &quot;code&quot;: &quot;en&quot;,
+                            &quot;name&quot;: &quot;English&quot;
+                        }
+                    }
+                ]
+            },
+            &quot;activity_dates&quot;: [
+                {
+                    &quot;id&quot;: 8143502,
+                    &quot;iso_date&quot;: &quot;2017-04-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Planned start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143503,
+                    &quot;iso_date&quot;: &quot;2017-04-01&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;2&quot;,
+                        &quot;name&quot;: &quot;Actual start&quot;
+                    }
+                },
+                {
+                    &quot;id&quot;: 8143504,
+                    &quot;iso_date&quot;: &quot;2018-03-31&quot;,
+                    &quot;type&quot;: {
+                        &quot;code&quot;: &quot;3&quot;,
+                        &quot;name&quot;: &quot;Planned End&quot;
+                    }
+                }
+            ],
+            &quot;transactions&quot;: &quot;<a href="http://localhost:8000/api/activities/3305469/transactions/" rel="nofollow">http://localhost:8000/api/activities/3305469/transactions/</a>&quot;,
+            &quot;aggregations&quot;: {
+                &quot;activity&quot;: {
+                    &quot;budget_value&quot;: 3726232.8,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 3726232.8,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                },
+                &quot;children&quot;: {
+                    &quot;budget_value&quot;: 0.0,
+                    &quot;budget_currency&quot;: null,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 0.0,
+                    &quot;incoming_commitment_currency&quot;: null
+                },
+                &quot;activity_children&quot;: {
+                    &quot;budget_value&quot;: 3726232.8,
+                    &quot;budget_currency&quot;: &quot;USD&quot;,
+                    &quot;disbursement_value&quot;: 0.0,
+                    &quot;disbursement_currency&quot;: null,
+                    &quot;incoming_funds_value&quot;: 0.0,
+                    &quot;incoming_funds_currency&quot;: null,
+                    &quot;commitment_value&quot;: 0.0,
+                    &quot;commitment_currency&quot;: null,
+                    &quot;expenditure_value&quot;: 0.0,
+                    &quot;expenditure_currency&quot;: null,
+                    &quot;interest_payment_value&quot;: 0.0,
+                    &quot;interest_payment_currency&quot;: null,
+                    &quot;loan_repayment_value&quot;: 0.0,
+                    &quot;loan_repayment_currency&quot;: null,
+                    &quot;reimbursement_value&quot;: 0.0,
+                    &quot;reimbursement_currency&quot;: null,
+                    &quot;purchase_of_equity_value&quot;: 0.0,
+                    &quot;purchase_of_equity_currency&quot;: null,
+                    &quot;sale_of_equity_value&quot;: 0.0,
+                    &quot;sale_of_equity_currency&quot;: null,
+                    &quot;credit_guarantee_value&quot;: 0.0,
+                    &quot;credit_guarantee_currency&quot;: null,
+                    &quot;incoming_commitment_value&quot;: 3726232.8,
+                    &quot;incoming_commitment_currency&quot;: &quot;USD&quot;
+                }
+            }
+        }
+    ]
+}</pre>
+				</div>
+			</div>
+
+			
+
+			
+
+			
+			
+		</div>
+	</div>
+</section>
+
+
+    	
+		<footer>
+	        <div class="row">
+	            <div class="columns small-6 medium-4 large-2 small-centered text-center">
+	            <a href="http://www.zimmermanzimmerman.nl" target="_blank"><img src="/static/foundation/img/zz-logo.svg"></a>
+	            </div>
+	        </div>
+	        <div class="row">
+	            <div class="columns small-12 small-centered text-center">
+	                <p>Code licensed under the <a href="https://github.com/zimmerman-zimmerman/OIPA/blob/master/LICENSE.MD" target="_blank">GNU AGPL</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+	            </div>
+	        </div>
+	    </footer>
+		
+
+	</body>
+	
+
+
+
+    <script src="/static/foundation/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/static/foundation/bower_components/foundation/js/foundation.min.js"></script>
+    <script src="/static/foundation/js/app.js"></script>
+
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-364056-19']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>  
+
+
+
+</html>

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from api.codelist.views import CodelistMetaList, CodelistItemList
 
-
+app_name = 'api'
 urlpatterns = [
     url(r'^(?P<codelist>[^@$&+,/:;=?]+)/$',
         CodelistItemList.as_view(),

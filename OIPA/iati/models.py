@@ -1,13 +1,15 @@
 from decimal import Decimal
 
 from geodata.models import Country, Region
-from activity_manager import ActivityManager
-from location_manager import LocationManager
-from document_manager import DocumentManager
+from .activity_manager import ActivityManager
+from .location_manager import LocationManager
+from .document_manager import DocumentManager
 from django.contrib.gis.db.models import PointField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+
 from iati_codelists.models import *
 from iati_vocabulary.models import RegionVocabulary
 from iati_vocabulary.models import GeographicVocabulary
@@ -30,16 +32,17 @@ from djorm_pgfulltext.fields import VectorField
 
 class Narrative(models.Model):
     # references an actual related model which has a corresponding narrative
-    related_content_type = models.ForeignKey(ContentType, related_name='related_agent')
+    related_content_type = models.ForeignKey(
+        ContentType, related_name='related_agent', on_delete=models.CASCADE)
     related_object_id = models.IntegerField(
         verbose_name='related object',
         null=True,
         db_index=True)
     related_object = GenericForeignKey('related_content_type', 'related_object_id')
 
-    activity = models.ForeignKey('Activity')
+    activity = models.ForeignKey('Activity', on_delete=models.CASCADE)
 
-    language = models.ForeignKey(Language)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
     content = models.TextField()
 
     def __unicode__(self,):
@@ -50,7 +53,7 @@ class Narrative(models.Model):
 
 
 class ActivitySearch(models.Model):
-    activity = models.OneToOneField('Activity')
+    activity = models.OneToOneField('Activity', on_delete=models.CASCADE)
     iati_identifier = models.CharField(max_length=255)
     title = models.TextField(null=True)
     description = models.TextField(null=True)
@@ -80,16 +83,19 @@ class Activity(models.Model):
     # normalized for use in the API
     normalized_iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
 
-    iati_standard_version = models.ForeignKey(Version)
-    dataset = models.ForeignKey(Dataset, null=True, default=None)
-    publisher = models.ForeignKey(Publisher, null=True, default=None)
+    iati_standard_version = models.ForeignKey(Version,
+                                              on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, null=True, default=None,
+                                on_delete=models.CASCADE)
+    publisher = models.ForeignKey(Publisher, null=True, default=None,
+                                  on_delete=models.CASCADE)
 
     default_currency = models.ForeignKey(
         Currency,
         null=True,
         blank=True,
         default=None,
-        related_name="default_currency")
+        related_name="default_currency", on_delete=models.CASCADE)
     hierarchy = models.SmallIntegerField(
         choices=hierarchy_choices,
         default=1,
@@ -100,7 +106,8 @@ class Activity(models.Model):
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
 
     # default_lang = models.CharField(max_length=2, blank=True, null=True)
-    default_lang = models.ForeignKey(Language, null=True, blank=True, default=None)
+    default_lang = models.ForeignKey(Language, null=True, blank=True,
+                                     default=None, on_delete=models.CASCADE)
     linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
 
     planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
@@ -114,7 +121,7 @@ class Activity(models.Model):
         ActivityStatus,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
 
     policy_marker = models.ManyToManyField(
         PolicyMarker,
@@ -133,12 +140,21 @@ class Activity(models.Model):
         CollaborationType,
         null=True,
         blank=True,
-        default=None)
-    default_flow_type = models.ForeignKey(FlowType, null=True, blank=True, default=None)
-    default_aid_type = models.ForeignKey(AidType, null=True, blank=True, default=None)
-    default_finance_type = models.ForeignKey(FinanceType, null=True, blank=True, default=None)
-    default_tied_status = models.ForeignKey(TiedStatus, null=True, blank=True, default=None)
-    scope = models.ForeignKey(ActivityScope, null=True, blank=True, default=None)
+        default=None, on_delete=models.CASCADE)
+    default_flow_type = models.ForeignKey(
+        FlowType, null=True, blank=True, default=None,
+        on_delete=models.CASCADE)
+    default_aid_type = models.ForeignKey(
+        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+    default_finance_type = models.ForeignKey(
+        FinanceType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
+    default_tied_status = models.ForeignKey(
+        TiedStatus, null=True, blank=True, default=None,
+        on_delete=models.CASCADE)
+    scope = models.ForeignKey(
+        ActivityScope, null=True, blank=True, default=None,
+        on_delete=models.CASCADE)
 
     # @percentage on capital-spend
     capital_spend = models.DecimalField(
@@ -397,18 +413,22 @@ class AbstractActivityAggregation(models.Model):
 
 
 class ActivityAggregation(AbstractActivityAggregation):
-    activity = models.OneToOneField(Activity, related_name="activity_aggregation", default=None)
+    activity = models.OneToOneField(
+        Activity, related_name="activity_aggregation",
+        default=None, on_delete=models.CASCADE)
 
 
 class ChildAggregation(AbstractActivityAggregation):
-    activity = models.OneToOneField(Activity, related_name="child_aggregation", default=None)
+    activity = models.OneToOneField(
+        Activity, related_name="child_aggregation", default=None,
+        on_delete=models.CASCADE)
 
 
 class ActivityPlusChildAggregation(AbstractActivityAggregation):
     activity = models.OneToOneField(
         Activity,
         related_name="activity_plus_child_aggregation",
-        default=None)
+        default=None, on_delete=models.CASCADE)
 
 
 class Title(models.Model):
@@ -418,7 +438,8 @@ class Title(models.Model):
         object_id_field='related_object_id')
 
     # related name allows title to be accessed from activity.title
-    activity = models.OneToOneField(Activity, related_name="title")
+    activity = models.OneToOneField(Activity, related_name="title",
+                                    on_delete=models.CASCADE)
 
     def get_activity(self):
         return self.activity
@@ -428,7 +449,7 @@ class Title(models.Model):
 
 
 class ActivitySearchData(models.Model):
-    activity = models.OneToOneField(Activity)
+    activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
     search_identifier = models.CharField(db_index=True, max_length=150)
     search_description = models.TextField(max_length=80000)
     search_title = models.TextField(max_length=80000)
@@ -451,7 +472,7 @@ class ActivityReportingOrganisation(models.Model):
 
     activity = models.ForeignKey(
         Activity,
-        related_name="reporting_organisations")
+        related_name="reporting_organisations", on_delete=models.CASCADE)
 
     # if in organisation standard
     organisation = models.ForeignKey(
@@ -459,7 +480,9 @@ class ActivityReportingOrganisation(models.Model):
         null=True,
         default=None,
         on_delete=models.SET_NULL)
-    type = models.ForeignKey(OrganisationType, null=True, default=None, blank=True)
+    type = models.ForeignKey(
+        OrganisationType, null=True, default=None, blank=True,
+        on_delete=models.CASCADE)
 
     secondary_reporter = models.BooleanField(default=False)
 
@@ -485,7 +508,7 @@ class ActivityParticipatingOrganisation(models.Model):
 
     activity = models.ForeignKey(
         Activity,
-        related_name="participating_organisations")
+        related_name="participating_organisations", on_delete=models.CASCADE)
 
     # if in organisation standard
     organisation = models.ForeignKey(
@@ -495,8 +518,12 @@ class ActivityParticipatingOrganisation(models.Model):
         default=None,
         on_delete=models.SET_NULL)
 
-    type = models.ForeignKey(OrganisationType, null=True, blank=True, default=None)
-    role = models.ForeignKey(OrganisationRole, null=True, blank=True, default=None)
+    type = models.ForeignKey(OrganisationType,
+                             null=True, blank=True,
+                             default=None, on_delete=models.CASCADE)
+    role = models.ForeignKey(OrganisationRole,
+                             null=True, blank=True,
+                             default=None, on_delete=models.CASCADE)
 
     # when organisation is not mentioned in transactions
     org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
@@ -504,7 +531,7 @@ class ActivityParticipatingOrganisation(models.Model):
         Activity,
         related_name="participating_activity",
         null=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -526,14 +553,16 @@ class ActivityParticipatingOrganisation(models.Model):
 
 
 class ActivityPolicyMarker(models.Model):
-    activity = models.ForeignKey(Activity)
-    code = models.ForeignKey(PolicyMarker)
-    vocabulary = models.ForeignKey(PolicyMarkerVocabulary)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    code = models.ForeignKey(PolicyMarker, on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(PolicyMarkerVocabulary,
+                                   on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
     significance = models.ForeignKey(
         PolicySignificance,
         null=True,
         blank=True,
+        on_delete=models.CASCADE
     )
     narratives = GenericRelation(
         Narrative,
@@ -552,9 +581,11 @@ class ActivityPolicyMarker(models.Model):
 
 
 class ActivitySector(models.Model):
-    activity = models.ForeignKey(Activity)
-    sector = models.ForeignKey(Sector)
-    vocabulary = models.ForeignKey(SectorVocabulary, null=True, blank=True, default=None)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(SectorVocabulary,
+                                   null=True, blank=True,
+                                   default=None, on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
     percentage = models.DecimalField(
         max_digits=5,
@@ -575,8 +606,8 @@ class ActivitySector(models.Model):
 
 
 class ActivityRecipientCountry(models.Model):
-    activity = models.ForeignKey(Activity)
-    country = models.ForeignKey(Country)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -596,27 +627,32 @@ class ActivityRecipientCountry(models.Model):
 
 
 class CountryBudgetItem(models.Model):
-    activity = models.OneToOneField(Activity, related_name="country_budget_items")
-    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary)
+    activity = models.OneToOneField(
+        Activity, related_name="country_budget_items",
+        on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary,
+                                   on_delete=models.CASCADE)
 
     def get_activity(self):
         return self.activity
 
 
 class HumanitarianScope(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     code = models.CharField(max_length=100)
-    vocabulary = models.ForeignKey(HumanitarianScopeVocabulary)
+    vocabulary = models.ForeignKey(HumanitarianScopeVocabulary,
+                                   on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
-    type = models.ForeignKey(HumanitarianScopeType)
+    type = models.ForeignKey(HumanitarianScopeType, on_delete=models.CASCADE)
 
     def get_activity(self):
         return self.activity
 
 
 class BudgetItem(models.Model):
-    country_budget_item = models.ForeignKey(CountryBudgetItem)
-    code = models.ForeignKey(BudgetIdentifier)
+    country_budget_item = models.ForeignKey(CountryBudgetItem,
+                                            on_delete=models.CASCADE)
+    code = models.ForeignKey(BudgetIdentifier, on_delete=models.CASCADE)
     percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -629,7 +665,8 @@ class BudgetItem(models.Model):
 
 
 class BudgetItemDescription(models.Model):
-    budget_item = models.OneToOneField(BudgetItem, related_name="description")
+    budget_item = models.OneToOneField(
+        BudgetItem, related_name="description", on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -640,9 +677,10 @@ class BudgetItemDescription(models.Model):
 
 
 class ActivityRecipientRegion(models.Model):
-    activity = models.ForeignKey(Activity)
-    region = models.ForeignKey(Region)
-    vocabulary = models.ForeignKey(RegionVocabulary, default=1)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(
+        RegionVocabulary, default=1, on_delete=models.CASCADE)
     vocabulary_uri = models.URLField(null=True, blank=True)
     percentage = models.DecimalField(
         max_digits=5,
@@ -663,7 +701,7 @@ class ActivityRecipientRegion(models.Model):
 
 
 class OtherIdentifier(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     identifier = models.CharField(max_length=100)
     owner_ref = models.CharField(max_length=100, default="")
     # owner_name = models.CharField(max_length=100, default="")
@@ -671,7 +709,8 @@ class OtherIdentifier(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-    type = models.ForeignKey(OtherIdentifierType, null=True, blank=True)
+    type = models.ForeignKey(
+        OtherIdentifierType, null=True, blank=True, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "identifier: %s" % self.identifier
@@ -681,7 +720,7 @@ class OtherIdentifier(models.Model):
 
 
 class ActivityWebsite(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     url = models.URLField()
 
     def __unicode__(self,):
@@ -692,8 +731,9 @@ class ActivityWebsite(models.Model):
 
 
 class ContactInfo(models.Model):
-    activity = models.ForeignKey(Activity)
-    type = models.ForeignKey(ContactType, null=True, blank=True)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        ContactType, null=True, blank=True, on_delete=models.CASCADE)
     telephone = models.CharField(max_length=100, default="", null=True, blank=True)
     email = models.TextField(default="", null=True, blank=True)
     website = models.CharField(max_length=255, default="", null=True, blank=True)
@@ -706,7 +746,9 @@ class ContactInfo(models.Model):
 
 
 class ContactInfoOrganisation(models.Model):
-    contact_info = models.OneToOneField(ContactInfo, related_name="organisation", default=None)
+    contact_info = models.OneToOneField(
+        ContactInfo, related_name="organisation",
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -714,7 +756,9 @@ class ContactInfoOrganisation(models.Model):
 
 
 class ContactInfoDepartment(models.Model):
-    contact_info = models.OneToOneField(ContactInfo, related_name="department", default=None)
+    contact_info = models.OneToOneField(
+        ContactInfo, related_name="department",
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -725,7 +769,9 @@ class ContactInfoDepartment(models.Model):
 
 
 class ContactInfoPersonName(models.Model):
-    contact_info = models.OneToOneField(ContactInfo, related_name="person_name", default=None)
+    contact_info = models.OneToOneField(
+        ContactInfo, related_name="person_name",
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -736,7 +782,9 @@ class ContactInfoPersonName(models.Model):
 
 
 class ContactInfoJobTitle(models.Model):
-    contact_info = models.OneToOneField(ContactInfo, related_name="job_title", default=None)
+    contact_info = models.OneToOneField(
+        ContactInfo, related_name="job_title",
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -747,7 +795,9 @@ class ContactInfoJobTitle(models.Model):
 
 
 class ContactInfoMailingAddress(models.Model):
-    contact_info = models.OneToOneField(ContactInfo, related_name="mailing_address", default=None)
+    contact_info = models.OneToOneField(
+    ContactInfo, related_name="mailing_address",
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -772,7 +822,7 @@ class RelatedActivity(models.Model):
         max_length=200,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
     ref = models.CharField(db_index=True, max_length=200, default="", blank=True)
 
     def __unicode__(self,):
@@ -786,9 +836,11 @@ class RelatedActivity(models.Model):
 
 
 class DocumentLink(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     url = models.TextField(max_length=500)
-    file_format = models.ForeignKey(FileFormat, null=True, blank=True, default=None)
+    file_format = models.ForeignKey(
+        FileFormat, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
     categories = models.ManyToManyField(
         DocumentCategory,
         through="DocumentLinkCategory")
@@ -806,8 +858,8 @@ class DocumentLink(models.Model):
 
 
 class DocumentLinkCategory(models.Model):
-    document_link = models.ForeignKey(DocumentLink)
-    category = models.ForeignKey(DocumentCategory)
+    document_link = models.ForeignKey(DocumentLink, on_delete=models.CASCADE)
+    category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Document link categories"
@@ -817,15 +869,18 @@ class DocumentLinkCategory(models.Model):
 
 
 class DocumentLinkLanguage(models.Model):
-    document_link = models.ForeignKey(DocumentLink)
-    language = models.ForeignKey(Language, null=True, blank=True, default=None)
+    document_link = models.ForeignKey(DocumentLink, on_delete=models.CASCADE)
+    language = models.ForeignKey(
+        Language, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
 
     def get_activity(self):
         return self.document_link.activity
 
 
 class DocumentLinkTitle(models.Model):
-    document_link = models.OneToOneField(DocumentLink)
+    document_link = models.OneToOneField(
+        DocumentLink, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -836,14 +891,15 @@ class DocumentLinkTitle(models.Model):
 
 
 class DocumentSearch(models.Model):
-    document = models.OneToOneField('Document')
+    document = models.OneToOneField('Document', on_delete=models.CASCADE)
     content = VectorField()
     text = VectorField()
     last_reindexed = models.DateTimeField()
 
 
 class Document(models.Model):
-    document_link = models.OneToOneField(DocumentLink)
+    document_link = models.OneToOneField(
+        DocumentLink, on_delete=models.CASCADE)
     long_url = models.TextField(max_length=500, default='')
     url_is_valid = models.BooleanField(default=False)
     document_name = models.CharField(max_length=500, default='')
@@ -879,8 +935,10 @@ class Document(models.Model):
 
 
 class Result(models.Model):
-    activity = models.ForeignKey(Activity)
-    type = models.ForeignKey(ResultType, null=True, blank=True, default=None)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        ResultType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
     aggregation_status = models.BooleanField(default=False)
 
     def __unicode__(self,):
@@ -891,7 +949,7 @@ class Result(models.Model):
 
 
 class ResultTitle(models.Model):
-    result = models.OneToOneField(Result)
+    result = models.OneToOneField(Result, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -902,7 +960,7 @@ class ResultTitle(models.Model):
 
 
 class ResultDescription(models.Model):
-    result = models.OneToOneField(Result)
+    result = models.OneToOneField(Result, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -913,14 +971,14 @@ class ResultDescription(models.Model):
 
 
 class ResultIndicator(models.Model):
-    result = models.ForeignKey(Result)
+    result = models.ForeignKey(Result, on_delete=models.CASCADE)
     baseline_year = models.IntegerField(null=True, blank=True, default=None)
     baseline_value = models.CharField(null=True, blank=True, default=None, max_length=100)
     measure = models.ForeignKey(
         IndicatorMeasure,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
     ascending = models.BooleanField(default=True)
 
     def get_activity(self):
@@ -931,9 +989,11 @@ class ResultIndicator(models.Model):
 
 
 class ResultIndicatorReference(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+    result_indicator = models.ForeignKey(
+        ResultIndicator, on_delete=models.CASCADE)
     code = models.CharField(max_length=255)
-    vocabulary = models.ForeignKey(IndicatorVocabulary)
+    vocabulary = models.ForeignKey(
+        IndicatorVocabulary, on_delete=models.CASCADE)
     # TODO: this should be renamed to vocabulary_uri in IATI standard... - 2016-06-03
     indicator_uri = models.URLField(null=True, blank=True)
 
@@ -942,7 +1002,8 @@ class ResultIndicatorReference(models.Model):
 
 
 class ResultIndicatorTitle(models.Model):
-    result_indicator = models.OneToOneField(ResultIndicator)
+    result_indicator = models.OneToOneField(
+        ResultIndicator, on_delete=models.CASCADE)
     primary_name = models.CharField(
         max_length=255,
         null=False,
@@ -959,7 +1020,8 @@ class ResultIndicatorTitle(models.Model):
 
 
 class ResultIndicatorDescription(models.Model):
-    result_indicator = models.OneToOneField(ResultIndicator)
+    result_indicator = models.OneToOneField(
+        ResultIndicator, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -970,7 +1032,8 @@ class ResultIndicatorDescription(models.Model):
 
 
 class ResultIndicatorBaselineComment(models.Model):
-    result_indicator = models.OneToOneField(ResultIndicator)
+    result_indicator = models.OneToOneField(
+        ResultIndicator, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -981,7 +1044,8 @@ class ResultIndicatorBaselineComment(models.Model):
 
 
 class ResultIndicatorPeriod(models.Model):
-    result_indicator = models.ForeignKey(ResultIndicator)
+    result_indicator = models.ForeignKey(
+        ResultIndicator, on_delete=models.CASCADE)
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
@@ -996,9 +1060,10 @@ class ResultIndicatorPeriod(models.Model):
 
 
 class ResultIndicatorPeriodTargetLocation(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     ref = models.CharField(max_length=50)
-    location = models.ForeignKey('Location')
+    location = models.ForeignKey('Location', on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s" % self.ref
@@ -1008,9 +1073,10 @@ class ResultIndicatorPeriodTargetLocation(models.Model):
 
 
 class ResultIndicatorPeriodActualLocation(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     ref = models.CharField(max_length=50)
-    location = models.ForeignKey('Location')
+    location = models.ForeignKey('Location', on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s" % self.ref
@@ -1020,7 +1086,8 @@ class ResultIndicatorPeriodActualLocation(models.Model):
 
 
 class ResultIndicatorPeriodTargetDimension(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -1032,7 +1099,8 @@ class ResultIndicatorPeriodTargetDimension(models.Model):
 
 
 class ResultIndicatorPeriodActualDimension(models.Model):
-    result_indicator_period = models.ForeignKey(ResultIndicatorPeriod)
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -1044,7 +1112,8 @@ class ResultIndicatorPeriodActualDimension(models.Model):
 
 
 class ResultIndicatorPeriodTargetComment(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.OneToOneField(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1055,7 +1124,8 @@ class ResultIndicatorPeriodTargetComment(models.Model):
 
 
 class ResultIndicatorPeriodActualComment(models.Model):
-    result_indicator_period = models.OneToOneField(ResultIndicatorPeriod)
+    result_indicator_period = models.OneToOneField(
+        ResultIndicatorPeriod, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1066,7 +1136,7 @@ class ResultIndicatorPeriodActualComment(models.Model):
 
 
 class Description(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1078,7 +1148,7 @@ class Description(models.Model):
         related_name="description_type",
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "Description with type %s" % self.type
@@ -1088,15 +1158,20 @@ class Description(models.Model):
 
 
 class Budget(models.Model):
-    activity = models.ForeignKey(Activity)
-    type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
-    status = models.ForeignKey(BudgetStatus, default=1)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        BudgetType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
+    status = models.ForeignKey(
+        BudgetStatus, default=1, on_delete=models.CASCADE)
     period_start = models.DateField(blank=True, default=None)
     period_end = models.DateField(blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, blank=True, default=None)
-    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+    currency = models.ForeignKey(
+        Currency, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
 
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
@@ -1137,14 +1212,18 @@ class BudgetSector(models.Model):
 
 class PlannedDisbursement(models.Model):
 
-    activity = models.ForeignKey(Activity)
-    type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        BudgetType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
     period_start = models.DateField(blank=True, default=None)
     period_end = models.DateField(null=True, blank=True, default=None)
     value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, blank=True, default=None)
-    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+    currency = models.ForeignKey(
+        Currency, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
 
     xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
     usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
@@ -1192,7 +1271,8 @@ class PlannedDisbursementProvider(models.Model):
         OrganisationType,
         null=True,
         default=None,
-        blank=True
+        blank=True,
+        on_delete=models.CASCADE
     )
 
     provider_activity = models.ForeignKey(
@@ -1212,7 +1292,7 @@ class PlannedDisbursementProvider(models.Model):
 
     planned_disbursement = models.OneToOneField(
         PlannedDisbursement,
-        related_name="provider_organisation")
+        related_name="provider_organisation", on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -1250,7 +1330,8 @@ class PlannedDisbursementReceiver(models.Model):
         OrganisationType,
         null=True,
         default=None,
-        blank=True
+        blank=True,
+        on_delete=models.CASCADE
     )
 
     receiver_activity = models.ForeignKey(
@@ -1270,7 +1351,7 @@ class PlannedDisbursementReceiver(models.Model):
 
     planned_disbursement = models.OneToOneField(
         PlannedDisbursement,
-        related_name="receiver_organisation")
+        related_name="receiver_organisation", on_delete=models.CASCADE)
 
     narratives = GenericRelation(
         Narrative,
@@ -1294,7 +1375,8 @@ class PlannedDisbursementReceiver(models.Model):
 
 
 class Conditions(models.Model):
-    activity = models.OneToOneField(Activity, related_name="conditions")
+    activity = models.OneToOneField(
+        Activity, related_name="conditions", on_delete=models.CASCADE)
     attached = models.BooleanField()
 
     # def __unicode__(self,):
@@ -1305,8 +1387,10 @@ class Conditions(models.Model):
 
 
 class Condition(models.Model):
-    conditions = models.ForeignKey(Conditions)
-    type = models.ForeignKey(ConditionType, null=True, blank=True, default=None)
+    conditions = models.ForeignKey(Conditions, on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        ConditionType, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1320,7 +1404,7 @@ class Condition(models.Model):
 
 
 class Location(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
 
     ref = models.CharField(max_length=200, default="", null=True, blank=True)
     location_reach = models.ForeignKey(
@@ -1328,7 +1412,7 @@ class Location(models.Model):
         null=True,
         blank=True,
         default=None,
-        related_name="location_reach")
+        related_name="location_reach", on_delete=models.CASCADE)
 
     # TODO: make location_id a one-to-one field?
     location_id_vocabulary = models.ForeignKey(
@@ -1336,20 +1420,21 @@ class Location(models.Model):
         null=True,
         blank=True,
         default=None,
-        related_name="location_id_vocabulary")
+        related_name="location_id_vocabulary",
+        on_delete=models.CASCADE)
     location_id_code = models.CharField(blank=True, max_length=255, default="")
 
     location_class = models.ForeignKey(
         GeographicLocationClass,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
     feature_designation = models.ForeignKey(
         LocationType,
         null=True,
         blank=True,
         default=None,
-        related_name="feature_designation")
+        related_name="feature_designation", on_delete=models.CASCADE)
 
     point_srs_name = models.CharField(blank=True, max_length=255, default="")
     point_pos = PointField(
@@ -1359,7 +1444,9 @@ class Location(models.Model):
         spatial_index=True,
         srid=4326,
         geography=True)
-    exactness = models.ForeignKey(GeographicExactness, null=True, blank=True, default=None)
+    exactness = models.ForeignKey(
+        GeographicExactness, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
 
     objects = LocationManager()
 
@@ -1372,11 +1459,11 @@ class Location(models.Model):
 
 # TODO: move to codelist
 class LocationAdministrative(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     code = models.CharField(max_length=255)
     vocabulary = models.ForeignKey(
         GeographicVocabulary,
-        related_name="administrative_vocabulary")
+        related_name="administrative_vocabulary", on_delete=models.CASCADE)
     level = models.IntegerField(null=True, blank=True, default=None)
 
     def get_activity(self):
@@ -1384,7 +1471,8 @@ class LocationAdministrative(models.Model):
 
 
 class LocationName(models.Model):
-    location = models.OneToOneField(Location, related_name="name")
+    location = models.OneToOneField(
+        Location, related_name="name", on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1395,7 +1483,8 @@ class LocationName(models.Model):
 
 
 class LocationDescription(models.Model):
-    location = models.OneToOneField(Location, related_name="description")
+    location = models.OneToOneField(
+        Location, related_name="description", on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1406,7 +1495,9 @@ class LocationDescription(models.Model):
 
 
 class LocationActivityDescription(models.Model):
-    location = models.OneToOneField(Location, related_name="activity_description")
+    location = models.OneToOneField(
+        Location, related_name="activity_description",
+        on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
@@ -1417,7 +1508,7 @@ class LocationActivityDescription(models.Model):
 
 
 class Fss(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     extraction_date = models.DateField()
     priority = models.BooleanField(default=False)
     phaseout_year = models.IntegerField(null=True, blank=True)
@@ -1430,9 +1521,9 @@ class Fss(models.Model):
 
 
 class FssForecast(models.Model):
-    fss = models.ForeignKey(Fss)
+    fss = models.ForeignKey(Fss, on_delete=models.CASCADE)
     year = models.IntegerField()
-    currency = models.ForeignKey(Currency)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     value_date = models.DateField()
     value = models.DecimalField(max_digits=15, decimal_places=2)
 
@@ -1444,7 +1535,7 @@ class FssForecast(models.Model):
 
 
 class CrsAdd(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     channel_code = models.CharField(max_length=50, null=True, blank=True)
 
     def __unicode__(self,):
@@ -1455,8 +1546,9 @@ class CrsAdd(models.Model):
 
 
 class CrsAddOtherFlags(models.Model):
-    crs_add = models.ForeignKey(CrsAdd, related_name="other_flags")
-    other_flags = models.ForeignKey(OtherFlags)
+    crs_add = models.ForeignKey(
+        CrsAdd, related_name="other_flags", on_delete=models.CASCADE)
+    other_flags = models.ForeignKey(OtherFlags, on_delete=models.CASCADE)
     significance = models.BooleanField()
 
     def __unicode__(self,):
@@ -1467,7 +1559,8 @@ class CrsAddOtherFlags(models.Model):
 
 
 class CrsAddLoanTerms(models.Model):
-    crs_add = models.OneToOneField(CrsAdd, related_name="loan_terms")
+    crs_add = models.OneToOneField(
+        CrsAdd, related_name="loan_terms", on_delete=models.CASCADE)
     rate_1 = models.DecimalField(
         null=True,
         blank=True,
@@ -1484,12 +1577,12 @@ class CrsAddLoanTerms(models.Model):
         LoanRepaymentType,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
     repayment_plan = models.ForeignKey(
         LoanRepaymentPeriod,
         null=True,
         blank=True,
-        default=None)
+        default=None, on_delete=models.CASCADE)
     repayment_plan_text = models.TextField(null=True, blank=True, default="")
     commitment_date = models.DateField(null=True, blank=True, default=None)
     repayment_first_date = models.DateField(null=True, blank=True, default=None)
@@ -1503,10 +1596,13 @@ class CrsAddLoanTerms(models.Model):
 
 
 class CrsAddLoanStatus(models.Model):
-    crs_add = models.OneToOneField(CrsAdd, related_name="loan_status")
+    crs_add = models.OneToOneField(
+        CrsAdd, related_name="loan_status", on_delete=models.CASCADE)
     year = models.IntegerField(null=True, blank=True, default=None)
     value_date = models.DateField(null=True, blank=True, default=None)
-    currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
+    currency = models.ForeignKey(
+        Currency, null=True, blank=True,
+        default=None, on_delete=models.CASCADE)
     interest_received = models.DecimalField(
         null=True,
         blank=True,
@@ -1540,9 +1636,9 @@ class CrsAddLoanStatus(models.Model):
 
 
 class ActivityDate(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     iso_date = models.DateField()
-    type = models.ForeignKey(ActivityDateType)
+    type = models.ForeignKey(ActivityDateType, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "type: %s - iso_date: %s" % (self.type, self.iso_date.strftime('%Y-%m-%d'))
@@ -1552,7 +1648,7 @@ class ActivityDate(models.Model):
 
 
 class LegacyData(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     name = models.CharField(max_length=150, null=True, blank=True)
     value = models.CharField(max_length=200, null=True, blank=True)
     iati_equivalent = models.CharField(max_length=150, null=True, blank=True)

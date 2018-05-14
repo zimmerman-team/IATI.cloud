@@ -42,7 +42,7 @@ class AidType(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(AidTypeCategory)
+    category = models.ForeignKey(AidTypeCategory, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -127,7 +127,8 @@ class DocumentCategory(models.Model):
     code = models.CharField(primary_key=True, max_length=3)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(DocumentCategoryCategory)
+    category = models.ForeignKey(DocumentCategoryCategory,
+                                 on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -160,7 +161,7 @@ class FinanceType(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=220)
     description = models.TextField(default="")
-    category = models.ForeignKey(FinanceTypeCategory)
+    category = models.ForeignKey(FinanceTypeCategory, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -242,7 +243,8 @@ class LocationType(models.Model):
     code = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(LocationTypeCategory)
+    category = models.ForeignKey(LocationTypeCategory,
+                                 on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -281,7 +283,8 @@ class PolicyMarker(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True, default=None)
+    vocabulary = models.ForeignKey(PolicyMarkerVocabulary, null=True,
+                                   default=None, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s" % self.name
@@ -336,8 +339,10 @@ class Sector(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(SectorCategory, null=True, default=None)
-    vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None)
+    category = models.ForeignKey(SectorCategory, null=True, default=None,
+                                 on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(SectorVocabulary, null=True, default=None,
+                                   on_delete=models.CASCADE)
     # check why percentage is here, looks like an error - 2016-07-22
     percentage = models.DecimalField(
         max_digits=5,
@@ -411,7 +416,8 @@ class BudgetIdentifierSector(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(BudgetIdentifierSectorCategory)
+    category = models.ForeignKey(BudgetIdentifierSectorCategory,
+                                 on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
@@ -421,8 +427,10 @@ class BudgetIdentifier(models.Model):
     code = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
-    category = models.ForeignKey(BudgetIdentifierSector)
-    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary, null=True, default=None)
+    category = models.ForeignKey(BudgetIdentifierSector,
+                                 on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(BudgetIdentifierVocabulary, null=True,
+                                   default=None, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)

@@ -4,7 +4,7 @@ import os
 import time
 
 import django_rq
-import fulltext
+from . import fulltext
 import requests
 from django.conf import settings
 from django_rq import job
@@ -477,7 +477,8 @@ def download_file(d):
                     is_downloaded = downloader.download()
                     doc.is_downloaded = is_downloaded
                 except Exception as e:
-                    print str(e)
+                    # print str(e)
+                    pass
 
                 '''Get Text from file and save document'''
                 if is_downloaded:
@@ -494,7 +495,8 @@ def download_file(d):
                 try:
                     is_downloaded = downloader.download()
                 except Exception as e:
-                    print str(e)
+                    # print str(e)
+                    pass
                 '''hash the downloaded file and it long url'''
                 if is_downloaded:
                     long_url_hash = hashlib.md5(long_url).hexdigest()
@@ -513,7 +515,7 @@ def download_file(d):
     try:
         doc.save()
     except Exception as e:
-        print str(e)
+        # print str(e)
         doc.document_content = document_content.decode("latin-1")
         doc.save()
 

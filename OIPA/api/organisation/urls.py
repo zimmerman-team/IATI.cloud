@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from api.organisation import views
 
-
+app_name = 'api'
 urlpatterns = [
     url(r'^$', views.OrganisationList.as_view(), name='organisation-list'),
     url(

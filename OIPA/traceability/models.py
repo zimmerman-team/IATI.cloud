@@ -23,8 +23,8 @@ class Chain(models.Model):
 
 
 class ChainNode(models.Model):
-    chain = models.ForeignKey(Chain, null=False)
-    activity = models.ForeignKey(Activity, null=True)
+    chain = models.ForeignKey(Chain, null=False, on_delete=models.CASCADE)
+    activity = models.ForeignKey(Activity, null=True, on_delete=models.CASCADE)
     activity_oipa_id = models.IntegerField(blank=False)
     activity_iati_id = models.CharField(max_length=255, blank=False)
     tier = models.IntegerField(null=True, default=None)
@@ -60,7 +60,7 @@ class ChainNodeError(models.Model):
         ('10', u"participating-org is given as implementer but there are no disbursements nor expenditures to this organisation ref"),
     )
 
-    chain_node = models.ForeignKey(ChainNode)
+    chain_node = models.ForeignKey(ChainNode, on_delete=models.CASCADE)
     error_type = models.CharField(choices=level_choices, max_length=10, null=False)
     mentioned_activity_or_org = models.CharField(
         max_length=255, null=True, blank=False, default=None)
@@ -69,9 +69,13 @@ class ChainNodeError(models.Model):
 
 
 class ChainLink(models.Model):
-    chain = models.ForeignKey(Chain, null=False)
-    start_node = models.ForeignKey(ChainNode, null=False, related_name='start_link')
-    end_node = models.ForeignKey(ChainNode, null=False, related_name='end_link')
+    chain = models.ForeignKey(Chain, null=False, on_delete=models.CASCADE)
+    start_node = models.ForeignKey(
+        ChainNode, null=False, related_name='start_link',
+        on_delete=models.CASCADE)
+    end_node = models.ForeignKey(
+        ChainNode, null=False, related_name='end_link',
+        on_delete=models.CASCADE)
 
 
 class ChainLinkRelation(models.Model):
@@ -91,7 +95,8 @@ class ChainLinkRelation(models.Model):
         ('end_node', u"End node")
     )
 
-    chain_link = models.ForeignKey(ChainLink, related_name='relations')
+    chain_link = models.ForeignKey(
+        ChainLink, related_name='relations', on_delete=models.CASCADE)
     relation = models.CharField(choices=relation_choices, max_length=30)
     from_node = models.CharField(choices=from_choices, max_length=10)
     related_id = models.CharField(max_length=100)

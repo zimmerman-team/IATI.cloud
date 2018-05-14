@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.http import HttpResponse
 
 from currency_convert.models import MonthlyAverage
-from currency_convert.imf_rate_parser import RateParser
 
 
 class MonthlyAverageAdmin(admin.ModelAdmin):

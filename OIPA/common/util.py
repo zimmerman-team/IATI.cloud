@@ -7,7 +7,7 @@ from functools import reduce
 import psycopg2
 from django.db import connection
 from django.db.models import Q
-from django.utils.text import force_text
+from django.utils.encoding import force_text
 
 
 def get_or_none(model, *args, **kwargs):

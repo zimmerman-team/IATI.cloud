@@ -3,7 +3,7 @@ import geodata
 from api.generics.serializers import DynamicFieldsModelSerializer
 from api.region.serializers import RegionSerializer
 from api.fields import JSONField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class CountrySerializer(DynamicFieldsModelSerializer):

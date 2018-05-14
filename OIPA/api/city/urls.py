@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from api.city import views
 
-
+app_name = 'api'
 urlpatterns = [
     url(r'^$', views.CityList.as_view(), name='city-list'),
     url(

@@ -2,11 +2,9 @@
 
 Copyright Joshua Banton"""
 import os
-import urllib2
+from urllib import request, parse
 import ftplib
-import urlparse
 import urllib
-import sys
 import socket
 import hashlib
 
@@ -82,7 +80,7 @@ class DownloadFile(object):
         if not self.fast_start:
             try:
                 self.urlFilesize = self.getUrlFileSize()
-            except urllib2.HTTPError:
+            except request.HTTPError:
                 self.urlFilesize = None
         else:
             self.urlFilesize = None
@@ -106,7 +104,7 @@ class DownloadFile(object):
             try:
                 data = urlObj.read(8192)
             except (socket.timeout, socket.error) as t:
-                print "caught ", t
+                # print "caught ", t
                 self.__retry__()
                 break
             if not data:
@@ -124,26 +122,26 @@ class DownloadFile(object):
             if self.getLocalFileSize() != self.urlFilesize:
                 self.resume()
         else:
-            print 'retries all used up'
+            # print 'retries all used up'
             return False, "Retries Exhausted"
 
     def __authHttp__(self):
         """handles http basic authentication"""
-        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman = request.HTTPPasswordMgrWithDefaultRealm()
         # this creates a password manager
         passman.add_password(None, self.url, self.auth[0], self.auth[1])
         # because we have put None at the start it will always
         # use this username/password combination for  urls
-        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        authhandler = request.HTTPBasicAuthHandler(passman)
         # create the AuthHandler
-        opener = urllib2.build_opener(authhandler)
-        urllib2.install_opener(opener)
+        opener = request.build_opener(authhandler)
+        request.install_opener(opener)
 
     def __authFtp__(self):
         """handles ftp authentication"""
-        ftped = urllib2.FTPHandler()
+        ftped = request.FTPHandler()
         ftpUrl = self.url.replace('ftp://', '')
-        req = urllib2.Request("ftp://%s:%s@%s" % (self.auth[0], self.auth[1], ftpUrl))
+        req = request.Request("ftp://%s:%s@%s" % (self.auth[0], self.auth[1], ftpUrl))
         req.timeout = self.timeout
         ftpObj = ftped.ftp_open(req)
         return ftpObj
@@ -152,9 +150,9 @@ class DownloadFile(object):
         f = open(self.localFileName, "wb")
         if self.auth:
             self.__authHttp__()
-        req = urllib2.Request(self.url)
+        req = request.Request(self.url)
         req.headers['Range'] = 'bytes=%s-%s' % (startPos, endPos)
-        urllib2Obj = urllib2.urlopen(req, timeout=self.timeout)
+        urllib2Obj = request.urlopen(req, timeout=self.timeout)
         self.__downloadFile__(urllib2Obj, f, callBack=callBack)
 
     def __startHttpResume__(self, restart=None, callBack=None):
@@ -169,9 +167,9 @@ class DownloadFile(object):
             f = open(self.localFileName, "ab")
         if self.auth:
             self.__authHttp__()
-        req = urllib2.Request(self.url)
+        req = request.Request(self.url)
         req.headers['Range'] = 'bytes=%s-%s' % (curSize, self.getUrlFileSize())
-        urllib2Obj = urllib2.urlopen(req, timeout=self.timeout)
+        urllib2Obj = request.urlopen(req, timeout=self.timeout)
         self.__downloadFile__(urllib2Obj, f, callBack=callBack)
 
     def __startFtpResume__(self, restart=None):
@@ -184,7 +182,7 @@ class DownloadFile(object):
         else:
             f = open(self.localFileName, "ab")
         ftper = ftplib.FTP(timeout=60)
-        parseObj = urlparse.urlparse(self.url)
+        parseObj = parse.urlparse(self.url)
         baseUrl = parseObj.hostname
         urlPort = parseObj.port
         bPath = os.path.basename(parseObj.path)
@@ -209,7 +207,7 @@ class DownloadFile(object):
         if self.type == 'http':
             if self.auth:
                 authObj = self.__authHttp__()
-            urllib2Obj = urllib2.urlopen(self.url, timeout=self.timeout)
+            urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
             size = urllib2Obj.headers.get('content-length')
             return size
 
@@ -220,7 +218,7 @@ class DownloadFile(object):
 
     def getType(self):
         """returns protocol of url (ftp or http)"""
-        type = urlparse.urlparse(self.url).scheme
+        type = parse.urlparse(self.url).scheme
         return type
 
     def checkExists(self):
@@ -229,17 +227,17 @@ class DownloadFile(object):
             if self.type == 'http':
                 authObj = self.__authHttp__()
                 try:
-                    urllib2.urlopen(self.url, timeout=self.timeout)
-                except urllib2.HTTPError:
+                    request.urlopen(self.url, timeout=self.timeout)
+                except request.HTTPError:
                     return False
                 return True
             elif self.type == 'ftp':
                 return "not yet supported"
         else:
-            urllib2Obj = urllib2.urlopen(self.url, timeout=self.timeout)
+            urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
             try:
-                urllib2.urlopen(self.url, timeout=self.timeout)
-            except urllib2.HTTPError:
+                request.urlopen(self.url, timeout=self.timeout)
+            except request.HTTPError:
                 return False
             return True
 
@@ -251,14 +249,14 @@ class DownloadFile(object):
         if self.auth:
             if self.type == 'http':
                 self.__authHttp__()
-                urllib2Obj = urllib2.urlopen(self.url, timeout=self.timeout)
+                urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
                 self.__downloadFile__(urllib2Obj, f, callBack=callBack)
             elif self.type == 'ftp':
                 self.url = self.url.replace('ftp://', '')
                 authObj = self.__authFtp__()
                 self.__downloadFile__(authObj, f, callBack=callBack)
         else:
-            urllib2Obj = urllib2.urlopen(self.url, timeout=self.timeout)
+            urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
             self.__downloadFile__(urllib2Obj, f, callBack=callBack)
         return True
 
