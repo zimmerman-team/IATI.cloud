@@ -30,7 +30,7 @@ class ActivityStatus(models.Model):
 
 
 class AidTypeCategory(models.Model):
-    code = models.CharField(primary_key=True, max_length=3)
+    code = models.CharField(primary_key=True, max_length=5)
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
 
