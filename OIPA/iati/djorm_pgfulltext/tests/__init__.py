@@ -4,12 +4,12 @@ import django
 from django.db import transaction
 from django.utils.unittest import TestCase
 
-from djorm_pgfulltext.tests.models import Book
-from djorm_pgfulltext.tests.models import Person
-from djorm_pgfulltext.tests.models import Person2
-from djorm_pgfulltext.tests.models import Person3
-from djorm_pgfulltext.tests.models import Person4
-from djorm_pgfulltext.tests.models import Person5
+from iati.djorm_pgfulltext.tests.models import Book
+from iati.djorm_pgfulltext.tests.models import Person
+from iati.djorm_pgfulltext.tests.models import Person2
+from iati.djorm_pgfulltext.tests.models import Person3
+from iati.djorm_pgfulltext.tests.models import Person4
+from iati.djorm_pgfulltext.tests.models import Person5
 
 
 class FtsSetUpMixin:
@@ -178,7 +178,7 @@ class TestFullTextLookups(FtsSetUpMixin, TestCase):
             list(Person.objects.filter(search_index__ft_startswith=test_str))
 
     def test_alternative_config(self):
-        from djorm_pgfulltext.fields import TSConfig
+        from iati.djorm_pgfulltext.fields import TSConfig
 
         pq = Person.objects.filter(
             search_index__ft_startswith=[

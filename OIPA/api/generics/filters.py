@@ -8,7 +8,7 @@ from django_filters import Filter, FilterSet, BooleanFilter
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from rest_framework import filters
-from djorm_pgfulltext.fields import TSConfig
+from iati.djorm_pgfulltext.fields import TSConfig
 from iati.models import Activity, Document
 from iati.models import Location
 from common.util import combine_filters

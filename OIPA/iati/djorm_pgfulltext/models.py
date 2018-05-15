@@ -6,8 +6,8 @@ from django.db import models, connections
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_text
 
-from djorm_pgfulltext.utils import adapt
-from djorm_pgfulltext.fields import VectorField
+from iati.djorm_pgfulltext.utils import adapt
+from iati.djorm_pgfulltext.fields import VectorField
 
 # Compatibility import and fixes section.
 

@@ -195,7 +195,6 @@ INSTALLED_APPS = [
     'iati_vocabulary.apps.IatiVocabularyConfig',
     'iati_codelists.apps.IatiCodelistsConfig',
     'test_without_migrations',
-    'djorm_pgfulltext',
     'admin_reorder',
     'rest_framework.authtoken',
     'iati.permissions',

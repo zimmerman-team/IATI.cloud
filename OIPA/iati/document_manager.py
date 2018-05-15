@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Prefetch
-from djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
+from iati.djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 
 class DocumentQuerySet(SearchQuerySet):

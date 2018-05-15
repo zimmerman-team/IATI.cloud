@@ -9,7 +9,7 @@ except NameError:
 import django
 from django.db import models
 
-from djorm_pgfulltext.utils import adapt
+from iati.djorm_pgfulltext.utils import adapt
 
 
 class VectorField(models.Field):
@@ -55,7 +55,7 @@ class VectorField(models.Field):
 
 try:
     from south.modelsinspector import add_introspection_rules
-    add_introspection_rules(rules=[], patterns=['djorm_pgfulltext\.fields\.VectorField'])
+    add_introspection_rules(rules=[], patterns=['iati\.djorm_pgfulltext\.fields\.VectorField'])
 except ImportError:
     pass
 

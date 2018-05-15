@@ -26,8 +26,8 @@ from iati_synchroniser.models import Publisher
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 
-from djorm_pgfulltext.models import SearchManager
-from djorm_pgfulltext.fields import VectorField
+from iati.djorm_pgfulltext.models import SearchManager
+from iati.djorm_pgfulltext.fields import VectorField
 
 
 class Narrative(models.Model):
