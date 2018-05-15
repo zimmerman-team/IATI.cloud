@@ -1,4 +1,4 @@
-import urllib2
+import urllib
 import logging
 import datetime
 from lxml import etree
@@ -143,7 +143,7 @@ class CodeListImporter():
             try:
                 model = apps.get_model(app_label='geodata', model_name=model_name)
             except LookupError:
-                print ''.join(['Model not found: ', model_name])
+                print(''.join(['Model not found: ', model_name]))
                 return False
 
         if not item:
@@ -154,7 +154,7 @@ class CodeListImporter():
 
         if len(item.name) > 200:
             item.name = item.name[0:200]
-            print "name of code: {} , name: {} shortened to 200".format(item.code, item.name)
+            print("name of code: {} , name: {} shortened to 200".format(item.code, item.name))
 
         item.codelist_iati_version = self.looping_through_version
 
@@ -230,19 +230,19 @@ class CodeListImporter():
                               "/codelists/downloads/clv1/"
                               "codelist/" + name + ".xml")
 
-        cur_file_opener = urllib2.build_opener()
+        cur_file_opener = urllib.request.build_opener()
         cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
         context2 = etree.iterparse(cur_xml_file, tag=name)
         self.fast_iter(context2, self.add_code_list_item)
 
     def loop_through_codelists(self, version):
-        downloaded_xml = urllib2.Request(
+        downloaded_xml = urllib.request.Request(
             "http://iatistandard.org/"
             + version.replace('.', '') +
             "/codelists/downloads/clv1/codelist.xml")
 
-        file_opener = urllib2.build_opener()
+        file_opener = urllib.request.build_opener()
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')
         self.fast_iter(context, self.get_codelist_data)
