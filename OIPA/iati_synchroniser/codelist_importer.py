@@ -6,6 +6,7 @@ from lxml import etree
 from django.db import IntegrityError
 from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist
+from django.utils.encoding import smart_text
 
 from iati.models import *
 from geodata.models import Country, Region
@@ -173,6 +174,11 @@ class CodeListImporter():
     def add_to_model_if_field_exists(self, model, item, field_name, field_content):
         try:
             model._meta.get_field(field_name)
+
+            # Save all strings as decoded strings and not as bytestrings:
+            if type(field_content) == bytes:
+                field_content = smart_text(field_content)
+
             setattr(item, field_name, field_content)
         except FieldDoesNotExist:
             pass
