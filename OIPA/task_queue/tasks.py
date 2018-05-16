@@ -71,7 +71,7 @@ def delete_all_tasks_from_queue(queue_name):
 @job
 def get_new_sources_from_iati_api():
     from django.core import management
-    management.call_command('get_new_sources_from_iati_registry', verbosity=0, interactive=False)
+    management.call_command('get_new_sources_from_iati_registry', verbosity=0)
 
     remove_all_api_caches()
 
@@ -417,7 +417,7 @@ def start_searchable_activities_task(counter=0):
 @job
 def update_searchable_activities():
     from django.core import management
-    management.call_command('set_searchable_activities', verbosity=0, interactive=False)
+    management.call_command('set_searchable_activities', verbosity=0)
 
     remove_all_api_caches()
 
