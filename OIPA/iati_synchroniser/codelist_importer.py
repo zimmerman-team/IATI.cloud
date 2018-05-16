@@ -62,9 +62,9 @@ class CodeListImporter():
         tag = elem.tag
         item = None
         code = self.return_first(elem.xpath('code/text()'))
-        name = self.return_first(elem.xpath('name/text()'))
+        name = smart_text(self.return_first(elem.xpath('name/text()')))
         description = self.return_first(elem.xpath('description/text()')) or ''
-        language_name = self.return_first(elem.xpath('language/text()'))
+        language_name = smart_text(self.return_first(elem.xpath('language/text()')))
         category = self.return_first(elem.xpath('category/text()'))
         url = self.return_first(elem.xpath('url/text()')) or ' '
         model_name = tag
@@ -234,7 +234,7 @@ class CodeListImporter():
         cur_downloaded_xml = ("http://iatistandard.org/"
                               + self.looping_through_version.replace('.', '') +
                               "/codelists/downloads/clv1/"
-                              "codelist/" + name + ".xml")
+                              "codelist/" + smart_text(name) + ".xml")
 
         cur_file_opener = urllib.request.build_opener()
         cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
