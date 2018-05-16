@@ -68,7 +68,7 @@ class HumanitarianScopeVocabulary(models.Model):
 
 
 class IndicatorVocabulary(models.Model):
-    code = models.CharField(primary_key=True, max_length=5)
+    code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     url = models.URLField()
