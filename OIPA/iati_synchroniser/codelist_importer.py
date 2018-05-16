@@ -176,7 +176,7 @@ class CodeListImporter():
             model._meta.get_field(field_name)
 
             # Save all strings as decoded strings and not as bytestrings:
-            if type(field_content) == bytes:
+            if type(field_content) == bytes and not field_content.isdigit():
                 field_content = smart_text(field_content)
 
             setattr(item, field_name, field_content)
