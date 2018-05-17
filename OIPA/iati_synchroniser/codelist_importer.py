@@ -166,14 +166,7 @@ class CodeListImporter():
 
         if item is not None and not model.objects.filter(pk=item.code).exists():
             try:
-                try:
-                    from django.db.utils import DataError
-
-                    item.code = smart_text(item.code)
-
-                    item.save()
-                except DataError:
-                    raise Exception(item.__dict__)
+                item.save()
             except IntegrityError as err:
                 print("Error: {}".format(err))
                 pass
