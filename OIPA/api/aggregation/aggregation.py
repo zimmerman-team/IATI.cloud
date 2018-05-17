@@ -208,11 +208,11 @@ def aggregate(queryset, request, selected_groupings, selected_aggregations, sele
 
     # TODO: just throw exceptions here and catch in view - 2016-04-08
 
-    if not len(selected_groupings):
+    if not len(list(selected_groupings)):
         raise ValueError(
             "Invalid value {} for mandatory field 'group_by'".format(
                 params.get('group_by')))
-    elif not len(selected_aggregations):
+    elif not len(list(selected_aggregations)):
         raise ValueError(
             "Invalid value {} for mandatory field 'aggregations'".format(
                 params.get('aggregations')))

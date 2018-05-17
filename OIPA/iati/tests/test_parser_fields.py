@@ -234,7 +234,7 @@ class ActivityTestCase(ParserSetupTestCase):
         self.parser_202.iati_activities__iati_activity(iati_activity)
         activity = self.parser_202.get_model('Activity')
 
-        for field, default in self.defaults.iteritems():
+        for field, default in self.defaults.items():
             self.assertEqual(getattr(activity, field), default)
         self.assertEqual(activity.iati_standard_version.code, "2.02")
 

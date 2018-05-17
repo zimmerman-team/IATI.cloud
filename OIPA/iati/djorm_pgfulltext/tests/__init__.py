@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from unittest import TestCase
 
 import django
 from django.db import transaction
-from django.utils.unittest import TestCase
 
 from iati.djorm_pgfulltext.tests.models import Book
 from iati.djorm_pgfulltext.tests.models import Person

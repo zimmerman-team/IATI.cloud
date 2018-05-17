@@ -2,6 +2,8 @@ from django.test import TestCase
 import unittest
 from mock import MagicMock
 
+from django.utils.encoding import smart_text
+
 from lxml.etree import Element
 
 from iati.models import AidType
@@ -61,7 +63,7 @@ class CodelistImporterTestCase(TestCase):
 
         element = Element('aidType')
         code = Element('code')
-        code.text = 'A01'
+        code.text = smart_text('A01')
 
         name = Element('name')
         name.text = 'General budget support'

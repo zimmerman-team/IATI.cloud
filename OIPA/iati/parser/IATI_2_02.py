@@ -3127,7 +3127,7 @@ class Parse(IatiParser):
         location = []
 
         if locations:
-            location = filter(lambda x: x.ref == ref, locations)
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
@@ -3230,7 +3230,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = filter(lambda x: x.ref == ref, locations)
+        location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(

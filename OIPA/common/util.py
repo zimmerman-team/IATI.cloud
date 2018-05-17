@@ -71,6 +71,8 @@ def normalise_unicode_string(any_str):
     :return: Unicode string
     """
     if str is not None:
-        if isinstance(any_str, unicode):
+        # Python 3 renamed the unicode type to str, the old str type has been
+        # replaced by bytes:
+        if isinstance(any_str, str):
             any_str = unicodedata.normalize("NFKD", any_str)
     return any_str
