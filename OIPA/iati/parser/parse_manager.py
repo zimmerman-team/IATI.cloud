@@ -42,7 +42,7 @@ class ParseManager():
         response = file_grabber.get_the_file(self.url)
 
         from iati_synchroniser.models import DatasetNote
-        if not response or response.code != 200:
+        if not response or response.status_code != 200:
             self.valid_dataset = False
             note = DatasetNote(
                 dataset=self.dataset,
@@ -59,11 +59,11 @@ class ParseManager():
             self.dataset.save()
             return
 
-        iati_file = response.read()
+        iati_file = response.content
         iati_file_str = str(iati_file)
 
         hasher = hashlib.sha1()
-        hasher.update(iati_file_str)
+        hasher.update(iati_file_str.encode('utf-8'))
         sha1 = hasher.hexdigest()
 
         if dataset.sha1 == sha1:
