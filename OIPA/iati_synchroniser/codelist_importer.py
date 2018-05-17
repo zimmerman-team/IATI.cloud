@@ -61,9 +61,9 @@ class CodeListImporter():
 
         tag = elem.tag
         item = None
-        code = self.return_first(elem.xpath('code/text()'))
+        code = smart_text(self.return_first(elem.xpath('code/text()')))
         name = smart_text(self.return_first(elem.xpath('name/text()')))
-        description = self.return_first(elem.xpath('description/text()')) or ''
+        description = smart_text(self.return_first(elem.xpath('description/text()'))) or ''
         language_name = smart_text(self.return_first(elem.xpath('language/text()')))
         category = self.return_first(elem.xpath('category/text()'))
         url = self.return_first(elem.xpath('url/text()')) or ' '
