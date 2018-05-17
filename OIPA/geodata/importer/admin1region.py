@@ -98,7 +98,7 @@ class Adm1RegionImport():
                     point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
                     the_adm1_region.center_location = fromstr(point_loc_str, srid=4326)
                 except KeyError:
-                    print "Admin 1 region with code %s has an illegal center location..." % the_adm1_region.adm1_code
+                    print("Admin 1 region with code %s has an illegal center location..." % the_adm1_region.adm1_code)
 
             the_adm1_region.polygon = r["geometry"].get('coordinates')
             the_adm1_region.geometry_type = r["geometry"].get('type')

@@ -56,5 +56,5 @@ class CityImport():
                         the_country.save()
 
             except AttributeError as e:
-                print "error in update_cities ", sys.exc_info()[0]
-                print e.message
+                print("error in update_cities ", sys.exc_info()[0])
+                print(e.message)
