@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib.gis.geos import GEOSGeometry, Point
 
-from iati_parser import IatiParser
+from iati.parser.iati_parser import IatiParser
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models

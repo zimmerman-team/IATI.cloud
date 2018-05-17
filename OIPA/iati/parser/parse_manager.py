@@ -3,10 +3,10 @@ from django import db
 from django.conf import settings
 import hashlib
 
-from IATI_2_02 import Parse as IATI_202_Parser
-from IATI_2_01 import Parse as IATI_201_Parser
-from IATI_1_05 import Parse as IATI_105_Parser
-from IATI_1_03 import Parse as IATI_103_Parser
+from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
+from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati.filegrabber import FileGrabber
