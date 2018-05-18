@@ -290,6 +290,7 @@ def export_publisher_activities(publisher_id):
 
 @job
 def update_exchange_rates():
+    # XXX: no such module exists!
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=False)
@@ -299,6 +300,7 @@ def update_exchange_rates():
 
 @job
 def force_update_exchange_rates():
+    # XXX: no such module exists!
     from currency_convert.imf_rate_parser import RateParser
     r = RateParser()
     r.update_rates(force=True)
