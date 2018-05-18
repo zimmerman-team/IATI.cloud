@@ -1,6 +1,4 @@
 import datetime
-import md5
-
 
 from django.contrib.auth.models import User
 from iati.permissions.models import OrganisationAdminGroup, OrganisationGroup

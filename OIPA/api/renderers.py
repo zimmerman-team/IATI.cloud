@@ -65,7 +65,7 @@ class XMLRenderer(BaseRenderer):
                             renamed_attr, six.text_type(value).lower() if isinstance(
                                 value, bool) else six.text_type(value))
 
-            for key, value in six.iteritems(data):
+            for key, value in six.items(data):
 
                 if key in attributes:
                     continue

@@ -17,7 +17,6 @@ class DatasetSyncerTestCase(TestCase):
     """
 
     def setUp(self):
-        management.call_command('flush', interactive=False, verbosity=0)
         self.datasetSyncer = DatasetSyncer()
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')

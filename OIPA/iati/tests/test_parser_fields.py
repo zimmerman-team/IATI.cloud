@@ -94,7 +94,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    management.call_command('flush', interactive=False, verbosity=0)
+    pass
 
 
 class ParserSetupTestCase(TestCase):

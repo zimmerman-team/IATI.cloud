@@ -21,7 +21,7 @@ def setUpModule():
 
 
 def tearDownModule():
-    management.call_command('flush', interactive=False, verbosity=0)
+    pass
 
 
 # TODO: refactor in test util module

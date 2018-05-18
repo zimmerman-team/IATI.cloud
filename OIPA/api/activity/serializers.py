@@ -52,7 +52,7 @@ def save_narratives(instance, data, activity_instance):
         narrative = iati_models.Narrative.objects.get(pk=fk_id)
         narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
-        for field, data in narrative_data.iteritems():
+        for field, data in narrative_data.items():
             setattr(narrative, field, data)
         narrative.save()
 

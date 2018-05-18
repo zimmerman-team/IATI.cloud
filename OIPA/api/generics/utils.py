@@ -93,7 +93,7 @@ def handle_errors(*validated):
         for error in vali['errors']:
             set_deep(error_dict, error.apiField, error.message)
 
-        for key, val in vali['validated_data'].iteritems():
+        for key, val in vali['validated_data'].items():
             validated_data.update({
                 key: val
             })
