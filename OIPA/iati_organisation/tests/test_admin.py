@@ -33,7 +33,7 @@ class OrganisationAdminTestCase(TestCase):
         organisation_admin = OrganisationAdmin(self.organisation, self.site)
         patterns = []
         for url in organisation_admin.get_urls():
-            patterns.append(url.regex.pattern)
+            patterns.append(url.pattern.regex.pattern)
 
         added_patterns = ['^update-primary-names/$']
 

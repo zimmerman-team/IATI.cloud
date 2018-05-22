@@ -302,7 +302,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         new_results = group_by.serialize_results(results, request)
 
-        self.assertEqual(new_results, [
+        self.assertEqual(list(new_results), [
             {
                 "key": OrderedDict([
                         ('iati_identifier', 'test'),
