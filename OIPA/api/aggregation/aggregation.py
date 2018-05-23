@@ -142,7 +142,7 @@ def apply_ordering(result, orderings):
     orderings - list of order keys
     """
 
-    if len(orderings):
+    if orderings and len(orderings):
         orderings = reversed(orderings)
         reverse = False
 
