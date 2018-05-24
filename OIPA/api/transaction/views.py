@@ -6,6 +6,7 @@ from api.generics.views import DynamicListView, DynamicDetailView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from api.cache import QueryParamsKeyConstructor
 
 from api.activity.serializers import ActivitySerializer
 
@@ -103,6 +104,8 @@ class TransactionList(CacheResponseMixin, DynamicListView):
         'provider_organisation',
         'receiver_organisation',
     )
+
+    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class TransactionDetail(CacheResponseMixin, DynamicDetailView):
