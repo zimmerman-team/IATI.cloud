@@ -216,7 +216,7 @@ class GroupBy():
         ])
         ]), l)
 
-        return result
+        return list(result)
 
 
 class Aggregation():

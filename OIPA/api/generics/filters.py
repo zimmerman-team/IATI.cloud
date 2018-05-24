@@ -96,9 +96,9 @@ class SearchFilter(filters.BaseFilterBackend):
                 if isinstance(query_fields, list):
                     filters = ([{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr) : query}for field in query_fields])
                     temp = Q(**filters.pop())
-                    
+
                     for f in filters:
-                        temp |= Q(**f)                    
+                        temp |= Q(**f)
                     return queryset.filter(temp)
             else:
                 return queryset.filter(
@@ -245,7 +245,7 @@ class TogetherFilterSet(FilterSet):
                         filteritem,
                         None) for filteritem in filterlist]
 
-                uid = unicode(uuid.uuid4())
+                uid = str(uuid.uuid4())
 
                 self.base_filters[uid] = TogetherFilter(filters=filter_classes)
                 data.appendlist(uid, filter_values)

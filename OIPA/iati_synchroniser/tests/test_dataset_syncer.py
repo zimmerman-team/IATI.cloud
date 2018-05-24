@@ -67,7 +67,7 @@ class DatasetSyncerTestCase(TestCase):
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
 
-        publisher = Publisher.objects.all()[0]
+        publisher = Publisher.objects.last()
         self.assertEqual("NP-SWC-27693", publisher.publisher_iati_id)
         self.assertEqual("Aasaman Nepal", publisher.display_name)
         self.assertEqual("aasaman", publisher.name)

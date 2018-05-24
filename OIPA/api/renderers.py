@@ -65,7 +65,7 @@ class XMLRenderer(BaseRenderer):
                             renamed_attr, six.text_type(value).lower() if isinstance(
                                 value, bool) else six.text_type(value))
 
-            for key, value in six.items(data):
+            for key, value in six.iteritems(data):
 
                 if key in attributes:
                     continue
@@ -79,7 +79,7 @@ class XMLRenderer(BaseRenderer):
                     # currently actuals are stored on the resultindicatorperiod, hence we need
                     # to remove empty actuals here.
                     if key in ['actual', 'target']:
-                        if value.items()[0][0] != 'value':
+                        if list(value.items())[0][0] != 'value':
                             continue
 
                     self._to_xml(etree.SubElement(xml, key.replace('_', '-')), value)
