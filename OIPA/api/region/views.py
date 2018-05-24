@@ -2,6 +2,7 @@ import geodata
 from api.region import serializers
 from rest_framework.generics import RetrieveAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from api.cache import QueryParamsKeyConstructor
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
@@ -40,6 +41,7 @@ class RegionList(CacheResponseMixin, DynamicListView):
     queryset = geodata.models.Region.objects.all().order_by('code')
     serializer_class = serializers.RegionSerializer
     fields = ('url', 'code', 'name')
+    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class RegionDetail(CacheResponseMixin, RetrieveAPIView):

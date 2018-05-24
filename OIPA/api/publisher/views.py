@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, exceptions
+from api.cache import QueryParamsKeyConstructor
 
 from api.publisher.permissions import OrganisationAdminGroupPermissions
 
@@ -78,6 +79,8 @@ class PublisherList(CacheResponseMixin, DynamicListView):
         'display_name',
         'name',
         'activities')
+
+    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class PublisherDetail(CacheResponseMixin, DynamicDetailView):
