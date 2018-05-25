@@ -7,7 +7,6 @@ from iati_synchroniser.factory import synchroniser_factory
 from django.core import management
 
 from mock import MagicMock
-import unittest
 from iati.factory import iati_factory
 
 
@@ -41,7 +40,6 @@ class DatasetSyncerTestCase(TestCase):
 
         self.assertEqual(keyval, input_list[0])
 
-    # @unittest.skip("Not implemented")
     def test_synchronize_with_iati_api(self):
         """
 
