@@ -1,13 +1,8 @@
-from django.db.models.fields.related import ManyToManyField, ManyToOneRel, OneToOneRel, ForeignKey
-
 from rest_framework import serializers
 from api.generics.utils import get_or_raise, get_or_none
 
 from iati import models as iati_models
 from iati_organisation import models as organisation_models
-from rest_framework.response import Response
-from rest_framework import status
-from iati_synchroniser.models import Publisher
 from rest_framework.exceptions import ValidationError
 from api.generics.fields import PointField
 
@@ -16,20 +11,19 @@ from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.serializers import ModelSerializerNoValidation
 from api.generics.serializers import SerializerNoValidation
 from api.sector.serializers import SectorSerializer
-from api.region.serializers import RegionSerializer, BasicRegionSerializer
+from api.region.serializers import BasicRegionSerializer
 from api.country.serializers import CountrySerializer
 from api.dataset.serializers import SimpleDatasetSerializer
 from api.codelist.serializers import VocabularySerializer
 from api.codelist.serializers import CodelistSerializer
 from api.codelist.serializers import NarrativeContainerSerializer
-from api.codelist.serializers import NarrativeSerializer, OrganisationNarrativeSerializer
-from api.codelist.serializers import CodelistCategorySerializer
+from api.codelist.serializers import NarrativeSerializer, \
+    OrganisationNarrativeSerializer
 from api.publisher.serializers import PublisherSerializer
 
 from api.activity.filters import RelatedActivityFilter
 
 from iati.parser import validators
-from iati.parser import exceptions
 
 
 def save_narratives(instance, data, activity_instance):
@@ -39,12 +33,7 @@ def save_narratives(instance, data, activity_instance):
     old_ids = set(filter(lambda x: x is not None, [i.get('id') for i in data]))
     new_data = filter(lambda x: x.get('id') is None, data)
 
-    # print(current_ids)
-    # print(old_ids)
-    # print(new_data)
-
     to_remove = list(current_ids.difference(old_ids))
-    # to_add = list(new_ids.difference(current_ids))
     to_add = new_data
     to_update = list(current_ids.intersection(old_ids))
 
@@ -58,12 +47,9 @@ def save_narratives(instance, data, activity_instance):
 
     for fk_id in to_remove:
         narrative = iati_models.Narrative.objects.get(pk=fk_id)
-        # instance = instances.get(pk=fk_id)
         narrative.delete()
 
     for narrative_data in to_add:
-        # narrative = iati_models.Narrative.objects.get(pk=fk_id)
-        # narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         iati_models.Narrative.objects.create(
             related_object=instance,
@@ -283,7 +269,6 @@ class BudgetSerializer(ModelSerializerNoValidation):
 
     class Meta:
         model = iati_models.Budget
-        # filter_class = BudgetFilter
         fields = (
             'activity',
             'id',
@@ -603,14 +588,19 @@ class ActivityAggregationSerializer(DynamicFieldsSerializer):
 
 class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
     # TODO: Link to organisation standard (hyperlinked)
-    ref = serializers.CharField(source="publisher.organisation.organisation_identifier")
+    ref = serializers.CharField(
+        source="publisher.organisation.organisation_identifier"
+    )
     type = CodelistSerializer(source="publisher.organisation.type")
     secondary_reporter = serializers.BooleanField()
 
     activity = serializers.CharField(write_only=True)
 
     narratives = OrganisationNarrativeSerializer(
-        source="publisher.organisation.name.narratives", many=True, required=False)
+        source="publisher.organisation.name.narratives",
+        many=True,
+        required=False
+    )
 
     class Meta:
         model = organisation_models.Organisation
@@ -622,50 +612,6 @@ class ReportingOrganisationSerializer(DynamicFieldsModelSerializer):
             'narratives',
             'activity',
         )
-
-    # def validate(self, data):
-    #     activity = get_or_raise(iati_models.Activity, data, 'activity')
-    #     # narratives = data.pop('narratives', [])
-
-    #     validated = validators.activity_reporting_org(
-    #         activity,
-    #         data.get('normalized_ref'),
-    #         data.get('type', {}).get('code'),
-    #         data.get('secondary_reporter'),
-    #         data.get('narratives')
-    #     )
-
-    #     # validated_narratives = validators.narratives(activity, narratives)
-
-    #     return handle_errors(validated)
-
-    # def create(self, validated_data):
-    #     activity = validated_data.get('activity')
-    #     narratives = validated_data.pop('narratives', [])
-
-    #     instance = iati_models.ActivityReportingOrganisation.objects.create(**validated_data)
-
-    #     save_narratives(instance, narratives, activity)
-
-    #     activity.modified = True
-    #     activity.save()
-
-    #     return instance
-
-    # def update(self, instance, validated_data):
-    #     activity = validated_data.get('activity')
-    #     narratives = validated_data.pop('narratives', [])
-
-    #     update_instance = iati_models.ActivityReportingOrganisation(**validated_data)
-    #     update_instance.id = instance.id
-    #     update_instance.save()
-
-    #     save_narratives(update_instance, narratives, activity)
-
-    #     activity.modified = True
-    #     activity.save()
-
-    #     return update_instance
 
 
 class ParticipatingOrganisationSerializer(ModelSerializerNoValidation):
@@ -864,39 +810,6 @@ class ActivityPolicyMarkerSerializer(ModelSerializerNoValidation):
 # TODO: change to NarrativeContainer
 class TitleSerializer(ModelSerializerNoValidation):
     narratives = NarrativeSerializer(many=True)
-
-    # def validate(self, data):
-    #     activity = get_or_raise(iati_models.Activity, data, 'activity')
-    #     narratives = data.pop('narratives', [])
-
-    #     print('goggo')
-
-    #     validated = validators.activity_title(
-    #         activity,
-    #         narratives,
-    #     )
-
-    #     return handle_errors(validated)
-
-    # def create(self, validated_data):
-    #     narratives = validated_data.pop('narratives', [])
-
-    #     instance = iati_models.Title.objects.create(**validated_data)
-
-    #     save_narratives(instance, narratives)
-
-    #     return instance
-
-    # def update(self, instance, validated_data):
-    #     narratives = validated_data.pop('narratives', [])
-
-    #     update_instance = iati_models.Title(**validated_data)
-    #     update_instance.id = instance.id
-    #     update_instance.save()
-
-    #     save_narratives(instance, narratives)
-
-    #     return update_instance
 
     class Meta:
         model = iati_models.Title
@@ -1185,7 +1098,6 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
 
     vocabulary = VocabularySerializer()
     # TODO: gives errors, why? - 2016-12-12
-    # budget_items = BudgetItemSerializer(source="budgetitem_set", required=False)
 
     activity = serializers.CharField(write_only=True)
 
@@ -1231,7 +1143,7 @@ class CountryBudgetItemsSerializer(ModelSerializerNoValidation):
         return update_instance
 
     def destroy(self, *args, **kwargs):
-        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        activity = iati_models.Activity.objects.get(pk=kwargs.get('pk'))
         activity.country_budget_items.delete()
 
         activity.modified = True
@@ -1305,7 +1217,6 @@ class ConditionsSerializer(ModelSerializerNoValidation):
             'id',
             'activity',
             'attached',
-            # 'conditions',
         )
 
     def validate(self, data):
@@ -1341,7 +1252,7 @@ class ConditionsSerializer(ModelSerializerNoValidation):
         return update_instance
 
     def destroy(self, *args, **kwargs):
-        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        activity = iati_models.Activity.objects.get(pk=kwargs.get('pk'))
         activity.condition.delete()
 
         activity.modified = True
@@ -1948,8 +1859,6 @@ class ResultIndicatorSerializer(ModelSerializerNoValidation):
             data.get('baseline_year'),
             data.get('baseline_value'),
             data.get('resultindicatorbaselinecomment', {}).get('narratives'),
-            # data.get('baseline', {}).get('year'),
-            # data.get('baseline', {}).get('value'),
         )
 
         return handle_errors(validated)
@@ -2795,9 +2704,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='activities:activity-transactions',
     )
-    # transactions = TransactionSerializer(
-    #     many=True,
-    #     source='transaction_set')
 
     document_links = DocumentLinkSerializer(
         many=True,
@@ -2931,7 +2837,6 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        title_data = validated_data.pop('title', None)
         title_narratives_data = validated_data.pop('title_narratives', None)
         activity_status = validated_data.pop('activity_status', None)
         activity_scope = validated_data.pop('activity_scope', None)
@@ -2941,11 +2846,9 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         default_aid_type = validated_data.pop('default_aid_type', None)
         default_tied_status = validated_data.pop('default_tied_status', None)
 
-        # update_instance = iati_models.Activity(**validated_data)
         update_instance = instance
         for (key, value) in validated_data.items():
             setattr(update_instance, key, value)
-        # update_instance.id = instance.id
 
         update_instance.activity_status = activity_status
         update_instance.scope = activity_scope
@@ -3017,20 +2920,3 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
         )
 
         validators = []
-
-
-# class CheckValidIATIMixin():
-
-#     def save(self, *args, **kwargs):
-#         instance = super(CheckValidIATIMixin, self).save(*args, **kwargs)
-
-#         # query activity and check if it is valid or not
-
-#         activity = instance.activity
-
-#         if (activity.is_valid_iati)
-
-#         activity.is_valid_iati = True
-#         activity.save()
-
-#         # check if activity has the required fields set
