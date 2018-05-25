@@ -26,7 +26,7 @@ class PostSaveActivityTestCase(TestCase):
         # flush the database, but it breaks tests ('no table blah blah exists')
         # and etc., so let's just manually remove objects which were created
         # during previous fixtures.
-        # TODO: get rid of fixtures and use factory-boy
+        # TODO: get rid of fixtures and use factory-boy everywhere.
         Sector.objects.all().delete()
 
         version = VersionFactory.create(code='2.01')
