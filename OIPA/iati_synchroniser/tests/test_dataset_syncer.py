@@ -3,6 +3,7 @@ from django.test import TestCase
 from iati_synchroniser.dataset_syncer import DatasetSyncer
 from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
+from iati_synchroniser.factory import synchroniser_factory
 
 from mock import MagicMock
 from iati.factory import iati_factory
@@ -24,9 +25,7 @@ class DatasetSyncerTestCase(TestCase):
         self.datasetSyncer = DatasetSyncer()
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')
-        iati_factory.OrganisationTypeFactory.create(
-            code='22', name='Multilateral'
-        )
+        iati_factory.OrganisationTypeFactory.create(code='22', name='Multilateral')
 
     def test_get_val_in_list_of_dicts(self):
         """
@@ -36,9 +35,7 @@ class DatasetSyncerTestCase(TestCase):
             {"key": "filetype", "value": "organisation"},
             {"key": "version", "value": "2.02"},
         ]
-        keyval = self.datasetSyncer.get_val_in_list_of_dicts(
-            "filetype", input_list
-        )
+        keyval = self.datasetSyncer.get_val_in_list_of_dicts("filetype", input_list)
 
         self.assertEqual(keyval, input_list[0])
 
@@ -96,18 +93,9 @@ class DatasetSyncerTestCase(TestCase):
             self.datasetSyncer.update_or_create_dataset(data)
 
         dataset = Dataset.objects.all()[0]
-        self.assertEqual(
-            "43aa0616-58a4-4d16-b0a9-1181e3871827",
-            dataset.iati_id
-        )
+        self.assertEqual("43aa0616-58a4-4d16-b0a9-1181e3871827", dataset.iati_id)
         self.assertEqual("cic-sl", dataset.name)
-        self.assertEqual(
-            "088States Ex-Yugoslavia unspecified2013",
-            dataset.title
-        )
+        self.assertEqual("088States Ex-Yugoslavia unspecified2013", dataset.title)
         self.assertEqual(publisher, dataset.publisher)
-        self.assertEqual(
-            "http://aidstream.org/files/xml/cic-sl.xml",
-            dataset.source_url
-        )
+        self.assertEqual("http://aidstream.org/files/xml/cic-sl.xml", dataset.source_url)
         self.assertEqual(1, dataset.filetype)

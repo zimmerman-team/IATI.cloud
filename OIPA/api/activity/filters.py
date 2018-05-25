@@ -19,7 +19,7 @@ from api.generics.filters import ToManyFilter
 from api.generics.filters import ToManyNotInFilter
 
 from rest_framework import filters
-from django.db.models import Q
+from django.db.models import Q, F
 
 from iati.models import *
 from iati.transaction.models import *
