@@ -1409,7 +1409,10 @@ def activity_planned_disbursement(
     receiver_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=receiver_org_ref)
-    receiver_org_activity = get_or_none(models.Activity, iati_identifier=receiver_org_activity_id)
+    receiver_org_activity = get_or_none(
+        models.Activity,
+        pk=receiver_org_activity_id,
+    )
 
     if not type_code:
         errors.append(
