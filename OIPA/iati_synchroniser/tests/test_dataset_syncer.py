@@ -17,6 +17,13 @@ class DatasetSyncerTestCase(TestCase):
     """
 
     def setUp(self):
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy
+        Publisher.objects.all().delete()
+
         self.datasetSyncer = DatasetSyncer()
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')
