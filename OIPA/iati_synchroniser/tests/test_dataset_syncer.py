@@ -4,7 +4,6 @@ from iati_synchroniser.dataset_syncer import DatasetSyncer
 from iati_synchroniser.models import Dataset
 from iati_synchroniser.models import Publisher
 from iati_synchroniser.factory import synchroniser_factory
-from django.core import management
 
 from mock import MagicMock
 from iati.factory import iati_factory
