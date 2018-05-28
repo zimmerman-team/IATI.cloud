@@ -1,12 +1,10 @@
+from django.test import RequestFactory
 from django.urls import reverse
-
-from django.test import RequestFactory, Client
-from rest_framework.test import APIClient
 from rest_framework import status
-from rest_framework.test import APITestCase
-from iati.factory import iati_factory
+from rest_framework.test import APIClient, APITestCase
 
-from iati.permissions.factories import OrganisationAdminGroupFactory, OrganisationUserFactory
+from iati.factory.iati_factory import ActivityFactory
+from iati.permissions.factories import OrganisationUserFactory
 
 
 class TestActivityEndpoints(APITestCase):
@@ -21,12 +19,13 @@ class TestActivityEndpoints(APITestCase):
     def test_activities_endpoint(self):
         url = reverse('activities:activity-list')
         expect_url = '/api/activities/'
-        assert url == expect_url, msg.format('activities endpoint should be located at {0}')
+        msg = 'activities endpoint should be located at {0}'
+        assert url == expect_url, msg.format(expect_url)
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
 
     def test_activity_detail_endpoint(self):
-        iati_factory.ActivityFactory.create(iati_identifier='activity_id')
+        ActivityFactory.create(iati_identifier='activity_id')
         url = reverse('activities:activity-detail', args={'activity_id'})
         msg = 'activity detail endpoint should be located at {0}'
         expect_url = '/api/activities/activity_id/'
@@ -41,7 +40,9 @@ class TestActivityEndpoints(APITestCase):
         assert url == expect_url, msg.format(expect_url)
         response = self.c.get(
             expect_url, {
-                'group_by': 'recipient_country', 'aggregations': 'count'}, format='json')
+                'group_by': 'recipient_country',
+                'aggregations': 'count'
+            }, format='json')
         self.assertTrue(status.is_success(response.status_code))
 
     def test_transactions_endpoint(self):

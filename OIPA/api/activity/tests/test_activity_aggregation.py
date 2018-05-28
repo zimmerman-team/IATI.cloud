@@ -1,15 +1,16 @@
 from django.test import TestCase
+from rest_framework.test import APIClient
+
 from iati.factory import iati_factory
 from iati.transaction import factories as transaction_factory
-from rest_framework.test import APIClient
-from decimal import Decimal
 
 
 class ActivityAggregationTestCase(TestCase):
     def setUp(self):
         """set up 2 activities with the shown specs
 
-        then create individual tests to check most used aggregation / group by combinations.
+        then create individual tests to check most used aggregation / group by
+        combinations.
 
         activity 1
             id - IATI-0001
@@ -71,7 +72,8 @@ class ActivityAggregationTestCase(TestCase):
             id='IATI-0002',
             iati_identifier='IATI-0002',
             iati_standard_version=first_activity.iati_standard_version)
-        first_sector = iati_factory.SectorFactory.build(code=11000, name='Sector 1')
+        first_sector = iati_factory.SectorFactory.build(
+            code=11000, name='Sector 1')
         activity_sector = iati_factory.ActivitySectorFactory.create(
             activity=first_activity,
             sector=first_sector,
@@ -84,7 +86,8 @@ class ActivityAggregationTestCase(TestCase):
             vocabulary=activity_sector.vocabulary
         )
 
-        second_sector = iati_factory.SectorFactory.build(code=11001, name='Sector 2')
+        second_sector = iati_factory.SectorFactory.build(
+            code=11001, name='Sector 2')
         iati_factory.ActivitySectorFactory.create(
             activity=second_activity,
             sector=second_sector,
@@ -104,7 +107,8 @@ class ActivityAggregationTestCase(TestCase):
             percentage=50
         )
 
-        second_country = iati_factory.CountryFactory.build(code="KE", name="Kenya")
+        second_country = iati_factory.CountryFactory.build(
+            code="KE", name="Kenya")
         iati_factory.ActivityRecipientCountryFactory.create(
             activity=second_activity,
             country=second_country,
@@ -113,9 +117,11 @@ class ActivityAggregationTestCase(TestCase):
 
         iati_factory.BudgetFactory.create(activity=first_activity, value=20000)
         iati_factory.BudgetFactory.create(activity=first_activity, value=50000)
-        iati_factory.BudgetFactory.create(activity=second_activity, value=80000)
+        iati_factory.BudgetFactory.create(
+            activity=second_activity, value=80000)
 
-        # transaction type = 1 (incoming funds), works the same for disbursements etc.
+        # transaction type = 1 (incoming funds), works the same for
+        # disbursements etc.
         first_transaction = transaction_factory.TransactionFactory.create(
             activity=first_activity,
             value=50000)
