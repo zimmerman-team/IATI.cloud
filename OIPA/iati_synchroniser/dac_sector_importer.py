@@ -28,7 +28,7 @@ class DacSectorImporter():
         current_dac3 = None
         dac5_vocabulary = SectorVocabulary.objects.get(pk=1)
 
-        for key, value in sectors.iteritems():
+        for key, value in sectors.items():
             if len(key) == 3:
                 # dac 3
                 current_dac3, created = SectorCategory.objects.get_or_create(

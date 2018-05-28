@@ -79,7 +79,7 @@ class XMLRenderer(BaseRenderer):
                     # currently actuals are stored on the resultindicatorperiod, hence we need
                     # to remove empty actuals here.
                     if key in ['actual', 'target']:
-                        if value.items()[0][0] != 'value':
+                        if list(value.items())[0][0] != 'value':
                             continue
 
                     self._to_xml(etree.SubElement(xml, key.replace('_', '-')), value)

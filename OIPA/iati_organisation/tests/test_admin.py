@@ -33,7 +33,7 @@ class OrganisationAdminTestCase(TestCase):
         organisation_admin = OrganisationAdmin(self.organisation, self.site)
         patterns = []
         for url in organisation_admin.get_urls():
-            patterns.append(url.regex.pattern)
+            patterns.append(url.pattern.regex.pattern)
 
         added_patterns = ['^update-primary-names/$']
 
@@ -49,5 +49,5 @@ class OrganisationAdminTestCase(TestCase):
         organisation_admin.get_json_data = MagicMock(return_value=data)
         organisation_admin.update_primary_names(request)
 
-        org = Organisation.objects.all()[0]
+        org = Organisation.objects.last()
         self.assertEqual(org.primary_name, "Org. name")

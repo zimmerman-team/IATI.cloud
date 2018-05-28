@@ -1,6 +1,9 @@
-import django.utils.http
-from rest_framework import serializers
 import json
+
+from django.utils.encoding import smart_text
+import django.utils.http
+
+from rest_framework import serializers
 
 
 class GeometryField(serializers.Field):
@@ -23,7 +26,9 @@ class EncodedHyperlinkedIdentityField(
         if obj.pk is None:
             return None
         lookup_value = getattr(obj, self.lookup_field)
-        quoted_lookup_value = django.utils.http.urlquote(lookup_value)
+        quoted_lookup_value = django.utils.http.urlquote(
+            smart_text(lookup_value)
+        )
 
         kwargs = {self.lookup_url_kwarg: quoted_lookup_value}
         return self.reverse(

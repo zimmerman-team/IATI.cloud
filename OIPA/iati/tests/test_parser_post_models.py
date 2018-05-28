@@ -10,7 +10,7 @@ from iati.transaction.models import TransactionSector, TransactionRecipientCount
 from iati_codelists.factory.codelist_factory import VersionFactory, SectorFactory, BudgetTypeFactory, BudgetStatusFactory
 from iati_vocabulary.factory.vocabulary_factory import SectorVocabularyFactory
 from iati_synchroniser.factory.synchroniser_factory import DatasetFactory
-from iati.models import BudgetSector
+from iati.models import BudgetSector, Sector
 from iati.parser import post_save
 
 
@@ -21,6 +21,13 @@ class PostSaveActivityTestCase(TestCase):
 
     def setUp(self):
         self.parser = Parser_201(None)
+
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy everywhere.
+        Sector.objects.all().delete()
 
         version = VersionFactory.create(code='2.01')
         dataset = DatasetFactory.create(name='dataset-4')

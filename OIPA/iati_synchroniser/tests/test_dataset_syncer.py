@@ -17,7 +17,13 @@ class DatasetSyncerTestCase(TestCase):
     """
 
     def setUp(self):
-        management.call_command('flush', interactive=False, verbosity=0)
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy everywhere.
+        Publisher.objects.all().delete()
+
         self.datasetSyncer = DatasetSyncer()
         iati_factory.LanguageFactory.create(code='en', name='English')
         iati_factory.VersionFactory.create(code='2.02', name='2.02')
@@ -68,7 +74,7 @@ class DatasetSyncerTestCase(TestCase):
             data = json.load(fixture).get('result')[0]
             self.datasetSyncer.update_or_create_publisher(data)
 
-        publisher = Publisher.objects.all()[0]
+        publisher = Publisher.objects.last()
         self.assertEqual("NP-SWC-27693", publisher.publisher_iati_id)
         self.assertEqual("Aasaman Nepal", publisher.display_name)
         self.assertEqual("aasaman", publisher.name)

@@ -126,7 +126,7 @@ class OrganisationSaveTestCase(TestCase):
         self.assertEqual(instance.default_currency.code, currency.code)
 
         name = instance.name
-        name_narratives = name.narratives.all()
+        name_narratives = name.narratives.all().order_by('pk')
         self.assertEqual(name_narratives[0].content, data['name']['narratives'][0]['text'])
         self.assertEqual(name_narratives[1].content, data['name']['narratives'][1]['text'])
 

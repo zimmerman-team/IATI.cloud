@@ -3,10 +3,10 @@ from django import db
 from django.conf import settings
 import hashlib
 
-from IATI_2_02 import Parse as IATI_202_Parser
-from IATI_2_01 import Parse as IATI_201_Parser
-from IATI_1_05 import Parse as IATI_105_Parser
-from IATI_1_03 import Parse as IATI_103_Parser
+from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
+from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati.filegrabber import FileGrabber
@@ -42,7 +42,7 @@ class ParseManager():
         response = file_grabber.get_the_file(self.url)
 
         from iati_synchroniser.models import DatasetNote
-        if not response or response.code != 200:
+        if not response or response.status_code != 200:
             self.valid_dataset = False
             note = DatasetNote(
                 dataset=self.dataset,
@@ -59,11 +59,11 @@ class ParseManager():
             self.dataset.save()
             return
 
-        iati_file = response.read()
+        iati_file = response.content
         iati_file_str = str(iati_file)
 
         hasher = hashlib.sha1()
-        hasher.update(iati_file_str)
+        hasher.update(iati_file_str.encode('utf-8'))
         sha1 = hasher.hexdigest()
 
         if dataset.sha1 == sha1:

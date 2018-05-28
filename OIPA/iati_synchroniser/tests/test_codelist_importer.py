@@ -17,6 +17,16 @@ class CodelistImporterTestCase(TestCase):
         Test code list importer functionality
     """
 
+    def setUp(self):
+        # XXX: previously, django's 'flush' management command was called to
+        # flush the database, but it breaks tests ('no table blah blah exists')
+        # and etc., so let's just manually remove objects which were created
+        # during previous fixtures.
+        # TODO: get rid of fixtures and use factory-boy everywhere.
+        Country.objects.all().delete()
+        AidType.objects.all().delete()
+        AidTypeCategory.objects.all().delete()
+
     def test_add_aid_type_category_item(self):
         """
         Test adding an AidTypeCategory code list item

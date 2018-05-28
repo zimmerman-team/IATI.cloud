@@ -1,4 +1,4 @@
-from IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
 from lxml.builder import E
 
 from iati import models

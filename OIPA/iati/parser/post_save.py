@@ -154,7 +154,7 @@ def set_sector_transaction(activity):
     if not activity.transaction_set.count():
         return False
 
-    t = activity.transaction_set.all()[0]
+    t = activity.transaction_set.all().order_by('pk').first()
     # set on transaction?
     if t.transactionsector_set.count():
         # its set on transactions

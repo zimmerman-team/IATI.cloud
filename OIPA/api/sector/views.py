@@ -5,7 +5,7 @@ from api.activity.views import ActivityList
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
-
+from api.cache import QueryParamsKeyConstructor
 
 from api.generics.views import DynamicListView, DynamicDetailView
 
@@ -32,6 +32,7 @@ class SectorList(CacheResponseMixin, DynamicListView):
     queryset = iati.models.Sector.objects.all()
     serializer_class = serializers.SectorSerializer
     fields = ('url', 'code', 'name')
+    list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class SectorDetail(CacheResponseMixin, RetrieveAPIView):

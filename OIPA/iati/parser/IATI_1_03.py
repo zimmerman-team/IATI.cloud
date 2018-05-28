@@ -1,4 +1,4 @@
-from IATI_1_05 import Parse as IATI_105_Parser
+from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
 from iati import models
 from geodata.models import Country, Region
 import dateutil.parser

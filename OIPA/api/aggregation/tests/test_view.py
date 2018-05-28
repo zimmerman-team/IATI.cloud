@@ -186,7 +186,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
         renamed_fields = group_by.get_renamed_fields()
 
         self.assertEqual(len(renamed_fields), 1)
-        self.assertItemsEqual(renamed_fields.keys(), ["id_renamed"])
+        self.assertCountEqual(renamed_fields.keys(), ["id_renamed"])
 
     def test_get_renamed_fields_with_multiple_renaming(self):
         """
@@ -203,7 +203,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
         renamed_fields = group_by.get_renamed_fields()
 
         self.assertEqual(len(renamed_fields), 2)
-        self.assertItemsEqual(renamed_fields.keys(), ["id_renamed", "name_renamed"])
+        self.assertCountEqual(renamed_fields.keys(), ["id_renamed", "name_renamed"])
 
     def test_get_renamed_fields_partly(self):
         """
@@ -223,7 +223,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
         # self.assertDictEqual(renamed_fields, {
         #     "id_renamed": F("id")
         #     })
-        self.assertItemsEqual(renamed_fields.keys(), ["id_renamed"])
+        self.assertCountEqual(renamed_fields.keys(), ["id_renamed"])
 
     def test_get_fields_no_renaming(self):
         """
@@ -264,7 +264,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
             queryset=self.queryset,
         )
 
-        self.assertItemsEqual(group_by.get_fields(), ["id_renamed", "name"])
+        self.assertCountEqual(group_by.get_fields(), ["id_renamed", "name"])
 
     def test_serialize_result_expands_key_given_results_array(self):
         """
@@ -302,7 +302,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         new_results = group_by.serialize_results(results, request)
 
-        self.assertEqual(new_results, [
+        self.assertEqual(list(new_results), [
             {
                 "key": OrderedDict([
                         ('iati_identifier', 'test'),
@@ -351,7 +351,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
 
         new_results = group_by.serialize_results(results, request)
 
-        self.assertItemsEqual(new_results, [
+        self.assertCountEqual(new_results, [
             {
                 "key": {
                     "iati_identifier": "test",

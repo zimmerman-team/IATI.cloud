@@ -1,4 +1,4 @@
-from IATI_2_02 import Parse as IATI_202_Parser
+from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
 
 # from datetime import datetime
 #

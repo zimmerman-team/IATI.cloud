@@ -7,7 +7,6 @@ import datetime
 from django.core import management
 
 # Runs each test in a transaction and flushes database
-from django.test import TestCase as DjangoTestCase
 from django.test import TestCase
 
 from lxml import etree
@@ -59,10 +58,10 @@ def setUpModule():
 
 
 def tearDownModule():
-    management.call_command('flush', interactive=False, verbosity=0)
+    pass
 
 
-class ParserSetupTestCase(DjangoTestCase):
+class ParserSetupTestCase(TestCase):
 
     @classmethod
     def setUpClass(self):

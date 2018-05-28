@@ -1,13 +1,12 @@
 from __future__ import division
 
 import threading
-import unicodedata
 from functools import reduce
 
 import psycopg2
 from django.db import connection
 from django.db.models import Q
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_text
 
 
 def get_or_none(model, *args, **kwargs):
@@ -64,13 +63,16 @@ def findnth_occurence_in_string(haystack, needle, n):
     return len(haystack) - len(parts[-1]) - len(needle)
 
 
+# XXX: use this everywhere insread of smart_text() ?
 def normalise_unicode_string(any_str):
     """
-    Cleanup up a string.
+    Cleanup up a bytestring.
     :param any_str: Any string
-    :return: Unicode string
+    :return: String
     """
     if str is not None:
-        if isinstance(any_str, unicode):
-            any_str = unicodedata.normalize("NFKD", any_str)
+        # Python 3 renamed the unicode type to str, the old str type has been
+        # replaced by bytes:
+        if isinstance(any_str, str):
+            any_str = smart_text(any_str, 'utf-8')
     return any_str

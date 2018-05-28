@@ -14,6 +14,7 @@ from api.generics.views import DynamicListView, DynamicDetailView, \
     DynamicListCRUDView, DynamicDetailCRUDView
 from api.transaction.serializers import TransactionSerializer
 from api.transaction.filters import TransactionFilter
+from api.cache import QueryParamsKeyConstructor
 
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
 
@@ -139,7 +140,7 @@ class ActivityAggregations(AggregationView):
             fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
-            serializer_fields=('url', 'code', 'name', 'location'),
+            serializer_fields=('url', 'code', 'name', 'location', 'region'),
             name_search_field='recipient_country__name',
             renamed_name_search_field='recipient_country_name',
         ),
@@ -376,6 +377,8 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_expenditure_value',
         'activity_plus_child_budget_value')
 
+    list_cache_key_func = QueryParamsKeyConstructor()
+
 
 class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
 
@@ -485,6 +488,7 @@ class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     """
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
+    list_cache_key_func = QueryParamsKeyConstructor()
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')

@@ -1,5 +1,5 @@
 import json
-import urllib2
+import urllib
 import datetime
 
 from iati_synchroniser.models import Publisher, Dataset
@@ -23,10 +23,9 @@ class DatasetSyncer():
     #     self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
     def get_data(self, url):
-        req = urllib2.Request(url)
-        opener = urllib2.build_opener()
-        f = opener.open(req)
-        json_objects = json.load(f)
+        req = urllib.request.Request(url)
+        response = urllib.request.urlopen(req).read()
+        json_objects = json.loads(response.decode('utf-8'))
         return json_objects
 
     def get_val_in_list_of_dicts(self, key, dicts):

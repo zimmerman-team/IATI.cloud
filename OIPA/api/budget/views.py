@@ -150,7 +150,7 @@ class BudgetAggregations(AggregationView):
             renamed_fields="recipient_country",
             queryset=Country.objects.all(),
             serializer=CountrySerializer,
-            serializer_fields=('url', 'code', 'name', 'location'),
+            serializer_fields=('url', 'code', 'name', 'location', 'region'),
             name_search_field='activity__recipient_country__name',
             renamed_name_search_field='recipient_country_name',
         ),

@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from api.transaction.serializers import TransactionSerializer
 from iati.transaction.factories import TransactionFactory
 

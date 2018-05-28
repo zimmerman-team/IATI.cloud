@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib.gis.geos import GEOSGeometry, Point
 
-from iati_parser import IatiParser
+from iati.parser.iati_parser import IatiParser
 from iati import models
 from iati.transaction import models as transaction_models
 from iati_codelists import models as codelist_models
@@ -3127,7 +3127,7 @@ class Parse(IatiParser):
         location = []
 
         if locations:
-            location = filter(lambda x: x.ref == ref, locations)
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
@@ -3230,7 +3230,7 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = filter(lambda x: x.ref == ref, locations)
+        location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
