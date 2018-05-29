@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
-from iati import models as iati_models
+from api.codelist.serializers import (
+    CodelistSerializer, NarrativeContainerSerializer
+)
 from api.generics.serializers import DynamicFieldsModelSerializer
-from api.codelist.serializers import CodelistSerializer
-from api.codelist.serializers import NarrativeContainerSerializer
+from iati import models as iati_models
 
 
 class DocumentCategorySerializer(serializers.ModelSerializer):
@@ -42,5 +43,4 @@ class DocumentSerializer(DynamicFieldsModelSerializer):
             'id',
             'document_name',
             'long_url',
-            #'document_content',
             'document_link')

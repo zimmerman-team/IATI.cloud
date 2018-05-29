@@ -1,26 +1,11 @@
-
-from django.test import TestCase  # Runs each test in a transaction and flushes database
-from unittest import skip
-import datetime
-
-from django.test import RequestFactory, Client
-from rest_framework.test import APIClient
-from iati.factory import iati_factory
-from iati.transaction import factories as transaction_factory
-from iati_codelists.factory import codelist_factory
-from iati_vocabulary.factory import vocabulary_factory
-
-from api.activity import serializers
-
-from iati import models as iati_models
-from iati.transaction import models as transaction_models
-
-from lxml.builder import E
+from django.conf import settings
+# Runs each test in a transaction and flushes database:
+from django.test import RequestFactory, TestCase
 from lxml import etree as ET
+from lxml.builder import E
+from rest_framework.test import APIClient
 
 from iati.factory.utils import _create_test_activity
-
-from django.conf import settings
 
 # narrative = getattr(E, 'narrative')
 iati_activities = getattr(E, 'iati-activities')
@@ -137,8 +122,8 @@ class ActivityXMLTestCase(TestCase):
 
     def setUp(self):
         self.activity = _create_test_activity()
-        # TODO: generate full activity example so we can parse this and test the
-        # result - 2016-12-14
+        # TODO: generate full activity example so we can parse this and test
+        # the result - 2016-12-14
 
     def test_create_activity(self):
         res = self.c.get(
@@ -147,33 +132,33 @@ class ActivityXMLTestCase(TestCase):
 
         activity = self.activity
         reporting_org1 = activity.publisher.organisation
-        # reporting_org2 = activity.reporting_organisations.all()[1]
         description1 = activity.description_set.all()[0]
         description2 = activity.description_set.all()[1]
         participating_org1 = activity.participating_organisations.all()[0]
         other_identifier1 = activity.otheridentifier_set.all()[0]
-        # activity_status1 = activity.activity_status
         recipient_country1 = activity.activityrecipientcountry_set.all()[0]
         recipient_region1 = activity.activityrecipientregion_set.all()[0]
         sector1 = activity.activitysector_set.all()[0]
         document_link1 = activity.documentlink_set.all()[0]
-        document_link_category1 = document_link1.documentlinkcategory_set.all()[0]
-        document_link_language1 = document_link1.documentlinklanguage_set.all()[0]
+        document_link_category1 = document_link1.documentlinkcategory_set\
+            .all()[0]
+        document_link_language1 = document_link1.documentlinklanguage_set\
+            .all()[0]
         location1 = activity.location_set.all()[0]
-        location_administrative1 = location1.locationadministrative_set.all()[0]
+        location_administrative1 = location1.locationadministrative_set\
+            .all()[0]
         transaction1 = activity.transaction_set.all()[0]
         provider_org1 = transaction1.provider_organisation
         receiver_org1 = transaction1.receiver_organisation
         transaction_sector1 = transaction1.transactionsector_set.all()[0]
-        transaction_recipient_country1 = transaction1.transactionrecipientcountry_set.all()[0]
-        transaction_recipient_region1 = transaction1.transactionrecipientregion_set.all()[0]
+        transaction_recipient_country1 = transaction1\
+            .transactionrecipientcountry_set.all()[0]
+        transaction_recipient_region1 = transaction1\
+            .transactionrecipientregion_set.all()[0]
         budget1 = activity.budget_set.all()[0]
         conditions1 = activity.conditions
         condition1 = conditions1.condition_set.all()[0]
         condition2 = conditions1.condition_set.all()[1]
-        # conditions2 = activity.conditions_set.all()[1]
-        # condition3 = conditions2.condition_set.all()[0]
-        # condition4 = conditions2.condition_set.all()[1]
         contact_info1 = activity.contactinfo_set.all()[0]
         country_budget_item1 = activity.country_budget_items
         budget_item1 = country_budget_item1.budgetitem_set.all()[0]
@@ -182,28 +167,29 @@ class ActivityXMLTestCase(TestCase):
         legacy_data2 = activity.legacydata_set.all()[1]
         crs_add1 = activity.crsadd_set.all()[0]
         other_flag1 = crs_add1.other_flags.all()[0]
-        crs_add_loan_terms1 = crs_add1.loan_terms
         related_activity1 = activity.relatedactivity_set.all()[0]
         policy_marker1 = activity.activitypolicymarker_set.all()[0]
         activity_date1 = activity.activitydate_set.all()[0]
         planned_disbursement1 = activity.planneddisbursement_set.all()[0]
-        planned_disbursement_provider1 = planned_disbursement1.provider_organisation
-        planned_disbursement_receiver1 = planned_disbursement1.receiver_organisation
+        planned_disbursement_provider1 = planned_disbursement1\
+            .provider_organisation
+        planned_disbursement_receiver1 = planned_disbursement1\
+            .receiver_organisation
         result1 = activity.result_set.all()[0]
         result_indicator1 = result1.resultindicator_set.all()[0]
-        result_indicator_reference1 = result_indicator1.resultindicatorreference_set.all()[0]
-        result_indicator_period1 = result_indicator1.resultindicatorperiod_set.all()[0]
-        result_indicator_period_target_location1 = result_indicator_period1.resultindicatorperiodtargetlocation_set.all()[
-            0]
-        result_indicator_period_target_dimension1 = result_indicator_period1.resultindicatorperiodtargetdimension_set.all()[
-            0]
-        result_indicator_period_target_comment1 = result_indicator_period1.resultindicatorperiodtargetcomment
+        result_indicator_reference1 = result_indicator1\
+            .resultindicatorreference_set.all()[0]
+        result_indicator_period1 = result_indicator1.resultindicatorperiod_set\
+            .all()[0]
+        result_indicator_period_target_location1 = result_indicator_period1.\
+            resultindicatorperiodtargetlocation_set.all()[0]
+        result_indicator_period_target_dimension1 = result_indicator_period1.\
+            resultindicatorperiodtargetdimension_set.all()[0]
 
-        result_indicator_period_actual_location1 = result_indicator_period1.resultindicatorperiodactuallocation_set.all()[
-            0]
-        result_indicator_period_actual_dimension1 = result_indicator_period1.resultindicatorperiodactualdimension_set.all()[
-            0]
-        result_indicator_period_actual_comment1 = result_indicator_period1.resultindicatorperiodactualcomment
+        result_indicator_period_actual_location1 = result_indicator_period1.\
+            resultindicatorperiodactuallocation_set.all()[0]
+        result_indicator_period_actual_dimension1 = result_indicator_period1.\
+            resultindicatorperiodactualdimension_set.all()[0]
 
         location01 = related_activity1.ref_activity.location_set.all()[0]
         location02 = related_activity1.ref_activity.location_set.all()[1]
@@ -216,19 +202,28 @@ class ActivityXMLTestCase(TestCase):
         xml = iati_activities(
             ET.Comment(settings.EXPORT_COMMENT),
             iati_activity(
-                iati_identifier(related_activity1.ref_activity.iati_identifier),
+                iati_identifier(
+                    related_activity1.ref_activity.iati_identifier
+                ),
                 reporting_org(
                     narrative("reporting_organisation1"),
                     narrative("reporting_organisation2"),
                     **{
                         "ref": reporting_org1.organisation_identifier,
                         "type": reporting_org1.type.code,
-                        "secondary-reporter": boolToNum(activity.secondary_reporter)
+                        "secondary-reporter": boolToNum(
+                            activity.secondary_reporter
+                        )
                     }
                 ),
-                activity_status(
-                    **{"code": str(related_activity1.ref_activity.activity_status.code)}),
-                activity_scope(**{"code": str(related_activity1.ref_activity.scope.code)}),
+                activity_status(**{
+                    "code": str(
+                        related_activity1.ref_activity.activity_status.code
+                    )
+                }),
+                activity_scope(**{
+                    "code": str(related_activity1.ref_activity.scope.code)
+                }),
                 location(
                     location_reach(code=location01.location_reach.code),
                     location_id(**{
@@ -240,14 +235,18 @@ class ActivityXMLTestCase(TestCase):
                     activity_description(),
                     point(
                         pos(
-                            "{} {}".format(location01.point_pos.y, location01.point_pos.x)),
+                            "{} {}".format(
+                                location01.point_pos.y, location01.point_pos.x
+                            )),
                         **{
                             "srsName": location01.point_srs_name,
                         }
                     ),
                     exactness(code=location01.exactness.code),
                     location_class(code=location01.location_class.code),
-                    feature_designation(code=location01.feature_designation.code),
+                    feature_designation(
+                        code=location01.feature_designation.code
+                    ),
                     **{
                         "ref": location01.ref,
                     }
@@ -263,32 +262,52 @@ class ActivityXMLTestCase(TestCase):
                     activity_description(),
                     point(
                         pos(
-                            "{} {}".format(location02.point_pos.y, location02.point_pos.x)),
+                            "{} {}".format(
+                                location02.point_pos.y, location02.point_pos.x
+                            )),
                         **{
                             "srsName": location02.point_srs_name,
                         }
                     ),
                     exactness(code=location02.exactness.code),
                     location_class(code=location02.location_class.code),
-                    feature_designation(code=location02.feature_designation.code),
+                    feature_designation(
+                        code=location02.feature_designation.code
+                    ),
                     **{
                         "ref": location02.ref,
                     }
                 ),
                 collaboration_type(
-                    **{"code": str(related_activity1.ref_activity.collaboration_type.code)}),
+                    **{"code": str(
+                        related_activity1.ref_activity.collaboration_type.code
+                    )}),
                 default_flow_type(
-                    **{"code": str(related_activity1.ref_activity.default_flow_type.code)}),
+                    **{"code": str(
+                        related_activity1.ref_activity.default_flow_type.code
+                    )}),
                 default_finance_type(
-                    **{"code": str(related_activity1.ref_activity.default_finance_type.code)}),
+                    **{"code": str(
+                        related_activity1.ref_activity.default_finance_type
+                        .code
+                    )}),
                 default_aid_type(
-                    **{"code": str(related_activity1.ref_activity.default_aid_type.code)}),
+                    **{"code": str(
+                        related_activity1.ref_activity.default_aid_type.code
+                    )}),
                 default_tied_status(
-                    **{"code": str(related_activity1.ref_activity.default_tied_status.code)}),
+                    **{"code": str(
+                        related_activity1.ref_activity.default_tied_status.code
+                    )}),
                 transaction(
-                    transaction_type(**{"code": transaction2.transaction_type.code}),
+                    transaction_type(**{
+                        "code": transaction2.transaction_type.code
+                    }),
                     transaction_date(
-                        **{"iso-date": transaction2.transaction_date.isoformat()}),
+                        **{
+                            "iso-date": transaction2.transaction_date
+                            .isoformat()
+                        }),
                     value(
                         str(transaction2.value),
                         **{
@@ -296,7 +315,9 @@ class ActivityXMLTestCase(TestCase):
                             "currency": transaction2.currency.code
                         }
                     ),
-                    disbursement_channel(**{"code": transaction2.disbursement_channel.code}),
+                    disbursement_channel(
+                        **{"code": transaction2.disbursement_channel.code
+                    }),
                     flow_type(**{"code": transaction2.flow_type.code}),
                     finance_type(**{"code": transaction2.finance_type.code}),
                     aid_type(**{"code": transaction2.aid_type.code}),
@@ -308,7 +329,8 @@ class ActivityXMLTestCase(TestCase):
                 ),
                 **{
                     "hierarchy": str(related_activity1.ref_activity.hierarchy),
-                    "{http://www.w3.org/XML/1998/namespace}lang": related_activity1.ref_activity.default_lang.code,
+                    "{http://www.w3.org/XML/1998/namespace}lang": related_activity1  # NOQA: E501
+                    .ref_activity.default_lang.code,
                 }
             ),
             iati_activity(
@@ -319,7 +341,9 @@ class ActivityXMLTestCase(TestCase):
                     **{
                         "ref": reporting_org1.organisation_identifier,
                         "type": reporting_org1.type.code,
-                        "secondary-reporter": boolToNum(activity.secondary_reporter)
+                        "secondary-reporter": boolToNum(
+                            activity.secondary_reporter
+                        )
                     }
                 ),
                 title(
@@ -352,8 +376,12 @@ class ActivityXMLTestCase(TestCase):
                 ),
                 other_identifier(
                     owner_org(
-                        narrative(other_identifier1.narratives.all()[0].content),
-                        narrative(other_identifier1.narratives.all()[1].content),
+                        narrative(
+                            other_identifier1.narratives.all()[0].content
+                        ),
+                        narrative(
+                            other_identifier1.narratives.all()[1].content
+                        ),
                         **{
                             "ref": other_identifier1.owner_ref,
                         }
@@ -363,7 +391,9 @@ class ActivityXMLTestCase(TestCase):
                         "type": other_identifier1.type.code,
                     }
                 ),
-                activity_status(**{"code": str(activity.activity_status.code)}),
+                activity_status(
+                    **{"code": str(activity.activity_status.code
+                )}),
                 activity_date(
                     **{
                         "iso-date": activity_date1.iso_date.isoformat(),
@@ -386,7 +416,10 @@ class ActivityXMLTestCase(TestCase):
                     email(contact_info1.email),
                     website(contact_info1.website),
                     mailing_address(
-                        narrative("Transparency House, The Street, Town, City, Postcode")
+                        narrative(
+                            "Transparency House, The Street, Town, City, \
+                            Postcode"
+                        )
                     ),
                     ** {
                         "type": contact_info1.type.code,
@@ -433,21 +466,24 @@ class ActivityXMLTestCase(TestCase):
                     }),
                     point(
                         pos(
-                            "{} {}".format(location1.point_pos.y, location1.point_pos.x)),
+                            "{} {}".format(
+                                location1.point_pos.y,
+                                location1.point_pos.x
+                            )),
                         **{
                             "srsName": location1.point_srs_name,
                         }
                     ),
                     exactness(code=location1.exactness.code),
                     location_class(code=location1.location_class.code),
-                    feature_designation(code=location1.feature_designation.code),
+                    feature_designation(
+                        code=location1.feature_designation.code
+                    ),
                     **{
                         "ref": location1.ref,
                     }
                 ),
                 sector(
-                    # narrative("sector1"),
-                    # narrative("sector2"),
                     **{
                         "code": sector1.sector.code,
                         "vocabulary": sector1.vocabulary.code,
@@ -479,38 +515,59 @@ class ActivityXMLTestCase(TestCase):
                         "significance": policy_marker1.significance.code
                     }
                 ),
-                collaboration_type(**{"code": str(activity.collaboration_type.code)}),
-                default_flow_type(**{"code": str(activity.default_flow_type.code)}),
-                default_finance_type(**{"code": str(activity.default_finance_type.code)}),
-                default_aid_type(**{"code": str(activity.default_aid_type.code)}),
-                default_tied_status(**{"code": str(activity.default_tied_status.code)}),
+                collaboration_type(**{
+                    "code": str(activity.collaboration_type.code)
+                }),
+                default_flow_type(**{
+                    "code": str(activity.default_flow_type.code)
+                }),
+                default_finance_type(**{
+                    "code": str(activity.default_finance_type.code)
+                }),
+                default_aid_type(**{
+                    "code": str(activity.default_aid_type.code)
+                }),
+                default_tied_status(**{
+                    "code": str(activity.default_tied_status.code)
+                }),
                 planned_disbursement(
-                    period_start(**{"iso-date": planned_disbursement1.period_start.isoformat()}),
-                    period_end(**{"iso-date": planned_disbursement1.period_end.isoformat()}),
+                    period_start(**{
+                        "iso-date": planned_disbursement1.period_start
+                        .isoformat()
+                    }),
+                    period_end(**{
+                        "iso-date": planned_disbursement1.period_end
+                        .isoformat()
+                    }),
                     value(
                         str(planned_disbursement1.value),
                         **{
                             "currency": planned_disbursement1.currency.code,
-                            "value-date": planned_disbursement1.value_date.isoformat()
+                            "value-date": planned_disbursement1.value_date
+                            .isoformat()
                         }),
                     provider_org(
                         narrative("Agency B"),
                         **{
-                            "provider-activity-id": planned_disbursement_provider1.provider_activity_ref,
+                            "provider-activity-id": planned_disbursement_provider1  # NOQA: E501
+                            .provider_activity_ref,
                             "type": planned_disbursement_provider1.type.code,
                             "ref": planned_disbursement_provider1.ref
                         }),
                     receiver_org(
                         narrative("Agency A"),
                         **{
-                            "receiver-activity-id": planned_disbursement_receiver1.receiver_activity_ref,
+                            "receiver-activity-id": planned_disbursement_receiver1  # NOQA: E501
+                            .receiver_activity_ref,
                             "type": planned_disbursement_receiver1.type.code,
                             "ref": planned_disbursement_receiver1.ref
                         }),
                     **{"type": planned_disbursement1.type.code}
                 ),
                 budget(
-                    period_start(**{'iso-date': budget1.period_start.isoformat()}),
+                    period_start(**{
+                        'iso-date': budget1.period_start.isoformat()
+                    }),
                     period_end(**{'iso-date': budget1.period_end.isoformat()}),
                     value(
                         str(budget1.value),
@@ -529,7 +586,9 @@ class ActivityXMLTestCase(TestCase):
                 ),
                 transaction(
                     transaction_type(code=transaction1.transaction_type.code),
-                    transaction_date(**{'iso-date': transaction1.transaction_date.isoformat()}),
+                    transaction_date(**{
+                        'iso-date': transaction1.transaction_date.isoformat()
+                    }),
                     value(str(transaction1.value), **{
                         "currency": transaction1.currency.code,
                         "value-date": transaction1.value_date.isoformat()
@@ -542,17 +601,21 @@ class ActivityXMLTestCase(TestCase):
                         narrative("transaction_provider_org1_1"),
                         narrative("transaction_provider_org1_2"),
                         **{
-                            "provider-activity-id": provider_org1.provider_activity_ref,
+                            "provider-activity-id": provider_org1
+                            .provider_activity_ref,
                             "ref": provider_org1.ref,
                         }),
                     receiver_org(
                         narrative("transaction_receiver_org1_1"),
                         narrative("transaction_receiver_org1_2"),
                         **{
-                            "receiver-activity-id": receiver_org1.receiver_activity_ref,
+                            "receiver-activity-id": receiver_org1
+                            .receiver_activity_ref,
                             "ref": receiver_org1.ref,
                         }),
-                    disbursement_channel(code=transaction1.disbursement_channel.code),
+                    disbursement_channel(
+                        code=transaction1.disbursement_channel.code
+                    ),
                     sector(**{
                         "vocabulary": transaction_sector1.vocabulary.code,
                         "vocabulary-uri": transaction_sector1.vocabulary_uri,
@@ -562,8 +625,10 @@ class ActivityXMLTestCase(TestCase):
                         "code": transaction_recipient_country1.country.code,
                     }),
                     recipient_region(**{
-                        "vocabulary": transaction_recipient_region1.vocabulary.code,
-                        "vocabulary-uri": transaction_recipient_region1.vocabulary_uri,
+                        "vocabulary": transaction_recipient_region1.vocabulary
+                        .code,
+                        "vocabulary-uri": transaction_recipient_region1
+                        .vocabulary_uri,
                         "code": transaction_recipient_region1.region.code,
                     }),
                     flow_type(code=transaction1.flow_type.code),
@@ -582,7 +647,8 @@ class ActivityXMLTestCase(TestCase):
                     E.category(code=document_link_category1.category.code),
                     E.language(code=document_link_language1.language.code),
                     getattr(E, 'document-date')(**
-                                                {"iso-date": document_link1.iso_date.isoformat()}),
+                        {"iso-date": document_link1.iso_date.isoformat()}
+                    ),
                     **{
                         "format": document_link1.file_format.code,
                         "url": document_link1.url,
@@ -619,19 +685,6 @@ class ActivityXMLTestCase(TestCase):
                     ),
                     **{"attached": boolToNum(conditions1.attached), }
                 ),
-                # conditions(
-                #     condition(
-                #         narrative("Conditions text3"),
-                #         narrative("Conditions texte3"),
-                #         **{"type": condition1.type.code,}
-                #         ),
-                #     condition(
-                #         narrative("Conditions text4"),
-                #         narrative("Conditions texte4"),
-                #         **{"type": condition2.type.code,}
-                #         ),
-                #     **{"attached": boolToNum(conditions2.attached),}
-                #     ),
                 result(
                     title(narrative("Result title")),
                     description(narrative("Result description text")),
@@ -640,9 +693,11 @@ class ActivityXMLTestCase(TestCase):
                         description(narrative("Indicator description text")),
                         reference(
                             **{
-                                "vocabulary": result_indicator_reference1.vocabulary.code,
+                                "vocabulary": result_indicator_reference1
+                                .vocabulary.code,
                                 "code": result_indicator_reference1.code,
-                                "indicator-uri": result_indicator_reference1.indicator_uri
+                                "indicator-uri": result_indicator_reference1
+                                .indicator_uri
                             }),
                         baseline(
                             comment(narrative("Baseline comment text")),
@@ -652,28 +707,36 @@ class ActivityXMLTestCase(TestCase):
                             }),
                         period(
                             period_start(
-                                **{"iso-date": result_indicator_period1.period_start.isoformat()}),
+                                **{"iso-date": result_indicator_period1
+                                .period_start.isoformat()}),
                             period_end(
-                                **{"iso-date": result_indicator_period1.period_end.isoformat()}),
+                                **{"iso-date": result_indicator_period1
+                                .period_end.isoformat()}),
                             target(
                                 comment(narrative("Target comment text")),
                                 location(
-                                    **{"ref": result_indicator_period_target_location1.ref}),
+                                    **{"ref": result_indicator_period_target_location1.ref}  # NOQA: E501
+                                ),
                                 dimension(**{
-                                    "name": result_indicator_period_target_dimension1.name,
-                                    "value": result_indicator_period_target_dimension1.value
+                                    "name": result_indicator_period_target_dimension1.name,  # NOQA: E501
+                                    "value": result_indicator_period_target_dimension1.value  # NOQA: E501
                                 }),
-                                **{"value": str(result_indicator_period1.target)}
+                                **{"value": str(
+                                    result_indicator_period1.target
+                                )}
                             ),
                             actual(
                                 comment(narrative("Actual comment text")),
-                                location(
-                                    **{"ref": result_indicator_period_actual_location1.ref}),
-                                dimension(**{
-                                    "name": result_indicator_period_actual_dimension1.name,
-                                    "value": result_indicator_period_actual_dimension1.value
+                                location(**{
+                                    "ref": result_indicator_period_actual_location1.ref  # NOQA: E501
                                 }),
-                                **{"value": str(result_indicator_period1.actual)}
+                                dimension(**{
+                                    "name": result_indicator_period_actual_dimension1.name,  # NOQA: E501
+                                    "value": result_indicator_period_actual_dimension1.value  # NOQA: E501
+                                }),
+                                **{"value": str(
+                                    result_indicator_period1.actual
+                                )}
                             )
                         ),
                         **{
@@ -682,7 +745,9 @@ class ActivityXMLTestCase(TestCase):
                         }),
                     **{
                         "type": result1.type.code,
-                        "aggregation-status": boolToNum(result1.aggregation_status)
+                        "aggregation-status": boolToNum(
+                            result1.aggregation_status
+                        )
                     }),
                 crs_add(
                     other_flags(
@@ -704,17 +769,23 @@ class ActivityXMLTestCase(TestCase):
                         ),
                         commitment_date(
                             **{
-                                "iso-date": str(crs_add1.loan_terms.commitment_date)
+                                "iso-date": str(
+                                    crs_add1.loan_terms.commitment_date
+                                )
                             }
                         ),
                         repayment_first_date(
                             **{
-                                "iso-date": str(crs_add1.loan_terms.repayment_first_date)
+                                "iso-date": str(
+                                    crs_add1.loan_terms.repayment_first_date
+                                )
                             }
                         ),
                         repayment_final_date(
                             **{
-                                "iso-date": str(crs_add1.loan_terms.repayment_final_date)
+                                "iso-date": str(
+                                    crs_add1.loan_terms.repayment_final_date
+                                )
                             }
                         ),
                         **{
@@ -723,11 +794,17 @@ class ActivityXMLTestCase(TestCase):
                         }
                     ),
                     loan_status(
-                        interest_received(str(crs_add1.loan_status.interest_received)),
+                        interest_received(str(
+                            crs_add1.loan_status.interest_received
+                        )),
                         principal_outstanding(
                             str(crs_add1.loan_status.principal_outstanding)),
-                        principal_arrears(str(crs_add1.loan_status.principal_arrears)),
-                        interest_arrears(str(crs_add1.loan_status.interest_arrears)),
+                        principal_arrears(str(
+                            crs_add1.loan_status.principal_arrears
+                        )),
+                        interest_arrears(str(
+                            crs_add1.loan_status.interest_arrears
+                        )),
                         **{
                             "year": str(crs_add1.loan_status.year),
                             "currency": crs_add1.loan_status.currency.code,
@@ -751,7 +828,8 @@ class ActivityXMLTestCase(TestCase):
                     }),
                 **{
                     "hierarchy": str(activity.hierarchy),
-                    "{http://www.w3.org/XML/1998/namespace}lang": activity.default_lang.code,
+                    "{http://www.w3.org/XML/1998/namespace}lang": activity
+                    .default_lang.code,
                 }
             ),
             version="2.02",
@@ -774,4 +852,7 @@ class ActivityXMLTestCase(TestCase):
                     e2.tag))
             return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
 
-        elements_equal(ET.fromstring(ET.tostring(xml, pretty_print=True)), parsed_xml)
+        elements_equal(
+            ET.fromstring(ET.tostring(xml, pretty_print=True)),
+            parsed_xml
+        )
