@@ -1,25 +1,14 @@
+from rest_framework import authentication
 from rest_framework.generics import ListAPIView
-from rest_framework.views import APIView
-from iati.models import Organisation
-from api.export_organisation import serializers as export_serializers
-# from api.organisation import filters
-from api.generics.filters import SearchFilter
-from api.generics.utils import get_serializer_fields
-from common.util import difference
-from django_filters.rest_framework import DjangoFilterBackend
-from api.renderers import OrganisationXMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer
-from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination
-from django.db.models import Q
-
-from rest_framework import authentication, permissions
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
+from api.export_organisation import serializers as export_serializers
+from api.pagination import IatiXMLPagination
 from api.publisher.permissions import PublisherPermissions
-
-import django_rq
-from rest_framework.response import Response
-from iati_synchroniser.models import Dataset, Publisher
+from api.renderers import OrganisationXMLRenderer
+from iati.models import Organisation
+from iati_synchroniser.models import Publisher
 
 
 class OrganisationList(CacheResponseMixin, ListAPIView):
