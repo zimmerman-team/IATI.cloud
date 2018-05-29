@@ -7,7 +7,6 @@ from rest_framework.test import APIClient
 
 from iati.factory.utils import _create_test_activity
 
-# narrative = getattr(E, 'narrative')
 iati_activities = getattr(E, 'iati-activities')
 iati_activity = getattr(E, 'iati-activity')
 iati_identifier = getattr(E, 'iati-identifier')
@@ -417,8 +416,8 @@ class ActivityXMLTestCase(TestCase):
                     website(contact_info1.website),
                     mailing_address(
                         narrative(
-                            "Transparency House, The Street, Town, City, \
-                            Postcode"
+                            "Transparency House, The Street, Town, City, "
+                            "Postcode"
                         )
                     ),
                     ** {
@@ -427,16 +426,12 @@ class ActivityXMLTestCase(TestCase):
                 activity_scope(
                     **{"code": str(activity.scope.code)}),
                 recipient_country(
-                    # narrative("recipient_country1"),
-                    # narrative("recipient_country2"),
                     **{
                         "code": recipient_country1.country.code,
                         "percentage": str(recipient_country1.percentage),
                     }
                 ),
                 recipient_region(
-                    # narrative("recipient_region1"),
-                    # narrative("recipient_region2"),
                     **{
                         "code": recipient_region1.region.code,
                         "vocabulary": recipient_region1.vocabulary.code,
