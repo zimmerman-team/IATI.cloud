@@ -38,7 +38,7 @@ currencies = [
 
 def annotate_currency(query_params, groupings):
     """
-    Choose the right currency field, 
+    Choose the right currency field,
     and aggregate differently based on group_by
     """
     currency = query_params.get('convert_to')
@@ -187,7 +187,7 @@ class BudgetAggregations(AggregationView):
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__reporting_organisations__organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
@@ -196,8 +196,7 @@ class BudgetAggregations(AggregationView):
             fields="activity__participating_organisations__primary_name",
             renamed_fields="participating_organisation",
             queryset=ActivityParticipatingOrganisation.objects.all(),
-            # serializer=OrganisationSerializer,
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__participating_organisations__primary_name",
             renamed_name_search_field="participating_organisation_name"
         ),
@@ -207,7 +206,7 @@ class BudgetAggregations(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
-            name_search_field=
+            name_search_field=  # NOQA: E251
             "activity__participating_organisations__type__name",
             renamed_name_search_field="participating_organisations_type_name"
         ),
