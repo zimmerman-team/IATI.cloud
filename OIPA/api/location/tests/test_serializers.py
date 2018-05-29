@@ -2,14 +2,12 @@
 # serializer in once along with the code and vocabulary fields. Or is
 # testing the fields separately preferable?
 
-from django.test import TestCase  # Runs each test in a transaction and flushes database
-from unittest import skip
-import datetime
-
+# Runs each test in a transaction and flushes database
+from django.test import TestCase
 from django.test import RequestFactory
+
+from api.activity.serializers import LocationSerializer
 from iati.factory import iati_factory
-from iati_codelists.factory import codelist_factory
-from api.location import serializers
 
 
 # TODO: separate into several test cases
@@ -18,18 +16,12 @@ class LocationSerializerTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     request_dummy.query_params = dict()
 
-    # @pytest.mark.django_db
     def test_locationSerializer(self):
 
         location = iati_factory.LocationFactory.build()
 
-        serializer = serializers.LocationSerializer(
+        serializer = LocationSerializer(
             location, context={'request': self.request_dummy})
-
-        # assert 'activity' in serializer.data,\
-        #     """
-        #     a serialized location should contain a field 'activity'
-        #     """
 
         assert serializer.data['ref'] == location.ref,\
             """
