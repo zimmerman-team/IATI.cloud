@@ -1,14 +1,15 @@
-from api.generics.views import DynamicListView
-from geodata.models import Region
-
-from iati_synchroniser.models import Codelist
+from django.apps import apps
+from rest_framework.exceptions import NotFound
+from rest_framework.filters import OrderingFilter
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from api.codelist.filters import AllDjangoFilterBackend
-from api.codelist.serializers import CodelistMetaSerializer, CodelistItemSerializer
-from rest_framework.filters import OrderingFilter
-from rest_framework.exceptions import NotFound
-from django.apps import apps
-from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from api.codelist.serializers import (
+    CodelistItemSerializer, CodelistMetaSerializer
+)
+from api.generics.views import DynamicListView
+from geodata.models import Region
+from iati_synchroniser.models import Codelist
 
 
 class CodelistMetaList(CacheResponseMixin, DynamicListView):
@@ -17,7 +18,8 @@ class CodelistMetaList(CacheResponseMixin, DynamicListView):
 
     ## Result details
 
-    Each result item contains full information about codelist including URI to codelist items.
+    Each result item contains full information about codelist including URI to
+    codelist items.
 
     URI is constructed as follows: `/api/codelists/{codelistname}/`
 
@@ -36,18 +38,20 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
     - `code` (*optional*): Comma separated list of codes on the codelist.
     - `vocabulary` (*optional*): Comma separated list of .
-    - `category` (*optional*): Comma separated list of categories (if applicable for the codelist).
+    - `category` (*optional*): Comma separated list of categories (if
+       applicable for the codelist).
 
     ## Ordering
 
-    API request may include `ordering` parameter. This parameter controls the order in which
-    results are returned.
+    API request may include `ordering` parameter. This parameter controls the
+    order in which results are returned.
 
     Results can be ordered by:
 
     - `name`
 
-    The user may also specify reverse orderings by prefixing the field name with '-', like so: `-name`
+    The user may also specify reverse orderings by prefixing the field name
+    with '-', like so: `-name`
 
     ## Result details
 
@@ -94,8 +98,8 @@ class CodelistItemList(CacheResponseMixin, DynamicListView):
 
     def get_serializer_class(self):
         cms = CodelistItemSerializer
-        # dummy, for some reason this method is called multiple times, first time
-        # without a request class.
+        # dummy, for some reason this method is called multiple times, first
+        # time without a request class.
         cms.Meta.model = Region
 
         if hasattr(self, 'request'):

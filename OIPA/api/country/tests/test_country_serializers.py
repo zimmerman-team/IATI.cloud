@@ -1,8 +1,8 @@
 from django.contrib.gis.geos import Point
-from django.test import RequestFactory
-from geodata.factory import geodata_factory
+from django.test import RequestFactory, TestCase
+
 from api.country import serializers
-from django.test import TestCase
+from geodata.factory import geodata_factory
 
 
 class TestCountrySerializers(TestCase):
@@ -33,9 +33,12 @@ class TestCountrySerializers(TestCase):
             """
             'country.name' should be serialized to a field called 'name'
             """
-        assert serializer.data['numerical_code_un'] == country.numerical_code_un,\
+        assert serializer.data[
+                'numerical_code_un'
+            ] == country.numerical_code_un,\
             """
-            'country.numerical_code_un' should be serialized to a field called 'numerical_code_un'
+            'country.numerical_code_un' should be serialized to a field called
+            'numerical_code_un'
             """
         assert serializer.data['name'] == country.name,\
             """
@@ -43,15 +46,20 @@ class TestCountrySerializers(TestCase):
             """
         assert serializer.data['alt_name'] == country.alt_name,\
             """
-            'country.alt_name' should be serialized to a field called 'alt_name'
+            'country.alt_name' should be serialized to a field called
+            'alt_name'
             """
         assert serializer.data['language'] == country.language,\
             """
-            'country.language' should be serialized to a field called 'language'
+            'country.language' should be serialized to a field called
+            'language'
             """
-        assert serializer.data['dac_country_code'] == country.dac_country_code,\
+        assert serializer.data[
+                'dac_country_code'
+            ] == country.dac_country_code,\
             """
-            'country.dac_country_code' should be serialized to a field called 'dac_country_code'
+            'country.dac_country_code' should be serialized to a field called
+            'dac_country_code'
             """
         assert serializer.data['iso3'] == country.iso3,\
             """

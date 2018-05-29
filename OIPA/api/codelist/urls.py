@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from api.codelist.views import CodelistMetaList, CodelistItemList
 
 app_name = 'api'

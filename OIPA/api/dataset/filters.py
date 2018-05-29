@@ -1,7 +1,10 @@
+from django.db.models import Q
+from django_filters import (
+    CharFilter, DateTimeFilter, Filter, FilterSet, NumberFilter
+)
+
 from api.generics.filters import CommaSeparatedCharFilter, ToManyFilter
 from iati_synchroniser.models import Dataset, DatasetNote
-from django_filters import Filter, FilterSet, CharFilter, NumberFilter, DateTimeFilter
-from django.db.models import Q
 
 
 class SearchQueryFilter(Filter):
