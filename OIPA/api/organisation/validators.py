@@ -1,4 +1,3 @@
-
 def organisation_required_fields(organisation):
     if not organisation.name:
         return False
