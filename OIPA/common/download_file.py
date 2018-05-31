@@ -1,26 +1,29 @@
 """Downloads files from http or ftp locations.
 
 Copyright Joshua Banton"""
-import os
-from urllib import request, parse
 import ftplib
-import urllib
-import socket
 import hashlib
-
-from time import time, sleep
+import os
+import socket
+import urllib
+from time import sleep, time
+from urllib import parse, request
 
 
 class DownloadFile(object):
-    """This class is used for downloading files from the internet via http or ftp.
-    It supports basic http authentication and ftp accounts, and supports resuming downloads.
+    """This class is used for downloading files from the internet via http or
+    ftp.
+    It supports basic http authentication and ftp accounts, and supports
+    resuming downloads.
     It does not support https or sftp at this time.
 
-    The main advantage of this class is it's ease of use, and pure pythoness. It only uses the Python standard library,
+    The main advantage of this class is it's ease of use, and pure pythoness.
+    It only uses the Python standard library,
     so no dependencies to deal with, and no C to compile.
 
     #####
-    If a non-standard port is needed just include it in the url (http://example.com:7632).
+    If a non-standard port is needed just include it in the url
+    (http://example.com:7632).
 
     #Rate Limiting:
         rate_limit = the average download rate in Bps
@@ -39,7 +42,7 @@ class DownloadFile(object):
          Resume
              downloader = fileDownloader.DownloadFile('http://example.com/file.zip')
             downloader.resume()
-    """
+    """  # NOQA: E501
 
     def __init__(
             self,
@@ -84,7 +87,8 @@ class DownloadFile(object):
                 self.urlFilesize = None
         else:
             self.urlFilesize = None
-        if not self.localFileName:  # if no filename given pulls filename from the url
+        # if no filename given pulls filename from the url:
+        if not self.localFileName:
             self.localFileName = self.getUrlFilename(self.url)
         self.rate_limit_on = rate_limit_on
         self.rate_limit = rate_limit
@@ -104,7 +108,6 @@ class DownloadFile(object):
             try:
                 data = urlObj.read(8192)
             except (socket.timeout, socket.error) as t:
-                # print "caught ", t
                 self.__retry__()
                 break
             if not data:
@@ -141,7 +144,8 @@ class DownloadFile(object):
         """handles ftp authentication"""
         ftped = request.FTPHandler()
         ftpUrl = self.url.replace('ftp://', '')
-        req = request.Request("ftp://%s:%s@%s" % (self.auth[0], self.auth[1], ftpUrl))
+        req = request.Request("ftp://%s:%s@%s" %
+                              (self.auth[0], self.auth[1], ftpUrl))
         req.timeout = self.timeout
         ftpObj = ftped.ftp_open(req)
         return ftpObj
@@ -206,7 +210,7 @@ class DownloadFile(object):
         """gets filesize of remote file from ftp or http server"""
         if self.type == 'http':
             if self.auth:
-                authObj = self.__authHttp__()
+                self.__authHttp__()
             urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
             size = urllib2Obj.headers.get('content-length')
             return size
@@ -225,7 +229,7 @@ class DownloadFile(object):
         """Checks to see if the file in the url in self.url exists"""
         if self.auth:
             if self.type == 'http':
-                authObj = self.__authHttp__()
+                self.__authHttp__()
                 try:
                     request.urlopen(self.url, timeout=self.timeout)
                 except request.HTTPError:
@@ -234,7 +238,7 @@ class DownloadFile(object):
             elif self.type == 'ftp':
                 return "not yet supported"
         else:
-            urllib2Obj = request.urlopen(self.url, timeout=self.timeout)
+            request.urlopen(self.url, timeout=self.timeout)
             try:
                 request.urlopen(self.url, timeout=self.timeout)
             except request.HTTPError:
@@ -282,8 +286,10 @@ class FileDownloaderError(Exception):
 
 
 class TokenBucket(object):
-    """An implementation of the token bucket algorithm.
-       Slightly modified from http://code.activestate.com/recipes/511490-implementation-of-the-token-bucket-algorithm/"""
+    """
+    An implementation of the token bucket algorithm.
+    Slightly modified from http://code.activestate.com/recipes/511490-implementation-of-the-token-bucket-algorithm/
+    """  # NOQA: E501
 
     def __init__(self, bucket_size, fill_rate):
         """tokens is the total tokens in the bucket. fill_rate is the

@@ -41,7 +41,7 @@ def difference(list1, list2):
 
 
 def combine_filters(filters):
-    ### combine Q objects ###
+    # combine Q objects
     if len(filters) == 1:
         return filters[0]
     return reduce(lambda q1, q2: q1 | q2, filters, Q())
