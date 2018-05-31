@@ -1,6 +1,7 @@
 from rest_framework import serializers
+
 import iati
-from api.generics.serializers import DynamicFieldsModelSerializer, DynamicFieldsSerializer
+from api.generics.serializers import DynamicFieldsSerializer
 
 
 class SectorCategorySerializer(serializers.ModelSerializer):
@@ -12,7 +13,10 @@ class SectorCategorySerializer(serializers.ModelSerializer):
 
 
 class SectorSerializer(DynamicFieldsSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='sectors:sector-detail', read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='sectors:sector-detail',
+        read_only=True
+    )
     category = SectorCategorySerializer(read_only=True)
 
     code = serializers.CharField()
