@@ -1,54 +1,33 @@
-from api.transaction.serializers import TransactionSerializer, TransactionSectorSerializer
-from api.transaction.filters import TransactionFilter, TransactionAggregationFilter
-from iati.transaction.models import Transaction, TransactionSector
-from api.generics.views import DynamicListView, DynamicDetailView
-
+from django.db.models import Count, F, Q, Sum
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+)
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
-from api.cache import QueryParamsKeyConstructor
-
-from api.activity.serializers import ActivitySerializer
-
-from geodata.models import Country
-from geodata.models import Region
-from iati.models import Sector
-from iati.models import ActivityStatus
-from iati.models import PolicyMarker
-from iati.models import TransactionType
-from iati.models import CollaborationType
-from iati.models import DocumentCategory
-from iati.models import FlowType
-from iati.models import AidType
-from iati.models import FinanceType
-from iati.models import TiedStatus
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import OrganisationType
-from iati.models import Organisation
-from iati.models import ActivityReportingOrganisation
-from iati.models import PolicySignificance
 
 from api.activity.serializers import CodelistSerializer
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.cache import QueryParamsKeyConstructor
 from api.country.serializers import CountrySerializer
+from api.generics.filters import SearchFilter
+from api.generics.views import DynamicDetailView, DynamicListView
+from api.organisation.serializers import OrganisationSerializer
+from api.pagination import CustomTransactionPagination
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
-from api.organisation.serializers import OrganisationSerializer
-
-from api.pagination import CustomTransactionPagination
-
-from django.db.models import Count, Sum, Q, F
-
-from api.generics.filters import SearchFilter
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-
+from api.transaction.filters import (
+    TransactionAggregationFilter, TransactionFilter
+)
+from api.transaction.serializers import (
+    TransactionSectorSerializer, TransactionSerializer
+)
 from geodata.models import Country, Region
-from api.country.serializers import CountrySerializer
-from api.region.serializers import RegionSerializer
-from api.activity.serializers import RelatedActivitySerializer, SectorSerializer
-
-from iati.models import Activity, RelatedActivity, Sector
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import ActivityReportingOrganisation
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivityStatus, AidType,
+    CollaborationType, DocumentCategory, FinanceType, FlowType, Organisation,
+    OrganisationType, PolicySignificance, Sector, TiedStatus, TransactionType
+)
+from iati.transaction.models import Transaction, TransactionSector
 
 
 class TransactionList(CacheResponseMixin, DynamicListView):
@@ -76,7 +55,8 @@ class TransactionList(CacheResponseMixin, DynamicListView):
 
     ## Result details
 
-    Each result item contains short information about transaction including URI to transaction details.
+    Each result item contains short information about transaction including
+    URI to transaction details.
 
     URI is constructed as follows: `/api/transactions/{transaction_id}`
 
@@ -160,7 +140,8 @@ currencies = [
 
 def annotate_currency(query_params, groupings):
     """
-    Choose the right currency field, and aggregate differently based on group_by
+    Choose the right currency field, and aggregate differently based on
+    group_by
     """
     currency = query_params.get('convert_to')
     currency_field = None
@@ -189,7 +170,8 @@ def annotate_currency(query_params, groupings):
 
     for grouping in groupings:
         if grouping.query_param == 'recipient_country':
-            grouping_additions.append('transactionrecipientcountry__percentage')
+            grouping_additions.append(
+                'transactionrecipientcountry__percentage')
         elif grouping.query_param == 'recipient_region':
             grouping_additions.append('transactionrecipientregion__percentage')
         elif grouping.query_param == 'sector':
@@ -206,7 +188,8 @@ def annotate_currency(query_params, groupings):
 
 class TransactionAggregation(AggregationView):
     """
-    Returns aggregations based on the item grouped by, and the selected aggregation.
+    Returns aggregations based on the item grouped by, and the selected
+    aggregation.
 
     ## Group by options
 
@@ -256,9 +239,12 @@ class TransactionAggregation(AggregationView):
 
     ## Currency options
 
-    By default the values returned by the aggregations are in the reported currency. This only renders meaningful results when all values were in the same currency. Which is only the case when you filter your results down.
+    By default the values returned by the aggregations are in the reported
+    currency. This only renders meaningful results when all values were in the
+    same currency. Which is only the case when you filter your results down.
 
-    The aggregation endpoints have the ability to return values in a currency. Options for this `convert_to` parameter are:
+    The aggregation endpoints have the ability to return values in a currency.
+    Options for this `convert_to` parameter are:
 
     - `xdr`
     - `usd`
@@ -267,9 +253,11 @@ class TransactionAggregation(AggregationView):
     - `jpy`
     - `cad`
 
-    This results in converted values when the original value was in another currency.
+    This results in converted values when the original value was in another
+    currency.
 
-    Information on used exchange rates can be found <a href='https://docs.oipa.nl/'>in the docs</a>.
+    Information on used exchange rates can be found
+    <a href='https://docs.oipa.nl/'>in the docs</a>.
 
 
     ## Request parameters
@@ -370,7 +358,9 @@ class TransactionAggregation(AggregationView):
         ),
         GroupBy(
             query_param="related_activity",
-            fields=("activity__relatedactivity__ref_activity__iati_identifier"),
+            fields=(
+                "activity__relatedactivity__ref_activity__iati_identifier"
+            ),
             renamed_fields="related_activity",
         ),
         GroupBy(
@@ -386,16 +376,19 @@ class TransactionAggregation(AggregationView):
             queryset=Organisation.objects.all(),
             serializer=OrganisationSerializer,
             serializer_main_field='id',
-            name_search_field="activity__reporting_organisations__organisation__primary_name",
+            name_search_field="activity__reporting_organisations__\
+                    organisation__primary_name",
             renamed_name_search_field="reporting_organisation_name"
         ),
         GroupBy(
             query_param="participating_organisation",
             fields=("activity__participating_organisations__primary_name",
                     "activity__participating_organisations__normalized_ref"),
-            renamed_fields=("participating_organisation", "participating_organisation_ref"),
+            renamed_fields=("participating_organisation",
+                            "participating_organisation_ref"),
             queryset=ActivityParticipatingOrganisation.objects.all(),
-            name_search_field="activity__participating_organisations__primary_name",
+            name_search_field="activity__participating_organisations\
+                    __primary_name",
             renamed_name_search_field="participating_organisation_name"
         ),
         GroupBy(
@@ -436,8 +429,10 @@ class TransactionAggregation(AggregationView):
             renamed_fields="participating_organisation_type",
             queryset=OrganisationType.objects.all(),
             serializer=CodelistSerializer,
-            name_search_field="activity__participating_organisations__type__name",
-            renamed_name_search_field="participating_organisations_type_name"
+            name_search_field="activity__participating_organisations__type\
+                    __name",
+            renamed_name_search_field="participating_organisations_type\
+                    _name"
         ),
         GroupBy(
             query_param="collaboration_type",
@@ -487,10 +482,12 @@ class TransactionAggregation(AggregationView):
             query_param="transaction_date_year",
             extra={
                 'select': {
-                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
+                    'transaction_date_year': 'EXTRACT(\
+                            YEAR FROM "transaction_date")::integer',
                 },
                 'where': [
-                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
+                    'EXTRACT(\
+                        YEAR FROM "transaction_date")::integer IS NOT NULL',
                 ],
             },
             fields="transaction_date_year",
@@ -499,12 +496,16 @@ class TransactionAggregation(AggregationView):
             query_param="transaction_date_quarter",
             extra={
                 'select': {
-                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
-                    'transaction_date_quarter': 'EXTRACT(QUARTER FROM "transaction_date")::integer',
+                    'transaction_date_year': 'EXTRACT(YEAR \
+                            FROM "transaction_date")::integer',
+                    'transaction_date_quarter': 'EXTRACT(QUARTER FROM \
+                            "transaction_date")::integer',
                 },
                 'where': [
-                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
-                    'EXTRACT(QUARTER FROM "transaction_date")::integer IS NOT NULL',
+                    'EXTRACT(YEAR FROM "transaction_date")::integer \
+                            IS NOT NULL',
+                    'EXTRACT(QUARTER FROM "transaction_date")::integer \
+                            IS NOT NULL',
                 ],
             },
             fields=("transaction_date_year", "transaction_date_quarter")
@@ -513,12 +514,16 @@ class TransactionAggregation(AggregationView):
             query_param="transaction_date_month",
             extra={
                 'select': {
-                    'transaction_date_year': 'EXTRACT(YEAR FROM "transaction_date")::integer',
-                    'transaction_date_month': 'EXTRACT(MONTH FROM "transaction_date")::integer',
+                    'transaction_date_year': 'EXTRACT(YEAR \
+                            FROM "transaction_date")::integer',
+                    'transaction_date_month': 'EXTRACT(MONTH \
+                            FROM "transaction_date")::integer',
                 },
                 'where': [
-                    'EXTRACT(YEAR FROM "transaction_date")::integer IS NOT NULL',
-                    'EXTRACT(MONTH FROM "transaction_date")::integer IS NOT NULL',
+                    'EXTRACT(YEAR FROM "transaction_date")::integer \
+                            IS NOT NULL',
+                    'EXTRACT(MONTH FROM "transaction_date")::integer \
+                            IS NOT NULL',
                 ],
             },
             fields=("transaction_date_year", "transaction_date_month")

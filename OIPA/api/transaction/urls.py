@@ -1,9 +1,10 @@
 from django.conf.urls import url
-from api.transaction.views import TransactionList
-from api.transaction.views import TransactionDetail
-from api.transaction.views import TransactionAggregation
-from api.transaction.views import TransactionSectorList, TransactionSectorDetail
 from django.views.decorators.cache import cache_page
+
+from api.transaction.views import (
+    TransactionAggregation, TransactionDetail, TransactionList,
+    TransactionSectorDetail, TransactionSectorList
+)
 from OIPA.production_settings import API_CACHE_SECONDS
 
 app_name = 'api'

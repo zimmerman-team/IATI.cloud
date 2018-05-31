@@ -1,9 +1,11 @@
 from django.test import TestCase
-from iati.transaction.models import Transaction
-from iati.factory.iati_factory import ActivityFactory
-from iati.transaction.factories import TransactionTypeFactory
-from iati.transaction.factories import TransactionFactory
+
 from api.transaction.filters import TransactionFilter
+from iati.factory.iati_factory import ActivityFactory
+from iati.transaction.factories import (
+    TransactionFactory, TransactionTypeFactory
+)
+from iati.transaction.models import Transaction
 
 
 class TestTransactionListFiltering(TestCase):

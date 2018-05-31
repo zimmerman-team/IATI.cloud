@@ -1,6 +1,7 @@
+from unittest import skip
+
 from django.db import models
 from django.test import TestCase
-from unittest import skip
 
 
 class Model(models.Model):
