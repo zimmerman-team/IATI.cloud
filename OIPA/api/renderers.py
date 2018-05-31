@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
+
+import csv
+
+from django.conf import settings
 from django.utils import six
-from django.utils.six.moves import StringIO
-from rest_framework.renderers import BaseRenderer
 from lxml import etree
 from lxml.builder import E
-from django.conf import settings
-from collections import OrderedDict
+from rest_framework.renderers import BaseRenderer
+from rest_framework_csv.renderers import CSVRenderer
 
 # TODO: Make this more generic - 2016-01-21
 
@@ -46,24 +48,30 @@ class XMLRenderer(BaseRenderer):
     def _to_xml(self, xml, data, parent_name=None):
         if isinstance(data, (list, tuple)):
             for item in data:
-                self._to_xml(etree.SubElement(xml, parent_name.replace('_', '-')), item)
+                self._to_xml(etree.SubElement(
+                    xml, parent_name.replace('_', '-')), item)
 
         elif isinstance(data, dict):
             attributes = []
 
             if hasattr(data, 'xml_meta'):
-                attributes = list(set(data.xml_meta.get('attributes', list())) & set(data.keys()))
+                attributes = list(set(data.xml_meta.get(
+                    'attributes', list())) & set(data.keys()))
 
                 for attr in attributes:
 
                     renamed_attr = attr.replace(
-                        'xml_lang', '{http://www.w3.org/XML/1998/namespace}lang').replace('_', '-')
+                        'xml_lang',
+                        '{http://www.w3.org/XML/1998/namespace}lang'
+                    ).replace('_', '-')
 
                     value = data[attr]
                     if value is not None:
                         xml.set(
-                            renamed_attr, six.text_type(value).lower() if isinstance(
-                                value, bool) else six.text_type(value))
+                            renamed_attr,
+                            six.text_type(value).lower() if isinstance(
+                                value, bool
+                            ) else six.text_type(value))
 
             for key, value in six.iteritems(data):
 
@@ -75,14 +83,17 @@ class XMLRenderer(BaseRenderer):
                 elif isinstance(value, list):
                     self._to_xml(xml, value, parent_name=key)
                 else:
-                    # TODO remove this ugly hack by adjusting the resultindicatorperiod actual / target models. 30-08-16
-                    # currently actuals are stored on the resultindicatorperiod, hence we need
-                    # to remove empty actuals here.
+                    # TODO remove this ugly hack by adjusting the
+                    # resultindicatorperiod actual / target models. 30-08-16
+                    # currently actuals are stored on the
+                    # resultindicatorperiod, hence we need to remove empty
+                    # actuals here.
                     if key in ['actual', 'target']:
                         if list(value.items())[0][0] != 'value':
                             continue
 
-                    self._to_xml(etree.SubElement(xml, key.replace('_', '-')), value)
+                    self._to_xml(etree.SubElement(
+                        xml, key.replace('_', '-')), value)
 
         elif data is None:
             pass
@@ -90,10 +101,6 @@ class XMLRenderer(BaseRenderer):
         else:
             xml.text = six.text_type(data)
             pass
-
-
-import csv
-from rest_framework_csv.renderers import CSVRenderer
 
 
 class PaginatedCSVRenderer(CSVRenderer):
@@ -109,8 +116,8 @@ class PaginatedCSVRenderer(CSVRenderer):
         }
 
     def render(self, data, *args, **kwargs):
-        # TODO: this is probably a bug in DRF, might get fixed later then need to
-        # update this - 2017-04-03
+        # TODO: this is probably a bug in DRF, might get fixed later then
+        # need to update this - 2017-04-03
         actual_kwargs = args[1].get('kwargs', {})
 
         # this is a list view

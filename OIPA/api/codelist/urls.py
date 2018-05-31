@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from api.codelist.views import CodelistMetaList, CodelistItemList
+from api.codelist.views import CodelistItemList, CodelistMetaList
 
 app_name = 'api'
 urlpatterns = [

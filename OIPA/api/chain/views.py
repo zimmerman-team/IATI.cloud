@@ -1,24 +1,23 @@
 from django.db.models import Count
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
-from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink
-from iati.transaction.models import Transaction
-
-from api.generics.views import DynamicListView, DynamicDetailView
-from api.pagination import CustomTransactionPagination
-
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from api.chain.filters import ChainFilter, ChainLinkFilter,\
-    ChainNodeErrorFilter, ChainNodeFilter
-from api.chain.serializers import ChainSerializer, ChainLinkSerializer,\
-    ChainNodeErrorSerializer, ChainNodeSerializer
 from api.activity.views import ActivityList
-from api.transaction.serializers import TransactionSerializer
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.chain.filters import (
+    ChainFilter, ChainLinkFilter, ChainNodeErrorFilter, ChainNodeFilter
+)
+from api.chain.serializers import (
+    ChainLinkSerializer, ChainNodeErrorSerializer, ChainNodeSerializer,
+    ChainSerializer
+)
+from api.generics.views import DynamicDetailView, DynamicListView
+from api.pagination import CustomTransactionPagination
 from api.transaction.filters import TransactionFilter
-
+from api.transaction.serializers import TransactionSerializer
 from iati.models import Activity
+from iati.transaction.models import Transaction
+from traceability.models import Chain, ChainLink, ChainNode, ChainNodeError
 
 
 class ChainAggregations(AggregationView):

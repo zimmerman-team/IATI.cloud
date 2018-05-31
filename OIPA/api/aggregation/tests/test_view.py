@@ -2,18 +2,18 @@
 Tests for the views using the aggregation methods
 """
 
+from collections import OrderedDict
 from unittest import skip
+
+from django.db.models import Count, Q
 from django.test import TestCase as DjangoTestCase
-from api.aggregation.views import Aggregation, GroupBy
-from django.db.models import Q, Count
+from django.test.client import RequestFactory
 from rest_framework import serializers
 
-from iati.models import Activity
-from iati.factory.utils import _create_test_activity
+from api.aggregation.views import Aggregation, GroupBy
 from api.generics.serializers import DynamicFieldsSerializer
-from django.test.client import RequestFactory
-
-from collections import OrderedDict
+from iati.factory.utils import _create_test_activity
+from iati.models import Activity
 
 
 class AggregationInstanceTestCase(DjangoTestCase):

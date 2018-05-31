@@ -3,8 +3,7 @@
 # testing the fields separately preferable?
 
 # Runs each test in a transaction and flushes database
-from django.test import TestCase
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase
 
 from api.activity.serializers import LocationSerializer
 from iati.factory import iati_factory

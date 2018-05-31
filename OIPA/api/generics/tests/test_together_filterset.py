@@ -1,11 +1,9 @@
 from django.test import TestCase
-
-from iati.models import Activity
+from django.test.client import RequestFactory
+from django_filters import DateFilter
 
 from api.generics.filters import TogetherFilterSet
-from django.test.client import RequestFactory
-
-from django_filters import DateFilter
+from iati.models import Activity
 
 
 class TestFilter(TogetherFilterSet):

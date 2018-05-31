@@ -1,5 +1,5 @@
-from django.conf.urls import url
-from django.conf.urls import include
+from django.conf.urls import include, url
+
 from api import views
 
 urlpatterns = [
@@ -17,12 +17,18 @@ urlpatterns = [
     url(r'^countries/', include('api.country.urls', namespace='countries')),
     url(r'^cities/', include('api.city.urls', namespace='cities')),
     url(r'^locations/', include('api.location.urls', namespace='locations')),
-    url(r'^organisations/', include('api.organisation.urls', namespace='organisations')),
+    url(r'^organisations/', include(
+        'api.organisation.urls', namespace='organisations'
+    )),
     url(r'^sectors/', include('api.sector.urls', namespace='sectors')),
-    url(r'^transactions/', include('api.transaction.urls', namespace='transactions')),
+    url(r'^transactions/', include(
+        'api.transaction.urls', namespace='transactions'
+    )),
     url(r'^results/', include('api.result.urls', namespace='results')),
     url(r'^datasets/', include('api.dataset.urls', namespace='datasets')),
-    url(r'^publishers/', include('api.publisher.urls', namespace='publishers')),
+    url(r'^publishers/', include(
+        'api.publisher.urls', namespace='publishers'
+    )),
     url(r'^chains/', include('api.chain.urls', namespace='chains')),
 
     # TODO: no email confirmation? - 2016-10-18

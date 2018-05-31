@@ -1,29 +1,20 @@
+from django.db.models import Count, F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.budget import filters
-from api.generics.filters import SearchFilter
-
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-
-from django.db.models import Count, Sum, F
-
-from geodata.models import Country
-from geodata.models import Region
-from iati.models import Budget
-from iati.models import Sector
-from iati.models import ActivityStatus
-from iati.models import CollaborationType
-from iati.models import DocumentCategory
-from iati.models import ActivityParticipatingOrganisation
-from iati.models import OrganisationType
-from iati.models import Organisation
-
 from api.activity.serializers import CodelistSerializer
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
+from api.budget import filters
 from api.country.serializers import CountrySerializer
+from api.generics.filters import SearchFilter
+from api.organisation.serializers import OrganisationSerializer
 from api.region.serializers import RegionSerializer
 from api.sector.serializers import SectorSerializer
-from api.organisation.serializers import OrganisationSerializer
-
+from geodata.models import Country, Region
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivityStatus, Budget,
+    CollaborationType, DocumentCategory, Organisation, OrganisationType,
+    Sector
+)
 
 # These are the accepted currencies
 currencies = [
