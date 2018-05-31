@@ -1,9 +1,10 @@
-from api.result.filters import ResultFilter
-from api.aggregation.views import AggregationView, Aggregation, GroupBy
-from django.db.models import Sum, Func, F, Count
-from iati.models import Result
+from django.db.models import Count, F, Func, Sum
 from django_filters.rest_framework import DjangoFilterBackend
+
+from api.aggregation.views import Aggregation, AggregationView, GroupBy
 from api.generics.filters import SearchFilter
+from api.result.filters import ResultFilter
+from iati.models import Result
 
 
 class ResultAggregations(AggregationView):

@@ -1,23 +1,27 @@
-from django.test import TestCase
-from iati.factory import iati_factory
-from iati.transaction import factories as transaction_factory
-from rest_framework.test import APIClient
-from decimal import Decimal
 import datetime
+from decimal import Decimal
+
+from django.test import TestCase
+from rest_framework.test import APIClient
+
+from iati.factory import iati_factory
 
 
 class ResultAggregationTestCase(TestCase):
     def setUp(self):
         """set up 2 rsults
 
-        then create individual tests to check most used aggregation / group by combinations.
+        then create individual tests to check most used aggregation / group by
+        combinations.
 
         """
         activity = iati_factory.ActivityFactory.create()
         result_type = iati_factory.ResultTypeFactory.create()
 
-        first_result = iati_factory.ResultFactory.create(activity=activity, type=result_type)
-        second_result = iati_factory.ResultFactory.create(activity=activity, type=result_type)
+        first_result = iati_factory.ResultFactory.create(
+            activity=activity, type=result_type)
+        second_result = iati_factory.ResultFactory.create(
+            activity=activity, type=result_type)
 
         first_result_indicator = iati_factory.ResultIndicatorFactory.create(
             result=first_result,
@@ -28,7 +32,7 @@ class ResultAggregationTestCase(TestCase):
 
         date_now = datetime.datetime.now()
 
-        first_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create(
+        iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=first_result_indicator,
             period_start=date_now,
             period_end=date_now,
@@ -36,7 +40,7 @@ class ResultAggregationTestCase(TestCase):
             actual=None
         )
 
-        second_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create(
+        iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=first_result_indicator,
             period_start=date_now,
             period_end=date_now,
@@ -44,7 +48,7 @@ class ResultAggregationTestCase(TestCase):
             actual="30"
         )
 
-        third_result_indicator_period = iati_factory.ResultIndicatorPeriodFactory.create(
+        iati_factory.ResultIndicatorPeriodFactory.create(
             result_indicator=second_result_indicator,
             period_start=date_now,
             period_end=date_now,
