@@ -1,9 +1,9 @@
 import sys
+
 from django.contrib.gis.geos import fromstr
 
 from geodata.importer.common import get_json_data
-from geodata.models import City
-from geodata.models import Country
+from geodata.models import City, Country
 
 
 class CityImport():
@@ -33,7 +33,8 @@ class CityImport():
                 country_iso2 = c['properties']['ISO_A2']
                 namepar = c['properties']['NAMEPAR']
 
-                point_loc_str = 'POINT(' + str(longitude) + ' ' + str(latitude) + ')'
+                point_loc_str = 'POINT(' + str(longitude) + \
+                    ' ' + str(latitude) + ')'
                 longlat = fromstr(point_loc_str, srid=4326)
 
                 if Country.objects.filter(code=country_iso2).exists():

@@ -1,8 +1,7 @@
 from django.contrib.gis.geos import fromstr
 
-from geodata.models import Country
-from geodata.models import Adm1Region
 from geodata.importer.common import get_json_data
+from geodata.models import Adm1Region, Country
 
 
 class Adm1RegionImport():
@@ -14,7 +13,9 @@ class Adm1RegionImport():
         self.get_json_data = get_json_data
 
     def update_from_json(self):
-        adm1_regions = self.get_json_data("/../data_backup/admin_1_regions.json")
+        adm1_regions = self.get_json_data(
+            "/../data_backup/admin_1_regions.json"
+        )
 
         for r in adm1_regions['features']:
 
@@ -96,9 +97,13 @@ class Adm1RegionImport():
                     longitude = str(p.get('longitude'))
                     latitude = str(p.get('latitude'))
                     point_loc_str = 'POINT(' + longitude + ' ' + latitude + ')'
-                    the_adm1_region.center_location = fromstr(point_loc_str, srid=4326)
+                    the_adm1_region.center_location = fromstr(
+                        point_loc_str, srid=4326)
                 except KeyError:
-                    print("Admin 1 region with code %s has an illegal center location..." % the_adm1_region.adm1_code)
+                    print(
+                        "Admin 1 region with code %s has an illegal center \
+                         location..." % the_adm1_region.adm1_code
+                    )
 
             the_adm1_region.polygon = r["geometry"].get('coordinates')
             the_adm1_region.geometry_type = r["geometry"].get('type')
