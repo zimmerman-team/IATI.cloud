@@ -1,12 +1,12 @@
-from django.db.models import Sum
 from django.core.exceptions import ObjectDoesNotExist
-
-from iati.models import Activity
-from iati.models import ActivityAggregation
-from iati.models import ChildAggregation
-from iati.models import ActivityPlusChildAggregation
-from iati.transaction.models import Transaction
 from django.db import IntegrityError
+from django.db.models import Sum
+
+from iati.models import (
+    Activity, ActivityAggregation, ActivityPlusChildAggregation,
+    ChildAggregation
+)
+from iati.transaction.models import Transaction
 
 
 class ActivityAggregationCalculation():

@@ -1,15 +1,12 @@
 import re
-from iati import models
-from iati.transaction import models as transaction_models
-from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models
-from iati_organisation import models as organisation_models
-import dateutil.parser
 from datetime import date as datetime_date
 from decimal import Decimal
-from iati_synchroniser.models import Publisher
 
-from iati.parser.exceptions import *
+import dateutil.parser
+
+from iati import models
+from iati.parser.exceptions import FieldValidationError, RequiredFieldError
+from iati_codelists import models as codelist_models
 
 
 def get_or_raise(model, validated_data, attr, default=None):
@@ -23,19 +20,6 @@ def get_or_raise(model, validated_data, attr, default=None):
         )
 
     return model.objects.get(pk=pk)
-    # except model.DoesNotExist:
-    #     return default
-
-
-def get_or_none(model, validated_data, attr, default=None):
-    pk = validated_data.pop(attr, None)
-
-    if pk is None:
-        return default
-    try:
-        return model.objects.get(pk=pk)
-    except model.DoesNotExist:
-        return default
 
 
 def get_or_none(model, *args, **kwargs):
@@ -125,9 +109,6 @@ def validate_date(unvalidated_date):
 def validate_dates(*dates):
     return combine_validation([validate_date(date) for date in dates])
 
-    # for date in dates:
-    #     validate_date()
-
 
 def narrative(i, activity_id, default_lang, lang, text, apiField=""):
     warnings = []
@@ -146,8 +127,10 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
             RequiredFieldError(
                 "narrative",
                 "xml:lang",
-                "must specify xml:lang on iati-activity or xml:lang on the element itself",
-                apiField="{}narratives[{}].language".format(apiField + "." if apiField else "", i),
+                "must specify xml:lang on iati-activity or xml:lang on the \
+                        element itself",
+                apiField="{}narratives[{}].language".format(
+                    apiField + "." if apiField else "", i),
             ))
 
     if not text:
@@ -156,7 +139,8 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
                 'narrative',
                 "text",
                 "empty narrative",
-                apiField="{}narratives[{}].text".format(apiField + "." if apiField else "", i),
+                apiField="{}narratives[{}].text".format(
+                    apiField + "." if apiField else "", i),
             ))
 
     return {
@@ -170,9 +154,9 @@ def narrative(i, activity_id, default_lang, lang, text, apiField=""):
     }
 
 
-def narratives(narratives, default_lang, activity_id, warnings=[], errors=[], apiField=""):
-    # warnings = []
-    # errors = []
+def narratives(narratives, default_lang, activity_id, warnings=[], errors=[],
+               apiField=""):
+
     validated_data = []
 
     for i, n in enumerate(narratives):
@@ -262,14 +246,18 @@ def activity(
         secondary_reporter = False
 
     default_currency = get_or_none(models.Currency, pk=default_currency)
-    iati_standard_version = get_or_none(models.Version, pk=iati_standard_version)
+    iati_standard_version = get_or_none(
+        models.Version, pk=iati_standard_version)
     activity_status = get_or_none(models.ActivityStatus, pk=activity_status)
     activity_scope = get_or_none(models.ActivityScope, pk=activity_scope)
-    collaboration_type = get_or_none(models.CollaborationType, pk=collaboration_type)
+    collaboration_type = get_or_none(
+        models.CollaborationType, pk=collaboration_type)
     default_flow_type = get_or_none(models.FlowType, pk=default_flow_type)
-    default_finance_type = get_or_none(models.FinanceType, pk=default_finance_type)
+    default_finance_type = get_or_none(
+        models.FinanceType, pk=default_finance_type)
     default_aid_type = get_or_none(models.AidType, pk=default_aid_type)
-    default_tied_status = get_or_none(models.TiedStatus, pk=default_tied_status)
+    default_tied_status = get_or_none(
+        models.TiedStatus, pk=default_tied_status)
     default_lang = get_or_none(models.Language, pk=default_lang)
 
     try:
@@ -398,7 +386,8 @@ def activity(
     #             "title__narratives",
     #             ))
 
-    title_narratives = narratives(title_narratives, default_lang, None, warnings, errors, "title")
+    title_narratives = narratives(
+        title_narratives, default_lang, None, warnings, errors, "title")
     errors = errors + title_narratives['errors']
     warnings = warnings + title_narratives['warnings']
 
@@ -442,7 +431,8 @@ def activity_reporting_org(
         narratives_data=[],
 ):
 
-    organisation = get_or_none(models.Organisation, organisation_identifier=ref)
+    organisation = get_or_none(
+        models.Organisation, organisation_identifier=ref)
     org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
 
     warnings = []
@@ -472,7 +462,8 @@ def activity_reporting_org(
             FieldValidationError(
                 "reporting-org",
                 "organisation",
-                "organisation with ref {} does not exist in organisation standard".format(ref),
+                "organisation with ref {} does not exist in organisation \
+                        standard".format(ref),
                 apiField="organisation",
             ))
 
@@ -547,15 +538,16 @@ def activity_participating_org(
         narratives_data=[],
 ):
 
-    organisation = get_or_none(models.Organisation, organisation_identifier=ref)
+    organisation = get_or_none(
+        models.Organisation, organisation_identifier=ref)
     org_type = get_or_none(codelist_models.OrganisationType, code=org_type)
     org_role = get_or_none(codelist_models.OrganisationRole, code=org_role)
 
     warnings = []
     errors = []
 
-    # NOTE: strictly taken, the ref should be specified. In practice many reporters don't use them
-    # simply because they don't know the ref.
+    # NOTE: strictly taken, the ref should be specified. In practice many
+    # reporters don't use them simply because they don't know the ref.
     if not ref:
         warnings.append(
             RequiredFieldError(
@@ -585,7 +577,8 @@ def activity_participating_org(
             FieldValidationError(
                 "reporting-org",
                 "organisation",
-                "organisation with ref {} does not exist in organisation standard".format(ref),
+                "organisation with ref {} does not exist in organisation \
+                        standard".format(ref),
                 apiField="organisation",
             ))
 
@@ -729,7 +722,9 @@ def activity_contact_info(
             "organisation": {
                 # "contact_info_id": contact_info.id,
             },
-            "organisation_narratives": organisation_narratives['validated_data'],
+            "organisation_narratives": organisation_narratives[
+                'validated_data'
+            ],
             "department": {
                 # "contact_info_id": contact_info.id,
             },
@@ -748,7 +743,9 @@ def activity_contact_info(
             "mailing_address": {
                 # "contact_info_id": contact_info.id,
             },
-            "mailing_address_narratives": mailing_address_narratives['validated_data'],
+            "mailing_address_narratives": mailing_address_narratives[
+                'validated_data'
+            ],
         },
     }
 
@@ -788,21 +785,6 @@ def activity_recipient_country(
                 "percentage must be a value between 0 and 100",
                 apiField="percentage",
             ))
-
-    # recipient_countries = activity.activityrecipientcountry_set.all()
-    # # TODO: we need the update instance here ideally - 2016-10-17
-    # if instance:
-    #     sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.exclude(pk=instance.id).values_list('percentage'), 0) + percentage
-    # else:
-    #     sum_percentage = reduce(lambda acc, x: acc + x[0], recipient_countries.values_list('percentage'), 0) + percentage
-
-    # if sum_percentage != Decimal(100):
-    #     errors.append(
-    #         FieldValidationError(
-    #             "recipient-country",
-    #             "percentage",
-    #             "The recipient-country percentage doesn't add up to 100",
-    #             ))
 
     return {
         "warnings": warnings,
@@ -1004,13 +986,16 @@ def activity_location(
     warnings = []
     errors = []
 
-    location_reach = get_or_none(models.GeographicLocationReach, pk=location_reach_code)
+    location_reach = get_or_none(
+        models.GeographicLocationReach, pk=location_reach_code)
     location_id_vocabulary = get_or_none(
         models.GeographicVocabulary,
         pk=location_id_vocabulary_code)
     exactness = get_or_none(models.GeographicExactness, pk=exactness_code)
-    location_class = get_or_none(models.GeographicLocationClass, pk=location_class_code)
-    feature_designation = get_or_none(models.LocationType, pk=feature_designation_code)
+    location_class = get_or_none(
+        models.GeographicLocationClass, pk=location_class_code)
+    feature_designation = get_or_none(
+        models.LocationType, pk=feature_designation_code)
 
     if not ref:
         errors.append(
@@ -1077,7 +1062,9 @@ def activity_location(
             "location_id_vocabulary": location_id_vocabulary,
             "name_narratives": name_narratives['validated_data'],
             "description_narratives": description_narratives['validated_data'],
-            "activity_description_narratives": activity_description_narratives['validated_data'],
+            "activity_description_narratives": activity_description_narratives[
+                'validated_data'
+            ],
             "point_srs_name": point_srs_name,
             "point_pos": point_pos,
             "exactness": exactness,
@@ -1098,7 +1085,8 @@ def activity_humanitarian_scope(
     errors = []
 
     type = get_or_none(models.HumanitarianScopeType, code=type_code)
-    vocabulary = get_or_none(models.HumanitarianScopeVocabulary, code=vocabulary_code)
+    vocabulary = get_or_none(
+        models.HumanitarianScopeVocabulary, code=vocabulary_code)
 
     if not type_code:
         errors.append(
@@ -1162,9 +1150,11 @@ def activity_policy_marker(
     warnings = []
     errors = []
 
-    vocabulary = get_or_none(models.PolicyMarkerVocabulary, code=vocabulary_code)
+    vocabulary = get_or_none(
+        models.PolicyMarkerVocabulary, code=vocabulary_code)
     policy_marker = get_or_none(models.PolicyMarker, code=policy_marker_code)
-    significance = get_or_none(models.PolicySignificance, code=significance_code)
+    significance = get_or_none(
+        models.PolicySignificance, code=significance_code)
 
     if not policy_marker_code:
         errors.append(
@@ -1400,12 +1390,15 @@ def activity_planned_disbursement(
 
     type = get_or_none(models.BudgetType, pk=type_code)
     currency = get_or_none(models.Currency, pk=currency_code)
-    provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
+    provider_org_type = get_or_none(
+        models.OrganisationType, pk=provider_org_type_code)
     provider_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=provider_org_ref)
-    provider_org_activity = get_or_none(models.Activity, iati_identifier=provider_org_activity_id)
-    receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
+    provider_org_activity = get_or_none(
+        models.Activity, iati_identifier=provider_org_activity_id)
+    receiver_org_type = get_or_none(
+        models.OrganisationType, pk=receiver_org_type_code)
     receiver_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=receiver_org_ref)
@@ -1553,7 +1546,9 @@ def activity_planned_disbursement(
                 "provider_activity": provider_org_activity,
                 "type": provider_org_type,
             },
-            "provider_org_narratives": provider_org_narratives['validated_data'],
+            "provider_org_narratives": provider_org_narratives[
+                'validated_data'
+            ],
             "receiver_org": {
                 "ref": receiver_org_ref,
                 "normalized_ref": receiver_org_ref,
@@ -1561,7 +1556,9 @@ def activity_planned_disbursement(
                 "receiver_activity": receiver_org_activity,
                 "type": receiver_org_type,
             },
-            "receiver_org_narratives": receiver_org_narratives['validated_data'],
+            "receiver_org_narratives": receiver_org_narratives[
+                'validated_data'
+            ],
         },
     }
 
@@ -1607,21 +1604,28 @@ def activity_transaction(
     if not receiver_org_narratives_data:
         receiver_org_narratives_data = []
 
-    transaction_type = get_or_none(models.TransactionType, pk=transaction_type_code)
+    transaction_type = get_or_none(
+        models.TransactionType, pk=transaction_type_code)
     currency = get_or_none(models.Currency, pk=currency_code)
-    provider_org_type = get_or_none(models.OrganisationType, pk=provider_org_type_code)
+    provider_org_type = get_or_none(
+        models.OrganisationType, pk=provider_org_type_code)
     provider_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=provider_org_ref)
-    provider_org_activity = get_or_none(models.Activity, iati_identifier=provider_org_activity_id)
-    receiver_org_type = get_or_none(models.OrganisationType, pk=receiver_org_type_code)
+    provider_org_activity = get_or_none(
+        models.Activity, iati_identifier=provider_org_activity_id)
+    receiver_org_type = get_or_none(
+        models.OrganisationType, pk=receiver_org_type_code)
     receiver_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=receiver_org_ref)
-    receiver_org_activity = get_or_none(models.Activity, iati_identifier=receiver_org_activity_id)
-    disbursement_channel = get_or_none(models.DisbursementChannel, pk=disbursement_channel_code)
+    receiver_org_activity = get_or_none(
+        models.Activity, iati_identifier=receiver_org_activity_id)
+    disbursement_channel = get_or_none(
+        models.DisbursementChannel, pk=disbursement_channel_code)
     sector = get_or_none(models.Sector, pk=sector_code)
-    sector_vocabulary = get_or_none(models.SectorVocabulary, pk=sector_vocabulary_code)
+    sector_vocabulary = get_or_none(
+        models.SectorVocabulary, pk=sector_vocabulary_code)
     recipient_country = get_or_none(models.Country, pk=recipient_country_code)
     recipient_region = get_or_none(models.Region, pk=recipient_region_code)
     recipient_region_vocabulary = get_or_none(
@@ -1652,23 +1656,18 @@ def activity_transaction(
             FieldValidationError(
                 "transaction",
                 "transaction-type",
-                "codelist entry not found for {}".format(transaction_type_code),
+                "codelist entry not found for {}".format(
+                    transaction_type_code),
                 apiField="transaction_type.code",
             ))
 
-    # if not disbursement_channel_code:
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "transaction",
-    #             "disbursement-channel",
-    #             apiField="disbursement_channel.code",
-    #             ))
     if not disbursement_channel:
         errors.append(
             FieldValidationError(
                 "transaction",
                 "disbursement-channel",
-                "codelist entry not found for {}".format(disbursement_channel_code),
+                "codelist entry not found for {}".format(
+                    disbursement_channel_code),
                 apiField="disbursement_channel.code",
             ))
 
@@ -1732,8 +1731,10 @@ def activity_transaction(
             ))
 
     if sector_code:
-        # check if activity is using sector-strategy or transaction-sector strategy
-        has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
+        # check if activity is using sector-strategy or transaction-sector
+        # strategy
+        has_existing_sectors = len(
+            models.ActivitySector.objects.filter(activity=activity))
 
         if has_existing_sectors:
             errors.append(
@@ -1830,7 +1831,9 @@ def activity_transaction(
                 "provider_activity": provider_org_activity,
                 "type": provider_org_type,
             },
-            "provider_org_narratives": provider_org_narratives['validated_data'],
+            "provider_org_narratives": provider_org_narratives[
+                'validated_data'
+            ],
             "receiver_org": {
                 "ref": receiver_org_ref,
                 "normalized_ref": receiver_org_ref,
@@ -1838,7 +1841,9 @@ def activity_transaction(
                 "receiver_activity": receiver_org_activity,
                 "type": receiver_org_type,
             },
-            "receiver_org_narratives": receiver_org_narratives['validated_data'],
+            "receiver_org_narratives": receiver_org_narratives[
+                'validated_data'
+            ],
             "disbursement_channel": disbursement_channel,
             "sector": {
                 "sector": sector,
@@ -1916,8 +1921,10 @@ def transaction_sector(
             ))
 
     if sector_code:
-        # check if activity is using sector-strategy or transaction-sector strategy
-        has_existing_sectors = len(models.ActivitySector.objects.filter(activity=activity))
+        # check if activity is using sector-strategy or transaction-sector
+        # strategy
+        has_existing_sectors = len(
+            models.ActivitySector.objects.filter(activity=activity))
 
         if has_existing_sectors:
             errors.append(
@@ -2116,7 +2123,9 @@ def activity_result_indicator(
             "description_narratives": description_narratives['validated_data'],
             "baseline_year": baseline_year,
             "baseline_value": baseline_value,
-            "baseline_comment_narratives": baseline_comment_narratives['validated_data']
+            "baseline_comment_narratives": baseline_comment_narratives[
+                'validated_data'
+            ]
         },
     }
 
@@ -2194,8 +2203,6 @@ def activity_result_indicator_period(
         target_comment_narratives_data = []
     if not actual_comment_narratives_data:
         actual_comment_narratives_data = []
-
-    # vocabulary = get_or_none(models.IndicatorVocabulary, code=vocabulary_code)
 
     if not period_start_raw:
         errors.append(
@@ -2295,15 +2302,19 @@ def activity_result_indicator_period(
             "actual": actual,
             "period_start": period_start,
             "period_end": period_end,
-            "target_comment_narratives": target_comment_narratives['validated_data'],
-            "actual_comment_narratives": actual_comment_narratives['validated_data'],
+            "target_comment_narratives": target_comment_narratives[
+                'validated_data'
+            ],
+            "actual_comment_narratives": actual_comment_narratives[
+                'validated_data'
+            ],
         },
     }
 
 
 def activity_result_indicator_period_location(
-        result_indicator_period,
-        ref,
+    result_indicator_period,
+    ref,
 ):
     warnings = []
     errors = []
@@ -2445,7 +2456,8 @@ def country_budget_items(
     warnings = []
     errors = []
 
-    vocabulary = get_or_none(codelist_models.BudgetIdentifierVocabulary, code=vocabulary_code)
+    vocabulary = get_or_none(
+        codelist_models.BudgetIdentifierVocabulary, code=vocabulary_code)
 
     if not vocabulary_code:
         errors.append(
@@ -2481,7 +2493,8 @@ def budget_item(
     warnings = []
     errors = []
 
-    budget_identifier = get_or_none(codelist_models.BudgetIdentifier, code=budget_identifier_code)
+    budget_identifier = get_or_none(
+        codelist_models.BudgetIdentifier, code=budget_identifier_code)
 
     if not budget_identifier_code:
         errors.append(
@@ -2494,7 +2507,8 @@ def budget_item(
         errors.append(
             FieldValidationError(
                 "activity/country-budget-items/budget-item",
-                "code {} not found on BudgetIdentifier codelist".format(budget_identifier_code),
+                "code {} not found on BudgetIdentifier codelist".format(
+                    budget_identifier_code),
                 apiField="budget_identifier.code",
             ))
 
@@ -2602,7 +2616,8 @@ def condition(
         errors.append(
             FieldValidationError(
                 "activity/conditions/condition",
-                "code {} not found on ConditionType codelist".format(type_code),
+                "code {} not found on ConditionType codelist".format(
+                    type_code),
                 apiField="type.code",
             ))
 
@@ -2656,8 +2671,10 @@ def crs_add_loan_terms(
     warnings = []
     errors = []
 
-    repayment_type = get_or_none(codelist_models.LoanRepaymentType, code=repayment_type_code)
-    repayment_period = get_or_none(codelist_models.LoanRepaymentPeriod, code=repayment_period_code)
+    repayment_type = get_or_none(
+        codelist_models.LoanRepaymentType, code=repayment_type_code)
+    repayment_period = get_or_none(
+        codelist_models.LoanRepaymentPeriod, code=repayment_period_code)
 
     if not rate_1:
         errors.append(
@@ -2673,32 +2690,6 @@ def crs_add_loan_terms(
                 "rate_2",
                 apiField="loan_terms.rate_2",
             ))
-
-    # if not repayment_type_code:
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "activity/crs_add/loan_terms",
-    #             "repayment_type",
-    #             ))
-    # elif not repayment_type:
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "activity/crs_add/loan_terms",
-    #             "code {} not found on LoanRepaymentType codelist".format(repayment_type),
-    #             ))
-
-    # if not repayment_period_code:
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "activity/crs_add/loan_terms",
-    #             "repayment_period",
-    #             ))
-    # elif not repayment_period:
-    #     errors.append(
-    #         RequiredFieldError(
-    #             "activity/crs_add/loan_terms",
-    #             "code {} not found on LoanRepaymentPeriod codelist".format(repayment_period),
-    #             ))
 
     try:
         commitment_date = validate_date(commitment_date_raw)
@@ -2945,67 +2936,67 @@ def fss_forecast(
     }
 
 
-def related_activity(
-        fss,
-        year,
-        value_date_raw,
-        currency_code,
-        value,
-):
-    warnings = []
-    errors = []
+# def related_activity(
+        # fss,
+        # year,
+        # value_date_raw,
+        # currency_code,
+        # value,
+# ):
+    # warnings = []
+    # errors = []
 
-    currency = get_or_none(models.Currency, code=currency_code)
+    # currency = get_or_none(models.Currency, code=currency_code)
 
-    try:
-        value_date = validate_date(value_date_raw)
-    except RequiredFieldError:
-        if not value:
-            errors.append(
-                FieldValidationError(
-                    "activity/fss/forecast",
-                    "value",
-                    apiField="value",
-                ))
+    # try:
+        # value_date = validate_date(value_date_raw)
+    # except RequiredFieldError:
+        # if not value:
+            # errors.append(
+                # FieldValidationError(
+                    # "activity/fss/forecast",
+                    # "value",
+                    # apiField="value",
+                # ))
 
-        value_date = None
+        # value_date = None
 
-    if not currency and not fss.activity.default_currency:
-        errors.append(
-            FieldValidationError(
-                "activity/fss/forecast",
-                "currency",
-                "currency not specified and no default specified on activity",
-                apiField="currency.code",
-            ))
+    # if not currency and not fss.activity.default_currency:
+        # errors.append(
+            # FieldValidationError(
+                # "activity/fss/forecast",
+                # "currency",
+                # "currency not specified and no default specified on activity",
+                # apiField="currency.code",
+            # ))
 
-    if not year:
-        errors.append(
-            RequiredFieldError(
-                "activity/fss/forecast",
-                "year",
-                apiField="year",
-            ))
+    # if not year:
+        # errors.append(
+            # RequiredFieldError(
+                # "activity/fss/forecast",
+                # "year",
+                # apiField="year",
+            # ))
 
-    if not value:
-        errors.append(
-            RequiredFieldError(
-                "activity/fss/forecast",
-                "value",
-                apiField="value",
-            ))
+    # if not value:
+        # errors.append(
+            # RequiredFieldError(
+                # "activity/fss/forecast",
+                # "value",
+                # apiField="value",
+            # ))
 
-    return {
-        "warnings": warnings,
-        "errors": errors,
-        "validated_data": {
-            "fss": fss,
-            "year": year,
-            "value_date": value_date,
-            "currency": currency,
-            "value": value,
-        },
-    }
+    # return {
+        # "warnings": warnings,
+        # "errors": errors,
+        # "validated_data": {
+            # "fss": fss,
+            # "year": year,
+            # "value_date": value_date,
+            # "currency": currency,
+            # "value": value,
+        # },
+    # }
 
 
 def related_activity(
@@ -3106,12 +3097,6 @@ def activity_document_link(
     try:
         document_date = validate_date(document_date_raw)
     except RequiredFieldError:
-        # if not document_date:
-        #     errors.append(
-        #             RequiredFieldError(
-        #                 "activity/document-link",
-        #                 "document-date",
-        #                 ))
 
         document_date = None
 

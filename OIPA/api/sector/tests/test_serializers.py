@@ -2,6 +2,7 @@ from django.test import RequestFactory, TestCase
 
 from api.sector import serializers
 from iati.factory import iati_factory
+from iati_codelists.factory.codelist_factory import SectorCategoryFactory
 
 
 class TestSectorSerializers(TestCase):
@@ -38,7 +39,7 @@ class TestSectorSerializers(TestCase):
             assert field in serializer.data, assertion_msg.format(field)
 
     def test_SectorCategorySerializer(self):
-        sector_category = iati_factory.SectorCategoryFactory.build(
+        sector_category = SectorCategoryFactory.build(
             code='2',
         )
         serializer = serializers.SectorCategorySerializer(sector_category)

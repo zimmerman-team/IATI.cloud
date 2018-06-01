@@ -20,27 +20,26 @@ from iati.factory.iati_factory import (
     ConditionFactory, ConditionsFactory, ContactInfoFactory,
     ContactTypeFactory, CountryBudgetItemFactory, CountryFactory,
     CrsAddFactory, CrsAddOtherFlagsFactory, CurrencyFactory,
-    DescriptionFactory, DescriptionTypeFactory, DisbursementChannelFactory,
-    DocumentLinkCategoryFactory, DocumentLinkFactory,
-    DocumentLinkLanguageFactory, FinanceTypeFactory, FlowTypeFactory,
-    FssFactory, FssForecastFactory, GeographicExactnessFactory,
-    GeographicLocationClassFactory, GeographicLocationReachFactory,
-    GeographicVocabularyFactory, HumanitarianScopeFactory,
-    HumanitarianScopeTypeFactory, HumanitarianScopeVocabularyFactory,
-    IndicatorMeasureFactory, LegacyDataFactory, LoanRepaymentPeriodFactory,
-    LoanRepaymentTypeFactory, LocationFactory, LocationTypeFactory,
-    OrganisationFactory, OrganisationRoleFactory, OrganisationTypeFactory,
-    OtherIdentifierFactory, ParticipatingOrganisationFactory,
-    PlannedDisbursementFactory, PolicyMarkerFactory,
-    PolicyMarkerVocabularyFactory, PolicySignificanceFactory, RegionFactory,
-    RegionVocabularyFactory, RelatedActivityFactory, ResultFactory,
-    ResultIndicatorFactory, ResultIndicatorPeriodActualDimensionFactory,
+    DescriptionFactory, DescriptionTypeFactory, DocumentLinkCategoryFactory,
+    DocumentLinkFactory, DocumentLinkLanguageFactory, FinanceTypeFactory,
+    FlowTypeFactory, FssFactory, FssForecastFactory,
+    GeographicExactnessFactory, GeographicLocationClassFactory,
+    GeographicLocationReachFactory, GeographicVocabularyFactory,
+    HumanitarianScopeFactory, HumanitarianScopeTypeFactory,
+    HumanitarianScopeVocabularyFactory, IndicatorMeasureFactory,
+    LegacyDataFactory, LoanRepaymentPeriodFactory, LoanRepaymentTypeFactory,
+    LocationFactory, LocationTypeFactory, OrganisationFactory,
+    OrganisationRoleFactory, OrganisationTypeFactory, OtherIdentifierFactory,
+    ParticipatingOrganisationFactory, PlannedDisbursementFactory,
+    PolicyMarkerFactory, PolicyMarkerVocabularyFactory,
+    PolicySignificanceFactory, RegionFactory, RegionVocabularyFactory,
+    RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
+    ResultIndicatorPeriodActualDimensionFactory,
     ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
     ResultIndicatorPeriodTargetDimensionFactory,
     ResultIndicatorPeriodTargetLocationFactory,
     ResultIndicatorReferenceFactory, ResultTypeFactory, SectorFactory,
-    SectorVocabularyFactory, TiedStatusFactory, TitleFactory,
-    TransactionTypeFactory
+    SectorVocabularyFactory, TiedStatusFactory, TitleFactory
 )
 from iati.parser.exceptions import FieldValidationError
 from iati.permissions.factories import (
@@ -2257,7 +2256,7 @@ class TransactionSaveTestCase(TestCase):
 
     def test_create_transaction(self):
         activity = ActivityFactory.create()
-        transaction_type = TransactionTypeFactory.create()
+        transaction_type = transaction_factory.TransactionTypeFactory.create()
         currency = CurrencyFactory.create()
         organisation_type = OrganisationTypeFactory.create()
         organisation = OrganisationFactory.create()
@@ -2268,7 +2267,7 @@ class TransactionSaveTestCase(TestCase):
         country = CountryFactory.create()
         region = RegionFactory.create()
         region_vocabulary = RegionVocabularyFactory.create()
-        disbursement_channel = DisbursementChannelFactory.create()
+        disbursement_channel = codelist_factory.DisbursementChannelFactory.create()
         flow_type = FlowTypeFactory.create()
         finance_type = FinanceTypeFactory.create()
         aid_type = AidTypeFactory.create()
@@ -2499,7 +2498,8 @@ class TransactionSaveTestCase(TestCase):
                 transaction=transaction,
                 reported_transaction=transaction
             )
-        transaction_type = TransactionTypeFactory.create(code="2")
+        transaction_type = transaction_factory.TransactionTypeFactory.create(
+            code="2")
         currency = CurrencyFactory.create(code="af")
         OrganisationTypeFactory.create()
         OrganisationFactory.create()
@@ -2510,7 +2510,8 @@ class TransactionSaveTestCase(TestCase):
         CountryFactory.create()
         RegionFactory.create()
         RegionVocabularyFactory.create()
-        disbursement_channel = DisbursementChannelFactory.create()
+        disbursement_channel = codelist_factory.DisbursementChannelFactory\
+            .create()
         flow_type = FlowTypeFactory.create()
         finance_type = FinanceTypeFactory.create()
         aid_type = AidTypeFactory.create()

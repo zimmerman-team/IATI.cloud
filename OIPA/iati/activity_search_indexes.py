@@ -1,20 +1,19 @@
-from iati.models import Activity, ActivitySearch
 from datetime import datetime
 from functools import partial
 
-from django.core.exceptions import ObjectDoesNotExist
-from common.util import setInterval, print_progress
-
-import sys
-import traceback
-
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
+from django.core.exceptions import ObjectDoesNotExist
+
+from common.util import print_progress, setInterval
+from iati.models import Activity, ActivitySearch
 
 
 # TODO: prefetches - 2016-01-07
 def reindex_activity(activity):
-    if hasattr(settings, 'FTS_ENABLED') and getattr(settings, 'FTS_ENABLED') == False:
+    if hasattr(
+        settings, 'FTS_ENABLED'
+    ) and getattr(settings, 'FTS_ENABLED') is False:
         return
 
     try:

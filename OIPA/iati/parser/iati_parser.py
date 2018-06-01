@@ -11,7 +11,10 @@ from django.db.models.fields.related import ForeignKey, OneToOneField
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
-from iati.parser.exceptions import *
+from iati.parser.exceptions import (
+    FieldValidationError, IgnoredVocabularyError, NoUpdateRequired,
+    ParserError, RequiredFieldError, ValidationError
+)
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
 
@@ -34,7 +37,8 @@ class IatiParser(object):
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
 
-        # TODO: find a way to simply save in parser functions, and actually commit to db on exit
+        # TODO: find a way to simply save in parser functions, and actually
+        # commit to db on exit
         self.model_store = OrderedDict()
         self.root = root
 
@@ -43,7 +47,9 @@ class IatiParser(object):
         if ref and findnth_occurence_in_string(ref, '-', 1) > -1:
             index = findnth_occurence_in_string(ref, '-', 1)
             reg_agency = self.get_or_none(
-                codelist_models.OrganisationRegistrationAgency, code=ref[:index])
+                codelist_models.OrganisationRegistrationAgency,
+                code=ref[:index]
+            )
             if reg_agency:
                 reg_agency_found = True
 
@@ -52,7 +58,8 @@ class IatiParser(object):
                 'FieldValidationError',
                 element_name,
                 "ref",
-                "Must be in the format {Registration Agency} - (Registration Number}",
+                "Must be in the format {Registration Agency} - (Registration \
+                        Number}",
                 element.sourceline,
                 ref)
 
@@ -78,15 +85,16 @@ class IatiParser(object):
         """
         get default currency if not available for currency-related fields
         """
-        # TO DO; this does not invalidate the whole element (budget, transaction,
-        # planned disbursement) while it should
+        # TODO: this does not invalidate the whole element (budget,
+        # transaction, planned disbursement) while it should
         if not currency:
             currency = getattr(self.get_model('Activity'), 'default_currency')
             if not currency:
                 raise RequiredFieldError(
                     model_name,
                     "currency",
-                    "must specify default-currency on iati-activity or as currency on the element itself")
+                    "must specify default-currency on iati-activity or as \
+                            currency on the element itself")
 
         return currency
 
@@ -254,7 +262,8 @@ class IatiParser(object):
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
 
-        if hasattr(self, function_name) and callable(getattr(self, function_name)):
+        if hasattr(self, function_name)\
+                and callable(getattr(self, function_name)):
             element_method = getattr(self, function_name)
             try:
                 element_method(element)
@@ -322,7 +331,8 @@ class IatiParser(object):
 
         return function_name[2:]
 
-    # TODO: separate these functions in their own data structure - 2015-12-02
+    # TODO: separate these functions in their own data structure
+    # - 2015-12-02
     def get_model_list(self, key):
         if key in self.model_store:
             return self.model_store[key]
@@ -371,8 +381,8 @@ class IatiParser(object):
                 setattr(model, field.name, getattr(model, field.name))
 
     def save_all_models(self):
-        # TODO: problem: assigning unsaved model to foreign key results in error
-        # because field_id has not been set (see issue )
+        # TODO: problem: assigning unsaved model to foreign key results in
+        # error because field_id has not been set (see issue )
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
@@ -380,7 +390,8 @@ class IatiParser(object):
                     model.save()
 
                 except ValueError as e:
-                    # TO DO; check if we need to do internal logging on these value errors
+                    # TODO: check if we need to do internal logging on these
+                    # value errors
                     log.exception(e)
 
                 except Exception as e:

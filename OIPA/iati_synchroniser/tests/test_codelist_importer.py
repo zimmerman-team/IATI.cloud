@@ -1,14 +1,13 @@
-from django.test import TestCase
 import unittest
+
+from django.test import TestCase
+from lxml.etree import Element
 from mock import MagicMock
 
-from lxml.etree import Element
-
-from iati.models import AidType
-from iati.models import AidTypeCategory
-from iati.models import Country
-from iati_synchroniser.codelist_importer import CodeListImporter
 from iati.factory import iati_factory
+from iati.models import AidType, AidTypeCategory, Country
+from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory
+from iati_synchroniser.codelist_importer import CodeListImporter
 
 
 class CodelistImporterTestCase(TestCase):
@@ -37,7 +36,7 @@ class CodelistImporterTestCase(TestCase):
         description_text = 'For contributions under this category...'
 
         # use factory to create AidTypeCategory, check if set on model
-        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(
+        aidTypeCategory = AidTypeCategoryFactory.create(
             code=code_text, name=name_text, description=description_text)
 
         element = Element('AidType-category')
@@ -67,7 +66,7 @@ class CodelistImporterTestCase(TestCase):
         """
 
         # category should already be in the db
-        aidTypeCategory = iati_factory.AidTypeCategoryFactory.create(code='A')
+        aidTypeCategory = AidTypeCategoryFactory.create(code='A')
 
         element = Element('aidType')
         code = Element('code')

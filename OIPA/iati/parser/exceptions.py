@@ -15,7 +15,8 @@ class ParserError(Exception):
 
 
 class RequiredFieldError(Exception):
-    def __init__(self, model, field, msg="required attribute/element missing", apiField=None):
+    def __init__(self, model, field,
+                 msg="required attribute/element missing", apiField=None):
         """
         This error
 
@@ -64,7 +65,6 @@ class ValidationError(Exception):
         msg: explanation what went wrong
         """
         self.model = model
-        self.field = field
         self.message = msg
         self.iati_id = iati_id
         self.variable = variable

@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.test import TestCase
-import unittest
-from mock import MagicMock
-from iati.management.commands.set_searchable_activities import *
-from iati_codelists.factory import codelist_factory
+
 from iati.factory import iati_factory
+from iati.management.commands.set_searchable_activities import Command
 from iati.transaction import factories as transaction_factory
+from iati_codelists.factory import codelist_factory
 
 
 class SearchableActivitiesTestCase(TestCase):
@@ -55,7 +55,7 @@ class SearchableActivitiesTestCase(TestCase):
         transaction = transaction_factory.TransactionFactory.create(
             activity=self.second_activity,
         )
-        transaction_provider = transaction_factory.TransactionProviderFactory.create(
+        transaction_factory.TransactionProviderFactory.create(
             ref="GB-1",
             normalized_ref="GB-1",
             provider_activity=self.first_activity,
@@ -66,7 +66,8 @@ class SearchableActivitiesTestCase(TestCase):
     def test_update_searchable_activities(self):
         """
         Test if root organisations projects are set as searchable.
-        This tests both update_searchable_activities and set_children_searchable.
+        This tests both update_searchable_activities and
+        set_children_searchable.
         """
         self.command.update_searchable_activities()
 

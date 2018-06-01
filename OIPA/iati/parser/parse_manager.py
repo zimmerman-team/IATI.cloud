@@ -1,16 +1,17 @@
-from lxml import etree
-from django import db
-from django.conf import settings
 import hashlib
 
-from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
-from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
-from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
-from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
-from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
-from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
+from django import db
+from django.conf import settings
+from lxml import etree
+
 from iati.filegrabber import FileGrabber
 from iati.parser import schema_validators
+from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
+from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
+from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
+from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 
 
 class ParserDisabledError(Exception):
@@ -25,7 +26,8 @@ class ParseManager():
         """
 
         if settings.IATI_PARSER_DISABLED:
-            raise ParserDisabledError("The parser is disabled on this instance of OIPA")
+            raise ParserDisabledError(
+                "The parser is disabled on this instance of OIPA")
 
         self.dataset = dataset
         self.url = dataset.source_url
@@ -150,7 +152,8 @@ class ParseManager():
         if (self.force_reparse or self.hash_changed) and self.valid_dataset:
             self.parser.load_and_parse(self.root)
 
-        # Throw away query logs when in debug mode to prevent memory from overflowing
+        # Throw away query logs when in debug mode to prevent memory from
+        # overflowing
         if settings.DEBUG:
             db.reset_queries()
 
@@ -161,9 +164,16 @@ class ParseManager():
 
         try:
             (activity,) = self.root.xpath(
-                '//iati-activity/iati-identifier[text()="{}"]'.format(activity_id))
+                '//iati-activity/iati-identifier[text()="{}"]'.format(
+                    activity_id
+                )
+            )
         except ValueError:
-            raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
+            raise ValueError(
+                "Activity {} doesn't exist in {}".format(
+                    activity_id, self.url
+                )
+            )
 
         self.parser.force_reparse = True
         self.parser.parse(activity.getparent())
