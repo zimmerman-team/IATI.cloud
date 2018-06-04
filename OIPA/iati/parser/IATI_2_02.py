@@ -134,7 +134,8 @@ class Parse(IatiParser):
                 "found in dataset: '{}'".format(old_activity.dataset.name),
                 activity_id)
 
-        if old_activity and not self.force_reparse and not old_activity.modified:
+        if (old_activity
+                and not self.force_reparse and not old_activity.modified):
             # update last_updated_model to prevent the activity from being
             # deleted because its not updated (and thereby assumed not found
             # in the dataset)
@@ -3071,7 +3072,8 @@ class Parse(IatiParser):
                         "Period-start must be before period-end",
                         None,
                         None,
-                        "start date: {} , end_date: {}".format(start_date, end_date))
+                        "start date: {} , end_date: {}".format(
+                            start_date, end_date))
 
         except AttributeError:
             # period start/end dont exist
@@ -3245,7 +3247,7 @@ class Parse(IatiParser):
     # """attributes:
 
     # tag:narrative"""
-    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(
+    def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(  # NOQA: E501
             self, element):
         period_target_comment = self.get_model(
             'ResultIndicatorPeriodTargetComment')

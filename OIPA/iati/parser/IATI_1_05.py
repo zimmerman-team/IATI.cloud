@@ -89,7 +89,7 @@ class Parse(IATI_201_Parser):
                             element,
                             activity_reporting_organisation.organisation.name,
                             is_organisation_narrative=True)
-                except ObjectDoesNotExist as e:
+                except ObjectDoesNotExist as e:  # NOQA: F821
                     # org has no name, create it
                     organisation_name = organisation_models.OrganisationName()
                     organisation_name\

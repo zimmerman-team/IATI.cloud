@@ -1622,7 +1622,7 @@ def activity_transaction(
     receiver_org_activity = get_or_none(
         models.Activity, iati_identifier=receiver_org_activity_id)
     disbursement_channel = get_or_none(
-        models.DisbursementChannel, pk=disbursement_channel_code)
+        codelist_models.DisbursementChannel, pk=disbursement_channel_code)
     sector = get_or_none(models.Sector, pk=sector_code)
     sector_vocabulary = get_or_none(
         models.SectorVocabulary, pk=sector_vocabulary_code)
@@ -2934,69 +2934,6 @@ def fss_forecast(
             "value": value,
         },
     }
-
-
-# def related_activity(
-        # fss,
-        # year,
-        # value_date_raw,
-        # currency_code,
-        # value,
-# ):
-    # warnings = []
-    # errors = []
-
-    # currency = get_or_none(models.Currency, code=currency_code)
-
-    # try:
-        # value_date = validate_date(value_date_raw)
-    # except RequiredFieldError:
-        # if not value:
-            # errors.append(
-                # FieldValidationError(
-                    # "activity/fss/forecast",
-                    # "value",
-                    # apiField="value",
-                # ))
-
-        # value_date = None
-
-    # if not currency and not fss.activity.default_currency:
-        # errors.append(
-            # FieldValidationError(
-                # "activity/fss/forecast",
-                # "currency",
-                # "currency not specified and no default specified on activity",
-                # apiField="currency.code",
-            # ))
-
-    # if not year:
-        # errors.append(
-            # RequiredFieldError(
-                # "activity/fss/forecast",
-                # "year",
-                # apiField="year",
-            # ))
-
-    # if not value:
-        # errors.append(
-            # RequiredFieldError(
-                # "activity/fss/forecast",
-                # "value",
-                # apiField="value",
-            # ))
-
-    # return {
-        # "warnings": warnings,
-        # "errors": errors,
-        # "validated_data": {
-            # "fss": fss,
-            # "year": year,
-            # "value_date": value_date,
-            # "currency": currency,
-            # "value": value,
-        # },
-    # }
 
 
 def related_activity(
