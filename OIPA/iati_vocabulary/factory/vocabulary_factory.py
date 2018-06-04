@@ -1,10 +1,8 @@
-from iati.models import RegionVocabulary
-from iati.models import GeographicVocabulary
+from factory.django import DjangoModelFactory
 
+from iati.models import GeographicVocabulary, RegionVocabulary
 from iati_codelists import models as codelist_models
 from iati_vocabulary import models as vocabulary_models
-
-from factory.django import DjangoModelFactory
 
 
 class NoDatabaseFactory(DjangoModelFactory):
