@@ -1,11 +1,10 @@
-from mock import MagicMock
-
 from django.contrib.admin.sites import AdminSite
 from django.test import TestCase
+from mock import MagicMock
 
 from iati.factory.iati_factory import OrganisationFactory
-from iati_organisation.models import Organisation
 from iati_organisation.admin import OrganisationAdmin
+from iati_organisation.models import Organisation
 
 
 class MockRequest(object):

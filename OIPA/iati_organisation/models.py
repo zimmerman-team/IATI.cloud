@@ -1,32 +1,25 @@
-from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey, GenericRelation
+)
 from django.contrib.contenttypes.models import ContentType
-from iati.models import OrganisationType
-from iati.models import Language
-from iati.models import Currency
-from iati.models import FileFormat
-from iati.models import DocumentCategory
-from iati.models import Version
-from iati.models import BudgetStatus
-from geodata.models import Country
-from geodata.models import Region
-from iati_vocabulary.models import RegionVocabulary
+from django.db import models
 
-from iati_codelists.models import *
-from iati_vocabulary.models import *
+from geodata.models import Country, Region
+from iati.models import (
+    BudgetStatus, Currency, DocumentCategory, FileFormat, Language,
+    OrganisationType, Version
+)
+from iati_vocabulary.models import RegionVocabulary
 
 from .organisation_manager import OrganisationManager
 
+
 # function for making url
-
-
 def make_abs_url(org_identifier):
     return '/api/organisation/' + org_identifier
 
+
 # narrative for adding free text to elements
-
-
 class OrganisationNarrative(models.Model):
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -66,13 +59,16 @@ class Organisation(models.Model):
     """
     This model is initially filled by the IATI Registry API.
     Then updated by content of the IATI organisation file if available.
-    Or created by an activity file if the organisation is not the publisher and thereby not initially filled.
+    Or created by an activity file if the organisation is not the publisher
+    and thereby not initially filled.
     """
 
-    organisation_identifier = models.CharField(max_length=150, unique=True, db_index=True)
+    organisation_identifier = models.CharField(
+        max_length=150, unique=True, db_index=True)
     # normalized for use in the API, should be deprecated and fixed by a
     # proper regex in the URL - 2017-11-06
-    normalized_organisation_identifier = models.CharField(max_length=150, db_index=True)
+    normalized_organisation_identifier = models.CharField(
+        max_length=150, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version,
                                               on_delete=models.CASCADE)
@@ -137,7 +133,8 @@ class TotalBudget(models.Model):
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
 
 
@@ -159,7 +156,8 @@ class RecipientOrgBudget(models.Model):
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
     narratives = GenericRelation(OrganisationNarrative)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
 
 
 class RecipientOrgBudgetLine(BudgetLineAbstract):
@@ -178,7 +176,8 @@ class RecipientCountryBudget(models.Model):
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
 
 
@@ -201,7 +200,8 @@ class RecipientRegionBudget(models.Model):
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
 
 
@@ -218,7 +218,8 @@ class TotalExpenditure(models.Model):
     period_end = models.DateField(null=True)
     value_date = models.DateField(null=True)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
     narratives = GenericRelation(OrganisationNarrative)
 
 
@@ -228,7 +229,8 @@ class TotalExpenditureLine(models.Model):
 
     ref = models.CharField(max_length=150)
     currency = models.ForeignKey(Currency, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=14, decimal_places=2, null=True, default=None)
+    value = models.DecimalField(
+        max_digits=14, decimal_places=2, null=True, default=None)
     value_date = models.DateField(null=True)
     narratives = GenericRelation(OrganisationNarrative)
 
@@ -256,7 +258,9 @@ class OrganisationDocumentLink(models.Model):
     iso_date = models.DateField(null=True, blank=True)
 
     def __unicode__(self,):
-        return "%s - %s" % (self.organisation.organisation_identifier, self.url)
+        return "%s - %s" % (
+            self.organisation.organisation_identifier, self.url
+        )
 
     def get_absolute_url(self):
         return make_abs_url(self.organisation.organisation_identifier)

@@ -4,26 +4,15 @@
 
 import copy
 import datetime
-from django.core import management
 
+from django.core import management
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
-
-from lxml import etree
 from lxml.builder import E
 
-from iati.parser.parse_manager import ParseManager
-
-import iati.models as iati_models
-import iati_codelists.models as codelist_models
-import iati_organisation.models as org_models
-from geodata.models import Country
 from iati.factory import iati_factory
-
-from iati.parser.IATI_1_03 import Parse as Parser_103
-from iati.parser.IATI_1_05 import Parse as Parser_105
+from iati.parser.parse_manager import ParseManager
 from iati_organisation.parser.organisation_1_05 import Parse as OrgParse_105
-
 from iati_synchroniser.factory import synchroniser_factory
 
 
@@ -32,10 +21,10 @@ def build_xml(version, organisation_identifier):
         Construct a base activity file to work with in the tests
     """
 
-    activities_attrs = {"generated-datetime": datetime.datetime.now().isoformat(),
-                        "version": version,
-
-                        }
+    activities_attrs = {
+        "generated-datetime": datetime.datetime.now().isoformat(),
+        "version": version,
+    }
 
     activity = E("iati-organisations",
                  **activities_attrs
@@ -74,7 +63,8 @@ class ParserSetupTestCase(TestCase):
 
         dummy_source = synchroniser_factory.DatasetFactory.create(filetype=2)
 
-        self.parser_105 = ParseManager(dummy_source, self.iati_105).get_parser()
+        self.parser_105 = ParseManager(
+            dummy_source, self.iati_105).get_parser()
 
         assert(isinstance(self.parser_105, OrgParse_105))
 
@@ -103,9 +93,6 @@ class OrganisationTestCase(ParserSetupTestCase):
             "hierarchy": 1,
         }
 
-        # iati_organisation = E("iati-organisation", **self.attrs)
-        # iati_organisation.append(E("organisation-identifier", self.iati_identifier))
-
         self.organisation = iati_factory.OrganisationFactory.create()
 
         self.parser_105.default_lang = self.organisation.default_lang
@@ -118,14 +105,16 @@ class OrganisationTestCase(ParserSetupTestCase):
             '{http://www.w3.org/XML/1998/namespace}lang': 'en',
         }
 
-        element = E('iati-organisation', E('iati-identifier', 'test-id', {}), attribs)
+        element = E('iati-organisation',
+                    E('iati-identifier', 'test-id', {}), attribs)
 
         self.parser_105.iati_organisations__iati_organisation(element)
 
         organisation = self.parser_105.get_model('Organisation')
 
         self.assertEqual(organisation.organisation_identifier, 'test-id')
-        self.assertEqual(organisation.default_currency_id, attribs['default-currency'])
+        self.assertEqual(organisation.default_currency_id,
+                         attribs['default-currency'])
         self.assertEqual(
             organisation.last_updated_datetime,
             self.parser_105.validate_date(

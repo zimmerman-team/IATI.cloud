@@ -1,11 +1,11 @@
-import ujson
 import os
 import os.path
 
-from django.contrib import admin
 from django.conf.urls import url
+from django.contrib import admin
 from django.http import HttpResponse
 
+import ujson
 from iati_organisation.models import Organisation
 
 
@@ -17,7 +17,8 @@ class OrganisationAdmin(admin.ModelAdmin):
         urls = super(OrganisationAdmin, self).get_urls()
 
         my_urls = [
-            url(r'^update-primary-names/$', self.admin_site.admin_view(self.update_primary_names)),
+            url(r'^update-primary-names/$',
+                self.admin_site.admin_view(self.update_primary_names)),
         ]
         return my_urls + urls
 
@@ -38,7 +39,9 @@ class OrganisationAdmin(admin.ModelAdmin):
                 org.primary_name = org_names[o]
                 org.save()
 
-        return HttpResponse('<html><body>Success</body></html>', content_type='text/html')
+        return HttpResponse(
+            '<html><body>Success</body></html>', content_type='text/html'
+        )
 
 
 admin.site.register(Organisation, OrganisationAdmin)

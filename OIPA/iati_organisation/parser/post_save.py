@@ -6,7 +6,8 @@ from iati_synchroniser.models import Publisher
 
 
 def set_activity_reporting_organisation(organisation):
-    """ update ActivityParticipatingOrganisation.organisation references to this organisation """
+    """ update ActivityParticipatingOrganisation.organisation references to
+    this organisation """
     ActivityReportingOrganisation.objects.filter(
         organisation=None,
         ref=organisation.organisation_identifier
@@ -18,7 +19,8 @@ def set_publisher_fk(organisation):
         return
 
     try:
-        publisher = Publisher.objects.get(publisher_iati_id=organisation.organisation_identifier)
+        publisher = Publisher.objects.get(
+            publisher_iati_id=organisation.organisation_identifier)
         publisher.organisation = organisation
         publisher.save()
     except Publisher.DoesNotExist:
