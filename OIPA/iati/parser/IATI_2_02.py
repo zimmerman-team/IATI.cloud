@@ -975,7 +975,7 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
         vocabulary = self.get_or_none(
-            codelist_models.GeographicVocabulary, code=vocabulary_code)
+            vocabulary_models.GeographicVocabulary, code=vocabulary_code)
 
         if not code:
             raise RequiredFieldError(
@@ -1077,7 +1077,7 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
         vocabulary = self.get_or_none(
-            codelist_models.GeographicVocabulary, code=vocabulary_code)
+            vocabulary_models.GeographicVocabulary, code=vocabulary_code)
         level = element.attrib.get('level')
 
         if not code:
