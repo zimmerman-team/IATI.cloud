@@ -128,7 +128,7 @@ class CodelistImporterTestCase(TestCase):
 
         # case; should not be added
         with self.assertRaises(AttributeError):
-            non_existing_field = aid_type_item.non_existing_field_for_this_model
+            aid_type_item.non_existing_field_for_this_model
 
         # and the function should still return the item
         self.assertEqual(aid_type_item, aid_type_item2)
@@ -150,6 +150,8 @@ class CodelistImporterTestCase(TestCase):
         importer.synchronise_with_codelists()
 
         self.assertEqual(11, importer.get_codelist_data.call_count)
-        self.assertEqual(len(importer.iati_versions), importer.loop_through_codelists.call_count)
-        importer.get_codelist_data.assert_called_with(name='DocumentCategory-category')
+        self.assertEqual(len(importer.iati_versions),
+                         importer.loop_through_codelists.call_count)
+        importer.get_codelist_data.assert_called_with(
+            name='DocumentCategory-category')
         importer.loop_through_codelists.assert_called_with('2.02')

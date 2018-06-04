@@ -1,10 +1,10 @@
-from factory.django import DjangoModelFactory
-from factory import Sequence, SubFactory
-from iati_synchroniser.models import Dataset
-from iati_synchroniser.models import Publisher
 from datetime import datetime
 
+from factory import Sequence, SubFactory
+from factory.django import DjangoModelFactory
+
 from iati.factory.iati_factory import OrganisationFactory
+from iati_synchroniser.models import Dataset, Publisher
 
 
 class NoDatabaseFactory(DjangoModelFactory):

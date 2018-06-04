@@ -1,26 +1,18 @@
+import datetime
 import json
 import urllib
-import datetime
 
-from iati_synchroniser.models import Publisher, Dataset
 from iati_organisation.models import Organisation
-from iati_synchroniser.create_publisher_organisation import create_publisher_organisation
+from iati_synchroniser.create_publisher_organisation import (
+    create_publisher_organisation
+)
+from iati_synchroniser.models import Dataset, Publisher
 
-DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'
-PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'
+DATASET_URL = 'https://iatiregistry.org/api/action/package_search?rows=200&{options}'  # NOQA: E501
+PUBLISHER_URL = 'https://iatiregistry.org/api/action/organization_list?all_fields=true&include_extras=true&limit=200&{options}'  # NOQA: E501
 
 
 class DatasetSyncer():
-
-    # def __init__(self):
-    #     """
-    #     Prefetch data, to minify amount of DB queries
-    #     """
-    #     source_url_tuples = Dataset.objects.values_list('id')
-    #     self.source_urls = [url[0] for url in source_url_tuples]
-
-    #     publisher_id_tuples = Publisher.objects.values_list('id')
-    #     self.publisher_ids = [pub_id[0] for pub_id in publisher_id_tuples]
 
     def get_data(self, url):
         req = urllib.request.Request(url)
@@ -29,7 +21,10 @@ class DatasetSyncer():
         return json_objects
 
     def get_val_in_list_of_dicts(self, key, dicts):
-        return next((item for item in dicts if item.get("key") and item["key"] == key), None)
+        return next(
+            (item for item in dicts
+                if item.get("key") and item["key"] == key), None
+        )
 
     def synchronize_with_iati_api(self):
         """
@@ -86,7 +81,9 @@ class DatasetSyncer():
         )
 
         if not Organisation.objects.filter(
-                organisation_identifier=publisher['publisher_iati_id']).exists():
+                organisation_identifier=publisher[
+                    'publisher_iati_id'
+                ]).exists():
             create_publisher_organisation(
                 obj,
                 publisher['publisher_organization_type']
@@ -98,14 +95,16 @@ class DatasetSyncer():
         """
 
         """
-        filetype_name = self.get_val_in_list_of_dicts('filetype', dataset['extras'])
+        filetype_name = self.get_val_in_list_of_dicts(
+            'filetype', dataset['extras'])
 
         if filetype_name and filetype_name.get('value') == 'organisation':
             filetype = 2
         else:
             filetype = 1
 
-        iati_version = self.get_val_in_list_of_dicts('iati_version', dataset['extras'])
+        iati_version = self.get_val_in_list_of_dicts(
+            'iati_version', dataset['extras'])
         if iati_version:
             iati_version = iati_version.get('value')
         else:
@@ -115,7 +114,8 @@ class DatasetSyncer():
         if not len(dataset['resources']) or not dataset['organization']:
             return
 
-        publisher = Publisher.objects.get(iati_id=dataset['organization']['id'])
+        publisher = Publisher.objects.get(
+            iati_id=dataset['organization']['id'])
 
         obj, created = Dataset.objects.update_or_create(
             iati_id=dataset['id'],
@@ -134,7 +134,8 @@ class DatasetSyncer():
     def remove_deprecated(self):
         """
         remove old publishers and datasets that used an id between 1-5000
-        instead of the IATI Registry UUID (thats way over string length 5, pretty hacky code here tbh but its a one time solution)
+        instead of the IATI Registry UUID (thats way over string length 5,
+        pretty hacky code here tbh but its a one time solution)
         """
         for p in Publisher.objects.all():
             if len(p.iati_id) < 5:
