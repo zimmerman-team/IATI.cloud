@@ -1605,10 +1605,10 @@ def activity_transaction(
         receiver_org_narratives_data = []
 
     transaction_type = get_or_none(
-        models.TransactionType, pk=transaction_type_code)
+        codelist_models.TransactionType, pk=transaction_type_code)
     currency = get_or_none(models.Currency, pk=currency_code)
     provider_org_type = get_or_none(
-        models.OrganisationType, pk=provider_org_type_code)
+        codelist_models.OrganisationType, pk=provider_org_type_code)
     provider_org_organisation = get_or_none(
         models.Organisation,
         organisation_identifier=provider_org_ref)

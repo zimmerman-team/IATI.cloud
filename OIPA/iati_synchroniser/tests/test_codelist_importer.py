@@ -4,9 +4,10 @@ from django.test import TestCase
 from lxml.etree import Element
 from mock import MagicMock
 
+from geodata.models import Country
 from iati.factory import iati_factory
-from iati.models import AidType, AidTypeCategory, Country
 from iati_codelists.factory.codelist_factory import AidTypeCategoryFactory
+from iati_codelists.models import AidType, AidTypeCategory
 from iati_synchroniser.codelist_importer import CodeListImporter
 
 

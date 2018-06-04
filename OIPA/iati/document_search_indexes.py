@@ -1,9 +1,10 @@
-from iati.models import Document, DocumentSearch
 from datetime import datetime
 from functools import partial
 
 from django.core.exceptions import ObjectDoesNotExist
-from common.util import setInterval, print_progress
+
+from common.util import print_progress, setInterval
+from iati.models import Document, DocumentSearch
 
 
 # TODO: prefetches - 2016-01-07
@@ -25,8 +26,11 @@ def reindex_document(document):
         document_search.last_reindexed = datetime.now()
         document_search.save()
 
+    # FIXME: get rid of all these prints throughout the project:
     except Exception as e:
-        print("Building ft indexes for {id} raises: {e}".format(id=document.id, e=e.message))
+        print("Building ft indexes for {id} raises: {e}".format(
+            id=document.id, e=e.message)
+        )
 
 
 def reindex_all_documents():

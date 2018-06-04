@@ -1,8 +1,9 @@
-import iati
-from iati_codelists import models as codelist_models
-
-from factory import SubFactory, RelatedFactory
+from factory import SubFactory
 from factory.django import DjangoModelFactory
+
+import iati
+from iati.transaction.models import TransactionType
+from iati_codelists import models as codelist_models
 
 
 class NoDatabaseFactory(DjangoModelFactory):
@@ -43,7 +44,7 @@ class FileFormatFactory(NoDatabaseFactory):
 
 class DocumentCategoryCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.DocumentCategoryCategory
+        model = codelist_models.DocumentCategoryCategory
 
     code = 'A'
     name = 'Activity Level'
@@ -117,7 +118,7 @@ class FlowTypeFactory(NoDatabaseFactory):
 
 class AidTypeCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.AidTypeCategory
+        model = codelist_models.AidTypeCategory
 
     code = 1
     name = 'test-category'
@@ -126,7 +127,7 @@ class AidTypeCategoryFactory(NoDatabaseFactory):
 
 class AidTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.AidType
+        model = codelist_models.AidType
 
     code = 1
     name = 'test'
@@ -163,7 +164,7 @@ class SectorFactory(NoDatabaseFactory):
 
 class SectorCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.SectorCategory
+        model = codelist_models.SectorCategory
 
     code = 200
     name = 'education'
@@ -231,7 +232,7 @@ class PolicySignificanceFactory(NoDatabaseFactory):
 
 class FinanceTypeCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.FinanceTypeCategory
+        model = codelist_models.FinanceTypeCategory
 
     code = "100"
     name = "GRANT"
@@ -248,7 +249,7 @@ class FinanceTypeFactory(NoDatabaseFactory):
 
 class TiedStatusFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.TiedStatus
+        model = codelist_models.TiedStatus
 
     code = "3"
     name = 'Partially tied'
@@ -256,7 +257,7 @@ class TiedStatusFactory(NoDatabaseFactory):
 
 class ResultTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.ResultType
+        model = codelist_models.ResultType
 
     code = "2"
     name = 'ResultType'
@@ -264,7 +265,7 @@ class ResultTypeFactory(NoDatabaseFactory):
 
 class GeographicLocationClassFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.GeographicLocationClass
+        model = codelist_models.GeographicLocationClass
 
     code = "2"
     name = 'Populated place'
@@ -272,7 +273,7 @@ class GeographicLocationClassFactory(NoDatabaseFactory):
 
 class GeographicLocationReachFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.GeographicLocationReach
+        model = codelist_models.GeographicLocationReach
 
     code = "1"
     name = 'Activity'
@@ -288,7 +289,7 @@ class GeographicExactnessFactory(NoDatabaseFactory):
 
 class LocationTypeCategoryFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.LocationTypeCategory
+        model = codelist_models.LocationTypeCategory
 
     code = 'S'
     name = 'Spot Features'
@@ -296,18 +297,17 @@ class LocationTypeCategoryFactory(NoDatabaseFactory):
 
 class LocationTypeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.LocationType
+        model = codelist_models.LocationType
 
     code = 'AIRQ'
     name = 'abandoned airfield'
     description = 'abandoned airfield'
-    #category = LocationTypeCategoryFactory.build()
     category = SubFactory(LocationTypeCategoryFactory)
 
 
 class ActivityScopeFactory(NoDatabaseFactory):
     class Meta(GetOrCreateMetaMixin):
-        model = iati.models.ActivityScope
+        model = codelist_models.ActivityScope
 
     code = "1"
     name = 'example scope'
@@ -319,9 +319,6 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
 
     code = "1"
     name = 'Emergency'
-
-
-from iati.transaction.models import TransactionType
 
 
 class TransactionTypeFactory(NoDatabaseFactory):

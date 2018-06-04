@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models import Prefetch
+
 from iati.djorm_pgfulltext.models import SearchManagerMixIn, SearchQuerySet
 
 
 class DocumentQuerySet(SearchQuerySet):
 
-    # TODO: this makes counting a lot slower than it has to be for a lot of queries
+    # TODO: this makes counting a lot slower than it has to be for a lot of
+    # queries
     def count(self):
         self = self.order_by().only('id')
         return super(DocumentQuerySet, self).count()

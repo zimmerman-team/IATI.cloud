@@ -86,34 +86,41 @@ def reindex_activity(activity):
     activity_search.sector = " ".join(sector_text)
     activity_search.document_link = " ".join(document_link_text)
 
-    text = " ".join([
-        activity_search.iati_identifier,
-        activity_search.title,
-        activity_search.description,
-        activity_search.reporting_org,
-        activity_search.participating_org,
-        activity_search.recipient_country,
-        activity_search.recipient_region,
-        activity_search.sector,
-        activity_search.document_link,
-    ])
+    _config = 'english'
 
-    combined_vector = SearchVector('iati_identifier',
-                                   config='english') + SearchVector('title',
-                                                                    config='english') + SearchVector('description',
-                                                                                                     config='english') + SearchVector('reporting_org',
-                                                                                                                                      config='english') + SearchVector('participating_org',
-                                                                                                                                                                       config='english') + SearchVector('recipient_country',
-                                                                                                                                                                                                        config='english') + SearchVector('recipient_region',
-                                                                                                                                                                                                                                         config='english') + SearchVector('sector',
-                                                                                                                                                                                                                                                                          config='english') + SearchVector('document_link',
-                                                                                                                                                                                                                                                                                                           config='english')
-
-    # activity_search.search_vector_text = combined_vector
+    combined_vector = SearchVector(
+        'iati_identifier',
+        config=_config
+    ) + SearchVector(
+        'title',
+        config=_config
+    ) + SearchVector(
+        'description',
+        config=_config
+    ) + SearchVector(
+        'reporting_org',
+        config=_config
+    ) + SearchVector(
+        'participating_org',
+        config=_config
+    ) + SearchVector(
+        'recipient_country',
+        config=_config
+    ) + SearchVector(
+        'recipient_region',
+        config=_config
+    ) + SearchVector(
+        'sector',
+        config=_config
+    ) + SearchVector(
+        'document_link',
+        config=_config
+    )
 
     activity_search.last_reindexed = datetime.now()
     activity_search.save()
-    ActivitySearch.objects.filter(id=activity_search.id).update(search_vector_text=combined_vector)
+    ActivitySearch.objects.filter(id=activity_search.id).update(
+        search_vector_text=combined_vector)
 
 
 def reindex_all_activities():

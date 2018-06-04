@@ -25,9 +25,11 @@ from geodata.models import Country, Region
 from iati.models import (
     ActivityParticipatingOrganisation, ActivityStatus, AidType,
     CollaborationType, DocumentCategory, FinanceType, FlowType, Organisation,
-    OrganisationType, PolicySignificance, Sector, TiedStatus, TransactionType
+    OrganisationType, PolicySignificance, Sector, TiedStatus
 )
-from iati.transaction.models import Transaction, TransactionSector
+from iati.transaction.models import (
+    Transaction, TransactionSector, TransactionType
+)
 
 
 class TransactionList(CacheResponseMixin, DynamicListView):
