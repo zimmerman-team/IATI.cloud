@@ -4,28 +4,31 @@ import os
 import time
 
 import django_rq
-from . import fulltext
 import requests
 from django.conf import settings
+from django.core.cache import caches
 from django_rq import job
 from redis import Redis
+from rest_framework_extensions.settings import extensions_api_settings
 from rq import Worker
 from rq.job import Job
 
-from common.download_file import DownloadFile
-from common.download_file import hash_file
-from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-from iati.models import DocumentLink, Document
+from api.export.serializers import ActivityXMLSerializer
+from api.renderers import XMLRenderer
+from common.download_file import DownloadFile, hash_file
+from iati.activity_aggregation_calculation import (
+    ActivityAggregationCalculation
+)
+from iati.models import Activity, Document, DocumentLink
 from iati_synchroniser.models import Dataset
 
-from rest_framework_extensions.settings import extensions_api_settings
-from django.core.cache import caches
+from . import fulltext
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
 
 ###############################
-#### TASK QUEUE MANAGEMENT ####
+#### TASK QUEUE MANAGEMENT ####  # NOQA: E266
 ###############################
 
 
@@ -65,7 +68,7 @@ def delete_all_tasks_from_queue(queue_name):
 
 
 ###############################
-######## PARSING TASKS ########
+######## PARSING TASKS ########  # NOQA: E266
 ###############################
 
 @job
@@ -154,7 +157,8 @@ def force_parse_source_by_id(source_id, update_searchable=False):
 
         queue = django_rq.get_queue("parser")
         if update_searchable and settings.ROOT_ORGANISATIONS:
-            queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
+            queue.enqueue(start_searchable_activities_task,
+                          args=(0,), timeout=300)
 
     except Dataset.DoesNotExist:
         return False
@@ -196,12 +200,14 @@ def delete_source_by_id(source_id):
 def delete_sources_not_found_in_registry_in_x_days(days):
     if int(days) < 6:
         raise Exception(
-            "The task queue only allows deletion of sources when not found for +5 days")
+            "The task queue only allows deletion of sources when not found \
+                for +5 days")
 
     for source in Dataset.objects.all():
         current_date = float(datetime.datetime.now().strftime('%s'))
         if source.last_found_in_registry:
-            last_found_in_registry = float(source.last_found_in_registry.strftime('%s'))
+            last_found_in_registry = float(
+                source.last_found_in_registry.strftime('%s'))
             update_interval_time = 24 * 60 * 60 * int(days)
 
             if (current_date - update_interval_time) > last_found_in_registry:
@@ -216,7 +222,7 @@ def delete_sources_not_found_in_registry_in_x_days(days):
 
 
 ###############################
-#### IATI MANAGEMENT TASKS ####
+#### IATI MANAGEMENT TASKS ####  # NOQA: E266
 ###############################
 
 @job
@@ -233,13 +239,9 @@ def find_replace_source_url(find_url, replace_url):
         source.save()
 
 
-###############################
-#### INTERNAL TASKS ####
-###############################
-
-from iati.models import Activity
-from api.export.serializers import ActivityXMLSerializer
-from api.renderers import XMLRenderer
+########################
+#### INTERNAL TASKS ####  # NOQA: E266
+########################
 
 
 @job
@@ -257,9 +259,9 @@ def export_publisher_activities(publisher_id):
     return xml
 
 
-###############################
-#### EXCHANGE RATE TASKS ####
-###############################
+#############################
+#### EXCHANGE RATE TASKS ####  # NOQA: E266
+#############################
 
 @job
 def update_exchange_rates():
@@ -278,7 +280,7 @@ def force_update_exchange_rates():
 
 
 ###############################
-######## GEODATA TASKS ########
+######## GEODATA TASKS ########  # NOQA: E266
 ###############################
 
 @job
@@ -321,7 +323,7 @@ def update_city_data():
 
 
 #############################################
-######## SEARCHABLE ACTIVITIES TASKS ########
+######## SEARCHABLE ACTIVITIES TASKS ########  # NOQA: E266
 #############################################
 
 
@@ -353,9 +355,11 @@ def start_searchable_activities_task(counter=0):
             if w.queues[0].name == "parser":
                 current_job = w.get_current_job()
                 if current_job:
-                    if 'start_searchable_activities_task' not in current_job.description:
+                    if ('start_searchable_activities_task'
+                            not in current_job.description):
                         has_other_jobs = True
-                    if 'update_searchable_activities' in current_job.description:
+                    if ('update_searchable_activities'
+                            in current_job.description):
                         already_running_update = True
 
     if already_running_update:
@@ -366,11 +370,13 @@ def start_searchable_activities_task(counter=0):
         queue.enqueue(update_searchable_activities)
     elif counter > 180:
         raise Exception(
-            "Waited for 30 min, still jobs runnings so invalidating this task. If this happens please contact OIPA devs!")
+            "Waited for 30 min, still jobs runnings so invalidating this task. \
+                    If this happens please contact OIPA devs!")
     else:
         counter += 1
         time.sleep(120)
-        queue.enqueue(start_searchable_activities_task, args=(counter,), timeout=300)
+        queue.enqueue(start_searchable_activities_task,
+                      args=(counter,), timeout=300)
 
 
 @job
@@ -380,7 +386,7 @@ def update_searchable_activities():
 
 
 #############################################
-############# Docstore TASKS ################
+############# Docstore TASKS ################  # NOQA: E266
 #############################################
 
 
@@ -439,13 +445,16 @@ def download_file(d):
                 if is_downloaded:
                     doc.long_url_hash = hashlib.md5(long_url).hexdigest()
                     doc.file_hash = hash_file(document_path)
-                    document_content = fulltext.get(save_path + save_name, '< no content >')
+                    document_content = fulltext.get(
+                        save_path + save_name, '< no content >')
                     doc.document_content = document_content
 
             if (not created and doc.is_downloaded):
-                '''prepare the updated file storage with the new name <update.timestamp.id.extention'''
+                '''prepare the updated file storage with the new name \
+                        <update.timestamp.id.extention'''
                 ts = time.time()
-                document_path_update = save_path + "update." + str(ts) + "." + save_name
+                document_path_update = save_path + \
+                    "update." + str(ts) + "." + save_name
                 downloader = DownloadFile(long_url, document_path_update)
                 try:
                     is_downloaded = downloader.download()
@@ -456,13 +465,16 @@ def download_file(d):
                 if is_downloaded:
                     long_url_hash = hashlib.md5(long_url).hexdigest()
                     file_hash = hash_file(document_path_update)
-                '''if file hash or url hash id different, parse the content of the file'''
+                '''if file hash or url hash id different, parse the content '
+                of the file'''
                 if is_downloaded and long_url_hash != '' and (
-                        doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
+                        doc.long_url_hash != long_url_hash
+                        or doc.file_hash != file_hash):
                     doc.document_or_long_url_changed = True
                     doc.long_url_hash = long_url_hash
                     doc.file_hash = file_hash
-                    document_content = fulltext.get(document_path_update, '< no content >')
+                    document_content = fulltext.get(
+                        document_path_update, '< no content >')
                     doc.document_content = document_content
                 else:
                     '''delete the updated file. This file is empty'''

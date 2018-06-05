@@ -1,19 +1,16 @@
+import json
+
+import django_rq
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
-import json
-import django_rq
 from django_rq import get_connection
-from rq import requeue_job
-from rq import get_failed_queue
-from rq import Worker
-from rq_scheduler import Scheduler
-from rq.registry import FinishedJobRegistry
-from task_queue import tasks
-from redis import Redis
+from rq import Worker, get_failed_queue, requeue_job
 from rq.exceptions import NoSuchJobError
 from rq.job import Job
+from rq.registry import FinishedJobRegistry
+from rq_scheduler import Scheduler
 
-from math import ceil
+from task_queue import tasks
 
 
 # PARSE TASKS
@@ -50,7 +47,9 @@ def get_workers(request):
             cjinfo = {
                 'id': cj.id,
                 'args': cj.args,
-                'enqueued_at': cj.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+                'enqueued_at': cj.enqueued_at.strftime(
+                    "%a, %d %b %Y %H:%M:%S +0000"
+                ),
                 'description': cj.description}
         else:
             cjinfo = None
@@ -140,8 +139,12 @@ def get_queue(request):
 
         job_dict = {
             'job_id': job._id,
-            'created_at': job.created_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
-            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'created_at': job.created_at.strftime(
+                "%a, %d %b %Y %H:%M:%S +0000"
+            ),
+            'enqueued_at': job.enqueued_at.strftime(
+                "%a, %d %b %Y %H:%M:%S +0000"
+            ),
             'status': job.get_status(),
             'function': job.func_name,
             'args': job.args}
@@ -204,7 +207,9 @@ def get_failed_tasks(request):
             'func_name': job.description,
             'error_message': job.exc_info,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
-            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'enqueued_at': job.enqueued_at.strftime(
+                "%a, %d %b %Y %H:%M:%S +0000"
+            ),
             'args': job.args
         }
 
@@ -242,7 +247,9 @@ def get_finished_tasks(request):
             'job_id': job.id,
             'func_name': job.func_name,
             'ended_at': job.ended_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
-            'enqueued_at': job.enqueued_at.strftime("%a, %d %b %Y %H:%M:%S +0000"),
+            'enqueued_at': job.enqueued_at.strftime(
+                "%a, %d %b %Y %H:%M:%S +0000"
+            ),
             'args': job.args}
 
         jobdata.append(job_dict)
