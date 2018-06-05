@@ -1,9 +1,9 @@
 # Django settings for OIPA project.
 
 import os
-from os import environ as env
 import sys
 from ast import literal_eval
+from os import environ as env
 
 from django.urls import reverse_lazy
 from tzlocal import get_localzone
@@ -21,7 +21,9 @@ SECRET_KEY = env.get('OIPA_SECRET_KEY', 'PXwlMOpfNJTgIdQeH5zk39jKfUMZPOUK')
 
 DATABASES = {
     'default': {
-        'ENGINE': env.get('OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'),
+        'ENGINE': env.get(
+            'OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'
+        ),
         'HOST': env.get('OIPA_DB_HOST', 'localhost'),
         'PORT': env.get('OIPA_DB_PORT', '5432'),
         'NAME': env.get('OIPA_DB_NAME', 'oipa'),
@@ -302,11 +304,15 @@ API_CACHE_SECONDS = int(env.get('OIPA_API_CACHE_SECONDS', 0))
 
 CACHES = {
     'default': {
-        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     },
     'api': {
-        'BACKEND': env.get('OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'),
+        'BACKEND': env.get(
+            'OIPA_CACHES_DEFAULT_BACKEND', 'redis_cache.RedisCache'
+        ),
         'LOCATION': env.get('OIPA_CACHES_DEFAULT_LOCATION', 'localhost:6379'),
     }
 }
@@ -318,7 +324,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'  # NOQA: E501
         },
         'simple': {
             'format': '%(levelname)s %(message)s'

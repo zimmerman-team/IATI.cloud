@@ -1,7 +1,8 @@
 # Sample production settings, change as required
 
-from OIPA.settings import *  # noqa: F401, F403
 import os
+
+from OIPA.settings import *  # noqa: F401, F403
 
 BASE_DIR = os.path.dirname(os.path.realpath(__name__))
 
