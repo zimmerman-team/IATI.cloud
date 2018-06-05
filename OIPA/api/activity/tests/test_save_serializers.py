@@ -2267,7 +2267,8 @@ class TransactionSaveTestCase(TestCase):
         country = CountryFactory.create()
         region = RegionFactory.create()
         region_vocabulary = RegionVocabularyFactory.create()
-        disbursement_channel = codelist_factory.DisbursementChannelFactory.create()
+        disbursement_channel = codelist_factory.DisbursementChannelFactory\
+            .create()
         flow_type = FlowTypeFactory.create()
         finance_type = FinanceTypeFactory.create()
         aid_type = AidTypeFactory.create()

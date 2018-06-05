@@ -1,8 +1,12 @@
-from iati.models import Activity
-from traceability.models import Chain, ChainNode, ChainNodeError, ChainLink, ChainLinkRelation
-from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
-from django.db.models import Q, Count
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Q
+
+from iati.models import Activity
+from traceability.models import (
+    Chain, ChainLink, ChainLinkRelation, ChainNode, ChainNodeError
+)
 
 
 def find(list, filter):
@@ -37,15 +41,20 @@ class ChainRetriever():
     def retrieve_chain_for_all_activities(self):
         # get all activities that other activities set as provider of funds
         for activity in Activity.objects.annotate(
-            related_set_as_provider=Count('relatedactivity__ref_activity__transaction_provider_activity')).annotate(
-            set_as_provider=Count('transaction_provider_activity')).filter(
-            Q(
-                related_set_as_provider__gt=0) | Q(
-                    set_as_provider__gt=0)):
-            # filter all activities that have  (this was too slow to put in the query above)
+            related_set_as_provider=Count(
+                'relatedactivity__ref_activity__transaction_provider_activity'
+            )).annotate(
+                set_as_provider=Count(
+                    'transaction_provider_activity'
+                )).filter(
+                    Q(related_set_as_provider__gt=0) | Q(
+                        set_as_provider__gt=0
+                    )):
+            # filter all activities that have  (this was too slow to put in
+            # the query above)
             if Activity.objects.filter(
-                    transaction_provider_activity__transaction__activity=activity).count() > 0:
-                print 'skipped {}'.format(activity.iati_identifier)
+                transaction_provider_activity__transaction__activity=activity
+            ).count() > 0:
                 continue
 
             if self.chain_update_needed(activity):
@@ -55,8 +64,11 @@ class ChainRetriever():
         start_nodes = ChainNode.objects.filter(
             activity=activity, bol=True, treated_as_end_node=False, tier=0)
 
-        if len(start_nodes) > 0 and start_nodes[0].chain.last_updated < self.started_at:
-            # in a chain, only update if the chain is not created within this run
+        if len(
+            start_nodes
+        ) > 0 and start_nodes[0].chain.last_updated < self.started_at:
+            # in a chain, only update if the chain is not created within this
+            # run
             return True
 
         elif len(start_nodes) is 0:
@@ -67,27 +79,28 @@ class ChainRetriever():
     def retrieve_chain(self, activity):
 
         # delete old chain
-        if ChainNode.objects.filter(activity=activity, bol=True,
-                                    treated_as_end_node=False, tier=0).exists():
+        if ChainNode.objects.filter(
+            activity=activity, bol=True,
+            treated_as_end_node=False,
+            tier=0
+        ).exists():
             node = ChainNode.objects.filter(
                 activity=activity, bol=True, treated_as_end_node=False, tier=0)
 
             if len(node) > 1:
-                print 'Multiple mentions of this chain, should not happen'
-                print node
+                print('Multiple mentions of this chain, should not happen')
+                print(node)
+
             node[0].chain.delete()
 
         # create, is saved as self.chain
         self.create_chain()
 
-        # log
-        print 'creating chain {}, started at activity {}'.format(
-            self.chain.id, activity.iati_identifier)
-
         # add all links based upon the current activity
         self.get_activity_links(activity, False)
 
-        # add all links based upon the links within our current activity and do that recursively
+        # add all links based upon the links within our current activity and
+        # do that recursively
         self.walk_the_tree(0)
 
         # save links
@@ -100,10 +113,13 @@ class ChainRetriever():
             for relation in relations:
                 relation['chain_link'] = cl
             ChainLinkRelation.objects.bulk_create(
-                [ChainLinkRelation(**link_relation) for link_relation in relations])
+                [ChainLinkRelation(**link_relation)
+                    for link_relation in relations]
+            )
 
         # save errors
-        ChainNodeError.objects.bulk_create([ChainNodeError(**error) for error in self.errors])
+        ChainNodeError.objects.bulk_create(
+            [ChainNodeError(**error) for error in self.errors])
 
         # define start points, end points, and tiers of nodes
         self.retrieve_bols()
@@ -141,13 +157,15 @@ class ChainRetriever():
         Rule 1.
         If it has Incoming fund with provider-activity-id
         Then add link to reference upstream activity
-        Else if they have no correct provider-activity-id set, create a broken link warning/error
+        Else if they have no correct provider-activity-id set, create a broke
+        nlink warning/error
 
 
         Rule 2.
         If it has disbursements with receiver-activity-id
         Then add link that references downstream activity
-        Else if they have no correct receiver-activity-id set, create a broken link warning/error
+        Else if they have no correct receiver-activity-id set, create a broken
+        link warning/error
 
 
         Rule 3.
@@ -162,18 +180,24 @@ class ChainRetriever():
 
         Rule 5.
         If it has participating-orgs not mentioned in rule 1 and 2
-        Then, depending upon role, add as possibly missing upstream or downstream links
-        Upstream on role is funder and org is not the reporter of his activity. Downstream on other roles?
+        Then, depending upon role, add as possibly missing upstream or
+        downstream links
+        Upstream on role is funder and org is not the reporter of his activity.
+        Downstream on other roles?
 
 
         Rule 6.
-        If it is mentioned as provider-activity-id in incoming funds & incoming commitments of activities
-        Then add link that reference as downstream activity (direction is upwards)
+        If it is mentioned as provider-activity-id in incoming funds & incoming
+        commitments of activities
+        Then add link that reference as downstream activity (direction is
+        upwards)
 
 
         Rule 7.
-        If it is mentioned as receiver-activity-id in commitments & disbursements of activities
-        Then add link that reference as upstream activity (direction is downwards)
+        If it is mentioned as receiver-activity-id in commitments &
+        disbursements of activities
+        Then add link that reference as upstream activity (direction is
+        downwards)
 
 
         Rule 8. = rule 1 else
@@ -200,17 +224,21 @@ class ChainRetriever():
         # node error types:
         ('1', u"provider-org not set on incoming fund"),
         ('2', u"provider-activity-id not set on incoming fund"),
-        ('3', u"given provider-activity-id set on incoming fund does not exist"),
+        ('3', u"given provider-activity-id set on incoming fund does not
+        exist"),
 
         ('4', u"receiver-org not set on disbursement"),
         ('5', u"receiver-activity-id not set on disbursement"),
-        ('6', u"given receiver-activity-id set on disbursement does not exist"),
+        ('6', u"given receiver-activity-id set on disbursement does not
+        exist"),
 
         ('7', u"given related-activity with type parent does not exist"),
         ('8', u"given related-activity with type child does not exist"),
 
-        ('9', u"participating-org is given as funder but there are no incoming funds from this organisation ref"),
-        ('10', u"participating-org is given as implementer but there are no disbursements nor expenditures to this organisation ref"),
+        ('9', u"participating-org is given as funder but there are no incoming
+        funds from this organisation ref"),
+        ('10', u"participating-org is given as implementer but there are no
+        disbursements nor expenditures to this organisation ref"),
 
 
         # error warning level choices
@@ -219,19 +247,26 @@ class ChainRetriever():
             ('error', u"Error")
 
         # error type choices
-            ('1', u"provider-org not set on incoming fund or incoming commitment"),
-            ('2', u"provider-activity-id not set on incoming fund or incoming commitment"),
-            ('3', u"given provider-activity-id set on incoming fund or incoming commitment does not exist"),
+            ('1', u"provider-org not set on incoming fund or incoming
+            commitment"),
+            ('2', u"provider-activity-id not set on incoming fund or incoming
+            commitment"),
+            ('3', u"given provider-activity-id set on incoming fund or
+            incoming commitment does not exist"),
 
             ('4', u"receiver-org not set on commitment or disbursement"),
-            ('5', u"receiver-activity-id not set on commitment or disbursement"),
-            ('6', u"given receiver-activity-id set on commitment or disbursement does not exist"),
+            ('5', u"receiver-activity-id not set on commitment or
+            disbursement"),
+            ('6', u"given receiver-activity-id set on commitment or
+            disbursement does not exist"),
 
             ('7', u"given related-activity with type parent does not exist"),
             ('8', u"given related-activity with type child does not exist"),
 
-            ('9', u"participating-org is given as funder but there are no incoming funds from this organisation ref"),
-            ('10', u"participating-org is given as implementer but there are no disbursements nor expenditures to this organisation ref")
+            ('9', u"participating-org is given as funder but there are no
+            incoming funds from this organisation ref"),
+            ('10', u"participating-org is given as implementer but there are
+            no disbursements nor expenditures to this organisation ref")
 
         """
 
@@ -249,7 +284,6 @@ class ChainRetriever():
         )
 
         # 1.
-        # for t in activity.transaction_set.filter(transaction_type__in=['1', '11']):
         for t in activity.transaction_set.filter(transaction_type__in=['1']):
             try:
                 provider_org = t.provider_organisation
@@ -257,7 +291,8 @@ class ChainRetriever():
             except ObjectDoesNotExist:
                 self.add_error(activity_node, '1', '', 'error', t.id)
                 continue
-            if not provider_org.provider_activity_ref or provider_org.provider_activity_ref == '':
+            if (not provider_org.provider_activity_ref
+                    or provider_org.provider_activity_ref == ''):
                 self.add_error(activity_node, '2', '', 'error', t.id)
             elif not provider_org.provider_activity:
                 self.add_error(
@@ -276,7 +311,6 @@ class ChainRetriever():
                     treat_upstream_as_end_node)
 
         # 2.
-        # for t in activity.transaction_set.filter(transaction_type__in=['2', '3']):
         for t in activity.transaction_set.filter(transaction_type__in=['3']):
             try:
                 receiver_org = t.receiver_organisation
@@ -284,7 +318,8 @@ class ChainRetriever():
             except ObjectDoesNotExist:
                 self.add_error(activity_node, '4', '', 'warning', t.id)
                 continue
-            if not receiver_org.receiver_activity_ref or receiver_org.receiver_activity_ref == '':
+            if (not receiver_org.receiver_activity_ref
+                    or receiver_org.receiver_activity_ref == ''):
                 self.add_error(activity_node, '5', '', 'info', t.id)
             elif not receiver_org.receiver_activity:
                 self.add_error(
@@ -306,13 +341,15 @@ class ChainRetriever():
                 if not ra.ref_activity:
                     self.add_error(activity_node, '7', ra.ref, 'error', ra.id)
                 else:
-                    self.add_link(ra.ref_activity, activity, 'parent', 'end_node', ra.id, False)
+                    self.add_link(ra.ref_activity, activity,
+                                  'parent', 'end_node', ra.id, False)
             # child
             elif ra.type.code == '2':
                 if not ra.ref_activity:
                     self.add_error(activity_node, '8', ra.ref, 'error', ra.id)
                 else:
-                    self.add_link(activity, ra.ref_activity, 'child', 'start_node', ra.id, False)
+                    self.add_link(activity, ra.ref_activity,
+                                  'child', 'start_node', ra.id, False)
 
         # 4.
         # DONE IN #3.
@@ -336,21 +373,21 @@ class ChainRetriever():
 
         # 6.
         for a in Activity.objects.filter(
-                transaction__transaction_type="1",
-                transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(activity, a, 'incoming_fund', 'end_node', 'to do', False)
+            transaction__transaction_type="1",
+            transaction__provider_organisation__provider_activity_ref=activity.iati_identifier  # NOQA: E501
+        ).distinct():
 
-        # for a in Activity.objects.filter(transaction__transaction_type="11", transaction__provider_organisation__provider_activity_ref=activity.iati_identifier).distinct():
-        #     self.add_link(activity, a, 'incoming_commitment', 'end_node', 'to do', False)
+            self.add_link(activity, a, 'incoming_fund',
+                          'end_node', 'to do', False)
 
         # 7.
         for a in Activity.objects.filter(
-                transaction__transaction_type="3",
-                transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
-            self.add_link(a, activity, 'disbursement', 'start_node', 'to do', False)
+            transaction__transaction_type="3",
+            transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier  # NOQA: E501
+        ).distinct():
 
-        # for a in Activity.objects.filter(transaction__transaction_type="2", transaction__receiver_organisation__receiver_activity_ref=activity.iati_identifier).distinct():
-        #     self.add_link(a, activity, 'commitment', 'start_node', 'to do', False)
+            self.add_link(a, activity, 'disbursement',
+                          'start_node', 'to do', False)
 
         # 8.
         # DONE IN #1
@@ -364,7 +401,8 @@ class ChainRetriever():
         start_activity
         end_activity
         relation: ChainLinkRelation.relation
-        from: ChainLinkRelation.from : is this link made based upon data from the start_node or end_node
+        from: ChainLinkRelation.from : is this link made based upon data from
+        the start_node or end_node
         related_id: ChainLinkRelation.related_id :
         """
 
@@ -392,7 +430,9 @@ class ChainRetriever():
         # add link + relation info
         link = find(
             self.links, lambda x: (
-                x['start_node'].activity == start_activity and x['end_node'].activity == end_activity))
+                x['start_node'].activity == start_activity
+                and x['end_node'].activity == end_activity)
+        )
 
         if not link:
             self.links.append({
@@ -430,11 +470,13 @@ class ChainRetriever():
         Find and set the activities where this tree starts (begin of line).
         """
 
-        # get all nodes that are not mentioned as link end_node and set them as BOL.
+        # get all nodes that are not mentioned as link end_node and set them
+        # as BOL.
         ChainNode.objects.filter(
             chain=self.chain
         ).exclude(
-            id__in=ChainLink.objects.filter(chain=self.chain).values('end_node__id')
+            id__in=ChainLink.objects.filter(
+                chain=self.chain).values('end_node__id')
         ).update(
             bol=True,
             tier=0
@@ -445,11 +487,13 @@ class ChainRetriever():
         Find and set the activities where this tree ends (end of line).
         """
 
-        # get all nodes that are not mentioned as link start_node and set them as EOL.
+        # get all nodes that are not mentioned as link start_node and set them
+        # as EOL.
         ChainNode.objects.filter(
             chain=self.chain
         ).exclude(
-            id__in=ChainLink.objects.filter(chain=self.chain).values('start_node__id')
+            id__in=ChainLink.objects.filter(
+                chain=self.chain).values('start_node__id')
         ).update(
             eol=True
         )
@@ -465,15 +509,18 @@ class ChainRetriever():
 
             moved_nodes = []
             # ChainNode.objects.filter(chain=3725, tier=1)
-            for cn in ChainNode.objects.filter(chain=self.chain, tier=tier):
-                # find chainlinks where this node is the start, set the end node as next
-                # level if None
-                for cl in ChainLink.objects.filter(chain=self.chain, start_node=cn):
+            for cn in ChainNode.objects.filter(
+                    chain=self.chain, tier=tier):
+                # find chainlinks where this node is the start, set the end
+                # node as next level if None
+                for cl in ChainLink.objects.filter(
+                        chain=self.chain, start_node=cn):
                     end_node = cl.end_node
 
                     if end_node.tier and end_node.tier < (tier + 1):
-                        # to place activities with cofunding from other activities on the deepest level where they exist,
-                        # , moved nodes array is there to prevent an endless loop
+                        # to place activities with cofunding from other
+                        # activities on the deepest level where they exist,
+                        # moved nodes array is there to prevent an endless loop
                         moved_nodes.append(end_node.id)
                         end_node.tier = tier + 1
                         end_node.save()

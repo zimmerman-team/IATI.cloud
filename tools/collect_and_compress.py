@@ -1,4 +1,3 @@
-
 import sys
 sys.path.append('../OIPA')
 
@@ -61,8 +60,8 @@ def handle_response(tar, source):
         tar.addfile(tarinfo=info, fileobj=iati_file)
 
 
-activities_path = '{}/iati-activities-{}.tgz'.format(directory, date_now) 
-organisations_path = '{}/iati-organisations-{}.tgz'.format(directory, date_now) 
+activities_path = '{}/iati-activities-{}.tgz'.format(directory, date_now)
+organisations_path = '{}/iati-organisations-{}.tgz'.format(directory, date_now)
 
 with tarfile.open(activities_path, 'w:gz') as tar:
     for source in IatiXmlSource.objects.all().filter(type=1):
