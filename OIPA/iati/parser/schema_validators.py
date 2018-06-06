@@ -19,7 +19,9 @@ def validate(iati_parser, xml_etree):
 
     try:
         xmlschema.assertValid(xml_etree)
-    except etree.DocumentInvalid as xml_errors:
+    except etree.DocumentInvalid as e:
+        xml_errors = e
+
         pass
 
     if xml_errors:
