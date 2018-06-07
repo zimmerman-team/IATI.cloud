@@ -252,10 +252,13 @@ class CodeListImporter():
                               "codelist/" + smart_text(name) + ".xml")
 
         cur_file_opener = urllib.request.build_opener()
-        cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
+        try:
+            cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
-        context2 = etree.iterparse(cur_xml_file, tag=name)
-        self.fast_iter(context2, self.add_code_list_item)
+            context2 = etree.iterparse(cur_xml_file, tag=name)
+            self.fast_iter(context2, self.add_code_list_item)
+        except urllib.error.HTTPError:  # FIXME: present 404s to frontend?
+            pass
 
     def loop_through_codelists(self, version):
         downloaded_xml = urllib.request.Request(
