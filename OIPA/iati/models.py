@@ -199,7 +199,7 @@ class Activity(models.Model):
     modified = models.BooleanField(default=False, db_index=True)
 
     objects = ActivityManager(
-        ft_model=ActivitySearch,  # model that contains the ft indexes
+        # ft_model=ActivitySearch,  # model that contains the ft indexes
         fields=('title', 'description'),  # fields on the model
         config='pg_catalog.simple',  # default dictionary to use
         search_field='text',  # text field for all search fields,
