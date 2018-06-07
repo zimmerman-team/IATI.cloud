@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from unittest import skip
+from urllib.error import URLError
 
+import mechanicalsoup
 from django.test import TestCase
 from lxml.builder import E
 from mock import MagicMock, Mock
@@ -10,38 +11,34 @@ from currency_convert import convert
 from currency_convert.factory.currency_convert_factory import (
     MonthlyAverageFactory
 )
+from currency_convert.imf_rate_parser import RateBrowser, RateParser
 from currency_convert.models import MonthlyAverage
 from iati_codelists.models import Currency
 
-# XXX: use mechanicalsoup instead of mechanize for Python3:
-# import mechanize
 
-
-@skip('currency_convert.imf_rate_parser module is not available!')
 class RateBrowserTestCase(TestCase):
 
     def setUp(self):
         """
 
         """
-        self.rate_browser = RateBrowser()  # NOQA: F821
+        self.rate_browser = RateBrowser()
 
     def test_prepare_browser(self):
         """
         test if returns a browser
         """
         self.assertTrue(isinstance(
-            self.rate_browser.browser, mechanize.Browser))  # NOQA: F821
+            self.rate_browser.browser, mechanicalsoup.Browser))
 
     def test_retry_on_urlerror(self):
         """
         should retry 2 times when receiving an URL error
         """
         self.rate_browser.browser.open = Mock(
-            side_effect=URLError('cant connect...'))  # NOQA: F821
+            side_effect=URLError('cant connect...'))
 
 
-@skip('currency_convert.imf_rate_parser module is not available!')
 class RateParserTestCase(TestCase):
 
     def create_rate_value_elem(self, value, currency_name, currency_iso):
@@ -72,7 +69,7 @@ class RateParserTestCase(TestCase):
         root_elem.append(effective_date)
         root_elem.append(effective_date_2)
 
-        self.rate_parser = RateParser()  # NOQA: F821
+        self.rate_parser = RateParser()
         self.rate_parser.now = datetime(1995, 1, 31)
         self.effective_date = effective_date
         self.root_elem = root_elem
@@ -128,7 +125,7 @@ class RateParserTestCase(TestCase):
 
     def test_create_browser(self):
         browser = self.rate_parser.create_browser()
-        self.assertTrue(isinstance(browser, RateBrowser))  # NOQA: F821
+        self.assertTrue(isinstance(browser, RateBrowser))
 
     def test_update_rates(self):
         currency, created = Currency.objects.get_or_create(
