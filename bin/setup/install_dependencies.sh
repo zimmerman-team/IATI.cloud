@@ -28,5 +28,5 @@ sudo apt-get install -y redis-server
 # pip dependencies
 sudo pip install ipython
 
-# fulltext Python library for extracting text from various file formats (for indexing).
+# This is required by fulltext Python library for extracting text from various file formats (for indexing):
 sudo apt-get install -y catdoc odt2txt antiword poppler-utils unrtf perl libimage-exiftool-perl html2text binutils unrar gzip bzip2 unzip docx2txt

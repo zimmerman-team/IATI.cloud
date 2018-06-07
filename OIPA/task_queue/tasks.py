@@ -4,6 +4,7 @@ import os
 import time
 
 import django_rq
+import fulltext
 import requests
 from django.conf import settings
 from django.core.cache import caches
@@ -21,8 +22,6 @@ from iati.activity_aggregation_calculation import (
 )
 from iati.models import Activity, Document, DocumentLink
 from iati_synchroniser.models import Dataset
-
-from . import fulltext
 
 redis_conn = Redis.from_url(settings.RQ_REDIS_URL)
 
