@@ -8,9 +8,9 @@ from django.contrib.gis.db.models import PointField
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
+from djorm_pgfulltext.fields import VectorField
 
 from geodata.models import Country, Region
-from iati.djorm_pgfulltext.fields import VectorField
 from iati_codelists.models import (
     ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
     BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
@@ -31,7 +31,6 @@ from iati_vocabulary.models import (
 )
 
 from .activity_manager import ActivityManager
-from .document_manager import DocumentManager
 from .location_manager import LocationManager
 
 
@@ -924,6 +923,9 @@ class DocumentLinkTitle(models.Model):
 
 
 class DocumentSearch(models.Model):
+    '''Currently this model is just stored for refference and searching (both
+    feature and API endpoint) for Documents is disabled
+    '''
     document = models.OneToOneField('Document', on_delete=models.CASCADE)
     content = VectorField()
     text = VectorField()
@@ -943,15 +945,6 @@ class Document(models.Model):
     document_or_long_url_changed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
-
-    objects = DocumentManager(
-        ft_model=DocumentSearch,  # model that contains the ft indexes
-        fields=('content'),  # fields on the model
-        config='pg_catalog.simple',  # default dictionary to use
-        search_field='text',  # text field for all search fields,
-        # TODO: make this compatible with M2M - 2016-01-11:
-        auto_update_search_field=False,
-    )
 
     def __unicode__(self):
         return self.id

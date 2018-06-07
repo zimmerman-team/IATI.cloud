@@ -9,8 +9,7 @@ from django.db.models.sql.constants import QUERY_TERMS
 from django_filters import BooleanFilter, CharFilter, Filter, FilterSet
 from rest_framework import filters
 
-from iati.djorm_pgfulltext.fields import TSConfig
-from iati.models import Activity, Document, Location
+from iati.models import Activity, Location
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
@@ -109,37 +108,6 @@ class SearchFilter(filters.BaseFilterBackend):
                     **{'{0}activitysearch__search_vector_text__{1}'.format(
                         model_prefix, lookup_expr
                     ): query})
-
-        return queryset
-
-
-class DocumentSearchFilter(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-
-        query = request.query_params.get('document_q', None)
-        query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'ft'
-        if query_lookup:
-            if query_lookup == 'exact':
-                lookup_expr = 'ft'
-            if query_lookup == 'startswith':
-                lookup_expr = 'ft_startswith'
-
-        if query:
-
-            dict_query_list = [TSConfig('simple'), query]
-
-            model_prefix = ''
-
-            # when SearchFilter is used on other endpoints than activities,
-            # add activity__ to the filter name
-            if Document is not queryset.model:
-                model_prefix = 'document__'
-
-            return queryset.filter(
-                **{'{0}documentsearch__text__{1}'.format(
-                    model_prefix, lookup_expr
-                ): dict_query_list})
 
         return queryset
 
