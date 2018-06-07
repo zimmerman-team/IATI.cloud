@@ -2,6 +2,7 @@ import hashlib
 
 from django import db
 from django.conf import settings
+from django.utils.encoding import smart_text
 from lxml import etree
 
 from iati.filegrabber import FileGrabber
@@ -61,11 +62,17 @@ class ParseManager():
             self.dataset.save()
             return
 
-        iati_file = response.content
-        iati_file_str = str(iati_file)
+        # 1. Turn bytestring into string (treat it using specified encoding):
+        try:
+            iati_file = smart_text(response.content, 'utf-8')
+        # XXX: some files contain non utf-8 characters:
+        # FIXME: this is hardcoded:
+        except UnicodeDecodeError:
+            iati_file = smart_text(response.content, 'latin-1')
 
+        # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()
-        hasher.update(iati_file_str.encode('utf-8'))
+        hasher.update(iati_file.encode('utf-8'))
         sha1 = hasher.hexdigest()
 
         if dataset.sha1 == sha1:
@@ -75,7 +82,7 @@ class ParseManager():
             dataset.sha1 = sha1
 
         try:
-            self.root = etree.fromstring(iati_file_str)
+            self.root = etree.fromstring(response.content)
             self.parser = self._prepare_parser(self.root, dataset)
 
             if settings.ERROR_LOGS_ENABLED:
