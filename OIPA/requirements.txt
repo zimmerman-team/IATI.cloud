@@ -29,6 +29,9 @@ django-extensions==2.0.7
 
 django-debug-toolbar==1.9.1
 
+# Interactive Python debugger:
+ipdb==0.11
+
 git+https://github.com/Supervisor/supervisor@master
 git+https://github.com/DragosChirila/django-supervisor@master
 ckanapi==4.1
