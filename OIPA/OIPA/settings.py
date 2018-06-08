@@ -12,7 +12,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = literal_eval(env.get('OIPA_DEBUG', 'True'))
 FTS_ENABLED = literal_eval(env.get('OIPA_FTS_ENABLED', 'True'))
 
-LOGIN_URL = reverse_lazy('two_factor:login')
 LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_URL = '/logout'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
