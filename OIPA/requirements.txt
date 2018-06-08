@@ -1,12 +1,26 @@
+
+##################
+# Core libraries #
+##################
+
+Django==2.0.6
+django-grappelli==2.11.1
+# Adding CORS headers to responses, only allowing certain API methods:
+django-cors-headers==2.2.0
+
+###########################################
+# Developer / debugging related libraries #
+###########################################
+
+# mainly used for shell_plus management command:
+django-extensions==1.9.9
+django-debug-toolbar==1.9.1
+
 git+https://github.com/Supervisor/supervisor@master
 git+https://github.com/DragosChirila/django-supervisor@master
 ckanapi==4.1
-django-cors-headers==2.2.0
-django-debug-toolbar==1.9.1
-django-extensions==1.9.9
 django-filter==1.1.0
 django-formtools==2.1 # dependency of two_factor
-django-grappelli==2.10.2
 django-modeladmin-reorder==0.2
 django-otp-yubikey==0.4.2
 django-otp==0.4.2
@@ -15,7 +29,6 @@ django-rest-auth[with_social]==0.9.3
 django-rq==1.0.1
 django-test-without-migrations==0.6
 django-two-factor-auth==1.7.0
-Django==2.0.6
 djangorestframework-csv==2.0.0
 djangorestframework-xml==1.3.0
 djangorestframework==3.7.7
