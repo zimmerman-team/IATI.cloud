@@ -6,6 +6,7 @@ from http import cookiejar
 from urllib.error import URLError
 
 import mechanicalsoup
+from django.utils.encoding import smart_text
 from lxml import etree
 
 from currency_convert.models import MonthlyAverage
@@ -37,11 +38,14 @@ class RateBrowser():
         try:
             # wait couple sec to prevent retries due to too many connections
             time.sleep(5)
-            self.browser.open(url, timeout=80)
-            response = self.browser.open(download_url, timeout=80)
-            xml_data = response.read()
+
+            self.browser.get(url, timeout=80)
+            response = self.browser.get(download_url, timeout=80)
+
             self.browser.close()
-            return etree.fromstring(str(xml_data))
+            return etree.fromstring(
+                smart_text(response.content, 'utf-8').encode('utf-8')
+            )
         except URLError as e:
             # retry once
             self.get_xml_data(url, download_url, retry_count=retry_count + 1)
@@ -107,8 +111,6 @@ class RateParser():
         rate is available.
         """
         for e in data.getchildren():
-            # if e.tag == 'ReportName':
-            #     print e.text
             if e.tag == 'EFFECTIVE_DATE':
                 self.parse_day_rates(e)
 
