@@ -7,12 +7,14 @@ Django==2.0.6
 django-grappelli==2.11.1
 # Adding CORS headers to responses, only allowing certain API methods:
 django-cors-headers==2.2.0
+# Reorder apps in Django-admin:
+django-modeladmin-reorder==0.3.1
 
 ###########################################
 # Developer / debugging related libraries #
 ###########################################
 
-# mainly used for shell_plus management command:
+# mainly used for 'shell_plus' management command:
 django-extensions==2.0.7
 django-debug-toolbar==1.9.1
 
@@ -21,7 +23,6 @@ git+https://github.com/DragosChirila/django-supervisor@master
 ckanapi==4.1
 django-filter==1.1.0
 django-formtools==2.1 # dependency of two_factor
-django-modeladmin-reorder==0.2
 django-otp-yubikey==0.4.2
 django-otp==0.4.2
 django-redis-cache==1.7.1
