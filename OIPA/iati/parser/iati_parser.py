@@ -228,14 +228,14 @@ class IatiParser(object):
             iati_identifier = 'no-identifier'
 
         if variable:
-            variable = variable[0:255]
+            variable = str(variable)[0:255]
 
         note = DatasetNote(
             dataset=self.dataset,
             iati_identifier=iati_identifier,
             model=model,
             field=field,
-            message=message[0:255],
+            message=str(message)[0:255],
             exception_type=error_type,
             line_number=sourceline,
             variable=variable
