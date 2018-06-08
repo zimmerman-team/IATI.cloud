@@ -1,8 +1,7 @@
-from django.db.models import query, Q
 import operator
-
-from django.db.models import Prefetch
 from functools import reduce
+
+from django.db.models import Prefetch, Q, query
 
 
 class TransactionQuerySet(query.QuerySet):
@@ -71,8 +70,10 @@ class TransactionQuerySet(query.QuerySet):
     def prefetch_provider_organisation(self):
         from iati.transaction.models import TransactionProvider
         from iati.models import Narrative
-        narrative_prefetch = Prefetch('narratives',
-                                      queryset=Narrative.objects.select_related('language'))
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language')
+        )
 
         return self.prefetch_related(
             Prefetch(
@@ -86,8 +87,10 @@ class TransactionQuerySet(query.QuerySet):
     def prefetch_receiver_organisation(self):
         from iati.transaction.models import TransactionReceiver
         from iati.models import Narrative
-        narrative_prefetch = Prefetch('narratives',
-                                      queryset=Narrative.objects.select_related('language'))
+        narrative_prefetch = Prefetch(
+            'narratives',
+            queryset=Narrative.objects.select_related('language')
+        )
 
         return self.prefetch_related(
             Prefetch(

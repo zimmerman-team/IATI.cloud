@@ -1,9 +1,7 @@
 from rest_framework import permissions
 
-from common.util import get_or_none
-
+from iati.permissions.models import OrganisationAdminGroup
 from iati_synchroniser.models import Publisher
-from iati.permissions.models import OrganisationGroup, OrganisationAdminGroup
 
 
 class OrganisationAdminGroupPermissions(permissions.BasePermission):
@@ -32,13 +30,15 @@ class OrganisationAdminGroupPermissions(permissions.BasePermission):
             return False
 
         try:
-            admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
+            OrganisationAdminGroup.objects.get(
+                publisher=publisher)
         except OrganisationAdminGroup.DoesNotExist:
             return False
 
         # check if this user is in the admin group
 
-        return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
+        return organisation_user.organisation_admin_groups.filter(
+            publisher=publisher).exists()
 
 
 class ActivityCreatePermissions(permissions.BasePermission):
@@ -68,22 +68,26 @@ class ActivityCreatePermissions(permissions.BasePermission):
             return False
 
         try:
-            admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
+            OrganisationAdminGroup.objects.get(
+                publisher=publisher)
         except OrganisationAdminGroup.DoesNotExist:
             return False
 
         # check if this user is in the admin group
 
-        return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
+        return organisation_user.organisation_admin_groups.filter(
+            publisher=publisher).exists()
 
 
 class PublisherPermissions(permissions.BasePermission):
-    message = 'You have no admin priviledges for the publisher defined on the activity'
+    message = 'You have no admin priviledges for the publisher defined on the \
+    activity'
 
     def has_permission(self, request, view):
         """
-        checks if the publisher_id sent along in the URL matches one of the OrganisationAdminGroups that the user belongs to.
-        For Activity Update and Delete
+        Checks if the publisher_id sent along in the URL matches one of the
+        OrganisationAdminGroups that the user belongs to. For Activity Update
+        and Delete
         """
 
         user = request.user
@@ -99,9 +103,11 @@ class PublisherPermissions(permissions.BasePermission):
             return False
 
         try:
-            admin_group = OrganisationAdminGroup.objects.get(publisher=publisher)
+            OrganisationAdminGroup.objects.get(
+                publisher=publisher)
         except OrganisationAdminGroup.DoesNotExist:
             return False
 
         # check if this user is in the admin group
-        return organisation_user.organisation_admin_groups.filter(publisher=publisher).exists()
+        return organisation_user.organisation_admin_groups.filter(
+            publisher=publisher).exists()

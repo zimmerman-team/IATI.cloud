@@ -1,18 +1,15 @@
 import uuid
-import operator
+from functools import reduce
+
 from django.conf import settings
-from django.db.models.sql.constants import QUERY_TERMS
-from django.db.models import Q
-from django_filters import CharFilter
-from django_filters import Filter, FilterSet, BooleanFilter
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
+from django.db.models import Q
+from django.db.models.sql.constants import QUERY_TERMS
+from django_filters import BooleanFilter, CharFilter, Filter, FilterSet
 from rest_framework import filters
-from iati.djorm_pgfulltext.fields import TSConfig
-from iati.models import Activity, Document
-from iati.models import Location
-from common.util import combine_filters
-from functools import reduce
+
+from iati.models import Activity, Location
 
 VALID_LOOKUP_TYPES = sorted(QUERY_TERMS)
 
@@ -41,7 +38,8 @@ def reduce_comma(arr, value):
 class DistanceFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
 
-        location_longitude = request.query_params.get('location_longitude', None)
+        location_longitude = request.query_params.get(
+            'location_longitude', None)
         location_latitude = request.query_params.get('location_latitude', None)
         distance_km = request.query_params.get('location_distance_km', None)
 
@@ -58,9 +56,14 @@ class DistanceFilter(filters.BaseFilterBackend):
                 model_prefix = ''
 
             loc_ids = Location.objects.filter(
-                **{'point_pos__distance_lte': (pnt, D(km=distance_km))}).values('id')
+                **{'point_pos__distance_lte': (pnt, D(
+                    km=distance_km
+                ))}
+            ).values('id')
 
-            return queryset.filter(**{"{}id__in".format(model_prefix): loc_ids})
+            return queryset.filter(
+                **{"{}id__in".format(model_prefix): loc_ids}
+            )
 
         return queryset
 
@@ -77,8 +80,6 @@ class SearchFilter(filters.BaseFilterBackend):
         if query:
 
             query_fields = request.query_params.get('q_fields')
-            #dict_query_list = [TSConfig('simple'), query]
-            #print(dict_query_list)
             model_prefix = ''
 
             # when SearchFilter is used on other endpoints than activities,
@@ -88,13 +89,15 @@ class SearchFilter(filters.BaseFilterBackend):
 
             # if root organisations set, only query searchable activities
             if settings.ROOT_ORGANISATIONS:
-                queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
+                queryset = queryset.filter(
+                    **{'{0}is_searchable'.format(model_prefix): True})
 
             if query_fields:
                 query_fields = query_fields.split(',')
 
                 if isinstance(query_fields, list):
-                    filters = ([{'{0}activitysearch__{1}__{2}'.format(model_prefix, field, lookup_expr) : query}for field in query_fields])
+                    filters = ([{'{0}activitysearch__{1}__{2}'.format(
+                        model_prefix, field, lookup_expr): query}for field in query_fields])  # NOQA: E501
                     temp = Q(**filters.pop())
 
                     for f in filters:
@@ -102,41 +105,9 @@ class SearchFilter(filters.BaseFilterBackend):
                     return queryset.filter(temp)
             else:
                 return queryset.filter(
-                    **{'{0}activitysearch__search_vector_text__{1}'.format(model_prefix, lookup_expr): query})
-
-        return queryset
-
-
-class DocumentSearchFilter(filters.BaseFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-
-        query = request.query_params.get('document_q', None)
-        query_lookup = request.query_params.get('q_lookup', None)
-        lookup_expr = 'ft'
-        if query_lookup:
-            if query_lookup == 'exact':
-                lookup_expr = 'ft'
-            if query_lookup == 'startswith':
-                lookup_expr = 'ft_startswith'
-
-        if query:
-
-            query_fields = request.query_params.get('q_fields')
-            dict_query_list = [TSConfig('simple'), query]
-
-            model_prefix = ''
-
-            # when SearchFilter is used on other endpoints than activities,
-            # add activity__ to the filter name
-            if Document is not queryset.model:
-                model_prefix = 'document__'
-
-            # if root organisations set, only query searchable activities
-            # if settings.ROOT_ORGANISATIONS:
-            #     queryset = queryset.filter(**{'{0}is_searchable'.format(model_prefix): True})
-
-            return queryset.filter(
-                **{'{0}documentsearch__text__{1}'.format(model_prefix, lookup_expr): dict_query_list})
+                    **{'{0}activitysearch__search_vector_text__{1}'.format(
+                        model_prefix, lookup_expr
+                    ): query})
 
         return queryset
 
@@ -220,7 +191,8 @@ class TogetherFilter(Filter):
 
 class TogetherFilterSet(FilterSet):
 
-    def __init__(self, data=None, queryset=None, prefix=None, strict=None, *args, **kwargs):
+    def __init__(self, data=None, queryset=None, prefix=None, strict=None,
+                 *args, **kwargs):
         """
         Adds a together_exclusive meta option that selects fields that have to
         be called in the same django filter() call when both present
@@ -239,7 +211,8 @@ class TogetherFilterSet(FilterSet):
         for filterlist in together_exclusive:
             if set(filterlist).issubset(data.keys()):
 
-                filter_values = [data.pop(filteritem)[0] for filteritem in filterlist]
+                filter_values = [data.pop(filteritem)[0]
+                                 for filteritem in filterlist]
                 filter_classes = [
                     self.declared_filters.get(
                         filteritem,
@@ -250,25 +223,8 @@ class TogetherFilterSet(FilterSet):
                 self.base_filters[uid] = TogetherFilter(filters=filter_classes)
                 data.appendlist(uid, filter_values)
 
-        super(FilterSet, self).__init__(data, queryset, prefix, strict, *args, **kwargs)
-
-
-# class SubFilterSet(FilterSet):
-#     """
-#     Use a FilterSet as a sub filterset for another filterset
-#     """
-
-#     __metaclass__ = SubFilterSetMetaClass
-
-#     def __init__(self, data=None, queryset=None, prefix=None, strict=None):
-
-#         meta = getattr(self, 'Meta', None)
-
-#         sub_filtersets = getattr(meta, 'sub_filtersets', [])
-
-#         data = data.copy()
-
-#         for filterset in sub_filtersets:
+        super(FilterSet, self).__init__(
+            data, queryset, prefix, strict, *args, **kwargs)
 
 
 class CommaSeparatedCharMultipleFilter(CharFilter):
@@ -286,9 +242,11 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
         lookup_expr = self.lookup_expr
 
         if lookup_expr is 'in':
-            final_filters = Q(**{"{}__{}".format(self.name, lookup_expr): values})
+            final_filters = Q(
+                **{"{}__{}".format(self.name, lookup_expr): values})
         else:
-            filters = [Q(**{"{}__{}".format(self.name, lookup_expr): value}) for value in values]
+            filters = [Q(**{"{}__{}".format(self.name, lookup_expr): value})
+                       for value in values]
             final_filters = reduce(lambda a, b: a | b, filters)
 
         return qs.filter(final_filters)
@@ -297,12 +255,22 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
 class ToManyFilter(CommaSeparatedCharMultipleFilter):
     """
     An in filter for a to-many field, where the IN is executed as a subfilter
-    e.g. instead of
-    SELECT "iati_activity"."id" FROM "iati_activity" LEFT OUTER JOIN "iati_activityreportingorganisation" as r ON r.activity_id = iati_activity.id  WHERE "r"."ref" IN ('US-USAGOV');
+    e.g. instead of:
+
+    SELECT "iati_activity"."id"
+    FROM "iati_activity"
+    LEFT OUTER JOIN "iati_activityreportingorganisation" as r
+    ON r.activity_id = iati_activity.id
+    WHERE "r"."ref" IN ('US-USAGOV');
 
     we do:
 
-    SELECT "iati_activity"."id" FROM "iati_activity" WHERE "iati_activity"."id" IN (SELECT U0."activity_id" FROM "iati_activityreportingorganisation" U0 WHERE U0."ref" = 'US-USAGOV');
+    SELECT "iati_activity"."id"
+    FROM "iati_activity"
+    WHERE "iati_activity"."id"
+    IN (SELECT U0."activity_id"
+    FROM "iati_activityreportingorganisation" U0
+    WHERE U0."ref" = 'US-USAGOV');
 
     qs: The queryset which will be queried
     fk: The foreign key that relates back to the main_fk
@@ -313,7 +281,8 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         if not qs:
             raise ValueError("qs must be specified")
         if not fk:
-            raise ValueError("fk must be specified, that relates back to the main model")
+            raise ValueError(
+                "fk must be specified, that relates back to the main model")
 
         self.nested_qs = qs
         self.fk = fk
@@ -328,14 +297,11 @@ class ToManyFilter(CommaSeparatedCharMultipleFilter):
         nested_qs = self.nested_qs.objects.all()
         nested_qs = super(ToManyFilter, self).filter(nested_qs, value)
 
-        # nested_qs = self.nested_qs.objects.all().filter(in_filter).values(self.fk)
         in_filter = {
             "{}__in".format(self.main_fk): nested_qs.values(self.fk)
         }
 
         return qs.filter(**in_filter)
-
-        # return qs.filter(id__in=nested_qs.values(self.fk))
 
 
 class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
@@ -347,7 +313,8 @@ class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
         if not qs:
             raise ValueError("qs must be specified")
         if not fk:
-            raise ValueError("fk must be specified, that relates back to the main model")
+            raise ValueError(
+                "fk must be specified, that relates back to the main model")
 
         self.nested_qs = qs
         self.fk = fk
@@ -372,19 +339,30 @@ class ToManyNotInFilter(CommaSeparatedCharMultipleFilter):
 class NestedFilter(CommaSeparatedCharMultipleFilter):
     """
     An in filter for a to-many field, where the IN is executed as a subfilter
+
     e.g. instead of
-    SELECT "iati_activity"."id" FROM "iati_activity" LEFT OUTER JOIN "iati_activityreportingorganisation" as r ON r.activity_id = iati_activity.id  WHERE "r"."ref" IN ('US-USAGOV');
+    SELECT "iati_activity"."id"
+    FROM "iati_activity"
+    LEFT OUTER JOIN "iati_activityreportingorganisation" as r
+    ON r.activity_id = iati_activity.id
+    WHERE "r"."ref" IN ('US-USAGOV');
 
     we do:
 
-    SELECT "iati_activity"."id" FROM "iati_activity" WHERE "iati_activity"."id" IN (SELECT U0."activity_id" FROM "iati_activityreportingorganisation" U0 WHERE U0."ref" = 'US-USAGOV');
+    SELECT "iati_activity"."id"
+    FROM "iati_activity"
+    WHERE "iati_activity"."id"
+    IN (SELECT U0."activity_id"
+    FROM "iati_activityreportingorganisation" U0
+    WHERE U0."ref" = 'US-USAGOV');
     """
 
     def __init__(self, nested_filter=None, fk=None, **kwargs):
         if not nested_filter:
             raise ValueError("qs must be specified")
         if not fk:
-            raise ValueError("fk must be specified, that relates back to the main model")
+            raise ValueError(
+                "fk must be specified, that relates back to the main model")
 
         self.nested_filter = nested_filter
         self.fk = fk

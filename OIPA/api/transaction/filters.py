@@ -1,13 +1,18 @@
-from django_filters import FilterSet, NumberFilter, DateFilter, BooleanFilter
-from api.generics.filters import CommaSeparatedCharFilter
-from api.generics.filters import CommaSeparatedStickyCharFilter
-from api.generics.filters import ToManyFilter
-from api.generics.filters import ToManyNotInFilter
+from django_filters import BooleanFilter, DateFilter, FilterSet, NumberFilter
 
-from api.activity.filters import ActivityFilter
-
-from iati.models import *
-from iati.transaction.models import *
+from api.generics.filters import (
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter, ToManyFilter,
+    ToManyNotInFilter
+)
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivityRecipientCountry,
+    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
+    Budget, DocumentLink, RelatedActivity, Result
+)
+from iati.transaction.models import (
+    Transaction, TransactionProvider, TransactionReceiver,
+    TransactionRecipientCountry, TransactionRecipientRegion, TransactionSector
+)
 
 
 class TransactionFilter(FilterSet):
@@ -40,12 +45,18 @@ class TransactionFilter(FilterSet):
     max_value = NumberFilter(name='value', lookup_expr='lte')
 
     value_not = NumberFilter(lookup_expr='exact', name='value', exclude=True)
-    xdr_value_not = NumberFilter(lookup_expr='exact', name='xdr_value', exclude=True)
-    usd_value_not = NumberFilter(lookup_expr='exact', name='usd_value', exclude=True)
-    eur_value_not = NumberFilter(lookup_expr='exact', name='eur_value', exclude=True)
-    gbp_value_not = NumberFilter(lookup_expr='exact', name='gbp_value', exclude=True)
-    jpy_value_not = NumberFilter(lookup_expr='exact', name='jpy_value', exclude=True)
-    cad_value_not = NumberFilter(lookup_expr='exact', name='cad_value', exclude=True)
+    xdr_value_not = NumberFilter(
+        lookup_expr='exact', name='xdr_value', exclude=True)
+    usd_value_not = NumberFilter(
+        lookup_expr='exact', name='usd_value', exclude=True)
+    eur_value_not = NumberFilter(
+        lookup_expr='exact', name='eur_value', exclude=True)
+    gbp_value_not = NumberFilter(
+        lookup_expr='exact', name='gbp_value', exclude=True)
+    jpy_value_not = NumberFilter(
+        lookup_expr='exact', name='jpy_value', exclude=True)
+    cad_value_not = NumberFilter(
+        lookup_expr='exact', name='cad_value', exclude=True)
 
     provider_activity = ToManyFilter(
         qs=TransactionProvider,
@@ -62,7 +73,8 @@ class TransactionFilter(FilterSet):
     provider_activity_reporting_org = ToManyFilter(
         qs=TransactionProvider,
         lookup_expr='in',
-        name='provider_activity__reporting_organisations__organisation__organisation_identifier',
+        name='provider_activity__reporting_organisations__organisation__\
+              organisation_identifier',
         fk='transaction',
     )
 
@@ -263,8 +275,8 @@ class TransactionFilter(FilterSet):
 
     # makes no
     # TO DO: check if this also influences other filters
-    # for example, sector_category should probably filter through transactionsector__sector__category
-    # in the transaction endpoint
+    # for example, sector_category should probably filter through
+    # transactionsector__sector__category in the transaction endpoint
 
     recipient_country = ToManyFilter(
         main_fk='activity',

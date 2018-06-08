@@ -1,22 +1,19 @@
 from rest_framework import serializers
 
-from iati import models as iati_models
-from iati.transaction import models
-
-from api.generics.serializers import DynamicFieldsModelSerializer
-from api.codelist.serializers import CodelistSerializer, NarrativeSerializer, VocabularySerializer
-from api.activity.serializers import ActivitySerializer
-
-from api.sector.serializers import SectorSerializer
-from api.region.serializers import RegionSerializer, BasicRegionSerializer
+from api.activity.serializers import (
+    ActivitySerializer, handle_errors, save_narratives
+)
+from api.codelist.serializers import (
+    CodelistSerializer, NarrativeSerializer, VocabularySerializer
+)
 from api.country.serializers import CountrySerializer
-
+from api.generics.serializers import DynamicFieldsModelSerializer
 from api.generics.utils import get_or_raise
-
-from api.activity.serializers import save_narratives, handle_errors
-
+from api.region.serializers import BasicRegionSerializer
+from api.sector.serializers import SectorSerializer
+from iati import models as iati_models
 from iati.parser import validators
-from iati.parser import exceptions
+from iati.transaction import models
 
 
 class TransactionProviderSerializer(serializers.ModelSerializer):
@@ -26,7 +23,8 @@ class TransactionProviderSerializer(serializers.ModelSerializer):
     provider_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
-    provider_activity_id = serializers.CharField(source="provider_activity_ref", required=False)
+    provider_activity_id = serializers.CharField(
+        source="provider_activity_ref", required=False)
 
     class Meta:
         model = models.TransactionProvider
@@ -46,7 +44,9 @@ class TransactionReceiverSerializer(serializers.ModelSerializer):
     receiver_activity = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='activities:activity-detail')
-    receiver_activity_id = serializers.CharField(source="receiver_activity_ref")
+    receiver_activity_id = serializers.CharField(
+        source="receiver_activity_ref"
+    )
 
     class Meta:
         model = models.TransactionReceiver
@@ -131,7 +131,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     provider_organisation = TransactionProviderSerializer(required=False)
     receiver_organisation = TransactionReceiverSerializer(required=False)
     disbursement_channel = CodelistSerializer()
-    sector = TransactionSectorSerializer(required=False, source="transaction_sector")
+    sector = TransactionSectorSerializer(
+        required=False, source="transaction_sector")
     recipient_country = TransactionRecipientCountrySerializer(
         required=False, source="transaction_recipient_country")
     recipient_region = TransactionRecipientRegionSerializer(
@@ -142,7 +143,8 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
     description = TransactionDescriptionSerializer()
     humanitarian = serializers.BooleanField()
 
-    activity = ActivitySerializer(read_only=True, fields=('id', 'iati_identifier', 'url', 'title'))
+    activity = ActivitySerializer(read_only=True, fields=(
+        'id', 'iati_identifier', 'url', 'title'))
     activity_id = serializers.CharField(write_only=True)
 
     class Meta:
@@ -195,12 +197,17 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             data.get('receiver_organisation', {}).get('type', {}).get('code'),
             data.get('receiver_organisation', {}).get('narratives'),
             data.get('disbursement_channel', {}).get('code'),
-            data.get('transaction_sector', {}).get('sector', {}).get('code', {}),
-            data.get('transaction_sector', {}).get('vocabulary', {}).get('code', {}),
+            data.get('transaction_sector', {}).get(
+                'sector', {}).get('code', {}),
+            data.get('transaction_sector', {}).get(
+                'vocabulary', {}).get('code', {}),
             data.get('transaction_sector', {}).get('vocabulary_uri', {}),
-            data.get('transaction_recipient_country', {}).get('country', {}).get('code', {}),
-            data.get('transaction_recipient_region', {}).get('region', {}).get('code', {}),
-            data.get('transaction_recipient_region', {}).get('vocabulary', {}).get('code', {}),
+            data.get('transaction_recipient_country', {}).get(
+                'country', {}).get('code', {}),
+            data.get('transaction_recipient_region', {}).get(
+                'region', {}).get('code', {}),
+            data.get('transaction_recipient_region', {}).get(
+                'vocabulary', {}).get('code', {}),
             data.get('transaction_recipient_region', {}).get('vocabulary_uri'),
             data.get('flow_type', {}).get('code'),
             data.get('finance_type', {}).get('code'),
@@ -212,11 +219,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
     def create(self, validated_data):
         activity = validated_data.get('activity')
-        description_narratives_data = validated_data.pop('description_narratives', [])
+        description_narratives_data = validated_data.pop(  # NOQA: F841
+            'description_narratives', [])
         provider_data = validated_data.pop('provider_org')
-        provider_narratives_data = validated_data.pop('provider_org_narratives', [])
+        provider_narratives_data = validated_data.pop(
+            'provider_org_narratives', [])
         receiver_data = validated_data.pop('receiver_org')
-        receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
+        receiver_narratives_data = validated_data.pop(
+            'receiver_org_narratives', [])
         sector_data = validated_data.pop('sector')
         recipient_country_data = validated_data.pop('recipient_country')
         recipient_region_data = validated_data.pop('recipient_region')
@@ -265,11 +275,14 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
     def update(self, instance, validated_data):
         activity = validated_data.get('activity')
-        description_narratives_data = validated_data.pop('description_narratives', [])
+        description_narratives_data = validated_data.pop(  # NOQA: F841
+            'description_narratives', [])
         provider_data = validated_data.pop('provider_org')
-        provider_narratives_data = validated_data.pop('provider_org_narratives', [])
+        provider_narratives_data = validated_data.pop(
+            'provider_org_narratives', [])
         receiver_data = validated_data.pop('receiver_org')
-        receiver_narratives_data = validated_data.pop('receiver_org_narratives', [])
+        receiver_narratives_data = validated_data.pop(
+            'receiver_org_narratives', [])
         sector_data = validated_data.pop('sector')
         recipient_country_data = validated_data.pop('recipient_country')
         recipient_region_data = validated_data.pop('recipient_region')

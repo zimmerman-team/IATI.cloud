@@ -1,12 +1,14 @@
+from collections import OrderedDict
+
 from rest_framework import serializers
 from rest_framework.fields import SkipField
-
-from collections import OrderedDict
 
 
 class XMLMetaMixin(object):
     def to_representation(self, *args, **kwargs):
-        representation = super(XMLMetaMixin, self).to_representation(*args, **kwargs)
+        representation = super(
+            XMLMetaMixin, self
+        ).to_representation(*args, **kwargs)
         if hasattr(self, 'xml_meta'):
             representation.xml_meta = self.xml_meta
         return representation
@@ -35,7 +37,8 @@ class SkipNullMixin(object):
                 continue
 
             # check for the case where source="*" is passed
-            # if all fields are null in that field, result will be an empty dictionary
+            # if all fields are null in that field, result will be an empty
+            # dictionary
             elif instance == attribute:
                 result = field.to_representation(attribute)
 
@@ -64,7 +67,9 @@ class FilteredListSerializer(serializers.ListSerializer):
         request = self.context.get("request")
 
         if self.filter_class:
-            queryset = self.filter_class(request.query_params, queryset=queryset).qs
+            queryset = self.filter_class(
+                request.query_params, queryset=queryset
+            ).qs
 
         return super(FilteredListSerializer, self).to_representation(queryset)
 
@@ -131,7 +136,9 @@ class ModelSerializerNoValidation(DynamicFieldsModelSerializer):
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('required', None)
-        super(ModelSerializerNoValidation, self).__init__(required=False, *args, **kwargs)
+        super(ModelSerializerNoValidation, self).__init__(
+            required=False, *args, **kwargs
+        )
 
 
 class SerializerNoValidation(DynamicFieldsSerializer):

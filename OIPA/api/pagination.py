@@ -9,7 +9,9 @@ from rest_framework.response import Response
 
 class CustomPagination(pagination.PageNumberPagination):
     page_size = 10
-    max_page_size = 400  # TODO: change this to 100, makes more sense against ddos and such - 2016-01-20
+    # TODO: change this to 100, makes more sense against ddos and such
+    # - 2016-01-20:
+    max_page_size = 400
     page_size_query_param = 'page_size'
 
 

@@ -1,19 +1,22 @@
+import django_rq
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import authentication
 from rest_framework.generics import ListAPIView
+from rest_framework.renderers import BrowsableAPIRenderer
+from rest_framework.response import Response
 from rest_framework.views import APIView
-from iati.models import Activity
-from api.export import serializers as export_serializers
+
 from api.activity import filters
+from api.export import serializers as export_serializers
 from api.generics.filters import SearchFilter
 from api.generics.utils import get_serializer_fields
-from common.util import difference
-from django_filters.rest_framework import DjangoFilterBackend
+from api.pagination import IatiXMLPagination
+from api.publisher.permissions import PublisherPermissions
 from api.renderers import XMLRenderer
-from rest_framework.renderers import BrowsableAPIRenderer
-from api.pagination import IatiXMLPagination, IatiXMLUnlimitedPagination
-from django.db.models import Q
-
-from rest_framework import authentication, permissions
-from api.publisher.permissions import OrganisationAdminGroupPermissions, ActivityCreatePermissions, PublisherPermissions
+from common.util import difference
+from iati.models import Activity
+from iati_synchroniser.models import Dataset
+from task_queue.tasks import export_publisher_activities
 
 
 class IATIActivityList(ListAPIView):
@@ -21,7 +24,8 @@ class IATIActivityList(ListAPIView):
     """IATI representation for activities"""
 
     queryset = Activity.objects.all()
-    filter_backends = (SearchFilter, DjangoFilterBackend, filters.RelatedOrderingFilter,)
+    filter_backends = (SearchFilter, DjangoFilterBackend,
+                       filters.RelatedOrderingFilter,)
     filter_class = filters.ActivityFilter
     serializer_class = export_serializers.ActivityXMLSerializer
     pagination_class = IatiXMLPagination
@@ -30,7 +34,8 @@ class IATIActivityList(ListAPIView):
 
     fields = difference(
         get_serializer_fields(serializer_class),
-        ['url', 'activity_aggregation', 'child_aggregation', 'activity_plus_child_aggregation']
+        ['url', 'activity_aggregation', 'child_aggregation',
+            'activity_plus_child_aggregation']
     )
 
     ordering = ('iati_identifier',)
@@ -51,14 +56,6 @@ class IATIActivityList(ListAPIView):
 
     def get_queryset(self):
         return super(IATIActivityList, self).get_queryset().prefetch_all()
-
-
-import django_rq
-from task_queue.tasks import export_publisher_activities
-from rest_framework.response import Response
-from iati_synchroniser.models import Dataset
-
-import uuid
 
 
 class IATIActivityNextExportList(APIView):
@@ -132,7 +129,8 @@ class IATIActivityNextExportListResult(APIView):
         elif job.is_started:
             ret = {'status': 'waiting'}
         elif job.is_failed:
-            ret = {'status': 'failed', 'message': "job failed for unknown reasons"}
+            ret = {'status': 'failed',
+                   'message': "job failed for unknown reasons"}
             print(job.to_dict())
 
         return Response(ret)

@@ -1,5 +1,8 @@
 from django.db import models
-from iati_vocabulary.models import RegionVocabulary, GeographicVocabulary, PolicyMarkerVocabulary, SectorVocabulary, BudgetIdentifierVocabulary
+
+from iati_vocabulary.models import (
+    BudgetIdentifierVocabulary, PolicyMarkerVocabulary, SectorVocabulary
+)
 
 
 class Language(models.Model):

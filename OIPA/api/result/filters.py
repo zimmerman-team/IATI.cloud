@@ -1,20 +1,14 @@
-from api.generics.filters import TogetherFilterSet
-from api.generics.filters import ToManyFilter
-from api.generics.filters import CommaSeparatedCharFilter
-from api.generics.filters import CommaSeparatedStickyCharFilter
-from api.generics.filters import StickyBooleanFilter
-from api.generics.filters import StickyCharFilter
+from django_filters import BooleanFilter, DateFilter, NumberFilter
 
-from django_filters import DateFilter
-from django_filters import BooleanFilter
-from django_filters import NumberFilter
-
-from iati.models import Result
-from iati.models import ResultTitle
-from iati.models import ResultIndicatorTitle
-
-from iati.models import *
-from iati.transaction.models import *
+from api.generics.filters import (
+    CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
+    StickyBooleanFilter, StickyCharFilter, TogetherFilterSet, ToManyFilter
+)
+from iati.models import (
+    ActivityParticipatingOrganisation, ActivityRecipientCountry,
+    ActivityRecipientRegion, ActivityReportingOrganisation, ActivitySector,
+    DocumentLink, RelatedActivity, Result
+)
 
 
 class ResultFilter(TogetherFilterSet):

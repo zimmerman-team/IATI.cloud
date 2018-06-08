@@ -12,25 +12,25 @@ In the following sub-chapters, the most interesting elements of the admin interf
 
 The admin interface can be found at `http://<oipa_url>/admin/`. When you followed the steps at <a href="/installing/">Installing</a> to install OIPA, an account already exists and you can log in with username `vagrant`, password `vagrant`.
 
-When you don't have a log-in yet, a superuser can be created with the Django management command: `python manage.py createsuperuser`. 
+When you don't have a log-in yet, a superuser can be created with the Django management command: `python manage.py createsuperuser`.
 
-The main page of the admin interface contains a list of models, the underlying pages provide forms to create/read/update/delete items. These are all basic Django and hopefully self explanatory. All odd or non-standard functionality in the admin will be handled below.  
+The main page of the admin interface contains a list of models, the underlying pages provide forms to create/read/update/delete items. These are all basic Django and hopefully self explanatory. All odd or non-standard functionality in the admin will be handled below.
 
 --------
 ## User management
 --------
 
-OIPA uses the Django user management. A user can be created at `http://<oipa_url>/admin/auth/user/add/`. *note*; by default the newly created user has no permissions to log into the admin site. This should be set by marking the 'Staff status' checkbox or 'Superuser status', dependent on your further permission configuration. 
+OIPA uses the Django user management. A user can be created at `http://<oipa_url>/admin/auth/user/add/`. *note*; by default the newly created user has no permissions to log into the admin site. This should be set by marking the 'Staff status' checkbox or 'Superuser status', dependent on your further permission configuration.
 
 --------
 ## Task queue
 --------
 
-The task queue is available for superusers and can be found in the top navigation bar or at `http://<oipa_url>/admin/queue/`. 
+The task queue is available for superusers and can be found in the top navigation bar or at `http://<oipa_url>/admin/queue/`.
 
-The task queue has two queues, one for all parsing tasks (parser queue) and one for all other tasks (default queue). These queues both have workers that run the tasks. 
+The task queue has two queues, one for all parsing tasks (parser queue) and one for all other tasks (default queue). These queues both have workers that run the tasks.
 
-The task queues page first shows an overview of active workers and the amount of tasks in the different queues. Below the overview the user can add a task. 
+The task queues page first shows an overview of active workers and the amount of tasks in the different queues. Below the overview the user can add a task.
 
 
 ### Available tasks
@@ -56,8 +56,6 @@ The task queues page first shows an overview of active workers and the amount of
 
 **Force update currency exchange rates** <br> Fetches monthly currency exchange rates from the IMF. <u>Does</u> reparse exchange rates when they already exist in OIPA.
 
-**Collect documents for indexing** <br> Fetches all binary documents (pdf, csv etc.) for scraping and storage. Enables you to search *inside* of documents. Once Task has been executed, update your Index using `python manage.py update_ft_indexes_documents` and access data at `http://<oipa_url>/api/documents/`.
-
 
 --------
 ## Custom codelists
@@ -69,14 +67,14 @@ When first installing OIPA, it is advised to import all default IATI codelists u
 ## Loading geographic data
 --------
 
-Next to IATI codelists and parsing IATI data, OIPA also has functionality to load in geo meta data. This can be done through the city / admin 1 region / country / region admin pages listed at `http://<oipa_url>/admin/geodata/`. It's on our list to move this processes to the task queue. 
+Next to IATI codelists and parsing IATI data, OIPA also has functionality to load in geo meta data. This can be done through the city / admin 1 region / country / region admin pages listed at `http://<oipa_url>/admin/geodata/`. It's on our list to move this processes to the task queue.
 
 The following (meta) can be loaded in:
 
-- Cities: 6100+ cities and their center locations. 
+- Cities: 6100+ cities and their center locations.
 - Admin1 regions: First level administrative regions within countries.
 - Countries: Center locations (longitude/latitude), alternative names, polygons, update relation to regions, other identifiers (UN code, alpha 3, fips10)
 - Regions: Center locations (longitude/latitude)
 
 
- 
+

@@ -1,8 +1,8 @@
-from django.test import TestCase
 from django.contrib.gis.geos import Point
-from django.test import RequestFactory
-from geodata.factory import geodata_factory
+from django.test import RequestFactory, TestCase
+
 from api.city import serializers
+from geodata.factory import geodata_factory
 
 
 class TestCitySerializers(TestCase):

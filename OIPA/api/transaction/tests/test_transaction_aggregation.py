@@ -11,7 +11,8 @@ class TransactionAggregationTestCase(TestCase):
 
     def setUp(self):
         """
-        set up 2 activities. then create individual tests to check most used aggregation / group by combinations.
+        set up 2 activities. then create individual tests to check most used
+        aggregation / group by combinations.
         """
 
         first_activity = iati_factory.ActivityFactory.create()
@@ -19,7 +20,8 @@ class TransactionAggregationTestCase(TestCase):
             iati_identifier='IATI-0002',
             iati_standard_version=first_activity.iati_standard_version)
 
-        # transaction type = 1 (incoming funds), works the same for disbursements etc.
+        # transaction type = 1 (incoming funds), works the same for
+        # disbursements etc.
         first_transaction = transaction_factory.TransactionFactory.create(
             activity=first_activity,
             value=50000)
@@ -32,15 +34,18 @@ class TransactionAggregationTestCase(TestCase):
             value=25000,
             transaction_type=first_transaction.transaction_type)
 
-        first_sector = iati_factory.SectorFactory.create(code=11000, name='Sector 1')
-        second_sector = iati_factory.SectorFactory.create(code=11001, name='Sector 2')
+        first_sector = iati_factory.SectorFactory.create(
+            code=11000, name='Sector 1')
+        second_sector = iati_factory.SectorFactory.create(
+            code=11001, name='Sector 2')
 
         # TODO: Create appropriate objects here - 2016-04-18
-        transaction_sector = transaction_factory.TransactionSectorFactory.create(
-            transaction=first_transaction,
-            sector=first_sector,
-            percentage=100
-        )
+        transaction_sector = transaction_factory.TransactionSectorFactory\
+            .create(
+                transaction=first_transaction,
+                sector=first_sector,
+                percentage=100
+            )
         transaction_factory.TransactionSectorFactory.create(
             transaction=second_transaction,
             sector=first_sector,
@@ -67,7 +72,8 @@ class TransactionAggregationTestCase(TestCase):
         )
 
         country = iati_factory.CountryFactory.build(code="AD", name="Andorra")
-        second_country = iati_factory.CountryFactory.build(code="KE", name="Kenya")
+        second_country = iati_factory.CountryFactory.build(
+            code="KE", name="Kenya")
 
         transaction_factory.TransactionRecipientCountryFactory.create(
             transaction=first_transaction,
@@ -97,7 +103,8 @@ class TransactionAggregationTestCase(TestCase):
 
         self.api_client = APIClient()
 
-    def get_results(self, group_by, aggregations, order_by, filter_name=None, filter_value=None):
+    def get_results(self, group_by, aggregations, order_by, filter_name=None,
+                    filter_value=None):
 
         url_parts = [
             '/api/transactions/aggregations/?format=json&group_by=',

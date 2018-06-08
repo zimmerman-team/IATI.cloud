@@ -1,7 +1,7 @@
-import ujson
 import os
 import os.path
 
+import ujson
 from iati_codelists.models import Sector, SectorCategory, SectorVocabulary
 
 

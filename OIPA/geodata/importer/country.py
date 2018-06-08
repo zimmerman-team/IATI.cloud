@@ -1,9 +1,8 @@
-import ujson
-from geodata.importer.common import get_json_data
 from django.contrib.gis.geos import fromstr
 
-from geodata.models import Country
-from geodata.models import Region
+import ujson
+from geodata.importer.common import get_json_data
+from geodata.models import Country, Region
 
 
 class CountryImport():
@@ -15,7 +14,8 @@ class CountryImport():
         self.get_json_data = get_json_data
 
     def update_polygon(self):
-        admin_countries = self.get_json_data("/../data_backup/country_data.json")
+        admin_countries = self.get_json_data(
+            "/../data_backup/country_data.json")
 
         for k in admin_countries.get('features'):
             country_iso2 = k.get('properties').get('iso2')
@@ -26,7 +26,8 @@ class CountryImport():
             the_country.save()
 
     def update_country_center(self):
-        country_centers = self.get_json_data("/../data_backup/country_center.json")
+        country_centers = self.get_json_data(
+            "/../data_backup/country_center.json")
 
         for c in country_centers:
             if Country.objects.filter(code=c).exists():
@@ -43,7 +44,8 @@ class CountryImport():
                 current_country.save()
 
     def update_regions(self):
-        country_regions = self.get_json_data("/../data_backup/country_regions.json")
+        country_regions = self.get_json_data(
+            "/../data_backup/country_regions.json")
 
         for cr in country_regions:
             country_iso2 = cr['iso2']
@@ -55,6 +57,7 @@ class CountryImport():
             if Region.objects.filter(code=region_dac_code).exists():
                 the_region = Region.objects.get(code=region_dac_code)
 
-            if the_country.region is None and the_country is not None and the_region is not None:
+            if the_country.region is None \
+                    and the_country is not None and the_region is not None:
                 the_country.region = the_region
                 the_country.save()

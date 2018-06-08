@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+
 from iati_vocabulary.models import RegionVocabulary
 
 

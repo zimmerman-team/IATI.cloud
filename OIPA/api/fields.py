@@ -1,8 +1,7 @@
 import json
 
-from django.utils.encoding import smart_text
 import django.utils.http
-
+from django.utils.encoding import smart_text
 from rest_framework import serializers
 
 

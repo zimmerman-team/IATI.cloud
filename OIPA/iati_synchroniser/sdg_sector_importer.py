@@ -1,8 +1,8 @@
-import ujson
 import os
 import os.path
 
-from iati_codelists.models import Sector, SectorCategory, SectorVocabulary
+import ujson
+from iati_codelists.models import Sector, SectorVocabulary
 
 
 class SdgSectorImporter():
@@ -24,7 +24,9 @@ class SdgSectorImporter():
         return data
 
     def update(self):
-        sectors = self.get_json_data("/data/sdg_target_sectors.json").get('targets')
+        sectors = self.get_json_data(
+            "/data/sdg_target_sectors.json"
+        ).get('targets')
 
         vocabulary = SectorVocabulary.objects.get(pk=8)
 

@@ -1,20 +1,21 @@
-import urllib
-import logging
 import datetime
-from lxml import etree
+import logging
+import urllib
 
-from django.db import IntegrityError
 from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist
+from django.db import IntegrityError
 from django.utils.encoding import smart_text
+from lxml import etree
 
-from iati.models import *
 from geodata.models import Country, Region
-from iati_vocabulary.models import RegionVocabulary
-from iati_synchroniser.models import Codelist
+from iati_codelists.models import (
+    FileFormat, OrganisationIdentifier, OrganisationRegistrationAgency, Sector
+)
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
+from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
-
+from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +64,10 @@ class CodeListImporter():
         item = None
         code = smart_text(self.return_first(elem.xpath('code/text()')))
         name = smart_text(self.return_first(elem.xpath('name/text()')))
-        description = smart_text(self.return_first(elem.xpath('description/text()'))) or ''
-        language_name = smart_text(self.return_first(elem.xpath('language/text()')))
+        description = smart_text(self.return_first(
+            elem.xpath('description/text()'))) or ''
+        language_name = smart_text(
+            self.return_first(elem.xpath('language/text()')))
         category = self.return_first(elem.xpath('category/text()'))
         url = self.return_first(elem.xpath('url/text()')) or ' '
         model_name = tag
@@ -121,7 +124,8 @@ class CodeListImporter():
 
         elif tag == "Version":
             if url is None:
-                url = 'http://iatistandard.org/' + self.looping_through_version.replace('.', '')
+                url = 'http://iatistandard.org/' + \
+                    self.looping_through_version.replace('.', '')
 
         if name is None or name == '':
             logger.log(0, 'name is null in ' + tag)
@@ -129,20 +133,25 @@ class CodeListImporter():
 
         model = None
         try:
-            # to do; change app_label to iati_codelist after codelist app change
-            model = apps.get_model(app_label='iati_codelists', model_name=model_name)
+            # to do; change app_label to iati_codelist after codelist app
+            # change
+            model = apps.get_model(
+                app_label='iati_codelists', model_name=model_name)
         except LookupError:
             pass
 
         try:
-            # to do; change app_label to iati_codelist after codelist app change
-            model = apps.get_model(app_label='iati_vocabulary', model_name=model_name)
+            # to do; change app_label to iati_codelist after codelist app
+            # change
+            model = apps.get_model(
+                app_label='iati_vocabulary', model_name=model_name)
         except LookupError:
             pass
 
         if not model:
             try:
-                model = apps.get_model(app_label='geodata', model_name=model_name)
+                model = apps.get_model(
+                    app_label='geodata', model_name=model_name)
             except LookupError:
                 print(''.join(['Model not found: ', model_name]))
                 return False
@@ -155,23 +164,29 @@ class CodeListImporter():
 
         if len(item.name) > 200:
             item.name = item.name[0:200]
-            print("name of code: {} , name: {} shortened to 200".format(item.code, item.name))
+            print("name of code: {} , name: {} shortened to 200".format(
+                item.code, item.name))
 
         item.codelist_iati_version = self.looping_through_version
 
-        item = self.add_to_model_if_field_exists(model, item, 'description', description)
+        item = self.add_to_model_if_field_exists(
+            model, item, 'description', description)
         item = self.add_to_model_if_field_exists(model, item, 'url', url)
         if category:
-            item = self.add_to_model_if_field_exists(model, item, 'category_id', category)
+            item = self.add_to_model_if_field_exists(
+                model, item, 'category_id', category)
 
-        if item is not None and not model.objects.filter(pk=item.code).exists():
+        if item is not None and not model.objects.filter(
+            pk=item.code
+        ).exists():
             try:
                 item.save()
             except IntegrityError as err:
                 print("Error: {}".format(err))
                 pass
 
-    def add_to_model_if_field_exists(self, model, item, field_name, field_content):
+    def add_to_model_if_field_exists(
+            self, model, item, field_name, field_content):
         try:
             model._meta.get_field(field_name)
 
@@ -237,10 +252,13 @@ class CodeListImporter():
                               "codelist/" + smart_text(name) + ".xml")
 
         cur_file_opener = urllib.request.build_opener()
-        cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
+        try:
+            cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
 
-        context2 = etree.iterparse(cur_xml_file, tag=name)
-        self.fast_iter(context2, self.add_code_list_item)
+            context2 = etree.iterparse(cur_xml_file, tag=name)
+            self.fast_iter(context2, self.add_code_list_item)
+        except urllib.error.HTTPError:  # FIXME: present 404s to frontend?
+            pass
 
     def loop_through_codelists(self, version):
         downloaded_xml = urllib.request.Request(

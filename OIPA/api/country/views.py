@@ -1,10 +1,10 @@
+from rest_framework.generics import RetrieveAPIView
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 import geodata
 from api.country import serializers
-from geodata.models import Country
-from rest_framework.generics import RetrieveAPIView
 from api.country.filters import CountryFilter
 from api.generics.views import DynamicListView
-from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 
 class CountryList(CacheResponseMixin, DynamicListView):

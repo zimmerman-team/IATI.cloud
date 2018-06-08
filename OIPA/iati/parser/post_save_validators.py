@@ -1,11 +1,16 @@
-from django.db.models import Sum, Max
-from iati.models import Activity, RelatedActivity, ActivityParticipatingOrganisation
+from django.db.models import Max, Sum
+
+from iati.models import (
+    Activity, ActivityParticipatingOrganisation, RelatedActivity
+)
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
 
 def identifier_correct_prefix(self, a):
     """
-    Rule: Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier, and suffixed with the organisations own activity identifier.
+    Rule: Must be prefixed with either the current org ref for the reporting
+    org or a previous identifier reported in other-identifier, and suffixed
+    with the organisations own activity identifier.
     """
     reporting_org = a.reporting_organisations.first()
     if not reporting_org:
@@ -20,7 +25,8 @@ def identifier_correct_prefix(self, a):
         "FieldValidationError",
         "iati-identifier",
         "ref",
-        "Must be prefixed with either the current org ref for the reporting org or a previous identifier reported in other-identifier",
+        ("Must be prefixed with either the current org ref for the reporting "
+         "org or a previous identifier reported in other-identifier"),
         -1,
         reporting_org.ref,
         a.iati_identifier)
@@ -28,10 +34,12 @@ def identifier_correct_prefix(self, a):
 
 def geo_percentages_add_up(self, a):
     """
-    Rule: Percentages for all reported countries and regions must add up to 100%
+    Rule: Percentages for all reported countries and regions must add up to
+    100%
     """
-    recipient_country_sum = a.activityrecipientcountry_set.all().aggregate(Sum('percentage')
-                                                                           ).get('percentage__sum')
+    recipient_country_sum = a.activityrecipientcountry_set.all().aggregate(
+        Sum('percentage')
+    ).get('percentage__sum')
     recipient_region_sum = a.activityrecipientregion_set.all(
     ).aggregate(Sum('percentage')).get('percentage__sum')
 
@@ -46,7 +54,8 @@ def geo_percentages_add_up(self, a):
             "FieldValidationError",
             "recipient-country/recipient-region",
             "percentage",
-            "Percentages for all reported countries and regions must add up to 100%",
+            ("Percentages for all reported countries and regions must add up "
+             "to 100%"),
             -1,
             '-',
             a.iati_identifier)
@@ -56,7 +65,8 @@ def sector_percentages_add_up(self, a):
     """
     Rule: Percentages for all reported sectors must add up to 100%
     """
-    sector_sum = a.activitysector_set.all().aggregate(Sum('percentage')).get('percentage__sum')
+    sector_sum = a.activitysector_set.all().aggregate(
+        Sum('percentage')).get('percentage__sum')
 
     if not (sector_sum is None or sector_sum == 0 or sector_sum == 100):
         self.append_error(
@@ -72,10 +82,12 @@ def sector_percentages_add_up(self, a):
 def use_sector_or_transaction_sector(self, a):
     """
     Rules:
-    If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used
+    If this element is used then ALL transaction elements should contain a
+    transaction/sector element and iati-activity/sector should NOT be used
     Either transaction/sector or sector must be present.
 
-    This element can be used multiple times, but only one sector can be reported per vocabulary.
+    This element can be used multiple times, but only one sector can be
+    reported per vocabulary.
 
     """
     direct_count = a.activitysector_set.filter(sector__vocabulary='1').count()
@@ -89,7 +101,9 @@ def use_sector_or_transaction_sector(self, a):
             "FieldValidationError",
             "transaction/sector",
             "-",
-            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used",
+            ("If this element is used then ALL transaction elements should "
+             "contain a transaction/sector element and "
+             "iati-activity/sector should NOT be used"),
             -1,
             '-',
             a.iati_identifier)
@@ -99,7 +113,8 @@ def use_sector_or_transaction_sector(self, a):
             "FieldValidationError",
             "sector",
             "-",
-            "Either transaction/sector or sector must be present (DAC vocabulary)",
+            ("Either transaction/sector or sector must be present (DAC "
+             "vocabulary)"),
             -1,
             '-',
             a.iati_identifier)
@@ -108,23 +123,35 @@ def use_sector_or_transaction_sector(self, a):
 def use_direct_geo_or_transaction_geo(self, a):
     """
     Rules:
-    If this element is used then ALL transaction elements should contain a transaction/recipient-country element and iati-activity/recipient-country should NOT be used
+    If this element is used then ALL transaction elements should contain a
+    §transaction/recipient-country element and iati-activity/recipient-countr:
+    should NOT be used
     Either transaction/recipient-country or recipient-country must be present.
-    If this element is used then ALL transaction elements should contain a transaction/recipient-region element and iati-activity/recipient-region should NOT be used
-    This element can be used multiple times, but only one recipient-region can be reported per vocabulary.
+    If this element is used then ALL transaction elements should contain a
+    transaction/recipient-region element and iati-activity/recipient-region
+    should NOT be used
+    This element can be used multiple times, but only one recipient-region can
+    be reported per vocabulary.
     Either transaction/recipient-region or recipient-region must be present.
     only a recipient-region OR a recipient-country is expected
     """
-    direct_count = a.activityrecipientcountry_set.count() + a.activityrecipientregion_set.count()
-    indirect_count = a.transaction_set.filter(transaction_recipient_country__isnull=False).count(
-    ) + a.transaction_set.filter(transaction_recipient_region__isnull=False).count()
+    direct_count = a.activityrecipientcountry_set.count()\
+        + a.activityrecipientregion_set.count()
+
+    indirect_count = a.transaction_set.filter(
+        transaction_recipient_country__isnull=False
+    ).count() + a.transaction_set.filter(
+        transaction_recipient_region__isnull=False
+    ).count()
 
     if direct_count and indirect_count:
         self.append_error(
             "FieldValidationError",
             "transaction/sector",
             "-",
-            "If this element is used then ALL transaction elements should contain a transaction/sector element and iati-activity/sector should NOT be used",
+            ("If this element is used then ALL transaction elements should "
+                "contain a transaction/sector element and "
+                "iati-activity/sector should NOT be used"),
             -1,
             '-',
             a.iati_identifier)
@@ -134,7 +161,9 @@ def use_direct_geo_or_transaction_geo(self, a):
             "FieldValidationError",
             "recipient-country/recipient-region",
             "-",
-            "Either transaction/recipient-country,transaction/recipient-region or recipient-country,recipient-region must be present (DAC vocabulary)",
+            ("Either transaction/recipient-country,transaction/recipient- "
+                "redion or recipient-country,recipient-region must be present "
+                "(DAC vocabulary)"),
             -1,
             '-',
             a.iati_identifier)
@@ -142,10 +171,12 @@ def use_direct_geo_or_transaction_geo(self, a):
 
 def transactions_at_multiple_levels(self, dataset):
     """
-    Rule: If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level
+    Rule: If multiple hierarchy levels are reported then financial transactions
+    should only be reported at the lowest hierarchical level
     """
 
-    # TODO - query this from the Dataset since the query below is presumeably slower - 2017-06-20
+    # TODO - query this from the Dataset since the query below is presumeably
+    # slower - 2017-06-20
 
     max_hierarchy = Activity.objects.filter(
         dataset=dataset).aggregate(
@@ -158,7 +189,9 @@ def transactions_at_multiple_levels(self, dataset):
             "FieldValidationError",
             "transaction",
             "-",
-            "If multiple hierarchy levels are reported then financial transactions should only be reported at the lowest hierarchical level",
+            ("If multiple hierarchy levels are reported then financial "
+             "transactions should only be reported at the lowest "
+             "hierarchical level"),
             -1,
             '-',
             "dataset validation error")
@@ -166,7 +199,8 @@ def transactions_at_multiple_levels(self, dataset):
 
 def unfound_identifiers(self, dataset):
 
-    for ra in RelatedActivity.objects.filter(current_activity__dataset=dataset, ref_activity=None):
+    for ra in RelatedActivity.objects.filter(
+            current_activity__dataset=dataset, ref_activity=None):
         variable = ra.ref
         activity_id = ra.current_activity.iati_identifier
         self.append_error(
@@ -211,7 +245,8 @@ def unfound_identifiers(self, dataset):
             activity_id)
 
     for po in ActivityParticipatingOrganisation.objects.filter(
-            activity__dataset=dataset, org_activity_id__isnull=False, org_activity_obj=None):
+            activity__dataset=dataset, org_activity_id__isnull=False,
+            org_activity_obj=None):
         variable = po.org_activity_id
         activity_id = po.activity.iati_identifier
         self.append_error(

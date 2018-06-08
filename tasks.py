@@ -1,5 +1,6 @@
 import re
-from invoke import run, task, env
+
+from invoke import run, task
 
 
 def get_oipa_port():
@@ -13,12 +14,14 @@ def get_oipa_port():
             return match[0]
     return None
 
+
 @task
 def test():
     """
     Run tests
     """
     run('./manage.py test --settings OIPA.test_settings --nomigrations')
+
 
 @task
 def serve():
@@ -32,4 +35,4 @@ def serve():
         print("Can not find OIPA instance port. Abort.")
         return
 
-    run('vagrant ssh -c "cd /vagrant/OIPA/ && /home/vagrant/.env/bin/python manage.py runserver 0.0.0.0:8000"')
+    run('vagrant ssh -c "cd /vagrant/OIPA/ && /home/vagrant/.env/bin/python manage.py runserver 0.0.0.0:8000"')  # NOQA: E501

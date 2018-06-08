@@ -1,16 +1,18 @@
-from lxml import etree
-from django import db
-from django.conf import settings
 import hashlib
 
-from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
-from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
-from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
-from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
-from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
-from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
+from django import db
+from django.conf import settings
+from django.utils.encoding import smart_text
+from lxml import etree
+
 from iati.filegrabber import FileGrabber
 from iati.parser import schema_validators
+from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
+from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
+from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
+from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
+from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
+from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 
 
 class ParserDisabledError(Exception):
@@ -25,7 +27,8 @@ class ParseManager():
         """
 
         if settings.IATI_PARSER_DISABLED:
-            raise ParserDisabledError("The parser is disabled on this instance of OIPA")
+            raise ParserDisabledError(
+                "The parser is disabled on this instance of OIPA")
 
         self.dataset = dataset
         self.url = dataset.source_url
@@ -59,11 +62,17 @@ class ParseManager():
             self.dataset.save()
             return
 
-        iati_file = response.content
-        iati_file_str = str(iati_file)
+        # 1. Turn bytestring into string (treat it using specified encoding):
+        try:
+            iati_file = smart_text(response.content, 'utf-8')
+        # XXX: some files contain non utf-8 characters:
+        # FIXME: this is hardcoded:
+        except UnicodeDecodeError:
+            iati_file = smart_text(response.content, 'latin-1')
 
+        # 2. Encode the string to use for hashing:
         hasher = hashlib.sha1()
-        hasher.update(iati_file_str.encode('utf-8'))
+        hasher.update(iati_file.encode('utf-8'))
         sha1 = hasher.hexdigest()
 
         if dataset.sha1 == sha1:
@@ -73,7 +82,7 @@ class ParseManager():
             dataset.sha1 = sha1
 
         try:
-            self.root = etree.fromstring(iati_file_str)
+            self.root = etree.fromstring(response.content)
             self.parser = self._prepare_parser(self.root, dataset)
 
             if settings.ERROR_LOGS_ENABLED:
@@ -150,7 +159,8 @@ class ParseManager():
         if (self.force_reparse or self.hash_changed) and self.valid_dataset:
             self.parser.load_and_parse(self.root)
 
-        # Throw away query logs when in debug mode to prevent memory from overflowing
+        # Throw away query logs when in debug mode to prevent memory from
+        # overflowing
         if settings.DEBUG:
             db.reset_queries()
 
@@ -161,9 +171,16 @@ class ParseManager():
 
         try:
             (activity,) = self.root.xpath(
-                '//iati-activity/iati-identifier[text()="{}"]'.format(activity_id))
+                '//iati-activity/iati-identifier[text()="{}"]'.format(
+                    activity_id
+                )
+            )
         except ValueError:
-            raise ValueError("Activity {} doesn't exist in {}".format(activity_id, self.url))
+            raise ValueError(
+                "Activity {} doesn't exist in {}".format(
+                    activity_id, self.url
+                )
+            )
 
         self.parser.force_reparse = True
         self.parser.parse(activity.getparent())

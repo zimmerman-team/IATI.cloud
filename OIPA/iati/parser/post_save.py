@@ -2,15 +2,13 @@
 Methods triggered after activity has been parsed
 """
 
-from decimal import Decimal, InvalidOperation
-from iati import models
-from iati.transaction import models as transaction_models
-from iati_codelists import models as codelist_models
-from iati_vocabulary import models as vocabulary_models
+from decimal import Decimal
 
-from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-from iati import activity_search_indexes
-from iati.parser.exceptions import *
+from iati import activity_search_indexes, models
+from iati.activity_aggregation_calculation import (
+    ActivityAggregationCalculation
+)
+from iati.transaction import models as transaction_models
 
 
 def set_related_activities(activity):
@@ -22,12 +20,14 @@ def set_related_activities(activity):
 
 def set_participating_organisation_activity_id(participating_organisation):
     """ update activity_id references to this activity """
-    # TODO: add reverse relation for participating organisation activity_id - 2016-05-31
+    # TODO: add reverse relation for participating organisation activity_id
+    # - 2016-05-31
     pass
 
 
 def set_transaction_provider_receiver_activity(activity):
-    """ update transaction-provider, transaction-receiver references to this activity """
+    """ update transaction-provider, transaction-receiver references to this
+    activity """
     transaction_models.TransactionProvider.objects.filter(
         provider_activity_ref=activity.iati_identifier
     ).update(provider_activity=activity)
@@ -59,7 +59,8 @@ def set_derived_activity_dates(activity):
 
 def set_activity_aggregations(activity):
     """
-    set total activity aggregations for the different transaction types and budget
+    set total activity aggregations for the different transaction types and
+    budget
     """
     aac = ActivityAggregationCalculation()
     aac.parse_activity_aggregations(activity)
@@ -74,32 +75,41 @@ def update_activity_search_index(activity):
 
 def set_country_region_transaction(activity):
     """
-    IATI business rule: If transaction/recipient-country AND/OR transaction/recipient-region are used
-    THEN ALL transaction elements MUST contain a recipient-country or recipient-region element
-    AND (iati-activity/recipient-country AND iati-activity/recipient-region MUST NOT be used)
+    IATI business rule: If transaction/recipient-country AND/OR
+    transaction/recipient-region are used
+    THEN ALL transaction elements MUST contain a recipient-country or
+    recipient-region element
+    AND (iati-activity/recipient-country AND iati-activity/recipient-region
+    MUST NOT be used)
 
     Functionality:
-    -adds TransactionRecipientCountry/TransactionRecipientRegion if recipient country/region are not set on the transaction itself
-    -sets correct xdr_value on TransactionRecipientCountry/TransactionRecipientRegion based on percentages
+    -adds TransactionRecipientCountry/TransactionRecipientRegion if recipient
+    country/region are not set on the transaction itself
+    -sets correct xdr_value on
+    TransactionRecipientCountry/TransactionRecipientRegion based on percentages
 
     Notes:
-    for added items, TransactionRecipientCountry.reported_on_transaction is set to False.
+    for added items, TransactionRecipientCountry.reported_on_transaction is set
+    to False.
     This is to make sure we can serialize it correctly on API output;
     when a reporting org does not report recipient-country on the transaction,
-    we'll have to be sure we also don't show it when exporting to XML in our API.
+    we'll have to be sure we also don't show it when exporting to XML in our
+    API.
 
     Purpose:
-    Make both ways of reporting on recipient country / recipient region comparable by storing them in the same way.
+    Make both ways of reporting on recipient country / recipient region
+    comparable by storing them in the same way.
     Aggregations become less complex when doing so.
 
     """
     if not activity.transaction_set.count():
         return False
 
-    # check if country or region are set on transaction by checking the first transaction,
-    # then 100% of the xdr_value will go to the country/region
+    # check if country or region are set on transaction by checking the first
+    # transaction, then 100% of the xdr_value will go to the country/region
     t = activity.transaction_set.all()[0]
-    if t.transactionrecipientcountry_set.count() or t.transactionrecipientregion_set.count():
+    if t.transactionrecipientcountry_set.count()\
+            or t.transactionrecipientregion_set.count():
         for t in activity.transaction_set.all():
             for trc in t.transactionrecipientcountry_set.all():
                 trc.percentage = 100
@@ -114,7 +124,8 @@ def set_country_region_transaction(activity):
         regions = activity.activityrecipientregion_set.all()
 
         # check if percentages are not set, then divide equally
-        if len(countries.filter(percentage=None)) or len(regions.filter(percentage=None)):
+        if len(countries.filter(percentage=None))\
+                or len(regions.filter(percentage=None)):
             total_count = countries.count() + regions.count()
             percentage = Decimal(100) / Decimal(total_count)
             for recipient_country in countries:
@@ -122,7 +133,8 @@ def set_country_region_transaction(activity):
             for recipient_region in regions:
                 recipient_region.percentage = percentage
 
-        # create TransactionRecipientCountry/Region for each transaction, for each country/region
+        # create TransactionRecipientCountry/Region for each transaction, for
+        # each country/region
         for t in activity.transaction_set.all():
             for recipient_country in countries:
                 trc = transaction_models.TransactionRecipientCountry(
@@ -145,8 +157,9 @@ def set_country_region_transaction(activity):
 
 def set_sector_transaction(activity):
     """
-    IATI business rule: If this element is used then ALL transaction elements should contain
-    a transaction/sector element and iati-activity/sector should NOT be used.
+    IATI business rule: If this element is used then ALL transaction elements
+    should contain a transaction/sector element and iati-activity/sector
+    should NOT be used.
 
     For functionality/notes/purpose see set_country_region_transaction.
     This function does the same thing for sectors.
@@ -166,7 +179,8 @@ def set_sector_transaction(activity):
     else:
         sectors = activity.activitysector_set.all()
 
-        # check if percentages are not set, if so divide percentages equally over amount of sector
+        # check if percentages are not set, if so divide percentages equally
+        # over amount of sector
         if len(sectors.filter(percentage=None)):
             vocabulary_codes = []
             for val in activity.activitysector_set.values('vocabulary__code'):
@@ -181,7 +195,8 @@ def set_sector_transaction(activity):
                 for s in sectors_filtred:
                     s.percentage = percentage
 
-        # create TransactionSector for each sector for each transaction with correct xdr_value
+        # create TransactionSector for each sector for each transaction with
+        # correct xdr_value
 
                 for t in activity.transaction_set.all():
                     for recipient_sector in sectors_filtred:
@@ -215,7 +230,8 @@ def set_sector_budget(activity):
 
     sectors = activity.activitysector_set.all()
 
-    # if percentages are not set divide percentages equally over amount of sectors
+    # if percentages are not set divide percentages equally over amount of
+    # sectors
     if len(sectors.filter(percentage=None)):
         total_count = sectors.count()
         percentage = Decimal(100) / Decimal(total_count)

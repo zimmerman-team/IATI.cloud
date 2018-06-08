@@ -1,6 +1,7 @@
 from django.db import models
-from iati.models import Activity
 from django.utils.timezone import now
+
+from iati.models import Activity
 
 # Networks should be based upon orgs in the org standard
 
@@ -47,25 +48,32 @@ class ChainNodeError(models.Model):
     error_type_choices = (
         ('1', u"provider-org not set on incoming fund"),
         ('2', u"provider-activity-id not set on incoming fund"),
-        ('3', u"given provider-activity-id set on incoming fund does not exist"),
+        ('3',
+            u"given provider-activity-id set on incoming fund does not exist"),
 
         ('4', u"receiver-org not set on disbursement"),
         ('5', u"receiver-activity-id not set on disbursement"),
-        ('6', u"given receiver-activity-id set on disbursement does not exist"),
+        ('6',
+            u"given receiver-activity-id set on disbursement does not exist"),
 
         ('7', u"given related-activity with type parent does not exist"),
         ('8', u"given related-activity with type child does not exist"),
 
-        ('9', u"participating-org is given as funder but there are no incoming funds from this organisation ref"),
-        ('10', u"participating-org is given as implementer but there are no disbursements nor expenditures to this organisation ref"),
+        ('9',
+            u"participating-org is given as funder but there are no incoming \
+                funds from this organisation ref"),
+        ('10', u"participating-org is given as implementer but there are no \
+            disbursements nor expenditures to this organisation ref"),
     )
 
     chain_node = models.ForeignKey(ChainNode, on_delete=models.CASCADE)
-    error_type = models.CharField(choices=level_choices, max_length=10, null=False)
+    error_type = models.CharField(
+        choices=level_choices, max_length=10, null=False)
     mentioned_activity_or_org = models.CharField(
         max_length=255, null=True, blank=False, default=None)
     related_id = models.CharField(max_length=100)
-    warning_level = models.CharField(choices=level_choices, max_length=255, null=False)
+    warning_level = models.CharField(
+        choices=level_choices, max_length=255, null=False)
 
 
 class ChainLink(models.Model):

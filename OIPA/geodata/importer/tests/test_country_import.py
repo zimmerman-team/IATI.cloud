@@ -1,11 +1,9 @@
+from django.test import TestCase
 from mock import MagicMock
 
-from django.test import TestCase
-
-from geodata.factory.geodata_factory import CountryFactory
-from geodata.factory.geodata_factory import RegionFactory
-from geodata.models import Country
+from geodata.factory.geodata_factory import CountryFactory, RegionFactory
 from geodata.importer.country import CountryImport
+from geodata.models import Country
 
 
 class CountryImportTestCase(TestCase):
@@ -26,7 +24,9 @@ class CountryImportTestCase(TestCase):
                 },
                 "geometry": {
                     "type": "Polygon",
-                    "coordinates": [[[61.210817, 35.650072], [62.230651, 35.270664]]]}},
+                    "coordinates": [
+                        [[61.210817, 35.650072], [62.230651, 35.270664]]
+                    ]}},
             ]}
         self.country_import.get_json_data = MagicMock(return_value=data)
         self.country_import.update_polygon()

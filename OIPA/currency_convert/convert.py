@@ -11,10 +11,6 @@ def get_monthly_average(currency_iso, value_date):
             currency=currency_iso)
         return ma.value
     except ObjectDoesNotExist:
-        # print 'exchange rate for %s does not exist for year %s and month %s' % (
-        #     currency_iso,
-        #     value_date.year,
-        #     value_date.month)
         return False
 
 

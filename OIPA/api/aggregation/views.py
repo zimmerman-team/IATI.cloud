@@ -1,11 +1,13 @@
+from django.db.models import F, Q
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from django.db.models import Q, F
-from api.aggregation.aggregation import aggregate
-from rest_framework_extensions.key_constructor.constructors \
-    import DefaultKeyConstructor
-from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
 from rest_framework_extensions.cache.decorators import cache_response
+from rest_framework_extensions.key_constructor.bits import QueryParamsKeyBit
+from rest_framework_extensions.key_constructor.constructors import (
+    DefaultKeyConstructor
+)
+
+from api.aggregation.aggregation import aggregate
 
 
 class QueryParamsKeyConstructor(DefaultKeyConstructor):
@@ -261,7 +263,7 @@ class Aggregation():
 # TODO: seems unnescessary - 2016-04-11
 class Order:
     def __init__(self, query_param=None, fields=None):
-        if not (query_param or field):
+        if not (query_param):
             raise ValueError("not all required params were passed")
 
         self.query_param = query_param

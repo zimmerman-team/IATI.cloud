@@ -1,6 +1,5 @@
-from api.generics.filters import TogetherFilterSet
+from api.generics.filters import CommaSeparatedCharFilter, TogetherFilterSet
 from iati.models import Location
-from api.generics.filters import CommaSeparatedCharFilter
 
 
 class LocationFilter(TogetherFilterSet):

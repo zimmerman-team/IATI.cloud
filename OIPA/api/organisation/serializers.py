@@ -1,23 +1,21 @@
-from iati_organisation import models as org_models
-import iati
 from rest_framework import serializers
-from api.generics.serializers import DynamicFieldsSerializer, DynamicFieldsModelSerializer, FilterableModelSerializer
 
-from api.fields import EncodedHyperlinkedIdentityField
-
-from api.codelist.serializers import OrganisationNarrativeSerializer, OrganisationNarrativeContainerSerializer
-from api.codelist.serializers import VocabularySerializer
-from api.codelist.serializers import CodelistSerializer
-from api.codelist.serializers import CodelistCategorySerializer
+from api.codelist.serializers import (
+    CodelistSerializer, OrganisationNarrativeContainerSerializer,
+    OrganisationNarrativeSerializer
+)
 from api.country.serializers import CountrySerializer
-from api.region.serializers import RegionSerializer, BasicRegionSerializer
-from api.generics.serializers import ModelSerializerNoValidation
-from api.generics.serializers import SerializerNoValidation
-
+from api.fields import EncodedHyperlinkedIdentityField
+from api.generics.serializers import (
+    DynamicFieldsModelSerializer, DynamicFieldsSerializer,
+    ModelSerializerNoValidation, SerializerNoValidation
+)
+from api.generics.utils import get_or_none, get_or_raise, handle_errors
+from api.region.serializers import BasicRegionSerializer
+from iati.models import Narrative
+from iati.parser.exceptions import ValidationError
+from iati_organisation import models as org_models
 from iati_organisation.parser import validators
-from iati.parser import exceptions
-from api.generics.utils import handle_errors
-from api.generics.utils import get_or_raise, get_or_none
 
 
 def save_narratives(instance, data, organisation_instance):
@@ -27,17 +25,12 @@ def save_narratives(instance, data, organisation_instance):
     old_ids = set(filter(lambda x: x is not None, [i.get('id') for i in data]))
     new_data = filter(lambda x: x.get('id') is None, data)
 
-    # print(current_ids)
-    # print(old_ids)
-    # print(new_data)
-
     to_remove = list(current_ids.difference(old_ids))
-    # to_add = list(new_ids.difference(current_ids))
     to_add = new_data
     to_update = list(current_ids.intersection(old_ids))
 
     for fk_id in to_update:
-        narrative = iati_models.Narrative.objects.get(pk=fk_id)
+        narrative = Narrative.objects.get(pk=fk_id)
         narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         for field, data in narrative_data.items():
@@ -45,13 +38,10 @@ def save_narratives(instance, data, organisation_instance):
         narrative.save()
 
     for fk_id in to_remove:
-        narrative = iati_models.Narrative.objects.get(pk=fk_id)
-        # instance = instances.get(pk=fk_id)
+        narrative = Narrative.objects.get(pk=fk_id)
         narrative.delete()
 
     for narrative_data in to_add:
-        # narrative = iati_models.Narrative.objects.get(pk=fk_id)
-        # narrative_data = filter(lambda x: x['id'] is fk_id, data)[0]
 
         org_models.OrganisationNarrative.objects.create(
             related_object=instance,
@@ -104,7 +94,8 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        total_budget = get_or_raise(org_models.TotalBudget, data, 'total_budget')
+        total_budget = get_or_raise(
+            org_models.TotalBudget, data, 'total_budget')
 
         validated = validators.organisation_total_budget_line(
             total_budget,
@@ -127,7 +118,8 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
         total_budget.organisation.modified = True
         total_budget.organisation.save()
 
-        save_narratives(total_budget, narratives_data, total_budget.organisation)
+        save_narratives(total_budget, narratives_data,
+                        total_budget.organisation)
 
         return instance
 
@@ -142,7 +134,8 @@ class TotalBudgetBudgetLineSerializer(ModelSerializerNoValidation):
         total_budget.organisation.modified = True
         total_budget.organisation.save()
 
-        save_narratives(total_budget, narratives_data, total_budget.organisation)
+        save_narratives(total_budget, narratives_data,
+                        total_budget.organisation)
 
         return update_instance
 
@@ -175,7 +168,8 @@ class OrganisationTotalBudgetSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_total_budget(
             organisation,
@@ -250,12 +244,14 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_org_budget = validated_data.get('recipient_org_budget')
         narratives_data = validated_data.pop('narratives', [])
 
-        instance = org_models.RecipientOrgBudgetLine.objects.create(**validated_data)
+        instance = org_models.RecipientOrgBudgetLine.objects.create(
+            **validated_data)
 
         recipient_org_budget.organisation.modified = True
         recipient_org_budget.organisation.save()
 
-        save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
+        save_narratives(recipient_org_budget, narratives_data,
+                        recipient_org_budget.organisation)
 
         return instance
 
@@ -270,7 +266,8 @@ class RecipientOrgBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_org_budget.organisation.modified = True
         recipient_org_budget.organisation.save()
 
-        save_narratives(recipient_org_budget, narratives_data, recipient_org_budget.organisation)
+        save_narratives(recipient_org_budget, narratives_data,
+                        recipient_org_budget.organisation)
 
         return update_instance
 
@@ -312,7 +309,8 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_recipient_org_budget(
             organisation,
@@ -330,7 +328,8 @@ class OrganisationRecipientOrgBudgetSerializer(ModelSerializerNoValidation):
     def create(self, validated_data):
         organisation = validated_data.get('organisation')
 
-        instance = org_models.RecipientOrgBudget.objects.create(**validated_data)
+        instance = org_models.RecipientOrgBudget.objects.create(
+            **validated_data)
 
         organisation.modified = True
         organisation.save()
@@ -369,7 +368,10 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
 
     def validate(self, data):
         recipient_country_budget = get_or_raise(
-            org_models.RecipientCountryBudget, data, 'recipient_country_budget')
+            org_models.RecipientCountryBudget,
+            data,
+            'recipient_country_budget'
+        )
 
         validated = validators.organisation_recipient_country_budget_line(
             recipient_country_budget,
@@ -384,10 +386,12 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         return handle_errors(validated)
 
     def create(self, validated_data):
-        recipient_country_budget = validated_data.get('recipient_country_budget')
+        recipient_country_budget = validated_data.get(
+            'recipient_country_budget')
         narratives_data = validated_data.pop('narratives', [])
 
-        instance = org_models.RecipientCountryBudgetLine.objects.create(**validated_data)
+        instance = org_models.RecipientCountryBudgetLine.objects.create(
+            **validated_data)
 
         recipient_country_budget.organisation.modified = True
         recipient_country_budget.organisation.save()
@@ -400,10 +404,12 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         return instance
 
     def update(self, instance, validated_data):
-        recipient_country_budget = validated_data.get('recipient_country_budget')
+        recipient_country_budget = validated_data.get(
+            'recipient_country_budget')
         narratives_data = validated_data.pop('narratives', [])
 
-        update_instance = org_models.RecipientCountryBudgetLine(**validated_data)
+        update_instance = org_models.RecipientCountryBudgetLine(
+            **validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -418,7 +424,8 @@ class RecipientCountryBudgetLineSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
-class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
+class OrganisationRecipientCountryBudgetSerializer(
+        ModelSerializerNoValidation):
     organisation = serializers.CharField(write_only=True)
 
     value = ValueSerializer(source='*')
@@ -428,7 +435,8 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
-    recipient_country = CountrySerializer(source="country", fields=('url', 'code', 'name'))
+    recipient_country = CountrySerializer(
+        source="country", fields=('url', 'code', 'name'))
 
     budget_lines = RecipientCountryBudgetLineSerializer(
         many=True, source="recipientcountrybudgetline_set", required=False)
@@ -447,7 +455,8 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_recipient_country_budget(
             organisation,
@@ -465,7 +474,8 @@ class OrganisationRecipientCountryBudgetSerializer(ModelSerializerNoValidation):
     def create(self, validated_data):
         organisation = validated_data.get('organisation')
 
-        instance = org_models.RecipientCountryBudget.objects.create(**validated_data)
+        instance = org_models.RecipientCountryBudget.objects.create(
+            **validated_data)
 
         organisation.modified = True
         organisation.save()
@@ -522,7 +532,8 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_region_budget = validated_data.get('recipient_region_budget')
         narratives_data = validated_data.pop('narratives', [])
 
-        instance = org_models.RecipientRegionBudgetLine.objects.create(**validated_data)
+        instance = org_models.RecipientRegionBudgetLine.objects.create(
+            **validated_data)
 
         recipient_region_budget.organisation.modified = True
         recipient_region_budget.organisation.save()
@@ -538,7 +549,8 @@ class RecipientRegionBudgetLineSerializer(ModelSerializerNoValidation):
         recipient_region_budget = validated_data.get('recipient_region_budget')
         narratives_data = validated_data.pop('narratives', [])
 
-        update_instance = org_models.RecipientRegionBudgetLine(**validated_data)
+        update_instance = org_models.RecipientRegionBudgetLine(
+            **validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -563,7 +575,8 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     period_start = serializers.CharField()
     period_end = serializers.CharField()
 
-    recipient_region = BasicRegionSerializer(source="region", fields=('url', 'code', 'name'))
+    recipient_region = BasicRegionSerializer(
+        source="region", fields=('url', 'code', 'name'))
 
     budget_lines = RecipientRegionBudgetLineSerializer(
         many=True, source="recipientregionbudgetline_set", required=False)
@@ -582,7 +595,8 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_recipient_region_budget(
             organisation,
@@ -600,7 +614,8 @@ class OrganisationRecipientRegionBudgetSerializer(ModelSerializerNoValidation):
     def create(self, validated_data):
         organisation = validated_data.get('organisation')
 
-        instance = org_models.RecipientRegionBudget.objects.create(**validated_data)
+        instance = org_models.RecipientRegionBudget.objects.create(
+            **validated_data)
 
         organisation.modified = True
         organisation.save()
@@ -638,7 +653,8 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        total_expenditure = get_or_raise(org_models.TotalExpenditure, data, 'total_expenditure')
+        total_expenditure = get_or_raise(
+            org_models.TotalExpenditure, data, 'total_expenditure')
 
         validated = validators.organisation_total_expenditure_line(
             total_expenditure,
@@ -655,12 +671,14 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
         total_expenditure = validated_data.get('total_expenditure')
         narratives_data = validated_data.pop('narratives', [])
 
-        instance = org_models.TotalExpenditureLine.objects.create(**validated_data)
+        instance = org_models.TotalExpenditureLine.objects.create(
+            **validated_data)
 
         total_expenditure.organisation.modified = True
         total_expenditure.organisation.save()
 
-        save_narratives(total_expenditure, narratives_data, total_expenditure.organisation)
+        save_narratives(total_expenditure, narratives_data,
+                        total_expenditure.organisation)
 
         return instance
 
@@ -675,7 +693,8 @@ class TotalExpenditureLineSerializer(ModelSerializerNoValidation):
         total_expenditure.organisation.modified = True
         total_expenditure.organisation.save()
 
-        save_narratives(total_expenditure, narratives_data, total_expenditure.organisation)
+        save_narratives(total_expenditure, narratives_data,
+                        total_expenditure.organisation)
 
         return update_instance
 
@@ -704,7 +723,8 @@ class OrganisationTotalExpenditureSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_total_expenditure(
             organisation,
@@ -754,7 +774,8 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+        document_link = get_or_raise(
+            org_models.OrganisationDocumentLink, data, 'document_link')
 
         validated = validators.document_link_category(
             document_link,
@@ -766,7 +787,8 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
-        instance = org_models.OrganisationDocumentLinkCategory.objects.create(**validated_data)
+        instance = org_models.OrganisationDocumentLinkCategory.objects.create(
+            **validated_data)
 
         document_link.organisation.modified = True
         document_link.organisation.save()
@@ -776,7 +798,8 @@ class OrganisationDocumentLinkCategorySerializer(ModelSerializerNoValidation):
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
 
-        update_instance = org_models.OrganisationDocumentLinkCategory(**validated_data)
+        update_instance = org_models.OrganisationDocumentLinkCategory(
+            **validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -800,7 +823,8 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+        document_link = get_or_raise(
+            org_models.OrganisationDocumentLink, data, 'document_link')
 
         validated = validators.document_link_language(
             document_link,
@@ -812,7 +836,8 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
-        instance = org_models.OrganisationDocumentLinkLanguage.objects.create(**validated_data)
+        instance = org_models.OrganisationDocumentLinkLanguage.objects.create(
+            **validated_data)
 
         document_link.organisation.modified = True
         document_link.organisation.save()
@@ -822,7 +847,8 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
 
-        update_instance = org_models.OrganisationDocumentLinkLanguage(**validated_data)
+        update_instance = org_models.OrganisationDocumentLinkLanguage(
+            **validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -832,7 +858,8 @@ class OrganisationDocumentLinkLanguageSerializer(ModelSerializerNoValidation):
         return update_instance
 
 
-class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValidation):
+class OrganisationDocumentLinkRecipientCountrySerializer(
+        ModelSerializerNoValidation):
     recipient_country = CodelistSerializer()
 
     document_link = serializers.CharField(write_only=True)
@@ -850,7 +877,8 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
         )
 
     def validate(self, data):
-        document_link = get_or_raise(org_models.OrganisationDocumentLink, data, 'document_link')
+        document_link = get_or_raise(
+            org_models.OrganisationDocumentLink, data, 'document_link')
 
         validated = validators.document_link_recipient_country(
             document_link,
@@ -862,7 +890,8 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
     def create(self, validated_data):
         document_link = validated_data.get('document_link')
 
-        instance = org_models.DocumentLinkRecipientCountry.objects.create(**validated_data)
+        instance = org_models.DocumentLinkRecipientCountry.objects.create(
+            **validated_data)
 
         document_link.organisation.modified = True
         document_link.organisation.save()
@@ -872,7 +901,8 @@ class OrganisationDocumentLinkRecipientCountrySerializer(ModelSerializerNoValida
     def update(self, instance, validated_data):
         document_link = validated_data.get('document_link')
 
-        update_instance = org_models.DocumentLinkRecipientCountry(**validated_data)
+        update_instance = org_models.DocumentLinkRecipientCountry(
+            **validated_data)
         update_instance.id = instance.id
         update_instance.save()
 
@@ -908,7 +938,8 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         source="documentlinkrecipientcountry_set"
     )
 
-    title = OrganisationNarrativeContainerSerializer(source="documentlinktitle")
+    title = OrganisationNarrativeContainerSerializer(
+        source="documentlinktitle")
 
     document_date = DocumentDateSerializer(source="*")
 
@@ -929,7 +960,8 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        organisation = get_or_raise(org_models.Organisation, data, 'organisation')
+        organisation = get_or_raise(
+            org_models.Organisation, data, 'organisation')
 
         validated = validators.organisation_document_link(
             organisation,
@@ -945,11 +977,14 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         organisation = validated_data.get('organisation')
         title_narratives_data = validated_data.pop('title_narratives', [])
 
-        instance = org_models.OrganisationDocumentLink.objects.create(**validated_data)
+        instance = org_models.OrganisationDocumentLink.objects.create(
+            **validated_data)
 
-        document_link_title = org_models.DocumentLinkTitle.objects.create(document_link=instance)
+        document_link_title = org_models.DocumentLinkTitle.objects.create(
+            document_link=instance)
 
-        save_narratives(document_link_title, title_narratives_data, organisation)
+        save_narratives(document_link_title,
+                        title_narratives_data, organisation)
 
         organisation.modified = True
         organisation.save()
@@ -964,7 +999,8 @@ class OrganisationDocumentLinkSerializer(ModelSerializerNoValidation):
         update_instance.id = instance.id
         update_instance.save()
 
-        save_narratives(update_instance.documentlinktitle, title_narratives_data, organisation)
+        save_narratives(update_instance.documentlinktitle,
+                        title_narratives_data, organisation)
 
         organisation.modified = True
         organisation.save()
@@ -982,7 +1018,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         view_name='organisations:organisation-detail', read_only=True)
 
     last_updated_datetime = serializers.DateTimeField(required=False)
-    xml_lang = serializers.CharField(source='default_lang.code', required=False)
+    xml_lang = serializers.CharField(
+        source='default_lang.code', required=False)
     default_currency = CodelistSerializer(required=False)
     name = OrganisationNameSerializer(required=False)
 
@@ -1020,14 +1057,15 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
         if old_organisation:
             raise ValidationError({
-                "organisation_identifier": "Organisation with this IATI identifier already exists"
+                "organisation_identifier":
+                "Organisation with this IATI identifier already exists"
             })
 
-        name_data = validated_data.pop('name', None)
+        name_data = validated_data.pop('name', None)  # NOQA: F841
         name_narratives_data = validated_data.pop('name_narratives', None)
 
-        # TODO: only allow user to create the organisation he is validated with on
-        # the IATI registry - 2017-03-06
+        # TODO: only allow user to create the organisation he is
+        # validated with on the IATI registry - 2017-03-06
 
         instance = org_models.Organisation.objects.create(**validated_data)
         instance.publisher_id = self.context['view'].kwargs.get('publisher_id')
@@ -1037,7 +1075,8 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
 
         instance.save()
 
-        name = org_models.OrganisationName.objects.create(organisation=instance)
+        name = org_models.OrganisationName.objects.create(
+            organisation=instance)
         instance.name = name
 
         if name_narratives_data:
@@ -1046,7 +1085,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        name_data = validated_data.pop('name', None)
+        name_data = validated_data.pop('name', None)  # NOQA: F841
         name_narratives_data = validated_data.pop('name_narratives', None)
 
         update_instance = org_models.Organisation(**validated_data)
@@ -1055,6 +1094,7 @@ class OrganisationSerializer(DynamicFieldsModelSerializer):
         update_instance.save()
 
         if name_narratives_data:
-            save_narratives(update_instance.name, name_narratives_data, instance)
+            save_narratives(update_instance.name,
+                            name_narratives_data, instance)
 
         return update_instance

@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from api.result.views import ResultAggregations
 
 app_name = 'api'

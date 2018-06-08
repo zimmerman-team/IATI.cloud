@@ -1,24 +1,17 @@
 from decimal import Decimal
 
-from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
 
+from geodata.models import Country, Region
+from iati.models import Activity, Narrative
 from iati.transaction.transaction_manager import TransactionQuerySet
-from geodata.models import Country
-from geodata.models import Region
-from iati_vocabulary.models import RegionVocabulary
-from iati_vocabulary.models import SectorVocabulary
-from iati_codelists.models import AidType
-from iati_codelists.models import DisbursementChannel
-from iati_codelists.models import FinanceType
-from iati_codelists.models import FlowType
-from iati_codelists.models import TiedStatus
-from iati_codelists.models import Currency
-from iati_codelists.models import Sector
-from iati_codelists.models import TransactionType
+from iati_codelists.models import (
+    AidType, Currency, DisbursementChannel, FinanceType, FlowType, Sector,
+    TiedStatus, TransactionType
+)
 from iati_organisation.models import Organisation, OrganisationType
-from iati.models import Activity
-from iati.models import Narrative
+from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
 
 class Transaction(models.Model):
@@ -37,12 +30,18 @@ class Transaction(models.Model):
 
     humanitarian = models.NullBooleanField(null=True, blank=True)
 
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    xdr_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
 
     disbursement_channel = models.ForeignKey(
         DisbursementChannel,

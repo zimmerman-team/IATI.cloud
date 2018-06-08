@@ -1,3 +1,8 @@
+from rest_framework.exceptions import ValidationError
+
+from iati.parser import exceptions
+
+
 def get_serializer_fields(serializer):
     return serializer().get_fields().keys()
 
@@ -44,10 +49,6 @@ def get_type_parameters(name, query_params):
     return result_fields
 
 
-from iati.parser import validators
-from iati.parser import exceptions
-
-
 def get_or_raise(model, validated_data, attr, default=None):
     try:
         pk = validated_data.get(attr)
@@ -58,8 +59,6 @@ def get_or_raise(model, validated_data, attr, default=None):
         )
 
     return model.objects.get(pk=pk)
-    # except model.DoesNotExist:
-    #     return default
 
 
 def get_or_none(model, validated_data, attr, default=None):
@@ -80,9 +79,6 @@ def set_deep(d, key_string, value):
     for k in keys:
         dd = dd.setdefault(k, {})
     dd.setdefault(last, value)
-
-
-from rest_framework.exceptions import ValidationError
 
 
 def handle_errors(*validated):

@@ -1,12 +1,12 @@
-from rest_framework.serializers import HyperlinkedIdentityField
-from rest_framework.serializers import HyperlinkedRelatedField
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from iati_synchroniser.models import Publisher
-from iati_synchroniser.models import Dataset
-from iati_synchroniser.models import DatasetNote
-from api.generics.serializers import DynamicFieldsModelSerializer
 from django.urls import reverse
+from rest_framework.serializers import (
+    HyperlinkedIdentityField, HyperlinkedRelatedField, ModelSerializer,
+    SerializerMethodField
+)
+
+from api.generics.serializers import DynamicFieldsModelSerializer
 from iati.models import Activity
+from iati_synchroniser.models import Dataset, DatasetNote, Publisher
 
 
 class DatasetNoteSerializer(ModelSerializer):

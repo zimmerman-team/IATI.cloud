@@ -6,7 +6,7 @@ from decimal import Decimal
 import django.contrib.gis.db.models.fields
 from django.db import migrations, models
 import django.db.models.deletion
-import iati.djorm_pgfulltext.fields
+import djorm_pgfulltext.fields
 
 
 class Migration(migrations.Migration):
@@ -194,16 +194,16 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True,
                                         primary_key=True, serialize=False, verbose_name='ID')),
-                ('iati_identifier', iati.djorm_pgfulltext.fields.VectorField()),
-                ('text', iati.djorm_pgfulltext.fields.VectorField()),
-                ('title', iati.djorm_pgfulltext.fields.VectorField()),
-                ('description', iati.djorm_pgfulltext.fields.VectorField()),
-                ('reporting_org', iati.djorm_pgfulltext.fields.VectorField()),
-                ('participating_org', iati.djorm_pgfulltext.fields.VectorField()),
-                ('recipient_country', iati.djorm_pgfulltext.fields.VectorField()),
-                ('recipient_region', iati.djorm_pgfulltext.fields.VectorField()),
-                ('sector', iati.djorm_pgfulltext.fields.VectorField()),
-                ('document_link', iati.djorm_pgfulltext.fields.VectorField()),
+                ('iati_identifier', djorm_pgfulltext.fields.VectorField()),
+                ('text', djorm_pgfulltext.fields.VectorField()),
+                ('title', djorm_pgfulltext.fields.VectorField()),
+                ('description', djorm_pgfulltext.fields.VectorField()),
+                ('reporting_org', djorm_pgfulltext.fields.VectorField()),
+                ('participating_org', djorm_pgfulltext.fields.VectorField()),
+                ('recipient_country', djorm_pgfulltext.fields.VectorField()),
+                ('recipient_region', djorm_pgfulltext.fields.VectorField()),
+                ('sector', djorm_pgfulltext.fields.VectorField()),
+                ('document_link', djorm_pgfulltext.fields.VectorField()),
                 ('last_reindexed', models.DateTimeField()),
             ],
         ),
@@ -497,8 +497,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True,
                                         primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', iati.djorm_pgfulltext.fields.VectorField()),
-                ('text', iati.djorm_pgfulltext.fields.VectorField()),
+                ('content', djorm_pgfulltext.fields.VectorField()),
+                ('text', djorm_pgfulltext.fields.VectorField()),
                 ('last_reindexed', models.DateTimeField()),
             ],
         ),

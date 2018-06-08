@@ -1,7 +1,13 @@
-from rest_framework import mixins
-from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from api.generics.serializers import DynamicFieldsModelSerializer, DynamicFieldsSerializer
 from django.db.models.fields.related import ForeignKey, OneToOneField
+from rest_framework import mixins
+from rest_framework.generics import (
+    GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView,
+    RetrieveUpdateDestroyAPIView
+)
+
+from api.generics.serializers import (
+    DynamicFieldsModelSerializer, DynamicFieldsSerializer
+)
 
 
 class DynamicView(GenericAPIView):
@@ -15,24 +21,35 @@ class DynamicView(GenericAPIView):
         """
         Extract prefetches and default fields from Meta
         """
-        # TODO: move this to a meta class, to evaluate once when defining the class
+        # TODO: move this to a meta class, to evaluate once when defining the
+        # class
         # TODO: This is not efficient - 2016-01-20
 
         serializer_class = self.get_serializer_class()
         serializer = serializer_class()  # need an instance to extract fields
         model = serializer_class.Meta.model
 
-        assert issubclass(serializer_class, DynamicFieldsModelSerializer) or issubclass(serializer_class, DynamicFieldsSerializer), (
-            "serializer class must be an instance of DynamicFieldsModelSerializer " "instead got %s") % (serializer_class.__name__,)
+        assert issubclass(
+            serializer_class, DynamicFieldsModelSerializer
+        ) or issubclass(serializer_class, DynamicFieldsSerializer), (
+            "serializer class must be an instance of \
+             DynamicFieldsModelSerializer " "instead got %s"
+        ) % (serializer_class.__name__,)
 
         self.serializer_fields = serializer.fields.keys()
 
-        self.select_related_fields = [field.name for field in model._meta.fields
-                                      if isinstance(field, (ForeignKey, OneToOneField))]
+        self.select_related_fields = [
+            field.name for field in model._meta.fields
+            if isinstance(field, (ForeignKey, OneToOneField))
+        ]
 
         self.field_source_mapping = {
-            field.field_name: field.source for field in serializer.fields.values() if isinstance(
-                field, (ForeignKey, OneToOneField))}
+            field.field_name: field.source
+            for field in serializer.fields.values()
+            if isinstance(
+                field, (ForeignKey, OneToOneField)
+            )
+        }
 
     def _get_query_fields(self):
         if not self.request:
@@ -54,7 +71,9 @@ class DynamicView(GenericAPIView):
         if not fields:
             fields = self.serializer_fields
 
-        select_related_fields = list(set(self.select_related_fields) & set(fields))
+        select_related_fields = list(set(
+            self.select_related_fields
+        ) & set(fields))
 
         if select_related_fields:
             queryset = queryset.select_related(*select_related_fields)
@@ -64,7 +83,9 @@ class DynamicView(GenericAPIView):
             if hasattr(queryset, 'prefetch_%s' % field):
                 queryset = getattr(queryset, 'prefetch_%s' % field)()
 
-        queryset = super(DynamicView, self).filter_queryset(queryset, *args, **kwargs)
+        queryset = super(DynamicView, self).filter_queryset(
+            queryset, *args, **kwargs
+        )
 
         return queryset
 
@@ -74,7 +95,9 @@ class DynamicView(GenericAPIView):
         """
         fields = self._get_query_fields()
         kwargs['context'] = self.get_serializer_context()
-        return super(DynamicView, self).get_serializer(fields=fields, *args, **kwargs)
+        return super(DynamicView, self).get_serializer(
+            fields=fields, *args, **kwargs
+        )
 
 
 class DynamicListView(DynamicView, ListAPIView):

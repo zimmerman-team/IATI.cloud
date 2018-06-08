@@ -1,33 +1,37 @@
 from decimal import Decimal
 
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey, GenericRelation
+)
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.gis.db.models import PointField
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
+from django.db import models
+from djorm_pgfulltext.fields import VectorField
+
 from geodata.models import Country, Region
+from iati_codelists.models import (
+    ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
+    BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
+    Currency, DescriptionType, DocumentCategory, FileFormat, FinanceType,
+    FlowType, GeographicExactness, GeographicLocationClass,
+    GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language,
+    LoanRepaymentPeriod, LoanRepaymentType, LocationType, OrganisationRole,
+    OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker,
+    PolicySignificance, RelatedActivityType, ResultType, Sector, TiedStatus,
+    Version
+)
+from iati_organisation.models import Organisation
+from iati_synchroniser.models import Dataset, Publisher
+from iati_vocabulary.models import (
+    BudgetIdentifierVocabulary, GeographicVocabulary,
+    HumanitarianScopeVocabulary, IndicatorVocabulary, PolicyMarkerVocabulary,
+    RegionVocabulary, SectorVocabulary
+)
+
 from .activity_manager import ActivityManager
 from .location_manager import LocationManager
-from .document_manager import DocumentManager
-from django.contrib.gis.db.models import PointField
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
-from django.db import models
-
-from iati_codelists.models import *
-from iati_vocabulary.models import RegionVocabulary
-from iati_vocabulary.models import GeographicVocabulary
-from iati_vocabulary.models import PolicyMarkerVocabulary
-from iati_vocabulary.models import SectorVocabulary
-from iati_vocabulary.models import BudgetIdentifierVocabulary
-from iati_vocabulary.models import HumanitarianScopeVocabulary
-from iati_vocabulary.models import IndicatorVocabulary
-from iati_organisation.models import Organisation
-from iati_synchroniser.models import Dataset
-from iati_synchroniser.models import Publisher
-
-
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
-
-from iati.djorm_pgfulltext.models import SearchManager
-from iati.djorm_pgfulltext.fields import VectorField
 
 
 class Narrative(models.Model):
@@ -38,7 +42,8 @@ class Narrative(models.Model):
         verbose_name='related object',
         null=True,
         db_index=True)
-    related_object = GenericForeignKey('related_content_type', 'related_object_id')
+    related_object = GenericForeignKey(
+        'related_content_type', 'related_object_id')
 
     activity = models.ForeignKey('Activity', on_delete=models.CASCADE)
 
@@ -79,9 +84,11 @@ class Activity(models.Model):
         (2, u"Child"),
     )
 
-    iati_identifier = models.CharField(max_length=150, blank=False, unique=True, db_index=True)
+    iati_identifier = models.CharField(
+        max_length=150, blank=False, unique=True, db_index=True)
     # normalized for use in the API
-    normalized_iati_identifier = models.CharField(max_length=150, blank=False, db_index=True)
+    normalized_iati_identifier = models.CharField(
+        max_length=150, blank=False, db_index=True)
 
     iati_standard_version = models.ForeignKey(Version,
                                               on_delete=models.CASCADE)
@@ -101,21 +108,28 @@ class Activity(models.Model):
         default=1,
         blank=True,
         db_index=True)
-    last_updated_model = models.DateTimeField(null=True, blank=True, auto_now=True)
+    last_updated_model = models.DateTimeField(
+        null=True, blank=True, auto_now=True)
 
     last_updated_datetime = models.DateTimeField(blank=True, null=True)
 
-    # default_lang = models.CharField(max_length=2, blank=True, null=True)
     default_lang = models.ForeignKey(Language, null=True, blank=True,
                                      default=None, on_delete=models.CASCADE)
-    linked_data_uri = models.CharField(max_length=100, blank=True, null=True, default="")
+    linked_data_uri = models.CharField(
+        max_length=100, blank=True, null=True, default="")
 
-    planned_start = models.DateField(null=True, blank=True, default=None, db_index=True)
-    actual_start = models.DateField(null=True, blank=True, default=None, db_index=True)
-    start_date = models.DateField(null=True, blank=True, default=None, db_index=True)
-    planned_end = models.DateField(null=True, blank=True, default=None, db_index=True)
-    actual_end = models.DateField(null=True, blank=True, default=None, db_index=True)
-    end_date = models.DateField(null=True, blank=True, default=None, db_index=True)
+    planned_start = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
+    actual_start = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
+    start_date = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
+    planned_end = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
+    actual_end = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
+    end_date = models.DateField(
+        null=True, blank=True, default=None, db_index=True)
 
     activity_status = models.ForeignKey(
         ActivityStatus,
@@ -185,11 +199,11 @@ class Activity(models.Model):
     modified = models.BooleanField(default=False, db_index=True)
 
     objects = ActivityManager(
-        ft_model=ActivitySearch,  # model that contains the ft indexes
         fields=('title', 'description'),  # fields on the model
         config='pg_catalog.simple',  # default dictionary to use
         search_field='text',  # text field for all search fields,
-        auto_update_search_field=False,  # TODO: make this compatible with M2M - 2016-01-11
+        # TODO: make this compatible with M2M - 2016-01-11:
+        auto_update_search_field=False,
     )
 
     def __unicode__(self):
@@ -223,16 +237,25 @@ class Activity(models.Model):
         providing_activities = []
 
         for transaction in self.transaction_set.all():
-            if transaction.provider_organisation and transaction.provider_organisation.provider_activity:
-                providing_activities.append(transaction.provider_organisation.provider_activity.id)
+            if (
+                transaction.provider_organisation
+                and transaction.provider_organisation.provider_activity
+            ):
+                providing_activities.append(
+                    transaction.provider_organisation.provider_activity.id
+                )
 
-        return Activity.objects.filter(id__in=providing_activities).exclude(id=self.id).distinct()
+        return Activity.objects.filter(
+            id__in=providing_activities
+        ).exclude(id=self.id).distinct()
 
     @property
     def get_provided_activities(self):
         return Activity.objects.filter(
-            transaction__provider_organisation__provider_activity=self.id).exclude(
-            id=self.id).distinct()
+            transaction__provider_organisation__provider_activity=self.id
+        ).exclude(
+            id=self.id
+        ).distinct()
 
 
 class AbstractActivityAggregation(models.Model):
@@ -463,7 +486,8 @@ class ActivitySearchData(models.Model):
 
 class ActivityReportingOrganisation(models.Model):
     ref = models.CharField(max_length=250, db_index=True)
-    normalized_ref = models.CharField(max_length=120, db_index=True, default="", blank=True)
+    normalized_ref = models.CharField(
+        max_length=120, db_index=True, default="", blank=True)
 
     narratives = GenericRelation(
         Narrative,
@@ -482,7 +506,8 @@ class ActivityReportingOrganisation(models.Model):
         on_delete=models.SET_NULL)
     type = models.ForeignKey(
         OrganisationType, null=True, default=None, blank=True,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE
+    )
 
     secondary_reporter = models.BooleanField(default=False)
 
@@ -526,7 +551,8 @@ class ActivityParticipatingOrganisation(models.Model):
                              default=None, on_delete=models.CASCADE)
 
     # when organisation is not mentioned in transactions
-    org_activity_id = models.CharField(max_length=150, blank=False, null=True, db_index=True)
+    org_activity_id = models.CharField(
+        max_length=150, blank=False, null=True, db_index=True)
     org_activity_obj = models.ForeignKey(
         Activity,
         related_name="participating_activity",
@@ -570,7 +596,9 @@ class ActivityPolicyMarker(models.Model):
         object_id_field='related_object_id')
 
     def __unicode__(self,):
-        return "code: %s - significance: %s" % (self.code, self.significance.code)
+        return "code: %s - significance: %s" % (
+            self.code, self.significance.code
+        )
 
     class Meta:
         verbose_name = 'Policy marker'
@@ -734,9 +762,11 @@ class ContactInfo(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     type = models.ForeignKey(
         ContactType, null=True, blank=True, on_delete=models.CASCADE)
-    telephone = models.CharField(max_length=100, default="", null=True, blank=True)
+    telephone = models.CharField(
+        max_length=100, default="", null=True, blank=True)
     email = models.TextField(default="", null=True, blank=True)
-    website = models.CharField(max_length=255, default="", null=True, blank=True)
+    website = models.CharField(
+        max_length=255, default="", null=True, blank=True)
 
     def __unicode__(self,):
         return "type: %s" % self.type
@@ -796,7 +826,7 @@ class ContactInfoJobTitle(models.Model):
 
 class ContactInfoMailingAddress(models.Model):
     contact_info = models.OneToOneField(
-    ContactInfo, related_name="mailing_address",
+        ContactInfo, related_name="mailing_address",
         default=None, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
@@ -823,7 +853,8 @@ class RelatedActivity(models.Model):
         null=True,
         blank=True,
         default=None, on_delete=models.CASCADE)
-    ref = models.CharField(db_index=True, max_length=200, default="", blank=True)
+    ref = models.CharField(db_index=True, max_length=200,
+                           default="", blank=True)
 
     def __unicode__(self,):
         return "ref-activity: %s" % self.ref_activity
@@ -891,6 +922,9 @@ class DocumentLinkTitle(models.Model):
 
 
 class DocumentSearch(models.Model):
+    '''Currently this model is just stored for refference and searching (both
+    feature and API endpoint) for Documents is disabled
+    '''
     document = models.OneToOneField('Document', on_delete=models.CASCADE)
     content = VectorField()
     text = VectorField()
@@ -910,14 +944,6 @@ class Document(models.Model):
     document_or_long_url_changed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
-
-    objects = DocumentManager(
-        ft_model=DocumentSearch,  # model that contains the ft indexes
-        fields=('content'),  # fields on the model
-        config='pg_catalog.simple',  # default dictionary to use
-        search_field='text',  # text field for all search fields,
-        auto_update_search_field=False,  # TODO: make this compatible with M2M - 2016-01-11
-    )
 
     def __unicode__(self):
         return self.id
@@ -973,7 +999,8 @@ class ResultDescription(models.Model):
 class ResultIndicator(models.Model):
     result = models.ForeignKey(Result, on_delete=models.CASCADE)
     baseline_year = models.IntegerField(null=True, blank=True, default=None)
-    baseline_value = models.CharField(null=True, blank=True, default=None, max_length=100)
+    baseline_value = models.CharField(
+        null=True, blank=True, default=None, max_length=100)
     measure = models.ForeignKey(
         IndicatorMeasure,
         null=True,
@@ -994,7 +1021,8 @@ class ResultIndicatorReference(models.Model):
     code = models.CharField(max_length=255)
     vocabulary = models.ForeignKey(
         IndicatorVocabulary, on_delete=models.CASCADE)
-    # TODO: this should be renamed to vocabulary_uri in IATI standard... - 2016-06-03
+    # TODO: this should be renamed to vocabulary_uri in IATI standard...
+    # - 2016-06-03:
     indicator_uri = models.URLField(null=True, blank=True)
 
     def get_activity(self):
@@ -1049,8 +1077,10 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.DecimalField(max_digits=25, decimal_places=10, null=True, blank=True)
-    actual = models.DecimalField(max_digits=25, decimal_places=10, null=True, blank=True)
+    target = models.DecimalField(
+        max_digits=25, decimal_places=10, null=True, blank=True)
+    actual = models.DecimalField(
+        max_digits=25, decimal_places=10, null=True, blank=True)
 
     def __unicode__(self,):
         return "target: %s, actual: %s" % (self.target, self.actual)
@@ -1166,19 +1196,26 @@ class Budget(models.Model):
         BudgetStatus, default=1, on_delete=models.CASCADE)
     period_start = models.DateField(blank=True, default=None)
     period_end = models.DateField(blank=True, default=None)
-    value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    value = models.DecimalField(
+        max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
 
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    xdr_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
 
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (
@@ -1218,19 +1255,26 @@ class PlannedDisbursement(models.Model):
         default=None, on_delete=models.CASCADE)
     period_start = models.DateField(blank=True, default=None)
     period_end = models.DateField(null=True, blank=True, default=None)
-    value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    value = models.DecimalField(
+        max_digits=15, decimal_places=2, null=True, blank=True)
     value_string = models.CharField(max_length=50)
     value_date = models.DateField(null=True, blank=True, default=None)
     currency = models.ForeignKey(
         Currency, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
 
-    xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    usd_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    eur_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    gbp_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    jpy_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
-    cad_value = models.DecimalField(max_digits=20, decimal_places=7, default=Decimal(0))
+    xdr_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    usd_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    eur_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    gbp_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    jpy_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
+    cad_value = models.DecimalField(
+        max_digits=20, decimal_places=7, default=Decimal(0))
 
     def __unicode__(self,):
         return "value: %s - period_start: %s - period_end: %s" % (
@@ -1238,21 +1282,6 @@ class PlannedDisbursement(models.Model):
 
     def get_activity(self):
         return self.activity
-
-    # budget_type = models.ForeignKey(BudgetType, null=True, blank=True, default=None)
-    # activity = models.ForeignKey(Activity)
-    # period_start = models.CharField(max_length=100, default="")
-    # period_end = models.CharField(max_length=100, default="")
-    # value_date = models.DateField(null=True, blank=True)
-    # value = models.DecimalField(max_digits=15, decimal_places=2)
-    # xdr_value = models.DecimalField(max_digits=20, decimal_places=7, default=0)
-    # value_string = models.CharField(max_length=50)
-    # currency = models.ForeignKey(Currency, null=True, blank=True, default=None)
-    # # updated = models.DateField(null=True, default=None) deprecated
-
-    # def __unicode__(self,):
-    # return "value: %s - period_start: %s - period_end: %s" % (self.value,
-    # self.period_start, self.period_end)
 
 
 class PlannedDisbursementProvider(models.Model):
@@ -1379,9 +1408,6 @@ class Conditions(models.Model):
         Activity, related_name="conditions", on_delete=models.CASCADE)
     attached = models.BooleanField()
 
-    # def __unicode__(self,):
-    #     return "text: %s - type: %s" % (self.text[:30], self.type)
-
     def get_activity(self):
         return self.activity
 
@@ -1395,9 +1421,6 @@ class Condition(models.Model):
         Narrative,
         content_type_field='related_content_type',
         object_id_field='related_object_id')
-
-    # def __unicode__(self,):
-    #     return "text: %s - type: %s" % (self.text[:30], self.type)
 
     def get_activity(self):
         return self.conditions.activity
@@ -1585,8 +1608,10 @@ class CrsAddLoanTerms(models.Model):
         default=None, on_delete=models.CASCADE)
     repayment_plan_text = models.TextField(null=True, blank=True, default="")
     commitment_date = models.DateField(null=True, blank=True, default=None)
-    repayment_first_date = models.DateField(null=True, blank=True, default=None)
-    repayment_final_date = models.DateField(null=True, blank=True, default=None)
+    repayment_first_date = models.DateField(
+        null=True, blank=True, default=None)
+    repayment_final_date = models.DateField(
+        null=True, blank=True, default=None)
 
     def __unicode__(self,):
         return "%s" % self.crs_add_id
@@ -1641,7 +1666,9 @@ class ActivityDate(models.Model):
     type = models.ForeignKey(ActivityDateType, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return "type: %s - iso_date: %s" % (self.type, self.iso_date.strftime('%Y-%m-%d'))
+        return "type: %s - iso_date: %s" % (
+            self.type, self.iso_date.strftime('%Y-%m-%d')
+        )
 
     def get_activity(self):
         return self.activity

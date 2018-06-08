@@ -1,11 +1,9 @@
+from django.test import TestCase
 from mock import MagicMock
 
-from django.test import TestCase
-
-from geodata.factory.geodata_factory import CountryFactory
-from geodata.factory.geodata_factory import Adm1RegionFactory
-from geodata.models import Adm1Region
+from geodata.factory.geodata_factory import Adm1RegionFactory, CountryFactory
 from geodata.importer.admin1region import Adm1RegionImport
+from geodata.models import Adm1Region
 
 
 class Adm1RegionAdminTestCase(TestCase):
@@ -34,7 +32,12 @@ class Adm1RegionAdminTestCase(TestCase):
                     },
                     "geometry": {
                         "type": "Polygon",
-                        "coordinates": [[[-69.996938, 12.577582], [-69.936391, 12.531724], ]]
+                        "coordinates": [
+                            [
+                                [-69.996938, 12.577582],
+                                [-69.936391, 12.531724],
+                            ]
+                        ]
                     }
                 }]
         }

@@ -1,8 +1,9 @@
-import urllib
-from http.client import HTTPException
 import logging
-import mechanicalsoup
+import urllib
 from http import cookiejar
+from http.client import HTTPException
+
+import mechanicalsoup
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +11,8 @@ logger = logging.getLogger(__name__)
 class FileGrabber():
     def __init__(self):
         """
-        Get the file of an URL, use mechanicalsoup / cookiejar to simulate a browser because some IATI XML URLs deny bots
+        Get the file of an URL, use mechanicalsoup / cookiejar to simulate a
+        browser because some IATI XML URLs deny bots
         """
         browser = mechanicalsoup.Browser()
 
@@ -21,7 +23,8 @@ class FileGrabber():
         # User-Agent
         browser.addheaders = [
             ('User-agent',
-             'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+             'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) \
+                     Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
 
         self.browser = browser
 

@@ -1,9 +1,10 @@
 from unittest import skip
-from django.test import TestCase
-from rest_framework.views import APIView
-from api.generics.serializers import DynamicFieldsSerializer
-from django.test import RequestFactory
+
+from django.test import RequestFactory, TestCase
 from rest_framework import serializers
+from rest_framework.views import APIView
+
+from api.generics.serializers import DynamicFieldsSerializer
 
 
 class SimpleModelTypeSerializer(DynamicFieldsSerializer):
@@ -50,15 +51,18 @@ class TestDynamicFields(TestCase):
         self.assertIn('name', serializer.data)
         self.assertNotIn('description', serializer.data)
 
-    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
+    @skip('Is now handled in view, # TODO: write unittests for the views \
+          - 2016-02-18')
     def test_request_fields_serializer(self):
         pass
 
-    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
+    @skip('Is now handled in view, # TODO: write unittests for the views \
+        - 2016-02-18')
     def test_sub_request_fields_serializer(self):
         pass
 
-    @skip('Is now handled in view, # TODO: write unittests for the views - 2016-02-18')
+    @skip('Is now handled in view, # TODO: write unittests for the views \
+        - 2016-02-18')
     def test_view_fields_serializer(self):
         context = {
             'view': SimpleView

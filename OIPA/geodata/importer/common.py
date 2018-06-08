@@ -1,6 +1,7 @@
-import ujson
 import os
 import os.path
+
+import ujson
 
 
 def get_json_data(location_from_here):

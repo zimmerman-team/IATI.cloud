@@ -1,5 +1,6 @@
-from django.contrib.gis.geos import Point
 import factory
+from django.contrib.gis.geos import Point
+
 from geodata import models
 
 
