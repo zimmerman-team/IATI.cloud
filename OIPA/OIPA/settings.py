@@ -214,9 +214,6 @@ ADMIN_REORDER = (
     'geodata',
     'currency_convert',
     'auth',
-    # 'otp_static',
-    # 'otp_totp',
-    # 'otp_yubikey',
     'sites'
 )
 
