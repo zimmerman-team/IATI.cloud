@@ -13,7 +13,7 @@ django-cors-headers==2.2.0
 ###########################################
 
 # mainly used for shell_plus management command:
-django-extensions==1.9.9
+django-extensions==2.0.7
 django-debug-toolbar==1.9.1
 
 git+https://github.com/Supervisor/supervisor@master
