@@ -111,8 +111,8 @@ class PaginatedCSVRenderer(CSVRenderer):
         super(PaginatedCSVRenderer, self).__init__(*args, **kwargs)
         self.writer_opts = {
             'quoting': csv.QUOTE_ALL,
-            'quotechar': '"'.encode('utf-8'),
-            'delimiter': ';'.encode('utf-8')
+            'quotechar': '"',
+            'delimiter': ';'
         }
 
     def render(self, data, *args, **kwargs):
