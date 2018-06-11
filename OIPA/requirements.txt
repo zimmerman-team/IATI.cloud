@@ -30,9 +30,12 @@ psycopg2==2.7.4
 # Extensions to the standard datetime module:
 python-dateutil==2.7.3
 
-# Python library for queueing jobs and processing them in the background with
-# workers (backed by Redis):
+# Redis-based Python queuing library for queueing jobs and processing them in
+# the background with workers:
 rq==0.11.0
+
+# Job scheduling capabilities for RQ
+rq-scheduler==0.8.3
 
 ###########################################
 # Developer / debugging related libraries #
@@ -65,7 +68,6 @@ mock==2.0.0
 python-coveralls==2.9.1
 redis==2.10.6
 requests==2.18.4
-rq-scheduler==0.8.1
 sqlparse==0.2.4
 tzlocal==1.5.1
 ujson==1.35
