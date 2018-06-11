@@ -64,6 +64,12 @@ djangorestframework-xml==1.3.0
 # PostgreSQL full-text search integration with django orm.
 djorm-ext-pgfulltext==0.10
 
+# Extract text from various documents:
+fulltext==0.5
+
+# A library for interacting with websites (Requests + BeautifulSoup):
+MechanicalSoup==0.10.0
+
 ###########################################
 # Developer / debugging related libraries #
 ###########################################
@@ -81,11 +87,11 @@ ipdb==0.11
 ################
 
 flake8==3.5.0
+
 flake8-isort==2.5
 
-fulltext==0.5
 isort==4.3.4
-MechanicalSoup==0.10.0
+
 mock==2.0.0
 python-coveralls==2.9.1
 redis==2.10.6
