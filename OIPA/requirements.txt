@@ -70,6 +70,16 @@ fulltext==0.5
 # A library for interacting with websites (Requests + BeautifulSoup):
 MechanicalSoup==0.10.0
 
+# Mock objects for testing:
+mock==2.0.0
+
+# Tracking test coverage with https://coveralls.io/:
+python-coveralls==2.9.1
+
+redis==2.10.6
+
+requests==2.18.4
+
 ###########################################
 # Developer / debugging related libraries #
 ###########################################
@@ -87,16 +97,9 @@ ipdb==0.11
 ################
 
 flake8==3.5.0
-
 flake8-isort==2.5
-
 isort==4.3.4
 
-mock==2.0.0
-python-coveralls==2.9.1
-redis==2.10.6
-requests==2.18.4
-sqlparse==0.2.4
 tzlocal==1.5.1
 ujson==1.35
 yet_another_django_profiler==1.1.0
