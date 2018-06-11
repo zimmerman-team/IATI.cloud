@@ -37,6 +37,8 @@ rq==0.11.0
 # Job scheduling capabilities for RQ
 rq-scheduler==0.8.3
 
+uwsgi==2.0.17
+
 ###########################################
 # Developer / debugging related libraries #
 ###########################################
@@ -71,7 +73,6 @@ requests==2.18.4
 sqlparse==0.2.4
 tzlocal==1.5.1
 ujson==1.35
-uwsgi==2.0.16
 yet_another_django_profiler==1.1.0
 YubiOTP==0.2.1
 drf-extensions==0.3.1
