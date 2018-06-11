@@ -3021,7 +3021,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
 class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name='activities:activity-detail-by-iati_identifier',
+        view_name='activities:activity-detail-by-iati-identifier',
         lookup_field='iati_identifier',
         read_only=True)
 
@@ -3044,7 +3044,6 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
     )
 
-    # TODO ; add other-identifier serializer
     other_identifier = OtherIdentifierSerializer(
         many=True, source="otheridentifier_set", required=False)
 
@@ -3055,8 +3054,6 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
     )
 
-    # TODO ; add contact-info serializer
-    # note; contact info has a sequence we should use in the ContactInfoSerializer!
     contact_info = ContactInfoSerializer(
         many=True,
         source="contactinfo_set",
@@ -3090,7 +3087,6 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         required=False,
     )
 
-    # TODO ; add country-budget-items serializer
     country_budget_items = CountryBudgetItemsSerializer(required=False)
 
     humanitarian_scope = HumanitarianScopeSerializer(
@@ -3119,14 +3115,12 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
     )
 
-    # note; planned-disbursement has a sequence in PlannedDisbursementSerializer
     planned_disbursements = PlannedDisbursementSerializer(
         many=True,
         source='planneddisbursement_set',
         read_only=True,
     )
 
-    # capital_spend = CapitalSpendSerializer(required=False)
     capital_spend = serializers.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -3138,9 +3132,6 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
         view_name='activities:activity-transactions',
     )
-    # transactions = TransactionSerializer(
-    #     many=True,
-    #     source='transaction_set')
 
     document_links = DocumentLinkSerializer(
         many=True,
@@ -3151,7 +3142,8 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
         source='relatedactivity_set')
 
-    legacy_data = LegacyDataSerializer(many=True, source="legacydata_set", required=False)
+    legacy_data = LegacyDataSerializer(
+        many=True, source="legacydata_set", required=False)
 
     conditions = ConditionsSerializer(required=False)
 
@@ -3160,23 +3152,22 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
         read_only=True,
         source="result_set")
 
-    # note; crs-add has a sequence in CrsAddSerializer
     crs_add = CrsAddSerializer(many=True, source="crsadd_set", required=False)
 
     fss = FssSerializer(many=True, source="fss_set", required=False)
 
-    # activity attributes
     last_updated_datetime = serializers.DateTimeField(required=False)
-    xml_lang = serializers.CharField(source='default_lang.code', required=False)
+    xml_lang = serializers.CharField(source='default_lang.code',
+                                     required=False)
     default_currency = CodelistSerializer(required=False)
 
     humanitarian = serializers.BooleanField(required=False)
 
-    # from reporting-org, can be saved directly on activity
-    secondary_reporter = serializers.BooleanField(write_only=True, required=False)
+    secondary_reporter = serializers.BooleanField(
+        write_only=True, required=False)
 
-    # other added data
-    aggregations = ActivityAggregationContainerSerializer(source="*", read_only=True)
+    aggregations = ActivityAggregationContainerSerializer(
+        source="*", read_only=True)
 
     dataset = SimpleDatasetSerializer(
         read_only=True,
@@ -3250,21 +3241,3 @@ class ActivitySerializerByIatiIdentifier(DynamicFieldsModelSerializer):
             'publisher',
             'published_state',
         )
-
-        validators = []
-
-# class CheckValidIATIMixin():
-
-#     def save(self, *args, **kwargs):
-#         instance = super(CheckValidIATIMixin, self).save(*args, **kwargs)
-
-#         # query activity and check if it is valid or not
-
-#         activity = instance.activity
-
-#         if (activity.is_valid_iati)
-
-#         activity.is_valid_iati = True
-#         activity.save()
-
-#         # check if activity has the required fields set

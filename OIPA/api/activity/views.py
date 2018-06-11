@@ -440,31 +440,20 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-# TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
-
 
 class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
     """
-    Returns detailed information about Activity.
+    Returns detailed information of the Activity.
 
     ## URI Format
 
     ```
-    /api/activities/{activity_id}
+    /api/activities/{iati_identifier}
     ```
 
     ### URI Parameters
 
-    - `activity_id`: Desired activity ID
-
-    ## Extra endpoints
-
-    All information on activity transactions can be found on a separate page:
-
-    - `/api/activities/{activity_id}/transactions/`:
-        List of transactions.
-    - `/api/activities/{activity_id}/provider-activity-tree/`:
-        The upward and downward provider-activity-id traceability tree of this activity.
+    - `iati_ideantifier`: Desired to IATI Identifier of activity
 
     ## Request parameters
 

@@ -26,8 +26,19 @@ class TestActivityEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_activity_detail_endpoint(self):
+        activity = \
+            iati_factory.ActivityFactory.create(iati_identifier='activity_id')
+        url = reverse('activities:activity-detail', args={activity.pk})
+        msg = 'activity detail endpoint should be located at {0}'
+        expect_url = '/api/activities/{}/'.format(activity.pk)
+        assert url == expect_url, msg.format(expect_url)
+        response = self.c.get(url)
+        self.assertTrue(status.is_success(response.status_code))
+
+    def test_activity_detail_by_iati_identifier_endpoint(self):
         iati_factory.ActivityFactory.create(iati_identifier='activity_id')
-        url = reverse('activities:activity-detail', args={'activity_id'})
+        url = reverse('activities:activity-detail-by-iati-identifier',
+                      args={'activity_id'})
         msg = 'activity detail endpoint should be located at {0}'
         expect_url = '/api/activities/activity_id/'
         assert url == expect_url, msg.format(expect_url)
