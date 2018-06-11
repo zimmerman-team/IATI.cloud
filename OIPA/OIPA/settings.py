@@ -5,7 +5,6 @@ import sys
 from ast import literal_eval
 from os import environ as env
 
-from django.urls import reverse_lazy
 from tzlocal import get_localzone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
