@@ -443,6 +443,41 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
 # TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
 
 
+class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
+    """
+    Returns detailed information about Activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{activity_id}
+    ```
+
+    ### URI Parameters
+
+    - `activity_id`: Desired activity ID
+
+    ## Extra endpoints
+
+    All information on activity transactions can be found on a separate page:
+
+    - `/api/activities/{activity_id}/transactions/`:
+        List of transactions.
+    - `/api/activities/{activity_id}/provider-activity-tree/`:
+        The upward and downward provider-activity-id traceability tree of this activity.
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+
+    queryset = Activity.objects.all()
+    filter_class = filters.ActivityFilter
+    serializer_class = activity_serializers.ActivitySerializerByIatiIdentifier
+    lookup_field = 'iati_identifier'
+
+
 class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
