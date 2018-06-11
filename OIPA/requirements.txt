@@ -39,6 +39,10 @@ rq-scheduler==0.8.3
 
 uwsgi==2.0.17
 
+# Use the latest version of Supervisor (4.0.0.dev0) from Github, because it's
+# not yet in PyPI:
+git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor
+
 ###########################################
 # Developer / debugging related libraries #
 ###########################################
@@ -51,7 +55,6 @@ django-debug-toolbar==1.9.1
 # Interactive Python debugger:
 ipdb==0.11
 
-git+https://github.com/Supervisor/supervisor@master
 git+https://github.com/DragosChirila/django-supervisor@master
 ckanapi==4.1
 django-filter==1.1.0
