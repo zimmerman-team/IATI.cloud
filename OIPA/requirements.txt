@@ -103,5 +103,4 @@ isort==4.3.4
 tzlocal==1.5.1
 ujson==1.35
 yet_another_django_profiler==1.1.0
-YubiOTP==0.2.1
 drf-extensions==0.3.1
