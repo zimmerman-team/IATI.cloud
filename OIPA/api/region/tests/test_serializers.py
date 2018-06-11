@@ -1,4 +1,3 @@
-import pytest
 from django.test import RequestFactory, TestCase
 
 from api.region import serializers
@@ -9,7 +8,6 @@ class TestRegionSerializers(TestCase):
 
     request_dummy = RequestFactory().get('/')
 
-    @pytest.mark.django_db
     def test_RegionSerializer(self):
         region = iati_factory.RegionFactory.build(
             code='10',

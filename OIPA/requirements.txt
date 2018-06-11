@@ -55,8 +55,6 @@ isort==4.3.4
 Markdown==2.6.11
 MechanicalSoup==0.10.0
 mock==2.0.0
-pytest-django==3.1.2
-pytest==3.4.0
 python-coveralls==2.9.1
 python-dateutil==2.6.1
 redis==2.10.6

@@ -611,7 +611,6 @@ class ActivitySerializerTestCase(TestCase):
         for field in required_fields:
             assert field in serializer.data, assertion_msg.format(field)
 
-    # @pytest.mark.django_db
     def test_activitySerializer(self):
         request_dummy = RequestFactory().get('/')
         request_dummy.query_params = dict()
@@ -650,7 +649,6 @@ class ActivitySerializerTestCase(TestCase):
             that contains the data in activity.linked_data_uri
             """
 
-    # @pytest.mark.django_db
     def test_activitySerializer_required_fields(self):
         request_dummy = RequestFactory().get('/')
         request_dummy.query_params = dict()
