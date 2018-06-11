@@ -2,6 +2,9 @@
 # Core libraries #
 ##################
 
+# An API for interacting with the Comprehensive Knowledge Archive Network (CKAN):
+ckanapi==4.1
+
 Django==2.0.6
 
 django-grappelli==2.11.1
@@ -19,35 +22,7 @@ djangorestframework==3.8.2
 
 djangorestframework-csv==2.1.0
 
-# Factories for testing:
-factory-boy==2.11.1
-
-# Working with XML files
-lxml==4.2.1
-
-psycopg2==2.7.4
-
-# Extensions to the standard datetime module:
-python-dateutil==2.7.3
-
-# Redis-based Python queuing library for queueing jobs and processing them in
-# the background with workers:
-rq==0.11.0
-
-# Job scheduling capabilities for RQ
-rq-scheduler==0.8.3
-
-uwsgi==2.0.17
-
-# Use the latest version of Supervisor (4.0.0.dev0) from Github, because it's
-# not yet in PyPI:
-git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor
-
-# Use patched version (0.4.0) of Django-supervisor which has support for Python3:
-git+https://github.com/zimmerman-zimmerman/django-supervisor@07c67b4daebe4ebae5eb1c5567c11e076e58692d#egg=django-supervisor
-
-# An API for interacting with the Comprehensive Knowledge Archive Network (CKAN):
-ckanapi==4.1
+drf-extensions==0.3.1
 
 # Dynamic filters for DRF:
 django-filter==1.1.0
@@ -73,12 +48,45 @@ MechanicalSoup==0.10.0
 # Mock objects for testing:
 mock==2.0.0
 
+# Factories for testing:
+factory-boy==2.11.1
+
+# Working with XML files
+lxml==4.2.1
+
+psycopg2==2.7.4
+
 # Tracking test coverage with https://coveralls.io/:
 python-coveralls==2.9.1
+
+# Extensions to the standard datetime module:
+python-dateutil==2.7.3
 
 redis==2.10.6
 
 requests==2.18.4
+
+# Redis-based Python queuing library for queueing jobs and processing them in
+# the background with workers:
+rq==0.11.0
+
+# Job scheduling capabilities for RQ
+rq-scheduler==0.8.3
+
+# Getting local time zone:
+tzlocal==1.5.1
+
+# JSON decoder and encoder
+ujson==1.35
+
+uwsgi==2.0.17
+
+# Use the latest version of Supervisor (4.0.0.dev0) from Github, because it's
+# not yet in PyPI:
+git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor
+
+# Use patched version (0.4.0) of Django-supervisor which has support for Python3:
+git+https://github.com/zimmerman-zimmerman/django-supervisor@07c67b4daebe4ebae5eb1c5567c11e076e58692d#egg=django-supervisor
 
 ###########################################
 # Developer / debugging related libraries #
@@ -92,15 +100,15 @@ django-debug-toolbar==1.9.1
 # Interactive Python debugger:
 ipdb==0.11
 
+# Code profiling:
+yet_another_django_profiler==1.1.0
+
 ################
 # Code quality #
 ################
 
 flake8==3.5.0
-flake8-isort==2.5
-isort==4.3.4
 
-tzlocal==1.5.1
-ujson==1.35
-yet_another_django_profiler==1.1.0
-drf-extensions==0.3.1
+flake8-isort==2.5
+
+isort==4.3.4
