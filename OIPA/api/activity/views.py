@@ -440,7 +440,31 @@ class ActivityDetail(CacheResponseMixin, DynamicDetailView):
     filter_class = filters.ActivityFilter
     serializer_class = activity_serializers.ActivitySerializer
 
-# TODO separate endpoints for expensive fields like ActivityLocations & ActivityResults 08-07-2016
+
+class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
+    """
+    Returns detailed information of the Activity.
+
+    ## URI Format
+
+    ```
+    /api/activities/{iati_identifier}
+    ```
+
+    ### URI Parameters
+
+    - `iati_ideantifier`: Desired to IATI Identifier of activity
+
+    ## Request parameters
+
+    - `fields` (*optional*): List of fields to display
+
+    """
+
+    queryset = Activity.objects.all()
+    filter_class = filters.ActivityFilter
+    serializer_class = activity_serializers.ActivitySerializerByIatiIdentifier
+    lookup_field = 'iati_identifier'
 
 
 class ActivityTransactionList(CacheResponseMixin, DynamicListView):

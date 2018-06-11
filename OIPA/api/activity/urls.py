@@ -13,15 +13,17 @@ urlpatterns = [
     url(r'^aggregations/',
         cache_page(settings.API_CACHE_SECONDS)(api.activity.views.ActivityAggregations.as_view()),
         name='activity-aggregations'),
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/$',
+    url(r'^(?P<pk>\d+)/$',
         api.activity.views.ActivityDetail.as_view(),
         name='activity-detail'),
-
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/$',
+    url(r'^(?P<iati_identifier>[\w-]+)/$',
+        api.activity.views.ActivityDetailByIatiIdentifier.as_view(),
+        name='activity-detail-by-iati-identifier'),
+    url(r'^(?P<pk>\d+)/transactions/$',
         api.activity.views.ActivityTransactionList.as_view(),
         name='activity-transactions'),
 
-    url(r'^(?P<pk>[^@$&+,/:;=?]+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
+    url(r'^(?P<pk>\d+)/transactions/(?P<id>[^@$&+,/:;=?]+)$',
         api.activity.views.ActivityTransactionDetail.as_view(),
         name='activity-transaction-detail'),
 ]
