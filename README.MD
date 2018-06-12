@@ -51,6 +51,21 @@ For more detailed information, see the [install documentation](http://docs.oipa.
 
 Yes please! We are mainly looking for coders to help on the project. If you are a coder feel free to *Fork* the repository and send us Pull requests!
 
+## How should I contribute?
+--------
+
+Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP 8</a> code style guidelines, so it's difficult to add something to it, but there are certain key points to follow when contributing:
+
+* <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP 8</a> code style guidelines should _always_ be followed
+* When making commits, in the first line try to summarize changes (in around 50 characters or less) and in the message body (if needed) try to explain _what_ you did, and, most importantly, _why_. Try to avoid commit messages like "Moving to Python 3" or "Fixed bugs". Other developers should be able to understand _why_ the change was made!
+* Always try to reference issues ("related to #614", "closes #619" and etc.)
+* Avoid huge code commits where the difference can not even be rendered by browser based web apps (Github for example). Smaller commit make it much easier to understand why the change was made, why (if) it resulted in certain bugs and etc
+* When developing new feature, write at least some basic tests for it. This helps not to break other things in the future
+* If there's a reason to commit code that is commented out (there usually should be none), always leave a "FIXME" or "TODO" comment so it's clear for other developers _why_ this was done
+* When using external dependencies that are not in PyPI (from Github for example), stick to a particular commit (i. e. `git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor`), so if the library is updated, it doesn't break everything
+* In the near future, automatic code quality / testing checks (continuous integration tools) will be implemented to check all these things automatically when pushing / merging new branches. Quality is the key!
+* These rules are to be extended
+
 ## Running the tests
 -------
 To run the tests, log into the vagrant machine and run:
