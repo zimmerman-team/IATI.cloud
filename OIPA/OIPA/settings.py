@@ -298,43 +298,44 @@ CACHES = {
 
 OIPA_LOG_LEVEL = env.get('OIPA_LOG_LEVEL', 'INFO')
 
+# FIXME: lots of settings there are hardcoded, make this more reusable:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'  # NOQA: E501
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
     'handlers': {
-        'console': {
-            'level': OIPA_LOG_LEVEL,
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
+        # Include the default Django email handler for errors
+        # This is what you'd get without configuring logging at all.
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+             # But the emails are plain text by default - HTML is nicer
+            'include_html': True,
+        },
+        # Log to a text file that can be rotated by logrotate
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': '/var/log/oipa/oipa.log'
+        },
     },
     'loggers': {
-        '': {
-            'handlers': ['console'],
+        # Again, default Django configuration to email unhandled exceptions
+        'django.request': {
+            'handlers': ['logfile'],
+            'level': 'ERROR',
             'propagate': True,
-            'level': OIPA_LOG_LEVEL
         },
-
+        # Might as well log any errors anywhere else in Django
         'django': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': OIPA_LOG_LEVEL
-        }
-    }
+            'handlers': ['logfile'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'oipa': {
+            'handlers': ['logfile'],
+            'level': 'WARNING', # Or maybe INFO or DEBUG
+            'propagate': False
+        },
+    },
 }
 
 REST_FRAMEWORK_EXTENSIONS = {
