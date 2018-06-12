@@ -54,10 +54,10 @@ Yes please! We are mainly looking for coders to help on the project. If you are 
 ## How should I contribute?
 --------
 
-Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP 8</a> code style guidelines, so it's difficult add something to it, but there are certain key points to follow when contributing:
+Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP 8</a> code style guidelines, so it's difficult to add something to it, but there are certain key points to follow when contributing:
 
 * <a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP 8</a> code style guidelines should _always_ be followed
-* When making commits, in the first line try to summarize changes (in around 50 characters or less) and in the message body try to explain _what_ you did, and, most importantly, _why_. Try to avoid commit messages like "Moving to Python 3" or "Fixed bugs". Other developers should be able to understand _why_ the change was made!
+* When making commits, in the first line try to summarize changes (in around 50 characters or less) and in the message body (if needed) try to explain _what_ you did, and, most importantly, _why_. Try to avoid commit messages like "Moving to Python 3" or "Fixed bugs". Other developers should be able to understand _why_ the change was made!
 * Always try to reference issues ("related to #614", "closes #619" and etc.)
 * Avoid huge code commits where the difference can not even be rendered by browser based web apps (Github for example). Smaller commit make it much easier to understand why the change was made, why (if) it resulted in certain bugs and etc
 * When developing new feature, write at least some basic tests for it. This helps not to break other things in the future
