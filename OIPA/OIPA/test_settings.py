@@ -1,6 +1,6 @@
 from OIPA.production_settings import *  # noqa: F401, F403
 
-SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
+SPATIALITE_LIBRARY_PATH = '/usr/local/lib/mod_spatialite.dylib'
 
 DATABASES = {
     'default': {
