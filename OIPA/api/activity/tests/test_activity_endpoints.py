@@ -12,11 +12,15 @@ from iati.permissions.factories import OrganisationAdminGroupFactory, Organisati
 class TestActivityEndpoints(APITestCase):
     rf = RequestFactory()
     c = APIClient()
+    activity = None
 
     def setUp(self):
         user = OrganisationUserFactory.create(user__username='test1')
 
         self.c.force_authenticate(user.user)
+
+        self.activity = \
+            iati_factory.ActivityFactory.create(iati_identifier='activity_id')
 
     def test_activities_endpoint(self):
         url = reverse('activities:activity-list')
@@ -26,11 +30,9 @@ class TestActivityEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_activity_detail_endpoint(self):
-        activity = \
-            iati_factory.ActivityFactory.create(iati_identifier='activity_id')
-        url = reverse('activities:activity-detail', args={activity.pk})
+        url = reverse('activities:activity-detail', args={self.activity.pk})
         msg = 'activity detail endpoint should be located at {0}'
-        expect_url = '/api/activities/{}/'.format(activity.pk)
+        expect_url = '/api/activities/{}/'.format(self.activity.pk)
         assert url == expect_url, msg.format(expect_url)
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
@@ -56,9 +58,11 @@ class TestActivityEndpoints(APITestCase):
         self.assertTrue(status.is_success(response.status_code))
 
     def test_transactions_endpoint(self):
-        url = reverse('activities:activity-transactions', args={'activity_id'})
+        url = reverse('activities:activity-transactions',
+                      args={self.activity.pk})
         msg = 'activity transactions endpoint should be located at {0}'
-        expect_url = '/api/activities/activity_id/transactions/'
+        expect_url = \
+            '/api/activities/{}/transactions/'.format(self.activity.pk)
         assert url == expect_url, msg.format(expect_url)
         response = self.c.get(url)
         self.assertTrue(status.is_success(response.status_code))
