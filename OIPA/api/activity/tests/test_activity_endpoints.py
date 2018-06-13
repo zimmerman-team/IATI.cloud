@@ -12,7 +12,6 @@ from iati.permissions.factories import OrganisationAdminGroupFactory, Organisati
 class TestActivityEndpoints(APITestCase):
     rf = RequestFactory()
     c = APIClient()
-    activity = None
 
     def setUp(self):
         user = OrganisationUserFactory.create(user__username='test1')
