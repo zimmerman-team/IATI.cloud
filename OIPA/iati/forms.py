@@ -1,11 +1,12 @@
 from django import forms
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.forms import ModelForm
 
-from iati.models import (Activity, ActivityParticipatingOrganisation, ActivityReportingOrganisation, DocumentLink,
-                         Location, Narrative, RelatedActivity)
+from iati.models import (
+    Activity, ActivityParticipatingOrganisation, ActivityReportingOrganisation,
+    DocumentLink, Location, Narrative, RelatedActivity
+)
 
 
 class NarrativeForm(ModelForm):
@@ -19,7 +20,8 @@ class NarrativeForm(ModelForm):
     def clean(self):
         # Then call the clean() method of the super  class
         cleaned_data = super(NarrativeForm, self).clean()
-        # activity somehow is invalidated here, so re-setting it to the correct activity
+        # activity somehow is invalidated here, so re-setting it to the
+        # correct activity
         try:
             cleaned_data['activity'] = self.instance.activity
         except ObjectDoesNotExist:
@@ -64,14 +66,6 @@ class ActivityParticipatingOrganisationForm(forms.ModelForm):
         if data['ref']:
             data['normalized_ref'] = data['ref']
         return data
-
-
-class DocumentLinkTitleForm(ModelForm):
-
-    def save(self, commit=True):
-        instance = super(DocumentLinkTitleForm, self).save(commit=False)
-        instance.save()
-        return instance
 
 
 class DocumentLinkForm(ModelForm):

@@ -1,17 +1,35 @@
 import datetime
 
+import nested_admin
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html
 
-import nested_admin
-from iati.activity_aggregation_calculation import ActivityAggregationCalculation
-from iati.forms import (ActivityParticipatingOrganisationForm, ActivityReportingOrganisationForm, DocumentLinkForm,
-                        DocumentLinkTitleForm, LocationForm, NarrativeForm, RelatedActivityForm)
-from iati.models import *
+from iati.activity_aggregation_calculation import (
+    ActivityAggregationCalculation
+)
+from iati.forms import (
+    ActivityParticipatingOrganisationForm, ActivityReportingOrganisationForm,
+    DocumentLinkForm, LocationForm, NarrativeForm, RelatedActivityForm
+)
+from iati.models import (
+    Activity, ActivityDate, ActivityParticipatingOrganisation,
+    ActivityPolicyMarker, ActivityRecipientCountry, ActivityRecipientRegion,
+    ActivityReportingOrganisation, ActivitySector, Budget, BudgetSector,
+    Description, DocumentLink, DocumentLinkCategory, DocumentLinkTitle,
+    Location, Narrative, RelatedActivity, Result, ResultDescription,
+    ResultIndicator, ResultIndicatorBaselineComment,
+    ResultIndicatorDescription, ResultIndicatorPeriod,
+    ResultIndicatorPeriodActualComment, ResultIndicatorPeriodTargetComment,
+    ResultIndicatorTitle, ResultTitle, Title
+)
 from iati.parser import post_save
-from iati.transaction.models import *
+from iati.transaction.models import (
+    Transaction, TransactionDescription, TransactionProvider,
+    TransactionReceiver, TransactionRecipientCountry,
+    TransactionRecipientRegion, TransactionSector
+)
 
 
 class NarrativeInline(GenericTabularInline):
@@ -149,24 +167,24 @@ class TransactionInline(nested_admin.NestedStackedInline):
     def transaction_provider(self, obj):
         try:
             return obj.provider_organisation.narratives.all()[0].content
-        except Exception as e:
+        except Exception:
             return 'no provider name'
 
     def transaction_receiver(self, obj):
         try:
             return obj.receiver_organisation.narratives.all()[0].content
-        except Exception as e:
+        except Exception:
             return 'no receiver name'
 
     def edit_transaction(self, obj):
 
         if obj.id:
             return format_html(
-                '<a href="/admin/iati/transaction/{}/" onclick="return showAddAnotherPopup(this);">Edit details</a>',
+                '<a href="/admin/iati/transaction/{}/" onclick="return showAddAnotherPopup(this);">Edit details</a>',  # NOQA: E501
                 str(obj.id))
         else:
             return format_html(
-                'Please save the activity to edit receiver/provider details')
+                'Please save the activity to edit receiver/provider details')  # NOQA: E501
 
     extra = 6
 
@@ -231,16 +249,12 @@ class DocumentLinkTitleInline(nested_admin.NestedStackedInline):
         NarrativeInline,
     ]
 
-    # form = DocumentLinkTitleForm
-
     extra = 1
 
 
 class DocumentLinkInline(nested_admin.NestedStackedInline):
     inlines = [DocumentLinkTitleInline, DocumentCategoryInline]
     model = DocumentLink
-    # classes = ('collapse open',)
-    # inline_classes = ('collapse open',)
     extra = 4
 
     form = DocumentLinkForm
@@ -259,24 +273,26 @@ class ResultInline(nested_admin.NestedStackedInline):
     def read_title(self, obj):
         try:
             return obj.title.narratives.all()[0].content
-        except Exception as e:
+        except Exception:
             return 'no title given'
 
     def read_description(self, obj):
         try:
             return obj.title.narratives.all()[0].content
-        except Exception as e:
+        except Exception:
             return 'no title given'
 
     def edit_result(self, obj):
 
         if obj.id:
             return format_html(
-                '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',
+                '<a href="/admin/iati/result/{}/" onclick="return showAddAnotherPopup(this);">Edit</a>',  # NOQA: E501
                 str(obj.id))
         else:
             return format_html(
-                'Please save the activity to edit result details and to add indicator periods')
+                'Please save the activity to edit result details and to add '
+                'indicator periods'
+            )
 
 
 class LocationInline(nested_admin.NestedStackedInline):
@@ -389,7 +405,8 @@ class ActivityAdmin(nested_admin.NestedModelAdmin):
             for entry in formset.cleaned_data:
                 if entry and entry['id'] is None:
                     if isinstance(formset.instance, DocumentLinkTitle):
-                        formset.instance.document_link_id = formset.instance.document_link.id
+                        formset.instance.document_link_id = formset\
+                            .instance.document_link.id
                         formset.instance.save()
                     entry['activity'] = self.act
 
@@ -484,18 +501,6 @@ class TransactionAdmin(nested_admin.NestedModelAdmin):
 
     def get_object(self, request, object_id, from_field=None):
         obj = super(TransactionAdmin, self).get_object(request, object_id)
-
-        # if not getattr(obj, 'receiver_organisation', None):
-        #     transaction_receiver = TransactionReceiver()
-        #     transaction_receiver.transaction = obj
-        #     transaction_receiver.save()
-        #     obj.receiver_organisation = transaction_receiver
-        #
-        # if not getattr(obj, 'provider_organisation', None):
-        #     transaction_provider = TransactionProvider()
-        #     transaction_provider.transaction = obj
-        #     transaction_provider.save()
-        #     obj.provider_organisation = transaction_provider
 
         self.act = obj.activity
 
@@ -739,18 +744,32 @@ class ResultAdmin(nested_admin.NestedModelAdmin):
 
         if formset.model == ResultIndicatorPeriodActualComment:
             try:
-                if formset.instance.resultindicatorperiodactualcomment.id is None:
-                    if formset.instance.resultindicatorperiodactualcomment.result_indicator_period_id is None:
-                        formset.instance.resultindicatorperiodactualcomment.result_indicator_period_id = formset.instance.resultindicatorperiodactualcomment.result_indicator_period.id
+                if formset.instance.resultindicatorperiodactualcomment.id \
+                        is None:
+                    if formset.instance.resultindicatorperiodactualcomment\
+                            .result_indicator_period_id is None:
+                        formset.instance.resultindicatorperiodactualcomment\
+                            .result_indicator_period_id = formset\
+                            .instance.resultindicatorperiodactualcomment\
+                            .result_indicator_period.id
                     formset.instance.resultindicatorperiodactualcomment.save()
             except ObjectDoesNotExist:
                 pass
 
         if formset.model == ResultIndicatorPeriodTargetComment:
             try:
-                if formset.instance.resultindicatorperiodtargetcomment.id is None:
-                    if formset.instance.resultindicatorperiodtargetcomment.result_indicator_period_id is None:
-                        formset.instance.resultindicatorperiodtargetcomment.result_indicator_period_id = formset.instance.resultindicatorperiodtargetcomment.result_indicator_period.id
+                if formset.instance.resultindicatorperiodtargetcomment.id \
+                        is None:
+                    if formset.instance.resultindicatorperiodtargetcomment\
+                            .result_indicator_period_id is None:
+                        formset\
+                            .instance\
+                            .resultindicatorperiodtargetcomment\
+                            .result_indicator_period_id = formset\
+                            .instance\
+                            .resultindicatorperiodtargetcomment\
+                            .result_indicator_period\
+                            .id
                     formset.instance.resultindicatorperiodtargetcomment.save()
             except ObjectDoesNotExist:
                 pass
@@ -768,7 +787,8 @@ class ResultAdmin(nested_admin.NestedModelAdmin):
                 if formset.instance.resultindicatordescription.id is None:
                     if formset.instance.id is None:
                         formset.instance.save()
-                        formset.instance.resultindicatordescription.result_indicator = formset.instance
+                        formset.instance.resultindicatordescription\
+                            .result_indicator = formset.instance
                     formset.instance.resultindicatordescription.save()
             except ObjectDoesNotExist:
                 pass
