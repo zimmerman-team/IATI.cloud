@@ -192,7 +192,8 @@ INSTALLED_APPS = [
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
-    'django_filters'
+    'django_filters',
+    'nested_admin',
 ]
 
 ADMIN_REORDER = (
