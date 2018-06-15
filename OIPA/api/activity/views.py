@@ -514,11 +514,11 @@ class ActivityTransactionList(DynamicListView):
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
 
-    # TODO: Create cached logic fo this class
+    # TODO: Create cached logic for this class
     """
     This class has unique URL so not compatible the rest_framework_extensions
     cached. We should make a Params Key Constructor function 
-    then override the default below function, then will be like below:
+    then override the default below function and will be like below:
    
     @cache_response(key_func=YourQueryParamsKeyConstructor())    
     def get(self, request, *args, **kwargs):
