@@ -99,7 +99,7 @@ class TransactionFilter(FilterSet):
     #
 
     activity_id = CommaSeparatedCharFilter(
-        name='activity__id',
+        name='activity__iati_identifier',
         lookup_expr='in')
 
     iati_identifier = CommaSeparatedCharFilter(
