@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from rest_framework_extensions.cache.decorators import cache_response
 
 from api.generics.views import SaveAllSerializer
 from api.activity import serializers as activity_serializers
@@ -467,7 +468,7 @@ class ActivityDetailByIatiIdentifier(CacheResponseMixin, DynamicDetailView):
     lookup_field = 'iati_identifier'
 
 
-class ActivityTransactionList(CacheResponseMixin, DynamicListView):
+class ActivityTransactionList(DynamicListView):
     """
     Returns a list of IATI Activity Transactions stored in OIPA.
 
@@ -512,9 +513,21 @@ class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     """
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
-    list_cache_key_func = QueryParamsKeyConstructor()
+
+    # TODO: Create cached logic for this class
+    """
+    This class has unique URL so not compatible the rest_framework_extensions
+    cached. We should make a Params Key Constructor function 
+    then override the default below function and will be like below:
+   
+    @cache_response(key_func=YourQueryParamsKeyConstructor())    
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    """
 
     def get_queryset(self):
+        # Override default get query to get transaction list by primary key of
+        # the activity
         pk = self.kwargs.get('pk')
         try:
             return Activity.objects.get(pk=pk).\
