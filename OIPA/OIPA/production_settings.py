@@ -1,6 +1,10 @@
 import os
 
+from dotenv import find_dotenv, load_dotenv
+
 from OIPA.settings import *  # NOQA: F401, F403
+
+load_dotenv(find_dotenv())
 
 DATABASES = {
     'default': {
