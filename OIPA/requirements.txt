@@ -103,6 +103,9 @@ ipdb==0.11
 # Code profiling:
 yet_another_django_profiler==1.1.0
 
+# JSON logs for DataDog logging interface:
+python-json-logger==0.1.9
+
 ################
 # Code quality #
 ################
