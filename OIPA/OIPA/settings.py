@@ -22,12 +22,12 @@ DATABASES = {
         'ENGINE': env.get(
             'OIPA_DB_ENGINE', 'django.contrib.gis.db.backends.postgis'
         ),
-        'HOST': env.get('OIPA_DB_HOST', 'localhost'),
-        'PORT': env.get('OIPA_DB_PORT', '5432'),
-        'NAME': env.get('OIPA_DB_NAME', 'oipa'),
-        'USER': env.get('OIPA_DB_USER', 'oipa'),
-        'PASSWORD': env.get('OIPA_DB_PASSWORD', 'oipa'),
-        'CONN_MAX_AGE': int(env.get('OIPA_DB_CONN_MAX_AGE', 500))
+        'HOST': os.getenv('OIPA_DB_HOST', 'localhost'),
+        'PORT': os.getenv('OIPA_DB_PORT', 5432),
+        'NAME': os.getenv('OIPA_DB_NAME', 'oipa'),
+        'USER': os.getenv('OIPA_DB_USER', 'oipa'),
+        'PASSWORD': os.getenv('OIPA_DB_PASSWORD', 'oipa'),
+        'CONN_MAX_AGE': int(os.getenv('OIPA_DB_CONN_MAX_AGE', 500))
     },
 }
 
@@ -343,8 +343,3 @@ REST_FRAMEWORK_EXTENSIONS = {
     # reset cache every x seconds:
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
-
-try:
-    from local_settings import *  # noqa: F401, F403
-except ImportError:
-    pass
