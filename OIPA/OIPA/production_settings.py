@@ -30,19 +30,19 @@ LOGGING = {
         'oipa-json-logfile': {
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/var/log/oipa-logs/oipa-json.log',
+            'filename': '/var/log/oipa/oipa/oipa-json.log',
             'formatter': 'json',
         },
         'iati-parser-json-logfile': {
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/var/log/oipa-logs/iati-parser-json.log',
+            'filename': '/var/log/oipa/oipa/iati-parser-json.log',
             'formatter': 'json',
         },
         'django-json-logfile': {
             'level': OIPA_LOG_LEVEL,  # NOQA: F405
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/var/log/oipa-logs/django-json.log',
+            'filename': '/var/log/oipa/oipa/django-json.log',
             'formatter': 'json',
         },
     },
