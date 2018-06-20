@@ -255,7 +255,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `recipient_region` (*optional*): Comma separated list of region codes.
     - `sector` (*optional*): Comma separated list of 5-digit sector codes.
     - `sector_category` (*optional*): Comma separated list of 3-digit sector codes.
-    - `reporting_organisation` (*optional*): Comma separated list of organisation id's.
+    - `reporting_organisation` (*optional*): Comma separated list of reporting organisation IATI identifiers.
     - `participating_organisation` (*optional*): Comma separated list of organisation id's.
     - `total_budget_value_lte` (*optional*): Less then or equal total budget value
     - `total_budget_value_gte` (*optional*): Greater then or equal total budget value
@@ -517,10 +517,10 @@ class ActivityTransactionList(DynamicListView):
     # TODO: Create cached logic for this class
     """
     This class has unique URL so not compatible the rest_framework_extensions
-    cached. We should make a Params Key Constructor function 
+    cached. We should make a Params Key Constructor function
     then override the default below function and will be like below:
-   
-    @cache_response(key_func=YourQueryParamsKeyConstructor())    
+
+    @cache_response(key_func=YourQueryParamsKeyConstructor())
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
     """
