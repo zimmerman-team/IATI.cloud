@@ -94,6 +94,17 @@ class OrganisationFactory(NoDatabaseFactory):
     name = RelatedFactory(OrganisationNameFactory, 'organisation')
 
 
+class ActivityReportingOrganisationFactory(NoDatabaseFactory):
+    ref = 'US-EIN-262681792'
+
+    activity = SubFactory(ActivityFactory)
+    organisation = SubFactory(OrganisationFactory)
+
+    class Meta:
+        model = iati.models.ActivityReportingOrganisation
+        django_get_or_create = ('ref', )
+
+
 class RegionFactory(NoDatabaseFactory):
     class Meta:
         model = geodata.models.Region
