@@ -20,3 +20,13 @@ SECRET_KEY = '__DEV_SECRET_KEY__'
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
 }
+
+# Don't cache anything when developing:
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    'api': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+}
