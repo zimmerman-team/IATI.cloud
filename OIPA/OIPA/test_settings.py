@@ -11,3 +11,13 @@ DATABASES = {
 
 FTS_ENABLED = False
 CKAN_URL = "https://iati-staging.ckan.io"
+
+# Don't cache anything when testing:
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    'api': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+}
