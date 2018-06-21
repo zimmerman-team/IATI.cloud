@@ -50,7 +50,9 @@ class PublisherSerializer(DynamicFieldsModelSerializer):
     def get_activities(self, obj):
         request = self.context.get('request')
         url = request.build_absolute_uri(reverse('activities:activity-list'))
-        return url + '?reporting_organisation=' + obj.publisher_iati_id
+        return (url
+                + '?reporting_organisation_identifier='
+                + obj.publisher_iati_id)
 
     def get_activity_count(self, obj):
         return Activity.objects.filter(
