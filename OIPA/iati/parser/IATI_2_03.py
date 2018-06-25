@@ -3268,17 +3268,14 @@ class Parse(IatiParser):
         except Exception as e:
             value = None
 
-        if value is None:
-            raise RequiredFieldError(
-                "result/indicator/period/actual",
-                "value",
-                "required attribute missing (this error might be incorrect, "
-                "xsd:decimal is used to check instead of xsd:string)")
+        if value:
+            result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+            result_indicator_period.actual = value
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-        result_indicator_period.actual = value
+            self.register_model(
+                'ResultIndicatorPeriod', result_indicator_period
+            )
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
