@@ -262,7 +262,6 @@ class IatiParser(object):
         x_path = self.root.getroottree().getpath(element)
         function_name = self.generate_function_name(x_path)
 
-        # All these custom errors come from parser (IATI_2_03.py, etc.):
         if hasattr(self, function_name)\
                 and callable(getattr(self, function_name)):
             element_method = getattr(self, function_name)
