@@ -11,6 +11,7 @@ from iati.parser.IATI_1_03 import Parse as IATI_103_Parser
 from iati.parser.IATI_1_05 import Parse as IATI_105_Parser
 from iati.parser.IATI_2_01 import Parse as IATI_201_Parser
 from iati.parser.IATI_2_02 import Parse as IATI_202_Parser
+from iati.parser.IATI_2_03 import Parse as IATI_203_Parser
 from iati_organisation.parser.organisation_1_05 import Parse as Org_1_05_Parser
 from iati_organisation.parser.organisation_2_01 import Parse as Org_2_01_Parser
 
@@ -116,25 +117,39 @@ class ParseManager():
             iati_version = iati_version[0]
         # activity file
         if dataset.filetype == 1:
-            if iati_version == '2.02':
+            if iati_version == '2.03':
+                parser = IATI_203_Parser(root)
+
+            elif iati_version == '2.02':
                 parser = IATI_202_Parser(root)
+
             elif iati_version == '2.01':
                 parser = IATI_201_Parser(root)
+
             elif iati_version == '1.03':
                 parser = IATI_103_Parser(root)
                 parser.VERSION = iati_version
+
             else:
                 parser = IATI_105_Parser(root)
                 parser.VERSION = '1.05'
 
         # organisation file
         elif dataset.filetype == 2:
-            if iati_version == '2.02':
+            if iati_version == '2.03':
+                # FIXME: IATI organisation parser is 2.01!:
                 parser = Org_2_01_Parser(root)
                 parser.VERSION = iati_version
+
+            elif iati_version == '2.02':
+                # FIXME: IATI organisation parser is 2.01!:
+                parser = Org_2_01_Parser(root)
+                parser.VERSION = iati_version
+
             elif iati_version == '2.01':
                 parser = Org_2_01_Parser(root)
                 parser.VERSION = iati_version
+
             else:
                 parser = Org_1_05_Parser(root)
 
