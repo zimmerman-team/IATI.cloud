@@ -121,7 +121,12 @@ class DatasetNote(models.Model):
 class Codelist(models.Model):
     name = models.CharField(primary_key=True, max_length=100)
     description = models.TextField(max_length=1000, blank=True, null=True)
-    count = models.CharField(max_length=10, blank=True, null=True)
+    count = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text='Count of different codes in this codelist',
+    )
     fields = models.CharField(max_length=255, blank=True, null=True)
     date_updated = models.DateTimeField(
         default=datetime.datetime.now, editable=False)
