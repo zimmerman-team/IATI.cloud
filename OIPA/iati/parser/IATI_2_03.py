@@ -3153,7 +3153,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/period/period/target",
                 "value",
-                "required attribute missing (this error might be incorrect, "
+                "required attribute missing or it's not possible to convert "
+                "it to Decimal (this error might be incorrect, "
                 "xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
