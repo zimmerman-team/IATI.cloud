@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 class IatiParser(object):
     # default version
-    VERSION = '2.02'
+    VERSION = '2.03'
 
     def __init__(self, root):
         self.logged_functions = []
