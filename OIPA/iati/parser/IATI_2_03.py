@@ -51,8 +51,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 register_name,
                 "xml:lang",
-                "must specify xml:lang on iati-activity or xml:lang on the \
-                element itself")
+                "must specify xml:lang on iati-activity or xml:lang on the "
+                "element itself")
         if not text:
             raise RequiredFieldError(
                 register_name,
@@ -162,8 +162,8 @@ class Parse(IatiParser):
                 raise FieldValidationError(
                     "iati-activity",
                     "last-updated-datetime",
-                    "last-updated-time is not present, but is present on \
-                            existing activity",
+                    "last-updated-time is not present, but is present on "
+                    "existing activity",
                     None,
                     element.sourceline,
                     activity_id,
@@ -591,8 +591,8 @@ class Parse(IatiParser):
                 raise FieldValidationError(
                     "activity-date",
                     "iso-date",
-                    "All instances of the ActivityDateType code 2 & 4 (actual \
-                            dates) are not expected to be in the future",
+                    "All instances of the ActivityDateType code 2 & 4 (actual "
+                    "dates) are not expected to be in the future",
                     None,
                     None,
                     str(iso_date))
@@ -3007,15 +3007,15 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "year",
-                "required attribute missing (should be of type \
-                        xsd:positiveInteger with format (yyyy))")
+                "required attribute missing (should be of type "
+                "xsd:positiveInteger with format (yyyy))")
 
         if value is None:
             raise RequiredFieldError(
                 "result/indicator/baseline",
                 "value",
-                "required attribute missing (note; xsd:decimal is used to \
-                        check instead of xsd:string)")
+                "required attribute missing (note; xsd:decimal is used to "
+                "check instead of xsd:string)")
 
         result_indicator = self.pop_model('ResultIndicator')
         result_indicator.baseline_year = year
@@ -3158,8 +3158,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/period/period/target",
                 "value",
-                "required attribute missing (this error might be incorrect, \
-                        xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (this error might be incorrect, "
+                "xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.target = value
@@ -3187,8 +3187,8 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/period/target/location",
                 "ref",
-                "referenced location does not exist in a location element of \
-                        this activity",
+                "referenced location does not exist in a location element of "
+                "this activity",
                 None,
                 None,
                 ref)
@@ -3272,8 +3272,8 @@ class Parse(IatiParser):
             raise RequiredFieldError(
                 "result/indicator/period/actual",
                 "value",
-                "required attribute missing (this error might be incorrect, \
-                        xsd:decimal is used to check instead of xsd:string)")
+                "required attribute missing (this error might be incorrect, "
+                "xsd:decimal is used to check instead of xsd:string)")
 
         result_indicator_period = self.pop_model('ResultIndicatorPeriod')
         result_indicator_period.actual = value
@@ -3298,8 +3298,8 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "result/indicator/period/actual/location",
                 "ref",
-                "referenced location does not exist in a location element of \
-                        this activity",
+                "referenced location does not exist in a location element of "
+                "this activity",
                 None,
                 None,
                 ref)
