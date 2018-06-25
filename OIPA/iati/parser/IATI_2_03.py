@@ -3010,18 +3010,13 @@ class Parse(IatiParser):
                 "required attribute missing (should be of type "
                 "xsd:positiveInteger with format (yyyy))")
 
-        if value is None:
-            raise RequiredFieldError(
-                "result/indicator/baseline",
-                "value",
-                "required attribute missing (note; xsd:decimal is used to "
-                "check instead of xsd:string)")
+        if value:
+            result_indicator = self.pop_model('ResultIndicator')
+            result_indicator.baseline_year = year
+            result_indicator.baseline_value = value
 
-        result_indicator = self.pop_model('ResultIndicator')
-        result_indicator.baseline_year = year
-        result_indicator.baseline_value = value
+            self.register_model('ResultIndicator', result_indicator)
 
-        self.register_model('ResultIndicator', result_indicator)
         return element
 
     # """attributes:
