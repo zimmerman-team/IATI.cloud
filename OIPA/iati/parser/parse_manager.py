@@ -46,7 +46,9 @@ class ParseManager():
         response = file_grabber.get_the_file(self.url)
 
         from iati_synchroniser.models import DatasetNote
-        if not response or response.status_code != 200:
+        if (not response
+                or response.status_code != 200
+                or 'xml' not in response.headers['Content-Type']):
             self.valid_dataset = False
             note = DatasetNote(
                 dataset=self.dataset,
