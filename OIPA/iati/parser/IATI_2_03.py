@@ -2758,6 +2758,11 @@ class Parse(IatiParser):
             codelist_models.RelatedActivityType, code=ra_type_code)
         ref = element.attrib.get('ref')
 
+        # At least remove starting / ending spaces from iati_identifier
+        # TODO: validate with regex:
+        if ref:
+            ref = ref.lstrip().rstrip()
+
         if not ra_type_code:
             raise RequiredFieldError(
                 "related-activity",
