@@ -89,6 +89,8 @@ class ParseManager():
             if settings.ERROR_LOGS_ENABLED:
                 self.xsd_validate()
 
+        # TODO: when moving error messages to frontend, create a separate error
+        # for wrong file type:
         except etree.XMLSyntaxError as e:
             self.valid_dataset = False
             DatasetNote.objects.filter(dataset=self.dataset).delete()
@@ -97,7 +99,8 @@ class ParseManager():
                 iati_identifier="n/a",
                 model="n/a",
                 field="n/a",
-                message="This file contains XML syntax errors",
+                message="This file contains XML syntax errors or it's not an "
+                        "XML file",
                 exception_type='XMLSyntaxError',
                 line_number=None
             )
