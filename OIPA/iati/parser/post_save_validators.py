@@ -90,10 +90,9 @@ def use_sector_or_transaction_sector(self, a):
     reported per vocabulary.
 
     """
-    direct_count = a.activitysector_set.filter(sector__vocabulary='1').count()
+    direct_count = a.activitysector_set.count()
     indirect_count = a.transaction_set.filter(
         transaction_sector__isnull=False,
-        transaction_sector__sector__vocabulary='1',
     ).count()
 
     if direct_count and indirect_count:
