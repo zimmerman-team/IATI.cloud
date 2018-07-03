@@ -36,6 +36,7 @@ class CodeListImporter():
         self.get_codelist_data(name="BudgetIdentifierSector-category")
         self.get_codelist_data(name="BudgetIdentifierSector")
         self.get_codelist_data(name="LocationType-category")
+        self.get_codelist_data(name="FinanceType")
         self.get_codelist_data(name="FinanceType-category")
         self.get_codelist_data(name="AidType-category")
         self.get_codelist_data(name="DocumentCategory-category")
@@ -101,6 +102,9 @@ class CodeListImporter():
 
         elif tag == "BudgetIdentifierSector-category":
             model_name = 'BudgetIdentifierSectorCategory'
+
+        elif tag == "FinanceType":
+            model_name = 'FinanceType'
 
         elif tag == "FinanceType-category":
             model_name = 'FinanceTypeCategory'
