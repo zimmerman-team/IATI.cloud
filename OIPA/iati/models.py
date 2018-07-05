@@ -13,7 +13,7 @@ from djorm_pgfulltext.fields import VectorField
 from geodata.models import Country, Region
 from iati_codelists.models import (
     ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
-    BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
+    BudgetStatus, BudgetType, CRSChannelCode, CollaborationType, ConditionType, ContactType,
     Currency, DescriptionType, DocumentCategory, FileFormat, FinanceType,
     FlowType, GeographicExactness, GeographicLocationClass,
     GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language,
@@ -566,6 +566,12 @@ class ActivityParticipatingOrganisation(models.Model):
 
     # TODO: Workaround for IATI ref limitation - 2015-11-26
     primary_name = models.TextField(blank=True)
+
+    crs_channel_code = models.ForeignKey(
+        CRSChannelCode,
+        null=True,
+        on_delete=models.CASCADE
+    )
 
     def __unicode__(self,):
         return "name: %s - role: %s" % (self.primary_name, self.role)
