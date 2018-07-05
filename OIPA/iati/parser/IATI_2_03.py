@@ -2260,11 +2260,23 @@ class Parse(IatiParser):
         ref:BB-BBB-123456789
 
         tag:provider-org"""
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
+        transaction = self.get_model('Transaction')
+        transaction_provider = transaction_models.TransactionProvider()
 
+        transaction.save()
+        transaction_provider.transaction = transaction
+
+        # Let's set other attributes in this older function (where, with the
+        # previous implementation, model isn't supposed to be saved yet):
         return provider_org(
             self,
-            self.get_model('Transaction'),
-            transaction_models.TransactionProvider(),
+            transaction,
+            transaction_provider,
             'transaction',
         )(element)
 
