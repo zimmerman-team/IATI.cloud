@@ -241,10 +241,12 @@ class CodeListImporter():
     def get_codelist_data(self, elem=None, name=None):
 
         if not name:
-            name = self.return_first(elem.xpath('name/text()'))
-            description = self.return_first(elem.xpath('description/text()'))
-            count = self.return_first(elem.xpath('count/text()'))
-            fields = self.return_first(elem.xpath('fields/text()'))
+            name = smart_text(self.return_first(elem.xpath('name/text()')))
+            description = smart_text(
+                self.return_first(elem.xpath('description/text()'))
+            )
+            count = smart_text(self.return_first(elem.xpath('count/text()')))
+            fields = smart_text(self.return_first(elem.xpath('fields/text()')))
             date_updated = datetime.datetime.now()
 
             if Codelist.objects.filter(name=name).exists():
