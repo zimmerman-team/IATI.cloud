@@ -1700,7 +1700,7 @@ class Parse(IatiParser):
         default_tied_status = self.get_or_none(
             codelist_models.TiedStatus, code=code)
 
-        if not code:
+        if not code or not code.isdigit():
             raise RequiredFieldError(
                 "default-tied-status",
                 "code",
