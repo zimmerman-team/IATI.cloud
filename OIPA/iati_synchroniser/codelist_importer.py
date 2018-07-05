@@ -10,7 +10,8 @@ from lxml import etree
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
-    FileFormat, FinanceTypeCategory, OrganisationIdentifier, OrganisationRegistrationAgency, Sector
+    FileFormat, FinanceTypeCategory, OrganisationIdentifier,
+    OrganisationRegistrationAgency, Sector
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.models import Codelist
@@ -35,7 +36,7 @@ class CodeListImporter():
         self.get_codelist_data(name="IndicatorVocabulary")
         self.get_codelist_data(name="BudgetIdentifierSector-category")
         self.get_codelist_data(name="BudgetIdentifierSector")
-        # XXX: this line adds LocationType objects AS WELL ??? :
+        # XXX: this line adds LocationType objects as well? :
         self.get_codelist_data(name="LocationType-category")
         self.get_codelist_data(name="FinanceType-category")
         self.get_codelist_data(name="FinanceType")
