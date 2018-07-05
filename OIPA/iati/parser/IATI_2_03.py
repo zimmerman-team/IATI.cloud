@@ -650,7 +650,14 @@ class Parse(IatiParser):
         """attributes:
 
         tag:organisation"""
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         contact_info = self.get_model('ContactInfo')
+        contact_info.save()
+
         contact_info_organisation = models.ContactInfoOrganisation()
         contact_info_organisation.contact_info = contact_info
         self.register_model('ContactInfoOrganisation',
@@ -785,8 +792,17 @@ class Parse(IatiParser):
         """attributes:
 
         tag:mailing-address"""
+
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         contact_info = self.get_model('ContactInfo')
+        contact_info.save()
+
         contact_info_mailing_address = models.ContactInfoMailingAddress()
+
         contact_info_mailing_address.contact_info = contact_info
         self.register_model('ContactInfoMailingAddress',
                             contact_info_mailing_address)
@@ -2260,6 +2276,7 @@ class Parse(IatiParser):
         ref:BB-BBB-123456789
 
         tag:provider-org"""
+
         # XXX:  this can be ineficient, because previously some hacks were
         # implemented to keep everything in nmemory and save objects only at
         # the end of everything and now we're saving / assigning objects here
@@ -2691,7 +2708,15 @@ class Parse(IatiParser):
         """attributes:
 
         tag:title"""
+
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         document_link = self.get_model('DocumentLink')
+        document_link.save()
+
         document_link_title = models.DocumentLinkTitle()
         document_link_title.document_link = document_link
 
@@ -2732,8 +2757,16 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         document_link = self.get_model('DocumentLink')
+        document_link.save()
+
         document_link_category = models.DocumentLinkCategory()
+
         document_link_category.document_link = document_link
         document_link_category.category = category
 
@@ -2763,8 +2796,16 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         document_link = self.get_model('DocumentLink')
+        document_link.save()
+
         document_link_language = models.DocumentLinkLanguage()
+
         document_link_language.document_link = document_link
         document_link_language.language = language
 
