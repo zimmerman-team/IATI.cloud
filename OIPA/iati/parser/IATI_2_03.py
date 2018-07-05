@@ -337,6 +337,10 @@ class Parse(IatiParser):
         type:40
 
         tag:participating-org"""
+
+        activity = self.get_model('Activity')
+        participating_organisation = models.ActivityParticipatingOrganisation()
+
         ref = element.attrib.get('ref', '')
         activity_id = element.attrib.get('activity-id', None)
 
@@ -352,6 +356,8 @@ class Parse(IatiParser):
             codelist_models.OrganisationType,
             code=element.attrib.get('type'))
 
+        crs_channel_code = element.attrib.get('crs-channel-code', '')
+
         if not role:
             raise RequiredFieldError(
                 "participating-org",
@@ -362,8 +368,29 @@ class Parse(IatiParser):
             self.check_registration_agency_validity(
                 "participating-org", element, ref)
 
-        activity = self.get_model('Activity')
-        participating_organisation = models.ActivityParticipatingOrganisation()
+        # currently according to 2.03 rules this attribute is not required:
+        if crs_channel_code:
+
+            if not crs_channel_code.isdigit():
+                raise RequiredFieldError(
+                    "participating-org",
+                    "crs-channel-code",
+                    "code is invalid")
+
+            ccc_instance = codelist_models.CRSChannelCode.objects.filter(
+                code=crs_channel_code).first()
+
+            if not ccc_instance:
+                raise FieldValidationError(
+                    "participating-org",
+                    "crs-channel-code",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    crs_channel_code)
+
+            participating_organisation.crs_channel_code = ccc_instance
+
         participating_organisation.ref = ref
         participating_organisation.normalized_ref = normalized_ref
         participating_organisation.type = org_type
