@@ -58,8 +58,8 @@ class IatiParser(object):
                 'FieldValidationError',
                 element_name,
                 "ref",
-                "Must be in the format {Registration Agency} - (Registration \
-                        Number}",
+                "Must be in the format {Registration Agency} - (Registration "
+                "Number}",
                 element.sourceline,
                 ref)
 
@@ -93,8 +93,8 @@ class IatiParser(object):
                 raise RequiredFieldError(
                     model_name,
                     "currency",
-                    "must specify default-currency on iati-activity or as \
-                            currency on the element itself")
+                    "must specify default-currency on iati-activity or as "
+                    "currency on the element itself")
 
         return currency
 
