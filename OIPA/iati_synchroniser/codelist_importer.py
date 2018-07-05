@@ -10,7 +10,7 @@ from lxml import etree
 
 from geodata.models import Country, Region
 from iati_codelists.models import (
-    FileFormat, OrganisationIdentifier, OrganisationRegistrationAgency, Sector
+    FileFormat, FinanceTypeCategory, OrganisationIdentifier, OrganisationRegistrationAgency, Sector
 )
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.models import Codelist
@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 class CodeListImporter():
 
     def __init__(self):
-        self.looping_through_version = "2.02"
-        self.iati_versions = ["2.02", ]
+        self.looping_through_version = "2.03"
+        self.iati_versions = ["2.03", ]
 
     def synchronise_with_codelists(self):
         # Do categories first
@@ -35,9 +35,10 @@ class CodeListImporter():
         self.get_codelist_data(name="IndicatorVocabulary")
         self.get_codelist_data(name="BudgetIdentifierSector-category")
         self.get_codelist_data(name="BudgetIdentifierSector")
+        # XXX: this line adds LocationType objects AS WELL ??? :
         self.get_codelist_data(name="LocationType-category")
-        self.get_codelist_data(name="FinanceType")
         self.get_codelist_data(name="FinanceType-category")
+        self.get_codelist_data(name="FinanceType")
         self.get_codelist_data(name="AidType-category")
         self.get_codelist_data(name="DocumentCategory-category")
 
@@ -69,8 +70,8 @@ class CodeListImporter():
             elem.xpath('description/text()'))) or ''
         language_name = smart_text(
             self.return_first(elem.xpath('language/text()')))
-        category = self.return_first(elem.xpath('category/text()'))
-        url = self.return_first(elem.xpath('url/text()')) or ' '
+        category = smart_text(self.return_first(elem.xpath('category/text()')))
+        url = smart_text(self.return_first(elem.xpath('url/text()'))) or ' '
         model_name = tag
 
         if tag == "Country":
@@ -103,11 +104,11 @@ class CodeListImporter():
         elif tag == "BudgetIdentifierSector-category":
             model_name = 'BudgetIdentifierSectorCategory'
 
-        elif tag == "FinanceType":
-            model_name = 'FinanceType'
-
         elif tag == "FinanceType-category":
             model_name = 'FinanceTypeCategory'
+
+        elif tag == "FinanceType":
+            model_name = 'FinanceType'
 
         elif tag == "Region":
             region_voc = RegionVocabulary.objects.get(code=1)
@@ -176,6 +177,17 @@ class CodeListImporter():
         item = self.add_to_model_if_field_exists(
             model, item, 'description', description)
         item = self.add_to_model_if_field_exists(model, item, 'url', url)
+
+        if category and model_name == 'FinanceType':
+            ft_cat = FinanceTypeCategory.objects.filter(
+                # currently 'code' field is used as a PK for this model:
+                code=category,
+            ).first()
+
+            if ft_cat:
+                item.category = ft_cat
+
+        # FIXME: refactor this general abstract approach with models!:
         if category:
             item = self.add_to_model_if_field_exists(
                 model, item, 'category_id', category)
