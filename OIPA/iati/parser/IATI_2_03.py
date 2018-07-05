@@ -1006,13 +1006,25 @@ class Parse(IatiParser):
 
         tag:name"""
 
+        # XXX:  this can be ineficient, because previously some hacks were
+        # implemented to keep everything in nmemory and save objects only at
+        # the end of everything and now we're saving / assigning objects here
+        # directly.
+        # This is from memory:
         location = self.get_model('Location')
+        # We need to save / add OneToOne relationship here to avoid workarounds
+        # (it's not possible to add OneToOne relationship when model instance
+        # is not saved)
+        location.save()
+
         location_name = models.LocationName()
         location_name.location = location
 
+        location_name.save()
         self.register_model('LocationName', location_name)
         return element
 
+    # XXX: do we need a separate LocationName model ?....
     def iati_activities__iati_activity__location__name__narrative(
             self, element):
         """attributes:
