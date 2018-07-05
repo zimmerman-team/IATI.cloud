@@ -121,18 +121,14 @@ def use_sector_or_transaction_sector(self, a):
 
 def use_direct_geo_or_transaction_geo(self, a):
     """
-    Rules:
-    If this element is used then ALL transaction elements should contain a
-    §transaction/recipient-country element and iati-activity/recipient-countr:
-    should NOT be used
-    Either transaction/recipient-country or recipient-country must be present.
-    If this element is used then ALL transaction elements should contain a
-    transaction/recipient-region element and iati-activity/recipient-region
-    should NOT be used
-    This element can be used multiple times, but only one recipient-region can
-    be reported per vocabulary.
-    Either transaction/recipient-region or recipient-region must be present.
-    only a recipient-region OR a recipient-country is expected
+    A supranational geopolitical region that will benefit from this
+    transaction. If a specific country is not known, then this element MUST be
+    used.
+
+    If transaction/recipient-country AND/OR transaction/recipient-region are
+    used THEN ALL transaction elements MUST contain a recipient-country or
+    recipient-region element AND (iati-activity/recipient-country AND
+    iati-activity/recipient-region MUST NOT be used)
     """
     direct_count = a.activityrecipientcountry_set.count()\
         + a.activityrecipientregion_set.count()
@@ -161,7 +157,7 @@ def use_direct_geo_or_transaction_geo(self, a):
             "recipient-country/recipient-region",
             "-",
             ("Either transaction/recipient-country,transaction/recipient- "
-                "redion or recipient-country,recipient-region must be present "
+                "region or recipient-country,recipient-region must be present "
                 "(DAC vocabulary)"),
             -1,
             '-',

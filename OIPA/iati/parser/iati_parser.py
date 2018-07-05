@@ -251,6 +251,8 @@ class IatiParser(object):
 
         self.errors.append(note)
 
+    # All of the methods from specific parser file (i. e. IATI_2_03.py) get
+    # called here:
     def parse(self, element):
         if element is None:
             return
@@ -370,6 +372,8 @@ class IatiParser(object):
     def save_model(self, key, index=-1):
         return self.get_model(key, index).save()
 
+    # XXX: currently this is not used anywhere, but let's keep it for
+    # refference (see: https://git.io/fbphN):
     def update_related(self, model):
         """
         Currently a workaround for foreign key assignment before save
@@ -382,11 +386,16 @@ class IatiParser(object):
 
     def save_all_models(self):
         # TODO: problem: assigning unsaved model to foreign key results in
-        # error because field_id has not been set (see issue )
+        # error because field_id has not been set (see: https://git.io/fbphN)
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
-                    self.update_related(model)
+                    # FIXME: this workaround is disabled for now as it doesn't
+                    # work anyway and it spits errors:
+                    # TODO: find out what it does and what's the impact on
+                    # this:
+                    # self.update_related(model)
+
                     model.save()
 
                 except ValueError as e:
