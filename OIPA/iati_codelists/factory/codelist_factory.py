@@ -321,6 +321,15 @@ class HumanitarianScopeTypeFactory(NoDatabaseFactory):
     name = 'Emergency'
 
 
+class CRSChannelCodeFactory(NoDatabaseFactory):
+    code = "47143"
+    name = "Global Community Engagement and Resilience Fund"
+    description = ""
+
+    class Meta:
+        model = codelist_models.CRSChannelCode
+
+
 class TransactionTypeFactory(NoDatabaseFactory):
     code = "1"
     name = "Incoming Funds"
