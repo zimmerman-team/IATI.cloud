@@ -526,6 +526,15 @@ class CRSChannelCode(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 
+class TagVocabulary(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(default="")
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
+
+
 class TransactionType(models.Model):
     code = models.CharField(primary_key=True, max_length=2)
     name = models.CharField(max_length=200)

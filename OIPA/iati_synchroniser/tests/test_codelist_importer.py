@@ -149,7 +149,7 @@ class CodelistImporterTestCase(TestCase):
 
         importer.synchronise_with_codelists()
 
-        self.assertEqual(12, importer.get_codelist_data.call_count)
+        self.assertEqual(13, importer.get_codelist_data.call_count)
         self.assertEqual(len(importer.iati_versions),
                          importer.loop_through_codelists.call_count)
         importer.get_codelist_data.assert_called_with(

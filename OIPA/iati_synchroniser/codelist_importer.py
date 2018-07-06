@@ -28,6 +28,14 @@ class CodeListImporter():
         self.iati_versions = ["2.03", ]
 
     def synchronise_with_codelists(self):
+        """These are the Codelists to grab from IATI xml file which lists all
+        available codelists.
+
+           - The model name has to match 'name' argument
+           - If it doesn't, add an 'if' block in 'add_code_list_item()' method
+        """
+        # TODO: make a proper list of these items (CODELISTS_TO_GET or smth):
+
         # Do categories first
         self.get_codelist_data(name="SectorCategory")
         self.get_codelist_data(name="SectorVocabulary")
@@ -42,6 +50,7 @@ class CodeListImporter():
         self.get_codelist_data(name="FinanceType")
         self.get_codelist_data(name="AidType-category")
         self.get_codelist_data(name="DocumentCategory-category")
+        self.get_codelist_data(name="TagVocabulary")
 
         for version in self.iati_versions:
             self.looping_through_version = version
