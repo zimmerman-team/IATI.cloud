@@ -154,4 +154,4 @@ class CodelistImporterTestCase(TestCase):
                          importer.loop_through_codelists.call_count)
         importer.get_codelist_data.assert_called_with(
             name='DocumentCategory-category')
-        importer.loop_through_codelists.assert_called_with('2.02')
+        importer.loop_through_codelists.assert_called_with('2.03')
