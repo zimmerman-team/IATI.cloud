@@ -372,14 +372,14 @@ class IatiParser(object):
     def save_model(self, key, index=-1):
         return self.get_model(key, index).save()
 
-    # XXX: currently this is not used anywhere, but let's keep it for
-    # refference (see: https://git.io/fbphN):
     def update_related(self, model):
         """
         Currently a workaround for foreign key assignment before save
         """
         if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
-            model.related_object = model._related_object_cache
+            # This is set in parser's (currently: IATI_2_03.py)
+            # 'add_narrative()' method:
+            model.related_object = model._related_object
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
@@ -390,11 +390,7 @@ class IatiParser(object):
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
-                    # FIXME: this workaround is disabled for now as it doesn't
-                    # work anyway and it spits errors:
-                    # TODO: find out what it does and what's the impact on
-                    # this:
-                    # self.update_related(model)
+                    self.update_related(model)
 
                     model.save()
 
