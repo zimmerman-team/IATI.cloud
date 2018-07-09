@@ -1,3 +1,4 @@
+import os
 from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
 from iati_synchroniser.models import Dataset, Publisher, DatasetNote
 from rest_framework.generics import RetrieveAPIView
@@ -28,6 +29,8 @@ from datetime import datetime
 
 from django.conf import settings
 from rest_framework import pagination
+
+from django.http import HttpResponse
 
 
 class DatasetPagination(pagination.PageNumberPagination):
@@ -544,3 +547,9 @@ class DatasetPublishOrganisationsUpdate(APIView):
         #  return Dataset object
         serializer = DatasetSerializer(dataset, context={'request': request})
         return Response(serializer.data)
+
+
+def staging_collection(request):
+    path = IATI_STAGING_PATH
+    file = IATI_STAGING_FILE_ID
+    return HttpResponse(open(os.path.join(path, file)).read(), content_type='text/xml')
