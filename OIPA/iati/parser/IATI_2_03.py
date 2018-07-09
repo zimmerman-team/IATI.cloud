@@ -680,13 +680,7 @@ class Parse(IatiParser):
         """attributes:
 
         tag:organisation"""
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         contact_info = self.get_model('ContactInfo')
-        contact_info.save()
 
         contact_info_organisation = models.ContactInfoOrganisation()
         contact_info_organisation.contact_info = contact_info
@@ -823,13 +817,7 @@ class Parse(IatiParser):
 
         tag:mailing-address"""
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         contact_info = self.get_model('ContactInfo')
-        contact_info.save()
 
         contact_info_mailing_address = models.ContactInfoMailingAddress()
 
@@ -1052,21 +1040,11 @@ class Parse(IatiParser):
 
         tag:name"""
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         location = self.get_model('Location')
-        # We need to save / add OneToOne relationship here to avoid workarounds
-        # (it's not possible to add OneToOne relationship when model instance
-        # is not saved)
-        location.save()
 
         location_name = models.LocationName()
         location_name.location = location
 
-        location_name.save()
         self.register_model('LocationName', location_name)
         return element
 
@@ -2307,15 +2285,9 @@ class Parse(IatiParser):
 
         tag:provider-org"""
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         transaction = self.get_model('Transaction')
-        transaction_provider = transaction_models.TransactionProvider()
 
-        transaction.save()
+        transaction_provider = transaction_models.TransactionProvider()
         transaction_provider.transaction = transaction
 
         # Let's set other attributes in this older function (where, with the
@@ -2334,7 +2306,9 @@ class Parse(IatiParser):
         tag:narrative"""
         # TODO: make this more transparant in data structure or handling
         # transaction_provider = self.get_model('Transaction', -2)
+
         transaction_provider = self.get_model('TransactionProvider')
+
         self.add_narrative(element, transaction_provider)
 
         transaction_provider.primary_name = self.get_primary_name(
@@ -2739,13 +2713,7 @@ class Parse(IatiParser):
 
         tag:title"""
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         document_link = self.get_model('DocumentLink')
-        document_link.save()
 
         document_link_title = models.DocumentLinkTitle()
         document_link_title.document_link = document_link
@@ -2787,13 +2755,7 @@ class Parse(IatiParser):
                 None,
                 code)
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         document_link = self.get_model('DocumentLink')
-        document_link.save()
 
         document_link_category = models.DocumentLinkCategory()
 
@@ -2826,13 +2788,7 @@ class Parse(IatiParser):
                 None,
                 code)
 
-        # XXX:  this can be ineficient, because previously some hacks were
-        # implemented to keep everything in nmemory and save objects only at
-        # the end of everything and now we're saving / assigning objects here
-        # directly.
-        # This is from memory:
         document_link = self.get_model('DocumentLink')
-        document_link.save()
 
         document_link_language = models.DocumentLinkLanguage()
 
@@ -2941,6 +2897,7 @@ class Parse(IatiParser):
     # tag:title"""
     def iati_activities__iati_activity__result__title(self, element):
         result = self.get_model('Result')
+
         result_title = models.ResultTitle()
         result_title.result = result
 
@@ -2960,6 +2917,7 @@ class Parse(IatiParser):
     # tag:description"""
     def iati_activities__iati_activity__result__description(self, element):
         result = self.get_model('Result')
+
         result_description = models.ResultDescription()
         result_description.result = result
 
@@ -2995,6 +2953,7 @@ class Parse(IatiParser):
                 "not found on the accompanying code list")
 
         result = self.get_model('Result')
+
         result_indicator = models.ResultIndicator()
         result_indicator.result = result
         result_indicator.measure = measure
@@ -3046,6 +3005,7 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__title(
             self, element):
         result_indicator = self.get_model('ResultIndicator')
+
         result_indicator_title = models.ResultIndicatorTitle()
         result_indicator_title.result_indicator = result_indicator
 
@@ -3069,6 +3029,7 @@ class Parse(IatiParser):
     def iati_activities__iati_activity__result__indicator__description(
             self, element):
         result_indicator = self.get_model('ResultIndicator')
+
         result_indicator_description = models.ResultIndicatorDescription()
         result_indicator_description.result_indicator = result_indicator
 
@@ -3174,9 +3135,11 @@ class Parse(IatiParser):
             # period start/end dont exist
             pass
 
-        # start with actual functionality for period
 
         result_indicator = self.get_model('ResultIndicator')
+
+        # start with actual functionality for period:
+
         result_indicator_period = models.ResultIndicatorPeriod()
         result_indicator_period.result_indicator = result_indicator
 
@@ -3439,6 +3402,7 @@ class Parse(IatiParser):
 
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
         result_indicator_period = self.get_model('ResultIndicatorPeriod')
+
         result_indicator_period_actual_comment = models\
             .ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment\
