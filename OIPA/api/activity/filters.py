@@ -630,8 +630,10 @@ class RelatedOrderingFilter(filters.OrderingFilter):
                 return self.is_valid_field(field.model, components[1])
 
             # foreign key
-            if field.rel and len(components) == 2:
-                return self.is_valid_field(field.rel.to, components[1])
+            if field.remote_field and len(components) == 2:
+                return self.is_valid_field(
+                    field.remote_field.model, components[1]
+                )
             return True
         except FieldDoesNotExist:
             return False
