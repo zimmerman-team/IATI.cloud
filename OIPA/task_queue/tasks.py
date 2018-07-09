@@ -454,7 +454,7 @@ def download_file(d):
                     file_hash = hash_file(document_path_update)
                 '''if file hash or url hash id different, parse the content of the file'''
                 if is_downloaded and long_url_hash != '' and (
-                        doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
+                    doc.long_url_hash != long_url_hash or doc.file_hash != file_hash):
                     doc.document_or_long_url_changed = True
                     doc.long_url_hash = long_url_hash
                     doc.file_hash = file_hash
@@ -476,20 +476,18 @@ def download_file(d):
 #############################################
 @job
 def check_for_staging_xml():
-        pub_id = IATI_STAGING_PUBLISHER_ID
-        id = IATI_STAGING_ID
-        pub = Publisher.objects.get(publisher_iati_id = pub_id)
-        url = IATI_STAGING_FILE_URL
+    pub_id = settings.IATI_STAGING_PUBLISHER_ID
+    id = settings.IATI_STAGING_ID
+    pub = Publisher.objects.get(publisher_iati_id=pub_id)
+    url = settings.IATI_STAGING_FILE_URL
 
-        try:
-            obj = Dataset.objects.get(iati_id ="IOM_staging_file")
-            obj.delete()
-        except Dataset.DoesNotExist:
-            obj = None
-        obj = Dataset(iati_id = id, name= id, title= id, publisher=pub, source_url=url)
-        obj.process(force_reparse=True)
-        queue = django_rq.get_queue("parser")
-        #if update_searchable and settings.ROOT_ORGANISATIONS:
-        queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
-
-
+    try:
+        obj = Dataset.objects.get(iati_id="IOM_staging_file")
+        obj.delete()
+    except Dataset.DoesNotExist:
+        obj = None
+    obj = Dataset(iati_id=id, name=id, title=id, publisher=pub, source_url=url)
+    obj.process(force_reparse=True)
+    queue = django_rq.get_queue("parser")
+    # if update_searchable and settings.ROOT_ORGANISATIONS:
+    queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)

@@ -1,9 +1,11 @@
 import os
-from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, SimplePublisherSerializer
+from api.dataset.serializers import DatasetSerializer, SimpleDatasetSerializer, DatasetNoteSerializer, \
+    SimplePublisherSerializer
 from iati_synchroniser.models import Dataset, Publisher, DatasetNote
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter
+from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from api.dataset.filters import DatasetFilter, NoteFilter
 from api.aggregation.views import AggregationView, Aggregation, GroupBy
@@ -246,6 +248,7 @@ class DatasetNotes(CacheResponseMixin, ListAPIView):
 
 
 from api.export.views import IATIActivityList
+
 export_view = IATIActivityList.as_view()
 
 from ckanapi import RemoteCKAN, NotAuthorized, NotFound
@@ -253,7 +256,7 @@ from ckanapi import RemoteCKAN, NotAuthorized, NotFound
 
 class DatasetPublishActivities(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (OrganisationAdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions,)
 
     def post(self, request, publisher_id):
         user = request.user.organisationuser
@@ -329,7 +332,7 @@ class DatasetPublishActivities(APIView):
             Dataset.objects.filter(
                 iati_id=old_package.get('id')).update(
                 iati_id=old_package.get('id') +
-                "will_be_removed")
+                        "will_be_removed")
 
         # 0. create_or_update Dataset object
         dataset = Dataset.objects.get(
@@ -361,7 +364,7 @@ class DatasetPublishActivities(APIView):
 
 class DatasetPublishActivitiesUpdate(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (OrganisationAdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions,)
 
     def put(self, request, publisher_id, dataset_id):
         user = request.user.organisationuser
@@ -405,7 +408,7 @@ class DatasetPublishActivitiesUpdate(APIView):
 
 class DatasetPublishOrganisations(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (OrganisationAdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions,)
 
     def post(self, request, publisher_id):
         user = request.user.organisationuser
@@ -506,7 +509,7 @@ class DatasetPublishOrganisations(APIView):
 
 class DatasetPublishOrganisationsUpdate(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (OrganisationAdminGroupPermissions, )
+    permission_classes = (OrganisationAdminGroupPermissions,)
 
     def put(self, request, publisher_id, dataset_id):
         user = request.user.organisationuser
@@ -550,6 +553,6 @@ class DatasetPublishOrganisationsUpdate(APIView):
 
 
 def staging_collection(request):
-    path = IATI_STAGING_PATH
-    file = IATI_STAGING_FILE_ID
+    path = settings.IATI_STAGING_PATH
+    file = settings.IATI_STAGING_FILE_ID
     return HttpResponse(open(os.path.join(path, file)).read(), content_type='text/xml')
