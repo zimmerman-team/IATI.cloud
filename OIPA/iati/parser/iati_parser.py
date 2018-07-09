@@ -169,7 +169,8 @@ class IatiParser(object):
                 '{http://www.w3.org/XML/1998/namespace}lang',
                 self.default_lang)
             if lang == 'en':
-                primary_name = element.text
+                # FIXME: this is hardcoded!
+                primary_name = element.text[:255]
         else:
             primary_name = element.text
         return primary_name
