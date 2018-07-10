@@ -3422,6 +3422,22 @@ class Parse(IatiParser):
 
         return element
 
+    def iati_activities__iati_activity__tag(self, element):
+        """A method to catch <tag> element from IATI activity file and save
+        ActivityTag model instance
+        """
+        activity = self.get_model('Activity')
+        activity_tag = models.ActivityTag()
+        activity_tag.activity = activity
+
+        self.register_model('ActivityTag', activity_tag)
+
+    def iati_activities__iati_activity__tag__narrative(self, element):
+        """A method to save activity <tag> element narratives
+        """
+        activity_tag = self.get_model('ActivityTag')
+        self.add_narrative(element, activity_tag)
+
     def post_save_models(self):
         """Perform all actions that need to happen after a single activity's
         been parsed."""

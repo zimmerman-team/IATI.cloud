@@ -1691,3 +1691,21 @@ class LegacyData(models.Model):
 
     def get_activity(self):
         return self.activity
+
+
+class ActivityTag(models.Model):
+    """A model to store Tags on Activity (introduced in 2.03)
+    Actual tag values are stored in Narrative model:
+
+        Narrative.objects.filter(
+            related_content_type__model='activitytag',
+            activity=activity_model_instance,
+        ).values_list('content')
+
+    In the future (if needed), implement a separate field for storing tag value
+    or s separate method (get_tag_value) to get it from Narratives or smth.
+    """
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "tag for %s" % self.activity
