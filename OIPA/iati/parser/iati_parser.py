@@ -252,9 +252,10 @@ class IatiParser(object):
 
         self.errors.append(note)
 
-    # All of the methods from specific parser file (i. e. IATI_2_03.py) get
-    # called here:
     def parse(self, element):
+        """All of the methods from specific parser file (i. e. IATI_2_03.py)
+        get called in this method
+        """
         if element is None:
             return
         if type(element).__name__ != '_Element':
@@ -268,6 +269,7 @@ class IatiParser(object):
         if hasattr(self, function_name)\
                 and callable(getattr(self, function_name)):
             element_method = getattr(self, function_name)
+
             try:
                 element_method(element)
             except RequiredFieldError as e:
