@@ -27,7 +27,7 @@ from iati_synchroniser.models import Dataset, Publisher
 from iati_vocabulary.models import (
     BudgetIdentifierVocabulary, GeographicVocabulary,
     HumanitarianScopeVocabulary, IndicatorVocabulary, PolicyMarkerVocabulary,
-    RegionVocabulary, SectorVocabulary
+    RegionVocabulary, SectorVocabulary, TagVocabulary
 )
 
 from .activity_manager import ActivityManager
@@ -1706,6 +1706,11 @@ class ActivityTag(models.Model):
     or s separate method (get_tag_value) to get it from Narratives or smth.
     """
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    code = models.CharField(max_length=5)
+    vocabulary = models.ForeignKey(
+        TagVocabulary, on_delete=models.CASCADE
+    )
+    vocabulary_uri = models.URLField(blank=True)
 
     def __str__(self):
         return "tag for %s" % self.activity
