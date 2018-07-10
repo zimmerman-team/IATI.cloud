@@ -526,7 +526,7 @@ class CRSChannelCode(models.Model):
         return "%s - %s" % (self.code, self.name)
 
 
-class TagVocabulary(models.Model):
+class TagCodelist(models.Model):
     code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField(default="")

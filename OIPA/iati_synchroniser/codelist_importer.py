@@ -84,6 +84,11 @@ class CodeListImporter():
         url = smart_text(self.return_first(elem.xpath('url/text()'))) or ' '
         model_name = tag
 
+        # If Codelist name in IATI's file is different from our model name (f.
+        # ex. TagVocabulary codelist is represented by TagCodelist model in our
+        # system, because we have a TagVocabulary model as well for codelist's
+        # vocalbulary), such model refferences should be overriden here:
+
         if tag == "Country":
             name = name.lower().title()
             item = Country(language=language_name, data_source="IATI")
@@ -136,6 +141,11 @@ class CodeListImporter():
 
         elif tag == "CRSChannelCode":
             name = name[:255]
+
+        # 'TagVocabulary' is a codelist name in IATI's data and our model name
+        # is 'TagCodelist':
+        elif tag == 'TagVocabulary':
+            model_name = 'TagCodelist'
 
         elif tag == "Version":
             if url is None:
