@@ -72,3 +72,15 @@ class IndicatorVocabularyFactory(NoDatabaseFactory):
     code = '1'
     name = 'WHO Registry'
     description = 'description'
+
+
+class TagVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.TagVocabulary
+
+    code = '1'
+    name = 'Agrovoc'
+    description = ('A controlled vocabulary covering all areas of interest of '
+                   'the Food and Agriculture Organization (FAO) of the United '
+                   'Nations, including food, nutrition, agriculture, '
+                   'fisheries, forestry, environment etc.')
