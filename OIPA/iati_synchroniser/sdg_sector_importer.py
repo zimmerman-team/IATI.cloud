@@ -25,6 +25,7 @@ class SdgSectorImporter():
 
     def update(self):
         sectors = self.get_json_data(
+            # FIXME: this should be imported dynamically ??:
             "/data/sdg_target_sectors.json"
         ).get('targets')
 
@@ -37,7 +38,7 @@ class SdgSectorImporter():
             Sector.objects.get_or_create(
                 code=code,
                 defaults={
-                    'name': description[:60] + '...',
+                    'name': description,
                     'description': description,
                     'vocabulary': vocabulary
                 }
