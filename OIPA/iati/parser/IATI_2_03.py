@@ -3426,11 +3426,72 @@ class Parse(IatiParser):
         """A method to catch <tag> element from IATI activity file and save
         ActivityTag model instance
         """
+        vocabulary_code = element.attrib.get('vocabulary')
+        code = element.attrib.get('code')
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
+
+        if not vocabulary_code:
+            raise RequiredFieldError(
+                "iati-activity/tag",
+                "vocabulary",
+                "required attribute missing"
+            )
+
+        if not code:
+            raise RequiredFieldError(
+                "iati-activity/tag",
+                "code",
+                "required attribute missing"
+            )
+
+        vocabulary = self.get_or_none(
+            vocabulary_models.TagVocabulary, code=vocabulary_code)
+
+        if not vocabulary:
+
+            if vocabulary_code != '99':
+                raise FieldValidationError(
+                    "iati-activity/tag",
+                    "vocabulary",
+                    "If a vocabulary is not on the TagVocabulary codelist, "
+                    "then the value of 99 (Reporting Organisation) should be "
+                    "declared",
+                    None,
+                    None,
+                    vocabulary_code)
+
+            # Our system doesn't have Vocabulary with such code (this is a
+            # warning log message)
+            raise FieldValidationError(
+                "iati-activity/tag",
+                "vocabulary",
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary_code)
+
+        if vocabulary_code == '99' and not vocabulary_uri:
+            raise FieldValidationError(
+                "iati-activity/tag",
+                "vocabulary-uri",
+                "If a publisher uses a vocabulary of 99 (i.e. ‘Reporting "
+                "Organisation’), then the @vocabulary-uri attribute "
+                "should also be used",
+                None,
+                None,
+                vocabulary_code)
+
         activity = self.get_model('Activity')
         activity_tag = models.ActivityTag()
+
         activity_tag.activity = activity
+        activity_tag.code = code
+        activity_tag.vocabulary = vocabulary
+        activity_tag.vocabulary_uri = vocabulary_uri or ''
 
         self.register_model('ActivityTag', activity_tag)
+
+        return element
 
     def iati_activities__iati_activity__tag__narrative(self, element):
         """A method to save activity <tag> element narratives
