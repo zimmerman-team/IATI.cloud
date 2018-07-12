@@ -1,7 +1,8 @@
 from django.db import models
 
 from iati_vocabulary.models import (
-    BudgetIdentifierVocabulary, PolicyMarkerVocabulary, SectorVocabulary
+    AidTypeVocabulary, BudgetIdentifierVocabulary, PolicyMarkerVocabulary,
+    SectorVocabulary
 )
 
 
@@ -46,6 +47,8 @@ class AidType(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(default="")
     category = models.ForeignKey(AidTypeCategory, on_delete=models.CASCADE)
+    vocabulary = models.ForeignKey(AidTypeVocabulary, null=True,
+                                   default=None, on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)

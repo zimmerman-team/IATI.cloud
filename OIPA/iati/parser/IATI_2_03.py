@@ -2624,6 +2624,7 @@ class Parse(IatiParser):
         tag:aid-type"""
         code = element.attrib.get('code')
         aid_type = self.get_or_none(codelist_models.AidType, code=code)
+        vocabulary_code = element.attrib.get('vocabulary')
 
         if not aid_type and not code:
             raise RequiredFieldError(
@@ -2639,8 +2640,30 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        # TODO: test:
+        if vocabulary_code:
+            vocabulary = self.get_or_none(
+                vocabulary_models.AidTypeVocabulary,
+                code=vocabulary_code
+            )
+
+            if not vocabulary:
+                raise FieldValidationError(
+                    "iati-activity/transaction/aid-type",
+                    "vocabulary",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    vocabulary_code)
+
         transaction = self.get_model('Transaction')
         transaction.aid_type = aid_type
+
+        # Note, that AidType is a codelist so in theory it shouldn't be there.
+        # Although, as an xml element, it can have certain attributes (like
+        # vocabulary):
+        self.register_model('AidType', aid_type)
+        aid_type.vocabulary = vocabulary
 
         return element
 
