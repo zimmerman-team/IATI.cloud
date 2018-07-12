@@ -15,6 +15,7 @@ from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
+from iati_vocabulary.factory.vocabulary_factory import TagVocabularyFactory
 
 
 class ActivityParticipatingOrganisationTestCase(TestCase):
@@ -137,3 +138,198 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         # Saving models is not tested here:
         self.assertEquals(participating_organisation.pk, None)
+
+
+class ActivityTagTestCase(TestCase):
+    """
+    2.03: A new, xml element 'tag' was added for Activity
+    """
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert(isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
+    def test_activity_tag(self):
+        """
+        - Tests if '<tag>' xml element is parsed and saved correctly with
+          proper attributes and narratives
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
+
+        # 1. Create specific XML elements for test case:
+        activity_tag_attributes = {
+            # Vocabulary is missing:
+
+            # "vocabulary": '1',
+            "code": '1',
+            'vocabulary-uri': 'http://example.com/vocab.html',
+        }
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        # # 2. Register Activity object:
+        self.parser_203.register_model('Activity', self.activity)
+
+        # CASE 1:
+        # 'vocabulary' attr is missing:
+        try:
+            self.parser_203.iati_activities__iati_activity__tag(
+                activity_tag_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # 'code' attr is missing:
+        activity_tag_attributes['vocabulary'] = '1'
+        activity_tag_attributes.pop('code')
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__tag(
+                activity_tag_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # CASE 2:
+        # such TagVocabulary doesn't exist (is not yet created for our tests)
+        # AND it's not 99:
+        activity_tag_attributes['vocabulary'] = '88'
+        activity_tag_attributes['code'] = '1'
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__tag(
+                activity_tag_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message, 'If a vocabulary is not on the '
+                                           'TagVocabulary codelist, then the '
+                                           'value of 99 (Reporting '
+                                           'Organisation) should be declared')
+
+        # CASE 3:
+        # our system is missing such TagVocabulary object (but vocabulary attr
+        # is correct (99)):
+        activity_tag_attributes['vocabulary'] = '99'
+        activity_tag_attributes['code'] = '1'
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__tag(
+                activity_tag_XML_element)
+            self.asseritFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(inst.message, 'not found on the accompanying '
+                                           'code list')
+
+        # CASE 4:
+        # Create a Vocabulary and remove vocabulary-uri attr:
+        fresh_tag_vicabulary = TagVocabularyFactory(code='99')
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        activity_tag_attributes['vocabulary'] = '99'
+        activity_tag_attributes['code'] = '1'
+        activity_tag_attributes.pop('vocabulary-uri')
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__tag(
+                activity_tag_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            # self.assertEqual(inst.field, 'vocabulary-uri')
+            self.assertEqual(inst.message, "If a publisher uses a vocabulary "
+                                           "of 99 (i.e. ‘Reporting "
+                                           "Organisation’), then the "
+                                           "@vocabulary-uri attribute should "
+                                           "also be used")
+
+        # CASE 5:
+        # ALL IS GOOD:
+        activity_tag_attributes[
+            'vocabulary-uri'
+        ] = 'http://example.com/vocab.html'
+
+        activity_tag_XML_element = E(
+            'tag',
+            **activity_tag_attributes
+        )
+
+        self.parser_203.iati_activities__iati_activity__tag(
+            activity_tag_XML_element)
+
+        activity_tag = self.parser_203.get_model(
+            'ActivityTag')
+
+        # Check if CRSChannelCode object is assigned to the participating org
+        # (model is not yet saved at this point):
+        self.assertEquals(
+            activity_tag.activity, self.activity
+        )
+        self.assertEquals(
+            activity_tag.code, activity_tag_attributes['code']
+        )
+        self.assertEquals(
+            activity_tag.vocabulary, fresh_tag_vicabulary
+        )
+        self.assertEquals(
+            activity_tag.vocabulary_uri,
+            activity_tag_attributes['vocabulary-uri']
+        )
+
+        # Saving models is not tested here:
+        self.assertEquals(activity_tag.pk, None)
