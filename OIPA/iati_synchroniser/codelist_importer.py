@@ -33,24 +33,28 @@ class CodeListImporter():
 
            - The model name has to match 'name' argument
            - If it doesn't, add an 'if' block in 'add_code_list_item()' method
+             in this class
         """
-        # TODO: make a proper list of these items (CODELISTS_TO_GET or smth):
+        self.CODELISTS_TO_PARSE = [
+            # Do categories first
+            "SectorCategory",
+            "SectorVocabulary",
+            "RegionVocabulary",
+            "PolicyMarkerVocabulary",
+            "IndicatorVocabulary",
+            "BudgetIdentifierSector-category",
+            "BudgetIdentifierSector",
+            # XXX: this line adds LocationType objects as well? :
+            "LocationType-category",
+            "FinanceType-category",
+            "FinanceType",
+            "AidType-category",
+            "DocumentCategory-category",
+            "TagVocabulary",
+        ]
 
-        # Do categories first
-        self.get_codelist_data(name="SectorCategory")
-        self.get_codelist_data(name="SectorVocabulary")
-        self.get_codelist_data(name="RegionVocabulary")
-        self.get_codelist_data(name="PolicyMarkerVocabulary")
-        self.get_codelist_data(name="IndicatorVocabulary")
-        self.get_codelist_data(name="BudgetIdentifierSector-category")
-        self.get_codelist_data(name="BudgetIdentifierSector")
-        # XXX: this line adds LocationType objects as well? :
-        self.get_codelist_data(name="LocationType-category")
-        self.get_codelist_data(name="FinanceType-category")
-        self.get_codelist_data(name="FinanceType")
-        self.get_codelist_data(name="AidType-category")
-        self.get_codelist_data(name="DocumentCategory-category")
-        self.get_codelist_data(name="TagVocabulary")
+        for codelist_name in self.CODELISTS_TO_PARSE:
+            self.get_codelist_data(codelist_name)
 
         for version in self.iati_versions:
             self.looping_through_version = version
@@ -289,7 +293,10 @@ class CodeListImporter():
 
             context2 = etree.iterparse(cur_xml_file, tag=name)
             self.fast_iter(context2, self.add_code_list_item)
-        except urllib.error.HTTPError:  # FIXME: present 404s to frontend?
+
+        # FIXME: log this error!:
+        # TODO: present 404s to frontend
+        except urllib.error.HTTPError:
             pass
 
     def loop_through_codelists(self, version):
