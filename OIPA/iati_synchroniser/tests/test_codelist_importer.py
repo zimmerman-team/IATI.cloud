@@ -161,7 +161,7 @@ class CodelistImporterTestCase(TestCase):
         ]
 
         importer.get_codelist_data.assert_called_with(
-            last_synced_codelist
+            name=last_synced_codelist
         )
 
         importer.loop_through_codelists.assert_called_with('2.03')
