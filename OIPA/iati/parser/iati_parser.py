@@ -18,8 +18,6 @@ from iati.parser.exceptions import (
 from iati_codelists import models as codelist_models
 from iati_synchroniser.models import DatasetNote
 
-codelist_cache = {}
-
 log = logging.getLogger(__name__)
 
 
@@ -36,6 +34,11 @@ class IatiParser(object):
         self.publisher = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
+        # A cache to store Codelist models in memory (for each element when
+        # parsing).
+        # During tests, if a new model with a same name is added to the
+        # database, this has to be cleared:
+        self.codelist_cache = {}
 
         # TODO: find a way to simply save in parser functions, and actually
         # commit to db on exit
@@ -68,10 +71,10 @@ class IatiParser(object):
         if code:
             code = normalise_unicode_string(code)
             try:
-                model_cache = codelist_cache[model.__name__]
+                model_cache = self.codelist_cache[model.__name__]
             except KeyError:
                 model_cache = model.objects.in_bulk()
-                codelist_cache[model.__name__] = model_cache
+                self.codelist_cache[model.__name__] = model_cache
             return model_cache.get(code)
 
         else:
