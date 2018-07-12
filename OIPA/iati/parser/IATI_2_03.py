@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -889,7 +889,19 @@ class Parse(IatiParser):
                 "not found on the accompanying code list",
                 None,
                 None,
-                element.attrib.get('code'))
+                code)
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "recipient-country",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         activity = self.get_model('Activity')
         activity_recipient_country = models.ActivityRecipientCountry()
