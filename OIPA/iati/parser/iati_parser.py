@@ -34,7 +34,7 @@ class IatiParser(object):
         self.publisher = None
         self.force_reparse = False
         self.default_lang = settings.DEFAULT_LANG
-        # A cache to store Codelist models in memory (for each element when
+        # A cache to store codelist items in memory (for each element when
         # parsing).
         # During tests, if a new model with a same name is added to the
         # database, this has to be cleared:

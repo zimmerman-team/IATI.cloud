@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class CodeListImporter():
+    # TODO: there's lots of same code here (Codelist items are (probably) added
+    # (files are downloaded) twice). Code needds to be refactored to the DRY
+    # principles.
 
     def __init__(self):
         self.looping_through_version = "2.03"
@@ -35,7 +38,7 @@ class CodeListImporter():
            - If it doesn't, add an 'if' block in 'add_code_list_item()' method
              in this class
         """
-        self.CODELISTS_TO_PARSE = [
+        self.CODELIST_ITEMS_TO_PARSE = [
             # Do categories first
             "SectorCategory",
             "SectorVocabulary",
@@ -44,18 +47,23 @@ class CodeListImporter():
             "IndicatorVocabulary",
             "BudgetIdentifierSector-category",
             "BudgetIdentifierSector",
-            # XXX: this line adds LocationType objects as well? :
             "LocationType-category",
             "FinanceType-category",
             "FinanceType",
             "AidType-category",
+            "AidTypeVocabulary",
             "DocumentCategory-category",
             "TagVocabulary",
         ]
 
-        for codelist_name in self.CODELISTS_TO_PARSE:
-            self.get_codelist_data(codelist_name)
+        for codelist_name in self.CODELIST_ITEMS_TO_PARSE:
+            # This adds Codelist ITEMS (not Codelist objects):
+            # FIXME: although, they are (probably) already added here TWICE
+            # TODO: refactor this whole code so double functionality according
+            # to DRY principles:
+            self.get_codelist_data(name=codelist_name)
 
+        # This loops through IATI versions and creates Codelist ITEMS:
         for version in self.iati_versions:
             self.looping_through_version = version
             self.loop_through_codelists(version)
@@ -256,6 +264,11 @@ class CodeListImporter():
                 'language': 'en'})
 
     def get_codelist_data(self, elem=None, name=None):
+        '''If 'name' parameter is not passed to this funtion, it first creates
+           Codelist objects.
+           Otherwise, actual codelist items (RegionVocabulary, SectorCategory)
+           are also created
+        '''
 
         if not name:
             name = smart_text(self.return_first(elem.xpath('name/text()')))
@@ -308,6 +321,8 @@ class CodeListImporter():
         file_opener = urllib.request.build_opener()
         xml_file = file_opener.open(downloaded_xml)
         context = etree.iterparse(xml_file, tag='codelist')
+        # This updates / creates new Codelist objects (name argument is not
+        # passed to 'get_codelist_data') AND adds Codelist items:
         self.fast_iter(context, self.get_codelist_data)
         self.add_missing_items()
 

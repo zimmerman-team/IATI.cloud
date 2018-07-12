@@ -150,14 +150,14 @@ class CodelistImporterTestCase(TestCase):
         importer.synchronise_with_codelists()
 
         self.assertEqual(
-            len(importer.CODELISTS_TO_PARSE),
+            len(importer.CODELIST_ITEMS_TO_PARSE),
             importer.get_codelist_data.call_count
         )
         self.assertEqual(len(importer.iati_versions),
                          importer.loop_through_codelists.call_count)
 
-        last_synced_codelist = importer.CODELISTS_TO_PARSE[
-            len(importer.CODELISTS_TO_PARSE) - 1
+        last_synced_codelist = importer.CODELIST_ITEMS_TO_PARSE[
+            len(importer.CODELIST_ITEMS_TO_PARSE) - 1
         ]
 
         importer.get_codelist_data.assert_called_with(
