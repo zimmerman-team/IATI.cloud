@@ -959,6 +959,18 @@ class Parse(IatiParser):
                 "code",
                 "code is unspecified or invalid")
 
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "activity-sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
+
         activity = self.get_model('Activity')
         activity_recipient_region = models.ActivityRecipientRegion()
         activity_recipient_region.region = region
@@ -1350,6 +1362,18 @@ class Parse(IatiParser):
                 "sector",
                 "vocabulary",
                 "non implemented vocabulary")
+
+        if percentage:
+            try:
+                percentage = Decimal(percentage)
+            except InvalidOperation:
+                raise FieldValidationError(
+                    "activity-sector",
+                    "percentage",
+                    "percentage value is not valid",
+                    None,
+                    None,
+                    percentage)
 
         activity = self.get_model('Activity')
         activity_sector = models.ActivitySector()
