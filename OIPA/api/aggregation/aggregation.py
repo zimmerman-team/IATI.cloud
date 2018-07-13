@@ -1,6 +1,8 @@
 from functools import reduce
 from operator import itemgetter
 
+from django.utils.encoding import smart_text
+
 
 def apply_annotations(
         queryset, selected_groupings, selected_aggregations, query_params):
@@ -95,11 +97,13 @@ def apply_annotations(
                 group_keys = []
                 for group_field in group_fields:
                     if isinstance(item[group_field], int):
-                        group_keys.append(str(item[group_field]))
+                        group_keys.append(smart_text(item[group_field]))
                     # In python 3.x all strings are sequences of Unicode
                     # characters:
                     if isinstance(item[group_field], str):
-                        group_keys.append(item[group_field].encode('utf-8'))
+                        group_keys.append(
+                            smart_text(item[group_field].encode('utf-8'))
+                        )
                 return '__'.join(group_keys)
 
         for item in iter(first_queryset):
