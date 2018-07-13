@@ -15,11 +15,13 @@ from iati.parser.exceptions import (
 )
 from iati.parser.IATI_2_03 import Parse as Parser_203
 from iati.parser.parse_manager import ParseManager
+from iati.transaction.factories import TransactionFactory
 from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import (
-    RegionVocabularyFactory, SectorVocabularyFactory, TagVocabularyFactory
+    AidTypeVocabularyFactory, RegionVocabularyFactory, SectorVocabularyFactory,
+    TagVocabularyFactory
 )
 
 
@@ -971,3 +973,161 @@ class ActivitySectorTestCase(TestCase):
 
         # Saving models is not tested here:
         self.assertEquals(activity_sector.pk, None)
+
+
+class AidTypeTestCase(TestCase):
+    """
+    2.03: Added new @vocabulary attributes for elements relating to aid-type
+    """
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert(isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version,
+            default_aid_type=None,
+        )
+
+        self.transaction = TransactionFactory(
+            aid_type=None,
+            activity=self.activity
+        )
+
+        self.parser_203.register_model('Transaction', self.transaction)
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_aid_type(self):
+        """
+        - Tests if '<aid-type>' xml element is parsed and saved
+          correctly with proper attributes and narratives
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
+
+        aid_type_attributes = {
+            # "code": '1',
+        }
+
+        aid_type_XML_element = E(
+            'aid-type',
+            **aid_type_attributes
+        )
+
+        # CASE 1:
+        # 'Code' attr is missing:
+        try:
+            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+                aid_type_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.model, 'transaction/aid-type')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # CASE 2:
+        # 'AidType' codelist not found:
+        aid_type_attributes = {
+            "code": '1',
+        }
+
+        aid_type_XML_element = E(
+            'aid-type',
+            **aid_type_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+                aid_type_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'transaction/aid-type')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying code list'
+            )
+
+        # CASE 3:
+        # Vocabulary not found:
+
+        # let's create an AidType element (so the parser doesn't complain):
+        aid_type = codelist_factory.AidTypeFactory(code='99')
+
+        self.parser_203.codelist_cache = {}
+
+        aid_type_attributes = {
+            "code": aid_type.code,
+            'vocabulary': '1',
+        }
+
+        aid_type_XML_element = E(
+            'aid-type',
+            **aid_type_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+                aid_type_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'iati-activity/transaction/aid-type')
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying code list'
+            )
+
+        # CASE 4: All is good
+        # let's create an AidTypeVocabulary element (so the parser doesn't
+        # complain):
+        aid_type_vocabulary = AidTypeVocabularyFactory(code='3')
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        aid_type_attributes = {
+            "code": aid_type.code,
+            'vocabulary': aid_type_vocabulary.code,
+        }
+
+        aid_type_XML_element = E(
+            'aid-type',
+            **aid_type_attributes
+        )
+
+        self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
+            aid_type_XML_element)
+
+        transaction = self.parser_203.get_model('Transaction')
+        aid_type = self.parser_203.get_model('AidType')
+
+        self.assertEquals(
+            transaction.aid_type, aid_type
+        )
+        self.assertEquals(
+            aid_type.vocabulary, aid_type_vocabulary
+        )
