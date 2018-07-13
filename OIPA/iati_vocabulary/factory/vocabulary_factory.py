@@ -84,3 +84,13 @@ class TagVocabularyFactory(NoDatabaseFactory):
                    'the Food and Agriculture Organization (FAO) of the United '
                    'Nations, including food, nutrition, agriculture, '
                    'fisheries, forestry, environment etc.')
+
+
+class AidTypeVocabularyFactory(NoDatabaseFactory):
+    class Meta(GetOrCreateMetaMixin):
+        model = vocabulary_models.AidTypeVocabulary
+
+    code = '3'
+    name = 'Earmarking Modality'
+    description = ('Codes A to L replicated directly from Grand Bargain '
+                   'document found in Annex 1 (pg.16)')
