@@ -344,7 +344,8 @@ class SectorCategory(models.Model):
 class Sector(models.Model):
     code = models.CharField(primary_key=True, max_length=100)
     # FIXME: when Sector importing is fixed (it's currently imported from a
-    # file, change this back to CharField):
+    # file, change this back to CharField).
+    # See: https://git.io/fNtF6
     name = models.TextField()
     description = models.TextField(default="")
     category = models.ForeignKey(SectorCategory, null=True, default=None,
