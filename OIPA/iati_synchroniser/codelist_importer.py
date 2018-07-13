@@ -51,6 +51,7 @@ class CodeListImporter():
             "FinanceType-category",
             "FinanceType",
             "AidType-category",
+            # TODO: update test:
             "AidTypeVocabulary",
             "DocumentCategory-category",
             "TagVocabulary",

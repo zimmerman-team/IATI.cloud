@@ -891,6 +891,7 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)
@@ -959,6 +960,7 @@ class Parse(IatiParser):
                 "code",
                 "code is unspecified or invalid")
 
+        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)
@@ -1363,6 +1365,7 @@ class Parse(IatiParser):
                 "vocabulary",
                 "non implemented vocabulary")
 
+        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)
