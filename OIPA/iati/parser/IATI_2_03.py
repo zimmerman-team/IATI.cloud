@@ -1362,7 +1362,6 @@ class Parse(IatiParser):
                 "vocabulary",
                 "non implemented vocabulary")
 
-        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)

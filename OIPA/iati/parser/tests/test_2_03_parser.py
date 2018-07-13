@@ -19,7 +19,7 @@ from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory.vocabulary_factory import (
-    RegionVocabularyFactory, TagVocabularyFactory
+    RegionVocabularyFactory, SectorVocabularyFactory, TagVocabularyFactory
 )
 
 
@@ -341,8 +341,8 @@ class ActivityTagTestCase(TestCase):
 
 class RecipientCountryTestCase(TestCase):
     """
-    2.03: Content must be a decimal number between 0 and 100 inclusive, WITH
-    NO PERCENTAGE SIGN
+    2.03: 'percentage' attribute must be a decimal number between 0 and 100
+    inclusive, WITH NO PERCENTAGE SIGN
     """
 
     def setUp(self):
@@ -502,8 +502,8 @@ class RecipientCountryTestCase(TestCase):
 
 class RecipientRegionTestCase(TestCase):
     """
-    2.03: Content must be a decimal number between 0 and 100 inclusive, WITH
-    NO PERCENTAGE SIGN
+    2.03: 'percentage' attribute must be a decimal number between 0 and 100
+    inclusive, WITH NO PERCENTAGE SIGN
     """
 
     def setUp(self):
@@ -732,3 +732,242 @@ class RecipientRegionTestCase(TestCase):
 
         # Saving models is not tested here:
         self.assertEquals(recipient_region.pk, None)
+
+
+class ActivitySectorTestCase(TestCase):
+    """
+    2.03: 'percentage' attribute must be a decimal number between 0 and 100
+    inclusive, WITH NO PERCENTAGE SIGN
+    """
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert(isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_activity_sector(self):
+        """
+        - Tests if '<sector>' xml element is parsed and saved
+          correctly with proper attributes and narratives
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
+
+        sector_attributes = {
+            # "code": '1',
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        # CASE 1:
+        # 'Code' attr is missing:
+        try:
+            self.parser_203.iati_activities__iati_activity__sector(
+                sector_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.model, 'sector')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # CASE 2:
+        # Vocabulary not found:
+
+        sector_attributes = {
+            "code": '1',
+            "vocabulary": '222',
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__sector(
+                sector_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'sector')
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(
+                inst.message, 'not found on the accompanying code list'
+            )
+
+        # CASE 3:
+        # Region not found (when code attr == 1):
+
+        # Create Vocabulary obj:
+        vocabulary = SectorVocabularyFactory(code=1)
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        sector_attributes = {
+            "code": '1',
+            "vocabulary": str(vocabulary.code),
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__sector(
+                sector_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'sector')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message, 'not found on the accompanying code list'
+            )
+
+        # CASE 4:
+        # Sector not found (when code attr is differnt):
+
+        # Update Vocabulary obj:
+        vocabulary.code = 222
+        vocabulary.save()
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        sector_attributes = {
+            "code": '1',
+            "vocabulary": str(vocabulary.code),
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__sector(
+                sector_XML_element)
+            self.assertFail()
+        except IgnoredVocabularyError as inst:
+            self.assertEqual(inst.model, 'sector')
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(
+                inst.message, 'non implemented vocabulary'
+            )
+
+        # CASE 5:
+        # percentage is wrong:
+
+        # Update Vocabulary obj:
+        vocabulary.code = 1
+        vocabulary.save()
+
+        sector = iati_factory.SectorFactory()
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        sector_attributes = {
+            "code": sector.code,
+            "vocabulary": str(vocabulary.code),
+            "percentage": '100%'
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__sector(
+                sector_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'sector')
+            self.assertEqual(inst.field, 'percentage')
+            self.assertEqual(
+                inst.message,
+                'percentage value is not valid'
+            )
+
+        # CASE 6:
+        # All is good:
+
+        # Refresh related object so old one doesn't get assigned:
+        sector.refresh_from_db()
+        vocabulary.refresh_from_db()
+
+        sector_attributes = {
+            "code": sector.code,
+            "vocabulary": str(vocabulary.code),
+            "percentage": '100',
+            "vocabulary-uri": "http://www.google.lt",
+        }
+
+        sector_XML_element = E(
+            'sector',
+            **sector_attributes
+        )
+
+        self.parser_203.iati_activities__iati_activity__sector(
+            sector_XML_element)
+
+        activity_sector = self.parser_203.get_model(
+            'ActivitySector')
+
+        self.assertEquals(
+            activity_sector.sector, sector
+        )
+
+        self.assertEquals(
+            activity_sector.activity, self.activity
+        )
+
+        self.assertEquals(
+            activity_sector.percentage,
+            Decimal(sector_attributes['percentage'])
+        )
+
+        self.assertEquals(
+            activity_sector.vocabulary_uri,
+            sector_attributes['vocabulary-uri']
+        )
+
+        self.assertEquals(activity_sector.vocabulary, vocabulary)
+
+        # Saving models is not tested here:
+        self.assertEquals(activity_sector.pk, None)
