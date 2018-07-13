@@ -959,7 +959,6 @@ class Parse(IatiParser):
                 "code",
                 "code is unspecified or invalid")
 
-        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)

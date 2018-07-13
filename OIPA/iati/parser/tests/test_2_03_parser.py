@@ -10,13 +10,17 @@ from django.test import TestCase
 from lxml.builder import E
 
 from iati.factory import iati_factory
-from iati.parser.exceptions import FieldValidationError, RequiredFieldError
+from iati.parser.exceptions import (
+    FieldValidationError, IgnoredVocabularyError, RequiredFieldError
+)
 from iati.parser.IATI_2_03 import Parse as Parser_203
 from iati.parser.parse_manager import ParseManager
 from iati_codelists.factory import codelist_factory
 from iati_codelists.factory.codelist_factory import VersionFactory
 from iati_synchroniser.factory import synchroniser_factory
-from iati_vocabulary.factory.vocabulary_factory import TagVocabularyFactory
+from iati_vocabulary.factory.vocabulary_factory import (
+    RegionVocabularyFactory, TagVocabularyFactory
+)
 
 
 class ActivityParticipatingOrganisationTestCase(TestCase):
@@ -438,7 +442,6 @@ class RecipientCountryTestCase(TestCase):
         self.parser_203.codelist_cache = {}
 
         recipient_country_attributes = {
-            # Code is missing:
             "code": country.code,
             "country": '1',
             "percentage": '50%',
@@ -464,7 +467,6 @@ class RecipientCountryTestCase(TestCase):
         # all is good:
 
         recipient_country_attributes = {
-            # Code is missing:
             "code": country.code,
             "country": '1',
             "percentage": '50',
@@ -496,3 +498,237 @@ class RecipientCountryTestCase(TestCase):
 
         # Saving models is not tested here:
         self.assertEquals(recipient_country.pk, None)
+
+
+class RecipientRegionTestCase(TestCase):
+    """
+    2.03: Content must be a decimal number between 0 and 100 inclusive, WITH
+    NO PERCENTAGE SIGN
+    """
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert(isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_recipient_region(self):
+        """
+        - Tests if '<recipient-region>' xml element is parsed and saved
+          correctly with proper attributes and narratives
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
+
+        recipient_region_attributes = {
+            # "code": '1',
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        # CASE 1:
+        # 'Code' attr is missing:
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_region(
+                recipient_region_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.model, 'recipient-region')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'code is unspecified or invalid')
+
+        # CASE 2:
+        # Vocabulary not found:
+
+        recipient_region_attributes = {
+            "code": '222',
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_region(
+                recipient_region_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.model, 'recipient-region')
+            self.assertEqual(inst.field, 'vocabulary')
+            self.assertEqual(
+                inst.message, 'not found on the accompanying code list'
+            )
+
+        # CASE 3:
+        # Region not found (when code attr == 1):
+
+        # Create Vocabulary obj:
+        vocabulary = RegionVocabularyFactory(code=1)
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        recipient_region_attributes = {
+            "code": '1',
+            "vocabulary": str(vocabulary.code),
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_region(
+                recipient_region_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.model, 'recipient-region')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message, 'not found on the accompanying code list'
+            )
+
+        # CASE 4:
+        # Region not found (when code attr is differnt):
+
+        # Update Vocabulary obj:
+        vocabulary.code = 222
+        vocabulary.save()
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        recipient_region_attributes = {
+            "code": '1',
+            "vocabulary": str(vocabulary.code),
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_region(
+                recipient_region_XML_element)
+            self.assertFail()
+        except IgnoredVocabularyError as inst:
+            self.assertEqual(inst.model, 'recipient-region')
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message, 'code is unspecified or invalid'
+            )
+
+        # CASE 5:
+        # percentage is wrong:
+
+        # Update Vocabulary obj:
+        vocabulary.code = 1
+        vocabulary.save()
+
+        # Create Region obj:
+        region = iati_factory.RegionFactory()
+
+        # Clear codelist cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        recipient_region_attributes = {
+            "code": region.code,
+            "vocabulary": str(vocabulary.code),
+            "percentage": '100%'
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_region(
+                recipient_region_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            # self.assertEqual(inst.field, 'percentage')
+            self.assertEqual(
+                inst.message,
+                'percentage value is not valid'
+            )
+
+        # CASE 6:
+        # All is good:
+
+        # Refresh related object so old one doesn't get assigned:
+        vocabulary.refresh_from_db()
+
+        recipient_region_attributes = {
+            "code": region.code,
+            "vocabulary": str(vocabulary.code),
+            "percentage": '100',
+            "vocabulary-uri": "http://www.google.lt",
+        }
+
+        recipient_region_XML_element = E(
+            'recipient-region',
+            **recipient_region_attributes
+        )
+
+        self.parser_203.iati_activities__iati_activity__recipient_region(
+            recipient_region_XML_element)
+
+        recipient_region = self.parser_203.get_model(
+            'ActivityRecipientRegion')
+
+        self.assertEquals(
+            recipient_region.region, region
+        )
+
+        self.assertEquals(
+            recipient_region.activity, self.activity
+        )
+
+        self.assertEquals(
+            recipient_region.percentage,
+            Decimal(recipient_region_attributes['percentage'])
+        )
+
+        self.assertEquals(
+            recipient_region.vocabulary_uri,
+            recipient_region_attributes['vocabulary-uri']
+        )
+
+        self.assertEquals(recipient_region.vocabulary, vocabulary)
+
+        # Saving models is not tested here:
+        self.assertEquals(recipient_region.pk, None)
