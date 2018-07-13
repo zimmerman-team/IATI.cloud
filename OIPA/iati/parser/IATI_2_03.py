@@ -1345,8 +1345,7 @@ class Parse(IatiParser):
                 "vocabulary",
                 "not found on the accompanying code list",
                 None,
-                None,
-                vocabulary.code)
+                None)
 
         if not sector and vocabulary.code == '1':
             raise FieldValidationError(
@@ -1369,7 +1368,7 @@ class Parse(IatiParser):
                 percentage = Decimal(percentage)
             except InvalidOperation:
                 raise FieldValidationError(
-                    "activity-sector",
+                    "sector",
                     "percentage",
                     "percentage value is not valid",
                     None,
