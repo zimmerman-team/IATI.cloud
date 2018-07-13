@@ -891,7 +891,6 @@ class Parse(IatiParser):
                 None,
                 code)
 
-        # TODO: update test:
         if percentage:
             try:
                 percentage = Decimal(percentage)

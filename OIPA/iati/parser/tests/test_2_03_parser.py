@@ -3,6 +3,7 @@
 ###########################################################
 
 import datetime
+from decimal import Decimal
 
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
@@ -175,6 +176,8 @@ class ActivityTagTestCase(TestCase):
             iati_standard_version=current_version
         )
 
+        self.parser_203.register_model('Activity', self.activity)
+
     def test_activity_tag(self):
         """
         - Tests if '<tag>' xml element is parsed and saved correctly with
@@ -184,7 +187,7 @@ class ActivityTagTestCase(TestCase):
           tested separately
         """
 
-        # 1. Create specific XML elements for test case:
+        # Create specific XML elements for test case:
         activity_tag_attributes = {
             # Vocabulary is missing:
 
@@ -197,9 +200,6 @@ class ActivityTagTestCase(TestCase):
             'tag',
             **activity_tag_attributes
         )
-
-        # # 2. Register Activity object:
-        self.parser_203.register_model('Activity', self.activity)
 
         # CASE 1:
         # 'vocabulary' attr is missing:
@@ -333,3 +333,166 @@ class ActivityTagTestCase(TestCase):
 
         # Saving models is not tested here:
         self.assertEquals(activity_tag.pk, None)
+
+
+class RecipientCountryTestCase(TestCase):
+    """
+    2.03: Content must be a decimal number between 0 and 100 inclusive, WITH
+    NO PERCENTAGE SIGN
+    """
+
+    def setUp(self):
+
+        # 'Main' XML file for instantiating parser:
+        xml_file_attrs = {
+            "generated-datetime": datetime.datetime.now().isoformat(),
+            "version": '2.03',
+        }
+        self.iati_203_XML_file = E("iati-activities", **xml_file_attrs)
+
+        dummy_source = synchroniser_factory.DatasetFactory.create(
+            name="dataset-2"
+        )
+
+        self.parser_203 = ParseManager(
+            dataset=dummy_source,
+            root=self.iati_203_XML_file,
+        ).get_parser()
+
+        self.parser_203.default_lang = "en"
+
+        assert(isinstance(self.parser_203, Parser_203))
+
+        # Version
+        current_version = VersionFactory(code='2.03')
+
+        # Related objects:
+        self.activity = iati_factory.ActivityFactory.create(
+            iati_standard_version=current_version
+        )
+
+        self.parser_203.register_model('Activity', self.activity)
+
+    def test_recipient_country(self):
+        """
+        - Tests if '<recipient-country>' xml element is parsed and saved
+          correctly with proper attributes and narratives
+        - Doesn't test if object is actually saved in the database (the final
+          stage), because 'save_all_models()' parser's function is (probably)
+          tested separately
+        """
+
+        recipient_country_attributes = {
+            # "code": '1',
+            "country": '1',
+            "percentage": '50',
+        }
+
+        recipient_country_XML_element = E(
+            'recipient-country',
+            **recipient_country_attributes
+        )
+
+        # CASE 1:
+        # 'Code' attr is missing:
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_country(
+                recipient_country_XML_element)
+            self.assertFail()
+        except RequiredFieldError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(inst.message, 'required attribute missing')
+
+        # CASE 2:
+        # 'Country' attr is missing:
+
+        recipient_country_attributes = {
+            "code": '1',
+            # "country": '1',
+            "percentage": '50',
+        }
+
+        recipient_country_XML_element = E(
+            'recipient-country',
+            **recipient_country_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_country(
+                recipient_country_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'code')
+            self.assertEqual(
+                inst.message,
+                'not found on the accompanying code list'
+            )
+
+        # CASE 3:
+        # 'percentage' attr is wrong:
+
+        # let's create Country object so parser doesn't complain anymore:
+        country = iati_factory.CountryFactory(code='LTU')
+
+        # Clear cache (from memory):
+        self.parser_203.codelist_cache = {}
+
+        recipient_country_attributes = {
+            # Code is missing:
+            "code": country.code,
+            "country": '1',
+            "percentage": '50%',
+        }
+
+        recipient_country_XML_element = E(
+            'recipient-country',
+            **recipient_country_attributes
+        )
+
+        try:
+            self.parser_203.iati_activities__iati_activity__recipient_country(
+                recipient_country_XML_element)
+            self.assertFail()
+        except FieldValidationError as inst:
+            self.assertEqual(inst.field, 'percentage')
+            self.assertEqual(
+                inst.message,
+                'percentage value is not valid'
+            )
+
+        # CASE 4:
+        # all is good:
+
+        recipient_country_attributes = {
+            # Code is missing:
+            "code": country.code,
+            "country": '1',
+            "percentage": '50',
+        }
+
+        recipient_country_XML_element = E(
+            'recipient-country',
+            **recipient_country_attributes
+        )
+
+        self.parser_203.iati_activities__iati_activity__recipient_country(
+            recipient_country_XML_element)
+
+        recipient_country = self.parser_203.get_model(
+            'ActivityRecipientCountry')
+
+        # check if everything's saved:
+
+        self.assertEquals(
+            recipient_country.country, country
+        )
+        self.assertEquals(
+            recipient_country.activity, self.activity
+        )
+        self.assertEquals(
+            recipient_country.percentage,
+            Decimal(recipient_country_attributes['percentage'])
+        )
+
+        # Saving models is not tested here:
+        self.assertEquals(recipient_country.pk, None)
