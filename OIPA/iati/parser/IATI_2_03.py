@@ -21,6 +21,11 @@ from iati_vocabulary import models as vocabulary_models
 
 
 class Parse(IatiParser):
+    # FIXME: not all methods validate required arguments (f. ex
+    # iati_activities__iati_activity__capital_spend)
+
+    # FIXME: also, occurences are not validated (f. ex. one time vs any number
+    # of times)
 
     def __init__(self, *args, **kwargs):
         super(Parse, self).__init__(*args, **kwargs)
@@ -2639,7 +2644,6 @@ class Parse(IatiParser):
                 None,
                 code)
 
-        # TODO: test:
         if vocabulary_code:
             vocabulary = self.get_or_none(
                 vocabulary_models.AidTypeVocabulary,
