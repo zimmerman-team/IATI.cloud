@@ -374,3 +374,24 @@ class NestedFilter(CommaSeparatedCharMultipleFilter):
             return qs
 
         return qs.filter(id__in=self.nested_filter.filter(qs, value))
+
+
+class StartsWithInCommaSeparatedCharFilter(CharFilter):
+    """
+    Filters for startwith in comma.
+    For example in URL: 'sector_start_with=1.,2.' then the result will
+    be filtered all data with prefix sector '1.' and '2.'
+    TODO: please make the test for this filter
+    """
+
+    def filter(self, qs, values):
+        if values:
+            values = values.split(',')
+            values = reduce(reduce_comma, values, [])
+
+        query = Q()
+        for value in values:
+            query = query | \
+                    Q(**{"{}__{}".format(self.name, self.lookup_expr): value})
+
+        return qs.filter(query)
