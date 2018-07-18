@@ -14,56 +14,70 @@ def add_unesco__specific_regions(apps, schema_editor):
     Region = apps.get_model('geodata', 'Region')
     RegionVocabulary = apps.get_model('iati_vocabulary', 'RegionVocabulary')
 
+    # FIXME: initial OIPA's tasks have to be ran in order for this to work:
+
     # "The region reported corresponds to a region vocabulary maintained by
     # the reporting organisation for this activity":
-    rpeorting_org_region_vocabulary = RegionVocabulary.objects.get(code=99)
+    reporting_org_region_vocabulary = RegionVocabulary.objects.filter(
+        code=99
+    ).first()
 
-    with open(
-        os.path.dirname(os.path.abspath(__file__)) +
-            '/data_files/unesco_specific_regions.json') as f:
-        data = json.load(f)
+    if reporting_org_region_vocabulary:
 
-        for region in data:
-            new_unesco_region = Region.objects.create(
-                added_manually=True,
-                code=region['code'],
-                name=region['label'],
-                region_vocabulary=rpeorting_org_region_vocabulary,
-            )
+        with open(
+            os.path.dirname(os.path.abspath(__file__)) +
+                '/data_files/unesco_specific_regions.json') as f:
+            data = json.load(f)
 
-            new_unesco_region.save()
+            for region in data:
+                new_unesco_region = Region.objects.create(
+                    added_manually=True,
+                    code=region['code'],
+                    name=region['label'],
+                    region_vocabulary=reporting_org_region_vocabulary,
+                )
 
-            print('\nManually added new Unesco-specific region: {0}'.format(
-                new_unesco_region.name
-            ))
+                new_unesco_region.save()
+
+                print('\nManually added new Unesco-specific region: {0}'.format(
+                    new_unesco_region.name
+                ))
 
 
 def remove_unesco_specific_regions(apps, schema_editor):
     Region = apps.get_model('geodata', 'Region')
     RegionVocabulary = apps.get_model('iati_vocabulary', 'RegionVocabulary')
 
+    # FIXME: initial OIPA's tasks have to be ran in order for this to work:
+
     # "The region reported corresponds to a region vocabulary maintained by
     # the reporting organisation for this activity":
-    rpeorting_org_region_vocabulary = RegionVocabulary.objects.get(code=99)
+    reporting_org_region_vocabulary = RegionVocabulary.objects.filter(
+        code=99
+    ).first()
 
-    with open(
-        os.path.dirname(os.path.abspath(__file__)) +
-            '/data_files/unesco_specific_regions.json') as f:
-        data = json.load(f)
+    if reporting_org_region_vocabulary:
+        pass
+        with open(
+            os.path.dirname(os.path.abspath(__file__)) +
+                '/data_files/unesco_specific_regions.json') as f:
+            data = json.load(f)
 
-        for region in data:
-            new_unesco_region = Region.objects.get(
-                added_manually=True,
-                code=region['code'],
-                name=region['label'],
-                region_vocabulary=rpeorting_org_region_vocabulary,
-            )
+            for region in data:
+                new_unesco_region = Region.objects.filter(
+                    added_manually=True,
+                    code=region['code'],
+                    name=region['label'],
+                    region_vocabulary=reporting_org_region_vocabulary,
+                ).first()
 
-            new_unesco_region.delete()
+                if new_unesco_region:
 
-            print('\nRemoved Unesco-specific region: {0}'.format(
-                new_unesco_region.name
-            ))
+                    new_unesco_region.delete()
+
+                    print('\nRemoved Unesco-specific region: {0}'.format(
+                        new_unesco_region.name
+                    ))
 
 
 
