@@ -25,7 +25,9 @@ class SdgSectorImporter():
 
     def update(self):
         sectors = self.get_json_data(
-            # FIXME: this should be imported dynamically ??:
+            # These look like Unesco-specific Sectors, but despite the fact
+            # that they are not in IATI (we can not parse them), they are
+            # (will be) used globally, so we have to keep them in OIPA:
             "/data/sdg_target_sectors.json"
         ).get('targets')
 
