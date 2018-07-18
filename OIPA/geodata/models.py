@@ -12,6 +12,10 @@ class Region(models.Model):
         'self', null=True, blank=True, on_delete=models.CASCADE)
     center_longlat = models.PointField(null=True, blank=True)
     objects = models.Manager()
+    # Some (project-specific) regions are using external codelists, so we need
+    # no manually add them. TODO: later on, get rid of this field and use only
+    # IATI-specific regions - see #667
+    added_manually = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
