@@ -11,7 +11,8 @@ from rest_framework import filters
 
 from api.generics.filters import (
     CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
-    TogetherFilterSet, ToManyFilter, ToManyNotInFilter
+    TogetherFilterSet, ToManyFilter, ToManyNotInFilter,
+    StartsWithInCommaSeparatedCharFilter
 )
 from iati.models import (
     Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
@@ -257,6 +258,11 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='in',
         name='sector__category__code',
         fk='activity',
+    )
+
+    sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
+        lookup_expr='startswith',
+        name='sector__code',
     )
 
     policy_marker = ToManyFilter(
