@@ -33,17 +33,12 @@ class UnescoRegionImporter():
             data = json.load(f)
 
             for region in data:
-                new_unesco_region = Region.objects.create(
+                new_unesco_region, created = Region.objects.get_or_create(
                     added_manually=True,
                     code=region['code'],
                     name=region['label'],
                     region_vocabulary=reporting_org_region_vocabulary,
                 )
 
-                new_unesco_region.save()
-
-                print(
-                    '\nManually added new Unesco-specific region: {0}'.format(
-                        new_unesco_region.name
-                    )
-                )
+                if created:
+                    new_unesco_region.save()
