@@ -2998,6 +2998,56 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link(self, element):
+        '''New (optional) element in 2.03
+        '''
+        url = element.attrib.get('url')
+
+        file_format_code = element.attrib.get('format')
+        file_format = self.get_or_none(
+            codelist_models.FileFormat, code=file_format_code)
+
+        if not url:
+            raise RequiredFieldError(
+                "document-link",
+                "url",
+                "required attribute missing")
+
+        if not file_format_code:
+            raise RequiredFieldError(
+                "document-link",
+                "format",
+                "required attribute missing")
+
+        if not file_format:
+            raise FieldValidationError(
+                "document-link",
+                "format",
+                "not found on the accompanying code list",
+                None,
+                None,
+                file_format_code)
+
+        activity = self.get_model('Activity')
+        result = self.get_model('Result')
+
+        # It is impossible to assign related object (ForeignKey) before it's
+        # saved, so:
+        # XXX: not sure how efficient this is.
+        if result.pk is None:
+            result.save()
+
+        document_link = models.DocumentLink()
+        document_link.activity = activity
+        document_link.url = url
+        document_link.file_format = file_format
+        document_link.result = result
+
+        self.register_model('DocumentLink', document_link)
+
+        return element
+
     def iati_activities__iati_activity__result__indicator(self, element):
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
