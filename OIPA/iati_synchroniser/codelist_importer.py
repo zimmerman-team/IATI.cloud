@@ -296,14 +296,15 @@ class CodeListImporter():
                     date_updated=date_updated)
                 new_codelist.save()
 
-        cur_downloaded_xml = ("http://reference.iatistandard.org/"
-                              + self.looping_through_version.replace('.', '') +
-                              "/codelists/downloads/clv1/"
-                              "codelist/" + smart_text(name) + ".xml")
+        codelist_file_url = ("http://reference.iatistandard.org/"
+                             + self.looping_through_version.replace('.', '') +
+                             "/codelists/downloads/clv1/"
+                             "codelist/" + smart_text(name) + ".xml")
 
         cur_file_opener = urllib.request.build_opener()
+
         try:
-            cur_xml_file = cur_file_opener.open(cur_downloaded_xml)
+            cur_xml_file = cur_file_opener.open(codelist_file_url)
 
             context2 = etree.iterparse(cur_xml_file, tag=name)
             self.fast_iter(context2, self.add_code_list_item)
@@ -311,7 +312,9 @@ class CodeListImporter():
         # FIXME: log this error!:
         # TODO: present 404s to frontend
         except urllib.error.HTTPError:
-            pass
+            raise Exception(
+                'Codelist URL not found: {0}'.format(codelist_file_url)
+            )
 
     def loop_through_codelists(self, version):
         downloaded_xml = urllib.request.Request(
