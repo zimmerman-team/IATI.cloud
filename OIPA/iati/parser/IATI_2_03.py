@@ -3048,6 +3048,85 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__title__narrative(
+            self, element):
+        """attributes:
+
+        tag:narrative"""
+        document_link_title = self.get_model('DocumentLinkTitle')
+        self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__category(self, element):
+        """attributes:
+        code:A01
+
+        tag:category"""
+        code = element.attrib.get('code')
+        category = self.get_or_none(
+            codelist_models.DocumentCategory, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/category",
+                "code",
+                "required attribute missing")
+
+        if not category:
+            raise FieldValidationError(
+                "document-link/category",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_category = models.DocumentLinkCategory()
+
+        document_link_category.document_link = document_link
+        document_link_category.category = category
+
+        self.register_model('DocumentLinkCategory', document_link_category)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__language(self, element):
+        """attributes:
+        code:en
+
+        tag:language"""
+        code = element.attrib.get('code')
+        language = self.get_or_none(codelist_models.Language, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/language",
+                "code",
+                "required attribute missing")
+
+        if not language:
+            raise FieldValidationError(
+                "document-link/language",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_language = models.DocumentLinkLanguage()
+
+        document_link_language.document_link = document_link
+        document_link_language.language = language
+
+        self.register_model('DocumentLinkLanguage', document_link_language)
+        return element
+
     def iati_activities__iati_activity__result__indicator(self, element):
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
