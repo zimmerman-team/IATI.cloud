@@ -11,8 +11,8 @@ from rest_framework import filters
 
 from api.generics.filters import (
     CommaSeparatedCharFilter, CommaSeparatedStickyCharFilter,
-    TogetherFilterSet, ToManyFilter, ToManyNotInFilter,
-    StartsWithInCommaSeparatedCharFilter
+    StartsWithInCommaSeparatedCharFilter, TogetherFilterSet, ToManyFilter,
+    ToManyNotInFilter
 )
 from iati.models import (
     Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,

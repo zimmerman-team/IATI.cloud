@@ -3198,7 +3198,6 @@ class Parse(IatiParser):
             # period start/end dont exist
             pass
 
-
         result_indicator = self.get_model('ResultIndicator')
 
         # start with actual functionality for period:

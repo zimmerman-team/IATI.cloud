@@ -13,9 +13,9 @@ from djorm_pgfulltext.fields import VectorField
 from geodata.models import Country, Region
 from iati_codelists.models import (
     ActivityDateType, ActivityScope, ActivityStatus, AidType, BudgetIdentifier,
-    BudgetStatus, BudgetType, CRSChannelCode, CollaborationType, ConditionType, ContactType,
-    Currency, DescriptionType, DocumentCategory, FileFormat, FinanceType,
-    FlowType, GeographicExactness, GeographicLocationClass,
+    BudgetStatus, BudgetType, CollaborationType, ConditionType, ContactType,
+    CRSChannelCode, Currency, DescriptionType, DocumentCategory, FileFormat,
+    FinanceType, FlowType, GeographicExactness, GeographicLocationClass,
     GeographicLocationReach, HumanitarianScopeType, IndicatorMeasure, Language,
     LoanRepaymentPeriod, LoanRepaymentType, LocationType, OrganisationRole,
     OrganisationType, OtherFlags, OtherIdentifierType, PolicyMarker,
