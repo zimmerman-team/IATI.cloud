@@ -877,7 +877,18 @@ class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     result = models.ForeignKey('Result', null=True, on_delete=models.CASCADE)
     result_indicator = models.ForeignKey(
-        'ResultIndicator', null=True, on_delete=models.CASCADE
+        'ResultIndicator',
+        related_name='result_indicators',
+        null=True,
+        on_delete=models.CASCADE
+    )
+    # XXX: could also point to a separate 'Basline' model that should come up
+    # from ResultIndicator model:
+    result_indicator_baseline = models.ForeignKey(
+        'ResultIndicator',
+        related_name='result_indicator_baselines',
+        null=True,
+        on_delete=models.CASCADE
     )
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(
