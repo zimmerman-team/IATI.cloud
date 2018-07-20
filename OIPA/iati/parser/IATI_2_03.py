@@ -3139,6 +3139,36 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
+    # TODO: test:
+    def iati_activities__iati_activity__result__document_link__document_date(
+            self, element):
+        '''New (optional) <document-link> element for <result> element in 2.03
+        '''
+        iso_date = element.attrib.get('iso-date')
+
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing")
+
+        iso_date = self.validate_date(iso_date)
+
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
+
+        document_link = self.pop_model('DocumentLink')
+        document_link.iso_date = iso_date
+
+        self.register_model('DocumentLink', document_link)
+        return element
+
     def iati_activities__iati_activity__result__indicator(self, element):
         measure_code = element.attrib.get('measure')
         measure = self.get_or_none(
@@ -3300,6 +3330,37 @@ class Parse(IatiParser):
 
         self.register_model('DocumentLink', document_link)
 
+        return element
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__document_link__document_date(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <indicator> element
+           inside <result> element in 2.03
+        '''
+        iso_date = element.attrib.get('iso-date')
+
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing")
+
+        iso_date = self.validate_date(iso_date)
+
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
+
+        document_link = self.pop_model('DocumentLink')
+        document_link.iso_date = iso_date
+
+        self.register_model('DocumentLink', document_link)
         return element
 
     # TODO: test
@@ -3493,6 +3554,37 @@ class Parse(IatiParser):
 
         self.register_model('DocumentLink', document_link)
 
+        return element
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__document_date(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        iso_date = element.attrib.get('iso-date')
+
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing")
+
+        iso_date = self.validate_date(iso_date)
+
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
+
+        document_link = self.pop_model('DocumentLink')
+        document_link.iso_date = iso_date
+
+        self.register_model('DocumentLink', document_link)
         return element
 
     # TODO: test

@@ -208,7 +208,7 @@
             </comment>
           </baseline>
           <!--result-baseline ends-->
-          <!--result-period starts-->
+          <!--result(indicator)-period starts-->
           <period>
             <period-start iso-date="2013-01-01" />
             <period-end iso-date="2013-03-31" />
@@ -218,6 +218,7 @@
               <comment>
                 <narrative>Target comment text</narrative>
               </comment>
+
               <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_period_target_en.odt">
                 <title>
                   <narrative>Results Period Target Report 2013</narrative>
@@ -229,6 +230,7 @@
                 <language code="en" />
                 <document-date iso-date="2014-02-05" />
               </document-link>
+
             </target>
             <actual value="11">
               <dimension name="sex" value="female" />
