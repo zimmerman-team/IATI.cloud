@@ -188,7 +188,7 @@
           <reference vocabulary="1" code="3429" />
           <reference vocabulary="7" code="861" />
           <reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />
-          <!--result-baseline starts-->
+          <!--result-baseline (actually result-indicator-basline) starts-->
           <baseline year="2012" iso-date="2012-01-01" value="10">
             <dimension name="sex" value="female" />
             <dimension name="age" value="adult" />

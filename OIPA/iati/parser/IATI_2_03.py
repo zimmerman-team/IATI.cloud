@@ -3428,7 +3428,6 @@ class Parse(IatiParser):
             self.register_model('ResultIndicator', result_indicator)
 
         return element
-
     # """attributes:
 
     # tag:comment"""
@@ -3443,9 +3442,6 @@ class Parse(IatiParser):
                             result_indicator_baseline_comment)
         return element
 
-    # """attributes:
-
-    # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(  # NOQA: E501
             self, element):
         baseline_comment = self.get_model('ResultIndicatorBaselineComment')
@@ -3453,9 +3449,145 @@ class Parse(IatiParser):
 
         return element
 
-    # """attributes:
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__document_link(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        url = element.attrib.get('url')
 
-    # tag:period"""
+        file_format_code = element.attrib.get('format')
+        file_format = self.get_or_none(
+            codelist_models.FileFormat, code=file_format_code)
+
+        if not url:
+            raise RequiredFieldError(
+                "document-link",
+                "url",
+                "required attribute missing")
+
+        if not file_format_code:
+            raise RequiredFieldError(
+                "document-link",
+                "format",
+                "required attribute missing")
+
+        if not file_format:
+            raise FieldValidationError(
+                "document-link",
+                "format",
+                "not found on the accompanying code list",
+                None,
+                None,
+                file_format_code)
+
+        activity = self.get_model('Activity')
+        result_indicator = self.get_model('ResultIndicator')
+
+        document_link = models.DocumentLink()
+        document_link.activity = activity
+        document_link.url = url
+        document_link.file_format = file_format
+        document_link.result_indicator_baseline = result_indicator
+
+        self.register_model('DocumentLink', document_link)
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__title(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_title = models.DocumentLinkTitle()
+        document_link_title.document_link = document_link
+
+        self.register_model('DocumentLinkTitle', document_link_title)
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__title__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        document_link_title = self.get_model('DocumentLinkTitle')
+        self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__category(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        code = element.attrib.get('code')
+        category = self.get_or_none(
+            codelist_models.DocumentCategory, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/category",
+                "code",
+                "required attribute missing")
+
+        if not category:
+            raise FieldValidationError(
+                "document-link/category",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_category = models.DocumentLinkCategory()
+
+        document_link_category.document_link = document_link
+        document_link_category.category = category
+
+        self.register_model('DocumentLinkCategory', document_link_category)
+        return element
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__language(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        code = element.attrib.get('code')
+        language = self.get_or_none(codelist_models.Language, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/language",
+                "code",
+                "required attribute missing")
+
+        if not language:
+            raise FieldValidationError(
+                "document-link/language",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_language = models.DocumentLinkLanguage()
+
+        document_link_language.document_link = document_link
+        document_link_language.language = language
+
+        self.register_model('DocumentLinkLanguage', document_link_language)
+        return element
+
     def iati_activities__iati_activity__result__indicator__period(
             self, element):
 
