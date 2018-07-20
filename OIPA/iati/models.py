@@ -890,6 +890,12 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
+    period_target = models.ForeignKey(
+        'ResultIndicator',
+        related_name='period_targets',
+        null=True,
+        on_delete=models.CASCADE
+    )
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(
         FileFormat, null=True, blank=True,
