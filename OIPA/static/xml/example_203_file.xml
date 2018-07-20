@@ -143,113 +143,115 @@
     <conditions attached="0"/>
 
     <!--Result within this activity (doesn't have some child elements like <document-date> for example):-->
-    <result type="1" aggregation-status="1">
-      <title>
-        <narrative>Result title</narrative>
-      </title>
-      <description>
-        <narrative>Result description text</narrative>
-      </description>
-      <!--result-document-link example starts-->
-      <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_en.odt">
+      <result type="1" aggregation-status="1">
         <title>
-          <narrative>Results Report 2013</narrative>
+          <narrative>Result title</narrative>
         </title>
         <description>
-          <narrative>Report of results</narrative>
+          <narrative>Result description text</narrative>
         </description>
-        <category code="A01" />
-        <language code="en" />
-        <document-date iso-date="2014-02-05" />
-      </document-link>
-      <reference vocabulary="1" code="3429" />
-
-      <!--Indicator within this result:-->
-      <indicator measure="1" ascending="1" aggregation-status="1">
-        <title>
-          <narrative>Indicator title</narrative>
-        </title>
-        <description>
-          <narrative>Indicator description text</narrative>
-        </description>
-        <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_indicator_en.odt">
+        <!--result-document-link example starts-->
+        <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_en.odt">
           <title>
-            <narrative>Results Indicator Report 2013</narrative>
+            <narrative>Results Report 2013</narrative>
           </title>
           <description>
-            <narrative>Report of results indicator</narrative>
+            <narrative>Report of results</narrative>
           </description>
           <category code="A01" />
           <language code="en" />
           <document-date iso-date="2014-02-05" />
         </document-link>
         <reference vocabulary="1" code="3429" />
-        <reference vocabulary="7" code="861" />
-        <reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />
-      <!--result-baseline starts-->
-     <baseline year="2012" iso-date="2012-01-01" value="10">
-       <dimension name="sex" value="female" />
-       <dimension name="age" value="adult" />
-       <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_baseline_en.odt">
-         <title>
-           <narrative>Results Baseline Report 2013</narrative>
-         </title>
-         <description>
-           <narrative>Report of results baseline</narrative>
-         </description>
-         <category code="A01" />
-         <language code="en" />
-         <document-date iso-date="2014-02-05" />
-       </document-link>
-       <comment>
-         <narrative>Baseline comment text</narrative>
-       </comment>
-     </baseline>
-     <!--result-baseline ends-->
-     <!--result-period starts-->
-     <period>
-       <period-start iso-date="2013-01-01" />
-       <period-end iso-date="2013-03-31" />
-       <target value="10">
-         <dimension name="sex" value="female" />
-         <dimension name="age" value="adult" />
-         <comment>
-           <narrative>Target comment text</narrative>
-         </comment>
-         <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_period_target_en.odt">
-           <title>
-             <narrative>Results Period Target Report 2013</narrative>
-           </title>
-           <description>
-             <narrative>Report of results period target</narrative>
-           </description>
-           <category code="A01" />
-           <language code="en" />
-           <document-date iso-date="2014-02-05" />
-         </document-link>
-       </target>
-       <actual value="11">
-         <dimension name="sex" value="female" />
-         <dimension name="age" value="adult" />
-         <comment>
-           <narrative>Actual comment text</narrative>
-         </comment>
-         <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_period_actual_en.odt">
-           <title>
-             <narrative>Results Period Actual Report 2013</narrative>
-           </title>
-           <description>
-             <narrative>Report of results period actual</narrative>
-           </description>
-           <category code="A01" />
-           <language code="en" />
-           <document-date iso-date="2014-02-05" />
-         </document-link>
-       </actual>
-     </period>
-     <!--result-period ends-->
-   </indicator>
- </result>
+
+        <!--Indicator within this result:-->
+        <indicator measure="1" ascending="1" aggregation-status="1">
+          <title>
+            <narrative>Indicator title</narrative>
+          </title>
+          <description>
+            <narrative>Indicator description text</narrative>
+          </description>
+
+          <!--Document link for this Result Indicator:-->
+          <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_indicator_en.odt">
+            <title>
+              <narrative>Results Indicator Report 2013</narrative>
+            </title>
+            <description>
+              <narrative>Report of results indicator</narrative>
+            </description>
+            <category code="A01" />
+            <language code="en" />
+            <document-date iso-date="2014-02-05" />
+          </document-link>
+          <reference vocabulary="1" code="3429" />
+          <reference vocabulary="7" code="861" />
+          <reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />
+          <!--result-baseline starts-->
+          <baseline year="2012" iso-date="2012-01-01" value="10">
+            <dimension name="sex" value="female" />
+            <dimension name="age" value="adult" />
+            <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_baseline_en.odt">
+              <title>
+                <narrative>Results Baseline Report 2013</narrative>
+              </title>
+              <description>
+                <narrative>Report of results baseline</narrative>
+              </description>
+              <category code="A01" />
+              <language code="en" />
+              <document-date iso-date="2014-02-05" />
+            </document-link>
+            <comment>
+              <narrative>Baseline comment text</narrative>
+            </comment>
+          </baseline>
+          <!--result-baseline ends-->
+          <!--result-period starts-->
+          <period>
+            <period-start iso-date="2013-01-01" />
+            <period-end iso-date="2013-03-31" />
+            <target value="10">
+              <dimension name="sex" value="female" />
+              <dimension name="age" value="adult" />
+              <comment>
+                <narrative>Target comment text</narrative>
+              </comment>
+              <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_period_target_en.odt">
+                <title>
+                  <narrative>Results Period Target Report 2013</narrative>
+                </title>
+                <description>
+                  <narrative>Report of results period target</narrative>
+                </description>
+                <category code="A01" />
+                <language code="en" />
+                <document-date iso-date="2014-02-05" />
+              </document-link>
+            </target>
+            <actual value="11">
+              <dimension name="sex" value="female" />
+              <dimension name="age" value="adult" />
+              <comment>
+                <narrative>Actual comment text</narrative>
+              </comment>
+              <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_period_actual_en.odt">
+                <title>
+                  <narrative>Results Period Actual Report 2013</narrative>
+                </title>
+                <description>
+                  <narrative>Report of results period actual</narrative>
+                </description>
+                <category code="A01" />
+                <language code="en" />
+                <document-date iso-date="2014-02-05" />
+              </document-link>
+            </actual>
+          </period>
+          <!--result-period ends-->
+        </indicator>
+      </result>
 
 
   </iati-activity>
