@@ -876,6 +876,9 @@ class RelatedActivity(models.Model):
 class DocumentLink(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     result = models.ForeignKey('Result', null=True, on_delete=models.CASCADE)
+    result_indicator = models.ForeignKey(
+        'ResultIndicator', null=True, on_delete=models.CASCADE
+    )
     url = models.TextField(max_length=500)
     file_format = models.ForeignKey(
         FileFormat, null=True, blank=True,
