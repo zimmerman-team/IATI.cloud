@@ -27,7 +27,7 @@ from iati_synchroniser.models import Dataset, Publisher
 from iati_vocabulary.models import (
     BudgetIdentifierVocabulary, GeographicVocabulary,
     HumanitarianScopeVocabulary, IndicatorVocabulary, PolicyMarkerVocabulary,
-    RegionVocabulary, SectorVocabulary, TagVocabulary
+    RegionVocabulary, ResultVocabulary, SectorVocabulary, TagVocabulary
 )
 
 # FIXME: relative imports:!
@@ -1047,6 +1047,18 @@ class ResultIndicator(models.Model):
 
     def __unicode__(self,):
         return "baseline year: %s" % self.baseline_year
+
+
+class ResultReference(models.Model):
+    result = models.ForeignKey(
+        Result, on_delete=models.CASCADE)
+    code = models.CharField(max_length=255)
+    vocabulary = models.ForeignKey(
+        ResultVocabulary, on_delete=models.CASCADE)
+    vocabulary_uri = models.URLField(null=True, blank=True)
+
+    def get_activity(self):
+        return self.result.activity
 
 
 class ResultIndicatorReference(models.Model):
