@@ -85,6 +85,9 @@ class CodeListImporter():
             return xpath_find[0].encode('utf-8')
 
     def add_code_list_item(self, elem):
+        '''Adds ALL available codelist items from the file IF element's name
+        matches model name in our database (RegionVocabulary, Country, etc.)
+        '''
 
         tag = elem.tag
         item = None
