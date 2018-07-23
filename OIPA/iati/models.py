@@ -1041,6 +1041,7 @@ class ResultIndicator(models.Model):
         blank=True,
         default=None, on_delete=models.CASCADE)
     ascending = models.BooleanField(default=True)
+    aggregation_status = models.BooleanField(default=False)
 
     def get_activity(self):
         return self.result.activity
