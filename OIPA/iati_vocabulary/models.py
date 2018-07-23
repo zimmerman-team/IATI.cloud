@@ -93,3 +93,12 @@ class AidTypeVocabulary(models.Model):
 
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
+
+
+class ResultVocabulary(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(default="")
+
+    def __unicode__(self,):
+        return "%s - %s" % (self.code, self.name)
