@@ -4160,6 +4160,176 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+        url = element.attrib.get('url')
+
+        file_format_code = element.attrib.get('format')
+        file_format = self.get_or_none(
+            codelist_models.FileFormat, code=file_format_code)
+
+        if not url:
+            raise RequiredFieldError(
+                "document-link",
+                "url",
+                "required attribute missing")
+
+        if not file_format_code:
+            raise RequiredFieldError(
+                "document-link",
+                "format",
+                "required attribute missing")
+
+        if not file_format:
+            raise FieldValidationError(
+                "document-link",
+                "format",
+                "not found on the accompanying code list",
+                None,
+                None,
+                file_format_code)
+
+        activity = self.get_model('Activity')
+        result_indicator = self.get_model('ResultIndicator')
+
+        document_link = models.DocumentLink()
+        document_link.activity = activity
+        document_link.url = url
+        document_link.file_format = file_format
+        document_link.period_actual = result_indicator
+
+        self.register_model('DocumentLink', document_link)
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__title(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_title = models.DocumentLinkTitle()
+        document_link_title.document_link = document_link
+
+        self.register_model('DocumentLinkTitle', document_link_title)
+
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__title__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link_title = self.get_model('DocumentLinkTitle')
+        self.add_narrative(element, document_link_title)
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__category(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        code = element.attrib.get('code')
+        category = self.get_or_none(
+            codelist_models.DocumentCategory, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/category",
+                "code",
+                "required attribute missing")
+
+        if not category:
+            raise FieldValidationError(
+                "document-link/category",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_category = models.DocumentLinkCategory()
+
+        document_link_category.document_link = document_link
+        document_link_category.category = category
+
+        self.register_model('DocumentLinkCategory', document_link_category)
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__language(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+        code = element.attrib.get('code')
+        language = self.get_or_none(codelist_models.Language, code=code)
+
+        if not code:
+            raise RequiredFieldError(
+                "document-link/language",
+                "code",
+                "required attribute missing")
+
+        if not language:
+            raise FieldValidationError(
+                "document-link/language",
+                "code",
+                "not found on the accompanying code list",
+                None,
+                None,
+                code)
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_language = models.DocumentLinkLanguage()
+
+        document_link_language.document_link = document_link
+        document_link_language.language = language
+
+        self.register_model('DocumentLinkLanguage', document_link_language)
+        return element
+
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__document_date(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+        iso_date = element.attrib.get('iso-date')
+
+        if not iso_date:
+            raise RequiredFieldError(
+                "document-link/document-date",
+                "iso-date",
+                "required attribute missing")
+
+        iso_date = self.validate_date(iso_date)
+
+        if not iso_date:
+            raise FieldValidationError(
+                "document-link/document-date",
+                "iso-date",
+                "iso-date not of type xsd:date",
+                None,
+                None,
+                element.attrib.get('iso-date'))
+
+        document_link = self.pop_model('DocumentLink')
+        document_link.iso_date = iso_date
+
+        self.register_model('DocumentLink', document_link)
+        return element
+
     def iati_activities__iati_activity__tag(self, element):
         """A method to catch <tag> element from IATI activity file and save
         ActivityTag model instance
