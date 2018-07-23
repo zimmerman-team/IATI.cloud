@@ -3220,6 +3220,8 @@ class Parse(IatiParser):
         measure = self.get_or_none(
             codelist_models.IndicatorMeasure, code=measure_code)
         ascending = element.attrib.get('ascending', '1')
+        # TODO: update test:
+        aggregation_status = element.attrib.get('aggregation-status')
 
         if not measure_code:
             raise RequiredFieldError(
@@ -3238,6 +3240,9 @@ class Parse(IatiParser):
         result_indicator.result = result
         result_indicator.measure = measure
         result_indicator.ascending = self.makeBool(ascending)
+        result_indicator.aggregation_status = self.makeBool(
+            aggregation_status
+        )
 
         self.register_model('ResultIndicator', result_indicator)
         return element
