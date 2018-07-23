@@ -1,7 +1,8 @@
 from django.db.models import Max, Sum
 
 from iati.models import (
-    Activity, ActivityParticipatingOrganisation, RelatedActivity
+    Activity, ActivityParticipatingOrganisation, RelatedActivity,
+    ResultIndicatorReference, ResultReference
 )
 from iati.transaction.models import TransactionProvider, TransactionReceiver
 
@@ -252,3 +253,31 @@ def unfound_identifiers(self, dataset):
             -1,
             variable,
             activity_id)
+
+
+# TODO: test:
+def use_result_reference_or_indicator_reference(self, activity):
+    '''New (optional) <reference> element for <result> element in IATI v. 2.03
+
+    The reference element can be repeated in any result. If the reference
+    element is reported at result level it must not be reported at
+    indicator level
+    '''
+
+    activity_result_references = ResultReference.objects.filter(
+        result__activity=activity)
+    activity_result_indicator_references = ResultIndicatorReference.objects\
+        .filter(result_indicator__result__activity=activity)
+
+    if (activity_result_references.exists()
+            and activity_result_indicator_references.exists()):
+
+        self.append_error(
+            "FieldValidationError",
+            "iati-activity/result/reference",
+            "-",
+            ("If the reference element is reported at result level it must "
+             "not be reported at indicator level"),
+            -1,
+            '-',
+            activity.iati_identifier)

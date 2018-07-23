@@ -4509,6 +4509,9 @@ class Parse(IatiParser):
             post_save_validators.sector_percentages_add_up(self, a)
             post_save_validators.use_sector_or_transaction_sector(self, a)
             post_save_validators.use_direct_geo_or_transaction_geo(self, a)
+            post_save_validators.use_result_reference_or_indicator_reference(
+                self, a
+            )
 
         post_save_validators.unfound_identifiers(self, dataset)
         post_save_validators.transactions_at_multiple_levels(self, dataset)
