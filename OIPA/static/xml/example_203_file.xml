@@ -162,7 +162,7 @@
           <language code="en" />
           <document-date iso-date="2014-02-05" />
         </document-link>
-        <reference vocabulary="1" code="3429" />
+        <reference vocabulary="99" code="B1" vocabulary-uri="http://example.com/indicators.html" />
 
         <!--Indicator within this result:-->
         <indicator measure="1" ascending="1" aggregation-status="1">
@@ -185,9 +185,13 @@
             <language code="en" />
             <document-date iso-date="2014-02-05" />
           </document-link>
-          <reference vocabulary="1" code="3429" />
-          <reference vocabulary="7" code="861" />
-          <reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />
+
+          <!--Reference is already reported on a Result level, so if you-->
+          <!--uncomment these, an error (DatasetNote) will be created:-->
+          <!--<reference vocabulary="1" code="3429" />-->
+          <!--<reference vocabulary="7" code="861" />-->
+          <!--<reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />-->
+
           <!--result-baseline (actually result-indicator-basline) starts-->
           <baseline year="2012" iso-date="2012-01-01" value="10">
             <dimension name="sex" value="female" />

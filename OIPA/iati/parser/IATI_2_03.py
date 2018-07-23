@@ -2955,7 +2955,52 @@ class Parse(IatiParser):
         self.register_model('Result', result)
         return element
 
-    # """attributes:
+    # TODO: test:
+    def iati_activities__iati_activity__result__reference(self, element):
+        '''New (optional) <reference> element for <result> element in 2.03
+
+        The reference element can be repeated in any result. If the reference
+        element is reported at result level it must not be reported at
+        indicator level
+        '''
+
+        vocabulary_code = element.attrib.get('vocabulary')
+        vocabulary = self.get_or_none(
+            vocabulary_models.ResultVocabulary, code=vocabulary_code)
+        code = element.attrib.get('code')
+        vocabulary_uri = element.attrib.get('vocabulary-uri')
+
+        if not vocabulary_code:
+            raise RequiredFieldError(
+                "result/reference",
+                "vocabulary",
+                "required attribute missing")
+
+        if not vocabulary:
+            raise FieldValidationError(
+                "result/reference",
+                "vocabulary",
+                "not found on the accompanying code list",
+                None,
+                None,
+                vocabulary_code)
+
+        if not code:
+            raise RequiredFieldError(
+                "result/reference",
+                "code",
+                "Unspecified or invalid.")
+
+        result = self.get_model('Result')
+        result_reference = models.ResultReference()
+        result_reference.result = result
+        result_reference.code = code
+        result_reference.vocabulary = vocabulary
+        result_reference.vocabulary_uri = vocabulary_uri
+
+        self.register_model('ResultReference',
+                            result_reference)
+        return element
 
     # tag:title"""
     def iati_activities__iati_activity__result__title(self, element):
