@@ -42,6 +42,8 @@ djorm-ext-pgfulltext==0.10
 # Extract text from various documents:
 fulltext==0.5
 
+gunicorn==19.9.0
+
 # A library for interacting with websites (Requests + BeautifulSoup):
 MechanicalSoup==0.10.0
 
