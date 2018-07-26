@@ -385,7 +385,7 @@ class IatiParser(object):
         if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
             # This is set in parser's (currently: IATI_2_03.py)
             # 'add_narrative()' method:
-            model.related_object = model._related_object
+            model.related_object = getattr(model, '_related_object')
         for field in model._meta.fields:
             if isinstance(field, (ForeignKey, OneToOneField)):
                 setattr(model, field.name, getattr(model, field.name))
