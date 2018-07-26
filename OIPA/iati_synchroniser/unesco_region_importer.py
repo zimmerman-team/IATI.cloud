@@ -5,6 +5,7 @@ from geodata.models import Region
 from iati_vocabulary.models import RegionVocabulary
 
 
+# TODO: test
 class UnescoRegionImporter():
     """
     Currently, Region objects in OIPA are Codelists (see:

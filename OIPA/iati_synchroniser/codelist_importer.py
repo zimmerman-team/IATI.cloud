@@ -17,6 +17,7 @@ from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
 from iati_synchroniser.unesco_region_importer import UnescoRegionImporter
+from iati_synchroniser.unesco_sector_importer import UnescoSectorImporter
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
 logger = logging.getLogger(__name__)
@@ -335,6 +336,8 @@ class CodeListImporter():
         self.add_missing_items()
 
         # XXX: where are these used?
+        # Some of them (from the JSON file) dublicate with official Sectors:
+        # reference.iatistandard.org/203/codelists/downloads/clv1/codelist/Sector.xml  # NOQA: E501
         dsi = DacSectorImporter()
         dsi.update()
 
@@ -348,3 +351,7 @@ class CodeListImporter():
         # temporary storing them in our db. See: #667
         uri = UnescoRegionImporter()
         uri.update()
+
+        # Unesco-specific sectors (they shouldn't be in OIPA):
+        usi = UnescoSectorImporter()
+        usi.update()
