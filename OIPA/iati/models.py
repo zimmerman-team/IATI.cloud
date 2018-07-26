@@ -878,8 +878,7 @@ class DocumentLink(models.Model):
     result = models.ForeignKey('Result', null=True, on_delete=models.CASCADE)
     result_indicator = models.ForeignKey(
         'ResultIndicator',
-        # FIXME: this name:
-        related_name='result_indicators',
+        related_name='result_indicator_document_links',
         null=True,
         on_delete=models.CASCADE
     )
@@ -887,22 +886,19 @@ class DocumentLink(models.Model):
     # from ResultIndicator model:
     result_indicator_baseline = models.ForeignKey(
         'ResultIndicator',
-        # FIXME: this name:
-        related_name='result_indicator_baselines',
+        related_name='baseline_document_links',
         null=True,
         on_delete=models.CASCADE
     )
     period_target = models.ForeignKey(
         'ResultIndicator',
-        # FIXME: this name:
-        related_name='period_targets',
+        related_name='period_target_document_links',
         null=True,
         on_delete=models.CASCADE
     )
     period_actual = models.ForeignKey(
         'ResultIndicator',
-        # FIXME: this name:
-        related_name='period_actuals',
+        related_name='period_actual_document_links',
         null=True,
         on_delete=models.CASCADE
     )
