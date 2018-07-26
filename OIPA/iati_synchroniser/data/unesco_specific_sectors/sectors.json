@@ -1,0 +1,26 @@
+[
+  {
+    "code": "01",
+    "label": "Priority Africa"
+  },
+  {
+    "code": "02",
+    "label": "Gender Equality"
+  },
+  {
+    "code": "03",
+    "label": "Youth"
+  },
+  {
+    "code": "04",
+    "label": "Climate Change"
+  },
+  {
+    "code": "05",
+    "label": "SIDS"
+  },
+  {
+    "code": "06",
+    "label": "Indigenous People"
+  }
+]
