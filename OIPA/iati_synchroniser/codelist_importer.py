@@ -334,9 +334,13 @@ class CodeListImporter():
         self.fast_iter(context, self.get_codelist_data)
         self.add_missing_items()
 
+        # XXX: where are these used?
         dsi = DacSectorImporter()
         dsi.update()
 
+        # These look like Unesco-specific Sectors, but despite the fact
+        # that they are not in IATI (we can not parse them), they are
+        # (will be) used globally, so we have to keep them in OIPA:
         ssi = SdgSectorImporter()
         ssi.update()
 
