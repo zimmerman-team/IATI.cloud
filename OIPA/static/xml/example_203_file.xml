@@ -43,6 +43,28 @@
     <recipient-region code="998">
       <narrative xml:lang="en">WORLD WIDE</narrative>
     </recipient-region>
+
+    <location ref="AF-KAN">
+      <location-reach code="1" />
+      <location-id vocabulary="G1" code="1453782" />
+      <name>
+        <narrative>Location name</narrative>
+      </name>
+      <description>
+        <narrative>Location description</narrative>
+      </description>
+      <activity-description>
+        <narrative>A description that qualifies the activity taking place at the location.</narrative>
+      </activity-description>
+      <administrative vocabulary="G1" level="1" code="1453782" />
+      <point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+        <pos>31.616944 65.716944</pos>
+      </point>
+      <exactness code="1"/>
+      <location-class code="2"/>
+      <feature-designation code="ADMF"/>
+    </location>
+
     <sector code="15220">
       <narrative xml:lang="en">Civilian peace-building, conflict prevention and resolution</narrative>
     </sector>
@@ -192,8 +214,16 @@
           <!--<reference vocabulary="7" code="861" />-->
           <!--<reference vocabulary="99" code="B1" indicator-uri="http://example.com/indicators.html" />-->
 
-          <!--result-baseline (actually result-indicator-basline) starts-->
+          <!--result-baseline (actually result-indicator-baseline) starts-->
           <baseline year="2012" iso-date="2012-01-01" value="10">
+
+            <!--location(s) for this ResultIndicator baseline:-->
+            <location ref="AF-KAN" />
+            <!--This one isn't referenced on Activity level, so if you comment-->
+            <!--this out, an error (DatasetNote) will be created:-->
+
+            <!--<location ref="KH-PNH" />-->
+
             <dimension name="sex" value="female" />
             <dimension name="age" value="adult" />
             <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_baseline_en.odt">
