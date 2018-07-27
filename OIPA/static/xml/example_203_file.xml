@@ -224,8 +224,10 @@
 
             <!--<location ref="KH-PNH" />-->
 
+            <!--dimension element(s) for this ResultIndicator baseline:-->
             <dimension name="sex" value="female" />
             <dimension name="age" value="adult" />
+
             <document-link format="application/vnd.oasis.opendocument.text" url="http:www.example.org/docs/result_baseline_en.odt">
               <title>
                 <narrative>Results Baseline Report 2013</narrative>
@@ -242,6 +244,7 @@
             </comment>
           </baseline>
           <!--result-baseline ends-->
+
           <!--result(indicator)-period starts-->
           <period>
             <period-start iso-date="2013-01-01" />
