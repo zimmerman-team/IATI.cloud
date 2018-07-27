@@ -16,7 +16,6 @@ from iati_codelists.models import (
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
-from iati_synchroniser.unesco_region_importer import UnescoRegionImporter
 from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
 
 logger = logging.getLogger(__name__)
@@ -343,8 +342,3 @@ class CodeListImporter():
         # (will be) used globally, so we have to keep them in OIPA:
         ssi = SdgSectorImporter()
         ssi.update()
-
-        # These are non-IATI, Unesco project-specific regions, but we're
-        # temporary storing them in our db. See: #667
-        uri = UnescoRegionImporter()
-        uri.update()
