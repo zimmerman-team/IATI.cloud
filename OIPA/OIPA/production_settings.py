@@ -73,3 +73,14 @@ LOGGING = {
         },
     },
 }
+
+# FIXME: Caching is disabled COMPLETELY for now.
+# See: #680
+CACHES = {
+    'api': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+}
