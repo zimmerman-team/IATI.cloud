@@ -1188,6 +1188,19 @@ class ResultIndicatorPeriodActualDimension(models.Model):
         return self.result_indicator_period.result_indicator.result.activity
 
 
+class ResultIndicatorBaselineDimension(models.Model):
+    result_indicator = models.ForeignKey(
+        ResultIndicator, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+
+    def __unicode__(self,):
+        return "%s: %s" % (self.name, self.value)
+
+    def get_activity(self):
+        return self.result_indicator.result.activity
+
+
 class ResultIndicatorPeriodTargetComment(models.Model):
     result_indicator_period = models.OneToOneField(
         ResultIndicatorPeriod, on_delete=models.CASCADE)
