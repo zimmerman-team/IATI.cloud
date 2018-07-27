@@ -18,8 +18,8 @@ from iati.models import (
     Activity, ActivityParticipatingOrganisation, ActivityPolicyMarker,
     ActivityRecipientCountry, ActivityRecipientRegion,
     ActivityReportingOrganisation, ActivitySector, Budget, DocumentLink,
-    HumanitarianScope, RelatedActivity, Result, ResultIndicatorPeriod,
-    ResultIndicatorTitle
+    HumanitarianScope, OtherIdentifier, RelatedActivity, Result,
+    ResultIndicatorPeriod, ResultIndicatorTitle
 )
 from iati.transaction.models import Transaction
 from iati_synchroniser.models import Dataset, Publisher
@@ -332,6 +332,13 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='year',
         name='period_end',
         fk='result_indicator__result__activity')
+
+    other_identifier = ToManyFilter(
+        qs=OtherIdentifier,
+        lookup_expr='in',
+        name='identifier',
+        fk='activity',
+    )
 
     #
     # Publisher meta filters
