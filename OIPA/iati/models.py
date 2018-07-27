@@ -878,7 +878,7 @@ class DocumentLink(models.Model):
     result = models.ForeignKey('Result', null=True, on_delete=models.CASCADE)
     result_indicator = models.ForeignKey(
         'ResultIndicator',
-        related_name='result_indicator_document_links',
+        related_name='result_indicators',
         null=True,
         on_delete=models.CASCADE
     )
@@ -886,19 +886,19 @@ class DocumentLink(models.Model):
     # from ResultIndicator model:
     result_indicator_baseline = models.ForeignKey(
         'ResultIndicator',
-        related_name='baseline_document_links',
+        related_name='result_indicator_baselines',
         null=True,
         on_delete=models.CASCADE
     )
     period_target = models.ForeignKey(
         'ResultIndicator',
-        related_name='period_target_document_links',
+        related_name='period_targets',
         null=True,
         on_delete=models.CASCADE
     )
     period_actual = models.ForeignKey(
         'ResultIndicator',
-        related_name='period_actual_document_links',
+        related_name='period_actuals',
         null=True,
         on_delete=models.CASCADE
     )
@@ -1475,13 +1475,6 @@ class Condition(models.Model):
 
 class Location(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    result_indicator_baseline = models.ForeignKey(
-        ResultIndicator,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name='baseline_locations',
-    )
 
     ref = models.CharField(max_length=200, default="", null=True, blank=True)
     location_reach = models.ForeignKey(
