@@ -2423,7 +2423,7 @@ def other_identifier(
     if owner_ref:
         pass
         # TODO:  check for valid org id
-        # http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/owner-org/
+        # http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/other-identifier/owner-org/
         # - 2016-12-07
 
     validated_narratives = narratives(
