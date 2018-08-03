@@ -6,7 +6,7 @@ Docstore is a collection of IATI activities documents contents. Those docs are a
 
 For more details about the documents content, it is highly recommended to look at the IATI standard reference:
 
-http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/document-link/
+http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/document-link/
 
 OIPA is a building a search engine named "Docstore" that is collecting docs published in IATI activities. It is offering a word look up and generating a list of documents that is matching users queries.
 

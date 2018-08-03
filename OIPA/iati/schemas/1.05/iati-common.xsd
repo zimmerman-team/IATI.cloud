@@ -131,7 +131,7 @@
               IATI Document Category Code
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/document_category
+              http://reference.iatistandard.org/codelists/document_category
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -156,7 +156,7 @@
           <xsd:documentation xml:lang="en">
             The MIME type of the external document,
             e.g. "application/pdf".  A list of MIME types
-            appears at http://iatistandard.org/codelists/file_format
+            appears at http://reference.iatistandard.org/codelists/file_format
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -218,7 +218,7 @@
         for an organisation file) attribute is specified.
 
         Currency codes are listed at
-        http://iatistandard.org/codelists/currency
+        http://reference.iatistandard.org/codelists/currency
       </xsd:documentation>
     </xsd:annotation>
   </xsd:attribute>
