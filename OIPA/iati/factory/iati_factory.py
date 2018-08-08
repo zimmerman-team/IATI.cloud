@@ -886,7 +886,7 @@ class HumanitarianScopeFactory(NoDatabaseFactory):
     code = "code"
     type = SubFactory(HumanitarianScopeTypeFactory)
     vocabulary = SubFactory(HumanitarianScopeVocabularyFactory)
-    vocabulary_uri = "http://iatistandard.org/202/activity-standard/iati-activities/iati-activity/humanitarian-scope/"
+    vocabulary_uri = "http://reference.iatistandard.org/202/activity-standard/iati-activities/iati-activity/humanitarian-scope/"
 
 
 class ActivitySearchFactory(ActivityFactory):
