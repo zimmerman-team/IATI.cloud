@@ -1706,8 +1706,8 @@ class ActivityLocationTestCase(ParserSetupTestCase):
     def test_location_coordinates_transform_code_103(self):
         """
         A precision value greater than 1, should be mapped to 2, see:
-        http://iatistandard.org/201/codelists/GeographicExactness/
-        http://iatistandard.org/201/codelists/GeographicalPrecision/
+        http://reference.iatistandard.org/201/codelists/GeographicExactness/
+        http://reference.iatistandard.org/201/codelists/GeographicalPrecision/
         """
         coordinates = E('pos', latitude='31.616944',
                         longitude='65.716944', precision='5')  # exact
@@ -2078,7 +2078,7 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
         Should perform the (less than ideal) mapping from 105 Vocabulary to
         201 PolicyMarkerVocabulary
         TODO: custom mappings
-        see http://iatistandard.org/201/activity-standard/iati-activities/iati-activity/policy-marker/narrative/
+        see http://reference.iatistandard.org/201/activity-standard/iati-activities/iati-activity/policy-marker/narrative/
         """  # NOQA: E501
         self.activity_policy_marker.attrib['vocabulary'] = 'DAC'
         self.activity_policy_marker.text = 'Some description'

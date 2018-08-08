@@ -87,10 +87,10 @@
         recommended. May contain the organisation name as content. 
         
         For the value of the @type attribute, 
-        see http://iatistandard.org/codelists/organisation-type. 
+        see http://reference.iatistandard.org/codelists/organisation-type. 
         
         For guidance on constructing the value of the @ref attribute, 
-        see http://iatistandard.org/org-ref
+        see http://reference.iatistandard.org/org-ref
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexType mixed="true">
@@ -119,7 +119,7 @@
               IATI Document Category Code
 
               For the value of the @code attribute, see
-              http://iatistandard.org/codelists/document_category
+              http://reference.iatistandard.org/codelists/document_category
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -144,7 +144,7 @@
           <xsd:documentation xml:lang="en">
             The MIME type of the external document,
             e.g. "application/pdf".  A partial list of MIME types
-            appears at http://iatistandard.org/codelists/file_format
+            appears at http://reference.iatistandard.org/codelists/file_format
           </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
@@ -201,7 +201,7 @@
         iati-activity/@default-currency attribute is specified.
 
         Currency codes are listed at
-        http://iatistandard.org/codelists/currency
+        http://reference.iatistandard.org/codelists/currency
       </xsd:documentation>
     </xsd:annotation>
   </xsd:attribute>

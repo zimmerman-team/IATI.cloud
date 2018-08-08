@@ -242,7 +242,7 @@ class Parse(IATI_201_Parser):
 
         tag:activity-date"""
         # TODO: should iati Rules be checked?
-        # http://iatistandard.org/201/activity-standard/iati-activities/iati-activity/activity-date/
+        # http://reference.iatistandard.org/201/activity-standard/iati-activities/iati-activity/activity-date/
         type_name = element.attrib.get('type')
         type_code = self.activity_date_type_mapping.get(type_name)
 
