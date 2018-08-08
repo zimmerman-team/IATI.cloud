@@ -159,7 +159,7 @@ class CodeListImporter():
 
         elif tag == "Version":
             if url is None:
-                url = 'http://iatistandard.org/' + \
+                url = 'http://reference.iatistandard.org/' + \
                     self.looping_through_version.replace('.', '')
 
         if name is None or name == '':
