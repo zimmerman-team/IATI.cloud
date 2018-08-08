@@ -16,11 +16,9 @@ class Migration(migrations.Migration):
 
         # So these are the actual strategies and plans sectors and their vocabulary id should be 98
         sap_sectors_codes = list(Sector.objects.filter(vocabulary_id=99).values_list('code', flat=True))
-        print('UNESCO STRATEGIES AND PLANS CODE LIST: ', sap_sectors_codes)
 
         # These are the actual unesco specific sectors and their vocabulary id should be 99
         spec_sectors_codes = list(Sector.objects.filter(vocabulary_id=98).values_list('code', flat=True))
-        print('UNESCO SPECIFIC CODES LIST: ', spec_sectors_codes)
 
         # And here we make the corrections for those sectors
         for sector in Sector.objects.filter(pk__in=sap_sectors_codes):
@@ -31,10 +29,14 @@ class Migration(migrations.Migration):
             sectorz.vocabulary = Vocabulary.objects.get(code=99)
             sectorz.save()
 
+    def re_update_sector_vocabulary(apps, schema_editor):
+        # this makes no sense
+        pass
+
     dependencies = [
         ('iati_codelists', '0010_aidtype_vocabulary'),
     ]
 
     operations = [
-        migrations.RunPython(update_sector_vocabulary),
+        migrations.RunPython(update_sector_vocabulary, re_update_sector_vocabulary),
     ]
