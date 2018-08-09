@@ -1,7 +1,5 @@
 import logging
-import urllib
 from http import cookiejar
-from http.client import HTTPException
 
 import mechanicalsoup
 import requests
@@ -38,7 +36,7 @@ class FileGrabber():
         # if proxies are used (their settings are taken from the
         # environment variable), 503 response is returned. So we need
         # to skip proxies here:
-        session.trust_env=False
+        session.trust_env = False
 
         response = session.get(url, timeout=10)
 
