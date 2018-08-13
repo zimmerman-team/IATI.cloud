@@ -1,7 +1,7 @@
 from django.db.models import signals
 from django.dispatch import receiver
 
-from . import models
+from iati.transaction import models
 from unesco.cron import calculated_transaction_balance_for_one_activity
 
 

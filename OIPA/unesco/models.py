@@ -17,6 +17,6 @@ class TransactionBalance(models.Model):
     cumulative_expenditure = models.DecimalField(
         max_digits=20, decimal_places=2, default=Decimal(0))
 
-    def __unicode__(self, ):
+    def __str__(self):
         return "Activity: %s - last update: %s" % (
             self.activity.iati_identifier, self.updated_at)

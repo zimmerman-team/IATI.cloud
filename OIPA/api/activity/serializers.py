@@ -2947,8 +2947,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
     # TODO: remove this field 'transaction_balance'
-    # TODO: after the field 'transactionbalance'
-    # TODO: has been implemented on the frontend
+    # after the field 'transactionbalance' has been implemented on the frontend
     transaction_balance = serializers.SerializerMethodField()
     transactionbalance = TransactionBalanceSerializer(read_only=True)
 
