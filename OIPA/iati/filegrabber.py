@@ -1,9 +1,8 @@
 import logging
-import urllib
 from http import cookiejar
-from http.client import HTTPException
 
 import mechanicalsoup
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -29,26 +28,18 @@ class FileGrabber():
         self.browser = browser
 
     def get_the_file(self, url, try_number=0):
-        try:
-            response = self.browser.get(url, timeout=10)
-            self.browser.close()
-            return response
+        session = requests.Session()
 
-        except urllib.error.HTTPError as e:
-            logger.info('HTTPError (url=' + url + ') = ' + str(e.code))
-            if try_number < 2:
-                return self.get_the_file(url, try_number + 1)
-            else:
-                return None
-        except urllib.error.URLError as e:
-            logger.info('URLError (url=' + url + ') = ' + str(e.reason))
-            if try_number < 2:
-                return self.get_the_file(url, try_number + 1)
-        except HTTPException as e:
-            logger.info('HTTPException reading url ' + url)
-            if try_number < 2:
-                return self.get_the_file(url, try_number + 1)
-        except Exception as e:
-            logger.info('%s (%s)' % (e, type(e)) + " in get_the_file: " + url)
-            if try_number < 2:
-                return self.get_the_file(url, try_number + 1)
+        # This is Unesco-specific functionality: the server
+        # uses proxies for all outside connections, but here we're
+        # accessing Unesco data file that is in the same server and
+        # if proxies are used (their settings are taken from the
+        # environment variable), 503 response is returned. So we need
+        # to skip proxies here:
+        session.trust_env = False
+
+        response = session.get(url, timeout=10)
+
+        self.browser.close()
+
+        return response

@@ -36,7 +36,7 @@ The task queues page first shows an overview of active workers and the amount of
 ### Available tasks
 
 
-**Update codelists from IATI registry** <br>Gets all codelist items from the different codelists at  <a href="http://iatistandard.org/201/codelists/downloads/clv1/codelist/" target="_blank">the IATI codelist API</a> and adds them to the appropriate OIPA codelist models.
+**Update codelists from IATI registry** <br>Gets all codelist items from the different codelists at  <a href="http://reference.iatistandard.org/201/codelists/downloads/clv1/codelist/" target="_blank">the IATI codelist API</a> and adds them to the appropriate OIPA codelist models.
 
 **Add new sources from IATI registry and parse all sources** <br>A shortcut of both tasks below.
 

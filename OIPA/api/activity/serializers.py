@@ -3065,7 +3065,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     def get_transaction_balance(self, obj):
         # TODO: please make a test code for this feature on the endpoint
-        # TODO: of activity detail and activity list
+        # of activity detail and activity list
 
         # We need this because the cumulative expenditure
         # is not so straightforwardly received from oipa

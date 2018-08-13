@@ -13,7 +13,7 @@
 
       This W3C XML Schema defines an XML document type for information
       about an aid organisation, following the standard published at
-      http://iatistandard.org
+      http://reference.iatistandard.org
 
       This document type may be extended with additional elements and
       attributes, but they must belong to an explicit XML namespace.
