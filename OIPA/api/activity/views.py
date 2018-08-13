@@ -391,7 +391,10 @@ class ActivityList(CacheResponseMixin, DynamicListView):
         'activity_incoming_funds_value',
         'activity_disbursement_value',
         'activity_expenditure_value',
-        'activity_plus_child_budget_value')
+        'activity_plus_child_budget_value',
+        'transactionbalance_total_budget',
+        'transactionbalance_total_expenditure',
+    )
 
     list_cache_key_func = QueryParamsKeyConstructor()
 

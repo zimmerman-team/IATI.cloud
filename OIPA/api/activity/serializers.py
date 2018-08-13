@@ -42,6 +42,7 @@ from iati.models import (
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
+from api.unesco.serializers import TransactionBalanceSerializer
 
 
 def save_narratives(instance, data, activity_instance):
@@ -2945,7 +2946,11 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
 
     published_state = PublishedStateSerializer(source="*", read_only=True)
 
+    # TODO: remove this field 'transaction_balance'
+    # TODO: after the field 'transactionbalance'
+    # TODO: has been implemented on the frontend
     transaction_balance = serializers.SerializerMethodField()
+    transactionbalance = TransactionBalanceSerializer(read_only=True)
 
     def validate(self, data):
         validated = validators.activity(
@@ -3156,6 +3161,7 @@ class ActivitySerializer(DynamicFieldsModelSerializer):
             'publisher',
             'published_state',
             'transaction_balance',
+            'transactionbalance'
         )
 
         validators = []

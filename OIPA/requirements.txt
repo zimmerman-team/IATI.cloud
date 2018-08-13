@@ -78,6 +78,11 @@ rq==0.11.0
 # Job scheduling capabilities for RQ
 rq-scheduler==0.8.3
 
+# Crontab job scheduling for UNESCO specifiec
+# to calculate the expenditure & budget from transaction and put them
+# on the transaction balance
+django-crontab==0.7.1
+
 # Getting local time zone:
 tzlocal==1.5.1
 
