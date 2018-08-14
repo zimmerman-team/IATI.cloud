@@ -33,4 +33,7 @@ urlpatterns = [
     # TODO: no email confirmation? - 2016-10-18
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^auth/registration/', include('rest_auth.registration.urls')),
+
+    # UNESCO specific endpoint
+    url(r'^unesco/', include('api.unesco.urls')),
 ]

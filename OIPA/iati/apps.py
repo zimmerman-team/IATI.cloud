@@ -6,3 +6,6 @@ from django.apps import AppConfig
 class IatiConfig(AppConfig):
     name = 'iati'
     verbose_name = 'IATI'
+
+    def ready(self):
+        import iati.transaction.signals

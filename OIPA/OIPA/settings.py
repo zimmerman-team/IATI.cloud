@@ -184,7 +184,10 @@ INSTALLED_APPS = [
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
-    'django_filters'
+    'django_filters',
+
+    'unesco',
+    'django_crontab',
 ]
 
 ADMIN_REORDER = (
@@ -336,3 +339,10 @@ REST_FRAMEWORK_EXTENSIONS = {
     # reset cache every x seconds:
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
+
+CRONJOBS = [
+    (
+        '0 12 * * *',
+        'unesco.cron.calculated_all_transaction_balance_for_all_activities'
+    ),
+]
