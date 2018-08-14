@@ -550,6 +550,22 @@ class ActivityFilter(TogetherFilterSet):
         lookup_expr='gte',
         name='activity_plus_child_aggregation__commitment_value')
 
+    transactionbalance_total_budget_gte = NumberFilter(
+        lookup_expr='gte',
+        name='transactionbalance__total_budget')
+
+    transactionbalance_total_budget_lte = NumberFilter(
+        lookup_expr='lte',
+        name='transactionbalance__total_budget')
+
+    transactionbalance_total_expenditure_gte = NumberFilter(
+        lookup_expr='gte',
+        name='transactionbalance__total_expenditure')
+
+    transactionbalance_total_expenditure_lte = NumberFilter(
+        lookup_expr='lte',
+        name='transactionbalance__total_expenditure')
+
     #
     # Related to publishing
     #
