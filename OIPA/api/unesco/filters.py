@@ -2,14 +2,7 @@ from django_filters import NumberFilter
 from api.generics.filters import (
     CommaSeparatedCharFilter,
     TogetherFilterSet,
-    ToManyFilter,
     StartsWithInCommaSeparatedCharFilter,
-)
-from iati.models import (
-    ActivityRecipientCountry,
-    ActivityRecipientRegion,
-    ActivitySector,
-    ActivityParticipatingOrganisation
 )
 from unesco.models import TransactionBalance
 
@@ -20,29 +13,21 @@ class TransactionBalanceFilter(TogetherFilterSet):
         name='activity__publisher__publisher_iati_id',
         lookup_expr='in')
 
-    recipient_country = ToManyFilter(
-        qs=ActivityRecipientCountry,
+    recipient_country = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='country__code',
-        fk='activity')
+        name='activity__recipient_country__code')
 
-    recipient_region = ToManyFilter(
-        qs=ActivityRecipientRegion,
+    recipient_region = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='region__code',
-        fk='activity')
+        name='activity__recipient_region__code')
 
-    sector = ToManyFilter(
-        qs=ActivitySector,
+    sector = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='sector__code',
-        fk='activity')
+        name='activity__sector__code')
 
-    participating_organisation_name = ToManyFilter(
-        qs=ActivityParticipatingOrganisation,
+    participating_organisation_name = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='primary_name',
-        fk='activity')
+        name='activity__participating_organisations__primary_name')
 
     sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
         lookup_expr='startswith',
@@ -66,7 +51,7 @@ class TransactionBalanceFilter(TogetherFilterSet):
 
     activity_status = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='activity_status')
+        name='activity__activity_status')
 
     class Meta:
         model = TransactionBalance
