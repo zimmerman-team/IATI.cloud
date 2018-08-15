@@ -36,19 +36,19 @@ class TransactionBalanceFilter(TogetherFilterSet):
         lookup_expr='startswith',
         field_name='activity__sector__code')
 
-    total_budget_lte = NumberFilter(
+    transactionbalance_total_budget_lte = NumberFilter(
         lookup_expr='lte',
         field_name='total_budget')
 
-    total_budget_gte = NumberFilter(
+    transactionbalance_total_budget_gte = NumberFilter(
         lookup_expr='gte',
         field_name='total_budget')
 
-    total_expenditure_lte = NumberFilter(
+    transactionbalance_total_expenditure_lte = NumberFilter(
         lookup_expr='lte',
         field_name='total_expenditure')
 
-    total_expenditure_gte = NumberFilter(
+    transactionbalance_total_expenditure_gte = NumberFilter(
         lookup_expr='gte',
         field_name='total_expenditure')
 
