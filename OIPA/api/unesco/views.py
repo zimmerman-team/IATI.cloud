@@ -43,4 +43,9 @@ class TransactionBalanceAggregation(AggregationView):
             fields="activity__publisher__publisher_iati_id",
             renamed_fields="reporting_organisation_identifier",
         ),
+        GroupBy(
+            query_param="activity_iati_identifier",
+            fields="activity__iati_identifier",
+            renamed_fields="activity_iati_identifier",
+        ),
     )
