@@ -1,15 +1,11 @@
-from django_filters import NumberFilter
+from django_filters import (
+    NumberFilter,
+    DateFilter
+)
 from api.generics.filters import (
     CommaSeparatedCharFilter,
     TogetherFilterSet,
-    ToManyFilter,
     StartsWithInCommaSeparatedCharFilter,
-)
-from iati.models import (
-    ActivityRecipientCountry,
-    ActivityRecipientRegion,
-    ActivitySector,
-    ActivityParticipatingOrganisation
 )
 from unesco.models import TransactionBalance
 
@@ -17,56 +13,64 @@ from unesco.models import TransactionBalance
 class TransactionBalanceFilter(TogetherFilterSet):
 
     reporting_organisation_identifier = CommaSeparatedCharFilter(
-        name='activity__publisher__publisher_iati_id',
+        field_name='activity__publisher__publisher_iati_id',
         lookup_expr='in')
 
-    recipient_country = ToManyFilter(
-        qs=ActivityRecipientCountry,
+    recipient_country = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='country__code',
-        fk='activity')
+        name='activity__recipient_country__code')
 
-    recipient_region = ToManyFilter(
-        qs=ActivityRecipientRegion,
+    recipient_region = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='region__code',
-        fk='activity')
+        field_name='activity__recipient_region__code')
 
-    sector = ToManyFilter(
-        qs=ActivitySector,
+    sector = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='sector__code',
-        fk='activity')
+        field_name='activity__sector__code')
 
-    participating_organisation_name = ToManyFilter(
-        qs=ActivityParticipatingOrganisation,
+    participating_organisation_name = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='primary_name',
-        fk='activity')
+        field_name='activity__participating_organisations__primary_name')
 
     sector_startswith_in = StartsWithInCommaSeparatedCharFilter(
         lookup_expr='startswith',
-        name='activity__sector__code')
+        field_name='activity__sector__code')
 
     total_budget_lte = NumberFilter(
         lookup_expr='lte',
-        name='total_budget')
+        field_name='total_budget')
 
     total_budget_gte = NumberFilter(
         lookup_expr='gte',
-        name='total_budget')
+        field_name='total_budget')
 
     total_expenditure_lte = NumberFilter(
         lookup_expr='lte',
-        name='total_expenditure')
+        field_name='total_expenditure')
 
     total_expenditure_gte = NumberFilter(
         lookup_expr='gte',
-        name='total_expenditure')
+        field_name='total_expenditure')
 
     activity_status = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='activity_status')
+        field_name='activity__activity_status')
+
+    planned_start_date_lte = DateFilter(
+        lookup_expr='lte',
+        field_name='activity__planned_start')
+
+    planned_start_date_gte = DateFilter(
+        lookup_expr='gte',
+        field_name='activity__planned_start')
+
+    planned_end_date_lte = DateFilter(
+        lookup_expr='lte',
+        field_name='activity__planned_end')
+
+    planned_end_date_gte = DateFilter(
+        lookup_expr='gte',
+        field_name='activity__planned_end')
 
     class Meta:
         model = TransactionBalance
