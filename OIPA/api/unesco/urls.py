@@ -6,5 +6,5 @@ app_name = 'api'
 urlpatterns = [
     url(r'^transaction-balance-aggregations',
         TransactionBalanceAggregation.as_view(),
-        name='transaction-balance-aggregation'),
+        name='transaction-balance-aggregations'),
 ]

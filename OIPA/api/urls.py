@@ -35,5 +35,5 @@ urlpatterns = [
     url(r'^auth/registration/', include('rest_auth.registration.urls')),
 
     # UNESCO specific endpoint
-    url(r'^unesco/', include('api.unesco.urls')),
+    url(r'^unesco/', include('api.unesco.urls', namespace='unesco')),
 ]

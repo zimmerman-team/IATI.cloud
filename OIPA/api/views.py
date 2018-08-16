@@ -42,6 +42,8 @@ def welcome(request, format=None):
     * Codelists: [`/api/publishers`](/api/codelists)
 
     * Chains: [`/api/chains`](/api/chains)
+    
+    * UNESCO specific [`/api/unesco/ransaction-balance-aggregations`](/api/unesco/ransaction-balance-aggregations)
 
     """  # NOQA: E501
     return Response({
@@ -100,6 +102,10 @@ def welcome(request, format=None):
                 format=format),
             'chains': reverse(
                 'chains:chain-list',
+                request=request,
+                format=format),
+            'unesco': reverse(
+                'unesco:transaction-balance-aggregations',
                 request=request,
                 format=format),
         }

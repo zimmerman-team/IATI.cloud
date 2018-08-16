@@ -294,7 +294,11 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `related_activity_sector_category` (*optional*): Comma separated list of 3-digit sector codes.
     - `transaction_provider_activity` (*optional*): Comma separated list of activity id's.
     - `transaction_date_year` (*optional*): Comma separated list of years in which the activity should have transactions.
-
+    - `transactionbalance_total_budget_gte` (*optional*): Greater then or equal transaction balance of the total budget.
+    - `transactionbalance_total_budget_lte` (*optional*): Less then or equal transaction balance of the total budget.
+    - `transactionbalance_total_expenditure_gte` (*optional*): Greater then or equal transaction balance of the total expenditure.
+    - `transactionbalance_total_expenditure_lte` (*optional*): Less then or equal transaction balance of the total expenditure.
+    
     ## Text search
 
     API request may include `q` parameter. This parameter controls text search
@@ -340,6 +344,8 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     - `activity_disbursement_value`
     - `activity_expenditure_value`
     - `activity_plus_child_budget_value`
+    - 'transactionbalance_total_budget`
+    - 'transactionbalance_total_expenditure'
 
     The user may also specify reverse orderings by prefixing the field name with '-', like so: `-title`
 
