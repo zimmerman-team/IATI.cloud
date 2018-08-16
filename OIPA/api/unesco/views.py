@@ -9,6 +9,50 @@ from .filters import TransactionBalanceFilter
 
 
 class TransactionBalanceAggregation(AggregationView):
+    """
+       Returns a list aggregations of the transaction balance of each activity for UNESCO specific.
+
+       ## Request parameters
+       - `reporting_organisation_identifier` (*optional*): Comma separated list of the reporting organisation id's.
+       - `recipient_country` *optional*): Comma separated list of iso2 country codes.
+       - `recipient_region` (*optional*): Comma separated list of region codes.
+       - `sector` (*optional*): Comma separated list of 5-digit sector codes.
+       - `participating_organisation_name` (*optional*): Comma separated list of organisation id's.
+       - `sector_startswith_in` (*optional*): Comma separated list of prefix sector codes.
+       - `transactionbalance_total_budget_lte` (*optional*): Less then or equal transaction balance of the total budget.
+       - `transactionbalance_total_budget_gte` (*optional*): Greater then or equal transaction balance of the total budget.
+       - `transactionbalance_total_expenditure_lte` (*optional*): Less then or equal transaction balance of the total expenditure.
+       - `transactionbalance_total_expenditure_gte` (*optional*): Greater then or equal transaction balance of the total expenditure.
+       - `activity_status` (*optional*): Comma separated list of activity statuses.
+       - `planned_start_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+       - `planned_start_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
+       - `planned_end_date_lte` (*optional*): Date in YYYY-MM-DD format, returns activities earlier or equal to the given activity date.
+       - `planned_end_date_gte` (*optional*): Date in YYYY-MM-DD format, returns activities later or equal to the given activity date.
+
+
+       ## Group by options
+
+       API request has to include `group_by` parameter.
+
+       This parameter controls result aggregations and
+       can be one or more (comma separated values) of:
+       - `reporting_organisation_identifier`
+       - `activity_iati_identifier`
+
+
+       ## Aggregation options
+
+       API request has to include `aggregations` parameter.
+
+       This parameter controls result aggregations and
+       can be one or more (comma separated values) of:
+
+       - `total_budget`
+       - `total_expenditure`
+       - `cumulative_budget`
+       - `cumulative_expenditure`
+
+    """
 
     queryset = TransactionBalance.objects.all()
     filter_backends = (SearchFilter, DjangoFilterBackend, )
