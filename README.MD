@@ -64,7 +64,7 @@ Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" tar
 * If there's a reason to commit code that is commented out (there usually should be none), always leave a "FIXME" or "TODO" comment so it's clear for other developers _why_ this was done
 * When using external dependencies that are not in PyPI (from Github for example), stick to a particular commit (i. e. `git+https://github.com/Supervisor/supervisor@ec495be4e28c694af1e41514e08c03cf6f1496c8#egg=supervisor`), so if the library is updated, it doesn't break everything
 * In the near future, automatic code quality / testing checks (continuous integration tools) will be implemented to check all these things automatically when pushing / merging new branches. Quality is the key!
-* These rules are to be extended
+* These rules are to be extended.
 
 ## Running the tests
 -------
