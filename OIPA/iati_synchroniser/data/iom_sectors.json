@@ -1,0 +1,226 @@
+[
+  {
+    "code": "1",
+    "description": "Movement, Emergency and Post-Crisis Migration Management"
+  },
+  {
+    "code": "2",
+    "description": "Migration Health"
+  },
+  {
+    "code": "3",
+    "description": "Migration and Development"
+  },
+  {
+    "code": "4",
+    "description": "Regulating Migration"
+  },
+  {
+    "code": "5",
+    "description": "Facilitating Migration"
+  },
+  {
+    "code": "6",
+    "description": "Migration Policy, Research and Communications"
+  },
+  {
+    "code": "7",
+    "description": "Land, Property and Reparation Programmes"
+  },
+  {
+    "code": "8",
+    "description": "General Programme Support"
+  },
+  {
+    "code": "CC",
+    "description":	"Camp Coordination and Camp Management"
+  },
+  {
+    "code": "CS",
+    "description": "Community Stabilization"
+  },
+  {
+    "code": "DP",
+    "description":	"Internally Displaced Persons"
+  },
+  {
+    "code": "DR",
+    "description":	"Disaster Risk Reduction"
+  },
+  {
+    "code": "DS",
+    "description":	"Durable Solutions"
+  },
+  {
+    "code": "DX",
+    "description":	"Displacement Tracking"
+  },
+  {
+    "code": "EA",
+    "description":	"Electoral Assistance"
+  },
+  {
+    "code": "EM",
+    "description":	"Election Observation Missions"
+  },
+  {
+    "code": "EP",
+    "description":	"Emergency Preparedness"
+  },
+  {
+    "code": "FC",
+    "description":	"Former Combatants"
+  },
+  {
+    "code": "OC",
+    "description":	"Out of Country Voting"
+  },
+  {
+    "code": "OP",
+    "description":	"Overseas Processing Entity (OPE)"
+  },
+  {
+    "code": "PB",
+    "description": "Peacebuilding and Peace Preservation"
+  },
+  {
+    "code": "PE",
+    "description":	"Addressing Violent Extremism"
+  },
+  {
+    "code": "RA",
+    "description":	"Repatriation Assistance"
+  },
+  {
+    "code": "RE",
+    "description":	"Resettlement Assistance"
+  },
+  {
+    "code": "RX",
+    "description":	"Emerging Resettlement Countries Joint Support Mechanism (ERCM) Activities"
+  },
+  {
+    "code": "SN",
+    "description":	"Emergency Shelter and NFI"
+  },
+  {
+    "code": "MA",
+    "description":	"Health Promotion and Assist for Migrants"
+  },
+  {
+    "code": "MH",
+    "description":	"Migr Health Assess and Travel Assistance"
+  },
+  {
+    "code": "MP",
+    "description":	"Migr Health Assist for Crisis Aff Pops"
+  },
+  {
+    "code": "CE",
+    "description":	"Community and Economic Development"
+  },
+  {
+    "code": "NC",
+    "description":	"Migration, Environment and Climate Change"
+  },
+  {
+    "code": "RM",
+    "description":	"Remittances"
+  },
+  {
+    "code": "RQ",
+    "description":	"CB Through Qualified Human Resources"
+  },
+  {
+    "code": "CT",
+    "description":	"Counter Trafficking"
+  },
+  {
+    "code": "IB",
+    "description":	"Immigration and Borders"
+  },
+  {
+    "code": "RT",
+    "description":	"Return Assistance to Migrants & Govt."
+  },
+  {
+    "code": "TC",
+    "description":	"TCMMCB"
+  },
+  {
+    "code": "FM",
+    "description":	"Migrant Processing and Integration"
+  },
+  {
+    "code": "IV",
+    "description":	"Immigration and Visas"
+  },
+  {
+    "code": "LM",
+    "description":	"Labour Migration"
+  },
+  {
+    "code": "PM",
+    "description":	"Media and Communications"
+  },
+  {
+    "code": "PO",
+    "description":	"Migration Policy Activities"
+  },
+  {
+    "code": "PR",
+    "description":	"Migration Research and Publications"
+  },
+  {
+    "code": "HA",
+    "description":	"Humanitarian Assistance to Victims"
+  },
+  {
+    "code": "LP",
+    "description":	"Land and Property"
+  },
+  {
+    "code": "RP",
+    "description":	"Reparations"
+  },
+  {
+    "code": "IM",
+    "description":	"International Migration Law"
+  },
+  {
+    "code": "MI",
+    "description":	"Miscellaneous"
+  },
+  {
+    "code": "MJ",
+    "description":	"Miscellaneous Internal Service Fee Admin"
+  },
+  {
+    "code": "MK",
+    "description":	"Miscellaneous Activities funded by Voluntary Contribution"
+  },
+  {
+    "code": "ML",
+    "description":	"Miscellaneous - Sublease/ Lease/ Sales"
+  },
+  {
+    "code": "SM",
+    "description":	"Humanitarian Assistance to Stranded Migrants"
+  },
+  {
+    "code": "SS",
+    "description":	"Seconded Staff"
+  },
+  {
+    "code": "DM",
+    "description":	"Staff and Services DI"
+  },
+  {
+    "code": "OS",
+    "description":	"Operational Support Income - Core Staff & Security"
+  },
+  {
+    "code": "AD",
+    "description":	"Administrative budget"
+  }
+]

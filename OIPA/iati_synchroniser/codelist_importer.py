@@ -13,6 +13,7 @@ from iati_vocabulary.models import RegionVocabulary
 from iati_synchroniser.models import Codelist
 from iati_synchroniser.dac_sector_importer import DacSectorImporter
 from iati_synchroniser.sdg_sector_importer import SdgSectorImporter
+from iati_synchroniser.iom_sector_importer import IOMSectorImporter
 
 
 logger = logging.getLogger(__name__)
@@ -253,3 +254,6 @@ class CodeListImporter():
 
         ssi = SdgSectorImporter()
         ssi.update()
+
+        isi = IOMSectorImporter()
+        isi.update()
