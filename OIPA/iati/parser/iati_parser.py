@@ -382,15 +382,13 @@ class IatiParser(object):
         # Update contact info id for the object which is related
         # to the ContactInfo model
         model_class_name = model.__class__.__name__
-        contact_info = 'ContactInfo'
-        if model_class_name.find(contact_info) is not -1 \
-                and model_class_name != contact_info:
+        if model_class_name.find('ContactInfo') is not -1 \
+                and model_class_name != 'ContactInfo':
             model.contact_info_id = getattr(model, 'contact_info').id
 
         # Update the transaction provider to make it related
         # to Transaction itself
-        transaction_provider = 'TransactionProvider'
-        if model_class_name.find(transaction_provider) is not -1:
+        if model_class_name.find('TransactionProvider') is not -1:
             model.transaction_id = getattr(model, 'transaction').id
 
     def save_all_models(self):
