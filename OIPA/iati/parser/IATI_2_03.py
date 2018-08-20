@@ -3554,6 +3554,94 @@ class Parse(IatiParser):
                             result_indicator_baseline_comment)
         return element
 
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__location(
+            self, element):
+        '''A new, optional element in v. 2.03:
+
+        A location already defined and described in the iati-activity/location
+        element.
+        '''
+        ref = element.attrib.get('ref')
+
+        if not ref:
+            raise RequiredFieldError(
+                "iati-activity/result/indicator/baseline/location",
+                "ref",
+                "This attribute has to be a cross-reference to the internal "
+                "reference assigned to a defined location: "
+                "iati-activity/location/@ref, so leaving it blank makes no "
+                "sense")
+
+        referenced_location = self.get_model('Location')
+
+        if not referenced_location.ref == ref:
+            raise FieldValidationError(
+                "iati-activity/result/indicator/baseline/location",
+                "ref",
+                "Referenced location doesn't exist",
+                None,
+                None,
+                ref)
+
+        activity = self.get_model('Activity')
+        result_indicator = self.get_model('ResultIndicator')
+
+        activity_locations = activity.location_set.all()
+
+        if (activity_locations
+                and referenced_location not in activity_locations):
+
+            raise FieldValidationError(
+                "iati-activity/result/indicator/baseline/location",
+                "location",
+                ("Referenced location has to be referenced on an Activity "
+                 "level"),
+                None,
+                None,
+                ref)
+
+        result_indicator.baseline_locations.add(
+            referenced_location, bulk=False
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__dimension(  # NOQA: E501
+            self, element):
+        '''A new, optional element in v. 2.03:
+
+        A category used for disaggregating the result by gender, age, etc.
+        '''
+
+        name = element.attrib.get('name')
+        value = element.attrib.get('value')
+
+        if not name:
+            raise RequiredFieldError(
+                "iati-activity/result/indicator/baseline/dimension"
+                "name",
+                "required attribute missing")
+
+        if value is None:
+            raise RequiredFieldError(
+                "result/indicator/period/actual/dimension",
+                "value",
+                "required attribute missing")
+
+        result_indicator = self.get_model('ResultIndicator')
+
+        baseline_dimension = models.ResultIndicatorBaselineDimension()
+        baseline_dimension.result_indicator = result_indicator
+        baseline_dimension.name = name
+        baseline_dimension.value = value
+
+        self.register_model(
+            'ResultIndicatorBaselineDimension', baseline_dimension)
+
+        return element
+
     def iati_activities__iati_activity__result__indicator__baseline__comment__narrative(  # NOQA: E501
             self, element):
         baseline_comment = self.get_model('ResultIndicatorBaselineComment')
