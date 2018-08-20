@@ -7,7 +7,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iati', '0018_auto_20180726_1658'),
+        # ('iati', '0018_auto_20180726_1658'),
+        ('iati', '0015_resultreference'),
     ]
 
     operations = [
