@@ -6,8 +6,8 @@ from decimal import Decimal, InvalidOperation
 
 import dateutil.parser
 from django.conf import settings
-from django.db.models import Model
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Model
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
