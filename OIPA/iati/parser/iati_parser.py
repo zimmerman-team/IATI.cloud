@@ -379,7 +379,7 @@ class IatiParser(object):
         return self.get_model(key, index).save()
 
     def update_related(self, model):
-        # Update contact info id for the object has been related
+        # Update contact info id for the object which is related
         # to the ContactInfo model
         model_class_name = model.__class__.__name__
         contact_info = 'ContactInfo'
@@ -387,8 +387,8 @@ class IatiParser(object):
                 and model_class_name != contact_info:
             model.contact_info_id = getattr(model, 'contact_info').id
 
-        # Update the transaction provider to make it has related
-        # to transaction on itself
+        # Update the transaction provider to make it related
+        # to Transaction itself
         transaction_provider = 'TransactionProvider'
         if model_class_name.find(transaction_provider) is not -1:
             model.transaction_id = getattr(model, 'transaction').id
@@ -399,8 +399,8 @@ class IatiParser(object):
                 try:
                     self.update_related(model)
 
-                    # This is happen only on version 2.03
-                    # The content type on the narrative model
+                    # This happens only on version 2.03:
+                    # The content type on the Narrative model
                     # has an empty value
                     if self.VERSION == '2.03':
                         narrative = 'Narrative'
@@ -414,8 +414,8 @@ class IatiParser(object):
                 except Exception as e:
                     log.exception(e)
 
-        # After all objects have been saved
-        # then update each model which has related to another object.
+        # After all objects have been saved,
+        # update each model which is related to another object.
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
