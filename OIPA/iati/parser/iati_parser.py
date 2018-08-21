@@ -6,8 +6,8 @@ from decimal import Decimal, InvalidOperation
 
 import dateutil.parser
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model
+from django.db.models.fields.related import ForeignKey, OneToOneField
 from lxml import etree
 
 from common.util import findnth_occurence_in_string, normalise_unicode_string
@@ -379,51 +379,26 @@ class IatiParser(object):
         return self.get_model(key, index).save()
 
     def update_related(self, model):
-        # Update contact info id for the object which is related
-        # to the ContactInfo model
-        model_class_name = model.__class__.__name__
-        if model_class_name.find('ContactInfo') is not -1 \
-                and model_class_name != 'ContactInfo':
-            model.contact_info_id = getattr(model, 'contact_info').id
-
-        # Update the transaction provider to make it related
-        # to Transaction itself
-        if model_class_name.find('TransactionProvider') is not -1:
-            model.transaction_id = getattr(model, 'transaction').id
+        """
+        Currently a workaround for foreign key assignment before save
+        """
+        if model.__class__.__name__ in ("OrganisationNarrative", "Narrative"):
+            # This is set in parser's (currently: IATI_2_03.py)
+            # 'add_narrative()' method:
+            model.related_object = getattr(model, '_related_object')
+        for field in model._meta.fields:
+            if isinstance(field, (ForeignKey, OneToOneField)):
+                setattr(model, field.name, getattr(model, field.name))
 
     def save_all_models(self):
+        # TODO: problem: assigning unsaved model to foreign key results in
+        # error because field_id has not been set (see: https://git.io/fbphN)
         for model_list in self.model_store.items():
             for model in model_list[1]:
                 try:
                     self.update_related(model)
 
-                    # This happens only on version 2.03:
-                    # The content type on the Narrative model
-                    # has an empty value
-                    if self.VERSION == '2.03':
-                        narrative = 'Narrative'
-                        if model_list[0].find(narrative) is not -1:
-                            related_name = model_list[0].replace(narrative, '')
-                            model.related_content_type = \
-                                ContentType.objects.get_for_model(
-                                    self.model_store.get(related_name)[0])
                     model.save()
-
-                except Exception as e:
-                    log.exception(e)
-
-        # After all objects have been saved,
-        # update each model which is related to another object.
-        for model_list in self.model_store.items():
-            for model in model_list[1]:
-                try:
-                    # Updated related object of the Narrative model.
-                    narrative = 'Narrative'
-                    if model_list[0].find(narrative) is not -1:
-                        related_name = model_list[0].replace(narrative, '')
-                        model.related_object = \
-                            self.model_store.get(related_name)[0]
-                        model.save()
 
                 except Exception as e:
                     log.exception(e)
