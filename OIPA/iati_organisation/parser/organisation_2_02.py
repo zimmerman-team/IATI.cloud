@@ -59,7 +59,12 @@ class Parse(IatiParser):
         narrative = OrganisationNarrative()
         narrative.language = language
         narrative.content = element.text
-        narrative.related_object = parent
+        # This (instead of narrative.related_object) is required, otherwise
+        # related object doesn't get passed to the model_store (memory) and
+        # 'update_related()' fails.
+        # It should probably be passed to the __init__() ?
+        setattr(narrative, '_related_object', parent)
+
         narrative.organisation = self.get_model('Organisation')
 
         # TODO: handle this differently (also: breaks tests)
