@@ -23,14 +23,14 @@ from iati.parser.IATI_1_05 import Parse as Parser_105
 from iati.parser.IATI_2_02 import Parse as Parser_202
 from iati.parser.parse_manager import ParseManager
 from iati.transaction import factories as transaction_factory
-from iati_codelists.factory import codelist_factory
-from iati_synchroniser.factory import synchroniser_factory
-from iati_vocabulary.factory import vocabulary_factory
-
 # TODO: replace fixtures with factoryboy classes - 2015-12-02
 # TODO: Setup parser classes per test, to isolate tests as much as possible
 # (currently per class) - 2015-12-02
 # TODO: Refactor this file into multiple files - 2015-12-02
+from iati.transaction.factories import TransactionTypeFactory
+from iati_codelists.factory import codelist_factory
+from iati_synchroniser.factory import synchroniser_factory
+from iati_vocabulary.factory import vocabulary_factory
 
 
 def build_xml(version, iati_identifier):
@@ -498,6 +498,9 @@ class ActivityTestCase(ParserSetupTestCase):
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
+        self.parser_105.model_store.clear()
+        self.parser_202.model_store.clear()
+
         self.iati_202 = copy_xml_tree(self.iati_202)
 
         self.title = E('title', )
@@ -517,6 +520,9 @@ class TitleTestCase(ParserSetupTestCase):
 
         self.parser_202.iati_activities__iati_activity__title__narrative(
             self.narrative)
+
+        self.parser_202.save_all_models()
+
         narrative = self.parser_202.get_model('TitleNarrative')
         self.assertEqual(narrative.related_object, title)
 
@@ -546,6 +552,8 @@ class TitleTestCase(ParserSetupTestCase):
         self.title.text = "random text"
         self.parser_105.iati_activities__iati_activity__title(self.title)
 
+        self.parser_105.save_all_models()
+
         title = self.parser_105.get_model('Title')
         narrative = self.parser_105.get_model('TitleNarrative')
 
@@ -565,6 +573,9 @@ class TitleTestCase(ParserSetupTestCase):
         narrative = self.parser_105.get_model('TitleNarrative')
 
         self.parser_105.iati_activities__iati_activity__title(second_title)
+
+        self.parser_105.save_all_models()
+
         second_narrative = self.parser_105.get_model('TitleNarrative')
 
         self.assertEqual(title.activity, self.activity)
@@ -2468,6 +2479,10 @@ class TransactionTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
+        self.parser_105.model_store.clear()
+        self.parser_202.model_store.clear()
+
+
         # sample attributes on iati-activity xml
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -2591,6 +2606,7 @@ class TransactionTestCase(ParserSetupTestCase):
                 value)
 
     def test_transaction_description_202(self):
+
         description = E('description')
         self\
             .parser_202.iati_activities__iati_activity__transaction__description(  # NOQA: E501
@@ -2604,6 +2620,9 @@ class TransactionTestCase(ParserSetupTestCase):
         self.parser_202\
             .iati_activities__iati_activity__transaction__description__narrative(  # NOQA: E501
                 self.narrative)
+
+        self.parser_202.save_all_models()
+
         narrative = self.parser_202.get_model(
             'TransactionDescriptionNarrative')
         self.assertEqual(narrative.related_object, transaction_description)
@@ -2613,6 +2632,9 @@ class TransactionTestCase(ParserSetupTestCase):
         self.parser_105\
             .iati_activities__iati_activity__transaction__description(
                 description)
+
+        self.parser_105.save_all_models()
+
         transaction_description = self.parser_105.get_model(
             'TransactionDescription')
 
@@ -3243,6 +3265,9 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_202\
             .iati_activities__iati_activity__result__title__narrative(
                 self.narrative)
+
+        # self.parser_202.save_all_models()
+
         narrative = self.parser_202.get_model('ResultTitleNarrative')
         self.assertEquals(narrative.related_object, result_title)
 
