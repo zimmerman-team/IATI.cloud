@@ -420,6 +420,9 @@ class BudgetFilter(TogetherFilterSet):
         lookup_expr='gte',
         name='activity__activity_plus_child_aggregation__commitment_value')
 
+    humanitarian = NumberFilter(
+        name='activity__humanitarian')
+
     class Meta:
         model = Budget
         fields = '__all__'
