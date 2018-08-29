@@ -497,8 +497,6 @@ class ActivityTestCase(ParserSetupTestCase):
 
 class TitleTestCase(ParserSetupTestCase):
     def setUp(self):
-        self.parser_105.model_store.clear()
-        self.parser_202.model_store.clear()
 
         self.iati_202 = copy_xml_tree(self.iati_202)
 
@@ -520,9 +518,10 @@ class TitleTestCase(ParserSetupTestCase):
         self.parser_202.iati_activities__iati_activity__title__narrative(
             self.narrative)
 
-        self.parser_202.save_all_models()
-
         narrative = self.parser_202.get_model('TitleNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, title)
 
         # TODO: refactor so this isnt nescessary
@@ -551,10 +550,10 @@ class TitleTestCase(ParserSetupTestCase):
         self.title.text = "random text"
         self.parser_105.iati_activities__iati_activity__title(self.title)
 
-        self.parser_105.save_all_models()
-
         title = self.parser_105.get_model('Title')
         narrative = self.parser_105.get_model('TitleNarrative')
+
+        self.parser_105.update_related(narrative)
 
         self.assertEqual(title.activity, self.activity)
         self.assertEqual(narrative.related_object, title)
@@ -573,9 +572,10 @@ class TitleTestCase(ParserSetupTestCase):
 
         self.parser_105.iati_activities__iati_activity__title(second_title)
 
-        self.parser_105.save_all_models()
-
         second_narrative = self.parser_105.get_model('TitleNarrative')
+
+        self.parser_105.update_related(narrative)
+        self.parser_105.update_related(second_narrative)
 
         self.assertEqual(title.activity, self.activity)
         self.assertEqual(narrative.related_object, title)
@@ -608,6 +608,8 @@ class DescriptionTestCase(ParserSetupTestCase):
             self.narrative)
         narrative = self.parser_202.get_model('DescriptionNarrative')
 
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, description)
 
     def test_description_105(self):
@@ -617,6 +619,8 @@ class DescriptionTestCase(ParserSetupTestCase):
 
         description = self.parser_105.get_model('Description')
         narrative = self.parser_105.get_model('DescriptionNarrative')
+
+        self.parser_105.update_related(narrative)
 
         self.assertEqual(description.activity, self.activity)
         self.assertEqual(narrative.related_object, description)
@@ -687,6 +691,8 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
             )
         narrative = self.parser_202.get_model('OtherIdentifierNarrative')
 
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, other_identifier)
 
     def test_other_identifier_105(self):
@@ -703,6 +709,9 @@ class OtherIdentifierTestCase(ParserSetupTestCase):
         self.assertEqual(other_identifier.owner_ref, self.owner_org_xml['ref'])
 
         narrative = self.parser_105.get_model('OtherIdentifierNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, other_identifier)
 
 
@@ -733,6 +742,8 @@ class NarrativeTestCase(ParserSetupTestCase):
         """
         self.parser_202.add_narrative(self.narrative, self.related_object)
         narrative = self.parser_202.get_model('ActivityNarrative')
+
+        self.parser_202.update_related(narrative)
 
         self.assertEqual(narrative.related_object, self.related_object)
         self.assertEqual(narrative.content, self.test_text)
@@ -820,6 +831,9 @@ class ActivityReportingOrganisationTestCase(ParserSetupTestCase):
 
         organisation_narrative = self.parser_202.get_model(
             'OrganisationNameNarrative')
+
+        self.parser_202.update_related(organisation_narrative)
+
         self.assertEqual(
             organisation_narrative.related_object, organisation_name)
         self.assertEqual(organisation_narrative.content,
@@ -917,6 +931,9 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
             )
         narrative = self.parser_202.get_model(
             'ActivityParticipatingOrganisationNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, participating_organisation)
         self.assertEqual(
             participating_organisation.primary_name, 'random text')
@@ -973,6 +990,9 @@ class ActivityParticipatingOrganisationTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ActivityParticipatingOrganisationNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, participating_organisation)
         self.assertEqual(participating_organisation.primary_name, 'some text')
 
@@ -1070,6 +1090,8 @@ class ActivityDateTestCase(ParserSetupTestCase):
             )
         narrative = self.parser_202.get_model('ActivityDateNarrative')
 
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, activity_date)
 
     def test_activity_date_105(self):
@@ -1087,6 +1109,9 @@ class ActivityDateTestCase(ParserSetupTestCase):
         self.assertEqual(activity_date.type.code, self.attrs_202['type'])
 
         narrative = self.parser_105.get_model('ActivityDateNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, activity_date)
 
 
@@ -1162,6 +1187,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
             )
         narrative = self.parser_202.get_model(
             'ContactInfoOrganisationNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, contact_info_organisation)
 
     def test_contact_info_organisation_105(self):
@@ -1180,6 +1208,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
                          self.test_contact_info)
         narrative = self.parser_105.get_model(
             'ContactInfoOrganisationNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, contact_info_organisation)
 
     def test_contact_info_department(self):
@@ -1202,6 +1233,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
                 self.narrative
             )
         narrative = self.parser_202.get_model('ContactInfoDepartmentNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, contact_info_department)
 
     def test_contact_info_department_105(self):
@@ -1240,6 +1274,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
                 self.narrative
             )
         narrative = self.parser_202.get_model('ContactInfoPersonNameNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, contact_info_person_name)
 
     def test_contact_info_person_name_105(self):
@@ -1278,6 +1315,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
                 self.narrative
             )
         narrative = self.parser_202.get_model('ContactInfoJobTitleNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, contact_info_job_title)
 
     def test_contact_info_job_title_105(self):
@@ -1343,6 +1383,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
             )
         narrative = self.parser_202.get_model(
             'ContactInfoMailingAddressNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object,
                          contact_info_mailing_address)
 
@@ -1363,6 +1406,9 @@ class ContactInfoTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ContactInfoMailingAddressNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object,
                          contact_info_mailing_address)
 
@@ -1559,6 +1605,9 @@ class ActivityLocationTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__location__name__narrative(
                 self.narrative)
         narrative = self.parser_202.get_model('LocationNameNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, location_name)
 
     def test_location_name_105(self):
@@ -1569,6 +1618,9 @@ class ActivityLocationTestCase(ParserSetupTestCase):
 
         self.assertEqual(location_name.location, self.test_location)
         narrative = self.parser_105.get_model('LocationNameNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, location_name)
 
     def test_location_description_202(self):
@@ -1586,6 +1638,9 @@ class ActivityLocationTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__location__description__narrative(
                 self.narrative)
         narrative = self.parser_202.get_model('LocationDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, location_description)
 
     def test_location_activity_description_202(self):
@@ -1606,6 +1661,9 @@ class ActivityLocationTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'LocationActivityDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, activity_description)
 
     def test_location_administrative_202(self):
@@ -1912,6 +1970,9 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
             parser_202.iati_activities__iati_activity__country_budget_items__budget_item__description__narrative(  # NOQA: E501
                 self.narrative)
         narrative = self.parser_202.get_model('BudgetItemDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, budget_item_description)
 
     def test_budget_item_description_105(self):
@@ -1932,6 +1993,9 @@ class CountryBudgetItemsTestCase(ParserSetupTestCase):
         self.assertEqual(budget_item_description.budget_item, budget_item)
 
         narrative = self.parser_105.get_model('BudgetItemDescriptionNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, budget_item_description)
 
 
@@ -1990,6 +2054,9 @@ class HumanitarianScopeTestCase(ParserSetupTestCase):
             .parser_202.iati_activities__iati_activity__humanitarian_scope__narrative(  # NOQA: E501
                 self.narrative)
         narrative = self.parser_202.get_model('HumanitarianScopeNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, humanitarian_scope)
         self.assertEqual(narrative.content, self.narrative.text)
 
@@ -2040,6 +2107,9 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__policy_marker__narrative(
                 self.narrative)
         narrative = self.parser_202.get_model('ActivityPolicyMarkerNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, activity_policy_marker)
 
     def test_activity_policy_marker_202_vocabulary_ommited(self):
@@ -2106,6 +2176,9 @@ class PolicyMarkerTestCase(ParserSetupTestCase):
                          self.attrs['vocabulary'])
 
         narrative = self.parser_105.get_model('ActivityPolicyMarkerNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, activity_policy_marker)
 
 
@@ -2405,6 +2478,9 @@ class PlannedDisbursementProviderOrganisationTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'PlannedDisbursementProviderNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, provider_organisation)
         self.assertEqual(provider_organisation.primary_name, 'random text')
 
@@ -2462,6 +2538,9 @@ class PlannedDisbursementReceiverOrganisationTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'PlannedDisbursementReceiverNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, receiver_organisation)
         self.assertEqual(receiver_organisation.primary_name, 'random text')
 
@@ -2478,9 +2557,6 @@ class TransactionTestCase(ParserSetupTestCase):
     """
 
     def setUp(self):
-        self.parser_105.model_store.clear()
-        self.parser_202.model_store.clear()
-
 
         # sample attributes on iati-activity xml
         self.iati_202 = copy_xml_tree(self.iati_202)
@@ -2620,10 +2696,11 @@ class TransactionTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__transaction__description__narrative(  # NOQA: E501
                 self.narrative)
 
-        self.parser_202.save_all_models()
-
         narrative = self.parser_202.get_model(
             'TransactionDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, transaction_description)
 
     def test_transaction_description_105(self):
@@ -2631,8 +2708,6 @@ class TransactionTestCase(ParserSetupTestCase):
         self.parser_105\
             .iati_activities__iati_activity__transaction__description(
                 description)
-
-        self.parser_105.save_all_models()
 
         transaction_description = self.parser_105.get_model(
             'TransactionDescription')
@@ -2642,6 +2717,9 @@ class TransactionTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'TransactionDescriptionNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, transaction_description)
 
     def test_transaction_disbursement_channel_202(self):
@@ -2873,6 +2951,9 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__transaction__provider_org__narrative(  # NOQA: E501
                 self.narrative)
         narrative = self.parser_202.get_model('TransactionProviderNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, provider_organisation)
         self.assertEqual(provider_organisation.primary_name, 'random text')
 
@@ -2913,6 +2994,9 @@ class ProviderOrganisationTestCase(ParserSetupTestCase):
         self.test_transaction = transaction_factory.TransactionFactory.build()
         self.parser_202.register_model('Transaction', self.test_transaction)
         narrative = self.parser_105.get_model('TransactionProviderNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, provider_organisation)
         self.assertEqual(provider_organisation.primary_name, 'random text')
 
@@ -2972,6 +3056,9 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__transaction__receiver_org__narrative(  # NOQA: E501
                 self.narrative)
         narrative = self.parser_202.get_model('TransactionReceiverNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, receiver_organisation)
         self.assertEqual(receiver_organisation.primary_name, 'random text')
 
@@ -3018,6 +3105,9 @@ class ReceiverOrganisationTestCase(ParserSetupTestCase):
             'TransactionReceiver')
 
         narrative = self.parser_105.get_model('TransactionReceiverNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEqual(narrative.related_object, receiver_organisation)
         self.assertEqual(receiver_organisation.primary_name, 'random text')
 
@@ -3079,6 +3169,9 @@ class DocumentLinkTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__document_link__title__narrative(
                 self.narrative)
         narrative = self.parser_202.get_model('DocumentLinkTitleNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEqual(narrative.related_object, document_link_title)
 
     def test_document_link_category_202(self):
