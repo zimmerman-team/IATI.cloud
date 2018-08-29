@@ -27,7 +27,6 @@ from iati.transaction import factories as transaction_factory
 # TODO: Setup parser classes per test, to isolate tests as much as possible
 # (currently per class) - 2015-12-02
 # TODO: Refactor this file into multiple files - 2015-12-02
-from iati.transaction.factories import TransactionTypeFactory
 from iati_codelists.factory import codelist_factory
 from iati_synchroniser.factory import synchroniser_factory
 from iati_vocabulary.factory import vocabulary_factory
@@ -3266,9 +3265,10 @@ class ResultTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__result__title__narrative(
                 self.narrative)
 
-        # self.parser_202.save_all_models()
-
         narrative = self.parser_202.get_model('ResultTitleNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_title)
 
     def test_result_title_105(self):
@@ -3282,6 +3282,9 @@ class ResultTestCase(ParserSetupTestCase):
         self.assertEquals(result_title.result, self.test_result)
 
         narrative = self.parser_105.get_model('ResultTitleNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_title)
 
     def test_result_title_105_duplicates(self):
@@ -3300,6 +3303,10 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative1 = self.parser_105.get_model('ResultTitleNarrative')
         narrative2 = self.parser_105.get_model('ResultTitleNarrative')
+
+        self.parser_105.update_related(narrative1)
+        self.parser_105.update_related(narrative2)
+
         self.assertEquals(narrative1.related_object, result_title)
         self.assertEquals(narrative2.related_object, result_title)
 
@@ -3319,6 +3326,9 @@ class ResultTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__result__description__narrative(
                 self.narrative)
         narrative = self.parser_202.get_model('ResultDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_description)
 
     def test_result_description_105(self):
@@ -3333,6 +3343,9 @@ class ResultTestCase(ParserSetupTestCase):
         self.assertEquals(result_description.result, self.test_result)
 
         narrative = self.parser_105.get_model('ResultDescriptionNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_description)
 
     def test_result_description_105_duplicates(self):
@@ -3353,6 +3366,10 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative1 = self.parser_105.get_model('ResultDescriptionNarrative')
         narrative2 = self.parser_105.get_model('ResultDescriptionNarrative')
+
+        self.parser_105.update_related(narrative1)
+        self.parser_105.update_related(narrative2)
+
         self.assertEquals(narrative1.related_object, result_description)
         self.assertEquals(narrative2.related_object, result_description)
 
@@ -3393,6 +3410,9 @@ class ResultTestCase(ParserSetupTestCase):
             .iati_activities__iati_activity__result__indicator__title__narrative(  # NOQA: E501
                 self.narrative)
         narrative = self.parser_202.get_model('ResultIndicatorTitleNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_indicator_title)
 
     def test_result_indicator_title_105(self):
@@ -3410,6 +3430,9 @@ class ResultTestCase(ParserSetupTestCase):
                           self.test_result_indicator)
 
         narrative = self.parser_105.get_model('ResultIndicatorTitleNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object, result_indicator_title)
 
     def test_result_indicator_description_202(self):
@@ -3433,6 +3456,9 @@ class ResultTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'ResultIndicatorDescriptionNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_description)
 
@@ -3454,6 +3480,9 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ResultIndicatorDescriptionNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_description)
 
@@ -3529,6 +3558,9 @@ class ResultTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'ResultIndicatorBaselineCommentNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_baseline_comment)
 
@@ -3553,6 +3585,9 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ResultIndicatorBaselineCommentNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_baseline_comment)
 
@@ -3712,6 +3747,9 @@ class ResultTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'ResultIndicatorPeriodTargetCommentNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_period_target_comment)
 
@@ -3740,6 +3778,9 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ResultIndicatorPeriodTargetCommentNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_period_target_comment)
 
@@ -3846,6 +3887,9 @@ class ResultTestCase(ParserSetupTestCase):
                 self.narrative)
         narrative = self.parser_202.get_model(
             'ResultIndicatorPeriodActualCommentNarrative')
+
+        self.parser_202.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_period_actual_comment)
 
@@ -3874,5 +3918,8 @@ class ResultTestCase(ParserSetupTestCase):
 
         narrative = self.parser_105.get_model(
             'ResultIndicatorPeriodActualCommentNarrative')
+
+        self.parser_105.update_related(narrative)
+
         self.assertEquals(narrative.related_object,
                           result_indicator_period_actual_comment)
