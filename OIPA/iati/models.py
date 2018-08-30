@@ -1132,13 +1132,23 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.DecimalField(
-        max_digits=25, decimal_places=10, null=True, blank=True)
+    # XXX: Previous relationship:
+    # target = models.DecimalField(
+        # max_digits=25, decimal_places=10, null=True, blank=True)
+    target = models.ForeignKey(
+        ResultIndicatorPeriodTarget,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
     actual = models.DecimalField(
         max_digits=25, decimal_places=10, null=True, blank=True)
 
     def __unicode__(self,):
-        return "target: %s, actual: %s" % (self.target, self.actual)
+        return "target: %s, actual: %s" % (
+            self.target.value if self.target else 'none',
+            self.actual
+        )
 
     def get_activity(self):
         return self.result_indicator.result.activity
