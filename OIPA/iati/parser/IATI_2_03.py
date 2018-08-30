@@ -3878,10 +3878,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_start = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     # tag:period-end"""
@@ -3907,10 +3906,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_end = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__target(
@@ -4206,12 +4204,8 @@ class Parse(IatiParser):
             value = None
 
         if value:
-            result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+            result_indicator_period = self.get_model('ResultIndicatorPeriod')
             result_indicator_period.actual = value
-
-            self.register_model(
-                'ResultIndicatorPeriod', result_indicator_period
-            )
 
         return element
 
