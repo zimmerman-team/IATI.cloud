@@ -1118,6 +1118,14 @@ class ResultIndicatorBaselineComment(models.Model):
         return self.result_indicator.result.activity
 
 
+class ResultIndicatorPeriodTarget(models.Model):
+    value = models.DecimalField(
+        max_digits=25, decimal_places=10, null=True, blank=True)
+
+    def __unicode__(self,):
+        return "target: %s" % (self.value)
+
+
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
