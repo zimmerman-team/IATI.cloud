@@ -250,6 +250,7 @@
             <period-start iso-date="2013-01-01" />
             <period-end iso-date="2013-03-31" />
             <target value="10">
+              <location ref="AF-KAN" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
@@ -288,7 +289,7 @@
               </document-link>
             </actual>
           </period>
-          <!--result-period ends-->
+          <!--result(indicator)-period ends-->
         </indicator>
       </result>
 
