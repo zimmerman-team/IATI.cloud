@@ -1221,7 +1221,7 @@ class ResultIndicatorBaselineDimension(models.Model):
 
 class ResultIndicatorPeriodTargetComment(models.Model):
     result_indicator_period_target = models.ForeignKey(
-        ResultIndicatorPeriodTarget, null=True, on_delete=models.CASCADE)
+        ResultIndicatorPeriodTarget, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
