@@ -1118,14 +1118,6 @@ class ResultIndicatorBaselineComment(models.Model):
         return self.result_indicator.result.activity
 
 
-class ResultIndicatorPeriodTarget(models.Model):
-    value = models.CharField(
-        max_length=50, blank=True, default='')
-
-    def __unicode__(self,):
-        return "target: %s" % (self.value)
-
-
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
@@ -1135,12 +1127,6 @@ class ResultIndicatorPeriod(models.Model):
     # XXX: Previous relationship:
     # target = models.DecimalField(
         # max_digits=25, decimal_places=10, null=True, blank=True)
-    target = models.ForeignKey(
-        ResultIndicatorPeriodTarget,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
     actual = models.DecimalField(
         max_digits=25, decimal_places=10, null=True, blank=True)
 
@@ -1152,6 +1138,20 @@ class ResultIndicatorPeriod(models.Model):
 
     def get_activity(self):
         return self.result_indicator.result.activity
+
+
+class ResultIndicatorPeriodTarget(models.Model):
+    value = models.CharField(
+        max_length=50, blank=True, default='')
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod,
+        null=True,
+        related_name='targets',
+        on_delete=models.CASCADE
+    )
+
+    def __unicode__(self,):
+        return "target: %s" % (self.value)
 
 
 class ResultIndicatorPeriodTargetLocation(models.Model):
