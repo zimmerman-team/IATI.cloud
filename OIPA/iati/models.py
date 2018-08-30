@@ -1119,8 +1119,8 @@ class ResultIndicatorBaselineComment(models.Model):
 
 
 class ResultIndicatorPeriodTarget(models.Model):
-    value = models.DecimalField(
-        max_digits=25, decimal_places=10, null=True, blank=True)
+    value = models.CharField(
+        max_length=50, blank=True, default='')
 
     def __unicode__(self,):
         return "target: %s" % (self.value)
