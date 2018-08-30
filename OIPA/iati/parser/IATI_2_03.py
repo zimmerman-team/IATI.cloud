@@ -3911,28 +3911,26 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
-        # TODO, 'guess number'
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value is None:
-            raise RequiredFieldError(
-                "result/indicator/period/period/target",
-                "value",
-                "required attribute missing or it's not possible to convert "
-                "it to Decimal (this error might be incorrect, "
-                "xsd:decimal is used to check instead of xsd:string)")
+        result_indicator_period_target = models.ResultIndicatorPeriodTarget()
+        result_indicator_period_target.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_target.value = value or ''  # can be None
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-        result_indicator_period.target = value
+        self.register_model(
+            'ResultIndicatorPeriodTarget', result_indicator_period_target)
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
