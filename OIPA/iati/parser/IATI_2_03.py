@@ -3988,10 +3988,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
 
         target_dimension = models.ResultIndicatorPeriodTargetDimension()
-        target_dimension.result_indicator_period = period
+        target_dimension.result_indicator_period_target = period_target
         target_dimension.name = name
         target_dimension.value = value
 
