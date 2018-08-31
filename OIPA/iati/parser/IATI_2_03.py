@@ -3959,9 +3959,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
+
         target_location = models.ResultIndicatorPeriodTargetLocation()
-        target_location.result_indicator_period = period
+        target_location.result_indicator_period_target = period_target
         target_location.ref = ref
         target_location.location = location[0]
 
@@ -4011,8 +4012,6 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetComment',
             result_indicator_period_target_comment)
         return element
-
-    # """attributes:
 
     # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(  # NOQA: E501
