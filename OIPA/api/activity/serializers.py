@@ -33,10 +33,10 @@ from iati.models import (
     Result, ResultDescription, ResultIndicator, ResultIndicatorBaselineComment,
     ResultIndicatorDescription, ResultIndicatorPeriod,
     ResultIndicatorPeriodActualComment, ResultIndicatorPeriodActualDimension,
-    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTargetComment,
-    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
-    ResultIndicatorReference, ResultIndicatorTitle, ResultTitle, ResultType,
-    Title
+    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
+    ResultIndicatorPeriodTargetComment, ResultIndicatorPeriodTargetDimension,
+    ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
+    ResultIndicatorTitle, ResultTitle, ResultType, Title
 )
 from iati.parser import validators
 from iati_organisation import models as organisation_models
@@ -1602,22 +1602,30 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
 
 class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
     ref = serializers.CharField()
-    result_indicator_period = serializers.CharField(write_only=True)
+    result_indicator_period_target = serializers.CharField(write_only=True)
+    result_indicator_period = serializers.CharField(
+        write_only=True,
+        source='result_indicator_period_target__result_indicator_period'
+    )
 
     class Meta:
         model = ResultIndicatorPeriodTargetLocation
         fields = (
             'id',
+            'result_indicator_period_target',
             'result_indicator_period',
             'ref',
         )
 
     def validate(self, data):
-        result_indicator_period = get_or_raise(
-            ResultIndicatorPeriod, data, 'result_indicator_period')
+        result_indicator_period_target = get_or_raise(
+            ResultIndicatorPeriodTarget,
+            data,
+            'result_indicator_period_target'
+        )
 
         validated = validators.activity_result_indicator_period_location(
-            result_indicator_period,
+            result_indicator_period_target,
             data.get('ref'),
         )
 
@@ -1636,12 +1644,17 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
         return instance
 
     def update(self, instance, validated_data):
+        result_indicator_period_target_id = validated_data.get(
+            'result_indicator_period_target'
+        )
         result_indicator_period = validated_data.get(
             'result_indicator_period'
         )
 
         update_instance = ResultIndicatorPeriodTargetLocation(
-            **validated_data
+            result_indicator_period_target_id=result_indicator_period_target_id,  # NOQA: E501
+            ref=validated_data['ref'],
+            location=validated_data['location']
         )
         update_instance.id = instance.id
         update_instance.save()
@@ -1796,7 +1809,7 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
 
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
-    target = ResultIndicatorPeriodTargetSerializer(source="*")
+    targets = ResultIndicatorPeriodTargetSerializer(many=True)
     actual = ResultIndicatorPeriodActualSerializer(source="*")
 
     period_start = serializers.CharField(required=False)
@@ -1811,7 +1824,7 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             'id',
             'period_start',
             'period_end',
-            'target',
+            'targets',
             'actual',
         )
 

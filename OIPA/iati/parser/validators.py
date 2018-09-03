@@ -2312,14 +2312,16 @@ def activity_result_indicator_period(
     }
 
 
-def activity_result_indicator_period_location(
-    result_indicator_period,
-    ref,
-):
+def activity_result_indicator_period_location(result_indicator_period_target,
+                                              ref):
     warnings = []
     errors = []
 
-    activity = result_indicator_period.result_indicator.result.activity
+    activity = result_indicator_period_target\
+        .result_indicator_period\
+        .result_indicator\
+        .result\
+        .activity
 
     location = get_or_none(models.Location, activity=activity, ref=ref)
 
@@ -2343,7 +2345,9 @@ def activity_result_indicator_period_location(
         "warnings": warnings,
         "errors": errors,
         "validated_data": {
-            "result_indicator_period": result_indicator_period,
+            "result_indicator_period_target": result_indicator_period_target.id,  # NOQA: E501
+            "result_indicator_period": result_indicator_period_target
+                                       .result_indicator_period,
             "ref": ref,
             "location": location,
         },

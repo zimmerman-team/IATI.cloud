@@ -298,7 +298,7 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/location/$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodTargetLocationList.as_view(),
         name='activity-result_indicator_period_target_location-list'),
-    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/location/(?P<target_location_id>[^@$&+,/:;=?]+)$',  # NOQA: E501
+    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/(?P<target_id>[^@$&+,/:;=?]+)/location/(?P<target_location_id>[^@$&+,/:;=?]+)$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodTargetLocationDetail.as_view(),
         name='activity-result_indicator_period_target_location-detail'),
 
