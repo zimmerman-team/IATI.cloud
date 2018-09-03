@@ -486,7 +486,9 @@ def check_for_staging_xml():
         obj.delete()
     except Dataset.DoesNotExist:
         obj = None
+
     obj = Dataset(iati_id=id, name=id, title=id, publisher=pub, source_url=url)
+    obj.save()
     obj.process(force_reparse=True)
     queue = django_rq.get_queue("parser")
     # if update_searchable and settings.ROOT_ORGANISATIONS:
