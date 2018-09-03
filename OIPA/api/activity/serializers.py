@@ -1758,7 +1758,6 @@ class ResultIndicatorPeriodTargetDimensionSerializer(ModelSerializerNoValidation
 
 class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
     value = serializers.DecimalField(
-        source='target',
         max_digits=25,
         decimal_places=10
     )

@@ -512,7 +512,7 @@ class ResultIndicatorPeriodTargetSerializer(XMLMetaMixin, SkipNullMixin,
     xml_meta = {'attributes': ('value',)}
 
     value = serializers.DecimalField(
-        source='target', max_digits=25, decimal_places=10)
+        source='targets__value', max_digits=25, decimal_places=10)
     comment = NarrativeContainerXMLSerializer(
         source="resultindicatorperiodtargetcomment")
     location = ResultIndicatorPeriodTargetLocationXMLSerializer(
