@@ -751,7 +751,9 @@ class ResultIndicatorReferenceFactory(NoDatabaseFactory):
 
 
 class ResultIndicatorPeriodTargetCommentFactory(NoDatabaseFactory):
-    result_indicator_period_target = SubFactory('iati.factory.ResultIndicatorPeriodTargetFactory')
+    result_indicator_period_target = RelatedFactory(
+        'iati.factory.iati_factory.ResultIndicatorPeriodTargetFactory'
+    )
 
     class Meta:
         model = iati.models.ResultIndicatorPeriodTargetComment
@@ -769,8 +771,6 @@ class ResultIndicatorPeriodFactory(NoDatabaseFactory):
     result_indicator = SubFactory(ResultIndicatorFactory)
     resultindicatorperiodactualcomment = RelatedFactory(
         ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
-    resultindicatorperiodtargetcomment = RelatedFactory(
-        ResultIndicatorPeriodTargetCommentFactory, 'result_indicator_period')
 
     period_start = "2013-01-01"
     period_end = "2013-03-31"

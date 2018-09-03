@@ -1632,10 +1632,17 @@ class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation)
         return handle_errors(validated)
 
     def create(self, validated_data):
-        result_indicator_period = validated_data.get('result_indicator_period')
+        result_indicator_period_target_id = validated_data.get(
+            'result_indicator_period_target'
+        )
+        result_indicator_period = validated_data.get(
+            'result_indicator_period'
+        )
 
         instance = ResultIndicatorPeriodTargetLocation.objects.create(
-            **validated_data
+            result_indicator_period_target_id=result_indicator_period_target_id,  # NOQA: E501
+            ref=validated_data['ref'],
+            location=validated_data['location']
         )
 
         result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
