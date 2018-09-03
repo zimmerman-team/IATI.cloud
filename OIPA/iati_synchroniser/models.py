@@ -2,7 +2,7 @@ from django.db import models
 import datetime
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-
+from rest_framework.decorators import api_view
 from iati_organisation.models import Organisation
 
 

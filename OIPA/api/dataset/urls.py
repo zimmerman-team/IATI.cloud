@@ -37,4 +37,5 @@ urlpatterns = [
         views.DatasetPublishOrganisationsUpdate.as_view(),
         name='dataset-publish'
     ),
+    url(r'^staging_collection.xml', views.staging_collection),
 ]
