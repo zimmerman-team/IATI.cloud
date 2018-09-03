@@ -3528,26 +3528,40 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create()  # NOQA: E501
         LocationFactory.create(
             activity=result_indicator_period_target_location
-            .result_indicator_period.result_indicator.result.activity,
+            .result_indicator_period_target
+            .result_indicator_period
+            .result_indicator
+            .result
+            .activity,
+
             ref="test123"
         )
 
         data = {
             "result_indicator_period": result_indicator_period_target_location
-            .result_indicator_period.id,
+                .result_indicator_period_target
+                .result_indicator_period
+                .id,  # NOQA: E501
+            "result_indicator_period_target": result_indicator_period_target_location  # NOQA: E501
+            .result_indicator_period_target.id,
             "ref": "test123",
         }
 
-        result_indicator_period = result_indicator_period_target_location\
+        result_indicator_period_target = result_indicator_period_target_location.result_indicator_period_target  # NOQA: E501
+
+        result_indicator_period = result_indicator_period_target\
             .result_indicator_period
 
         res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(  # NOQA: E501
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/{}/location/{}?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator_period.result_indicator.result.activity.id,
                 result_indicator_period.result_indicator.result.id,
                 result_indicator_period.result_indicator.id,
+
                 result_indicator_period.id,
+                result_indicator_period_target.id,
+
                 result_indicator_period_target_location.id),
             data,
             format='json')
@@ -3557,8 +3571,10 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
             pk=res.json()['id'])
 
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
+        self.assertEqual(
+            instance.result_indicator_period_target.result_indicator_period.id,
+            data['result_indicator_period']
+        )
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.location.ref, data['ref'])
 
