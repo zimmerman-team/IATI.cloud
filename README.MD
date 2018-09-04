@@ -22,15 +22,13 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 ## Quick start
 -------
 
-1. Install [Vagrant](https://www.vagrantup.com/)
-2. Goto your OIPA folder
-3. Run ```vagrant up```
-4. Find your way into the machine: ```vagrant ssh```
-5. Start the server: ```./manage.py runserver 0.0.0.0:8000``` (should you get an error, set different ports in your OIPA vagrantfile)
-6. Start the process control centre (supervisor): ```./manage.py supervisor```
-7. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a> (or the port set in your OIPA vagrantfile)
-8. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
-9. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+1. Go to your OIPA folder.
+2  Run ```source env/bin/activate``` to activate the virtual enviornment.
+3. Start the server: ```./manage.py runserver localhost:8000``` 
+4. Start the process control centre (supervisor): ```./manage.py supervisor```
+5. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+6. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
+7. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
 Happy Hunting!
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
