@@ -1562,42 +1562,16 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
         )
 
     def validate(self, data):
-        result_indicator_period = get_or_raise(
-            ResultIndicatorPeriod, data, 'result_indicator_period')
 
-        validated = validators.activity_result_indicator_period_location(
-            result_indicator_period,
-            data.get('ref'),
-        )
-
-        return handle_errors(validated)
+        raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
-        result_indicator_period = validated_data.get(
-            'result_indicator_period'
-        )
 
-        instance = ResultIndicatorPeriodActualLocation.objects.create(
-            **validated_data)
-
-        result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
-        result_indicator_period.result_indicator.result.activity.save()
-
-        return instance
+        raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
-        result_indicator_period = validated_data.get('result_indicator_period')
 
-        update_instance = ResultIndicatorPeriodActualLocation(
-            **validated_data
-        )
-        update_instance.id = instance.id
-        update_instance.save()
-
-        result_indicator_period.result_indicator.result.activity.modified = True  # NOQA: E501
-        result_indicator_period.result_indicator.result.activity.save()
-
-        return update_instance
+        raise NotImplementedError("This action is not implemented")
 
 
 class ResultIndicatorPeriodTargetLocationSerializer(ModelSerializerNoValidation):  # NOQA: E501
@@ -1782,7 +1756,9 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
         decimal_places=10
     )
     comment = NarrativeContainerSerializer(
-        source="resultindicatorperiodtargetcomment"
+        many=True,
+        source="resultindicatorperiodtargetcomment_set",
+        read_only=True
     )
     locations = ResultIndicatorPeriodTargetLocationSerializer(
         many=True,
@@ -1836,76 +1812,16 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
         )
 
     def validate(self, data):
-        result_indicator = get_or_raise(
-            ResultIndicator, data, 'result_indicator')
 
-        validated = validators.activity_result_indicator_period(
-            result_indicator,
-            data.get('target'),
-            data.get('actual'),
-            data.get('period_start'),
-            data.get('period_end'),
-            data.get('resultindicatorperiodtargetcomment',
-                     {}).get('narratives'),
-            data.get('resultindicatorperiodactualcomment',
-                     {}).get('narratives'),
-        )
-
-        return handle_errors(validated)
+        raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
-        result_indicator = validated_data.get('result_indicator')
-        target_comment_narratives_data = validated_data.pop(
-            'target_comment_narratives', [])
-        actual_comment_narratives_data = validated_data.pop(
-            'actual_comment_narratives', [])
 
-        instance = ResultIndicatorPeriod.objects.create(
-            **validated_data)
-
-        target_comment_narratives = ResultIndicatorPeriodTargetComment.objects.create(  # NOQA: E501
-            result_indicator_period=instance)
-        actual_comment_narratives = ResultIndicatorPeriodActualComment.objects.create(  # NOQA: E501
-            result_indicator_period=instance)
-
-        save_narratives(
-            target_comment_narratives,
-            target_comment_narratives_data,
-            result_indicator.result.activity)
-        save_narratives(
-            actual_comment_narratives,
-            actual_comment_narratives_data,
-            result_indicator.result.activity)
-
-        result_indicator.result.activity.modified = True
-        result_indicator.result.activity.save()
-
-        return instance
+        raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
-        result_indicator = validated_data.get('result_indicator')
-        target_comment_narratives_data = validated_data.pop(
-            'target_comment_narratives', [])
-        actual_comment_narratives_data = validated_data.pop(
-            'actual_comment_narratives', [])
 
-        update_instance = ResultIndicatorPeriod(**validated_data)
-        update_instance.id = instance.id
-        update_instance.save()
-
-        save_narratives(
-            update_instance.resultindicatorperiodtargetcomment,
-            target_comment_narratives_data,
-            result_indicator.result.activity)
-        save_narratives(
-            update_instance.resultindicatorperiodactualcomment,
-            actual_comment_narratives_data,
-            result_indicator.result.activity)
-
-        result_indicator.result.activity.modified = True
-        result_indicator.result.activity.save()
-
-        return update_instance
+        raise NotImplementedError("This action is not implemented")
 
 
 class ResultIndicatorBaselineSerializer(SerializerNoValidation):

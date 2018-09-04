@@ -323,7 +323,7 @@ def _create_test_activity(
         result_indicator_period=result_indicator_period
     )
     ResultIndicatorPeriodTargetCommentFactory(
-        result_indicator_period_target=result_indicator_period_target
+        result_indicator_period_target_id=result_indicator_period_target.id
     )
     # NEW^
     ResultIndicatorPeriodTargetLocationFactory.create(

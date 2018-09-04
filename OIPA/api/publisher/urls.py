@@ -291,16 +291,10 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/actual/location/$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodActualLocationList.as_view(),
         name='activity-result_indicator_period_actual_location-list'),
-    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/actual/location/(?P<actual_location_id>[^@$&+,/:;=?]+)$',  # NOQA: E501
-        api.activity.views.ResultIndicatorPeriodActualLocationDetail.as_view(),
-        name='activity-result_indicator_period_actual_location-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/(?P<target_id>[^@$&+,/:;=?]+)/location/$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodTargetLocationList.as_view(),
         name='activity-result_indicator_period_target_location-list'),
-    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/(?P<target_id>[^@$&+,/:;=?]+)/location/(?P<target_location_id>[^@$&+,/:;=?]+)$',  # NOQA: E501
-        api.activity.views.ResultIndicatorPeriodTargetLocationDetail.as_view(),
-        name='activity-result_indicator_period_target_location-detail'),
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/actual/dimension/$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodActualDimensionList.as_view(),
@@ -314,10 +308,6 @@ urlpatterns = [
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/dimension/$',  # NOQA: E501
         api.activity.views.ResultIndicatorPeriodTargetDimensionList.as_view(),
         name='activity-result_indicator_period_target_dimension-list'),
-    url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<activity_id>[^@$&+,/:;=?]+)/results/(?P<result_id>[^@$&+,/:;=?]+)/indicators/(?P<resultindicator_id>[^@$&+,/:;=?]+)/periods/(?P<period_id>[^@$&+,/:;=?]+)/target/dimension/(?P<target_dimension_id>[^@$&+,/:;=?]+)$',  # NOQA: E501
-        api.activity.views.ResultIndicatorPeriodTargetDimensionDetail\
-            .as_view(),
-        name='activity-result_indicator_period_target_dimension-detail'),
 
 
     url(r'^(?P<publisher_id>[^@$+,/:;=?]+)/activities/(?P<pk>[^@$&+,/:;=?]+)/crs_add/$',  # NOQA: E501
