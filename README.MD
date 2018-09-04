@@ -23,7 +23,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 -------
 
 1. Go to your OIPA folder.
-2  Run ```source env/bin/activate``` to activate the virtual enviornment.
+2.  Run ```source env/bin/activate``` to activate the virtual enviornment.
 3. Start the server: ```./manage.py runserver localhost:8000``` 
 4. Start the process control centre (supervisor): ```./manage.py supervisor```
 5. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
