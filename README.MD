@@ -32,7 +32,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 9. Start the process control centre (supervisor): ```./manage.py supervisor```
 10. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 11. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
-12. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+
 Happy Hunting!
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
