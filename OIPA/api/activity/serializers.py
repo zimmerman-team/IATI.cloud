@@ -32,9 +32,8 @@ from iati.models import (
     PlannedDisbursementProvider, PlannedDisbursementReceiver, RelatedActivity,
     Result, ResultDescription, ResultIndicator, ResultIndicatorBaselineComment,
     ResultIndicatorDescription, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualComment, ResultIndicatorPeriodActualDimension,
-    ResultIndicatorPeriodActualLocation, ResultIndicatorPeriodTarget,
-    ResultIndicatorPeriodTargetComment, ResultIndicatorPeriodTargetDimension,
+    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
+    ResultIndicatorPeriodTarget, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorPeriodTargetLocation, ResultIndicatorReference,
     ResultIndicatorTitle, ResultTitle, ResultType, Title
 )

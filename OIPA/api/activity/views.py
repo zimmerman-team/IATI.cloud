@@ -59,8 +59,7 @@ from iati.models import (
     HumanitarianScope, LegacyData, Location, Organisation, OrganisationType,
     OtherIdentifier, PlannedDisbursement, PolicySignificance, RelatedActivity,
     Result, ResultIndicator, ResultIndicatorPeriod,
-    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodActualLocation,
-    ResultIndicatorPeriodTargetDimension, ResultIndicatorPeriodTargetLocation,
+    ResultIndicatorPeriodActualDimension, ResultIndicatorPeriodTargetDimension,
     ResultIndicatorReference, Sector
 )
 from iati.transaction.models import Transaction

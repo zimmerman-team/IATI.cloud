@@ -1124,9 +1124,6 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    # XXX: Previous relationship:
-    # target = models.DecimalField(
-        # max_digits=25, decimal_places=10, null=True, blank=True)
     actual = models.DecimalField(
         max_digits=25, decimal_places=10, null=True, blank=True)
 

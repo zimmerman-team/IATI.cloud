@@ -16,10 +16,11 @@ from iati.factory.iati_factory import (
     RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
     ResultIndicatorPeriodActualDimensionFactory,
     ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
+    ResultIndicatorPeriodTargetCommentFactory,
     ResultIndicatorPeriodTargetDimensionFactory,
     ResultIndicatorPeriodTargetFactory,
     ResultIndicatorPeriodTargetLocationFactory,
-    ResultIndicatorReferenceFactory, TitleFactory, ResultIndicatorPeriodTargetCommentFactory
+    ResultIndicatorReferenceFactory, TitleFactory
 )
 from iati.transaction.factories import (
     TransactionDescriptionFactory, TransactionFactory,
@@ -325,14 +326,13 @@ def _create_test_activity(
     ResultIndicatorPeriodTargetCommentFactory(
         result_indicator_period_target_id=result_indicator_period_target.id
     )
-    # NEW^
     ResultIndicatorPeriodTargetLocationFactory.create(
         result_indicator_period_target=result_indicator_period_target)
     ResultIndicatorPeriodTargetDimensionFactory.create(
         result_indicator_period_target=result_indicator_period_target)
     _create_test_narrative(
         activity,
-        result_indicator_period_target.resultindicatorperiodtargetcomment_set.first(),
+        result_indicator_period_target.resultindicatorperiodtargetcomment_set.first(),  # NOQA: E501
         resultindicatorperiodtargetcomment_narrative_1)
     ResultIndicatorPeriodActualLocationFactory.create(
         result_indicator_period=result_indicator_period)
