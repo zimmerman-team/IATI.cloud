@@ -1563,14 +1563,17 @@ class ResultIndicatorPeriodActualLocationSerializer(ModelSerializerNoValidation)
 
     def validate(self, data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
 
@@ -1813,14 +1816,17 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
 
     def validate(self, data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
     def create(self, validated_data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
     def update(self, instance, validated_data):
 
+        # See: #747
         raise NotImplementedError("This action is not implemented")
 
 
