@@ -23,17 +23,18 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 -------
 
 1. Go to your OIPA folder.
-2. Run ```source env/bin/activate``` to activate the virtual enviornment.
-3. Install required libraries using ```OIPA/requirements.txt```
-4. Create a PostgreSQL database.
-5. Set up the database specifications in the file ```OIPA/.env```
-6. Run ```./manage.py migrate``` to migrate tables to created database.
-7. Start the server: ```./manage.py runserver localhost:8000``` 
-8. Create a superuser: ```./manage.py createsuperuser``` 
-9. Start the process control centre (supervisor): ```./manage.py supervisor```
-10. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
-11. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
-12. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+2. Run ```virtualenv <name> -p python3``` to install virtual environment in python3.
+3. Run ```source env/bin/activate``` to activate the virtual environment.
+4. Install required libraries using ```pip install -r requirements.txt```
+5. Create a PostgreSQL database.
+6. Set up the database specifications in the file ```OIPA/.env```
+7. Run ```python manage.py migrate``` to migrate tables to the newly created database.
+8. Start the server: ```python manage.py runserver localhost:8000``` 
+9. Create a superuser: ``python manage.py createsuperuser``` 
+10. Start the process control centre (supervisor): ```python manage.py supervisor```
+11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+12. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
+13. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
 
 Happy Hunting!
 
