@@ -4255,6 +4255,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__dimension(  # NOQA: E501
             self, element):
 
@@ -4284,13 +4285,16 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualDimension', actual_dimension)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
-        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_actual = self.get_model(
+            'ResultIndicatorPeriodActual'
+        )
 
         result_indicator_period_actual_comment = models\
             .ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment\
-            .result_indicator_period = result_indicator_period
+            .result_indicator_period_actual = result_indicator_period_actual
 
         self.register_model(
             'ResultIndicatorPeriodActualComment',
