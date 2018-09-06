@@ -283,7 +283,6 @@
             <!--Actual with quantative value:-->
             <actual value="11">
               <location ref="AF-KAN" />
-              <location ref="KH-PNH" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
