@@ -1171,14 +1171,14 @@ class ResultIndicatorPeriodTargetLocation(models.Model):
     def __unicode__(self,):
         return "%s" % self.ref
 
-    # FIXME: fix all these at least on ResultIndicators
+    # FIXME: fix all these methods and check if they are used
     def get_activity(self):
         return self.result_indicator_period.result_indicator.result.activity
 
 
 class ResultIndicatorPeriodActualLocation(models.Model):
-    result_indicator_period = models.ForeignKey(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+    result_indicator_period_actual = models.ForeignKey(
+        ResultIndicatorPeriodActual, on_delete=models.CASCADE)
     ref = models.CharField(max_length=50)
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
 
