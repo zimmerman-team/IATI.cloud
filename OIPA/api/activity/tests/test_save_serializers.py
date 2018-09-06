@@ -34,12 +34,10 @@ from iati.factory.iati_factory import (
     PolicyMarkerFactory, PolicyMarkerVocabularyFactory,
     PolicySignificanceFactory, RegionFactory, RegionVocabularyFactory,
     RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
-    ResultIndicatorPeriodActualDimensionFactory,
-    ResultIndicatorPeriodActualLocationFactory, ResultIndicatorPeriodFactory,
-    ResultIndicatorPeriodTargetDimensionFactory,
-    ResultIndicatorPeriodTargetLocationFactory,
-    ResultIndicatorReferenceFactory, ResultTypeFactory, SectorFactory,
-    SectorVocabularyFactory, TiedStatusFactory, TitleFactory
+    ResultIndicatorPeriodActualDimensionFactory, ResultIndicatorPeriodFactory,
+    ResultIndicatorPeriodTargetFactory, ResultIndicatorReferenceFactory,
+    ResultTypeFactory, SectorFactory, SectorVocabularyFactory,
+    TiedStatusFactory, TitleFactory
 )
 from iati.parser.exceptions import FieldValidationError
 from iati.permissions.factories import (
@@ -3186,300 +3184,6 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
                 pk=result_indicator_reference.id)
 
 
-class ResultIndicatorPeriodSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period(self):
-        result_indicator = ResultIndicatorFactory.create()
-
-        data = {
-            "result_indicator": result_indicator.id,
-            "period_start": datetime.date.today().isoformat(),
-            "period_end": (
-                datetime.date.today() + datetime.timedelta(days=5)
-            ).isoformat(),
-            "target": {
-                "value": 200,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-            "actual": {
-                "value": 100,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-        }
-
-        res = self.c.post(
-                "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator.result.activity.id,
-                result_indicator.result.id,
-                result_indicator.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriod.objects.get(pk=res.json()[
-                                                                 'id'])
-
-        self.assertEqual(instance.result_indicator.id,
-                         data['result_indicator'])
-        self.assertEqual(instance.period_start.isoformat(),
-                         data['period_start'])
-        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
-        self.assertEqual(instance.target, data['target']['value'])
-        self.assertEqual(instance.actual, data['actual']['value'])
-
-        instance2 = iati_models.ResultIndicatorPeriodTargetComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['target']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['target']
-                         ['comment']['narratives'][1]['text'])
-
-        instance2 = iati_models.ResultIndicatorPeriodActualComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['actual']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['actual']
-                         ['comment']['narratives'][1]['text'])
-
-    def test_update_result_indicator_period(self):
-        result_indicator_period = ResultIndicatorPeriodFactory.create()
-        vocabulary_factory.IndicatorVocabularyFactory.create(
-            code="2")
-
-        data = {
-            "result_indicator": result_indicator_period.result_indicator.id,
-            "period_start": datetime.date.today().isoformat(),
-            "period_end": (
-                datetime.date.today() + datetime.timedelta(days=5)
-            ).isoformat(),
-            "target": {
-                "value": 300,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-            "actual": {
-                "value": 200,
-                "comment": {
-                    "narratives": [
-                        {
-                            "text": "test1"
-                        },
-                        {
-                            "text": "test2"
-                        }
-                    ],
-                }
-            },
-        }
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriod.objects.get(pk=res.json()[
-                                                                 'id'])
-
-        self.assertEqual(instance.result_indicator.id,
-                         data['result_indicator'])
-        self.assertEqual(instance.period_start.isoformat(),
-                         data['period_start'])
-        self.assertEqual(instance.period_end.isoformat(), data['period_end'])
-        self.assertEqual(instance.target, data['target']['value'])
-        self.assertEqual(instance.actual, data['actual']['value'])
-
-        instance2 = iati_models.ResultIndicatorPeriodTargetComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['target']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['target']
-                         ['comment']['narratives'][1]['text'])
-
-        instance2 = iati_models.ResultIndicatorPeriodActualComment.objects.get(
-            result_indicator_period_id=res.json()['id'])
-        narratives2 = instance2.narratives.all()
-        self.assertEqual(narratives2[0].content, data['actual']
-                         ['comment']['narratives'][0]['text'])
-        self.assertEqual(narratives2[1].content, data['actual']
-                         ['comment']['narratives'][1]['text'])
-
-    def test_delete_result_indicator_period(self):
-        result_indicator_period = ResultIndicatorPeriodFactory.create()
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            iati_models.ResultIndicatorPeriod.objects.get(
-                pk=result_indicator_period.id)
-
-
-class ResultIndicatorPeriodActualLocationSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period_actual_location(self):
-        result_indicator_period = ResultIndicatorPeriodFactory.create()
-        location = LocationFactory.create(
-            activity=result_indicator_period.result_indicator.result.activity)
-
-        data = {
-            "result_indicator_period": result_indicator_period.id,
-            "ref": location.ref,
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(
-            pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_update_result_indicator_period_actual_location(self):
-        result_indicator_period_actual_location = ResultIndicatorPeriodActualLocationFactory.create()  # NOQA: E501
-        LocationFactory.create(
-            activity=result_indicator_period_actual_location
-            .result_indicator_period
-            .result_indicator
-            .result
-            .activity,
-            ref="test123"
-        )
-
-        data = {
-            "result_indicator_period": result_indicator_period_actual_location
-            .result_indicator_period.id,
-            "ref": "test123",
-        }
-
-        result_indicator_period = result_indicator_period_actual_location\
-            .result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_location.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodActualLocation.objects.get(
-            pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_delete_result_indicator_period_actual_location(self):
-        result_indicator_period_actual_location = ResultIndicatorPeriodActualLocationFactory.create()  # NOQA: E501
-
-        result_indicator_period = result_indicator_period_actual_location\
-            .result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/actual/location/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_actual_location.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            iati_models.ResultIndicatorPeriodActualLocation.objects.get(
-                pk=result_indicator_period_actual_location.id)
-
-
 class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
     request_dummy = RequestFactory().get('/')
     c = APIClient()
@@ -3495,22 +3199,28 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         self.c.force_authenticate(user.user)
 
     def test_create_result_indicator_period_target_location(self):
-        result_indicator_period = ResultIndicatorPeriodFactory.create()
+        result_indicator_period_target = ResultIndicatorPeriodTargetFactory.create()  # NOQA: E501
+        result_indicator_period = result_indicator_period_target\
+            .result_indicator_period
+
         location = LocationFactory.create(
             activity=result_indicator_period.result_indicator.result.activity)
 
         data = {
             "result_indicator_period": result_indicator_period.id,
+            "result_indicator_period_target": result_indicator_period_target.id,  # NOQA: E501
             "ref": location.ref,
         }
 
         res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/?format=json".format(  # NOQA: E501
+            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/{}/location/?format=json".format(  # NOQA: E501
                 self.publisher.id,
                 result_indicator_period.result_indicator.result.activity.id,
                 result_indicator_period.result_indicator.result.id,
                 result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
+                result_indicator_period.id,
+                result_indicator_period_target.id
+            ),
             data,
             format='json')
 
@@ -3519,70 +3229,12 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
         instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
             pk=res.json()['id'])
 
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
-        self.assertEqual(instance.ref, data['ref'])
-        self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_update_result_indicator_period_target_location(self):
-        result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create()  # NOQA: E501
-        LocationFactory.create(
-            activity=result_indicator_period_target_location
-            .result_indicator_period.result_indicator.result.activity,
-            ref="test123"
+        self.assertEqual(
+            instance.result_indicator_period_target.result_indicator_period.id,
+            data['result_indicator_period']
         )
-
-        data = {
-            "result_indicator_period": result_indicator_period_target_location
-            .result_indicator_period.id,
-            "ref": "test123",
-        }
-
-        result_indicator_period = result_indicator_period_target_location\
-            .result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_location.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
-            pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
         self.assertEqual(instance.ref, data['ref'])
         self.assertEqual(instance.location.ref, data['ref'])
-
-    def test_delete_result_indicator_period_target_location(self):
-        result_indicator_period_target_location = ResultIndicatorPeriodTargetLocationFactory.create()  # NOQA: E501
-
-        result_indicator_period = result_indicator_period_target_location\
-            .result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/location/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_location.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
-                pk=result_indicator_period_target_location.id)
 
 
 class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
@@ -3685,106 +3337,6 @@ class ResultIndicatorPeriodActualDimensionSaveTestCase(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ResultIndicatorPeriodActualDimension.objects.get(
                 pk=result_indicator_period_actual_dimension.id)
-
-
-class ResultIndicatorPeriodTargetDimensionSaveTestCase(TestCase):
-    request_dummy = RequestFactory().get('/')
-    c = APIClient()
-
-    def setUp(self):
-        admin_group = OrganisationAdminGroupFactory.create()
-        user = OrganisationUserFactory.create(user__username='test1')
-
-        admin_group.organisationuser_set.add(user)
-
-        self.publisher = admin_group.publisher
-
-        self.c.force_authenticate(user.user)
-
-    def test_create_result_indicator_period_target_dimension(self):
-        result_indicator_period = ResultIndicatorPeriodFactory.create()
-
-        data = {
-            "result_indicator_period": result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        res = self.c.post(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 201, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetDimension.objects\
-            .get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_update_result_indicator_period_target_dimension(self):
-        result_indicator_period_target_dimension = ResultIndicatorPeriodTargetDimensionFactory.create()  # NOQA: E501
-
-        data = {
-            "result_indicator_period": result_indicator_period_target_dimension
-            .result_indicator_period.id,
-            "name": "sex",
-            "value": "female",
-        }
-
-        result_indicator_period = result_indicator_period_target_dimension\
-            .result_indicator_period
-
-        res = self.c.put(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_dimension.id),
-            data,
-            format='json')
-
-        self.assertEquals(res.status_code, 200, res.json())
-
-        instance = iati_models.ResultIndicatorPeriodTargetDimension.objects\
-            .get(pk=res.json()['id'])
-
-        self.assertEqual(instance.result_indicator_period.id,
-                         data['result_indicator_period'])
-        self.assertEqual(instance.name, data['name'])
-        self.assertEqual(instance.value, data['value'])
-
-    def test_delete_result_indicator_period_target_dimension(self):
-        result_indicator_period_target_dimension = ResultIndicatorPeriodTargetDimensionFactory.create()  # NOQA: E501
-
-        result_indicator_period = result_indicator_period_target_dimension\
-            .result_indicator_period
-
-        res = self.c.delete(
-            "/api/publishers/{}/activities/{}/results/{}/indicators/{}/periods/{}/target/dimension/{}?format=json".format(  # NOQA: E501
-                self.publisher.id,
-                result_indicator_period.result_indicator.result.activity.id,
-                result_indicator_period.result_indicator.result.id,
-                result_indicator_period.result_indicator.id,
-                result_indicator_period.id,
-                result_indicator_period_target_dimension.id),
-            format='json')
-
-        self.assertEquals(res.status_code, 204)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            iati_models.ResultIndicatorPeriodTargetDimension.objects.get(
-                pk=result_indicator_period_target_dimension.id)
 
 
 class OtherIdentifierSaveTestCase(TestCase):

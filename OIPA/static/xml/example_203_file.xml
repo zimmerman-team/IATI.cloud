@@ -249,7 +249,9 @@
           <period>
             <period-start iso-date="2013-01-01" />
             <period-end iso-date="2013-03-31" />
+            <!--Target with quantative value:-->
             <target value="10">
+              <location ref="AF-KAN" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
@@ -267,7 +269,12 @@
                 <language code="en" />
                 <document-date iso-date="2014-02-05" />
               </document-link>
-
+            </target>
+            <!--Target without quantative value:-->
+            <target>
+              <comment>
+                <narrative>fully feasible to integrate hygiene promotion into vaccination programme under normal programme delivery circumstances.</narrative>
+              </comment>
             </target>
             <actual value="11">
               <dimension name="sex" value="female" />
@@ -288,7 +295,7 @@
               </document-link>
             </actual>
           </period>
-          <!--result-period ends-->
+          <!--result(indicator)-period ends-->
         </indicator>
       </result>
 
