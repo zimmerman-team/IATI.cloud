@@ -3911,7 +3911,7 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
 
@@ -4195,7 +4195,7 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # tag:actual"""
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
 
@@ -4217,6 +4217,7 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -4228,7 +4229,10 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = list(filter(lambda x: x.ref == ref, locations))
+        location = []
+
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
@@ -4240,10 +4244,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_location = models.ResultIndicatorPeriodActualLocation()
-        actual_location.result_indicator_period = period
+        actual_location.result_indicator_period_actual = period_actual
         actual_location.ref = ref
         actual_location.location = location[0]
 
