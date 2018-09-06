@@ -1124,9 +1124,6 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    actual = models.DecimalField(
-        max_digits=25, decimal_places=10, null=True, blank=True)
-
     def __unicode__(self,):
         return "target: %s, actual: %s" % (
             self.target.value if self.target else 'none',
@@ -1149,6 +1146,20 @@ class ResultIndicatorPeriodTarget(models.Model):
 
     def __unicode__(self,):
         return "target: %s" % (self.value)
+
+
+class ResultIndicatorPeriodActual(models.Model):
+    value = models.CharField(
+        max_length=50, blank=True, default='')
+    result_indicator_period = models.ForeignKey(
+        ResultIndicatorPeriod,
+        null=True,
+        related_name='actuals',
+        on_delete=models.CASCADE
+    )
+
+    def __unicode__(self,):
+        return "actual: %s" % (self.value)
 
 
 class ResultIndicatorPeriodTargetLocation(models.Model):
