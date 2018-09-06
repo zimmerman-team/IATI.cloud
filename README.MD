@@ -27,9 +27,9 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 3. Install required libraries using ```OIPA/requirements.txt```
 4. Create a PostgreSQL database.
 5. Set up the database specifications in the file ```OIPA/.env```
-6. Run ```./manage.py migrate```
+6. Run ```./manage.py migrate``` to migrate tables to created database.
 7. Start the server: ```./manage.py runserver localhost:8000``` 
-8. Create a superuser: ``./manage.py createsuperuser``` 
+8. Create a superuser: ```./manage.py createsuperuser``` 
 9. Start the process control centre (supervisor): ```./manage.py supervisor```
 10. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 11. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
