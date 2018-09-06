@@ -4198,16 +4198,22 @@ class Parse(IatiParser):
     # tag:actual"""
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value:
-            result_indicator_period = self.get_model('ResultIndicatorPeriod')
-            result_indicator_period.actual = value
+        result_indicator_period_actual = models.ResultIndicatorPeriodActual()
+        result_indicator_period_actual.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_actual.value = value or ''  # can be None
+
+        self.register_model(
+            'ResultIndicatorPeriodActual', result_indicator_period_actual)
 
         return element
 
