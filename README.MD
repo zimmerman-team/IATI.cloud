@@ -22,15 +22,19 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 ## Quick start
 -------
 
-1. Install [Vagrant](https://www.vagrantup.com/)
-2. Goto your OIPA folder
-3. Run ```vagrant up```
-4. Find your way into the machine: ```vagrant ssh```
-5. Start the server: ```./manage.py runserver 0.0.0.0:8000``` (should you get an error, set different ports in your OIPA vagrantfile)
-6. Start the process control centre (supervisor): ```./manage.py supervisor```
-7. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a> (or the port set in your OIPA vagrantfile)
-8. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
-9. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+1. Go to your OIPA folder.
+2. Run ```source env/bin/activate``` to activate the virtual enviornment.
+3. Install required libraries using ```OIPA/requirements.txt```
+4. Create a PostgreSQL database.
+5. Set up the database specifications in the file ```OIPA/.env```
+6. Run ```./manage.py migrate``` to migrate tables to created database.
+7. Start the server: ```./manage.py runserver localhost:8000``` 
+8. Create a superuser: ```./manage.py createsuperuser``` 
+9. Start the process control centre (supervisor): ```./manage.py supervisor```
+10. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
+11. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
+12. Finally, follow the instructions from here: http://docs.oipa.nl/en/latest/where_to_start/
+
 Happy Hunting!
 
 For more detailed information, see the [install documentation](http://docs.oipa.nl/en/latest/installing/)
