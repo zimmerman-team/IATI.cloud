@@ -245,10 +245,12 @@
           </baseline>
           <!--result-baseline ends-->
 
-          <!--result(indicator)-period starts-->
+          <!--Result indicator period starts-->
           <period>
             <period-start iso-date="2013-01-01" />
             <period-end iso-date="2013-03-31" />
+
+            <!--Result Indicator Period TARGETS:-->
             <!--Target with quantative value:-->
             <target value="10">
               <location ref="AF-KAN" />
@@ -276,7 +278,12 @@
                 <narrative>fully feasible to integrate hygiene promotion into vaccination programme under normal programme delivery circumstances.</narrative>
               </comment>
             </target>
+
+            <!--Result Indicator Period ACTUALS:-->
+            <!--Actual with quantative value:-->
             <actual value="11">
+              <location ref="AF-KAN" />
+              <location ref="KH-PNH" />
               <dimension name="sex" value="female" />
               <dimension name="age" value="adult" />
               <comment>
@@ -294,8 +301,15 @@
                 <document-date iso-date="2014-02-05" />
               </document-link>
             </actual>
+            <!--Actual without quantative value:-->
+            <actual>
+              <comment>
+                <narrative>hygiene promotion into vaccination programme under normal programme delivery circumstances was integrated!</narrative>
+              </comment>
+            </actual>
+
           </period>
-          <!--result(indicator)-period ends-->
+          <!--Result Indicator Period ends-->
         </indicator>
       </result>
 
