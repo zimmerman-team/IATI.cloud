@@ -1203,8 +1203,8 @@ class ResultIndicatorPeriodTargetDimension(models.Model):
 
 
 class ResultIndicatorPeriodActualDimension(models.Model):
-    result_indicator_period = models.ForeignKey(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+    result_indicator_period_actual = models.ForeignKey(
+        ResultIndicatorPeriodActual, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
