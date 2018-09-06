@@ -1,0 +1,8 @@
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ lu-min    | Superuser, Create role, Create DB                          | {}
+ lumin     | Superuser, Create role, Create DB                          | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zoom      | Superuser                                                  | {}
+
