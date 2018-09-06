@@ -27,10 +27,13 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
 3. Run ```source env/bin/activate``` to activate the virtual environment.
 4. Install required libraries using ```pip install -r requirements.txt```
 5. Create a PostgreSQL database.
-6. Set up the database specifications in the file ```OIPA/.env```
+6. Set up the database specifications in the file ```OIPA/.env``` as follows:
+   * OIPA_DB_NAME= ```<your database name>```
+   * OIPA_DB_USER= ```<user name>```
+   * OIPA_DB_PASSWORD= ```<password>```
 7. Run ```python manage.py migrate``` to migrate tables to the newly created database.
 8. Start the server: ```python manage.py runserver localhost:8000``` 
-9. Create a superuser: ``python manage.py createsuperuser``` 
+9. Create a superuser: `python manage.py createsuperuser`
 10. Start the process control centre (supervisor): ```python manage.py supervisor```
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
 12. Follow instructions for sign-in: http://docs.oipa.nl/en/latest/admin_interface/
