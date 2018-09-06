@@ -408,7 +408,7 @@ class ActivityQuerySet(SearchQuerySet):
             .select_related('language'))
 
         indicator_period_target_location_prefetch = Prefetch(
-            'resultindicatorperiodtargetlocation_set',
+            'targets__resultindicatorperiodtargetlocation_set',
             queryset=ResultIndicatorPeriodTargetLocation.objects.all()
             .select_related('location'))
 
@@ -418,7 +418,7 @@ class ActivityQuerySet(SearchQuerySet):
             .select_related('location'))
 
         indicator_period_target_dimension_prefetch = Prefetch(
-            'resultindicatorperiodtargetdimension_set',
+            'targets__resultindicatorperiodtargetdimension_set',
             queryset=ResultIndicatorPeriodTargetDimension.objects.all()
         )
 
@@ -428,7 +428,7 @@ class ActivityQuerySet(SearchQuerySet):
         )
 
         indicator_period_target_comment_prefetch = Prefetch(
-            'resultindicatorperiodtargetcomment__narratives',
+            'targets__resultindicatorperiodtargetcomment_set__narratives',
             queryset=Narrative.objects.all()
             .select_related('language'))
 
@@ -440,8 +440,8 @@ class ActivityQuerySet(SearchQuerySet):
         indicator_period_prefetch = Prefetch(
             'resultindicatorperiod_set',
             queryset=ResultIndicatorPeriod.objects.all()
-            .select_related(
-                'resultindicatorperiodtargetcomment',
+            .prefetch_related(
+                'targets__resultindicatorperiodtargetcomment_set',
                 'resultindicatorperiodactualcomment'
             )
             .prefetch_related(

@@ -3878,10 +3878,9 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_start = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
     # tag:period-end"""
@@ -3907,36 +3906,34 @@ class Parse(IatiParser):
                 None,
                 element.attrib.get('iso-date'))
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
         result_indicator_period.period_end = iso_date
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
+    # TODO: test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
-        # TODO, 'guess number'
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value is None:
-            raise RequiredFieldError(
-                "result/indicator/period/period/target",
-                "value",
-                "required attribute missing or it's not possible to convert "
-                "it to Decimal (this error might be incorrect, "
-                "xsd:decimal is used to check instead of xsd:string)")
+        result_indicator_period_target = models.ResultIndicatorPeriodTarget()
+        result_indicator_period_target.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_target.value = value or ''  # can be None
 
-        result_indicator_period = self.pop_model('ResultIndicatorPeriod')
-        result_indicator_period.target = value
+        self.register_model(
+            'ResultIndicatorPeriodTarget', result_indicator_period_target)
 
-        self.register_model('ResultIndicatorPeriod', result_indicator_period)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -3963,9 +3960,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
+
         target_location = models.ResultIndicatorPeriodTargetLocation()
-        target_location.result_indicator_period = period
+        target_location.result_indicator_period_target = period_target
         target_location.ref = ref
         target_location.location = location[0]
 
@@ -3973,6 +3971,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetLocation', target_location)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__dimension(  # NOQA: E501
             self, element):
 
@@ -3991,10 +3990,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_target = self.get_model('ResultIndicatorPeriodTarget')
 
         target_dimension = models.ResultIndicatorPeriodTargetDimension()
-        target_dimension.result_indicator_period = period
+        target_dimension.result_indicator_period_target = period_target
         target_dimension.name = name
         target_dimension.value = value
 
@@ -4002,19 +4001,20 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodTargetDimension', target_dimension)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target__comment(self, element):  # NOQA: E501
-        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_target = self.get_model(
+            'ResultIndicatorPeriodTarget'
+        )
         result_indicator_period_target_comment = models\
             .ResultIndicatorPeriodTargetComment()
         result_indicator_period_target_comment\
-            .result_indicator_period = result_indicator_period
+            .result_indicator_period_target = result_indicator_period_target
 
         self.register_model(
             'ResultIndicatorPeriodTargetComment',
             result_indicator_period_target_comment)
         return element
-
-    # """attributes:
 
     # tag:narrative"""
     def iati_activities__iati_activity__result__indicator__period__target__comment__narrative(  # NOQA: E501
@@ -4206,12 +4206,8 @@ class Parse(IatiParser):
             value = None
 
         if value:
-            result_indicator_period = self.pop_model('ResultIndicatorPeriod')
+            result_indicator_period = self.get_model('ResultIndicatorPeriod')
             result_indicator_period.actual = value
-
-            self.register_model(
-                'ResultIndicatorPeriod', result_indicator_period
-            )
 
         return element
 

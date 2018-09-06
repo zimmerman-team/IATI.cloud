@@ -1124,27 +1124,43 @@ class ResultIndicatorPeriod(models.Model):
     period_start = models.DateField(null=True, blank=True)
     period_end = models.DateField(null=True, blank=True)
 
-    target = models.DecimalField(
-        max_digits=25, decimal_places=10, null=True, blank=True)
     actual = models.DecimalField(
         max_digits=25, decimal_places=10, null=True, blank=True)
 
     def __unicode__(self,):
-        return "target: %s, actual: %s" % (self.target, self.actual)
+        return "target: %s, actual: %s" % (
+            self.target.value if self.target else 'none',
+            self.actual
+        )
 
     def get_activity(self):
         return self.result_indicator.result.activity
 
 
-class ResultIndicatorPeriodTargetLocation(models.Model):
+class ResultIndicatorPeriodTarget(models.Model):
+    value = models.CharField(
+        max_length=50, blank=True, default='')
     result_indicator_period = models.ForeignKey(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+        ResultIndicatorPeriod,
+        null=True,
+        related_name='targets',
+        on_delete=models.CASCADE
+    )
+
+    def __unicode__(self,):
+        return "target: %s" % (self.value)
+
+
+class ResultIndicatorPeriodTargetLocation(models.Model):
+    result_indicator_period_target = models.ForeignKey(
+        ResultIndicatorPeriodTarget, on_delete=models.CASCADE)
     ref = models.CharField(max_length=50)
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
 
     def __unicode__(self,):
         return "%s" % self.ref
 
+    # FIXME: fix all these at least on ResultIndicators
     def get_activity(self):
         return self.result_indicator_period.result_indicator.result.activity
 
@@ -1163,8 +1179,8 @@ class ResultIndicatorPeriodActualLocation(models.Model):
 
 
 class ResultIndicatorPeriodTargetDimension(models.Model):
-    result_indicator_period = models.ForeignKey(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+    result_indicator_period_target = models.ForeignKey(
+        ResultIndicatorPeriodTarget, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
 
@@ -1202,8 +1218,8 @@ class ResultIndicatorBaselineDimension(models.Model):
 
 
 class ResultIndicatorPeriodTargetComment(models.Model):
-    result_indicator_period = models.OneToOneField(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+    result_indicator_period_target = models.ForeignKey(
+        ResultIndicatorPeriodTarget, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
