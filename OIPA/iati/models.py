@@ -1241,8 +1241,8 @@ class ResultIndicatorPeriodTargetComment(models.Model):
 
 
 class ResultIndicatorPeriodActualComment(models.Model):
-    result_indicator_period = models.OneToOneField(
-        ResultIndicatorPeriod, on_delete=models.CASCADE)
+    result_indicator_period_actual = models.ForeignKey(
+        ResultIndicatorPeriodActual, on_delete=models.CASCADE)
     narratives = GenericRelation(
         Narrative,
         content_type_field='related_content_type',
