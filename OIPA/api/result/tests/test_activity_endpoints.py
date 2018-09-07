@@ -13,6 +13,6 @@ class TestResultEndpoints(APITestCase):
         response = self.client.get(
             expect_url, {
                 'group_by': 'result_indicator_title',
-                'aggregations': 'actual'
+                'aggregations': 'actuals'
             }, format='json')
         self.assertTrue(status.is_success(response.status_code))

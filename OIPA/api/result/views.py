@@ -53,10 +53,10 @@ class ResultAggregations(AggregationView):
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
         Aggregation(
-            query_param='actual',
-            field='actual',
+            query_param='actuals',
+            field='actuals',
             annotate=Sum(Func(
-                F('resultindicator__resultindicatorperiod__actual'),
+                F('resultindicator__resultindicatorperiod__actuals__value'),
                 function='CAST',
                 template='%(function)s(%(expressions)s as double precision)')),
         ),
