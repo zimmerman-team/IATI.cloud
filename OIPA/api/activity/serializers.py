@@ -1776,7 +1776,6 @@ class ResultIndicatorPeriodTargetSerializer(SerializerNoValidation):
 
 class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
     value = serializers.DecimalField(
-        source='actual',
         max_digits=25,
         decimal_places=10)
 
@@ -1795,7 +1794,7 @@ class ResultIndicatorPeriodActualSerializer(SerializerNoValidation):
 
 class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
     targets = ResultIndicatorPeriodTargetSerializer(many=True)
-    actual = ResultIndicatorPeriodActualSerializer(source="*")
+    actuals = ResultIndicatorPeriodActualSerializer(many=True)
 
     period_start = serializers.CharField(required=False)
     period_end = serializers.CharField(required=False)
@@ -1810,7 +1809,7 @@ class ResultIndicatorPeriodSerializer(ModelSerializerNoValidation):
             'period_start',
             'period_end',
             'targets',
-            'actual',
+            'actuals',
         )
 
     def validate(self, data):
