@@ -769,12 +769,9 @@ class ResultIndicatorPeriodFactory(NoDatabaseFactory):
         model = iati.models.ResultIndicatorPeriod
 
     result_indicator = SubFactory(ResultIndicatorFactory)
-    resultindicatorperiodactualcomment = RelatedFactory(
-        ResultIndicatorPeriodActualCommentFactory, 'result_indicator_period')
 
     period_start = "2013-01-01"
     period_end = "2013-03-31"
-    actual = "11"
 
 
 class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
@@ -785,6 +782,14 @@ class ResultIndicatorPeriodTargetFactory(NoDatabaseFactory):
     value = "10"
 
 
+class ResultIndicatorPeriodActualFactory(NoDatabaseFactory):
+    class Meta:
+        model = iati.models.ResultIndicatorPeriodActual
+
+    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+    value = "11"
+
+
 class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):
     class Meta:
         model = iati.models.ResultIndicatorPeriodActualLocation
@@ -792,7 +797,9 @@ class ResultIndicatorPeriodActualLocationFactory(NoDatabaseFactory):
     ref = "AF-KAN"
     location = SubFactory(LocationFactory)
 
-    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+    result_indicator_period_actual = SubFactory(
+        ResultIndicatorPeriodActualFactory
+    )
 
 
 class ResultIndicatorPeriodTargetLocationFactory(NoDatabaseFactory):
@@ -813,7 +820,9 @@ class ResultIndicatorPeriodActualDimensionFactory(NoDatabaseFactory):
 
     name = "gender"
     value = "female"
-    result_indicator_period = SubFactory(ResultIndicatorPeriodFactory)
+    result_indicator_period_actual = SubFactory(
+        ResultIndicatorPeriodActualFactory
+    )
 
 
 class ResultIndicatorPeriodTargetDimensionFactory(NoDatabaseFactory):
