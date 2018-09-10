@@ -4520,6 +4520,37 @@ class Parse(IatiParser):
         return element
 
     # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__period__actual__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <actual> element
+           inside <result> <indicator>'s <period> element in 2.03
+        '''
+
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
+        return element
+
+    # TODO: test
     def iati_activities__iati_activity__result__indicator__period__actual__document_link__category(  # NOQA: E501
             self, element):
         '''New (optional) <document-link> element for <actual> element
