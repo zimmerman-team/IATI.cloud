@@ -3911,7 +3911,7 @@ class Parse(IatiParser):
 
         return element
 
-    # TODO: test:
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__target(
             self, element):
 
@@ -4195,22 +4195,29 @@ class Parse(IatiParser):
         self.register_model('DocumentLink', document_link)
         return element
 
-    # tag:actual"""
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual(
             self, element):
+
+        # Current IATI 2.03 rules say, that:
+        # 1 - the @value must be omitted for qualitative measures
+        # 2 - The @value must be included for non-qualitative measures
+        # 3 - The @value must be a valid number for all non-qualitative
+        # measures
         value = element.attrib.get('value')
 
-        try:
-            value = Decimal(value)
-        except Exception as e:
-            value = None
+        result_indicator_period = self.get_model('ResultIndicatorPeriod')
 
-        if value:
-            result_indicator_period = self.get_model('ResultIndicatorPeriod')
-            result_indicator_period.actual = value
+        result_indicator_period_actual = models.ResultIndicatorPeriodActual()
+        result_indicator_period_actual.result_indicator_period = result_indicator_period  # NOQA: E501
+        result_indicator_period_actual.value = value or ''  # can be None
+
+        self.register_model(
+            'ResultIndicatorPeriodActual', result_indicator_period_actual)
 
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__location(self, element):  # NOQA: E501
 
         ref = element.attrib.get('ref')
@@ -4222,7 +4229,10 @@ class Parse(IatiParser):
                 "required attribute missing")
 
         locations = self.get_model_list('Location')
-        location = list(filter(lambda x: x.ref == ref, locations))
+        location = []
+
+        if locations:
+            location = list(filter(lambda x: x.ref == ref, locations))
 
         if not len(location):
             raise FieldValidationError(
@@ -4234,10 +4244,10 @@ class Parse(IatiParser):
                 None,
                 ref)
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_location = models.ResultIndicatorPeriodActualLocation()
-        actual_location.result_indicator_period = period
+        actual_location.result_indicator_period_actual = period_actual
         actual_location.ref = ref
         actual_location.location = location[0]
 
@@ -4245,6 +4255,7 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualLocation', actual_location)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__dimension(  # NOQA: E501
             self, element):
 
@@ -4263,10 +4274,10 @@ class Parse(IatiParser):
                 "value",
                 "required attribute missing")
 
-        period = self.get_model('ResultIndicatorPeriod')
+        period_actual = self.get_model('ResultIndicatorPeriodActual')
 
         actual_dimension = models.ResultIndicatorPeriodActualDimension()
-        actual_dimension.result_indicator_period = period
+        actual_dimension.result_indicator_period_actual = period_actual
         actual_dimension.name = name
         actual_dimension.value = value
 
@@ -4274,13 +4285,16 @@ class Parse(IatiParser):
             'ResultIndicatorPeriodActualDimension', actual_dimension)
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__period__actual__comment(self, element):  # NOQA: E501
-        result_indicator_period = self.get_model('ResultIndicatorPeriod')
+        result_indicator_period_actual = self.get_model(
+            'ResultIndicatorPeriodActual'
+        )
 
         result_indicator_period_actual_comment = models\
             .ResultIndicatorPeriodActualComment()
         result_indicator_period_actual_comment\
-            .result_indicator_period = result_indicator_period
+            .result_indicator_period_actual = result_indicator_period_actual
 
         self.register_model(
             'ResultIndicatorPeriodActualComment',
