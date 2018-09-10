@@ -882,20 +882,24 @@ class DocumentLink(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    # XXX: could also point to a separate 'Basline' model that should come up
-    # from ResultIndicator model:
+    # FIXME: this relationship has to point to (currently, non existing)
+    # ResultIndicatorPeriodBaseline model. See: #761
     result_indicator_baseline = models.ForeignKey(
         'ResultIndicator',
         related_name='baseline_document_links',
         null=True,
         on_delete=models.CASCADE
     )
+    # FIXME: this relationship has to point to ResultIndicatorPeriodTarget.
+    # See: #747
     period_target = models.ForeignKey(
         'ResultIndicator',
         related_name='period_target_document_links',
         null=True,
         on_delete=models.CASCADE
     )
+    # FIXME: this relationship has to point to ResultIndicatorPeriodActual.
+    # See: #756
     period_actual = models.ForeignKey(
         'ResultIndicator',
         related_name='period_actual_document_links',
@@ -1118,6 +1122,8 @@ class ResultIndicatorBaselineComment(models.Model):
         return self.result_indicator.result.activity
 
 
+# FIXME: new ResultIndicatorPeriodBaseline model has to be implemented.
+# See: #747 / #756 / #761
 class ResultIndicatorPeriod(models.Model):
     result_indicator = models.ForeignKey(
         ResultIndicator, on_delete=models.CASCADE)
