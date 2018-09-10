@@ -3415,6 +3415,8 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         result_indicator = self.get_model('ResultIndicator')
 
+        # TODO: assign Result here as well?
+
         # It is impossible to assign related object (ForeignKey) before it's
         # saved, so:
         # XXX: not sure how efficient this is.
@@ -3486,6 +3488,35 @@ class Parse(IatiParser):
         '''
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <indicator> element
+           inside <result> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription', document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <indicator> element
+           inside <result> element in 2.03
+        '''
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
         return element
 
     # TODO: test
