@@ -959,6 +959,15 @@ class DocumentLinkTitle(models.Model):
         return self.document_link.activity
 
 
+class DocumentLinkDescription(models.Model):
+    document_link = models.OneToOneField(
+        DocumentLink, on_delete=models.CASCADE)
+    narratives = GenericRelation(
+        Narrative,
+        content_type_field='related_content_type',
+        object_id_field='related_object_id')
+
+
 class DocumentSearch(models.Model):
     '''Currently this model is just stored for refference and searching (both
     feature and API endpoint) for Documents is disabled
