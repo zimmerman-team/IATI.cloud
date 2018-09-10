@@ -3143,6 +3143,30 @@ class Parse(IatiParser):
         return element
 
     # TODO: test
+    def iati_activities__iati_activity__result__document_link__description(
+            self, element):
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
+
+        return element
+
+    # TODO: test
     def iati_activities__iati_activity__result__document_link__category(
             self, element):
         '''New (optional) <document-link> element for <result> element in 2.03
