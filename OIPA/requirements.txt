@@ -11,6 +11,8 @@ pytest
 
 pytest-xdist
 
+psycopg2-binary
+
 django-grappelli==2.11.1
 
 # Adding CORS headers to responses, only allowing certain API methods:
