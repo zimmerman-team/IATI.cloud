@@ -7,6 +7,10 @@ ckanapi==4.1
 
 Django==2.0.6
 
+pytest
+
+pytest-xdist
+
 django-grappelli==2.11.1
 
 # Adding CORS headers to responses, only allowing certain API methods:
