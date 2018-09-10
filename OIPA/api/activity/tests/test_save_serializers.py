@@ -34,7 +34,6 @@ from iati.factory.iati_factory import (
     PolicyMarkerFactory, PolicyMarkerVocabularyFactory,
     PolicySignificanceFactory, RegionFactory, RegionVocabularyFactory,
     RelatedActivityFactory, ResultFactory, ResultIndicatorFactory,
-    ResultIndicatorPeriodActualDimensionFactory, ResultIndicatorPeriodFactory,
     ResultIndicatorPeriodTargetFactory, ResultIndicatorReferenceFactory,
     ResultTypeFactory, SectorFactory, SectorVocabularyFactory,
     TiedStatusFactory, TitleFactory
