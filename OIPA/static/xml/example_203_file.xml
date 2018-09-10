@@ -159,6 +159,9 @@
       <title>
         <narrative xml:lang="en">Activity web page for IATI activity NL-1-PPR-24706</narrative>
       </title>
+      <description>
+        <narrative> Description of the content of the project report or guidance on where to access the relevant information in this report </narrative>
+      </description>
       <category code="A12"/>
       <language code="en"/>
     </document-link>
