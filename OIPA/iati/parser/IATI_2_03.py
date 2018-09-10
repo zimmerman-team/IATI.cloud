@@ -3764,6 +3764,8 @@ class Parse(IatiParser):
         activity = self.get_model('Activity')
         result_indicator = self.get_model('ResultIndicator')
 
+        # TODO: assign result, result_indicator_baseline here too?
+
         document_link = models.DocumentLink()
         document_link.activity = activity
         document_link.url = url
@@ -3827,6 +3829,33 @@ class Parse(IatiParser):
         '''
         document_link_title = self.get_model('DocumentLinkTitle')
         self.add_narrative(element, document_link_title)
+        return element
+
+    # TODO: test
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__description(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+
+        document_link = self.get_model('DocumentLink')
+
+        document_link_description = models.DocumentLinkDescription()
+        document_link_description.document_link = document_link
+
+        self.register_model(
+            'DocumentLinkDescription',
+            document_link_description
+        )
+
+    # TODO: test:
+    def iati_activities__iati_activity__result__indicator__baseline__document_link__description__narrative(  # NOQA: E501
+            self, element):
+        '''New (optional) <document-link> element for <baseline> element
+           inside <result>'s <indicator> element in 2.03
+        '''
+        document_link_description = self.get_model('DocumentLinkDescription')
+        self.add_narrative(element, document_link_description)
         return element
 
     # TODO: test:
