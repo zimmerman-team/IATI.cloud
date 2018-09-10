@@ -76,9 +76,7 @@ Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" tar
 
 ## Running the tests
 -------
-To run the tests, log into the vagrant machine and run:
-
-```./manage.py test --nomigrations --settings=OIPA.test_settings```
+Pytest-django is used to run the test.This will be installed automatically when the project is set up. Run ```python -m pytest``` to run the tests. Please refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
 
 ## Who makes use of OIPA?
