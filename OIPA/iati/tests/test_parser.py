@@ -16,11 +16,13 @@ from iati.parser.iati_parser import IatiParser
 
 # TODO: use factories instead of these fixtures
 
-def setUpModule():
-    fixtures = ['test_vocabulary', 'test_codelists.json', ]
+@pytest.fixture(scope='session')
+def django_db_setup(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        fixtures = ['test_vocabulary', 'test_codelists.json', ]
 
-    for fixture in fixtures:
-        management.call_command("loaddata", fixture)
+        for fixture in fixtures:
+            management.call_command("loaddata", fixture)
 
 
 def tearDownModule():
@@ -46,7 +48,7 @@ class IatiParserTestCase(DjangoTestCase):
     def setUp(self):
         self.parser = IatiParser(None)
 
-    
+
     def test_get_or_none_charset_encoding(self):
         self.assertIsNone(self.parser.get_or_none(
             Activity, code=u'Default-aid-type: [code="D02"\xa0]\xa0'))
@@ -92,7 +94,7 @@ class IatiParserTestCase(DjangoTestCase):
         """
         self.assertEqual(self.parser._normalize("no,commas"), 'noCOMMAcommas')
 
-    
+
     @pytest.mark.django_db
     def test_validate_date(self):
         """
