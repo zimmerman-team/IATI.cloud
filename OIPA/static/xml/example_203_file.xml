@@ -104,7 +104,7 @@
     <collaboration-type code="3"/>
     <default-flow-type code="10"/>
     <default-finance-type code="110"/>
-    <default-aid-type code="B01"/>
+    <default-aid-type code="B01" vocabulary="2"/>
     <default-tied-status code="5"/>
     <budget>
       <period-start iso-date="2014-01-01"/>

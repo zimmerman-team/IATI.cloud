@@ -1713,12 +1713,15 @@ class Parse(IatiParser):
 
         return element
 
+    # TODO: update test:
     def iati_activities__iati_activity__default_aid_type(self, element):
         """attributes:
         code:A01
 
         tag:default-aid-type"""
         code = element.attrib.get('code')
+        vocabulary_code = element.attrib.get('vocabulary')
+
         default_aid_type = self.get_or_none(codelist_models.AidType, code=code)
 
         if not code:
@@ -1726,6 +1729,28 @@ class Parse(IatiParser):
                 "default-aid-type",
                 "code",
                 "required attribute missing")
+
+        # According to IATI 2.03 rules, 'vocabulary' attribute is:
+        # "A code for the vocabulary aid-type classifications. If omitted the
+        # AidType (OECD DAC) codelist is assumed. The code must be a valid
+        # value in the AidTypeVocabulary codelist."
+        if not vocabulary_code:
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                name='OECD DAC',
+            )
+        else:
+            try:
+                vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                    code=vocabulary_code
+                )
+            except vocabulary_models.AidTypeVocabulary.DoesNotExist:
+                raise FieldValidationError(
+                    "default-aid-type",
+                    "vocabulary",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    vocabulary_code)
 
         if not default_aid_type:
             raise FieldValidationError(
@@ -1738,6 +1763,9 @@ class Parse(IatiParser):
 
         activity = self.get_model('Activity')
         activity.default_aid_type = default_aid_type
+
+        default_aid_type.vocabulary = vocabulary
+        self.register_model('AidType', default_aid_type)
 
         return element
 
