@@ -3614,7 +3614,7 @@ class Parse(IatiParser):
         self.register_model('DocumentLinkLanguage', document_link_language)
         return element
 
-    # tag:baseline"""
+    # TODO: update test:
     def iati_activities__iati_activity__result__indicator__baseline(
             self, element):
         year = element.attrib.get('year')
@@ -3623,7 +3623,7 @@ class Parse(IatiParser):
         try:
             value = Decimal(value)
         except Exception as e:
-            value = None
+            value = ''
 
         try:
             year = int(year)
@@ -3639,17 +3639,14 @@ class Parse(IatiParser):
                 "required attribute missing (should be of type "
                 "xsd:positiveInteger with format (yyyy))")
 
-        if value:
-            result_indicator = self.pop_model('ResultIndicator')
-            result_indicator.baseline_year = year
-            result_indicator.baseline_value = value
+        result_indicator = self.pop_model('ResultIndicator')
+        result_indicator.baseline_year = year
+        result_indicator.baseline_value = value  # can be empty string
 
-            self.register_model('ResultIndicator', result_indicator)
+        self.register_model('ResultIndicator', result_indicator)
 
         return element
-    # """attributes:
 
-    # tag:comment"""
     def iati_activities__iati_activity__result__indicator__baseline__comment(
             self, element):
         result_indicator = self.get_model('ResultIndicator')
