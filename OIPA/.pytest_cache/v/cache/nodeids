@@ -1,0 +1,3 @@
+[
+  "iati/tests/test_parser.py::IatiParserTestCase::test_validate_date"
+]

@@ -1,0 +1,16 @@
+[
+  "OIPA/api/budget/tests/test_budget_endpoints.py::TestActivityEndpoints::test_activity_aggregations_endpoint",
+  "OIPA/api/generics/tests/test_dynamic_serializer.py::TestDynamicFields::test_fields_serializer",
+  "OIPA/api/generics/tests/test_dynamic_serializer.py::TestDynamicFields::test_request_fields_serializer",
+  "OIPA/api/generics/tests/test_dynamic_serializer.py::TestDynamicFields::test_sub_request_fields_serializer",
+  "OIPA/api/generics/tests/test_dynamic_serializer.py::TestDynamicFields::test_view_fields_serializer",
+  "OIPA/api/organisation/tests/test_organisation_endpoints.py::TestOrganisationEndpoints::test_organisation_detail_endpoint",
+  "OIPA/api/organisation/tests/test_organisation_endpoints.py::TestOrganisationEndpoints::test_organisations_endpoint",
+  "OIPA/api/organisation/tests/test_organisation_endpoints.py::TestOrganisationEndpoints::test_participated_activities_endpoint",
+  "OIPA/api/organisation/tests/test_organisation_endpoints.py::TestOrganisationEndpoints::test_reported_activities_endpoint",
+  "OIPA/api/result/tests/test_activity_endpoints.py::TestResultEndpoints::test_result_aggregations_endpoint",
+  "OIPA/api/tests/test_fields.py::TestFields::test_GeometryField",
+  "OIPA/api/tests/test_root_endpoint.py::TestRootEndpoint::test_root_endpoint",
+  "OIPA/common/test_util.py::UtilTestCase::test_normalise_unicode_string",
+  "OIPA/iati/tests/test_activity_manager.py::ActivityManagerTestCase::test_prepare"
+]
