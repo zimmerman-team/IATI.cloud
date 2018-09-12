@@ -51,6 +51,8 @@ class AidType(models.Model):
                                    default=None, on_delete=models.CASCADE)
     transaction = models.ForeignKey(
         'iati.Transaction',
+        null=True,
+        blank=True,
         on_delete=models.CASCADE
     )
 
