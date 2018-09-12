@@ -6,7 +6,7 @@ class LocationFilter(TogetherFilterSet):
 
     activity_status = CommaSeparatedCharFilter(
         lookup_expr='in',
-        name='activity__activity_status',)
+        field_name='activity__activity_status',)
 
     class Meta:
         model = Location

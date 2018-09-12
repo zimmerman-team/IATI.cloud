@@ -4,6 +4,7 @@
 
 import copy
 import datetime
+import pytest
 
 from django.core import management
 from django.test import TestCase as DjangoTestCase
@@ -37,7 +38,7 @@ def build_xml(version, organisation_identifier):
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
-
+@pytest.fixture(scope='session')
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 

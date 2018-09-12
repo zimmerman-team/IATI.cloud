@@ -9,11 +9,11 @@ from iati.models import Activity
 class TestFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
         lookup_expr='gte',
-        name='budget__period_start',)
+        field_name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_expr='lte',
-        name='budget__period_end')
+        field_name='budget__period_end')
 
     class Meta:
         model = Activity
@@ -24,11 +24,11 @@ class TestFilter(TogetherFilterSet):
 class TestWithoutFilter(TogetherFilterSet):
     budget_period_start = DateFilter(
         lookup_expr='gte',
-        name='budget__period_start',)
+        field_name='budget__period_start',)
 
     budget_period_end = DateFilter(
         lookup_expr='lte',
-        name='budget__period_end')
+        field_name='budget__period_end')
 
     class Meta:
         model = Activity

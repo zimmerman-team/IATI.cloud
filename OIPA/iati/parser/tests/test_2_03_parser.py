@@ -139,12 +139,12 @@ class ActivityParticipatingOrganisationTestCase(TestCase):
 
         # Check if CRSChannelCode object is assigned to the participating org
         # (model is not yet saved at this point):
-        self.assertEquals(
+        self.assertEqual(
             participating_organisation.crs_channel_code, crs_object_instance
         )
 
         # Saving models is not tested here:
-        self.assertEquals(participating_organisation.pk, None)
+        self.assertEqual(participating_organisation.pk, None)
 
 
 class ActivityTagTestCase(TestCase):
@@ -323,22 +323,22 @@ class ActivityTagTestCase(TestCase):
 
         # Check if CRSChannelCode object is assigned to the participating org
         # (model is not yet saved at this point):
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.activity, self.activity
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.code, activity_tag_attributes['code']
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.vocabulary, fresh_tag_vicabulary
         )
-        self.assertEquals(
+        self.assertEqual(
             activity_tag.vocabulary_uri,
             activity_tag_attributes['vocabulary-uri']
         )
 
         # Saving models is not tested here:
-        self.assertEquals(activity_tag.pk, None)
+        self.assertEqual(activity_tag.pk, None)
 
 
 class RecipientCountryTestCase(TestCase):
@@ -487,19 +487,19 @@ class RecipientCountryTestCase(TestCase):
 
         # check if everything's saved:
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.country, country
         )
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.activity, self.activity
         )
-        self.assertEquals(
+        self.assertEqual(
             recipient_country.percentage,
             Decimal(recipient_country_attributes['percentage'])
         )
 
         # Saving models is not tested here:
-        self.assertEquals(recipient_country.pk, None)
+        self.assertEqual(recipient_country.pk, None)
 
 
 class RecipientRegionTestCase(TestCase):
@@ -712,28 +712,28 @@ class RecipientRegionTestCase(TestCase):
         recipient_region = self.parser_203.get_model(
             'ActivityRecipientRegion')
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.region, region
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.activity, self.activity
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.percentage,
             Decimal(recipient_region_attributes['percentage'])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             recipient_region.vocabulary_uri,
             recipient_region_attributes['vocabulary-uri']
         )
 
-        self.assertEquals(recipient_region.vocabulary, vocabulary)
+        self.assertEqual(recipient_region.vocabulary, vocabulary)
 
         # Saving models is not tested here:
-        self.assertEquals(recipient_region.pk, None)
+        self.assertEqual(recipient_region.pk, None)
 
 
 class ActivitySectorTestCase(TestCase):
@@ -951,28 +951,28 @@ class ActivitySectorTestCase(TestCase):
         activity_sector = self.parser_203.get_model(
             'ActivitySector')
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.sector, sector
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.activity, self.activity
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.percentage,
             Decimal(sector_attributes['percentage'])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             activity_sector.vocabulary_uri,
             sector_attributes['vocabulary-uri']
         )
 
-        self.assertEquals(activity_sector.vocabulary, vocabulary)
+        self.assertEqual(activity_sector.vocabulary, vocabulary)
 
         # Saving models is not tested here:
-        self.assertEquals(activity_sector.pk, None)
+        self.assertEqual(activity_sector.pk, None)
 
 
 class AidTypeTestCase(TestCase):
@@ -1125,9 +1125,9 @@ class AidTypeTestCase(TestCase):
         transaction = self.parser_203.get_model('Transaction')
         aid_type = self.parser_203.get_model('AidType')
 
-        self.assertEquals(
+        self.assertEqual(
             transaction.aid_type, aid_type
         )
-        self.assertEquals(
+        self.assertEqual(
             aid_type.vocabulary, aid_type_vocabulary
         )

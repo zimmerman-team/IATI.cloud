@@ -95,7 +95,7 @@ class IatiParserTestCase(DjangoTestCase):
         self.assertEqual(self.parser._normalize("no,commas"), 'noCOMMAcommas')
 
 
-    @pytest.mark.django_db
+ 
     def test_validate_date(self):
         """
         date should return valid dates and return None on an invalid date
@@ -113,7 +113,7 @@ class IatiParserTestCase(DjangoTestCase):
         date = self.parser.validate_date('2101-01-01')
         self.assertEqual(date, None)
 
-    @pytest.mark.django_db
+    
     def test_get_primary_name(self):
         """
         if no primary name, set

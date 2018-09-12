@@ -39,7 +39,7 @@ class TestActivityPermissions(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201)
+        self.assertEqual(res.status_code, 201)
 
     def test_post_activity_fail_if_not_in_admin_group(self):
         """
@@ -69,7 +69,7 @@ class TestActivityPermissions(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 403)
+        self.assertEqual(res.status_code, 403)
 
     def test_update_activity_success(self):
         """
@@ -98,7 +98,7 @@ class TestActivityPermissions(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
     def test_update_activity_fail_if_not_in_admin_group(self):
         """
@@ -127,7 +127,7 @@ class TestActivityPermissions(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 403)
+        self.assertEqual(res.status_code, 403)
 
     def test_get_activity_success(self):
         """
@@ -155,4 +155,4 @@ class TestActivityPermissions(APITestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)

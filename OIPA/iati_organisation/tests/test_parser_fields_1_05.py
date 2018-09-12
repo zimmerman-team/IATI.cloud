@@ -4,7 +4,7 @@
 
 import copy
 import datetime
-
+import pytest
 from django.core import management
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
@@ -38,7 +38,7 @@ def copy_xml_tree(tree):
 
 # TODO: Get rid of fixtures - 2016-04-21
 
-
+@pytest.fixture(scope='session')
 def setUpModule():
     fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
 
