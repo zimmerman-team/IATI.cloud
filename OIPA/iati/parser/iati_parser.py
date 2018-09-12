@@ -357,7 +357,7 @@ class IatiParser(object):
         else:
             self.model_store[key] = [model]
 
-        # The position of the current model on on the model store
+        # The position of the current model on the model store
         return len(self.model_store[key]) - 1
 
     def get_model(self, key, index=-1):
