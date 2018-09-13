@@ -1719,6 +1719,8 @@ class Parse(IatiParser):
         code:A01
 
         tag:default-aid-type"""
+
+        """
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
 
@@ -1765,7 +1767,8 @@ class Parse(IatiParser):
         activity.default_aid_type = default_aid_type
 
         default_aid_type.vocabulary = vocabulary
-        self.register_model('AidType', default_aid_type)
+        # self.register_model('AidType', default_aid_type)
+        """
 
         return element
 
@@ -2699,18 +2702,29 @@ class Parse(IatiParser):
 
         transaction = self.get_model('Transaction')
 
-        aid_type.transaction = transaction
-        aid_type.vocabulary = vocabulary
+        transaction_aid_type = transaction_models.TransactionAidType()
+        transaction_aid_type.transaction = transaction
+        transaction_aid_type.aid_type = aid_type
+
+        self.register_model('TransactionAidType', transaction_aid_type)
+
+        transaction_aid_type_vocabulary = \
+            transaction_models.TransactionAidTypeVocabulary()
+        transaction_aid_type_vocabulary.transaction = transaction
+        transaction_aid_type_vocabulary.aid_type_vocabulary = vocabulary
+
+        self.register_model(
+            'TransactionAidTypeVocabulary', transaction_aid_type_vocabulary)
 
         # It is impossible to assign related object (ForeignKey) before it's
         # saved, so:
         # XXX: not sure how efficient this is.
-        transaction.save()
+        # transaction.save()
 
         # Note, that AidType is a codelist so in theory it shouldn't be there.
         # Although, as an xml element, it can have certain attributes (like
         # vocabulary):
-        self.register_model('AidType', aid_type)
+        # self.register_model('AidType', aid_type)
 
         return element
 
