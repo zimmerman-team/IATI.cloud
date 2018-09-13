@@ -1054,8 +1054,11 @@ class OrganisationTestCase(ParserSetupTestCase):
         self\
             .parser_202.iati_organisations__iati_organisation__document_link__language(  # NOQA: E501
                 element)
-        model = self.parser_202.get_model('OrganisationDocumentLink')
-        """ :type : org_models.OrganisationDocumentLink """
+        model = self.parser_202.get_model(
+            'OrganisationDocumentLinkLanguage',
+            self.parser_202.document_link_language_current_index)
+
+        """ :type : org_models.OrganisationDocumentLinkLanguage """
         self.assertEqual(
             model.language,
             self.parser_202.get_or_none(
