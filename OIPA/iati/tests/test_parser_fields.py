@@ -75,19 +75,6 @@ def create_parser(self, version="2.02"):
 def create_parsers(versions=["2.02", "1.05"]):
     return {version: create_parser(version) for version in versions}
 
-# TODO: get rid of fixtures
-
-@pytest.fixture(scope='session')
-def setUpModule():
-    fixtures = ['test_vocabulary', 'test_codelists.json', 'test_geodata.json']
-
-    for fixture in fixtures:
-        management.call_command("loaddata", fixture)
-
-
-def tearDownModule():
-    pass
-
 
 class ParserSetupTestCase(TestCase):
 
