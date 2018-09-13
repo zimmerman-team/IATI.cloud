@@ -29,7 +29,7 @@ class Parse(IatiParser):
     -- Total Expenditure Line
     - Organisation Document Link
 
-    # TODO: Added the others DataSet as The IATI Organisation File Standard
+    # TODO: Cover others element as The IATI Organisation File Standard
     http://reference.iatistandard.org/202/organisation-standard/overview/organisation-file/
     """
 
