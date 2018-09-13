@@ -46,6 +46,7 @@ class Parse(IatiParser):
         # on the process parse
         self.organisation_document_link_current_index = 0
         self.document_link_title_current_index = 0
+        self.document_link_language_current_index = 0
         self.total_budget_current_index = 0
         self.total_budget_line_current_index = 0
         self.total_expenditure_current_index = 0
@@ -906,8 +907,8 @@ class Parse(IatiParser):
                                self.organisation_document_link_current_index)
         organisation_document_link_language.document_link = model
 
-        self.register_model(
-            'OrganisationDocumentLinkCategory',
+        self.document_link_language_current_index = self.register_model(
+            'OrganisationDocumentLinkLanguage',
             organisation_document_link_language)
 
         # store element
