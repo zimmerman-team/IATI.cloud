@@ -793,7 +793,9 @@ $(document).ready(function (){
         var taskName = $('select[name="add-task-select-default"]').val();
         var btn = $('#add-task-button-default');
         var parameters = $('input[name="add-task-default-parameters"]').val();
+        $('input[name="add-task-default-parameters"]').val('');
         var parameters2 = $('input[name="add-task-default-parameters-2"]').val();
+        $('input[name="add-task-default-parameters"]').val('');
         var queue =  "default";
 
         $.ajax({
