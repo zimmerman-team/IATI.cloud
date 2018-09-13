@@ -11,7 +11,8 @@ from iati_codelists.models import (
     TiedStatus, TransactionType
 )
 from iati_organisation.models import Organisation, OrganisationType
-from iati_vocabulary.models import RegionVocabulary, SectorVocabulary
+from iati_vocabulary.models import RegionVocabulary, SectorVocabulary, \
+    AidTypeVocabulary
 
 
 class Transaction(models.Model):
@@ -308,3 +309,21 @@ class TransactionRecipientRegion(models.Model):
 
     def get_publisher(self):
         return self.transaction.activity.publisher
+
+
+class TransactionAidType(models.Model):
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.transaction.id, self.aid_type.code)
+
+
+class TransactionAidTypeVocabulary(models.Model):
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    aid_type_vocabulary = models.ForeignKey(
+        AidTypeVocabulary, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.transaction.id, self.aid_type.code)
+
