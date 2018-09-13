@@ -20,6 +20,18 @@ from iati_vocabulary.models import RegionVocabulary
 
 
 class Parse(IatiParser):
+    """
+    # NOTE: This parsed version is only covered the DataSet Organisation file
+    as the following:
+    - Total Budget
+    -- Total Budget Line
+    - Total Expenditure
+    -- Total Expenditure Line
+    - Organisation Document Link
+
+    # TODO: Added the others DataSet as The IATI Organisation File Standard
+    http://reference.iatistandard.org/202/organisation-standard/overview/organisation-file/
+    """
 
     organisation_identifier = ''
 
