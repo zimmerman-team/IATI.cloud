@@ -2656,39 +2656,15 @@ class Parse(IatiParser):
 
         tag:aid-type"""
         code = element.attrib.get('code')
+        aid_type = self.get_or_none(codelist_models.AidType, code=code)
         vocabulary_code = element.attrib.get('vocabulary')
 
-        if not code:
+        if not aid_type and not code:
             raise RequiredFieldError(
-                "iati-activity/transaction/aid-type",
+                "transaction/aid-type",
                 "code",
                 "required attribute missing")
-
-        aid_type = self.get_or_none(codelist_models.AidType, code=code)
-
-        # According to IATI 2.03 rules, 'vocabulary' attribute is:
-        # "A code for the vocabulary aid-type classifications. If omitted the
-        # AidType (OECD DAC) codelist is assumed. The code must be a valid
-        # value in the AidTypeVocabulary codelist."
-        if not vocabulary_code:
-            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
-                name='OECD DAC',
-            )
-        else:
-            try:
-                vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
-                    code=vocabulary_code
-                )
-            except vocabulary_models.AidTypeVocabulary.DoesNotExist:
-                raise FieldValidationError(
-                    "iati-activity/transaction/aid-type",
-                    "vocabulary",
-                    "not found on the accompanying code list",
-                    None,
-                    None,
-                    vocabulary_code)
-
-        if not aid_type:
+        elif not aid_type:
             raise FieldValidationError(
                 "transaction/aid-type",
                 "code",
@@ -2697,20 +2673,29 @@ class Parse(IatiParser):
                 None,
                 code)
 
+        if vocabulary_code:
+            vocabulary = self.get_or_none(
+                vocabulary_models.AidTypeVocabulary,
+                code=vocabulary_code
+            )
+
+            if not vocabulary:
+                raise FieldValidationError(
+                    "iati-activity/transaction/aid-type",
+                    "vocabulary",
+                    "not found on the accompanying code list",
+                    None,
+                    None,
+                    vocabulary_code)
+
         transaction = self.get_model('Transaction')
-
-        aid_type.transaction = transaction
-        aid_type.vocabulary = vocabulary
-
-        # It is impossible to assign related object (ForeignKey) before it's
-        # saved, so:
-        # XXX: not sure how efficient this is.
-        transaction.save()
+        transaction.aid_type = aid_type
 
         # Note, that AidType is a codelist so in theory it shouldn't be there.
         # Although, as an xml element, it can have certain attributes (like
         # vocabulary):
         self.register_model('AidType', aid_type)
+        aid_type.vocabulary = vocabulary
 
         return element
 

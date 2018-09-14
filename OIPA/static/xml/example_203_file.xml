@@ -132,7 +132,6 @@
         <narrative>ICTJ</narrative>
       </receiver-org>
       <aid-type code="A01" vocabulary="1"/>
-      <aid-type code="B01" vocabulary="2"/>
     </transaction>
     <transaction>
       <transaction-type code="3"/>
