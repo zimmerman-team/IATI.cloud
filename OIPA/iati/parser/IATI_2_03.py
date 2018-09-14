@@ -4823,6 +4823,9 @@ class Parse(IatiParser):
             post_save_validators.use_result_reference_or_indicator_reference(
                 self, a
             )
+            post_save_validators.one_aid_type_for_each_vocabulary(
+                self, a
+            )
 
         post_save_validators.unfound_identifiers(self, dataset)
         post_save_validators.transactions_at_multiple_levels(self, dataset)
