@@ -49,6 +49,7 @@ class AidType(models.Model):
     category = models.ForeignKey(AidTypeCategory, on_delete=models.CASCADE)
     vocabulary = models.ForeignKey(AidTypeVocabulary, null=True,
                                    default=None, on_delete=models.CASCADE)
+
     def __unicode__(self,):
         return "%s - %s" % (self.code, self.name)
 
