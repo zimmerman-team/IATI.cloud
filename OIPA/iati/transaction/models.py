@@ -55,6 +55,8 @@ class Transaction(models.Model):
     finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
+    aid_type = models.ForeignKey(
+        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
     tied_status = models.ForeignKey(
         TiedStatus, null=True, blank=True,
         default=None, on_delete=models.CASCADE)

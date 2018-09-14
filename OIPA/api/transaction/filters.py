@@ -496,7 +496,7 @@ class TransactionFilter(FilterSet):
         model = Transaction
         fields = [
             'id',
-            # 'aid_type',
+            'aid_type',
             'transaction_type',
             'value',
             'min_value',
