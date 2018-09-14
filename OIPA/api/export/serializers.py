@@ -1011,7 +1011,6 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin,
     )
     flow_type = CodelistSerializer()
     finance_type = CodelistSerializer()
-    aid_type = CodelistSerializer()
     tied_status = CodelistSerializer()
     currency = CodelistSerializer()
 
@@ -1043,7 +1042,6 @@ class TransactionSerializer(XMLMetaMixin, SkipNullMixin,
             'recipient_region',
             'flow_type',
             'finance_type',
-            'aid_type',
             'tied_status',
         )
 

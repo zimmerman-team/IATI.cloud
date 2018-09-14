@@ -12,9 +12,8 @@ from iati.transaction.models import (
     TransactionRecipientRegion, TransactionSector, TransactionType
 )
 from iati_codelists.factory.codelist_factory import (
-    AidTypeFactory, CurrencyFactory, DisbursementChannelFactory,
-    FinanceTypeFactory, FlowTypeFactory, OrganisationTypeFactory,
-    TiedStatusFactory
+    CurrencyFactory, DisbursementChannelFactory, FinanceTypeFactory,
+    FlowTypeFactory, OrganisationTypeFactory, TiedStatusFactory
 )
 
 
@@ -46,7 +45,6 @@ class TransactionFactory(NoDatabaseFactory):
     disbursement_channel = SubFactory(DisbursementChannelFactory)
     flow_type = SubFactory(FlowTypeFactory)
     finance_type = SubFactory(FinanceTypeFactory)
-    aid_type = SubFactory(AidTypeFactory)
     tied_status = SubFactory(TiedStatusFactory)
 
     class Meta:

@@ -2403,7 +2403,6 @@ class TransactionSaveTestCase(TestCase):
                          str(data['flow_type']['code']))
         self.assertEqual(instance.finance_type.code,
                          str(data['finance_type']['code']))
-        self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
         self.assertEqual(instance.tied_status.code,
                          str(data['tied_status']['code']))
         self.assertEqual(instance.disbursement_channel.code,
@@ -2647,7 +2646,6 @@ class TransactionSaveTestCase(TestCase):
                          str(data['flow_type']['code']))
         self.assertEqual(instance.finance_type.code,
                          str(data['finance_type']['code']))
-        self.assertEqual(instance.aid_type.code, str(data['aid_type']['code']))
         self.assertEqual(instance.tied_status.code,
                          str(data['tied_status']['code']))
         self.assertEqual(instance.transaction_type.code,
