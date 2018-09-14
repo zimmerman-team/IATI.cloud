@@ -73,6 +73,14 @@ class Transaction(models.Model):
         return self.activity.publisher
 
 
+class TransactionAidType(models.Model):
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.transaction.id, self.aid_type.code)
+
+
 class TransactionProvider(models.Model):
     ref = models.CharField(blank=True, default="", max_length=250)
     normalized_ref = models.CharField(max_length=120, default="")
