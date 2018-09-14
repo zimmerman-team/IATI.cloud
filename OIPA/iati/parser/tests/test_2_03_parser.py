@@ -982,6 +982,8 @@ class AidTypeTestCase(TestCase):
 
     def setUp(self):
 
+        AidTypeVocabularyFactory(name='OECD DAC')
+
         # 'Main' XML file for instantiating parser:
         xml_file_attrs = {
             "generated-datetime": datetime.datetime.now().isoformat(),
@@ -1012,14 +1014,14 @@ class AidTypeTestCase(TestCase):
         )
 
         self.transaction = TransactionFactory(
-            aid_type=None,
             activity=self.activity
         )
 
         self.parser_203.register_model('Transaction', self.transaction)
         self.parser_203.register_model('Activity', self.activity)
 
-    def test_aid_type(self):
+    # TODO: update test with multiple TransactionAidTypes:
+    def test_transaction_aid_type(self):
         """
         - Tests if '<aid-type>' xml element is parsed and saved
           correctly with proper attributes and narratives
@@ -1044,7 +1046,7 @@ class AidTypeTestCase(TestCase):
                 aid_type_XML_element)
             self.assertFail()
         except RequiredFieldError as inst:
-            self.assertEqual(inst.model, 'transaction/aid-type')
+            self.assertEqual(inst.model, 'iati-activity/transaction/aid-type')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(inst.message, 'required attribute missing')
 
@@ -1102,9 +1104,13 @@ class AidTypeTestCase(TestCase):
             )
 
         # CASE 4: All is good
-        # let's create an AidTypeVocabulary element (so the parser doesn't
-        # complain):
+        # let's create an AidTypeVocabulary and AidType elements (so the
+        # parser doesn't complain):
         aid_type_vocabulary = AidTypeVocabularyFactory(code='3')
+        aid_type = codelist_factory.AidTypeFactory(
+            code='3',
+            vocabulary=aid_type_vocabulary
+        )
 
         # Clear codelist cache (from memory):
         self.parser_203.codelist_cache = {}
@@ -1123,11 +1129,12 @@ class AidTypeTestCase(TestCase):
             aid_type_XML_element)
 
         transaction = self.parser_203.get_model('Transaction')
-        aid_type = self.parser_203.get_model('AidType')
+
+        transaction_aid_type = self.parser_203.get_model('TransactionAidType')
 
         self.assertEquals(
-            transaction.aid_type, aid_type
+            transaction_aid_type.transaction, transaction
         )
         self.assertEquals(
-            aid_type.vocabulary, aid_type_vocabulary
+            transaction_aid_type.aid_type, aid_type
         )
