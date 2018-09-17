@@ -19,4 +19,4 @@ OIPA/.coverage
 parse.log
 session.vim
 tags
-.pytest_cache
+.pytest_cache/*
