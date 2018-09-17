@@ -182,7 +182,7 @@ class TogetherFilter(Filter):
 
     def filter(self, qs, values):
         if self.filter_classes:
-            filters = {"%s__%s" % (c[0].name, c[0].lookup_expr): c[1]
+            filters = {"%s__%s" % (c[0].field_name, c[0].lookup_expr): c[1]
                        for c in zip(self.filter_classes, values)}
             qs = qs.filter(**filters)
 
@@ -243,7 +243,7 @@ class CommaSeparatedCharMultipleFilter(CharFilter):
 
         if lookup_expr is 'in':
             final_filters = Q(
-                **{"{}__{}".format(self.name, lookup_expr): values})
+                **{"{}__{}".format(self.field_name, lookup_expr): values})
         else:
             filters = [Q(**{"{}__{}".format(self.name, lookup_expr): value})
                        for value in values]

@@ -104,8 +104,8 @@ class AggregationInstanceTestCase(DjangoTestCase):
 
         queryset = aggregation.apply_extra_filter(self.queryset)
 
-        self.assertEquals(len(queryset), 1)
-        self.assertEquals(queryset[0], self.activity)
+        self.assertEqual(len(queryset), 1)
+        self.assertEqual(queryset[0], self.activity)
 
 
 class GroupByInstanceTestCase(DjangoTestCase):
@@ -172,7 +172,7 @@ class GroupByInstanceTestCase(DjangoTestCase):
             queryset=self.queryset,
         )
 
-        self.assertEquals(bool(group_by.get_renamed_fields()), False)
+        self.assertEqual(bool(group_by.get_renamed_fields()), False)
 
     def test_get_renamed_fields_with_renaming(self):
         """

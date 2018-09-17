@@ -101,7 +101,7 @@ class ActivitySerializerTestCase(TestCase):
         serializer = serializers.DocumentLinkCategorySerializer(
             {"category": doc_category})
 
-        self.assertEquals(serializer.data[
+        self.assertEqual(serializer.data[
             'category'
         ]['code'], doc_category.code),\
             """

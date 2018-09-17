@@ -56,8 +56,6 @@ factory-boy==2.11.1
 # Working with XML files
 lxml==4.2.1
 
-psycopg2==2.7.4
-
 # Tracking test coverage with https://coveralls.io/:
 python-coveralls==2.9.1
 
@@ -66,6 +64,14 @@ python-dateutil==2.7.3
 
 # Reading the key,value pair from .env file and adding them to environment variable:
 python-dotenv==0.8.2
+
+psycopg2-binary
+
+# Django plugin for Pytest
+pytest-django
+
+# Distributed testing for Pytest
+pytest-xdist
 
 redis==2.10.6
 

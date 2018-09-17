@@ -32,7 +32,7 @@ Documentation on installing, running and using OIPA can be found at <a href="htt
    * OIPA_DB_USER= ```<user name>```
    * OIPA_DB_PASSWORD= ```<password>```
 7. Run ```python manage.py migrate``` to migrate tables to the newly created database.
-8. Start the server: ```python manage.py runserver localhost:8000``` 
+8. Start the server: ```python manage.py runserver localhost:8000```
 9. Create a superuser: `python manage.py createsuperuser`
 10. Start the process control centre (supervisor): ```python manage.py supervisor```
 11. Open your browser at <a href="http://localhost:8000" target="_blank">localhost:8000</a>
@@ -76,9 +76,7 @@ Python already has clear <a href="https://www.python.org/dev/peps/pep-0008/" tar
 
 ## Running the tests
 -------
-To run the tests, log into the vagrant machine and run:
-
-```./manage.py test --nomigrations --settings=OIPA.test_settings```
+Pytest-django is used to run tests. This will be installed automatically when the project is set up. To run tests, ```cd``` to ```OIPA/``` directory (you have to be in the same directory where ```manage.py``` is) and run ```pytest``` to run the tests. Please refer to <a href="https://pytest-django.readthedocs.io/en/latest/#" target="_blank">Pytest-django documentations</a> for details.
 
 
 ## Who makes use of OIPA?

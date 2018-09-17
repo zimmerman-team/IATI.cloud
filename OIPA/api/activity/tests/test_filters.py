@@ -28,8 +28,8 @@ class ActivityFiltersTestCase(APITestCase):
         )
 
         self.assertTrue(status.is_success(response.status_code))
-        self.assertEquals(response.data['count'], 1)
-        self.assertEquals(
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(
             response.data['results'][0]['iati_identifier'],
             self.first_activity.iati_identifier
         )
@@ -58,12 +58,12 @@ class ActivityFiltersTestCase(APITestCase):
         )
 
         self.assertTrue(status.is_success(response.status_code))
-        self.assertEquals(response.data['count'], 2)
-        self.assertEquals(
+        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(
             response.data['results'][0]['iati_identifier'],
             self.first_activity.iati_identifier
         )
-        self.assertEquals(
+        self.assertEqual(
             response.data['results'][1]['iati_identifier'],
             self.second_activity.iati_identifier
         )
