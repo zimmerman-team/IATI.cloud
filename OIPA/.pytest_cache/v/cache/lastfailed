@@ -1,8 +1,0 @@
-{
-  "iati/tests/test_parser_fields.py::RecipientCountryTestCase::test_recipient_country_202": true,
-  "iati/tests/test_parser_fields.py::RecipientRegionTestCase::test_recipient_region_202": true,
-  "iati/tests/test_parser_fields.py::RecipientRegionTestCase::test_recipient_region_202_defaults": true,
-  "iati/tests/test_parser_fields.py::TransactionTestCase::test_transaction_recipient_country_202": true,
-  "iati/tests/test_parser_fields.py::TransactionTestCase::test_transaction_recipient_region_202": true,
-  "iati_organisation/tests/test_parser_fields.py::OrganisationTestCase::test_iati_organisations__iati_organisation__recipient_region_budget__recipient_region": true
-}
