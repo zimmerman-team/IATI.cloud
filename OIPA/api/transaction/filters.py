@@ -44,7 +44,9 @@ class TransactionFilter(FilterSet):
     min_value = NumberFilter(field_name='value', lookup_expr='gte')
     max_value = NumberFilter(field_name='value', lookup_expr='lte')
 
-    value_not = NumberFilter(lookup_expr='exact', field_name='value', exclude=True)
+    value_not = NumberFilter(
+        lookup_expr='exact', field_name='value', exclude=True
+    )
     xdr_value_not = NumberFilter(
         lookup_expr='exact', field_name='xdr_value', exclude=True)
     usd_value_not = NumberFilter(
@@ -171,7 +173,9 @@ class TransactionFilter(FilterSet):
         field_name='activity__start_date')
 
     end_date_isnull = BooleanFilter(field_name='activity__end_date__isnull')
-    start_date_isnull = BooleanFilter(field_name='activity__start_date__isnull')
+    start_date_isnull = BooleanFilter(
+        field_name='activity__start_date__isnull'
+    )
 
     activity_status = CommaSeparatedCharFilter(
         lookup_expr='in',
@@ -462,35 +466,35 @@ class TransactionFilter(FilterSet):
 
     total_hierarchy_disbursement_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__disbursement_value')
+        field_name='activity__activity_plus_child_aggregation__disbursement_value')  # NOQA: E501
 
     total_hierarchy_disbursement_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__disbursement_value')
+        field_name='activity__activity_plus_child_aggregation__disbursement_value')  # NOQA: E501
 
     total_hierarchy_incoming_funds_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')
+        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')  # NOQA: E501
 
     total_hierarchy_incoming_funds_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')
+        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')  # NOQA: E501
 
     total_hierarchy_expenditure_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__expenditure_value')
+        field_name='activity__activity_plus_child_aggregation__expenditure_value')  # NOQA: E501
 
     total_hierarchy_expenditure_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__expenditure_value')
+        field_name='activity__activity_plus_child_aggregation__expenditure_value')  # NOQA: E501
 
     total_hierarchy_commitment_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__commitment_value')
+        field_name='activity__activity_plus_child_aggregation__commitment_value')  # NOQA: E501
 
     total_hierarchy_commitment_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__commitment_value')
+        field_name='activity__activity_plus_child_aggregation__commitment_value')  # NOQA: E501
 
     class Meta:
         model = Transaction

@@ -2,6 +2,7 @@
     Unit tests and integration tests for parser.
 """
 from unittest import skip
+
 import pytest
 from django.core import management
 from django.test import TestCase as DjangoTestCase
@@ -13,8 +14,8 @@ from iati.models import Activity
 from iati.parser.IATI_2_01 import Parse as Parser_201
 from iati.parser.iati_parser import IatiParser
 
-
 # TODO: use factories instead of these fixtures
+
 
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_setup, django_db_blocker):
@@ -47,7 +48,6 @@ class IatiParserTestCase(DjangoTestCase):
 
     def setUp(self):
         self.parser = IatiParser(None)
-
 
     def test_get_or_none_charset_encoding(self):
         self.assertIsNone(self.parser.get_or_none(
@@ -94,8 +94,6 @@ class IatiParserTestCase(DjangoTestCase):
         """
         self.assertEqual(self.parser._normalize("no,commas"), 'noCOMMAcommas')
 
-
- 
     def test_validate_date(self):
         """
         date should return valid dates and return None on an invalid date
@@ -113,7 +111,6 @@ class IatiParserTestCase(DjangoTestCase):
         date = self.parser.validate_date('2101-01-01')
         self.assertEqual(date, None)
 
-    
     def test_get_primary_name(self):
         """
         if no primary name, set

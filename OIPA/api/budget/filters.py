@@ -383,35 +383,35 @@ class BudgetFilter(TogetherFilterSet):
 
     total_hierarchy_disbursement_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__disbursement_value')
+        field_name='activity__activity_plus_child_aggregation__disbursement_value')  # NOQA: E501
 
     total_hierarchy_disbursement_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__disbursement_value')
+        field_name='activity__activity_plus_child_aggregation__disbursement_value')  # NOQA: E501
 
     total_hierarchy_incoming_funds_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')
+        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')  # NOQA: E501
 
     total_hierarchy_incoming_funds_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')
+        field_name='activity__activity_plus_child_aggregation__incoming_funds_value')  # NOQA: E501
 
     total_hierarchy_expenditure_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__expenditure_value')
+        field_name='activity__activity_plus_child_aggregation__expenditure_value')  # NOQA: E501
 
     total_hierarchy_expenditure_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__expenditure_value')
+        field_name='activity__activity_plus_child_aggregation__expenditure_value')  # NOQA: E501
 
     total_hierarchy_commitment_lte = NumberFilter(
         lookup_expr='lte',
-        field_name='activity__activity_plus_child_aggregation__commitment_value')
+        field_name='activity__activity_plus_child_aggregation__commitment_value')  # NOQA: E501
 
     total_hierarchy_commitment_gte = NumberFilter(
         lookup_expr='gte',
-        field_name='activity__activity_plus_child_aggregation__commitment_value')
+        field_name='activity__activity_plus_child_aggregation__commitment_value')  # NOQA: E501
 
     class Meta:
         model = Budget

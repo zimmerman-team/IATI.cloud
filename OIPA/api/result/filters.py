@@ -90,7 +90,9 @@ class ResultFilter(TogetherFilterSet):
         field_name='activity__start_date')
 
     end_date_isnull = BooleanFilter(field_name='activity__end_date__isnull')
-    start_date_isnull = BooleanFilter(field_name='activity__start_date__isnull')
+    start_date_isnull = BooleanFilter(
+        field_name='activity__start_date__isnull'
+    )
 
     activity_status = CommaSeparatedCharFilter(
         lookup_expr='in',

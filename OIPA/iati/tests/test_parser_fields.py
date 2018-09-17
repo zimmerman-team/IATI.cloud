@@ -5,9 +5,7 @@ import copy
 import datetime
 from decimal import Decimal
 from unittest import skip
-import pytest
 
-from django.core import management
 # Runs each test in a transaction and flushes database
 from django.test import TestCase
 from lxml.builder import E
@@ -3469,8 +3467,10 @@ class ResultTestCase(ParserSetupTestCase):
         result_indicator = self.parser_202.get_model('ResultIndicator')
         self.assertEqual(result_indicator.result, self.test_result)
         self.assertEqual(result_indicator.measure.code, attrs['measure'])
-        self.assertEqual(result_indicator.ascending,
-                          bool(int(attrs['ascending'])))
+        self.assertEqual(
+            result_indicator.ascending,
+            bool(int(attrs['ascending']))
+        )
 
     def test_result_indicator_title_202(self):
         """
@@ -3485,7 +3485,7 @@ class ResultTestCase(ParserSetupTestCase):
             'ResultIndicatorTitle')
 
         self.assertEqual(result_indicator_title.result_indicator,
-                          self.test_result_indicator)
+                         self.test_result_indicator)
 
         self.parser_202\
             .iati_activities__iati_activity__result__indicator__title__narrative(  # NOQA: E501
@@ -3508,7 +3508,7 @@ class ResultTestCase(ParserSetupTestCase):
         result_indicator_title = self.parser_105.get_model(
             'ResultIndicatorTitle')
         self.assertEqual(result_indicator_title.result_indicator,
-                          self.test_result_indicator)
+                         self.test_result_indicator)
 
         narrative = self.parser_105.get_model('ResultIndicatorTitleNarrative')
 
@@ -3541,7 +3541,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_202.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_description)
+                         result_indicator_description)
 
     def test_result_indicator_description_105(self):
         """
@@ -3565,7 +3565,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_105.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_description)
+                         result_indicator_description)
 
     def test_result_indicator_reference_202(self):
         """
@@ -3613,7 +3613,7 @@ class ResultTestCase(ParserSetupTestCase):
         result_indicator = self.parser_202.get_model('ResultIndicator')
         self.assertEqual(result_indicator.baseline_year, int(attrs['year']))
         self.assertEqual(result_indicator.baseline_value,
-                          Decimal(attrs['value']))
+                         Decimal(attrs['value']))
 
     def test_result_indicator_baseline_comment_202(self):
         """
@@ -3643,7 +3643,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_202.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_baseline_comment)
+                         result_indicator_baseline_comment)
 
     def test_result_indicator_baseline_comment_105(self):
         """
@@ -3670,7 +3670,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_105.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_baseline_comment)
+                         result_indicator_baseline_comment)
 
     def test_result_indicator_period(self):
         """
@@ -3832,7 +3832,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_202.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_period_target_comment)
+                         result_indicator_period_target_comment)
 
     def test_result_indicator_period_target_comment_105(self):
         """
@@ -3863,7 +3863,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_105.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_period_target_comment)
+                         result_indicator_period_target_comment)
 
     def test_result_indicator_period_actual(self):
         """
@@ -3972,7 +3972,7 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_202.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_period_actual_comment)
+                         result_indicator_period_actual_comment)
 
     def test_result_indicator_period_actual_comment_105(self):
         """
@@ -4003,4 +4003,4 @@ class ResultTestCase(ParserSetupTestCase):
         self.parser_105.update_related(narrative)
 
         self.assertEqual(narrative.related_object,
-                          result_indicator_period_actual_comment)
+                         result_indicator_period_actual_comment)
