@@ -181,7 +181,7 @@ class ActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
@@ -290,7 +290,7 @@ class ActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Activity.objects.get(pk=res.json()['id'])
 
@@ -337,7 +337,7 @@ class ActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Activity.objects.get(pk=activity.id)
@@ -385,7 +385,7 @@ class DescriptionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Description.objects.get(pk=res.json()['id'])
 
@@ -424,7 +424,7 @@ class DescriptionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Description.objects.get(pk=res.json()['id'])
 
@@ -444,7 +444,7 @@ class DescriptionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Description.objects.get(pk=description.id)
@@ -500,7 +500,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityParticipatingOrganisation.objects\
             .get(pk=res.json()['id'])
@@ -556,7 +556,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityParticipatingOrganisation.objects.get(
             ref=data['ref'])
@@ -587,7 +587,7 @@ class ParticipatingOrganisationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivityParticipatingOrganisation.objects.get(
@@ -629,7 +629,7 @@ class ActivityDateSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
 
@@ -660,7 +660,7 @@ class ActivityDateSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityDate.objects.get(pk=res.json()['id'])
 
@@ -676,7 +676,7 @@ class ActivityDateSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivityDate.objects.get(
@@ -770,7 +770,7 @@ class ContactInfoSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
 
@@ -889,7 +889,7 @@ class ContactInfoSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ContactInfo.objects.get(pk=res.json()['id'])
 
@@ -948,7 +948,7 @@ class ContactInfoSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ContactInfo.objects.get(pk=contact_infos.id)
@@ -989,7 +989,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityRecipientCountry.objects.get(
             pk=res.json()['id']
@@ -1023,7 +1023,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityRecipientCountry.objects.get(
             pk=res.json()['id']
@@ -1045,7 +1045,7 @@ class ActivityRecipientCountrySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivityRecipientCountry.objects.get(
@@ -1095,7 +1095,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
         format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityRecipientRegion.objects.get(
             pk=res.json()['id']
@@ -1133,7 +1133,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityRecipientRegion.objects.get(
             pk=res.json()['id']
@@ -1156,7 +1156,7 @@ class ActivityRecipientRegionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivityRecipientRegion.objects.get(
@@ -1204,7 +1204,7 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
 
@@ -1237,7 +1237,7 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivitySector.objects.get(pk=res.json()['id'])
 
@@ -1255,7 +1255,7 @@ class ActivitySectorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivitySector.objects.get(pk=_sector.id)
@@ -1358,7 +1358,7 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Location.objects.get(pk=res.json()['id'])
 
@@ -1493,7 +1493,7 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Location.objects.get(pk=res.json()['id'])
 
@@ -1551,7 +1551,7 @@ class LocationSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Location.objects.get(pk=location.id)
@@ -1598,7 +1598,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.HumanitarianScope.objects.get(pk=res.json()[
                                                              'id'])
@@ -1638,7 +1638,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.HumanitarianScope.objects.get(pk=res.json()[
                                                              'id'])
@@ -1660,7 +1660,7 @@ class HumanitarianScopeSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.HumanitarianScope.objects.get(
@@ -1720,7 +1720,7 @@ class PolicyMarkerSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()[
                                                                 'id'])
@@ -1778,7 +1778,7 @@ class PolicyMarkerSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ActivityPolicyMarker.objects.get(pk=res.json()[
                                                                 'id'])
@@ -1808,7 +1808,7 @@ class PolicyMarkerSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ActivityPolicyMarker.objects.get(
@@ -1865,7 +1865,7 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Budget.objects.get(pk=res.json()['id'])
 
@@ -1916,7 +1916,7 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Budget.objects.get(pk=res.json()['id'])
 
@@ -1941,7 +1941,7 @@ class BudgetSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Budget.objects.get(pk=budgets.id)
@@ -2027,7 +2027,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()[
                                                                'id'])
@@ -2156,7 +2156,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.PlannedDisbursement.objects.get(pk=res.json()[
                                                                'id'])
@@ -2230,7 +2230,7 @@ class PlannedDisbursementSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.PlannedDisbursement.objects.get(
@@ -2387,7 +2387,7 @@ class TransactionSaveTestCase(TestCase):
 
         result = res.json()
 
-        self.assertEquals(res.status_code, 201, result)
+        self.assertEqual(res.status_code, 201, result)
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
 
@@ -2629,7 +2629,7 @@ class TransactionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
         result = res.json()
 
         instance = transaction_models.Transaction.objects.get(pk=result['id'])
@@ -2725,7 +2725,7 @@ class TransactionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             transaction_models.Transaction.objects.get(
@@ -2787,7 +2787,7 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Result.objects.get(pk=res.json()['id'])
 
@@ -2850,7 +2850,7 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Result.objects.get(pk=res.json()['id'])
 
@@ -2882,7 +2882,7 @@ class ResultSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Result.objects.get(pk=results.id)
@@ -2957,7 +2957,7 @@ class ResultIndicatorSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
 
@@ -3039,7 +3039,7 @@ class ResultIndicatorSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.ResultIndicator.objects.get(pk=res.json()['id'])
 
@@ -3076,7 +3076,7 @@ class ResultIndicatorSaveTestCase(TestCase):
                 result_indicator.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ResultIndicator.objects.get(
@@ -3121,7 +3121,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicatorReference.objects.get(
             pk=res.json()['id']
@@ -3160,7 +3160,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
     def test_delete_result_indicator_reference(self):
         result_indicator_reference = ResultIndicatorReferenceFactory.create()
@@ -3174,7 +3174,7 @@ class ResultIndicatorReferenceSaveTestCase(TestCase):
                 result_indicator_reference.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.ResultIndicatorReference.objects.get(
@@ -3221,7 +3221,7 @@ class ResultIndicatorPeriodTargetLocationSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.ResultIndicatorPeriodTargetLocation.objects.get(
             pk=res.json()['id'])
@@ -3280,7 +3280,7 @@ class OtherIdentifierSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
 
@@ -3330,7 +3330,7 @@ class OtherIdentifierSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.OtherIdentifier.objects.get(pk=res.json()['id'])
 
@@ -3357,7 +3357,7 @@ class OtherIdentifierSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.OtherIdentifier.objects.get(
@@ -3399,7 +3399,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()[
                                                              'id'])
@@ -3427,7 +3427,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.CountryBudgetItem.objects.get(pk=res.json()[
                                                              'id'])
@@ -3443,7 +3443,7 @@ class CountryBudgetItemsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.CountryBudgetItem.objects.get(
@@ -3493,7 +3493,7 @@ class BudgetItemSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.country_budget_item.id,
@@ -3537,7 +3537,7 @@ class BudgetItemSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.BudgetItem.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.country_budget_item.id,
@@ -3560,7 +3560,7 @@ class BudgetItemSaveTestCase(TestCase):
                 budget_item.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.BudgetItem.objects.get(pk=budget_item.id)
@@ -3597,7 +3597,7 @@ class LegacyDataSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3622,7 +3622,7 @@ class LegacyDataSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.LegacyData.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3639,7 +3639,7 @@ class LegacyDataSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.LegacyData.objects.get(pk=legacy_data.id)
@@ -3674,7 +3674,7 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3695,7 +3695,7 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Conditions.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3710,7 +3710,7 @@ class ConditionsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Conditions.objects.get(pk=conditions.id)
@@ -3757,7 +3757,7 @@ class ConditionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Condition.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.conditions.id, data['conditions'])
@@ -3798,7 +3798,7 @@ class ConditionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Condition.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.conditions.id, data['conditions'])
@@ -3820,7 +3820,7 @@ class ConditionSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Condition.objects.get(pk=condition.id)
@@ -3885,7 +3885,7 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -3969,7 +3969,7 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.CrsAdd.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4017,7 +4017,7 @@ class CrsAddSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.CrsAdd.objects.get(pk=crs_add.id)
@@ -4057,7 +4057,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.CrsAddOtherFlags.objects.get(
             pk=res.json()['id'])
@@ -4089,7 +4089,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.CrsAddOtherFlags.objects.get(
             pk=res.json()['id'])
@@ -4110,7 +4110,7 @@ class CrsAddOtherFlagsSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.CrsAddOtherFlags.objects.get(
@@ -4148,7 +4148,7 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.Fss.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4172,7 +4172,7 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.Fss.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.activity.id, data['activity'])
@@ -4188,7 +4188,7 @@ class FssSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.Fss.objects.get(pk=fss.id)
@@ -4230,7 +4230,7 @@ class FssForecastSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.fss.id, data['fss'])
@@ -4263,7 +4263,7 @@ class FssForecastSaveTestCase(TestCase):
             data,
             format='json')
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.FssForecast.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.fss.id, data['fss'])
@@ -4283,7 +4283,7 @@ class FssForecastSaveTestCase(TestCase):
                 fss_forecast.id),
             format='json')
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.FssForecast.objects.get(pk=fss_forecast.id)
@@ -4324,7 +4324,7 @@ class RelatedActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
@@ -4356,7 +4356,7 @@ class RelatedActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.RelatedActivity.objects.get(pk=res.json()['id'])
         self.assertEqual(instance.current_activity.id, data['activity'])
@@ -4376,7 +4376,7 @@ class RelatedActivitySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.RelatedActivity.objects.get(
@@ -4430,7 +4430,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
 
@@ -4485,7 +4485,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.DocumentLink.objects.get(pk=res.json()['id'])
 
@@ -4515,7 +4515,7 @@ class DocumentLinkSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.DocumentLink.objects.get(
@@ -4558,7 +4558,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()[
                                                                 'id'])
@@ -4589,7 +4589,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.DocumentLinkCategory.objects.get(pk=res.json()[
                                                                 'id'])
@@ -4609,7 +4609,7 @@ class DocumentLinkCategorySaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.DocumentLinkCategory.objects.get(
@@ -4652,7 +4652,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 201, res.json())
+        self.assertEqual(res.status_code, 201, res.json())
 
         instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()[
                                                                 'id'])
@@ -4682,7 +4682,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 200, res.json())
+        self.assertEqual(res.status_code, 200, res.json())
 
         instance = iati_models.DocumentLinkLanguage.objects.get(pk=res.json()[
                                                                 'id'])
@@ -4702,7 +4702,7 @@ class DocumentLinkLanguageSaveTestCase(TestCase):
             format='json'
         )
 
-        self.assertEquals(res.status_code, 204)
+        self.assertEqual(res.status_code, 204)
 
         with self.assertRaises(ObjectDoesNotExist):
             iati_models.DocumentLinkLanguage.objects.get(
