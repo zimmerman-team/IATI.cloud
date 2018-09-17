@@ -7,12 +7,6 @@ ckanapi==4.1
 
 Django==2.0.6
 
-pytest-django
-
-pytest-xdist
-
-psycopg2-binary
-
 django-grappelli==2.11.1
 
 # Adding CORS headers to responses, only allowing certain API methods:
@@ -70,6 +64,14 @@ python-dateutil==2.7.3
 
 # Reading the key,value pair from .env file and adding them to environment variable:
 python-dotenv==0.8.2
+
+psycopg2-binary
+
+# Django plugin for Pytest
+pytest-django
+
+# Distributed testing for Pytest
+pytest-xdist
 
 redis==2.10.6
 
