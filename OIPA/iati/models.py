@@ -159,8 +159,6 @@ class Activity(models.Model):
     default_flow_type = models.ForeignKey(
         FlowType, null=True, blank=True, default=None,
         on_delete=models.CASCADE)
-    default_aid_type = models.ForeignKey(
-        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
     default_finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
@@ -257,6 +255,18 @@ class Activity(models.Model):
         ).exclude(
             id=self.id
         ).distinct()
+
+
+class ActivityDefaultAidType(models.Model):
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.CASCADE,
+        related_name='default_aid_types'
+    )
+    aid_type = models.ForeignKey(AidType, on_delete=models.CASCADE)
+
+    def __string__(self, ):
+        return "%s - %s" % (self.activity.id, self.aid_type.code)
 
 
 class AbstractActivityAggregation(models.Model):
