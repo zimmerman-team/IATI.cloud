@@ -4,8 +4,8 @@
 
 import copy
 import datetime
-import pytest
 
+import pytest
 from django.core import management
 from django.test import TestCase as DjangoTestCase
 from lxml.builder import E
@@ -37,6 +37,7 @@ def build_xml(version, organisation_identifier):
 
 def copy_xml_tree(tree):
     return copy.deepcopy(tree)
+
 
 @pytest.fixture(scope='session')
 def setUpModule():
