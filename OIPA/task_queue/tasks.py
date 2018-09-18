@@ -471,6 +471,7 @@ def download_file(d):
         doc.save()
 
 
+from urllib2 import urlopen
 #############################################
 ########## Check for staging file ###########
 #############################################
@@ -480,6 +481,9 @@ def check_for_staging_xml():
     id = settings.IATI_STAGING_ID
     pub = Publisher.objects.get(publisher_iati_id=pub_id)
     url = settings.IATI_STAGING_FILE_URL
+    if not urlopen(url).getcode() == 200:
+        raise Exception('Staging url not accessible ', settings.IATI_STAGING_FILE_URL)
+
 
     try:
         obj = Dataset.objects.get(iati_id="IOM_staging_file")
