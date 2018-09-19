@@ -1,6 +1,8 @@
 {% extends "home/home.html" %}
 {% load staticfiles %}
 {% load rest_framework %}
+{% load markdownify %}
+
 
 {% block extrastyle %}
     {{ block.super }}
@@ -83,7 +85,7 @@
 			</div>
 
 			<div class="content-main">
-				<h1>{{ name }}</h1>
+				<h1>{{ name|markdownify}}</h1>
 				{% block description %}
 				{{ description }}
 				{% endblock %}

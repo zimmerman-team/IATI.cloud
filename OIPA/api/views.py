@@ -30,7 +30,7 @@ def welcome(request, format=None):
     * Datasets: [`/api/datasets`](/api/datasets)
 
     * Sectors: [`/api/sectors`](/api/sectors)
-
+    
     * Countries: [`/api/countries`](/api/countries)
 
     * Transactions: [`/api/transactions`](/api/transactions)
