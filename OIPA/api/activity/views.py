@@ -260,12 +260,10 @@ class ActivityAggregations(AggregationView):
 class ActivityList(CacheResponseMixin, DynamicListView):
 
     """
-    Returns a list of  IATI Activities stored in OIPA.
+    Returns a list of IATI Activities stored in OIPA.
 
     ## Request parameters
-    - `activity_id` (*optional*): Comma separated list of activity
-    adlkfadsk
-    id's.
+    - `activity_id` (*optional*): Comma separated list of activity id's.
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
@@ -357,8 +355,7 @@ class ActivityList(CacheResponseMixin, DynamicListView):
     To show more information in list view the `fields` parameter can be used. Example;
     `fields=activity_id,title,country,any_field`.
 
-    """
-    # NOQA: E501
+    """ # NOQA: E501
 
     queryset = Activity.objects.all()
     filter_backends = (
@@ -425,7 +422,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
         return Response(True)
 
 
-class ActivityDetail(CacheResponseMixin,DynamicDetailView):
+class ActivityDetail(CacheResponseMixin, DynamicDetailView):
 
     """
     Returns detailed information about Activity.
@@ -506,8 +503,7 @@ class ActivityTransactionList(CacheResponseMixin, DynamicListView):
     - `provider_organisation_name`
     - `receiver_organisation_name`
 
-    """
-    # NOQA: E501
+    """ # NOQA: E501
     serializer_class = TransactionSerializer
     filter_class = TransactionFilter
     list_cache_key_func = QueryParamsKeyConstructor()
