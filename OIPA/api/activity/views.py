@@ -257,13 +257,15 @@ class ActivityAggregations(AggregationView):
     )
 
 
-class ActivityList(DynamicListView):
-    #CacheResponseMixin,
+class ActivityList(CacheResponseMixin, DynamicListView):
+
     """
-    Returns a list of IATI Activities stored in OIPA.
+    Returns a list of  IATI Activities stored in OIPA.
 
     ## Request parameters
-    - `activity_id` (*optional*): Comma separated list of activity id's.
+    - `activity_id` (*optional*): Comma separated list of activity
+    adlkfadsk
+    id's.
     - `activity_scope` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_country` (*optional*): Comma separated list of iso2 country codes.
     - `recipient_region` (*optional*): Comma separated list of region codes.
