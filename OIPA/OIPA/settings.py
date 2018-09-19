@@ -184,7 +184,9 @@ INSTALLED_APPS = [
     'iati.permissions',
     'rest_auth',
     'rest_auth.registration',
-    'django_filters'
+    'django_filters',
+    'markdownify'
+
 ]
 
 ADMIN_REORDER = (

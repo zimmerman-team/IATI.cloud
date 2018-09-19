@@ -423,6 +423,7 @@ class ActivityMarkReadyToPublish(APIView, FilterPublisherMixin):
 
 
 class ActivityDetail(CacheResponseMixin, DynamicDetailView):
+
     """
     Returns detailed information about Activity.
 
