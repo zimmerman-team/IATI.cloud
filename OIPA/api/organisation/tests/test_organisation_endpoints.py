@@ -36,3 +36,16 @@ class TestOrganisationEndpoints(TestCase):
         msg = 'organisation-participated-activities should be located at {0}'
         expect_url = '/api/organisations/code/participated-activities/'
         assert url == expect_url, msg.format(expect_url)
+
+    def test_organisation_file_document_link_list_endpoint(self):
+        url = reverse(
+            'organisations:organisation-file-organisation-document-link-list',
+            kwargs={'organisation_identifier': 'organisation-identifier'}
+        )
+
+        msg = 'organisation-document-link-list ' \
+              'should be located at {0}'
+        expect_url = '/api/organisations/organisation-file' \
+                     '/organisation-identifier' \
+                     '/organisation-document-link-list/'
+        assert url == expect_url, msg.format(expect_url)

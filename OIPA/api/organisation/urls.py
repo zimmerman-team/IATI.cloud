@@ -4,6 +4,15 @@ from api.organisation import views
 
 app_name = 'api'
 urlpatterns = [
+    # BEGIN: Endpoint of the Organisation File
+    # - Organisation Document Link
+    url(
+        r'^organisation-file/(?P<organisation_identifier>[^@$&+,/:;=?]+)'
+        r'/organisation-document-link-list/$',
+        views.OrganisationFileOrganisationDocumentLinkList.as_view(),
+        name='organisation-file-organisation-document-link-list'
+    ),
+    # END
     url(r'^$', views.OrganisationList.as_view(), name='organisation-list'),
     url(
         r'^(?P<pk>[^@$&+,:;=?]+)/$',
