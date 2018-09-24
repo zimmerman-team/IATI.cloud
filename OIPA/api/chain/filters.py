@@ -69,7 +69,10 @@ class ChainNodeFilter(FilterSet):
     link_end_node_hierarchy = NumberFilter(
         field_name='start_link__end_node__activity__hierarchy',
         lookup_expr='exact')
-    hierarchy = CharFilter(field_name='activity__hierarchy', lookup_expr='exact')
+    hierarchy = CharFilter(
+        field_name='activity__hierarchy',
+        lookup_expr='exact'
+    )
     bol = BooleanFilter(field_name='bol', lookup_expr='exact')
     eol = BooleanFilter(field_name='eol', lookup_expr='exact')
     treated_as_end_node = BooleanFilter(

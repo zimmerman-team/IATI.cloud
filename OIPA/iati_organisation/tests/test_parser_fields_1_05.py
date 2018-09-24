@@ -4,6 +4,7 @@
 
 import copy
 import datetime
+
 import pytest
 from django.core import management
 # Runs each test in a transaction and flushes database
@@ -37,6 +38,7 @@ def copy_xml_tree(tree):
     return copy.deepcopy(tree)
 
 # TODO: Get rid of fixtures - 2016-04-21
+
 
 @pytest.fixture(scope='session')
 def setUpModule():
