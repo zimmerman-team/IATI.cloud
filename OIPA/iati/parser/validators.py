@@ -1591,6 +1591,7 @@ def activity_transaction(
         recipient_region_vocabulary_uri,
         flow_type_code,
         finance_type_code,
+        aid_type_code,
         tied_status_code,
 ):
     warnings = []
@@ -1632,6 +1633,7 @@ def activity_transaction(
         pk=recipient_region_vocabulary_code)
     flow_type = get_or_none(models.FlowType, pk=flow_type_code)
     finance_type = get_or_none(models.FinanceType, pk=finance_type_code)
+    aid_type = get_or_none(models.AidType, pk=aid_type_code)
     tied_status = get_or_none(models.TiedStatus, pk=tied_status_code)
 
     if humanitarian not in (0, 1):
@@ -1858,6 +1860,7 @@ def activity_transaction(
             },
             "flow_type": flow_type,
             "finance_type": finance_type,
+            "aid_type": aid_type,
             "tied_status": tied_status,
         },
     }

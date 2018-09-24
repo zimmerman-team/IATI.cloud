@@ -1722,11 +1722,9 @@ class Parse(IatiParser):
         code = element.attrib.get('code')
         vocabulary_code = element.attrib.get('vocabulary')
 
-        default_aid_type = self.get_or_none(codelist_models.AidType, code=code)
-
         if not code:
             raise RequiredFieldError(
-                "default-aid-type",
+                "iati-activity/default-aid-type",
                 "code",
                 "required attribute missing")
 
@@ -1739,33 +1737,37 @@ class Parse(IatiParser):
                 name='OECD DAC',
             )
         else:
-            try:
-                vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
-                    code=vocabulary_code
-                )
-            except vocabulary_models.AidTypeVocabulary.DoesNotExist:
-                raise FieldValidationError(
-                    "default-aid-type",
-                    "vocabulary",
-                    "not found on the accompanying code list",
-                    None,
-                    None,
-                    vocabulary_code)
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                code=vocabulary_code,
+            )
 
-        if not default_aid_type:
+        # XXX: Note, that at this point only official (Vocabulary type 1)
+        # vocabularies for AidType are supported:
+        aid_type = codelist_models.AidType.objects.filter(
+            code=code,
+            vocabulary=vocabulary
+        ).first()
+
+        if not aid_type:
             raise FieldValidationError(
-                "default-aid-type",
+                "iati-activity/default-aid-type",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)
 
         activity = self.get_model('Activity')
-        activity.default_aid_type = default_aid_type
+        activity_default_aid_type = models.ActivityDefaultAidType()
 
-        default_aid_type.vocabulary = vocabulary
-        self.register_model('AidType', default_aid_type)
+        activity_default_aid_type.activity = activity
+        activity_default_aid_type.aid_type = aid_type
+
+        self.register_model(
+            'ActivityDefaultAidType',
+            activity_default_aid_type
+        )
 
         return element
 
@@ -2187,7 +2189,6 @@ class Parse(IatiParser):
         transaction.flow_type = self.get_model('Activity').default_flow_type
         transaction.finance_type = self.get_model(
             'Activity').default_finance_type
-        transaction.aid_type = self.get_model('Activity').default_aid_type
         transaction.tied_status = self.get_model(
             'Activity').default_tied_status
 
@@ -2670,19 +2671,12 @@ class Parse(IatiParser):
                 name='OECD DAC',
             )
         else:
-            try:
-                vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
-                    code=vocabulary_code
-                )
-            except vocabulary_models.AidTypeVocabulary.DoesNotExist:
-                raise FieldValidationError(
-                    "iati-activity/transaction/aid-type",
-                    "vocabulary",
-                    "not found on the accompanying code list",
-                    None,
-                    None,
-                    vocabulary_code)
+            vocabulary = vocabulary_models.AidTypeVocabulary.objects.get(
+                code=vocabulary_code,
+            )
 
+        # XXX: Note, that at this point only official (Vocabulary type 1)
+        # vocabularies for AidType are supported:
         aid_type = codelist_models.AidType.objects.filter(
             code=code,
             vocabulary=vocabulary
@@ -2692,7 +2686,8 @@ class Parse(IatiParser):
             raise FieldValidationError(
                 "transaction/aid-type",
                 "code",
-                "not found on the accompanying code list",
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported",
                 None,
                 None,
                 code)

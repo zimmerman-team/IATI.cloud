@@ -619,7 +619,8 @@ class RecipientRegionTestCase(TestCase):
             self.assertEqual(inst.model, 'recipient-region')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 4:
@@ -824,7 +825,8 @@ class ActivitySectorTestCase(TestCase):
             self.assertEqual(inst.model, 'sector')
             self.assertEqual(inst.field, 'vocabulary')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 3:
@@ -857,7 +859,8 @@ class ActivitySectorTestCase(TestCase):
             self.assertEqual(inst.model, 'sector')
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
-                inst.message, 'not found on the accompanying code list'
+                inst.message,
+                "not found on the accompanying code list"
             )
 
         # CASE 4:
@@ -1070,40 +1073,11 @@ class AidTypeTestCase(TestCase):
             self.assertEqual(inst.field, 'code')
             self.assertEqual(
                 inst.message,
-                'not found on the accompanying code list'
+                "not found on the accompanying code list. Note, that custom "
+                "AidType Vocabularies currently are not supported"
             )
 
-        # CASE 3:
-        # Vocabulary not found:
-
-        # let's create an AidType element (so the parser doesn't complain):
-        aid_type = codelist_factory.AidTypeFactory(code='99')
-
-        self.parser_203.codelist_cache = {}
-
-        aid_type_attributes = {
-            "code": aid_type.code,
-            'vocabulary': '1',
-        }
-
-        aid_type_XML_element = E(
-            'aid-type',
-            **aid_type_attributes
-        )
-
-        try:
-            self.parser_203.iati_activities__iati_activity__transaction__aid_type(  # NOQA: E501
-                aid_type_XML_element)
-            self.assertFail()
-        except FieldValidationError as inst:
-            self.assertEqual(inst.model, 'iati-activity/transaction/aid-type')
-            self.assertEqual(inst.field, 'vocabulary')
-            self.assertEqual(
-                inst.message,
-                'not found on the accompanying code list'
-            )
-
-        # CASE 4: All is good
+        # CASE 3: All is good
         # let's create an AidTypeVocabulary and AidType elements (so the
         # parser doesn't complain):
         aid_type_vocabulary = AidTypeVocabularyFactory(code='3')

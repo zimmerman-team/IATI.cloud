@@ -124,6 +124,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
 
     transaction_date = serializers.CharField()
     value_date = serializers.CharField()
+    aid_type = CodelistSerializer()
     disbursement_channel = CodelistSerializer()
     finance_type = CodelistSerializer()
     flow_type = CodelistSerializer()
@@ -169,6 +170,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             'recipient_region',
             'flow_type',
             'finance_type',
+            'aid_type',
             'tied_status',
         )
 
@@ -209,6 +211,7 @@ class TransactionSerializer(DynamicFieldsModelSerializer):
             data.get('transaction_recipient_region', {}).get('vocabulary_uri'),
             data.get('flow_type', {}).get('code'),
             data.get('finance_type', {}).get('code'),
+            data.get('aid_type', {}).get('code'),
             data.get('tied_status', {}).get('code'),
         )
 

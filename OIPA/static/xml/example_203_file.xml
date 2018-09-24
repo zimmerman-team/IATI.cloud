@@ -104,6 +104,8 @@
     <collaboration-type code="3"/>
     <default-flow-type code="10"/>
     <default-finance-type code="110"/>
+    <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+    <!--will be created:-->
     <default-aid-type code="B01" vocabulary="2"/>
     <default-tied-status code="5"/>
     <budget>
@@ -132,6 +134,8 @@
         <narrative>ICTJ</narrative>
       </receiver-org>
       <aid-type code="A01" vocabulary="1"/>
+      <!--This is currently not supported (custom AidType vocabularies), so an error log (DatasetNote)-->
+      <!--will be created:-->
       <aid-type code="B01" vocabulary="2"/>
     </transaction>
     <transaction>
