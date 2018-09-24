@@ -351,6 +351,19 @@ REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 1 * 60 * 60 * 24 * 7,  # 1 week
 }
 
+# DATA PLUGINS is the data which has not related to the IATI data.
+# For example M49 Regions code, put it in the local_settings.py,
+# like the following:
+# import os
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# DATA_PLUGINS = {
+#     'codelist': {
+#        'm48_region_file': '{base_dir}/plugins/data/{filename}'.format(
+#             base_dir=BASE_DIR, filename='regions.json')
+#     }
+# }
+DATA_PLUGINS = {}
+
 try:
     from local_settings import *  # noqa: F401, F403
 except ImportError:
