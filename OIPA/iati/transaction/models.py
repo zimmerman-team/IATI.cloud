@@ -52,6 +52,11 @@ class Transaction(models.Model):
     flow_type = models.ForeignKey(
         FlowType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
+
+    # XXX: this is for IATI versions until 2.03. See: #762:
+    aid_type = models.ForeignKey(
+        AidType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+
     finance_type = models.ForeignKey(
         FinanceType, null=True, blank=True,
         default=None, on_delete=models.CASCADE)
