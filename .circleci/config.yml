@@ -24,6 +24,11 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: install gdal dependencies
+          command: |
+            apt-get install gdal-bin
+
       # Download and cache dependencies
       - restore_cache:
           keys:
