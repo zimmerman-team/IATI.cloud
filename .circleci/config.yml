@@ -28,7 +28,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-dependencies-{{ checksum "OIPA/requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
@@ -42,7 +42,7 @@ jobs:
       - save_cache:
           paths:
             - ./env
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v1-dependencies-{{ checksum "OIPA/requirements.txt" }}
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -53,7 +53,7 @@ jobs:
           name: run tests
           command: |
             . env/bin/activate
-            python manage.py test
+            python OIPA/manage.py test
 
       - store_artifacts:
           path: test-reports
