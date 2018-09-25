@@ -27,7 +27,7 @@ jobs:
       - run:
           name: install gdal dependencies
           command: |
-            apt-get install gdal-bin
+            sudo apt-get install gdal-bin
 
       # Download and cache dependencies
       - restore_cache:
