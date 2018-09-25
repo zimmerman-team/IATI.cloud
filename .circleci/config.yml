@@ -27,8 +27,10 @@ jobs:
       - run:
           name: install gdal dependencies
           command: |
+            sudo apt-get update
             sudo apt-get install software-properties-common
             sudo add-apt-repository ppa:ubuntugis/ppa
+            sudo apt-get update
 
             sudo apt-get install gdal-bin
             pip install gdal
