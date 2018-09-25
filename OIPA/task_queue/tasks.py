@@ -472,6 +472,7 @@ def download_file(d):
 
 
 from urllib2 import urlopen
+from django.core.cache import cache
 #############################################
 ########## Check for staging file ###########
 #############################################
@@ -496,4 +497,5 @@ def check_for_staging_xml():
     obj.process(force_reparse=True)
     queue = django_rq.get_queue("parser")
     # if update_searchable and settings.ROOT_ORGANISATIONS:
+    cache.clear()
     queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
