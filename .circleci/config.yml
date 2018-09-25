@@ -63,10 +63,10 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
       - run:
-          name: run tests
+          name: run Pytest tests
           command: |
             . env/bin/activate
-            python OIPA/manage.py test
+            pytest OIPA/
 
       - store_artifacts:
           path: test-reports
