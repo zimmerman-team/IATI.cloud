@@ -66,7 +66,9 @@ jobs:
 
       - run:
           name: Run Pytest tests
-          command: pytest OIPA/
+          command: |
+            . env/bin/activate
+            pytest OIPA/
 
       - store_artifacts:
           path: test-reports
@@ -74,4 +76,6 @@ jobs:
 
       - run:
           name: Run pep8 code style checks
-          command: flake8 OIPA
+          command: |
+            . env/bin/activate
+            flake8 OIPA
