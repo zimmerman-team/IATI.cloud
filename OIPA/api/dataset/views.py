@@ -555,4 +555,6 @@ class DatasetPublishOrganisationsUpdate(APIView):
 def staging_collection(request):
     path = settings.IATI_STAGING_PATH
     file = settings.IATI_STAGING_FILE_ID
+    if not os.path.isfile(os.path.join(path, file)):
+        return HttpResponse(status=404)
     return HttpResponse(open(os.path.join(path, file)).read(), content_type='text/xml')

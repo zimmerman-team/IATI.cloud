@@ -471,6 +471,8 @@ def download_file(d):
         doc.save()
 
 
+from urllib2 import urlopen
+from django.core.cache import cache
 #############################################
 ########## Check for staging file ###########
 #############################################
@@ -480,14 +482,20 @@ def check_for_staging_xml():
     id = settings.IATI_STAGING_ID
     pub = Publisher.objects.get(publisher_iati_id=pub_id)
     url = settings.IATI_STAGING_FILE_URL
+    if not urlopen(url).getcode() == 200:
+        raise Exception('Staging url not accessible ', settings.IATI_STAGING_FILE_URL)
+
 
     try:
         obj = Dataset.objects.get(iati_id="IOM_staging_file")
         obj.delete()
     except Dataset.DoesNotExist:
         obj = None
+
     obj = Dataset(iati_id=id, name=id, title=id, publisher=pub, source_url=url)
+    obj.save()
     obj.process(force_reparse=True)
     queue = django_rq.get_queue("parser")
     # if update_searchable and settings.ROOT_ORGANISATIONS:
+    cache.clear()
     queue.enqueue(start_searchable_activities_task, args=(0,), timeout=300)
