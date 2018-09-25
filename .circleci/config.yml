@@ -50,12 +50,14 @@ jobs:
           - v1-dependencies-
 
       - run:
+          name: Create and activate virtual environment before doing anything
+          command: |
+            python3 -m venv env
+            . env/bin/activate
+
+      - run:
           name: Install main dependencies
           command: |
-            #Activate virtual environment before doing anything:
-            python3 -m venv env
-
-            . env/bin/activate
             pip install -r OIPA/requirements.txt
 
       - save_cache:
@@ -66,7 +68,6 @@ jobs:
       - run:
           name: Run Pytest tests
           command: |
-            . env/bin/activate
             pytest OIPA/
 
       - store_artifacts:
