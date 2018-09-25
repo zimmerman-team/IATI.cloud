@@ -27,9 +27,9 @@ jobs:
       - run:
           name: install gdal dependencies
           command: |
-            pip install gdal
             sudo apt-get install libgdal-dev
-            sudo apt-get install gdal-bin
+            pip install gdal
+            #sudo apt-get install gdal-bin
 
       # Download and cache dependencies
       - restore_cache:
