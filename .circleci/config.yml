@@ -25,14 +25,20 @@ jobs:
       - checkout
 
       - run:
+          name: update package lists before installing dependencies
+          command: sudo apt-get update
+
+      - run:
           name: install gdal dependencies
           command: |
-            sudo apt-get update
-
             sudo apt-get install libgdal-dev
             sudo apt-get install gdal-bin
 
-      # Download and cache dependencies
+      - run:
+          name: install spacialite dependencies
+          command: sudo apt-get install libsqlite3-mod-spatialite
+
+      # Download and cache main dependencies:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "OIPA/requirements.txt" }}
