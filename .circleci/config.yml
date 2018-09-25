@@ -38,6 +38,10 @@ jobs:
           name: Install spacialite dependencies
           command: sudo apt-get install libsqlite3-mod-spatialite
 
+      - run:
+          name: Install Flake8 style guide checker
+          command: sudo apt-get install flake8
+
       # Download and cache main dependencies:
       - restore_cache:
           keys:
@@ -48,7 +52,9 @@ jobs:
       - run:
           name: Install main dependencies
           command: |
+            #Activate virtual environment before doing anything:
             python3 -m venv env
+
             . env/bin/activate
             pip install -r OIPA/requirements.txt
 
@@ -66,3 +72,7 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+      - run:
+          name: Run pep8 code style checks
+          command: flake8 OIPA/
