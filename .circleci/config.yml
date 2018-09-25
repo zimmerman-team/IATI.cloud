@@ -25,17 +25,17 @@ jobs:
       - checkout
 
       - run:
-          name: update package lists before installing dependencies
+          name: Update package lists before installing dependencies
           command: sudo apt-get update
 
       - run:
-          name: install gdal dependencies
+          name: Install gdal dependencies
           command: |
             sudo apt-get install libgdal-dev
             sudo apt-get install gdal-bin
 
       - run:
-          name: install spacialite dependencies
+          name: Install spacialite dependencies
           command: sudo apt-get install libsqlite3-mod-spatialite
 
       # Download and cache main dependencies:
@@ -46,7 +46,7 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: Install main dependencies
           command: |
             python3 -m venv env
             . env/bin/activate
@@ -57,13 +57,8 @@ jobs:
             - ./env
           key: v1-dependencies-{{ checksum "OIPA/requirements.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
       - run:
-          name: run Pytest tests
+          name: Run Pytest tests
           command: |
             . env/bin/activate
             pytest OIPA/
