@@ -22,16 +22,19 @@ class M49RegionsImporter:
 
     """
 
-    def __init__(self):
-        # If the settings has codelist with m48_region_file
-        # then continue this process otherwise just pass it.
-        try:
-            data = self.get_json_data(
-                settings.DATA_PLUGINS['codelist']['m48_region_file'])
+    def __init__(self, filename=None):
+        # The filename should be including full path of file itself.
+        if not filename:
+            try:
+                # If the settings has codelist with m48_region_file
+                # then continue this process otherwise just pass it.
+                filename = settings.DATA_PLUGINS['codelist']['m48_region_file']
+            except KeyError:
+                pass
 
+        if filename:
+            data = self.get_json_data(filename)
             self.loop_through(data=data)
-        except KeyError:
-            pass
 
     def get_json_data(self, location_from_here):
         # Open file file json
